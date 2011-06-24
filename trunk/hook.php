@@ -40,7 +40,7 @@ function plugin_ocsinventoryng_install() {
 	if (!TableExists("glpi_plugin_ocsinventoryng_profiles")) {
       
       $install=true;
-		$DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/sql/empty-1.0.0.sql");
+		$DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.0-empty.sql");
 	
 	}
 	CronTask::Register('PluginOcsinventoryngOcsServer', 'ocsng', MINUTE_TIMESTAMP*5);
