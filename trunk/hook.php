@@ -85,7 +85,7 @@ function plugin_ocsinventoryng_uninstall() {
 function plugin_get_headings_ocsinventoryng($item,$withtemplate) {
 	global $LANG;
 	
-	if (get_class($item)=='Profile') {
+	if (get_class($item)=='Profile' || get_class($item)=='Computer') {
 		if ($item->getField('id')) {
 			return array(
 				1 => $LANG['plugin_ocsinventoryng']['title'][1],
@@ -101,7 +101,7 @@ function plugin_get_headings_ocsinventoryng($item,$withtemplate) {
 // Define headings actions added by the plugin	 
 function plugin_headings_actions_ocsinventoryng($item) {
 		
-	if (get_class($item)=='Profile') {
+	if (get_class($item)=='Profile' || get_class($item)=='Computer') {
 		return array(
 					1 => "plugin_headings_ocsinventoryng",
 					);
@@ -121,6 +121,10 @@ function plugin_headings_ocsinventoryng($item,$withtemplate=0) {
          if (!$PluginOcsinventoryngProfile->getFromDBByProfile($item->getField('id')))
             $PluginOcsinventoryngProfile->createAccess($item->getField('id'));
          $PluginOcsinventoryngProfile->showForm($item->getField('id'), array('target' => $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/profile.form.php"));
+         break;
+      case 'Computer' :
+         PluginOcsinventoryngOcsLink::showForItem($item);
+         PluginOcsinventoryngOcsServer::editLock(getItemTypeFormURL('Computer'), $item->getField('id'));
          break;
    }
 

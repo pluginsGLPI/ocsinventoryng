@@ -754,14 +754,13 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       return $input;
    }
 
-
    function cleanDBonPurge() {
-      global $DB;
-
-      $query = "DELETE
-                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                WHERE `plugin_ocsinventoryng_ocsservers_id` = '".$this->fields['id']."'";
-      $result = $DB->query($query);
+      
+      $link = new PluginOcsinventoryngOcslink();
+      $link->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
+      
+      $admin = new PluginOcsinventoryngOcsAdminInfosLink();
+      $admin->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
    }
 
 
@@ -1060,10 +1059,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       if ($ocs_id_change || !$ocs_link_exists) {
          $ocsConfig = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
          // Set OCS checksum to max value
-         $query = "UPDATE `hardware`
-                   SET `CHECKSUM` = '" . self::MAX_CHECKSUM . "'
-                   WHERE `ID` = '$ocsid'";
-         $PluginOcsinventoryngDBocs->query($query);
+         self::setChecksumForComputer($ocsid,self::MAX_CHECKSUM);
 
          if ($ocs_id_change
              || $idlink = self::ocsLink($ocsid, $plugin_ocsinventoryng_ocsservers_id, $computers_id)) {
@@ -1473,12 +1469,12 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    }
 
 
-   static function setMaxChecksumForComputer($ocsid) {
+   static function setChecksumForComputer($ocsid,$checksum) {
       global $PluginOcsinventoryngDBocs;
 
             // Set OCS checksum to max value
       $query = "UPDATE `hardware`
-                SET `CHECKSUM` = '" . self::MAX_CHECKSUM . "'
+                SET `CHECKSUM` = '" . $checksum . "'
                 WHERE `ID` = '$ocsid'";
       $PluginOcsinventoryngDBocs->query($query);
    }
@@ -1492,7 +1488,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $comp = new Computer();
 
       $rules_matched = array();
-      self::setMaxChecksumForComputer($ocsid);
+      self::setChecksumForComputer($ocsid,self::MAX_CHECKSUM);
 
       //No entity predefined, check rules
       if ($defaultentity == -1 || $defaultlocation == -1) {
@@ -1660,10 +1656,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
             if ($force) {
                $ocs_checksum = self::MAX_CHECKSUM;
-               $query_ocs = "UPDATE `hardware`
-                             SET `CHECKSUM` = (" . self::MAX_CHECKSUM . ")
-                             WHERE `ID` = '" . $line['ocsid'] . "'";
-               $PluginOcsinventoryngDBocs->query($query_ocs);
+               self::setChecksumForComputer($line['ocsid'],$ocs_checksum);
+
             } else {
                $ocs_checksum = $data_ocs["CHECKSUM"];
             }
@@ -1806,10 +1800,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                }
 
                // Update OCS Cheksum
-               $query_ocs = "UPDATE `hardware`
-                             SET `CHECKSUM` = (CHECKSUM - $mixed_checksum)
-                             WHERE `ID` = '" . $line['ocsid'] . "'";
-               $PluginOcsinventoryngDBocs->query($query_ocs);
+               $newchecksum = "(CHECKSUM - $mixed_checksum)";
+               self::setChecksumForComputer($line['ocsid'],$newchecksum);
 
                //Return code to indicate that computer was synchronized
                return array('status'       => self::COMPUTER_SYNCHRONIZED,
@@ -2902,31 +2894,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    }
 
 
-   static function getLockableFields() {
-      global $LANG;
-
-      return array("name"                           => $LANG['common'][16],
-                   "computertypes_id"               => $LANG['common'][17],
-                   "manufacturers_id"               => $LANG['common'][5],
-                   "computermodels_id"              => $LANG['common'][22],
-                   "serial"                         => $LANG['common'][19],
-                   "otherserial"                    => $LANG['common'][20],
-                   "comment"                        => $LANG['common'][25],
-                   "contact"                        => $LANG['common'][18],
-                   "contact_num"                    => $LANG['common'][21],
-                   "domains_id"                     => $LANG['setup'][89],
-                   "networks_id"                    => $LANG['setup'][88],
-                   "operatingsystems_id"            => $LANG['computers'][9],
-                   "operatingsystemservicepacks_id" => $LANG['computers'][53],
-                   "operatingsystemversions_id"     => $LANG['computers'][52],
-                   "os_license_number"              => $LANG['computers'][10],
-                   "os_licenseid"                   => $LANG['computers'][11],
-                   "users_id"                       => $LANG['common'][34],
-                   "locations_id"                   => $LANG['common'][15],
-                   "groups_id"                      => $LANG['common'][35]);
-   }
-
-
    static function migrateImportDevice($computers_id, $import_device) {
 
       $new_import_device = array(self::IMPORT_TAG_078);
@@ -3102,7 +3069,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<table class='tab_cadre_fixe'>";
 
          // Print lock fields for OCSNG
-         $lockable_fields = self::getLockableFields();
+         $lockable_fields = Computer::getLockableFields();
          $locked          = importArrayFromDB($data["computer_update"]);
 
          if (!in_array(self::IMPORT_TAG_078,$locked)) {
