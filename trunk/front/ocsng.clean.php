@@ -33,10 +33,12 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-define('GLPI_ROOT', '../../..');
+if (!defined('GLPI_ROOT')) {
+   define('GLPI_ROOT', '../../..');
+}
 include (GLPI_ROOT . "/inc/includes.php");
 
-commonHeader($LANG['plugin_ocsinventoryng'][0], $_SERVER['PHP_SELF'], "plugins","ocsinventoryng");
+commonHeader($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
 
 if (!isset($_POST["clean_ok"])) {
    plugin_ocsinventoryng_checkRight("clean_ocsng", "r");

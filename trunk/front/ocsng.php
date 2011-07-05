@@ -34,13 +34,15 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-define('GLPI_ROOT', '../../..');
+if (!defined('GLPI_ROOT')) {
+   define('GLPI_ROOT', '../../..');
+}
 include (GLPI_ROOT . "/inc/includes.php");
 
-plugin_ocsinventoryng_checkSeveralRightsOr(array('ocsng'        => 'r',
+plugin_ocsinventoryng_checkSeveralRightsOr(array('ocsng' => 'r',
                            'clean_ocsng'  => 'r'));
 
-commonHeader($LANG['plugin_ocsinventoryng'][0], $_SERVER['PHP_SELF'], "plugins","ocsinventoryng");
+commonHeader($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
 if (isset ($_SESSION["ocs_import"])) {
    unset ($_SESSION["ocs_import"]);
 }

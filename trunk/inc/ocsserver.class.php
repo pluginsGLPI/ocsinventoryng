@@ -5947,4 +5947,5 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    }
 
 }
+
 ?>

@@ -123,7 +123,7 @@ function plugin_version_ocsinventoryng() {
 	return array (
 		'name' => $LANG['plugin_ocsinventoryng']['title'][1],
 		'version' => '1.0.0',
-		'author'=>'Xavier Caillaud',
+		'author'=>'Remi Colet, Nelly Lasson, David Durieux, Xavier Caillaud',
 		'homepage'=>'https://forge.indepnet.net/repositories/show/ocsinventoryng',
 		'minGlpiVersion' => '0.83',// For compatibility / no install in version < 0.80
 	);

@@ -39,7 +39,7 @@ if (!defined('GLPI_ROOT')) {
 }
 include (GLPI_ROOT . "/inc/includes.php");
 
-checkRight("config", "w");
+plugin_ocsinventoryng_checkRight("ocsng", "r");
 
 commonHeader($LANG['plugin_ocsinventoryng'][0], '', "plugins", "ocsinventoryng");
 

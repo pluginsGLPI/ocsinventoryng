@@ -56,8 +56,8 @@ function plugin_ocsinventoryng_install() {
       $result=$DB->query($query);
    }
    
-   
-if (!TableExists('glpi_plugin_ocsinventoryng_threads')) { //not installed
+   //Tables from massocsimport
+   if (!TableExists('glpi_plugin_ocsinventoryng_threads')) { //not installed
 
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_threads` (
                   `id` int(11) NOT NULL auto_increment,

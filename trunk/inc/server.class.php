@@ -38,7 +38,6 @@ class PluginOcsinventoryngServer extends CommonDBTM {
    function getIndexName() {
       return "plugin_ocsinventoryng_ocsservers_id";
    }
-
-
 }
+
 ?>

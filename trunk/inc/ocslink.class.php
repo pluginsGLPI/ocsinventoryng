@@ -88,8 +88,6 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          }
       }
    }
-
-
 }
 
 ?>

@@ -33,13 +33,14 @@
 // Original Author of file: Walid Nouh
 // Purpose of file:
 // ----------------------------------------------------------------------
+
 if (!defined('GLPI_ROOT')) {
    define('GLPI_ROOT', '../../..');
 }
 
 include (GLPI_ROOT . "/inc/includes.php");
    
-//checkRight("ocsng", "w");
+plugin_ocsinventoryng_checkRight("ocsng", "w");
 
 function configHeader() {
    global $LANG;
@@ -67,7 +68,7 @@ if (isset ($_POST["soft_unlock"])) {
 
 $plugin = new Plugin();
 if ($plugin->isInstalled("ocsinventoryng") && $plugin->isActivated("ocsinventoryng")) {
-   commonHeader($LANG["plugin_ocsinventoryng"]["common"][1], $_SERVER["PHP_SELF"], "plugins", "ocsinventoryng");
+   commonHeader($LANG["plugin_ocsinventoryng"]["common"][1], "", "plugins", "ocsinventoryng");
 
    if (!countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers")) {
       configHeader();
@@ -79,7 +80,7 @@ if ($plugin->isInstalled("ocsinventoryng") && $plugin->isActivated("ocsinventory
       $config->showConfigForm($_SERVER['PHP_SELF']);
    }
 } else {
-   commonHeader($LANG["common"][12], $_SERVER['PHP_SELF'], "config", "plugins");
+   commonHeader($LANG["common"][12], "", "config", "plugins");
    echo "<div class='center'><br><br>";
    echo "<img src=\"" . $CFG_GLPI["root_doc"] . "/pics/warning.png\" alt=\"warning\"><br><br>";
    echo "<b>Please activate the plugin</b></div>";

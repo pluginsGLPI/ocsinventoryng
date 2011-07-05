@@ -33,12 +33,15 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-define('GLPI_ROOT', '../../..');
+if (!defined('GLPI_ROOT')) {
+   define('GLPI_ROOT', '../../..');
+}
+
 include (GLPI_ROOT . "/inc/includes.php");
 
 plugin_ocsinventoryng_checkRight("ocsng","w");
 
-commonHeader($LANG['plugin_ocsinventoryng'][0], $_SERVER['PHP_SELF'], "plugins","ocsinventoryng");
+commonHeader($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
 
 $display_list = true;
 //First time this screen is displayed : set the import mode to 'basic'

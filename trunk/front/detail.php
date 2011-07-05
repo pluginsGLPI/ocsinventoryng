@@ -40,8 +40,8 @@ if (!defined('GLPI_ROOT')) {
 include (GLPI_ROOT . "/inc/includes.php");
 
 checkRight("logs", "r");
-commonHeader($LANG['plugin_ocsinventoryng']["common"][21], $_SERVER["PHP_SELF"], "plugins", "ocsinventoryng",
-             "details");
+
+commonHeader($LANG['plugin_ocsinventoryng']["common"][21], "", "plugins", "ocsinventoryng");
 
 Search::show('PluginOcsinventoryngDetail');
 

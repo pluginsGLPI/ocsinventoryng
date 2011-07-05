@@ -128,12 +128,9 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
 
 
    static function deleteThreadDetailsByProcessID($threads_id) {
-      global $DB;
 
-      $query ="DELETE
-               FROM `glpi_plugin_ocsinventoryng_details`
-               WHERE `plugin_ocsinventoryng_threads_id` = '$threads_id'";
-      $DB->query($query);
+      $temp = new self();
+      $temp->deleteByCriteria(array('plugin_ocsinventoryng_threads_id' => $threads_id));
    }
 
 
@@ -163,4 +160,5 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
    }
 
 }
+
 ?>

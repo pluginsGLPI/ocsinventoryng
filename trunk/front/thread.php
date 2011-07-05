@@ -43,7 +43,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 checkRight("logs", "r");
 
 if (haveRecursiveAccessToEntity(0)) {
-   commonHeader($LANG['plugin_ocsinventoryng']["common"][1], $_SERVER["PHP_SELF"], "plugins", "ocsinventoryng");
+   commonHeader($LANG['plugin_ocsinventoryng']["common"][1], "", "plugins", "ocsinventoryng");
 
    $thread = new PluginOcsinventoryngThread();
    
@@ -67,4 +67,3 @@ else {
 }
 
 ?>
-

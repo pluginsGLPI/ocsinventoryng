@@ -32,7 +32,9 @@
 // ----------------------------------------------------------------------
  */
 
-define('GLPI_ROOT', '../../..');
+if (!defined('GLPI_ROOT')) {
+   define('GLPI_ROOT', '../../..');
+}
 include (GLPI_ROOT."/inc/includes.php");
 
 checkRight("profile","r");

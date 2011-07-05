@@ -33,13 +33,14 @@
 // Original Author of file: Walid Nouh
 // Purpose of file:
 // ----------------------------------------------------------------------
+
 if (!defined('GLPI_ROOT')) {
    define('GLPI_ROOT', '../../..');
 }
 
 include (GLPI_ROOT . "/inc/includes.php");
 
-checkRight("config", "w");
+plugin_ocsinventoryng_checkRight("ocsng", "w");
 
 glpi_header("config.form.php");
 

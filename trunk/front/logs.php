@@ -33,6 +33,7 @@
 // Original Author of file: Walid Nouh
 // Purpose of file:
 // ----------------------------------------------------------------------
+
 if (!defined('GLPI_ROOT')) {
    define('GLPI_ROOT', '../../..');
 }
@@ -40,7 +41,8 @@ if (!defined('GLPI_ROOT')) {
 include (GLPI_ROOT . "/inc/includes.php");
 
 checkRight("logs", "r");
-commonHeader($LANG['Menu'][30], $_SERVER["PHP_SELF"], "plugins", "ocsinventoryng","notimported");
+
+commonHeader($LANG['Menu'][30], "", "plugins", "ocsinventoryng");
 
 $thread = new PluginOcsinventoryngThread();
 $thread->showErrorLog();

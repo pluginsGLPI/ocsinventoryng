@@ -32,6 +32,7 @@
 // Original Author of file: Walid Nouh
 // Purpose of file:
 // ----------------------------------------------------------------------
+
 if (!defined('GLPI_ROOT')) {
    define('GLPI_ROOT', '../../..');
 }
@@ -39,7 +40,9 @@ if (!defined('GLPI_ROOT')) {
 include (GLPI_ROOT . "/inc/includes.php");
 
 checkRight("logs", "r");
-commonHeader($LANG['plugin_ocsinventoryng']["common"][1], $_SERVER["PHP_SELF"], "plugins", "ocsinventoryng");
+
+commonHeader($LANG['plugin_ocsinventoryng']["common"][1], "", "plugins", "ocsinventoryng");
+
 Search::show('PluginOcsinventoryngNotimported');
 
 commonFooter();

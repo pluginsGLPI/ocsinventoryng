@@ -34,10 +34,13 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-define('GLPI_ROOT', '../../..');
+if (!defined('GLPI_ROOT')) {
+   define('GLPI_ROOT', '../../..');
+}
 include (GLPI_ROOT . "/inc/includes.php");
 
 plugin_ocsinventoryng_checkRight("ocsng", "w");
+
 $ocs = new PluginOcsinventoryngOcsServer();
 
 if (!isset($_GET["id"])) {
