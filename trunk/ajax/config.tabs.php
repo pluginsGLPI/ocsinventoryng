@@ -1,7 +1,6 @@
 <?php
-
 /*
- * @version $Id: ocsng.php 14685 2011-06-11 06:40:30Z remi $
+ * @version $Id: config.tabs.php 100 2011-06-11 07:49:18Z remi $
  -------------------------------------------------------------------------
  GLPI - Gestionnaire Libre de Parc Informatique
  Copyright (C) 2003-2011 by the INDEPNET Development Team.
@@ -30,36 +29,46 @@
  */
 
 // ----------------------------------------------------------------------
-// Original Author of file:
+// Original Author of file: Walid Nouh
 // Purpose of file:
 // ----------------------------------------------------------------------
 
 define('GLPI_ROOT', '../../..');
 include (GLPI_ROOT . "/inc/includes.php");
+header("Content-Type: text/html; charset=UTF-8");
+header_nocache();
 
-plugin_ocsinventoryng_checkSeveralRightsOr(array('ocsng'        => 'r',
-                           'clean_ocsng'  => 'r'));
-
-commonHeader($LANG['plugin_ocsinventoryng'][0], $_SERVER['PHP_SELF'], "plugins","ocsinventoryng");
-if (isset ($_SESSION["ocs_import"])) {
-   unset ($_SESSION["ocs_import"]);
-}
-if (isset ($_SESSION["ocs_link"])) {
-   unset ($_SESSION["ocs_link"]);
-}
-if (isset ($_SESSION["ocs_update"])) {
-   unset ($_SESSION["ocs_update"]);
+if (!isset($_POST["id"])) {
+   exit();
 }
 
-if (isset($_GET["plugin_ocsinventoryng_ocsservers_id"]) && $_GET["plugin_ocsinventoryng_ocsservers_id"]) {
-   
-   PluginOcsinventoryngOcsServer::ocsMenu($_GET["plugin_ocsinventoryng_ocsservers_id"]);
-
-   PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-
-} else {
-   PluginOcsinventoryngOcsServer::showFormServerChoice();
+if (!isset($_REQUEST['glpi_tab'])) {
+   exit();
 }
-commonFooter();
+
+if (!isset($_POST["withtemplate"])) {
+   $_POST["withtemplate"] = "";
+}
+
+$config = new PluginOcsinventoryngConfig();
+if ($_POST['id']>0 && $config->can($_POST['id'],'r')) {
+   switch($_REQUEST['glpi_tab']) {
+      case -1 :
+         $config->showScriptLock();
+         Plugin::displayAction($config, $_REQUEST['glpi_tab'], $_POST["withtemplate"]);
+         break;
+
+      case 1 :
+         $config->showScriptLock();
+         break;
+      default :
+         if (!Plugin::displayAction($config, $_REQUEST['glpi_tab'], $_POST["withtemplate"])) {
+         }
+         break;
+   }
+
+}
+
+ajaxFooter();
 
 ?>

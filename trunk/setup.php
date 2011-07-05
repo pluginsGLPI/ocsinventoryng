@@ -32,6 +32,12 @@
 // ----------------------------------------------------------------------
  */
 
+define("PLUGIN_OCSINVENTORYNG_STATE_STARTED", 1);
+define("PLUGIN_OCSINVENTORYNG_STATE_RUNNING", 2);
+define("PLUGIN_OCSINVENTORYNG_STATE_FINISHED", 3);
+
+define("PLUGIN_OCSINVENTORYNG_LOCKFILE", GLPI_LOCK_DIR . "/ocsinventoryng.lock");
+
 // Init the hooks of the plugins -Needed
 function plugin_init_ocsinventoryng() {
 	global $PLUGIN_HOOKS,$CFG_GLPI,$LANG;
@@ -50,6 +56,15 @@ function plugin_init_ocsinventoryng() {
    Plugin::registerClass('PluginOcsinventoryngRuleImportComputerCollection', array(
       'rulecollections_types' => true
    ));
+   
+   Plugin::registerClass('PluginOcsinventoryngNotimported',
+                         array ('massiveaction_noupdate_types' => true,
+                                'massiveaction_nodelete_types' => true,
+                                'notificationtemplates_types'  => true));
+
+   Plugin::registerClass('PluginOcsinventoryngDetail',
+                         array ('massiveaction_noupdate_types' => true,
+                                'massiveaction_nodelete_types' => true));
       
 	if (getLoginUserID()) {
 		
@@ -61,6 +76,7 @@ function plugin_init_ocsinventoryng() {
 		
       if (plugin_ocsinventoryng_haveRight("ocsng","w") || haveRight("config","w")) {
          
+         $PLUGIN_HOOKS['redirect_page']['ocsinventoryng']    = "front/notimported.form.php";
          $PLUGIN_HOOKS['headings']['ocsinventoryng'] = 'plugin_get_headings_ocsinventoryng';
 			$PLUGIN_HOOKS['headings_action']['ocsinventoryng'] = 'plugin_headings_actions_ocsinventoryng';
       }
@@ -73,6 +89,29 @@ function plugin_init_ocsinventoryng() {
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['search'] = 'front/ocsserver.php';
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['add'] = 'front/ocsserver.form.php';
          }
+      
+        /*if (haveRecursiveAccessToEntity(0)) {
+         $image = "<img src='".$CFG_GLPI["root_doc"]."/pics/stats_item.png' title='".
+                   $LANG["plugin_ocsinventoryng"]["common"][1]."' alt='".$LANG["plugin_ocsinventoryng"]["common"][1]."'>";
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng'][$image] = 'front/thread.php';
+         }
+         $image = "<img src='".$CFG_GLPI["root_doc"]."/pics/rdv.png' title='".
+                   $LANG["plugin_ocsinventoryng"]["common"][21]."' alt='".$LANG["plugin_ocsinventoryng"]["common"][21]."'>";
+         $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng'][$image]
+                      = 'front/detail.php';
+         $image = "<img src='".$CFG_GLPI["root_doc"]."/pics/puce-delete2.png' title='".
+                   $LANG["plugin_ocsinventoryng"]["common"][18]."' alt='".$LANG["plugin_ocsinventoryng"]["common"][18]."'>";
+         $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng'][$image]
+                      = 'front/notimported.php';
+         
+
+         if (haveRight("logs", "r")) {
+            //TODO
+            if (haveRecursiveAccessToEntity(0)) {
+               $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['config']
+                            = 'front/config.form.php';
+            }
+         }*/
       }
 	}
 }

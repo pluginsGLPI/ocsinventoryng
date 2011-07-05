@@ -51,7 +51,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    const PCI_DEVICE = 10;
    // not used const CASE_DEVICE=11;
    // not used const POWER_DEVICE=12;
-
+   const OCS_VERSION_LIMIT    = 4020;
+   const OCS1_3_VERSION_LIMIT = 5000;
+   const OCS2_VERSION_LIMIT   = 6000;
+   
    // Class constants - import_ management
    const FIELD_SEPARATOR = '$$$$$';
    const IMPORT_TAG_070  = '_version_070_';
@@ -122,6 +125,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
          $tabs[2]  = $LANG['plugin_ocsinventoryng']['config'][5];
          $tabs[3]  = $LANG['plugin_ocsinventoryng']['config'][27];
+         $tabs[4]  = $LANG['plugin_ocsinventoryng']["notimported"][2];
          $this->addStandardTab('Log', $tabs);
       }
       return $tabs;
@@ -169,7 +173,98 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       return $tab;
    }
 
+   
+   /**
+    * Print ocs menu 
+    *
+    * @param $target form target
+    * @param $ID Integer : Id of the ocs config
+    *
+    * @return Nothing (display)
+   **/
+   static function ocsMenu($plugin_ocsinventoryng_ocsservers_id) {
+      global $LANG,$CFG_GLPI,$DB;
+      
+      $name = "";
+      if (isset($plugin_ocsinventoryng_ocsservers_id)) {
+         $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = $plugin_ocsinventoryng_ocsservers_id;
+      }
+      $sql = "SELECT `name`
+              FROM `glpi_plugin_ocsinventoryng_ocsservers`
+              WHERE `id` = '".$plugin_ocsinventoryng_ocsservers_id."'";
+      $result = $DB->query($sql);
 
+      if ($DB->numrows($result) > 0) {
+         $datas = $DB->fetch_array($result);
+         $name = " : " . $datas["name"];
+      }
+      echo "<div class='center'>";
+      echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png' alt='" .
+            $LANG['plugin_ocsinventoryng'][0] . "' title=\"" . $LANG['plugin_ocsinventoryng'][0] . "\" ></td>";
+      echo "</div>";
+
+      echo "<div class='center'><table class='tab_cadre'>";
+      echo "<tr><th colspan='4'>" . $LANG['plugin_ocsinventoryng'][0] . " " . $name . "</th></tr>";
+      
+      if (plugin_ocsinventoryng_haveRight('ocsng','w')) {
+         //config server
+         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'><a href='ocsserver.form.php?id=".$plugin_ocsinventoryng_ocsservers_id."'>
+         <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsserver.png' alt='" .
+            $LANG['plugin_ocsinventoryng'][17] . "' title=\"" . $LANG['plugin_ocsinventoryng'][17] . "\" >
+            <br>".$LANG['plugin_ocsinventoryng'][17]." ".$name."</a></td>";
+         //config massimport
+         echo "<td class='center b' colspan='2'><a href='config.form.php'>
+         <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro.png' alt='" .
+            $LANG['plugin_ocsinventoryng'][25] . "' title=\"" . $LANG['plugin_ocsinventoryng'][25] . "\" >
+            <br>".$LANG['plugin_ocsinventoryng'][25]."</a></td></tr>";
+            
+         //manual import
+         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'><a href='ocsng.import.php'>
+         <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' alt='" .
+            $LANG['plugin_ocsinventoryng'][2] . "' title=\"" . $LANG['plugin_ocsinventoryng'][2] . "\" >
+            <br>".$LANG['plugin_ocsinventoryng'][2].
+               "</a></td>";
+         //threads
+         echo "<td class='center b' colspan='2'><a href='thread.php'>
+         <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/thread.png' alt='" .
+            $LANG["plugin_ocsinventoryng"]["common"][1] . "' title=\"" . $LANG["plugin_ocsinventoryng"]["common"][1] . "\" >
+            <br>".$LANG["plugin_ocsinventoryng"]["common"][1]."</a></td></tr>";
+         
+         //manual synchro
+         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'><a href='ocsng.sync.php'>
+         <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro1.png' alt='" .
+            $LANG['plugin_ocsinventoryng'][1] . "' title=\"" . $LANG['plugin_ocsinventoryng'][1] . "\" >
+            <br>".$LANG['plugin_ocsinventoryng'][1]. "</a></td>";
+         //host imported by thread
+         echo "<td class='center b' colspan='2'><a href='detail.php'>
+         <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/detail.png' alt='" .
+            $LANG["plugin_ocsinventoryng"]["common"][21] . "' title=\"" . $LANG["plugin_ocsinventoryng"]["common"][21] . "\" >
+            <br>".$LANG["plugin_ocsinventoryng"]["common"][21]."</a></td></tr>";
+         
+         //link
+         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'><a href='ocsng.link.php'>
+         <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' alt='" .
+            $LANG['plugin_ocsinventoryng'][4] . "' title=\"" . $LANG['plugin_ocsinventoryng'][4] . "\" >
+            <br>".$LANG['plugin_ocsinventoryng'][4].
+               "</a></td>";
+         //host not imported by thread
+         echo "<td class='center b' colspan='2'><a href='notimported.php'>
+         <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/notimported.png' alt='" .
+            $LANG["plugin_ocsinventoryng"]["common"][18] . "' title=\"" . $LANG["plugin_ocsinventoryng"]["common"][18] . "\" >
+            <br>".$LANG["plugin_ocsinventoryng"]["common"][18]."</a></td></tr>";
+               
+      }
+      
+      if (plugin_ocsinventoryng_haveRight('clean_ocsng','r')) {
+         echo "<tr class='tab_bg_1'><td class='center b' colspan='4'><a href='ocsng.clean.php'>
+         <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/clean.png' alt='" .
+            $LANG['plugin_ocsinventoryng'][3] . "' title=\"" . $LANG['plugin_ocsinventoryng'][3] . "\" >
+            <br>".$LANG['plugin_ocsinventoryng'][3].
+               "</a></td><tr>";
+      }
+
+      echo "</table></div>";
+   }
    /**
     * Print ocs config form
     *
@@ -439,7 +534,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "</td></tr>\n";
       
       //check version
-      if (self::checkOCSconnection($ID) && strpos(self::checkVersion(),'2.0') > 0) {
+      if ($this->fields['ocs_version'] > self::OCS1_3_VERSION_LIMIT) {
          echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['computers'][57] . " </td>\n<td>";
          Dropdown::showYesNo("import_vms", $this->fields["import_vms"]);
          echo "</td></tr>\n";
@@ -540,7 +635,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          return false;
       }
 
-      $rowspan = 6;
+      $rowspan = 5;
       //If no ID provided, or if the server is created using an existing template
       if (empty ($ID)) {
          $this->getEmpty();
@@ -554,14 +649,16 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'><td class='center'>" . $LANG['common'][16] . "&nbsp;: </td>\n";
       echo "<td><input type='text' name='name' value=\"" . $this->fields["name"] ."\"></td>\n";
+      echo "<td class='center'>" . $LANG['rulesengine'][78] . "&nbsp;: </td>\n";
+      echo "<td>".$this->fields["ocs_version"]."</td></tr>\n";
+      
+      echo "<tr class='tab_bg_1'><td class='center'>" . $LANG['ocsconfig'][2] . "&nbsp;: </td>\n";
+      echo "<td><input type='text' name='ocs_db_host' value=\"" .
+                  $this->fields["ocs_db_host"] ."\"></td>\n";
       echo "<td class='center' rowspan='$rowspan'>" . $LANG['common'][25] . "&nbsp;: </td>\n";
       echo "<td rowspan='$rowspan'>";
       echo "<textarea cols='45' rows='5' name='comment' >".$this->fields["comment"]."</textarea>";
       echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_1'><td class='center'>" . $LANG['plugin_ocsinventoryng']['config'][2] . "&nbsp;: </td>\n";
-      echo "<td><input type='text' name='ocs_db_host' value=\"" .
-                    $this->fields["ocs_db_host"] ."\"></td></tr>\n";
 
       echo "<tr class='tab_bg_1'><td class='center'>" . $LANG['plugin_ocsinventoryng']['config'][4] . "&nbsp;: </td>\n";
       echo "<td><input type='text' name='ocs_db_name' value=\"" .
@@ -1201,7 +1298,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $result = $PluginOcsinventoryngDBocs->query("SELECT `TVALUE`
                                FROM `config`
                                WHERE `NAME` = 'GUI_VERSION'");
-
+   
       return $PluginOcsinventoryngDBocs->result($result, 0, 0);
    }
       
@@ -1214,8 +1311,15 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                                   FROM `config`
                                   WHERE `NAME` = 'GUI_VERSION'");
 
+         // Update OCS version on ocsservers
+         if ($PluginOcsinventoryngDBocs->numrows($result)) {
+            $server = new PluginOcsinventoryngOcsServer();
+            $server->update(array('id'        => $PluginOcsinventoryngDBocs->ocsservers_id,
+                                'ocs_version' => $PluginOcsinventoryngDBocs->result($result,0,0)));
+         }
+
          if ($PluginOcsinventoryngDBocs->numrows($result) != 1
-             || ($PluginOcsinventoryngDBocs->result($result, 0, 0) < 4020
+             || ($PluginOcsinventoryngDBocs->result($result, 0, 0) < self::OCS_VERSION_LIMIT
                  && strpos($PluginOcsinventoryngDBocs->result($result, 0, 0),'2.0') !== 0)) { // hack for 2.0 RC
             return false;
          }
@@ -3934,7 +4038,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          if (!preg_match("/\/$/i",$ocs_config["ocs_url"])) {
             $url .= '/';
          }
-         $url = $url."machine.php?systemid=$ocsid";
+         if ($ocs_config['ocs_version'] > self::OCS2_VERSION_LIMIT) {
+            $url = $url."index.php?function=computer&amp;head=1&amp;systemid=$ocsid";
+         } else {
+            $url = $url."machine.php?systemid=$ocsid";
+         }
 
          if ($only_url) {
             return $url;
@@ -4465,53 +4573,54 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    }
 
 
-   static function updateVirtualMachines($computers_id, $ocsid, $plugin_ocsinventoryng_ocsservers_id, $import_vm,
+   static function updateVirtualMachines($computers_id, $ocsid, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_vm,
                                          $dohistory) {
       global $PluginOcsinventoryngDBocs;
 
-      //check version ?
-      if (self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id) 
-            && strpos(self::checkVersion(),'2.0') > 0) {
-         //Get vms for this host
-         $query = "SELECT *
-                   FROM `virtualmachines`
-                   WHERE `HARDWARE_ID` = '$ocsid'";
-         $result = $PluginOcsinventoryngDBocs->query($query);
+      // No VM before OCS 1.3
+      if ($cfg_ocs['ocs_version'] < self::OCS1_3_VERSION_LIMIT) {
+         return false;
+      }
+      self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      //Get vms for this host
+      $query = "SELECT *
+                FROM `virtualmachines`
+                WHERE `HARDWARE_ID` = '$ocsid'";
+      $result = $PluginOcsinventoryngDBocs->query($query);
 
-         $virtualmachine = new ComputerVirtualMachine();
-         if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
-            while ($line = $PluginOcsinventoryngDBocs->fetch_array($result)) {
-               $line = clean_cross_side_scripting_deep(addslashes_deep($line));
-               $vm['name'] = $line['NAME'];
-               $vm['vcpu'] = $line['VCPU'];
-               $vm['ram']  = $line['MEMORY'];
-               $vm['uuid'] = $line['UUID'];
-               $vm['computers_id'] = $computers_id;
+      $virtualmachine = new ComputerVirtualMachine();
+      if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
+         while ($line = $PluginOcsinventoryngDBocs->fetch_array($result)) {
+            $line = clean_cross_side_scripting_deep(addslashes_deep($line));
+            $vm['name'] = $line['NAME'];
+            $vm['vcpu'] = $line['VCPU'];
+            $vm['ram']  = $line['MEMORY'];
+            $vm['uuid'] = $line['UUID'];
+            $vm['computers_id'] = $computers_id;
 
-               $vm['virtualmachinestates_id']  = Dropdown::importExternal('VirtualMachineState',
-                                                                          $line['STATUS']);
-               $vm['virtualmachinetypes_id']   = Dropdown::importExternal('VirtualMachineType',
-                                                                          $line['VMTYPE']);
-               $vm['virtualmachinesystems_id'] = Dropdown::importExternal('VirtualMachineType',
-                                                                          $line['SUBSYSTEM']);
+            $vm['virtualmachinestates_id']  = Dropdown::importExternal('VirtualMachineState',
+                                                                       $line['STATUS']);
+            $vm['virtualmachinetypes_id']   = Dropdown::importExternal('VirtualMachineType',
+                                                                       $line['VMTYPE']);
+            $vm['virtualmachinesystems_id'] = Dropdown::importExternal('VirtualMachineType',
+                                                                       $line['SUBSYSTEM']);
 
-               if (!in_array(stripslashes($line["ID"]), $import_vm)) {
-                  $virtualmachine->reset();
-                  if (!$dohistory) {
-                     $vm['_no_history'] = true;
-                  }
-                  $id_vm = $virtualmachine->add($vm);
-                  if ($id_vm) {
-                     self::addToOcsArray($computers_id, array($id_vm => $line['ID']), "import_vm");
-                  }
-               } else {
-                  $id = array_search(stripslashes($line["ID"]), $import_vm);
-                  if ($virtualmachine->getFromDB($id)) {
-                      $vm['id'] = $id;
-                      $virtualmachine->update($vm);
-                  }
-                  unset ($import_vm[$id]);
+            if (!in_array(stripslashes($line["ID"]), $import_vm)) {
+               $virtualmachine->reset();
+               if (!$dohistory) {
+                  $vm['_no_history'] = true;
                }
+               $id_vm = $virtualmachine->add($vm);
+               if ($id_vm) {
+                  self::addToOcsArray($computers_id, array($id_vm => $line['ID']), "import_vm");
+               }
+            } else {
+               $id = array_search(stripslashes($line["ID"]), $import_vm);
+               if ($virtualmachine->getFromDB($id)) {
+                   $vm['id'] = $id;
+                   $virtualmachine->update($vm);
+               }
+               unset ($import_vm[$id]);
             }
          }
       }
