@@ -43,53 +43,40 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
 
       $tab[1]['table']     = $this->getTable();
       $tab[1]['field']     = 'ocsid';
-      $tab[1]['linkfield'] = 'ocsid';
       $tab[1]['name']      = $LANG['ocsng'][45];
       $tab[1]['datatype']  = 'integer';
 
-      $tab[2]['table']         = 'glpi_plugin_ocsinventoryng_ocsservers';
-      $tab[2]['field']         = 'name';
-      $tab[2]['linkfield']     = 'plugin_ocsinventoryng_ocsservers_id';
+      $tab[2]['table']         = $this->getTable();
+      $tab[2]['field']         = 'plugin_ocsinventoryng_ocsservers_id';
       $tab[2]['name']          = $LANG['ocsng'][29];
-      $tab[2]['searchtype']    = array('equals','contains');
-      $tab[2]['datatype']      = 'itemlink';
-      $tab[2]['itemype_link']  = 'OcsServer';
       $tab[2]['searchtype'] = 'equals';
 
       $tab[3]['table']     = $this->getTable();
       $tab[3]['field']     = 'process_time';
-      $tab[3]['linkfield'] = '';
       $tab[3]['name']      = $LANG['plugin_ocsinventoryng']["common"][31];
       $tab[3]['datatype']  = 'datetime';
 
       $tab[4]['table']     = $this->getTable();
       $tab[4]['field']     = 'action';
-      $tab[4]['linkfield'] = 'action';
       $tab[4]['name']      = $LANG['rulesengine'][11];
       $tab[4]['searchtype'] = 'equals';
 
       $tab[5]['table']     = 'glpi_plugin_ocsinventoryng_threads';
       $tab[5]['field']     = 'processid';
-      $tab[5]['linkfield'] = 'plugin_ocsinventoryng_threads_id';
       $tab[5]['name']      = $LANG['plugin_ocsinventoryng']["common"][32];
       $tab[5]['datatype']  = 'integer';
 
-      $tab[6]['table']         = 'glpi_computers';
-      $tab[6]['field']         = 'name';
-      $tab[6]['linkfield']     = 'computers_id';
+      $tab[6]['table']         = $this->getTable();
+      $tab[6]['field']         = 'computers_id';
       $tab[6]['name']          = $LANG['help'][25];
-      $tab[6]['datatype']      = 'itemlink';
-      $tab[6]['itemype_link']  = 'Computer';
 
       $tab[7]['table']     = $this->getTable();
       $tab[7]['field']     = 'threadid';
-      $tab[7]['linkfield'] = 'threadid';
       $tab[7]['name']      = $LANG['plugin_ocsinventoryng']["common"][9];
       $tab[7]['datatype']  = 'integer';
 
       $tab[8]['table']     = $this->getTable();
       $tab[8]['field']     = 'rules_id';
-      $tab[8]['linkfield'] = '';
       $tab[8]['name']      = $LANG['plugin_ocsinventoryng']["common"][39];
       $tab[8]['datatype']  = 'text';
 

@@ -345,8 +345,8 @@ class PluginOcsinventoryngThread extends CommonDBTM {
 
                echo "<td class='center'>";
                if ($thread["plugin_ocsinventoryng_ocsservers_id"] != -1) {
-                  $ocsConfig = PluginOcsinventoryngOcsServer::getConfig($thread["ocsservers_id"]);
-                  echo "<a href=\"front/ocsserver.form.php?id=".$ocsConfig["id"]."\">".
+                  $ocsConfig = PluginOcsinventoryngOcsServer::getConfig($thread["plugin_ocsinventoryng_ocsservers_id"]);
+                  echo "<a href=\"ocsserver.form.php?id=".$ocsConfig["id"]."\">".
                          $ocsConfig["name"]."</a>";
                } else {
                   echo $LANG["plugin_ocsinventoryng"]["config"][122];

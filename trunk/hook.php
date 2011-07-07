@@ -875,12 +875,20 @@ function plugin_ocsinventoryng_giveItem($type, $id, $data, $num) {
       case "glpi_plugin_ocsinventoryng_details.action" :
          $detail = new PluginOcsinventoryngDetail();
          return $detail->giveActionNameByActionID($data["ITEM_$num"]);
-      case "glpi_plugin_ocsinventoryng_notimported.reason" :
-         return PluginOcsinventoryngNotimported::getReason($data["ITEM_$num"]);
+      case "glpi_plugin_ocsinventoryng_details.computers_id":
+         $comp = new Computer();
+         $comp->getFromDB($data["ITEM_$num"]);
+         return "<a href='".getItemTypeFormURL('Computer')."?id=".$data["ITEM_$num"]."'>".$comp->getName()."</a>";
+      case "glpi_plugin_ocsinventoryng_details.plugin_ocsinventoryng_ocsservers_id":
+         $ocs = new PluginOcsinventoryngOcsServer();
+         $ocs->getFromDB($data["ITEM_$num"]);
+         return "<a href='".getItemTypeFormURL('PluginOcsinventoryngOcsServer')."?id=".$data["ITEM_$num"]."'>".$ocs->getName()."</a>";
       case "glpi_plugin_ocsinventoryng_details.rules_id":
          $detail = new PluginOcsinventoryngDetail();
          $detail->getFromDB($data['id']);
          return PluginOcsinventoryngNotimported::getRuleMatchedMessage($detail->fields['rules_id']);
+      case "glpi_plugin_ocsinventoryng_notimported.reason" :
+         return PluginOcsinventoryngNotimported::getReason($data["ITEM_$num"]);
       default:
         return "";
    }

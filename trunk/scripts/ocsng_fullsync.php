@@ -204,16 +204,16 @@ PluginOcsinventoryngNotimported::sendAlert();
 
 
 function FirstPass($ocsservers_id) {
-   global $DB, $DBocs;
+   global $DB, $PluginOcsinventoryngDBocs;
 
    if (PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id)) {
       // Compute lastest new computer
       $query = "SELECT MAX(`ID`)
                 FROM `hardware`";
       $max_id = 0;
-      if ($result = $DBocs->query($query)) {
-         if ($DBocs->numrows($result) > 0) {
-            $max_id = $DBocs->result($result, 0, 0);
+      if ($result = $PluginOcsinventoryngDBocs->query($query)) {
+         if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
+            $max_id = $PluginOcsinventoryngDBocs->result($result, 0, 0);
          }
       }
 
@@ -274,7 +274,7 @@ function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields
 
 function plugin_ocsinventoryng_importFromOcsServer($threads_id,$cfg_ocs, $server, $thread_nbr,
                                                   $threadid, $fields, $config) {
-   global $DBocs;
+   global $PluginOcsinventoryngDBocs;
 
    echo "\tThread #" . $threadid . " : import computers from server: '" . $cfg_ocs["name"] . "'\n";
 
@@ -308,15 +308,15 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id,$cfg_ocs, $server
    $query_ocs .= "$where_multi_thread
                   $limit";
 
-   $result_ocs = $DBocs->query($query_ocs);
-   $nb = $DBocs->numrows($result_ocs);
+   $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
+   $nb = $PluginOcsinventoryngDBocs->numrows($result_ocs);
    echo "\tThread #$threadid : $nb computer(s)\n";
 
    $fields["total_number_machines"] += $nb;
 
-   $thread = new PluginOcsinventoryngThread;
+   $thread = new PluginOcsinventoryngThread();
    $notimport = new PluginOcsinventoryngNotimported();
-   for ($i = 0 ; $data = $DBocs->fetch_array($result_ocs) ; $i++) {
+   for ($i = 0 ; $data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs) ; $i++) {
       if ($i == $config->fields["thread_log_frequency"]) {
          $fields["status"] = PLUGIN_OCSINVENTORYNG_STATE_RUNNING;
          $thread->update($fields);
@@ -325,8 +325,8 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id,$cfg_ocs, $server
 
       echo ".";
       $entities_id = 0;
-      $action = PluginOcsinventoryngPluginOcsinventoryngOcsServer::processComputer($data["ID"], $cfg_ocs["id"], 1);
-      PluginOcsinventoryngPluginOcsinventoryngOcsServer::manageImportStatistics($fields, $action['status']);
+      $action = PluginOcsinventoryngOcsServer::processComputer($data["ID"], $cfg_ocs["id"], 1);
+      PluginOcsinventoryngOcsServer::manageImportStatistics($fields, $action['status']);
 
       switch ($action['status']) {
          case PluginOcsinventoryngOcsServer::COMPUTER_NOT_UNIQUE :

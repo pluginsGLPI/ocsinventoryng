@@ -1,8 +1,8 @@
 @echo off
 echo Chemins php et du script a lancer
 
-SET path_php="C:\OCSNG\xampp\php"
-SET plugin_glpi="C:\OCSNG\xampp\htdocs\glpi\plugins\ocsinventoryng\scripts"
+SET path_php="D:\OCSNG\xampp\php"
+SET plugin_glpi="D:\OCSNG\xampp\htdocs\glpi83\plugins\ocsinventoryng\scripts"
 
 echo Definition du path
 

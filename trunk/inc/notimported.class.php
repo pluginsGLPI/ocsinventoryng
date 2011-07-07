@@ -282,7 +282,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
 
 
    function logNotImported($ocsservers_id,$ocsid,$reason) {
-      global $DBocs,$DB;
+      global $PluginOcsinventoryngDBocs,$DB;
 
       PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id);
 
@@ -291,9 +291,9 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
                 WHERE (`accountinfo`.`HARDWARE_ID` = `hardware`.`ID`
                          AND `bios`.`HARDWARE_ID` = `hardware`.`ID`
                             AND `hardware`.`ID` = '$ocsid')";
-      $result = $DBocs->query($query);
-      if ($result && $DBocs->numrows($result)) {
-         $line = $DBocs->fetch_array($result);
+      $result = $PluginOcsinventoryngDBocs->query($query);
+      if ($result && $PluginOcsinventoryngDBocs->numrows($result)) {
+         $line = $PluginOcsinventoryngDBocs->fetch_array($result);
          $input["_ocs"] = true;
          $input["name"] = $line["NAME"];
          $input["domain"] = $line["WORKGROUP"];
@@ -461,31 +461,31 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
    }
    
    static function getOcsComputerInfos($params = array()) {
-      global $DBocs;
-      PluginOcsinventoryngPluginOcsinventoryngOcsServer::checkOCSconnection($params['plugin_ocsinventoryng_ocsservers_id']);
+      global $PluginOcsinventoryngDBocs;
+      PluginOcsinventoryngOcsServer::checkOCSconnection($params['plugin_ocsinventoryng_ocsservers_id']);
       
       $changes = array();
       $query = "SELECT `SSN` FROM `bios` " .
                "WHERE `HARDWARE_ID`='".$params['ocsid']."'";
-      $result = $DBocs->query($query);
-      if ($DBocs->numrows($result) > 0) {
-         $ocs_serial = $DBocs->result($result,0,'SSN');
+      $result = $PluginOcsinventoryngDBocs->query($query);
+      if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
+         $ocs_serial = $PluginOcsinventoryngDBocs->result($result,0,'SSN');
          if ($ocs_serial != $params['serial']) {
             $query_serial = "UPDATE `bios` SET `SSN`='".$params['serial']."'" .
                   "          WHERE `HARDWARE_ID`='".$params['ocsid']."'";
-            $DBocs->query($query_serial);
+            $PluginOcsinventoryngDBocs->query($query_serial);
             $changes[] = 'serial';
          }
       }
       $query = "SELECT `TAG` FROM `accountinfo` " .
                "WHERE `HARDWARE_ID`='".$params['ocsid']."'";
-      $result = $DBocs->query($query);
-      if ($DBocs->numrows($result) > 0) {
-         $ocs_tag = $DBocs->result($result,0,'TAG');
+      $result = $PluginOcsinventoryngDBocs->query($query);
+      if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
+         $ocs_tag = $PluginOcsinventoryngDBocs->result($result,0,'TAG');
          if ($ocs_tag != $params['tag']) {
             $query_serial = "UPDATE `accountinfo` SET `TAG`='".$params['tag']."'" .
                            " WHERE `HARDWARE_ID`='".$params['ocsid']."'";
-            $DBocs->query($query_serial);
+            $PluginOcsinventoryngDBocs->query($query_serial);
             $changes[] = 'tag';
          }
       }

@@ -75,7 +75,7 @@ function plugin_init_ocsinventoryng() {
 		}
 		
       if (plugin_ocsinventoryng_haveRight("ocsng","w") || haveRight("config","w")) {
-         
+         $PLUGIN_HOOKS['use_massive_action']['ocsinventoryng'] = 1;
          $PLUGIN_HOOKS['redirect_page']['ocsinventoryng']    = "front/notimported.form.php";
          $PLUGIN_HOOKS['headings']['ocsinventoryng'] = 'plugin_get_headings_ocsinventoryng';
 			$PLUGIN_HOOKS['headings_action']['ocsinventoryng'] = 'plugin_headings_actions_ocsinventoryng';
