@@ -222,7 +222,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
       $tab[2]['table']     = $this->getTable();
       $tab[2]['field']     = 'name';
       $tab[2]['linkfield'] = '';
-      $tab[2]['name']      = $LANG['registry'][6];
+      $tab[2]['name']      = $LANG['plugin_ocsinventoryng']['registry'][6];
       $tab[2]['datatype']      = 'itemlink';
       $tab[2]['itemlink_type'] = $this->getType();
       $tab[2]['massiveaction'] = false;

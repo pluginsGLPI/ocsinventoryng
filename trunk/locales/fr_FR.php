@@ -118,9 +118,9 @@ $LANG['plugin_ocsinventoryng']['config'][2]  = "Hôte de la base de données OCS
 $LANG['plugin_ocsinventoryng']['config'][3]  = "Mot de passe de l'utilisateur OCSNG";
 $LANG['plugin_ocsinventoryng']['config'][4]  = "Nom de la base de données OCSNG";
 $LANG['plugin_ocsinventoryng']['config'][5]  = "Options d'importation";
-
+$LANG['plugin_ocsinventoryng']['config'][6] = "Connexion à la base de données OCSNG";
 $LANG['plugin_ocsinventoryng']['config'][7]  = "Base de données OCSNG en UTF8";
-
+$LANG['plugin_ocsinventoryng']['config'][8] = "Ajout impossible. Le serveur OCSNG existe déjà.";
 $LANG['plugin_ocsinventoryng']['config'][9]  = "Exclure les tags suivants (séparateur $, rien pour aucun)";
 $LANG['plugin_ocsinventoryng']['config'][10] = "Import global";
 $LANG['plugin_ocsinventoryng']['config'][11] = "Pas d'import";
@@ -132,9 +132,10 @@ $LANG['plugin_ocsinventoryng']['config'][16] = "Statut par défaut";
 $LANG['plugin_ocsinventoryng']['config'][17] = "Limiter l'importation aux tags suivants (séparateur $, rien pour tous)";
 $LANG['plugin_ocsinventoryng']['config'][18] = "Assurez-vous au préalable d'avoir géré correctement les doublons dans OCSNG";
 $LANG['plugin_ocsinventoryng']['config'][19] = "Import unique sur numéro de série";
+$LANG['plugin_ocsinventoryng']['config'][20] = "Comportement à la suppression d'un ordinateur dans OCSNG";
 
 $LANG['plugin_ocsinventoryng']['config'][27] = "Informations générales";
-
+$LANG['plugin_ocsinventoryng']['config'][28]  = "Synchronisation des matériels depuis OCSNG";
 $LANG['plugin_ocsinventoryng']['config'][36] = "Modems";
 $LANG['plugin_ocsinventoryng']['config'][37] = "Ports";
 $LANG['plugin_ocsinventoryng']['config'][38] = "Utiliser le dictionnaire logiciel d'OCSNG";
@@ -162,6 +163,12 @@ $LANG['plugin_ocsinventoryng']['profile'][1] = "OCSNG";
 $LANG['plugin_ocsinventoryng']['profile'][2] = "Synchronisation OCSNG manuellement";
 $LANG['plugin_ocsinventoryng']['profile'][3] = "Voir les informations OCSNG";
 
+$LANG['plugin_ocsinventoryng']['registry'][1] = "Ruche";
+$LANG['plugin_ocsinventoryng']['registry'][2] = "Chemin";
+$LANG['plugin_ocsinventoryng']['registry'][3] = "Clé/valeur";
+$LANG['plugin_ocsinventoryng']['registry'][4] = "Clé(s) de registre trouvée(s)";
+$LANG['plugin_ocsinventoryng']['registry'][5] = "Aucune clé de la base de registre trouvée";
+$LANG['plugin_ocsinventoryng']['registry'][6] = "Nom OCSNG";
 //massocsimport
 
 $LANG['plugin_ocsinventoryng']["common"][1]  = "Exécution des scripts de la tâche automatique";
