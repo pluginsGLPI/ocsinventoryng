@@ -3149,21 +3149,17 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       if ($DB->numrows($result) == 1) {
          $data = $DB->fetch_assoc($result);
          if (plugin_ocsinventoryng_haveRight("sync_ocsng","w")) {
-            echo "<tr class='tab_bg_1'><td class='center'>";
             echo "<form method='post' action=\"$target\">";
             echo "<input type='hidden' name='id' value='$ID'>";
             echo "<table class='tab_cadre_fixe'>";
-            echo "<tr><th>".$LANG['plugin_ocsinventoryng'][0]."</th></tr>";
-
             echo "<tr class='tab_bg_1'><td class='center'>";
             echo "<input type='hidden' name='resynch_id' value='" . $data["id"] . "'>";
             echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
                    $LANG['plugin_ocsinventoryng'][24] . "\">";
+            echo "</table>\n";
             echo "</form>\n";
-            echo "</td><tr>";
          }
 
-         echo "</table></div>";
 
          $header = false;
          echo "<div width='50%'>";

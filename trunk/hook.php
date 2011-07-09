@@ -774,7 +774,7 @@ function plugin_headings_ocsinventoryng($item,$withtemplate=0) {
          $PluginOcsinventoryngProfile->showForm($item->getField('id'), array('target' => $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/profile.form.php"));
          break;
       case 'Computer' :
-         PluginOcsinventoryngOcsLink::showForItem($item);
+         PluginOcsinventoryngOcsLink::showForItem(getItemTypeFormURL('PluginOcsinventoryngOcslink'),$item,$withtemplate);
          PluginOcsinventoryngOcsServer::editLock(getItemTypeFormURL('Computer'), $item->getField('id'));
          break;
    }
