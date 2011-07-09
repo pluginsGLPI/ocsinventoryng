@@ -1024,6 +1024,14 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
 
    if ($itemtype=='Computer') {
       if (plugin_ocsinventoryng_haveRight("ocsng","r")) {
+         
+         $sopt[102]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
+         $sopt[102]['field']         = 'last_update';
+         $sopt[102]['name']          = $LANG['plugin_ocsinventoryng'][13];
+         $sopt[102]['datatype']      = 'datetime';
+         $sopt[102]['massiveaction'] = false;
+         $sopt[102]['joinparams']    = array('jointype' => 'child');
+         
          $sopt[103]['table']         ='glpi_plugin_ocsinventoryng_ocslinks';
          $sopt[103]['field']         ='last_update';
          $sopt[103]['name']          = $LANG['plugin_ocsinventoryng'][14];
@@ -1067,6 +1075,22 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
       }
 	}
 	return $sopt;
+}
+
+function plugin_ocsinventoryng_displayConfigItem($type,$ID,$data,$num) {
+
+	$searchopt=&Search::getOptions($type);
+	$table=$searchopt[$ID]["table"];
+	$field=$searchopt[$ID]["field"];
+
+
+	switch ($table.'.'.$field) {
+      case "glpi_plugin_ocsinventoryng_ocslinks.last_update":
+      case "glpi_plugin_ocsinventoryng_ocslinks.last_ocs_update":
+         return " class='center'";
+         break;
+	}
+	return "";
 }
 
 
