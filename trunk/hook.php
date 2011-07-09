@@ -1017,6 +1017,58 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
    }
 }
 
+function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
+	global $LANG;
+
+    $sopt=array();
+
+   if ($itemtype=='Computer') {
+      if (plugin_ocsinventoryng_haveRight("ocsng","r")) {
+         $sopt[103]['table']         ='glpi_plugin_ocsinventoryng_ocslinks';
+         $sopt[103]['field']         ='last_update';
+         $sopt[103]['name']          = $LANG['plugin_ocsinventoryng'][14];
+         $sopt[103]['datatype']      = 'datetime';
+         $sopt[103]['massiveaction'] = false;
+         $sopt[103]['joinparams']    = array('jointype' => 'child');
+      
+         $sopt[101]['table']      = 'glpi_plugin_ocsinventoryng_ocslinks';
+         $sopt[101]['field']      = 'use_auto_update';
+         $sopt[101]['linkfield']  = '_auto_update_ocs'; // update through compter update process
+         $sopt[101]['name']       = $LANG['plugin_ocsinventoryng'][6]." ".$LANG['ocsconfig'][0];
+         $sopt[101]['datatype']   = 'bool';
+         $sopt[101]['joinparams'] = array('jointype' => 'child');
+
+         $sopt[104]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
+         $sopt[104]['field']         = 'ocs_agent_version';
+         $sopt[104]['name']          = $LANG['plugin_ocsinventoryng'][49];
+         $sopt[104]['massiveaction'] = false;
+         $sopt[104]['joinparams']    = array('jointype' => 'child');
+
+         $sopt[105]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
+         $sopt[105]['field']         = 'tag';
+         $sopt[105]['name']          = $LANG['plugin_ocsinventoryng']['config'][39];
+         $sopt[105]['datatype']      = 'string';
+         $sopt[105]['massiveaction'] = false;
+         $sopt[105]['joinparams']    = array('jointype' => 'child');
+
+         $sopt[110]['table']         = 'glpi_plugin_ocsinventoryng_registrykeys';
+         $sopt[110]['field']         = 'value';
+         $sopt[110]['name']          = $LANG['plugin_ocsinventoryng']['registry'][0]." : ".$LANG['plugin_ocsinventoryng']['registry'][3];
+         $sopt[110]['forcegroupby']  = true;
+         $sopt[110]['massiveaction'] = false;
+         $sopt[110]['joinparams']    = array('jointype' => 'child');
+
+         $sopt[111]['table']         = 'glpi_plugin_ocsinventoryng_registrykeys';
+         $sopt[111]['field']         = 'ocs_name';
+         $sopt[111]['name']          = $LANG['plugin_ocsinventoryng']['registry'][0]." : ".$LANG['plugin_ocsinventoryng']['registry'][6];
+         $sopt[111]['forcegroupby']  = true;
+         $sopt[111]['massiveaction'] = false;
+         $sopt[111]['joinparams']    = array('jointype' => 'child');
+      }
+	}
+	return $sopt;
+}
+
 
 function plugin_ocsinventoryng_addSelect($type, $id, $num) {
 

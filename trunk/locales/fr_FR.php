@@ -163,6 +163,7 @@ $LANG['plugin_ocsinventoryng']['profile'][1] = "OCSNG";
 $LANG['plugin_ocsinventoryng']['profile'][2] = "Synchronisation OCSNG manuellement";
 $LANG['plugin_ocsinventoryng']['profile'][3] = "Voir les informations OCSNG";
 
+$LANG['plugin_ocsinventoryng']['registry'][0] = "Registre";
 $LANG['plugin_ocsinventoryng']['registry'][1] = "Ruche";
 $LANG['plugin_ocsinventoryng']['registry'][2] = "Chemin";
 $LANG['plugin_ocsinventoryng']['registry'][3] = "Clé/valeur";
