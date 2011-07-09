@@ -165,6 +165,22 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          }
       }
    }
+   
+   //if Computer deleted
+	static function purgeComputer(Computer $comp) {
+	
+      $link = new self();
+      $link->deleteByCriteria(array('computers_id' => $comp->getField("id")));
+      
+      $reg = new PluginOcsinventoryngRegistryKey();
+      $reg->deleteByCriteria(array('computers_id' => $comp->getField("id")));
+   }
+   
+   //if Computer_Item deleted
+	static function purgeComputer_Item(Computer_Item $comp) {
+	
+      //TODO see Computer_Item function cleanDBonPurge()
+   }
 }
 
 ?>
