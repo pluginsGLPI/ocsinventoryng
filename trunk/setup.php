@@ -44,7 +44,8 @@ function plugin_init_ocsinventoryng() {
 
 	$PLUGIN_HOOKS['change_profile']['ocsinventoryng'] = array('PluginOcsinventoryngProfile','changeProfile');
 	$PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng'] = array('Profile'=>array('PluginOcsinventoryngProfile', 'purgeProfiles'));
-   
+   $PLUGIN_HOOKS['item_update']['ocsinventoryng'] = array('Computer'=>array('PluginOcsinventoryngOcslink', 'updateComputer'));
+   $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng'] = array('Computer_Item'=>array('PluginOcsinventoryngOcslink', 'addComputer_Item'));
    Plugin::registerClass('PluginOcsinventoryngOcsServer', array(
       'massiveaction_noupdate_types' => true
    ));

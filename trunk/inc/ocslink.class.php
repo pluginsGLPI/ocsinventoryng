@@ -88,6 +88,83 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          }
       }
    }
+   
+   /**
+   * Update lockable fields of an item
+   *
+   * @param $item CommonDBTM object
+   * @param $withtemplate integer : withtemplate param
+   * @return nothing
+   **/
+   static function updateComputer(CommonDBTM $item, $withtemplate='') {
+      global $DB, $LANG;
+
+      // Manage changes for OCS if more than 1 element (date_mod)
+      // Need dohistory==1 if dohistory==2 no locking fields
+      if ($item->fields["is_ocs_import"]  && $item->dohistory==1 && count($item->updates)>1) {
+         PluginOcsinventoryngOcsServer::mergeOcsArray($item->fields["id"], $item->updates, "computer_update");
+      }
+
+      if (isset($item->input["_auto_update_ocs"])) {
+         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                   SET `use_auto_update` = '".$item->input["_auto_update_ocs"]."'
+                   WHERE `computers_id` = '".$item->input["id"]."'";
+         $DB->query($query);
+      }
+   }
+   
+   /**
+   * Update lockable linked items of an item
+   *
+   * @param $item CommonDBTM object
+   * @param $withtemplate integer : withtemplate param
+   * @return nothing
+   **/
+   static function addComputer_Item(CommonDBTM $item, $withtemplate='') {
+      global $DB, $LANG;
+      
+      switch ($item->input['itemtype']) {
+         case 'Monitor' :
+            $link = new Monitor();
+            $ocstab = 'import_monitor';
+            break;
+
+         case 'Phone' :
+            // shoul really never occurs as OCS doesn't sync phone
+            $link = new Phone();
+            $ocstab = '';
+            break;
+
+         case 'Printer' :
+            $link = new Printer();
+            $ocstab = 'import_printer';
+            break;
+
+         case 'Peripheral' :
+            $link = new Peripheral();
+            $ocstab = 'import_peripheral';
+            break;
+
+         default :
+            return false;
+      }
+      if (!$link->getField('is_global') ) {
+         // Handle case where already used, should never happen (except from OCS sync)
+         $query = "SELECT `id`, `computers_id`
+                   FROM `glpi_computers_items`
+                   WHERE `glpi_computers_items`.`items_id` = '".$item->input['items_id']."'
+                         AND `glpi_computers_items`.`itemtype` = '".$item->input['itemtype']."'";
+         $result = $DB->query($query);
+
+         while ($data=$DB->fetch_assoc($result)) {
+            $temp = clone $item;
+            $temp->delete($data);
+            if ($ocstab) {
+               PluginOcsinventoryngOcsServer::deleteInOcsArray($data["computers_id"], $data["id"],$ocstab);
+            }
+         }
+      }
+   }
 }
 
 ?>

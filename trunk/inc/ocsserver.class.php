@@ -1761,7 +1761,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             if ($force) {
                $ocs_checksum = self::MAX_CHECKSUM;
                self::setChecksumForComputer($line['ocsid'],$ocs_checksum);
-
             } else {
                $ocs_checksum = $data_ocs["CHECKSUM"];
             }

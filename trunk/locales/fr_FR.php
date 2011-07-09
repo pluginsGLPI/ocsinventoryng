@@ -167,7 +167,7 @@ $LANG['plugin_ocsinventoryng']['registry'][1] = "Ruche";
 $LANG['plugin_ocsinventoryng']['registry'][2] = "Chemin";
 $LANG['plugin_ocsinventoryng']['registry'][3] = "Clé/valeur";
 $LANG['plugin_ocsinventoryng']['registry'][4] = "Clé(s) de registre trouvée(s)";
-$LANG['plugin_ocsinventoryng']['registry'][5] = "Aucune clé de la base de registre trouvée";
+$LANG['plugin_ocsinventoryng']['registry'][5] = "Aucune clé de base de registre trouvée";
 $LANG['plugin_ocsinventoryng']['registry'][6] = "Nom OCSNG";
 //massocsimport
 

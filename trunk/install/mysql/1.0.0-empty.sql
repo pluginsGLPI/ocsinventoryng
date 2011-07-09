@@ -121,7 +121,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
 ### Dump table glpi_registrykeys
 
 DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_registrykeys`;
-CREATE TABLE `glpi_registrykeys` (
+CREATE TABLE `glpi_plugin_ocsinventoryng_registrykeys` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `computers_id` int(11) NOT NULL DEFAULT '0',
   `hive` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
