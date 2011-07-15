@@ -1,6 +1,5 @@
-### Dump table glpi_plugin_ocsinventoryng_profiles
+### Alter table glpi_plugin_ocsinventoryng_profiles
 
-DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_profiles`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_profiles` (
 	`id` int(11) NOT NULL auto_increment,
 	`profiles_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_profiles (id)',
@@ -13,22 +12,26 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_profiles` (
 	KEY `profiles_id` (`profiles_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-### Dump table glpi_plugin_ocsinventoryng_ocsadmininfoslinks
+### Alter table glpi_plugin_ocsinventoryng_ocsadmininfoslinks
 
-DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_ocsadmininfoslinks`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_ocsadmininfoslinks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `glpi_column` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ocs_column` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
+  `ocsservers_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `plugin_ocsinventoryng_ocsservers_id` (`plugin_ocsinventoryng_ocsservers_id`)
+  KEY `ocsservers_id` (`ocsservers_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+INSERT INTO `glpi_plugin_ocsinventoryng_ocsadmininfoslinks` SELECT * FROM `glpi_ocsadmininfoslinks`;
 
-### Dump table glpi_plugin_ocsinventoryng_ocslinks
+ALTER TABLE `glpi_plugin_ocsinventoryng_ocsadmininfoslinks` 
+   CHANGE `ocsservers_id` `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0';
+   
+ALTER TABLE `glpi_ocsadmininfoslinks` RENAME `backup_glpi_ocsadmininfoslinks`;
 
-DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_ocslinks`;
+### Alter table glpi_plugin_ocsinventoryng_ocslinks
+
 CREATE TABLE `glpi_plugin_ocsinventoryng_ocslinks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `computers_id` int(11) NOT NULL DEFAULT '0',
@@ -44,25 +47,30 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocslinks` (
   `import_monitor` longtext COLLATE utf8_unicode_ci,
   `import_peripheral` longtext COLLATE utf8_unicode_ci,
   `import_printer` longtext COLLATE utf8_unicode_ci,
-  `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
+  `ocsservers_id` int(11) NOT NULL DEFAULT '0',
   `import_ip` longtext COLLATE utf8_unicode_ci,
   `ocs_agent_version` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `entities_id` int(11) NOT NULL DEFAULT '0',
   `tag` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `import_vm` longtext COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unicity` (`plugin_ocsinventoryng_ocsservers_id`,`ocsid`),
+  UNIQUE KEY `unicity` (`ocsservers_id`,`ocsid`),
   KEY `last_update` (`last_update`),
   KEY `ocs_deviceid` (`ocs_deviceid`),
-  KEY `last_ocs_update` (`plugin_ocsinventoryng_ocsservers_id`,`last_ocs_update`),
+  KEY `last_ocs_update` (`ocsservers_id`,`last_ocs_update`),
   KEY `computers_id` (`computers_id`),
   KEY `use_auto_update` (`use_auto_update`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+INSERT INTO `glpi_plugin_ocsinventoryng_ocslinks` SELECT * FROM `glpi_ocslinks`;
 
-### Dump table glpi_plugin_ocsinventoryng_ocsservers
+ALTER TABLE `glpi_plugin_ocsinventoryng_ocslinks` 
+   CHANGE `ocsservers_id` `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0';
+   
+ALTER TABLE `glpi_ocslinks` RENAME `backup_glpi_ocslinks`;
 
-DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_ocsservers`;
+### Alter table glpi_plugin_ocsinventoryng_ocsservers
+
 CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -118,9 +126,12 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   KEY `is_active` (`is_active`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-### Dump table glpi_registrykeys
+INSERT INTO `glpi_plugin_ocsinventoryng_ocsservers` SELECT * FROM `glpi_ocsservers`;
 
-DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_registrykeys`;
+ALTER TABLE `glpi_ocsservers` RENAME `backup_glpi_ocsservers`;
+
+### Alter table glpi_registrykeys
+
 CREATE TABLE `glpi_plugin_ocsinventoryng_registrykeys` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `computers_id` int(11) NOT NULL DEFAULT '0',
@@ -132,8 +143,12 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_registrykeys` (
   KEY `computers_id` (`computers_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `glpi_plugin_ocsinventoryng_ocsservers` VALUES ('1','localhost','ocs','ocs','localhost','ocsweb','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','',NULL,'0','1',NULL,'',NULL,NULL,'1','1','0','0',NULL);
+INSERT INTO `glpi_plugin_ocsinventoryng_registrykeys` SELECT * FROM `glpi_registrykeys`;
 
-INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginOcsinventoryngOcsServer','3','1','0');
-INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginOcsinventoryngOcsServer','19','2','0');
-INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginOcsinventoryngOcsServer','6','3','0');
+ALTER TABLE `glpi_registrykeys` RENAME `backup_glpi_registrykeys`;
+
+### Alter table glpi_displaypreferences
+
+UPDATE `glpi_displaypreferences` SET `itemtype` = 'PluginOcsinventoryngOcsServer' WHERE `itemtype` = 'OcsServer';
+
+UPDATE `glpi_crontasks` SET `itemtype` = 'PluginOcsinventoryngOcsServer' WHERE `itemtype` = 'OcsServer';
