@@ -94,6 +94,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    const LINK_RESULT_IMPORT    = 0;
    const LINK_RESULT_NO_IMPORT = 1;
    const LINK_RESULT_LINK      = 2;
+   
+   const PLUGIN_OCSINVENTORYNG_HISTORY_OCS_IMPORT     = 8;
+   const PLUGIN_OCSINVENTORYNG_HISTORY_OCS_DELETE     = 9;
+   const PLUGIN_OCSINVENTORYNG_HISTORY_OCS_IDCHANGED  = 10;
+   const PLUGIN_OCSINVENTORYNG_HISTORY_OCS_LINK       = 11;
 
    static function getTypeName() {
       global $LANG;
@@ -1148,7 +1153,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             $changes[1] = $data["ocsid"];
             //New ocsid
             $changes[2] = $ocsid;
-            Log::history($computers_id, 'Computer', $changes, 0, HISTORY_OCS_IDCHANGED);
+            Log::history($computers_id, 'Computer', $changes, 0, self::PLUGIN_OCSINVENTORYNG_HISTORY_OCS_IDCHANGED);
          }
       }
 
@@ -1251,7 +1256,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $changes[0] = '0';
                $changes[1] = "";
                $changes[2] = $ocsid;
-               Log::history($computers_id, 'Computer', $changes, 0, HISTORY_OCS_LINK);
+               Log::history($computers_id, 'Computer', $changes, 0, self::PLUGIN_OCSINVENTORYNG_HISTORY_OCS_LINK);
             }
 
             self::updateComputer($idlink, $plugin_ocsinventoryng_ocsservers_id, 0);
@@ -1443,7 +1448,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                            //New ocsid
                            $changes[2] = $data["ID"];
                            Log::history($DB->result($res_id, 0, "computers_id"), 'Computer',
-                                        $changes, 0, HISTORY_OCS_IDCHANGED);
+                                        $changes, 0, self::PLUGIN_OCSINVENTORYNG_HISTORY_OCS_IDCHANGED);
                         }
                      }
                   }
@@ -1675,7 +1680,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $changes[0] = '0';
                $changes[1] = "";
                $changes[2] = $ocsid;
-               Log::history($computers_id, 'Computer', $changes, 0, HISTORY_OCS_IMPORT);
+               Log::history($computers_id, 'Computer', $changes, 0, self::PLUGIN_OCSINVENTORYNG_HISTORY_OCS_IMPORT);
 
                if ($idlink = self::ocsLink($line['ID'], $plugin_ocsinventoryng_ocsservers_id, $computers_id)) {
                   self::updateComputer($idlink, $plugin_ocsinventoryng_ocsservers_id, 0);
@@ -2500,7 +2505,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $changes[0] = '0';
                $changes[1] = $data["ocsid"];
                $changes[2] = "";
-               Log::history($data["computers_id"], 'Computer', $changes, 0, HISTORY_OCS_DELETE);
+               Log::history($data["computers_id"], 'Computer', $changes, 0, self::PLUGIN_OCSINVENTORYNG_HISTORY_OCS_DELETE);
 
                $query = "DELETE
                          FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -4337,18 +4342,18 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       global $DB;
 
       $query = "SELECT *
-                FROM `glpi_registrykeys`
+                FROM `glpi_plugin_ocsinventoryng_registrykeys`
                 WHERE `computers_id` = '$glpi_computers_id'";
       $result = $DB->query($query);
 
       if ($DB->numrows($result) > 0) {
          while ($data = $DB->fetch_assoc($result)) {
             $query2 = "SELECT COUNT(*)
-                       FROM `glpi_registrykeys`
+                       FROM `glpi_plugin_ocsinventoryng_registrykeys`
                        WHERE `computers_id` = '" . $data['computers_id'] . "'";
             $result2 = $DB->query($query2);
 
-            $registry = new RegistryKey();
+            $registry = new PluginOcsinventoryngRegistryKey();
             if ($DB->result($result2, 0, 0) == 1) {
                $registry->delete(array('id' => $data['computers_id']), 1);
             }
@@ -5042,7 +5047,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       if ($cfg_ocs["import_registry"]) {
          //before update, delete all entries about $computers_id
          $query_delete = "DELETE
-                          FROM `glpi_registrykeys`
+                          FROM `glpi_plugin_ocsinventoryng_registrykeys`
                           WHERE `computers_id` = '$computers_id'";
          $DB->query($query_delete);
 
@@ -5058,7 +5063,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          $result = $PluginOcsinventoryngDBocs->query($query);
 
          if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
-            $reg = new RegistryKey();
+            $reg = new PluginOcsinventoryngRegistryKey();
 
             //update data
             while ($data = $PluginOcsinventoryngDBocs->fetch_array($result)) {
@@ -5895,7 +5900,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             $changes[1] = $line_links["tag"];
             $changes[2] = $data_ocs["TAG"];
 
-            Log::history($line_links["id"], 'Ocslink', $changes, 0, HISTORY_OCS_LINK);
+            Log::history($line_links["id"], 'Ocslink', $changes, 0, self::PLUGIN_OCSINVENTORYNG_HISTORY_OCS_LINK);
             return $data_ocs["TAG"];
          }
       }
