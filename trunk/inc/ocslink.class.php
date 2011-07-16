@@ -93,7 +93,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "<td class='center' colspan='2'>";
                      
                   echo $LANG['common'][52]." <a href='ocsserver.form.php?id="
-                       .OcsServer::getByMachineID($items_id)."'>".PluginOcsinventoryngOcsServer::getServerNameByID($items_id)."</a>";
+                       .PluginOcsinventoryngOcsServer::getByMachineID($items_id)."'>".
+                       PluginOcsinventoryngOcsServer::getServerNameByID($items_id)."</a>";
                   $query = "SELECT `ocs_agent_version`, `ocsid`
                             FROM `glpi_plugin_ocsinventoryng_ocslinks`
                             WHERE `computers_id` = '$items_id'";
@@ -101,11 +102,13 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   $result_agent_version = $DB->query($query);
                   $data_version = $DB->fetch_array($result_agent_version);
 
-                  $ocs_config = PluginOcsinventoryngOcsServer::getConfig(OcsServer::getByMachineID($items_id));
+                  $ocs_config = PluginOcsinventoryngOcsServer::getConfig(
+                                       PluginOcsinventoryngOcsServer::getByMachineID($items_id));
 
                   //If have write right on OCS and ocsreports url is not empty in OCS config
                   if (plugin_ocsinventoryng_haveRight("ocsng","w") && $ocs_config["ocs_url"] != '') {
-                     echo ", ".PluginOcsinventoryngOcsServer::getComputerLinkToOcsConsole (OcsServer::getByMachineID($items_id),
+                     echo ", ".PluginOcsinventoryngOcsServer::getComputerLinkToOcsConsole (
+                                          PluginOcsinventoryngOcsServer::getByMachineID($items_id),
                                                                        $data_version["ocsid"],
                                                                        $LANG['plugin_ocsinventoryng'][57]);
                   }
