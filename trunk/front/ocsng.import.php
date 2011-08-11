@@ -84,7 +84,7 @@ if (isset($_SESSION["ocs_import"]["id"])) {
       PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_import"]['statistics'], $action['status']);
       PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_import"]['statistics']);
       displayProgressBar(400, $percent);
-      glpi_header($_SERVER['PHP_SELF']);
+      Html::back();
 
    } else {
       //displayProgressBar(400, 100);
@@ -131,7 +131,7 @@ if (!isset($_POST["import_ok"])) {
          }
       }
    }
-   glpi_header($_SERVER['PHP_SELF']);
+   Html::back();
 }
 
 commonFooter();

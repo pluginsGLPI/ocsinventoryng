@@ -42,6 +42,6 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 plugin_ocsinventoryng_checkRight("ocsng", "w");
 
-glpi_header("config.form.php");
+Html::redirect("config.form.php");
 
 ?>

@@ -57,7 +57,7 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
       PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_update"]['statistics']);
       displayProgressBar(400, $percent);
 
-      glpi_header($_SERVER['PHP_SELF']);
+      Html::back();
 
    } else {
       PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_update"]['statistics'], true);
@@ -91,7 +91,7 @@ if (!isset($_POST["update_ok"])) {
          }
       }
    }
-   glpi_header($_SERVER['PHP_SELF']);
+   Html::back();
 }
 
 commonFooter();

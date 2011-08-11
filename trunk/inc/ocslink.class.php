@@ -80,7 +80,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
                $data = $DB->fetch_assoc($result);
-               $data = clean_cross_side_scripting_deep(addslashes_deep($data));
+               $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
                
                if (count($data)) {
                   echo "<div class='center'>";
@@ -120,9 +120,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "</td>";
                   
                   echo "<td class='center' colspan='2'>";
-                  echo $LANG['plugin_ocsinventoryng'][14]."&nbsp;: ".convDateTime($data["last_ocs_update"]);
+                  echo $LANG['plugin_ocsinventoryng'][14]."&nbsp;: ".Html::convDateTime($data["last_ocs_update"]);
                   echo "<br>";
-                  echo $LANG['plugin_ocsinventoryng'][13]."&nbsp;: ".convDateTime($data["last_update"]);
+                  echo $LANG['plugin_ocsinventoryng'][13]."&nbsp;: ".Html::convDateTime($data["last_update"]);
                   echo "</td></tr>";
 
                   echo "<tr class='tab_bg_1'>";

@@ -45,7 +45,7 @@ if (isset ($_POST["update"])) {
    $values["id"] = $_POST["link_id"];
    $values["use_auto_update"] = $_POST["use_auto_update"];
    $link->update($values);
-   glpi_header($_SERVER["HTTP_REFERER"]);
+   Html::back();
 }
 
 ?>

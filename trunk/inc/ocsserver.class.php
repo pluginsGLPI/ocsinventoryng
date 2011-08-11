@@ -131,7 +131,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          $tabs[2]  = $LANG['plugin_ocsinventoryng']['config'][5];
          $tabs[3]  = $LANG['plugin_ocsinventoryng']['config'][27];
          $tabs[4]  = $LANG['plugin_ocsinventoryng']["notimported"][2];
-         $this->addStandardTab('Log', $tabs);
+         $this->addStandardTab('Log', $tabs, $options);
       }
       return $tabs;
    }
@@ -290,7 +290,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<table class='tab_cadre_fixe'>\n";
       echo "<tr><th><input type='hidden' name='id' value='$ID'>&nbsp;".$LANG['plugin_ocsinventoryng']['config'][27] ." ".
                      $LANG['Menu'][0]. "&nbsp;</th>\n";
-      echo "<th>&nbsp;" . $LANG['title'][30] . "&nbsp;</th>\n";
+      echo "<th>&nbsp;" . Toolbox::ucfirst($LANG['log'][18]) . "&nbsp;</th>\n";
       echo "<th>&nbsp;" . $LANG['plugin_ocsinventoryng']['config'][43] . "&nbsp;</th></tr>\n";
 
       echo "<tr class='tab_bg_2'>\n";
@@ -699,7 +699,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       if (!empty ($ID)) {
          echo "<td>".$LANG['common'][26]."&nbsp;: </td>";
          echo "<td>";
-         echo ($this->fields["date_mod"] ? convDateTime($this->fields["date_mod"])
+         echo ($this->fields["date_mod"] ? Html::convDateTime($this->fields["date_mod"])
                                          : $LANG['setup'][307]);
          echo "</td>";
       }
@@ -1167,7 +1167,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
              || $idlink = self::ocsLink($ocsid, $plugin_ocsinventoryng_ocsservers_id, $computers_id)) {
 
              // automatic transfer computer
-             if ($CFG_GLPI['transfers_id_auto']>0 && isMultiEntitiesMode()) {
+             if ($CFG_GLPI['transfers_id_auto']>0 && Session::isMultiEntitiesMode()) {
 
                 // Retrieve data from glpi_plugin_ocsinventoryng_ocslinks
                 $ocsLink = new PluginOcsinventoryngOcslink();
@@ -1181,7 +1181,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                    $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
 
                    if ($PluginOcsinventoryngDBocs->numrows($result_ocs) == 1) {
-                      $data_ocs = addslashes_deep($PluginOcsinventoryngDBocs->fetch_array($result_ocs));
+                      $data_ocs = Toolbox::addslashes_deep($PluginOcsinventoryngDBocs->fetch_array($result_ocs));
                       self::transferComputer($ocsLink->fields, $data_ocs);
                    }
                 }
@@ -1633,7 +1633,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
          if ($result && $PluginOcsinventoryngDBocs->numrows($result) == 1) {
             $line = $PluginOcsinventoryngDBocs->fetch_array($result);
-            $line = clean_cross_side_scripting_deep(addslashes_deep($line));
+            $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
 
             $locations_id = (isset($data['locations_id'])?$data['locations_id']:0);
             $input        = self::getComputerInformations($line, self::getConfig($plugin_ocsinventoryng_ocsservers_id),
@@ -1747,10 +1747,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          }
 
          if ($PluginOcsinventoryngDBocs->numrows($result_ocs) == 1) {
-            $data_ocs = addslashes_deep($PluginOcsinventoryngDBocs->fetch_array($result_ocs));
+            $data_ocs = Toolbox::addslashes_deep($PluginOcsinventoryngDBocs->fetch_array($result_ocs));
 
             // automatic transfer computer
-            if ($CFG_GLPI['transfers_id_auto']>0 && isMultiEntitiesMode()) {
+            if ($CFG_GLPI['transfers_id_auto']>0 && Session::isMultiEntitiesMode()) {
                self::transferComputer($line, $data_ocs);
                $comp->getFromDB($line["computers_id"]);
             }
@@ -1954,7 +1954,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       if ($PluginOcsinventoryngDBocs->numrows($result) == 1) {
          $line = $PluginOcsinventoryngDBocs->fetch_assoc($result);
-         $line = clean_cross_side_scripting_deep(addslashes_deep($line));
+         $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
          $compupdate = array();
 
          if ($options['cfg_ocs']["import_os_serial"]
@@ -2101,7 +2101,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       if ($PluginOcsinventoryngDBocs->numrows($result) == 1) {
          $line = $PluginOcsinventoryngDBocs->fetch_assoc($result);
-         $line = clean_cross_side_scripting_deep(addslashes_deep($line));
+         $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
          $compupdate = array ();
          if ($cfg_ocs["import_os_serial"] && !in_array("os_license_number", $computer_updates)) {
             if (!empty ($line["WINPRODKEY"])) {
@@ -2223,7 +2223,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $compupdate = array();
       if ($PluginOcsinventoryngDBocs->numrows($result) == 1) {
          $line = $PluginOcsinventoryngDBocs->fetch_assoc($result);
-         $line = clean_cross_side_scripting_deep(addslashes_deep($line));
+         $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
          $compudate = array();
 
          if ($cfg_ocs["import_general_serial"] && !in_array("serial", $computer_updates)) {
@@ -2320,7 +2320,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $hardware = array();
       if ($PluginOcsinventoryngDBocs->numrows($result_ocs) > 0) {
          while ($data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs)) {
-            $data                  = clean_cross_side_scripting_deep(addslashes_deep($data));
+            $data                  = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
             $hardware[$data["ID"]] = $data["DEVICEID"];
          }
       }
@@ -2333,7 +2333,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $ocs_missing = array();
       if ($DB->numrows($result) > 0) {
          while ($data = $DB->fetch_array($result)) {
-            $data = clean_cross_side_scripting_deep(addslashes_deep($data));
+            $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
             if (!isset ($hardware[$data["ocsid"]])) {
                $ocs_missing[$data["ocsid"]] = $data["ocsid"];
             }
@@ -2366,10 +2366,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $already_linked = array();
       if ($DB->numrows($result_glpi) > 0) {
          while ($data = $DB->fetch_assoc($result_glpi)) {
-            $data = clean_cross_side_scripting_deep(addslashes_deep($data));
+            $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
 
             $already_linked[$data["ocsid"]]["entities_id"]  = $data["entities_id"];
-            if (utf8_strlen($data["ocs_deviceid"])>20) { // Strip datetime tag
+            if (Toolbox::strlen($data["ocs_deviceid"])>20) { // Strip datetime tag
                $already_linked[$data["ocsid"]]["ocs_deviceid"] = substr($data["ocs_deviceid"], 0,
                                                                         -20);
             } else {
@@ -2415,7 +2415,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<table class='tab_cadre'>";
          echo "<tr><th>" . $LANG['common'][1] . "</th><th>" . $LANG['plugin_ocsinventoryng'][13] . "</th>";
          echo "<th>" . $LANG['plugin_ocsinventoryng'][59] . "</th><th>" . $LANG['plugin_ocsinventoryng'][60] . "</th>";
-         if (isMultiEntitiesMode()) {
+         if (Session::isMultiEntitiesMode()) {
             echo "<th>" . $LANG['entity'][0] . "</th>";
          }
          if ($canedit) {
@@ -2433,10 +2433,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          foreach ($already_linked as $ID => $tab) {
             echo "<tr class='tab_bg_2 center'>";
             echo "<td>" . $tab["ocs_deviceid"] . "</td>\n";
-            echo "<td>" . convDateTime($tab["date"]) . "</td>\n";
+            echo "<td>" . Html::convDateTime($tab["date"]) . "</td>\n";
             echo "<td>" . $LANG['choice'][$tab["in_glpi"]] . "</td>\n";
             echo "<td>" . $LANG['choice'][$tab["in_ocs"]] . "</td>\n";
-            if (isMultiEntitiesMode()) {
+            if (Session::isMultiEntitiesMode()) {
                echo "<td>".Dropdown::getDropdownName('glpi_entities', $tab['entities_id'])."</td>\n";
             }
             if ($canedit) {
@@ -2557,7 +2557,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          $already_linked = array();
          if ($DB->numrows($result_glpi) > 0) {
             while ($data = $DB->fetch_assoc($result_glpi)) {
-               $data = clean_cross_side_scripting_deep(addslashes_deep($data));
+               $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
                if (isset ($hardware[$data["ocsid"]])) {
                   $already_linked[$data["ocsid"]]["date"]            = $data["last_update"];
                   $already_linked[$data["ocsid"]]["name"]            = $data["name"];
@@ -2604,8 +2604,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                echo "<tr class='tab_bg_2 center'>";
                echo "<td><a href='" . $CFG_GLPI["root_doc"] . "/front/computer.form.php?id=" .
                           $tab["computers_id"] . "'>" . $tab["name"] . "</a></td>\n";
-               echo "<td>" . convDateTime($tab["date"]) . "</td>\n";
-               echo "<td>" . convDateTime($hardware[$tab["ocsid"]]["date"]) . "</td>\n";
+               echo "<td>" . Html::convDateTime($tab["date"]) . "</td>\n";
+               echo "<td>" . Html::convDateTime($hardware[$tab["ocsid"]]["date"]) . "</td>\n";
                echo "<td>" . $LANG['choice'][$tab["use_auto_update"]] . "</td>\n";
                echo "<td><input type='checkbox' name='toupdate[" . $tab["id"] . "]' " .
                           ($check == "all" ? "checked" : "") . "></td></tr>\n";
@@ -2779,7 +2779,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          $hardware = array();
 
          while ($data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs)) {
-            $data = clean_cross_side_scripting_deep(addslashes_deep($data));
+            $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
             $hardware[$data["ID"]]["date"]   = $data["LASTDATE"];
             $hardware[$data["ID"]]["name"]   = $data["NAME"];
             $hardware[$data["ID"]]["TAG"]    = $data["TAG"];
@@ -2840,7 +2840,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             }
 
             //Show preview form only in import and in multi-entity mode
-            if (!$tolinked && isMultiEntitiesMode()) {
+            if (!$tolinked && Session::isMultiEntitiesMode()) {
                echo "<div class='firstbloc'>";
                echo "<form method='post' name='ocsng_import_mode' id='ocsng_import_mode'
                       action='$target'>\n";
@@ -2899,7 +2899,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                }
                echo "<tr class='tab_bg_2'><td>" . $tab["name"] . "</td>\n";
                echo "<td>".$tab["serial"]."</td>\n";
-               echo "<td>" . convDateTime($tab["date"]) . "</td>\n";
+               echo "<td>" . Html::convDateTime($tab["date"]) . "</td>\n";
                echo "<td>" . $tab["TAG"] . "</td>\n";
                if ($advanced && !$tolinked) {
                   if (!isset ($data['entities_id']) || $data['entities_id'] == -1) {
@@ -3452,7 +3452,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                      }
                   }
                   while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)) {
-                     $line2 = clean_cross_side_scripting_deep(addslashes_deep($line2));
+                     $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      if (!empty ($line2["CAPACITY"]) && $line2["CAPACITY"]!="No") {
                         $ram["designation"] = "";
                         if ($line2["TYPE"]!="Empty Slot" && $line2["TYPE"]!="Unknown") {
@@ -3513,7 +3513,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $result2 = $PluginOcsinventoryngDBocs->query($query2);
                if ($PluginOcsinventoryngDBocs->numrows($result2) > 0) {
                   while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)) {
-                     $line2 = clean_cross_side_scripting_deep(addslashes_deep($line2));
+                     $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      if (!empty ($line2["DISKSIZE"]) && preg_match("/disk|spare\sdrive/i", $line2["TYPE"])) {
                         if ($line2["NAME"]) {
                            $dd["designation"] = $line2["NAME"];
@@ -3568,7 +3568,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $result2 = $PluginOcsinventoryngDBocs->query($query2);
                if ($PluginOcsinventoryngDBocs->numrows($result2) > 0) {
                   while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)) {
-                     $line2 = clean_cross_side_scripting_deep(addslashes_deep($line2));
+                     $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      if (empty ($line2["DISKSIZE"]) || !preg_match("/disk/i", $line2["TYPE"])) {
                         if ($line2["NAME"]) {
                            $stor["designation"] = $line2["NAME"];
@@ -3616,7 +3616,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $result2 = $PluginOcsinventoryngDBocs->query($query2);
                if ($PluginOcsinventoryngDBocs->numrows($result2) > 0) {
                   while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)) {
-                     $line2 = clean_cross_side_scripting_deep(addslashes_deep($line2));
+                     $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      $mdm["designation"] = $line2["NAME"];
                      if (!in_array(stripslashes($prevalue.$mdm["designation"]), $import_device)) {
                         if (!empty ($line2["DESCRIPTION"])) {
@@ -3651,7 +3651,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $result2 = $PluginOcsinventoryngDBocs->query($query2);
                if ($PluginOcsinventoryngDBocs->numrows($result2) > 0) {
                   while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)) {
-                     $line2 = clean_cross_side_scripting_deep(addslashes_deep($line2));
+                     $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      $port["designation"] = "";
                      if ($line2["TYPE"] != "Other") {
                         $port["designation"] .= $line2["TYPE"];
@@ -3701,7 +3701,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $result = $PluginOcsinventoryngDBocs->query($query);
                if ($PluginOcsinventoryngDBocs->numrows($result) == 1) {
                   $line = $PluginOcsinventoryngDBocs->fetch_array($result);
-                  $line = clean_cross_side_scripting_deep(addslashes_deep($line));
+                  $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
                   for ($i=0 ; $i<$line["PROCESSORN"] ; $i++) {
                      $processor = array();
                      $processor["designation"] = $line["PROCESSORT"];
@@ -3761,7 +3761,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                if ($PluginOcsinventoryngDBocs->numrows($result2) > 0) {
                   $mac_already_imported = array();
                   while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)) {
-                     $line2 = clean_cross_side_scripting_deep(addslashes_deep($line2));
+                     $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      if ($cfg_ocs["import_device_iface"]) {
                         $network["designation"] = $line2["DESCRIPTION"];
                         if (!in_array($line2["MACADDR"],$mac_already_imported)) {
@@ -3909,7 +3909,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $result2 = $PluginOcsinventoryngDBocs->query($query2);
                if ($PluginOcsinventoryngDBocs->numrows($result2) > 0) {
                   while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)) {
-                     $line2 = clean_cross_side_scripting_deep(addslashes_deep($line2));
+                     $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      $video["designation"] = $line2["NAME"];
                      if (!is_numeric($line2["MEMORY"])) {
                         $line2["MEMORY"] = 0;
@@ -3956,7 +3956,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $result2 = $PluginOcsinventoryngDBocs->query($query2);
                if ($PluginOcsinventoryngDBocs->numrows($result2) > 0) {
                   while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)) {
-                     $line2 = clean_cross_side_scripting_deep(addslashes_deep($line2));
+                     $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      if (!$cfg_ocs["ocs_db_utf8"] && !seems_utf8($line2["NAME"])) {
                      $line2["NAME"] = encodeInUtf8($line2["NAME"]);
                      }
@@ -4282,15 +4282,14 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       } else if ($DB->numrows($result) == 1) {
          $ocs = $DB->fetch_array($result);
-         glpi_header($CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsng.php?plugin_ocsinventoryng_ocsservers_id=" . $ocs["id"]);
+         Html::redirect($CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsng.php?plugin_ocsinventoryng_ocsservers_id=" . $ocs["id"]);
 
       } else {
-         echo "<form action='$target' method='get'>";
          echo "<div class='center'><table class='tab_cadre'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>" . $LANG['plugin_ocsinventoryng'][26] . "</th></tr>\n";
 
          echo "<tr class='tab_bg_2'><td class='center' colspan=2>".$LANG['plugin_ocsinventoryng'][27]."</td></tr>";
-         echo "</table></div></form>\n";
+         echo "</table></div>\n";
       }
    }
 
@@ -4591,7 +4590,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $virtualmachine = new ComputerVirtualMachine();
       if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
          while ($line = $PluginOcsinventoryngDBocs->fetch_array($result)) {
-            $line = clean_cross_side_scripting_deep(addslashes_deep($line));
+            $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
             $vm['name'] = $line['NAME'];
             $vm['vcpu'] = $line['VCPU'];
             $vm['ram']  = $line['MEMORY'];
@@ -4654,7 +4653,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $d = new ComputerDisk();
       if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
          while ($line = $PluginOcsinventoryngDBocs->fetch_array($result)) {
-            $line = clean_cross_side_scripting_deep(addslashes_deep($line));
+            $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
 
             // Only not empty disk
             if ($line['TOTAL']>0) {
@@ -4863,7 +4862,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
          if ($PluginOcsinventoryngDBocs->numrows($result2) > 0) {
             while ($data2 = $PluginOcsinventoryngDBocs->fetch_array($result2)) {
-               $data2    = clean_cross_side_scripting_deep(addslashes_deep($data2));
+               $data2    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data2));
                $initname = $data2["INITNAME"];
 
                // Hack for OCS encoding problems
@@ -4900,7 +4899,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                                                                      "entities_id"  => $entity),
                                                                array(),
                                                                array('version' => $version));
-                  $res_rule = addslashes_deep($res_rule);
+                  $res_rule = Toolbox::addslashes_deep($res_rule);
 
                   if (isset($res_rule["name"])) {
                      $modified_name = $res_rule["name"];
@@ -5081,7 +5080,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
             //update data
             while ($data = $PluginOcsinventoryngDBocs->fetch_array($result)) {
-               $data                  = clean_cross_side_scripting_deep(addslashes_deep($data));
+               $data                  = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
                $input                 = array();
                $input["computers_id"] = $computers_id;
                $input["hive"]         = $data["regtree"];
@@ -5245,7 +5244,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                      if (empty($line["SERIAL"])) {
                         $checkserial = false;
                      }
-                     $lines[] = clean_cross_side_scripting_deep(addslashes_deep($line));
+                     $lines[] = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
                   }
                }
                if (count($lines)>0
@@ -5423,7 +5422,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
                if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
                   while ($line = $PluginOcsinventoryngDBocs->fetch_array($result)) {
-                     $line  = clean_cross_side_scripting_deep(addslashes_deep($line));
+                     $line  = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
                      $print = array();
                      // TO TEST : PARSE NAME to have real name.
                      if (!seems_utf8($line["NAME"])){
@@ -5446,7 +5445,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
                      if (!empty ($print["name"])) {
                         $rulecollection = new RuleDictionnaryPrinterCollection();
-                        $res_rule = addslashes_deep($rulecollection->processAllRules($params,
+                        $res_rule = Toolbox::addslashes_deep($rulecollection->processAllRules($params,
                                                                                      array(),
                                                                                      array()));
 
@@ -5572,7 +5571,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
                if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
                   while ($line = $PluginOcsinventoryngDBocs->fetch_array($result)) {
-                     $line   = clean_cross_side_scripting_deep(addslashes_deep($line));
+                     $line   = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
                      $periph = array();
 
                      if (!seems_utf8($line["CAPTION"])){
@@ -5903,7 +5902,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
 
       if ($PluginOcsinventoryngDBocs->numrows($result_ocs) == 1) {
-         $data_ocs = addslashes_deep($PluginOcsinventoryngDBocs->fetch_array($result_ocs));
+         $data_ocs = Toolbox::addslashes_deep($PluginOcsinventoryngDBocs->fetch_array($result_ocs));
 
          $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                    SET `tag` = '" . $data_ocs["TAG"] . "'

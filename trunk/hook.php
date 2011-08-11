@@ -1260,7 +1260,7 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
             }
             $_SESSION['glpi_massiveaction']['item_count']
                = count($_SESSION['glpi_massiveaction']['items']);
-            glpi_header($_SERVER['PHP_SELF'].'?multiple_actions=1');
+            Html::redirect($_SERVER['PHP_SELF'].'?multiple_actions=1');
 
          } else {
             if (count($_SESSION['glpi_massiveaction']['items']) >0) {
@@ -1277,11 +1277,11 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
                      PluginOcsinventoryngOcsServer::updateComputer($data['id'], $data['plugin_ocsinventoryng_ocsservers_id'], 1, 1);
                   }
                }
-               glpi_header($_SERVER['PHP_SELF'].'?multiple_actions=1');
+               Html::redirect($_SERVER['PHP_SELF'].'?multiple_actions=1');
             } else {
                $REDIRECT = $_SESSION['glpi_massiveaction']['REDIRECT'];
                unset($_SESSION['glpi_massiveaction']);
-               glpi_header($REDIRECT);
+               Html::redirect($REDIRECT);
             }
          }
          break;

@@ -122,7 +122,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
             echo self::getReason($this->fields[$field['name']]);
             break;
          case 'echo_datetime':
-            echo convDateTime($this->fields[$field['name']]);
+            echo Html::convDateTime($this->fields[$field['name']]);
             break;
          case 'echo_dropdown':
             $result = Dropdown::getDropdownName($field['table'],$this->fields[$field['name']]);

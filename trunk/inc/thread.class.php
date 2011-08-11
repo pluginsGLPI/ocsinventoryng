@@ -115,8 +115,8 @@ class PluginOcsinventoryngThread extends CommonDBTM {
             $this->displayProcessStatusIcon($thread["status"]);
             echo "</td>";
 
-            echo "<td class='center'>" . convDateTime($thread["starting_date"]) . "</td>";
-            echo "<td class='center'>" . convDateTime($thread["ending_date"]) . "</td>";
+            echo "<td class='center'>" . Html::convDateTime($thread["starting_date"]) . "</td>";
+            echo "<td class='center'>" . Html::convDateTime($thread["ending_date"]) . "</td>";
             echo "<td class='center'>" . $thread["imported_machines"] . "</td>";
             echo "<td class='center'>" . $thread["synchronized_machines"] . "</td>";
             echo "<td class='center'>" . $thread["linked_machines"] . "</td>";
@@ -325,8 +325,8 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                $this->displayProcessStatusIcon($this->getProcessStatus($thread["processid"]));
                echo "</td>";
                echo "<td class='center'>".$thread["threads_number"]."</td>";
-               echo "<td class='center'>".convDateTime($thread["starting_date"])."</td>";
-               echo "<td class='center'>".convDateTime($thread["ending_date"])."</td>";
+               echo "<td class='center'>".Html::convDateTime($thread["starting_date"])."</td>";
+               echo "<td class='center'>".Html::convDateTime($thread["ending_date"])."</td>";
                echo "<td class='center'>".$thread["imported_machines"]."</td>";
                echo "<td class='center'>".$thread["synchronized_machines"]."</td>";
                echo "<td class='center'>".$thread["linked_machines"]."</td>";

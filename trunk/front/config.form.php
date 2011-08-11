@@ -57,7 +57,7 @@ $config = new PluginOcsinventoryngConfig();
 
 if (isset ($_POST["update"])) {
    $config->update($_POST);
-   glpi_header($_SERVER['PHP_SELF']);
+   Html::back();
 }
 if (isset ($_POST["soft_lock"])) {
    $config->setScriptLock();

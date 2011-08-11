@@ -68,7 +68,7 @@ if (isset($_SESSION["ocs_link"])) {
 
       $key = array_pop($_SESSION["ocs_link"]);
       PluginOcsinventoryngOcsServer::linkComputer($key["ocsid"], $_SESSION["plugin_ocsinventoryng_ocsservers_id"], $key["computers_id"]);
-      glpi_header($_SERVER['PHP_SELF']);
+      Html::back();
 
    } else {
       displayProgressBar(400,100);
@@ -103,7 +103,7 @@ if (!isset($_POST["import_ok"])) {
          }
       }
    }
-   glpi_header($_SERVER['PHP_SELF']);
+   Html::back();
 }
 
 commonFooter();

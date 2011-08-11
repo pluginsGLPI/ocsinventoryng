@@ -40,7 +40,7 @@ if (!defined('GLPI_ROOT')) {
 
 include (GLPI_ROOT . "/inc/includes.php");
 
-checkRight("logs", "r");
+Session::checkRight("logs", "r");
 
 if (haveRecursiveAccessToEntity(0)) {
    commonHeader($LANG['plugin_ocsinventoryng']["common"][1], "", "plugins", "ocsinventoryng");
@@ -55,7 +55,7 @@ if (haveRecursiveAccessToEntity(0)) {
             $thread->deleteThreadsByProcessId($key);
          }
       }
-      glpi_header($_SERVER['HTTP_REFERER']);
+      Html::back();
    
    } else {
       $thread->showProcesses($_SERVER["PHP_SELF"]);
@@ -63,7 +63,7 @@ if (haveRecursiveAccessToEntity(0)) {
    commonFooter();
 }
 else {
-   glpi_header(getItemTypeSearchURL('PluginOcsinventoryngNotImported'));
+   Html::redirect(getItemTypeSearchURL('PluginOcsinventoryngNotImported'));
 }
 
 ?>

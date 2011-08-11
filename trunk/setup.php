@@ -69,7 +69,7 @@ function plugin_init_ocsinventoryng() {
                          array ('massiveaction_noupdate_types' => true,
                                 'massiveaction_nodelete_types' => true));
       
-	if (getLoginUserID()) {
+	if (Session::getLoginUserID()) {
 		
 		// Display a menu entry ?
 		if (plugin_ocsinventoryng_haveRight("ocsng","r")) {
@@ -173,8 +173,8 @@ function plugin_ocsinventoryng_checkRight($module, $right) {
 
    if (!plugin_ocsinventoryng_haveRight($module, $right)) {
       // Gestion timeout session
-      if (!getLoginUserID()) {
-         glpi_header($CFG_GLPI["root_doc"] . "/index.php");
+      if (!Session::getLoginUserID()) {
+         Html::redirect($CFG_GLPI["root_doc"] . "/index.php");
          exit ();
       }
       displayRightError();
@@ -210,8 +210,8 @@ function plugin_ocsinventoryng_checkSeveralRightsOr($modules) {
 
    if (!$valid) {
       // Gestion timeout session
-      if (!getLoginUserID()) {
-         glpi_header($CFG_GLPI["root_doc"] . "/index.php");
+      if (!Session::getLoginUserID()) {
+         Html::redirect($CFG_GLPI["root_doc"] . "/index.php");
          exit ();
       }
       displayRightError();

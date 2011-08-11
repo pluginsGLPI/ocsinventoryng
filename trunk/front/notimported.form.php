@@ -46,14 +46,14 @@ if (isset($_POST['action'])) {
          $_POST['force'] = true;
       case 'plugin_ocsinventoryng_replayrules':
          if (PluginOcsinventoryngNotimported::computerImport($_POST)) {
-            glpi_header(getItemTypeSearchURL('PluginOcsinventoryngNotimported'));
+            $dropdown->redirectToList();
          } else {
-            glpi_header(getItemTypeFormURL('PluginOcsinventoryngNotimported').'?id='.$_POST['id']);
+            Html::redirect(getItemTypeFormURL('PluginOcsinventoryngNotimported').'?id='.$_POST['id']);
          }
          break;
       case 'plugin_ocsinventoryng_link':
          $dropdown->linkComputer($_POST);
-         glpi_header(getItemTypeSearchURL('PluginOcsinventoryngNotimported'));
+         $dropdown->redirectToList();
          break;
    }
 }
