@@ -48,11 +48,11 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
    }
 
    function canCreate() {
-      return haveRight('config', 'w');
+      return Session::haveRight('config', 'w');
    }
 
    function canView() {
-      return haveRight('config', 'r');
+      return Session::haveRight('config', 'r');
    }
    
    function showConfigForm($target) {

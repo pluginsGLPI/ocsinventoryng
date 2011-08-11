@@ -220,7 +220,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
    function showProcesses($target) {
       global $DB,$LANG,$CFG_GLPI;
 
-      $canedit= haveRight("ocsng","w");
+      $canedit= plugin_ocsinventoryng_haveRight("ocsng","w");
 
       $config = new PluginOcsinventoryngConfig();
       $config->getFromDB(1);

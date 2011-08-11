@@ -3143,7 +3143,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    static function editLock($target, $ID) {
       global $DB, $LANG;
 
-      if (!haveRight("computer","w")) {
+      if (!Session::haveRight("computer","w")) {
          return false;
       }
       $query = "SELECT *

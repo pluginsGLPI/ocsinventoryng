@@ -201,11 +201,11 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
    }
 
    function canCreate() {
-      return haveRight("ocsng", "w");
+      return Session::haveRight("ocsng", "w");
    }
 
    function canView() {
-      return haveRight("logs", "r");
+      return Session::haveRight("logs", "r");
    }
 
    function getSearchOptions() {

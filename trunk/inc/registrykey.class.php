@@ -73,7 +73,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
    static function showForComputer($ID) {
       global $DB, $LANG;
 
-      if (!haveRight("computer","r")) {
+      if (!Session::haveRight("computer","r")) {
          return false;
       }
 

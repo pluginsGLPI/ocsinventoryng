@@ -77,14 +77,14 @@ function plugin_init_ocsinventoryng() {
 			$PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['search'] = 'front/ocsng.php';
 		}
 		
-      if (plugin_ocsinventoryng_haveRight("ocsng","w") || haveRight("config","w")) {
+      if (plugin_ocsinventoryng_haveRight("ocsng","w") || Session::haveRight("config","w")) {
          $PLUGIN_HOOKS['use_massive_action']['ocsinventoryng'] = 1;
          $PLUGIN_HOOKS['redirect_page']['ocsinventoryng']    = "front/notimported.form.php";
          $PLUGIN_HOOKS['headings']['ocsinventoryng'] = 'plugin_get_headings_ocsinventoryng';
 			$PLUGIN_HOOKS['headings_action']['ocsinventoryng'] = 'plugin_headings_actions_ocsinventoryng';
       }
       
-      if (plugin_ocsinventoryng_haveRight("ocsng", "w") || haveRight("config", "w")) {
+      if (plugin_ocsinventoryng_haveRight("ocsng", "w") || Session::haveRight("config", "w")) {
 			$PLUGIN_HOOKS['config_page']['ocsinventoryng'] = 'front/ocsserver.php';
 			$PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['config'] = 'front/ocsserver.php';
 			if ($_SERVER['PHP_SELF'] == $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.php" ||
@@ -155,7 +155,8 @@ function plugin_ocsinventoryng_haveRight($module,$right) {
 			"1" => array("1"),
 			"0" => array("0","1"), // ne doit pas arriver non plus
 		      );
-	if (isset($_SESSION["glpi_plugin_ocsinventoryng_profile"][$module])&&in_array($_SESSION["glpi_plugin_ocsinventoryng_profile"][$module],$matches[$right]))
+	if (isset($_SESSION["glpi_plugin_ocsinventoryng_profile"][$module])
+	&&in_array($_SESSION["glpi_plugin_ocsinventoryng_profile"][$module],$matches[$right]))
 		return true;
 	else return false;
 }
