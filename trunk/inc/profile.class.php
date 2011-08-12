@@ -58,6 +58,33 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
       $plugprof->deleteByCriteria(array('profiles_id' => $prof->getField("id")));
    }
    
+   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+      global $LANG;
+
+      if ($item->getType()=='Profile' && $item->getField('interface')!='helpdesk') {
+            return $LANG['plugin_ocsinventoryng']['title'][1];
+      }
+      return '';
+   }
+
+
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+      global $CFG_GLPI;
+
+      if ($item->getType()=='Profile') {
+         $ID = $item->getField('id');
+         $prof = new self();
+
+         if (!$prof->getFromDBByProfile($item->getField('id'))) {
+            $prof->createAccess($item->getField('id'));
+         }
+         $prof->showForm($item->getField('id'), 
+         array('target' => $CFG_GLPI["root_doc"].
+            "/plugins/ocsinventoryng/front/profile.form.php"));
+      }
+      return true;
+   }
+   
    function getFromDBByProfile($profiles_id) {
 		global $DB;
 		

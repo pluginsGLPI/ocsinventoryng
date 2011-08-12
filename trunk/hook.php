@@ -986,80 +986,32 @@ function plugin_ocsinventoryngs_getDatabaseRelations() {
 		return array ();
 }
 
-// Define headings added by the plugin
-function plugin_get_headings_ocsinventoryng($item,$withtemplate) {
-	global $LANG;
-	
-	switch (get_class($item)) {
-      case 'Profile' :
-         if ($item->getField('id')) {
-            return array(
-				1 => $LANG['plugin_ocsinventoryng']['title'][1],
-				);
-         }
-         break;
-      case 'Computer' :
-         $array = array ();
-         if ($item->getField('id') > 0
-                && !$withtemplate) {
-            $array[1] = $LANG['plugin_ocsinventoryng']['title'][1];
-            $array[2] = $LANG['plugin_ocsinventoryng']['config'][41];
-         }
-         return $array;
-         break;
+function plugin_ocsinventoryng_postinit() {
+   global $CFG_GLPI, $PLUGIN_HOOKS;
+
+   $PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng'] = array();
+   $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng'] = array();
+   $PLUGIN_HOOKS['item_update']['ocsinventoryng'] = array();
+
+   foreach (PluginOcsinventoryngOcsServer::getTypes(true) as $type) {
+      
+      $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng'][$type] 
+         = array('Computer_Item'=>
+            array('PluginOcsinventoryngOcslink', 'addComputer_Item'));
+      $PLUGIN_HOOKS['item_update']['ocsinventoryng'][$type] 
+         = array('Computer'=>
+            array('PluginOcsinventoryngOcslink', 'updateComputer'));
+      $PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng'][$type]
+         = array(
+         'Computer'=>
+            array('PluginOcsinventoryngOcslink', 'purgeComputer'),
+         'Computer_Item'=>
+            array('PluginOcsinventoryngOcslink', 'purgeComputer_Item')
+            );
+
+      CommonGLPI::registerStandardTab($type, 
+                                    'PluginOcsinventoryngOcsServer');
    }
-   
-	return false;
-	
-}
-
-// Define headings actions added by the plugin	 
-function plugin_headings_actions_ocsinventoryng($item) {
-		
-	if (get_class($item)=='Profile') {
-		return array(
-					1 => "plugin_headings_ocsinventoryng",
-					);
-	} else if (get_class($item)=='Computer') {
-		$array = array ();
-      $array[1] = "plugin_headings_ocsinventoryng";
-      $array[2] = "plugin_headings_ocsinventoryng_registry";
-      return $array;
-      break;
-	} else
-
-		return false;
-	
-}
-
-// action heading
-function plugin_headings_ocsinventoryng($item,$withtemplate=0) {
-	global $CFG_GLPI;
-		
-   $PluginOcsinventoryngProfile=new PluginOcsinventoryngProfile();
-   
-   switch (get_class($item)) {
-      case 'Profile' :
-         if (!$PluginOcsinventoryngProfile->getFromDBByProfile($item->getField('id')))
-            $PluginOcsinventoryngProfile->createAccess($item->getField('id'));
-         $PluginOcsinventoryngProfile->showForm($item->getField('id'), array('target' => $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/profile.form.php"));
-         break;
-      case 'Computer' :
-         PluginOcsinventoryngOcsLink::showForItem(getItemTypeFormURL('PluginOcsinventoryngOcslink'),$item,$withtemplate);
-         PluginOcsinventoryngOcsServer::editLock(getItemTypeFormURL('Computer'), $item->getField('id'));
-         break;
-   }
-
-}
-
-function plugin_headings_ocsinventoryng_registry($item,$withtemplate=0) {
-   
-   switch (get_class($item)) {
-      case 'Computer' :
-         PluginOcsinventoryngRegistryKey::showForComputer($item->getField('id'));
-         break;
-   }
-
 }
 
 function plugin_ocsinventoryng_MassiveActions($type) {

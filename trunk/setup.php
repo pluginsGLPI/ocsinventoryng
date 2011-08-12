@@ -42,12 +42,12 @@ define("PLUGIN_OCSINVENTORYNG_LOCKFILE", GLPI_LOCK_DIR . "/ocsinventoryng.lock")
 function plugin_init_ocsinventoryng() {
 	global $PLUGIN_HOOKS,$CFG_GLPI,$LANG;
 
-	$PLUGIN_HOOKS['change_profile']['ocsinventoryng'] = array('PluginOcsinventoryngProfile','changeProfile');
-	$PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng'] = array('Profile'=>array('PluginOcsinventoryngProfile', 'purgeProfiles'),
-                                                               'Computer'=>array('PluginOcsinventoryngOcslink', 'purgeComputer'),
-                                                               'Computer_Item'=>array('PluginOcsinventoryngOcslink', 'purgeComputer_Item'));
-   $PLUGIN_HOOKS['item_update']['ocsinventoryng'] = array('Computer'=>array('PluginOcsinventoryngOcslink', 'updateComputer'));
-   $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng'] = array('Computer_Item'=>array('PluginOcsinventoryngOcslink', 'addComputer_Item'));
+	$PLUGIN_HOOKS['change_profile']['ocsinventoryng'] = 
+               array('PluginOcsinventoryngProfile','changeProfile');
+	$PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng'] = 
+               array('Profile'=>
+               array('PluginOcsinventoryngProfile', 'purgeProfiles'));
+
    Plugin::registerClass('PluginOcsinventoryngOcsServer', array(
       'massiveaction_noupdate_types' => true
    ));
@@ -59,6 +59,9 @@ function plugin_init_ocsinventoryng() {
    Plugin::registerClass('PluginOcsinventoryngRuleImportComputerCollection', array(
       'rulecollections_types' => true
    ));
+   
+   Plugin::registerClass('PluginOcsinventoryngProfile',
+                         array('addtabon' => 'Profile'));
    
    Plugin::registerClass('PluginOcsinventoryngNotimported',
                          array ('massiveaction_noupdate_types' => true,
@@ -115,6 +118,7 @@ function plugin_init_ocsinventoryng() {
                             = 'front/config.form.php';
             }
          }*/
+         $PLUGIN_HOOKS['post_init']['ocsinventoryng'] = 'plugin_ocsinventoryng_postinit';
       }
 	}
 }

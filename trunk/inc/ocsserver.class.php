@@ -35,7 +35,8 @@ if (!defined('GLPI_ROOT')) {
 
 /// OCS config class
 class PluginOcsinventoryngOcsServer extends CommonDBTM {
-
+   
+   static $types = array('Computer');
    // From CommonDBTM
    public $dohistory = true;
    // Class constant - still used for import_device field
@@ -135,6 +136,14 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                }
                return $ong;
          }
+         
+         if (in_array($item->getType(), self::getTypes(true))
+               && $this->canView()) {
+            $ong = array();
+            $ong[1] = $LANG['plugin_ocsinventoryng']['title'][1];
+            $ong[2] = $LANG['plugin_ocsinventoryng']['config'][41];
+            return $ong;
+         }
       }
       return '';
    }
@@ -158,6 +167,22 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             
             case 4 :
                PluginOcsinventoryngConfig::showOcsReportsConsole($item->getID());
+               break;
+         }
+      } else if (in_array($item->getType(), self::getTypes(true))) {
+         switch ($tabnum) {
+            case 1 :
+               PluginOcsinventoryngOcsLink::showForItem(
+               Toolbox::getItemTypeFormURL('PluginOcsinventoryngOcslink'),
+               $item,$withtemplate);
+               PluginOcsinventoryngOcsServer::editLock(
+               Toolbox::getItemTypeFormURL('Computer'),
+               $item->getField('id'));
+               break;
+
+            case 2 :
+               PluginOcsinventoryngRegistryKey::showForComputer(
+                                                $item->getField('id'));
                break;
          }
       }
@@ -5995,6 +6020,48 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          }
       }
       return $output;
+   }
+   
+   /**
+    * For other plugins, add a type to the linkable types
+    *
+    *
+    * @param $type string class name
+   **/
+   static function registerType($type) {
+      if (!in_array($type, self::$types)) {
+         self::$types[] = $type;
+      }
+   }
+
+
+   /**
+    * Type than could be linked to a Store
+    *
+    * @param $all boolean, all type, or only allowed ones
+    *
+    * @return array of types
+   **/
+   static function getTypes($all=false) {
+
+      if ($all) {
+         return self::$types;
+      }
+
+      // Only allowed types
+      $types = self::$types;
+
+      foreach ($types as $key => $type) {
+         if (!class_exists($type)) {
+            continue;
+         }
+
+         $item = new $type();
+         if (!$item->canView()) {
+            unset($types[$key]);
+         }
+      }
+      return $types;
    }
 
 }
