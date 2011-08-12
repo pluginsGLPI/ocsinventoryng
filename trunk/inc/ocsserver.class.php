@@ -115,25 +115,63 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    function canView() {
       return plugin_ocsinventoryng_haveRight('ocsng', 'r');
    }
+   
+   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+      global $LANG;
+
+      if (!$withtemplate) {
+         switch ($item->getType()) {
+            case __CLASS__ :
+               //If connection to the OCS DB  is ok, and all rights are ok too
+               $ong = array();
+               $ong[1] = self::getTypeName(1);
+               if (self::checkOCSconnection($item->getID())
+                   && self::checkConfig(1)
+                   && self::checkConfig(2)
+                   && self::checkConfig(8)) {
+                  $ong[2] = $LANG['plugin_ocsinventoryng']['config'][5];
+                  $ong[3] = $LANG['plugin_ocsinventoryng']['config'][27];
+                  $ong[4] = $LANG['plugin_ocsinventoryng']["notimported"][2];
+               }
+               return $ong;
+         }
+      }
+      return '';
+   }
 
 
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+      
+      if ($item->getType() == __CLASS__) {
+         switch ($tabnum) {
+            case 1 :
+               $item->showDBConnectionStatus($item->getID());
+               break;
+
+            case 2 :
+               $item->ocsFormImportOptions($_POST['target'], $item->getID());
+               break;
+
+            case 3 :
+               $item->ocsFormConfig($_POST['target'], $item->getID());
+               break;
+            
+            case 4 :
+               PluginOcsinventoryngConfig::showOcsReportsConsole($item->getID());
+               break;
+         }
+      }
+      return true;
+   }
+   
    function defineTabs($options=array()) {
       global $LANG;
 
-      $tabs[1] = $LANG['help'][30];
-      //If connection to the OCS DB  is ok, and all rights are ok too
-      if ($this->fields['id'] != ''
-          && self::checkOCSconnection($this->fields['id'])
-          && self::checkConfig(1)
-          && self::checkConfig(2)
-          && self::checkConfig(8)) {
+      $ong = array();
+      $this->addStandardTab(__CLASS__, $ong, $options);
+      $this->addStandardTab('Log', $ong, $options);
 
-         $tabs[2]  = $LANG['plugin_ocsinventoryng']['config'][5];
-         $tabs[3]  = $LANG['plugin_ocsinventoryng']['config'][27];
-         $tabs[4]  = $LANG['plugin_ocsinventoryng']["notimported"][2];
-         $this->addStandardTab('Log', $tabs, $options);
-      }
-      return $tabs;
+      return $ong;
    }
 
 

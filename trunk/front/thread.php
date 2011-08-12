@@ -42,7 +42,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 Session::checkRight("logs", "r");
 
-if (haveRecursiveAccessToEntity(0)) {
+if (Session::haveRecursiveAccessToEntity(0)) {
    commonHeader($LANG['plugin_ocsinventoryng']["common"][1], "", "plugins", "ocsinventoryng");
 
    $thread = new PluginOcsinventoryngThread();

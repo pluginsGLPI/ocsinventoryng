@@ -211,7 +211,6 @@ $LANG['plugin_ocsinventoryng']["common"][39] = "Règle(s) vérifiée(s)";
 $LANG['plugin_ocsinventoryng']["common"][40] = "Entité";
 $LANG['plugin_ocsinventoryng']["common"][41] = "Import";
 
-$LANG['plugin_ocsinventoryng']["config"][101]  = "Configuration du plugin d'import OCS";
 $LANG['plugin_ocsinventoryng']["config"][102]  = "Nettoyage des processus";
 $LANG['plugin_ocsinventoryng']["config"][105]  = "Afficher les processus où rien n'a été modifié";
 $LANG['plugin_ocsinventoryng']["config"][106]  = "Effacer les processus après";

@@ -93,7 +93,7 @@ function plugin_init_ocsinventoryng() {
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['add'] = 'front/ocsserver.form.php';
          }
       
-        /*if (haveRecursiveAccessToEntity(0)) {
+        /*if (Session::haveRecursiveAccessToEntity(0)) {
          $image = "<img src='".$CFG_GLPI["root_doc"]."/pics/stats_item.png' title='".
                    $LANG["plugin_ocsinventoryng"]["common"][1]."' alt='".$LANG["plugin_ocsinventoryng"]["common"][1]."'>";
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng'][$image] = 'front/thread.php';
@@ -110,7 +110,7 @@ function plugin_init_ocsinventoryng() {
 
          if (haveRight("logs", "r")) {
             //TODO
-            if (haveRecursiveAccessToEntity(0)) {
+            if (Session::haveRecursiveAccessToEntity(0)) {
                $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['config']
                             = 'front/config.form.php';
             }

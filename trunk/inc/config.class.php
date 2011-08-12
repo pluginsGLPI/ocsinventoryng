@@ -37,22 +37,52 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
    static function getTypeName() {
       global $LANG;
-      return $LANG["plugin_ocsinventoryng"]["config"][101];
+      return $LANG['plugin_ocsinventoryng'][25];
    }
    
-   function defineTabs($options=array()) {
-      global $LANG;
-
-     $tabs[1] = $LANG['title'][26];
-     return $tabs;
-   }
-
    function canCreate() {
       return Session::haveRight('config', 'w');
    }
 
    function canView() {
       return Session::haveRight('config', 'r');
+   }
+   
+   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+      global $LANG;
+
+      if (!$withtemplate) {
+         switch ($item->getType()) {
+            case __CLASS__ :
+               //If connection to the OCS DB  is ok, and all rights are ok too
+               $ong = array();
+               $ong[1] = self::getTypeName(1);
+               return $ong;
+         }
+      }
+      return '';
+   }
+
+
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+      
+      if ($item->getType() == __CLASS__) {
+         switch ($tabnum) {
+            case 1 :
+               $item->showScriptLock();
+               break;
+         }
+      }
+      return true;
+   }
+   
+   function defineTabs($options=array()) {
+      global $LANG;
+
+      $ong = array();
+      $this->addStandardTab(__CLASS__, $ong, $options);
+
+      return $ong;
    }
    
    function showConfigForm($target) {
@@ -161,7 +191,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
    }
 
 
-   function showOcsReportsConsole($id) {
+   static function showOcsReportsConsole($id) {
       global $LANG;
 
       $ocsconfig = PluginOcsinventoryngOcsServer::getConfig($id);
