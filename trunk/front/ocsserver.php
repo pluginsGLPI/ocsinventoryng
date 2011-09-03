@@ -41,10 +41,10 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 plugin_ocsinventoryng_checkRight("ocsng", "r");
 
-commonHeader($LANG['plugin_ocsinventoryng'][0], '', "plugins", "ocsinventoryng");
+Html::header($LANG['plugin_ocsinventoryng'][0], '', "plugins", "ocsinventoryng");
 
 Search::show('PluginOcsinventoryngOcsServer');
 
-commonFooter();
+Html::footer();
 
 ?>

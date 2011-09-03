@@ -40,7 +40,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 plugin_ocsinventoryng_checkRight("ocsng","w");
 
-commonHeader($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
+Html::header($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
 
 $CFG_GLPI["use_ajax"] = 1;
 
@@ -106,6 +106,6 @@ if (!isset($_POST["import_ok"])) {
    Html::back();
 }
 
-commonFooter();
+Html::footer();
 
 ?>

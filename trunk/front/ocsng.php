@@ -42,7 +42,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 plugin_ocsinventoryng_checkSeveralRightsOr(array('ocsng' => 'r',
                            'clean_ocsng'  => 'r'));
 
-commonHeader($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
+Html::header($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
 if (isset ($_SESSION["ocs_import"])) {
    unset ($_SESSION["ocs_import"]);
 }
@@ -62,6 +62,6 @@ if (isset($_GET["plugin_ocsinventoryng_ocsservers_id"]) && $_GET["plugin_ocsinve
 } else {
    PluginOcsinventoryngOcsServer::showFormServerChoice();
 }
-commonFooter();
+Html::footer();
 
 ?>

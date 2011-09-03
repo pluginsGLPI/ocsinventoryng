@@ -47,7 +47,7 @@ if (!isset($_GET["id"])) {
    $_GET["id"] = "";
 }
 
-commonHeader($LANG['plugin_ocsinventoryng'][0], '', "plugins", "ocsinventoryng");
+Html::header($LANG['plugin_ocsinventoryng'][0], '', "plugins", "ocsinventoryng");
 
 //Delete template or server
 if (isset ($_POST["delete"])) {
@@ -73,6 +73,6 @@ if (isset ($_POST["delete"])) {
 } else {
    $ocs->showForm($_GET["id"]);
 }
-commonFooter();
+Html::footer();
 
 ?>

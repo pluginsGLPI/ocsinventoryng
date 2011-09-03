@@ -53,7 +53,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    // not used const CASE_DEVICE=11;
    // not used const POWER_DEVICE=12;
    const OCS_VERSION_LIMIT    = 4020;
-   const OCS1_3_VERSION_LIMIT = 5000;
+   const OCS1_3_VERSION_LIMIT = 5004;
    const OCS2_VERSION_LIMIT   = 6000;
    
    // Class constants - import_ management
@@ -618,7 +618,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       echo "<tr class='tab_bg_2'><td class='center'>".$LANG['plugin_ocsinventoryng']['config'][20]."</td>";
       echo "<td>";
-      $actions[0] = DROPDOWN_EMPTY_VALUE;
+      $actions[0] = Dropdown::EMPTY_VALUE;
       $actions[1] = $LANG['ldap'][47];
       foreach (getAllDatasFromTable('glpi_states') as $state) {
          $actions['STATE_'.$state['id']] = $LANG['setup'][819].' '.$state['name'];
@@ -926,6 +926,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       
       $admin = new PluginOcsinventoryngOcsAdminInfosLink();
       $admin->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
+      
+      // ocsservers_id for RuleImportComputer, OCS_SERVER for RuleOcs
+      Rule::cleanForItemCriteria($this);
+      Rule::cleanForItemCriteria($this, 'OCS_SERVER');
+
    }
 
 
@@ -1091,7 +1096,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       $query = "SELECT *
                 FROM `glpi_plugin_ocsinventoryng_ocsservers`
-                WHERE `id` = '$id'";
+                WHERE `id` = '$id' AND `is_active`='1'";
       $result = $DB->query($query);
 
       if ($result) {
@@ -1195,7 +1200,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       // Already link - check if the OCS computer already exists
       if ($numrows > 0) {
-         $ocs_link_exists = false;
+         $ocs_link_exists = true;
          $data = $DB->fetch_assoc($result);
          $query = "SELECT *
                    FROM `hardware`
@@ -1203,20 +1208,22 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          $result_ocs = $PluginOcsinventoryngDBocs->query($query);
          // Not found
          if ($PluginOcsinventoryngDBocs->numrows($result_ocs)==0) {
-            $ocs_id_change = true;
+
             $idlink = $data["id"];
             $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                       SET `ocsid` = '$ocsid'
                       WHERE `id` = '" . $data["id"] . "'";
-            $DB->query($query);
 
-            //Add history to indicates that the ocsid changed
-            $changes[0] = '0';
-            //Old ocsid
-            $changes[1] = $data["ocsid"];
-            //New ocsid
-            $changes[2] = $ocsid;
-            Log::history($computers_id, 'Computer', $changes, 0, self::PLUGIN_OCSINVENTORYNG_HISTORY_OCS_IDCHANGED);
+            if ($DB->query($query)) {
+               $ocs_id_change = true;
+               //Add history to indicates that the ocsid changed
+               $changes[0] = '0';
+               //Old ocsid
+               $changes[1] = $data["ocsid"];
+               //New ocsid
+               $changes[2] = $ocsid;
+               Log::history($computers_id, 'Computer', $changes, 0, self::PLUGIN_OCSINVENTORYNG_HISTORY_OCS_IDCHANGED);
+            }
          }
       }
 
@@ -2119,7 +2126,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             $compupdate["comment"] .= "Swap: " . $line["SWAP"];
          }
          
-         if ($options['cfg_ocs']["import_general_uuid"]
+         if ($options['cfg_ocs']['ocs_version'] >= self::OCS1_3_VERSION_LIMIT
+            && $options['cfg_ocs']["import_general_uuid"]
              && !in_array("uuid", $options['computers_updates'])) {
             $compupdate["uuid"] = $line["UUID"];
          }
@@ -2361,7 +2369,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
     *
     * @param $plugin_ocsinventoryng_ocsservers_id int : id of ocs server in GLPI
     * @param $check string : parameter for HTML input checkbox
-    * @param $start int : parameter for printPager method
+    * @param $start int : parameter for Html::printPager method
     *
     * @return nothing
    **/
@@ -2456,7 +2464,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $target = $CFG_GLPI['root_doc'].'/plugins/ocsinventoryng/front/ocsng.clean.php';
       if (($numrows = count($already_linked)) > 0) {
          $parameters = "check=$check";
-         printPager($start, $numrows, $target, $parameters);
+         Html::printPager($start, $numrows, $target, $parameters);
 
          // delete end
          array_splice($already_linked, $start + $_SESSION['glpilist_limit']);
@@ -2516,7 +2524,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          }
          echo "</td></tr>";
          echo "</table></form>\n";
-         printPager($start, $numrows, $target, $parameters);
+         Html::printPager($start, $numrows, $target, $parameters);
 
       } else {
          echo "<div class='center'><strong>" . $LANG['plugin_ocsinventoryng'][61] . "</strong></div>";
@@ -2637,7 +2645,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          $target = $CFG_GLPI['root_doc'].'/plugins/ocsinventoryng/front/ocsng.sync.php';
          if (($numrows = count($already_linked)) > 0) {
             $parameters = "check=$check";
-            printPager($start, $numrows, $target, $parameters);
+            Html::printPager($start, $numrows, $target, $parameters);
 
             // delete end
             array_splice($already_linked, $start + $_SESSION['glpilist_limit']);
@@ -2688,7 +2696,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                    "onclick= \"if ( unMarkCheckboxes('ocsng_form') ) return false;\">" .
                    $LANG['buttons'][19] . "</a></td></tr>\n";
             echo "</table></form>\n";
-            printPager($start, $numrows, $target, $parameters);
+            Html::printPager($start, $numrows, $target, $parameters);
 
          } else {
             echo "<br><strong>" . $LANG['plugin_ocsinventoryng'][11] . "</strong>";
@@ -2892,7 +2900,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
          if (($numrows = count($hardware)) > 0) {
             $parameters = "check=$check";
-            printPager($start, $numrows, $target, $parameters);
+            Html::printPager($start, $numrows, $target, $parameters);
 
             // delete end
             array_splice($hardware, $start + $_SESSION['glpilist_limit']);
@@ -3045,7 +3053,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                       $LANG['buttons'][19] . "</a>\n";
             }
 
-            printPager($start, $numrows, $target, $parameters);
+            Html::printPager($start, $numrows, $target, $parameters);
 
          } else {
          echo "<table class='tab_cadre_fixe'>";
@@ -5763,7 +5771,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
 
    static function cronOcsng($task) {
-      global $DB, $CFG_GLPI;
+      global $DB, $CFG_GLPI, $LANG;
 
       //Get a randon server id
       $plugin_ocsinventoryng_ocsservers_id = self::getRandomServerID();
@@ -5808,12 +5816,13 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
          $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
          $nbcomp = $PluginOcsinventoryngDBocs->numrows($result_ocs);
+         $task->setVolume(0);
          if ($nbcomp > 0) {
             while ($data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs)) {
-               $task->log("Update computer " . $data["ID"] . "\n");
+               $task->addVolume(1);
+               $task->log($LANG['help'][25] . " : " . $data["DEVICEID"] . " (" . $data["ID"] . ")\n");
                self::processComputer($data["ID"], $plugin_ocsinventoryng_ocsservers_id, 0);
             }
-            $task->setVolume($nbcomp);
          } else {
             return 0;
          }

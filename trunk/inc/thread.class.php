@@ -128,7 +128,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
             if ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED) {
                echo timestampToString($thread["duree"]);
             } else {
-               echo DROPDOWN_EMPTY_VALUE;
+               echo Dropdown::EMPTY_VALUE;
                $finished = false;
             }
             echo "</td>";
@@ -339,7 +339,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                if ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED) {
                   echo timestampToString($thread["duree"]);
                } else {
-                   echo DROPDOWN_EMPTY_VALUE;
+                   echo Dropdown::EMPTY_VALUE;
                }
                echo "</td>";
 
@@ -369,8 +369,8 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "</table>";
 
       if ($canedit) {
-         openArrowMassive("processes");
-         closeArrowMassive("delete_processes",$LANG["buttons"][6]);
+         Html::openArrowMassives("processes");
+         Html::closeArrowMassives(array("delete_processes"=>$LANG["buttons"][6]));
       }
    }
 

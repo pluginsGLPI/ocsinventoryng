@@ -42,11 +42,11 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 Session::checkRight("logs", "r");
 
-commonHeader($LANG['Menu'][30], "", "plugins", "ocsinventoryng");
+Html::header($LANG['Menu'][30], "", "plugins", "ocsinventoryng");
 
 $thread = new PluginOcsinventoryngThread();
 $thread->showErrorLog();
 
-commonFooter();
+Html::footer();
 
 ?>

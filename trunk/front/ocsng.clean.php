@@ -38,7 +38,7 @@ if (!defined('GLPI_ROOT')) {
 }
 include (GLPI_ROOT . "/inc/includes.php");
 
-commonHeader($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
+Html::header($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
 
 if (!isset($_POST["clean_ok"])) {
    plugin_ocsinventoryng_checkRight("clean_ocsng", "r");
@@ -62,6 +62,6 @@ if (!isset($_POST["clean_ok"])) {
    }
 }
 
-commonFooter();
+Html::footer();
 
 ?>

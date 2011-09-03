@@ -118,7 +118,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
       echo "<td> " .$LANG["plugin_ocsinventoryng"]["config"][114] . " </td><td>";
-      autocompletionTextField($this,"delay_refresh", array('size' => 5));
+      Html::autocompletionTextField($this,"delay_refresh", array('size' => 5));
       echo "&nbsp;".$LANG["plugin_ocsinventoryng"]["time"][3]."</td>";
       echo "</tr>";
 

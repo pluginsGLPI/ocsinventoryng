@@ -43,7 +43,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 Session::checkRight("logs", "r");
 
 if (Session::haveRecursiveAccessToEntity(0)) {
-   commonHeader($LANG['plugin_ocsinventoryng']["common"][1], "", "plugins", "ocsinventoryng");
+   Html::header($LANG['plugin_ocsinventoryng']["common"][1], "", "plugins", "ocsinventoryng");
 
    $thread = new PluginOcsinventoryngThread();
    
@@ -60,7 +60,7 @@ if (Session::haveRecursiveAccessToEntity(0)) {
    } else {
       $thread->showProcesses($_SERVER["PHP_SELF"]);
    }
-   commonFooter();
+   Html::footer();
 }
 else {
    Html::redirect(getItemTypeSearchURL('PluginOcsinventoryngNotImported'));

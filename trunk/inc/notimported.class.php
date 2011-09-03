@@ -127,7 +127,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
          case 'echo_dropdown':
             $result = Dropdown::getDropdownName($field['table'],$this->fields[$field['name']]);
             if ($result == '') {
-               echo DROPDOWN_EMPTY_VALUE;
+               echo Dropdown::EMPTY_VALUE;
             } else {
                echo $result;
             }

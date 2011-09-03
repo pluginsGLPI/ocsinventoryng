@@ -41,12 +41,12 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 Session::checkRight("logs", "r");
 
-commonHeader($LANG['plugin_ocsinventoryng']["common"][8], "", "plugins", "ocsinventoryng");
+Html::header($LANG['plugin_ocsinventoryng']["common"][8], "", "plugins", "ocsinventoryng");
 
 $thread = new PluginOcsinventoryngThread();
 $thread->title();
 $thread->showForm($_GET["pid"]);
 
-commonFooter();
+Html::footer();
 
 ?>

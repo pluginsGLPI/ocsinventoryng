@@ -48,7 +48,7 @@ if (isset($_POST['action'])) {
          if (PluginOcsinventoryngNotimported::computerImport($_POST)) {
             $dropdown->redirectToList();
          } else {
-            Html::redirect(getItemTypeFormURL('PluginOcsinventoryngNotimported').'?id='.$_POST['id']);
+            Html::redirect(Html::getItemTypeFormURL('PluginOcsinventoryngNotimported').'?id='.$_POST['id']);
          }
          break;
       case 'plugin_ocsinventoryng_link':

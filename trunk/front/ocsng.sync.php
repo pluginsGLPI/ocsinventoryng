@@ -40,7 +40,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 plugin_ocsinventoryng_checkRight("ocsng","w");
 
-commonHeader($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
+Html::header($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
 
 $display_list = true;
 
@@ -94,6 +94,6 @@ if (!isset($_POST["update_ok"])) {
    Html::back();
 }
 
-commonFooter();
+Html::footer();
 
 ?>
