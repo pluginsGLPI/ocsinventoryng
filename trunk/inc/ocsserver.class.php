@@ -35,7 +35,7 @@ if (!defined('GLPI_ROOT')) {
 
 /// OCS config class
 class PluginOcsinventoryngOcsServer extends CommonDBTM {
-   
+
    static $types = array('Computer');
    // From CommonDBTM
    public $dohistory = true;
@@ -55,7 +55,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    const OCS_VERSION_LIMIT    = 4020;
    const OCS1_3_VERSION_LIMIT = 5004;
    const OCS2_VERSION_LIMIT   = 6000;
-   
+
    // Class constants - import_ management
    const FIELD_SEPARATOR = '$$$$$';
    const IMPORT_TAG_070  = '_version_070_';
@@ -95,7 +95,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    const LINK_RESULT_IMPORT    = 0;
    const LINK_RESULT_NO_IMPORT = 1;
    const LINK_RESULT_LINK      = 2;
-   
+
    const PLUGIN_OCSINVENTORYNG_HISTORY_OCS_IMPORT     = 8;
    const PLUGIN_OCSINVENTORYNG_HISTORY_OCS_DELETE     = 9;
    const PLUGIN_OCSINVENTORYNG_HISTORY_OCS_IDCHANGED  = 10;
@@ -116,7 +116,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    function canView() {
       return plugin_ocsinventoryng_haveRight('ocsng', 'r');
    }
-   
+
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
       global $LANG;
 
@@ -136,7 +136,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                }
                return $ong;
          }
-         
+
          if (in_array($item->getType(), self::getTypes(true))
                && $this->canView()) {
             $ong = array();
@@ -150,7 +150,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
 
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
-      
+
       if ($item->getType() == __CLASS__) {
          switch ($tabnum) {
             case 1 :
@@ -164,7 +164,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             case 3 :
                $item->ocsFormConfig($_POST['target'], $item->getID());
                break;
-            
+
             case 4 :
                PluginOcsinventoryngConfig::showOcsReportsConsole($item->getID());
                break;
@@ -188,7 +188,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       }
       return true;
    }
-   
+
    function defineTabs($options=array()) {
       global $LANG;
 
@@ -241,9 +241,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       return $tab;
    }
 
-   
+
    /**
-    * Print ocs menu 
+    * Print ocs menu
     *
     * @param $target form target
     * @param $ID Integer : Id of the ocs config
@@ -252,7 +252,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    **/
    static function ocsMenu($plugin_ocsinventoryng_ocsservers_id) {
       global $LANG,$CFG_GLPI,$DB;
-      
+
       $name = "";
       if (isset($plugin_ocsinventoryng_ocsservers_id)) {
          $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = $plugin_ocsinventoryng_ocsservers_id;
@@ -273,7 +273,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       echo "<div class='center'><table class='tab_cadre'>";
       echo "<tr><th colspan='4'>" . $LANG['plugin_ocsinventoryng'][0] . " " . $name . "</th></tr>";
-      
+
       if (plugin_ocsinventoryng_haveRight('ocsng','w')) {
          //config server
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'><a href='ocsserver.form.php?id=".$plugin_ocsinventoryng_ocsservers_id."'>
@@ -285,7 +285,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro.png' alt='" .
             $LANG['plugin_ocsinventoryng'][25] . "' title=\"" . $LANG['plugin_ocsinventoryng'][25] . "\" >
             <br>".$LANG['plugin_ocsinventoryng'][25]."</a></td></tr>";
-            
+
          //manual import
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'><a href='ocsng.import.php'>
          <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' alt='" .
@@ -297,7 +297,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/thread.png' alt='" .
             $LANG["plugin_ocsinventoryng"]["common"][1] . "' title=\"" . $LANG["plugin_ocsinventoryng"]["common"][1] . "\" >
             <br>".$LANG["plugin_ocsinventoryng"]["common"][1]."</a></td></tr>";
-         
+
          //manual synchro
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'><a href='ocsng.sync.php'>
          <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro1.png' alt='" .
@@ -308,7 +308,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/detail.png' alt='" .
             $LANG["plugin_ocsinventoryng"]["common"][21] . "' title=\"" . $LANG["plugin_ocsinventoryng"]["common"][21] . "\" >
             <br>".$LANG["plugin_ocsinventoryng"]["common"][21]."</a></td></tr>";
-         
+
          //link
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'><a href='ocsng.link.php'>
          <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' alt='" .
@@ -320,9 +320,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/notimported.png' alt='" .
             $LANG["plugin_ocsinventoryng"]["common"][18] . "' title=\"" . $LANG["plugin_ocsinventoryng"]["common"][18] . "\" >
             <br>".$LANG["plugin_ocsinventoryng"]["common"][18]."</a></td></tr>";
-               
+
       }
-      
+
       if (plugin_ocsinventoryng_haveRight('clean_ocsng','r')) {
          echo "<tr class='tab_bg_1'><td class='center b' colspan='4'><a href='ocsng.clean.php'>
          <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/clean.png' alt='" .
@@ -403,7 +403,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['networking'][14] . " </td>\n<td>";
       Dropdown::showYesNo("import_ip", $this->fields["import_ip"]);
       echo "</td></tr>\n";
-      
+
       if (self::checkOCSconnection($ID) && strpos(self::checkVersion(),'2.0') > 0) {
          echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['computers'][58] . " </td>\n<td>";
          Dropdown::showYesNo("import_general_uuid", $this->fields["import_general_uuid"]);
@@ -413,8 +413,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<input type='hidden' name='import_general_uuid' value='0'>";
          echo "</td></tr>\n";
       }
-      
-      
+
+
 
       echo "<tr><td>&nbsp;</td></tr>";
       echo "</table>";
@@ -526,7 +526,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
    function ocsFormImportOptions($target, $ID, $withtemplate='', $templateid='') {
       global $LANG;
-      
+
       $this->getFromDB($ID);
       echo "<br><div class='center'>";
       echo "<form name='formconfig' action=\"$target\" method='post'>";
@@ -600,7 +600,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['plugin_ocsinventoryng']['config'][41] . " </td>\n<td>";
       Dropdown::showYesNo("import_registry", $this->fields["import_registry"]);
       echo "</td></tr>\n";
-      
+
       //check version
       if ($this->fields['ocs_version'] > self::OCS1_3_VERSION_LIMIT) {
          echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['computers'][57] . " </td>\n<td>";
@@ -719,7 +719,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<td><input type='text' name='name' value=\"" . $this->fields["name"] ."\"></td>\n";
       echo "<td class='center'>" . $LANG['rulesengine'][78] . "&nbsp;: </td>\n";
       echo "<td>".$this->fields["ocs_version"]."</td></tr>\n";
-      
+
       echo "<tr class='tab_bg_1'><td class='center'>" . $LANG['ocsconfig'][2] . "&nbsp;: </td>\n";
       echo "<td><input type='text' name='ocs_db_host' value=\"" .
                   $this->fields["ocs_db_host"] ."\"></td>\n";
@@ -920,13 +920,13 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    }
 
    function cleanDBonPurge() {
-      
+
       $link = new PluginOcsinventoryngOcslink();
       $link->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
-      
+
       $admin = new PluginOcsinventoryngOcsAdminInfosLink();
       $admin->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
-      
+
       // ocsservers_id for RuleImportComputer, OCS_SERVER for RuleOcs
       Rule::cleanForItemCriteria($this);
       Rule::cleanForItemCriteria($this, 'OCS_SERVER');
@@ -1365,7 +1365,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       return self::importComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock, $defaultentity, $defaultlocation);
    }
 
-   
+
    static function checkVersion() {
       global $PluginOcsinventoryngDBocs;
 
@@ -1373,10 +1373,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $result = $PluginOcsinventoryngDBocs->query("SELECT `TVALUE`
                                FROM `config`
                                WHERE `NAME` = 'GUI_VERSION'");
-   
+
       return $PluginOcsinventoryngDBocs->result($result, 0, 0);
    }
-      
+
    static function checkConfig($what=1) {
       global $PluginOcsinventoryngDBocs;
 
@@ -1564,20 +1564,28 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    }
 
 
+   /**
+    * Return field matching between OCS and GLPI
+    *
+    * @return array of glpifield => ocsfield
+   **/
    static function getOcsFieldsMatching() {
 
-      return array('SMANUFACTURER'  => 'manufacturers_id',
-                   'WINPRODKEY'     => 'os_license_number',
-                   'WINPRODID'      => 'os_licenseid',
-                   'OSNAME'         => 'operatingsystems_id',
-                   'OSVERSION'      => 'operatingsystemversions_id',
-                   'OSCOMMENTS'     => 'operatingsystemservicepacks_id',
-                   'WORKGROUP'      => 'domains_id',
-                   'USERID'         => 'contact',
-                   'NAME'           => 'name',
-                   'DESCRIPTION'    => 'comment',
-                   'SSN'            => 'serial',
-                   'SMODEL'         => 'computermodels_id');
+      // Manufacturer and Model both as text (for rules) and as id (for import)
+      return array('manufacturer'                     => 'SMANUFACTURER',
+                   'manufacturers_id'                 => 'SMANUFACTURER',
+                   'os_license_number'                => 'WINPRODKEY',
+                   'os_licenseid'                     => 'WINPRODID',
+                   'operatingsystems_id'              => 'OSNAME',
+                   'operatingsystemversions_id'       => 'OSVERSION',
+                   'operatingsystemservicepacks_id'   => 'OSCOMMENTS',
+                   'domains_id'                       => 'WORKGROUP',
+                   'contact'                          => 'USERID',
+                   'name'                             => 'NAME',
+                   'comment'                          => 'DESCRIPTION',
+                   'serial'                           => 'SSN',
+                   'model'                            => 'SMODEL',
+                   'computermodels_id'                => 'SMODEL');
    }
 
 
@@ -1599,7 +1607,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       $input['ocsid'] = $ocs_fields['ID'];
 
-      foreach (self::getOcsFieldsMatching() as $ocs_field => $glpi_field) {
+      foreach (self::getOcsFieldsMatching() as $glpi_field => $ocs_field) {
          if (isset($ocs_fields[$ocs_field])) {
             $table     = getTableNameForForeignKeyField($glpi_field);
             $ocs_field = Toolbox::encodeInUtf8($ocs_field);
@@ -2125,7 +2133,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             }
             $compupdate["comment"] .= "Swap: " . $line["SWAP"];
          }
-         
+
          if ($options['cfg_ocs']['ocs_version'] >= self::OCS1_3_VERSION_LIMIT
             && $options['cfg_ocs']["import_general_uuid"]
              && !in_array("uuid", $options['computers_updates'])) {
@@ -2832,6 +2840,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $query_ocs = "SELECT `hardware`.*,
                            `accountinfo`.`TAG` AS TAG,
                            `bios`.`SSN` AS SERIAL
+                           `bios`.`SMODEL`,
+                           `bios`.`SMANUFACTURER`
                     FROM `hardware`
                     INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
                     INNER JOIN `bios` ON (`hardware`.`id` = `bios`.`HARDWARE_ID`)".
@@ -2851,11 +2861,13 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
          while ($data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs)) {
             $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
-            $hardware[$data["ID"]]["date"]   = $data["LASTDATE"];
-            $hardware[$data["ID"]]["name"]   = $data["NAME"];
-            $hardware[$data["ID"]]["TAG"]    = $data["TAG"];
-            $hardware[$data["ID"]]["id"]     = $data["ID"];
-            $hardware[$data["ID"]]["serial"] = $data["SERIAL"];
+            $hardware[$data["ID"]]["date"]         = $data["LASTDATE"];
+            $hardware[$data["ID"]]["name"]         = $data["NAME"];
+            $hardware[$data["ID"]]["TAG"]          = $data["TAG"];
+            $hardware[$data["ID"]]["id"]           = $data["ID"];
+            $hardware[$data["ID"]]["serial"]       = $data["SERIAL"];
+            $hardware[$data["ID"]]["model"]        = $data["SMODEL"];
+            $hardware[$data["ID"]]["manufacturer"] = $data["SMANUFACTURER"];
 
             $query_network = "SELECT *
                               FROM `networks`
@@ -2894,7 +2906,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          }
 
          if ($tolinked && count($hardware)) {
-            echo "<div class='center'><strong>" . $LANG['plugin_ocsinventoryng'][22] . "</strong></div>";
+            echo "<div class='center b'>" . $LANG['plugin_ocsinventoryng'][22] . "</div>";
          }
          echo "<div class='center'>";
 
@@ -2931,7 +2943,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                }
                echo "</a></td></tr>";
 
-               echo "<tr class='tab_bg_1'><td class='center b'>".$LANG['plugin_ocsinventoryng']['config'][18] . "<br>";
+               echo "<tr class='tab_bg_1'><";
+               echo "td class='center b'>".$LANG['plugin_ocsinventoryng']['config'][18] . "<br>";
                echo "</tr></table></form></div>";
             }
 
@@ -2950,7 +2963,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                    $LANG['buttons'][37]."\">";
             echo "</td></tr>\n";
 
-            echo "<tr><th>" . $LANG['plugin_ocsinventoryng'][5] . "</th>\n<th>".$LANG['common'][19]."</th>\n";
+            echo "<tr><th>" . $LANG['plugin_ocsinventoryng'][5] . "</th>\n";
+            echo "<th>".$LANG['common'][5]." / ".$LANG['common'][22]." / ".$LANG['common'][19].
+                 "</th>\n";
             echo "<th>" . $LANG['common'][27] . "</th>\n<th>TAG</th>\n";
             if ($advanced && !$tolinked) {
                echo "<th>" . $LANG['plugin_ocsinventoryng'][40] . "</th>\n";
@@ -2969,7 +2984,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   $data = $rule->processAllRules(array(), array(), $tab["id"]);
                }
                echo "<tr class='tab_bg_2'><td>" . $tab["name"] . "</td>\n";
-               echo "<td>".$tab["serial"]."</td>\n";
+               echo "<td>".$tab["manufacturer"]." / ".$tab["model"]." / ".$tab["serial"]."</td>\n";
                echo "<td>" . Html::convDateTime($tab["date"]) . "</td>\n";
                echo "<td>" . $tab["TAG"] . "</td>\n";
                if ($advanced && !$tolinked) {
@@ -4953,14 +4968,14 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
                $version              = $data2["VERSION"];
                $manufacturer         = Manufacturer::processName($data2["PUBLISHER"]);
-               
+
                //Software might be created in another entity, depending on the entity's configuration
                $target_entity = EntityData::getUsedConfig('entities_id_software', $entity, '', true);
                //Do not change software's entity except if the dictionnary explicity changes it
                if ($target_entity == -2) {
                   $target_entity = $entity;
                }
-               
+
                if (!$cfg_ocs["use_soft_dict"]) {
                   //Software dictionnary
                   $rulecollection = new RuleDictionnarySoftwareCollection();
@@ -4983,7 +4998,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   } else {
                      $modified_version = $version;
                   }
-                  
+
                   //If software dictionnary returns an entity, it overrides the one that may have
                   //been defined in the entity's configuration
                   if (isset($res_rule["new_entities_id"])) {
@@ -6030,7 +6045,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       }
       return $output;
    }
-   
+
    /**
     * For other plugins, add a type to the linkable types
     *
