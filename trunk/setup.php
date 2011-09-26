@@ -42,27 +42,27 @@ define("PLUGIN_OCSINVENTORYNG_LOCKFILE", GLPI_LOCK_DIR . "/ocsinventoryng.lock")
 function plugin_init_ocsinventoryng() {
 	global $PLUGIN_HOOKS,$CFG_GLPI,$LANG;
 
-	$PLUGIN_HOOKS['change_profile']['ocsinventoryng'] = 
+	$PLUGIN_HOOKS['change_profile']['ocsinventoryng'] =
                array('PluginOcsinventoryngProfile','changeProfile');
-	$PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng'] = 
+	$PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng'] =
                array('Profile'=>
                array('PluginOcsinventoryngProfile', 'purgeProfiles'));
 
    Plugin::registerClass('PluginOcsinventoryngOcsServer', array(
       'massiveaction_noupdate_types' => true
    ));
-   
+
    Plugin::registerClass('PluginOcsinventoryngRuleOcsCollection', array(
       'rulecollections_types' => true
    ));
-   
+
    Plugin::registerClass('PluginOcsinventoryngRuleImportComputerCollection', array(
       'rulecollections_types' => true
    ));
-   
+
    Plugin::registerClass('PluginOcsinventoryngProfile',
                          array('addtabon' => 'Profile'));
-   
+
    Plugin::registerClass('PluginOcsinventoryngNotimported',
                          array ('massiveaction_noupdate_types' => true,
                                 'massiveaction_nodelete_types' => true,
@@ -71,22 +71,22 @@ function plugin_init_ocsinventoryng() {
    Plugin::registerClass('PluginOcsinventoryngDetail',
                          array ('massiveaction_noupdate_types' => true,
                                 'massiveaction_nodelete_types' => true));
-      
+
 	if (Session::getLoginUserID()) {
-		
+
 		// Display a menu entry ?
 		if (plugin_ocsinventoryng_haveRight("ocsng","r")) {
 			$PLUGIN_HOOKS['menu_entry']['ocsinventoryng'] = 'front/ocsng.php';
 			$PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['search'] = 'front/ocsng.php';
 		}
-		
+
       if (plugin_ocsinventoryng_haveRight("ocsng","w") || Session::haveRight("config","w")) {
          $PLUGIN_HOOKS['use_massive_action']['ocsinventoryng'] = 1;
          $PLUGIN_HOOKS['redirect_page']['ocsinventoryng']    = "front/notimported.form.php";
          $PLUGIN_HOOKS['headings']['ocsinventoryng'] = 'plugin_get_headings_ocsinventoryng';
 			$PLUGIN_HOOKS['headings_action']['ocsinventoryng'] = 'plugin_headings_actions_ocsinventoryng';
       }
-      
+
       if (plugin_ocsinventoryng_haveRight("ocsng", "w") || Session::haveRight("config", "w")) {
 			$PLUGIN_HOOKS['config_page']['ocsinventoryng'] = 'front/ocsserver.php';
 			$PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['config'] = 'front/ocsserver.php';
@@ -95,7 +95,7 @@ function plugin_init_ocsinventoryng() {
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['search'] = 'front/ocsserver.php';
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['add'] = 'front/ocsserver.form.php';
          }
-      
+
         /*if (Session::haveRecursiveAccessToEntity(0)) {
          $image = "<img src='".$CFG_GLPI["root_doc"]."/pics/stats_item.png' title='".
                    $LANG["plugin_ocsinventoryng"]["common"][1]."' alt='".$LANG["plugin_ocsinventoryng"]["common"][1]."'>";
@@ -109,7 +109,7 @@ function plugin_init_ocsinventoryng() {
                    $LANG["plugin_ocsinventoryng"]["common"][18]."' alt='".$LANG["plugin_ocsinventoryng"]["common"][18]."'>";
          $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng'][$image]
                       = 'front/notimported.php';
-         
+
 
          if (haveRight("logs", "r")) {
             //TODO
@@ -201,8 +201,7 @@ function plugin_ocsinventoryng_checkSeveralRightsOr($modules) {
       foreach ($modules as $mod => $right) {
          // Itemtype
          if (preg_match('/[A-Z]/', $mod[0])) {
-            if (class_exists($mod)) {
-               $item = new $mod();
+            if ($item = getItemForItemtype($mod)) {
                if ($item->canGlobal($right)) {
                   $valid = true;
                }
