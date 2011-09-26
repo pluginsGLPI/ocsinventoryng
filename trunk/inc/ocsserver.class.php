@@ -889,7 +889,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          $checksum |= pow(2,self::BIOS_FL);
       }
 
-      if ($this->fields["import_general_uuid"]) {
+      if ($this->fields["import_vms"]) {
          $checksum |= pow(2,self::VIRTUALMACHINES_FL);
       }
 
