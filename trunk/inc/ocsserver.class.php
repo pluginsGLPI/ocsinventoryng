@@ -1764,6 +1764,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   self::updateComputer($idlink, $plugin_ocsinventoryng_ocsservers_id, 0);
                }
 
+               //Return code to indicates that the machine was imported
+               return array('status'       => self::COMPUTER_IMPORTED,
+                            'entities_id'  => $data['entities_id'],
+                            'rule_matched' => $rules_matched,
+                            'computers_id' => $computers_id);
             } else {
                return array('status'       => self::COMPUTER_NOT_UNIQUE,
                             'entities_id'  => $data['entities_id'],
@@ -1774,12 +1779,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          if ($lock) {
             self::removeEntityLock($data['entities_id'], $fp);
          }
-
-         //Return code to indicates that the machine was imported
-         return array('status'       => self::COMPUTER_IMPORTED,
-                      'entities_id'  => $data['entities_id'],
-                      'rule_matched' => $rules_matched,
-                      'computers_id' => $computers_id);
       }
       //ELSE Return code to indicates that the machine was not imported because it doesn't matched rules
       return array('status'       => self::COMPUTER_FAILED_IMPORT,
