@@ -37,17 +37,21 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
    static function getTypeName() {
       global $LANG;
+
       return $LANG['plugin_ocsinventoryng'][25];
    }
-   
+
+
    function canCreate() {
       return Session::haveRight('config', 'w');
    }
 
+
    function canView() {
       return Session::haveRight('config', 'r');
    }
-   
+
+
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
       global $LANG;
 
@@ -55,9 +59,10 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
          switch ($item->getType()) {
             case __CLASS__ :
                //If connection to the OCS DB  is ok, and all rights are ok too
-               $ong = array();
-               $ong[1] = self::getTypeName(1);
-               return $ong;
+               return array('1' => self::getTypeName());
+
+            case 'PluginOcsinventoryngOcsServer' :
+               return array('1' => $LANG['plugin_ocsinventoryng']["notimported"][2]);
          }
       }
       return '';
@@ -65,37 +70,40 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
 
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
-      
-      if ($item->getType() == __CLASS__) {
-         switch ($tabnum) {
-            case 1 :
-               $item->showScriptLock();
-               break;
-         }
+
+      switch ($item->getType()) {
+         case __CLASS__ :
+            $item->showScriptLock();
+            break;
+
+         case 'PluginOcsinventoryngOcsServer' :
+            self::showOcsReportsConsole($item->getID());
+            break;
       }
       return true;
    }
-   
+
+
    function defineTabs($options=array()) {
       global $LANG;
 
       $ong = array();
       $this->addStandardTab(__CLASS__, $ong, $options);
-
       return $ong;
    }
-   
+
+
    function showConfigForm($target) {
       global $LANG;
 
       $this->getFromDB(1);
       $this->showTabs();
       $this->showFormHeader();
-      
+
       echo "<tr class='tab_bg_1'>";
-      echo "<td class='right' colspan='2'> " .$LANG["plugin_ocsinventoryng"]["config"][121]. " </td>";
+      echo "<td class='right' colspan='2'> " .$LANG["plugin_ocsinventoryng"]["config"][121]."</td>";
       echo "<td colspan='2'>&nbsp;&nbsp;&nbsp;";
-      Dropdown::showFromArray("plugin_ocsinventoryng_ocsservers_id",$this->getAllOcsServers(),
+      Dropdown::showFromArray("plugin_ocsinventoryng_ocsservers_id", $this->getAllOcsServers(),
                               array('value' => $this->fields["plugin_ocsinventoryng_ocsservers_id"]));
       echo "</td></tr>";
 
@@ -122,13 +130,15 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "&nbsp;".$LANG["plugin_ocsinventoryng"]["time"][3]."</td>";
       echo "</tr>";
 
-      $this->showFormButtons(array('canedit' => true, 'candel' => false));
+      $this->showFormButtons(array('canedit' => true,
+                                   'candel'  => false));
       $this->addDivForTabs();
       return true;
    }
 
+
    function showScriptLock() {
-      global $LANG; 
+      global $LANG;
 
       echo "<div class='center'>";
       echo "<form name='lock' action=\"".$_SERVER['HTTP_REFERER']."\" method='post'>";
@@ -150,11 +160,13 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
       echo "<tr class='tab_bg_2'><td colspan='2' class='center'>";
       echo "<input type='submit' name='".(!$status?"soft_lock":"soft_unlock")."' class='submit' ".
-            "value='".(!$status?$LANG["plugin_ocsinventoryng"]["config"][117]:$LANG["plugin_ocsinventoryng"]["config"][118])."'>";
+            "value='".(!$status?$LANG["plugin_ocsinventoryng"]["config"][117]
+                               :$LANG["plugin_ocsinventoryng"]["config"][118])."'>";
       echo "</td/></tr/></table><br>";
       echo "</form></div>";
-      
+
    }
+
 
    static function isScriptLocked() {
       return file_exists(PLUGIN_OCSINVENTORYNG_LOCKFILE);
@@ -179,9 +191,10 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       global $DB, $LANG;
 
       $servers[-1] = $LANG["plugin_ocsinventoryng"]["config"][122];
-      $sql = "SELECT `id`, `name`
-              FROM `glpi_plugin_ocsinventoryng_ocsservers`";
-      $result = $DB->query($sql);
+
+      $sql     = "SELECT `id`, `name`
+                  FROM `glpi_plugin_ocsinventoryng_ocsservers`";
+      $result  = $DB->query($sql);
 
       while ($conf = $DB->fetch_array($result)) {
          $servers[$conf["id"]] = $conf["name"];
@@ -198,24 +211,29 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
       echo "<div class='center'>";
       if ($ocsconfig["ocs_url"] != '') {
-         echo "<iframe src='" . $ocsconfig["ocs_url"] . "/index.php?multi=4' width='95%' height='650' >";
+         echo "<iframe src='".$ocsconfig["ocs_url"]."/index.php?multi=4' width='95%' height='650'>";
       }
       echo "</div>";
    }
 
+
    static function canUpdateOCS() {
-      $config = new PluginOcsinventoryngConfig;
+
+      $config = new PluginOcsinventoryngConfig();
       $config->getFromDB(1);
       return $config->fields['allow_ocs_update'];
    }
+
 
    /**
     * Display debug information for current object
    **/
    function showDebug() {
-      NotificationEvent::debugEvent(new PluginOcsinventoryngNotimported(), 
-                                    array('entities_id' =>0 ,'notimported' => array()));
-   }
-}
 
+      NotificationEvent::debugEvent(new PluginOcsinventoryngNotimported(),
+                                    array('entities_id' => 0 ,
+                                          'notimported' => array()));
+   }
+
+}
 ?>

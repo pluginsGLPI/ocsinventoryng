@@ -129,25 +129,15 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          switch ($item->getType()) {
             case __CLASS__ :
                //If connection to the OCS DB  is ok, and all rights are ok too
-               $ong    = array();
-               $ong[1] = self::getTypeName(1);
+               $ong[1] = self::getTypeName();
                if (self::checkOCSconnection($item->getID())
                    && self::checkConfig(1)
                    && self::checkConfig(2)
                    && self::checkConfig(8)) {
                   $ong[2] = $LANG['plugin_ocsinventoryng']['config'][5];
                   $ong[3] = $LANG['plugin_ocsinventoryng']['config'][27];
-                  $ong[4] = $LANG['plugin_ocsinventoryng']["notimported"][2];
                }
                return $ong;
-         }
-
-         if (in_array($item->getType(), self::getTypes(true))
-             && $this->canView()) {
-            $ong    = array();
-            $ong[1] = $LANG['plugin_ocsinventoryng']['title'][1];
-            $ong[2] = $LANG['plugin_ocsinventoryng']['config'][41];
-            return $ong;
          }
       }
       return '';
@@ -169,23 +159,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             case 3 :
                $item->ocsFormConfig($_POST['target'], $item->getID());
                break;
-
-            case 4 :
-               PluginOcsinventoryngConfig::showOcsReportsConsole($item->getID());
-               break;
-         }
-
-      } else if (in_array($item->getType(), self::getTypes(true))) {
-         switch ($tabnum) {
-            case 1 :
-               PluginOcsinventoryngOcsLink::showForItem(Toolbox::getItemTypeFormURL('PluginOcsinventoryngOcslink'),
-                                                        $item, $withtemplate);
-               PluginOcsinventoryngOcslink::editLock($item);
-               break;
-
-            case 2 :
-               PluginOcsinventoryngRegistryKey::showForComputer($item->getField('id'));
-               break;
          }
       }
       return true;
@@ -197,6 +170,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       $ong = array();
       $this->addStandardTab(__CLASS__, $ong, $options);
+      $this->addStandardTab('PluginOcsinventoryngConfig', $ong, $options);
+      $this->addStandardTab('PluginOcsinventoryngOcslink', $ong, $options);
+      $this->addStandardTab('PluginOcsinventoryngRegistryKey', $ong, $options);
       $this->addStandardTab('Log', $ong, $options);
       return $ong;
    }

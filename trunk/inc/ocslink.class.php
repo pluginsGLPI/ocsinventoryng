@@ -66,8 +66,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    *
    * @return nothing
    **/
-   static function showForItem($target, CommonDBTM $item, $withtemplate='') {
+   static function showForItem(CommonDBTM $item, $withtemplate='') {
       global $DB, $LANG;
+
+      $target = Toolbox::getItemTypeFormURL(__CLASS__);
 
       if (in_array($item->getType(), array('Computer'))) {
          $items_id = $item->getField('id');
@@ -528,5 +530,33 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       }
    }
 
+
+   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+      global $LANG;
+
+      if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))
+          && $this->canView()) {
+
+         switch ($item->getType()) {
+            case 'PluginOcsinventoryngOcsServer' :
+               return array('1' => $LANG['plugin_ocsinventoryng']['title'][1]);
+         }
+      }
+      return '';
+   }
+
+
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+
+      if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))) {
+         switch ($item->getType()) {
+            case 'PluginOcsinventoryngOcsServer' :
+               self::showForItem($item, $withtemplate);
+               self::editLock($item);
+               break;
+         }
+      }
+      return true;
+   }
 }
 ?>

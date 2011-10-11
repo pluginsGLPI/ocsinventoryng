@@ -58,7 +58,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
 
 
    function cleanDBonPurge() {
-      
+
       $self = new self();
       $self->deleteByCriteria(array('computers_id' => $this->fields['id']));
 
@@ -66,9 +66,9 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
 
 
    /** Display registry values for a computer
-    * 
+    *
    * @param $ID integer : computer ID
-   * 
+   *
    */
    static function showForComputer($ID) {
       global $DB, $LANG;
@@ -120,6 +120,33 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
       }
    }
 
+
+   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+      global $LANG;
+
+      if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))
+          && $this->canView()) {
+
+         switch ($item->getType()) {
+            case 'PluginOcsinventoryngOcsServer' :
+               return array('1' => $LANG['plugin_ocsinventoryng']['config'][41]);
+         }
+      }
+      return '';
+   }
+
+
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+
+      if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))) {
+         switch ($item->getType()) {
+            case 'PluginOcsinventoryngOcsServer' :
+               self::showForComputer($item->getField('id'));
+               break;
+         }
+      }
+      return true;
+   }
 }
 
 ?>
