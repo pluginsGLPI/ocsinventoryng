@@ -38,6 +38,42 @@ if (!defined('GLPI_ROOT')) {
 }
 include (GLPI_ROOT . "/inc/includes.php");
 
+Session::checkRight("computer", "r");
+
+$computer = new Computer();
+
+if (isset($_POST["unlock_monitor"])) {
+   $computer->check($_POST['id'], 'w');
+   if (isset($_POST["lockmonitor"]) && count($_POST["lockmonitor"])) {
+      foreach ($_POST["lockmonitor"] as $key => $val) {
+         OcsServer::deleteInOcsArray($_POST["id"], $key, "import_monitor");
+      }
+   }
+   Html::back();
+
+} else if (isset($_POST["unlock"])) {
+   $computer->check($_POST['id'], 'w');
+   $actions = array("lockprinter" => "import_printer",
+                    "locksoft"    => "import_software",
+                    "lockdisk"    => "import_disk",
+                    "lockmonitor" => "import_monitor",
+                    "lockperiph"  => "import_peripheral",
+                    "lockip"      => "import_ip",
+                    "lockdevice"  => "import_device",
+                    "lockfield"   => "computer_update");
+   foreach ($actions as $lock => $field) {
+      if (isset($_POST[$lock]) && count($_POST[$lock])) {
+         foreach ($_POST[$lock] as $key => $val) {
+            OcsServer::deleteInOcsArray($_POST["id"], $key, $field);
+         }
+      }
+   }
+   Html::back();
+
+} else {
+   Html::displayErrorAndDie("lost");
+}
+/*
 $link = new PluginOcsinventoryngOcslink();
 
 if (isset ($_POST["update"])) {
@@ -47,5 +83,5 @@ if (isset ($_POST["update"])) {
    $link->update($values);
    Html::back();
 }
-
+*/
 ?>
