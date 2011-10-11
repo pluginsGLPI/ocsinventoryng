@@ -46,7 +46,7 @@ if (isset($_POST["unlock_monitor"])) {
    $computer->check($_POST['id'], 'w');
    if (isset($_POST["lockmonitor"]) && count($_POST["lockmonitor"])) {
       foreach ($_POST["lockmonitor"] as $key => $val) {
-         OcsServer::deleteInOcsArray($_POST["id"], $key, "import_monitor");
+         PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST["id"], $key, "import_monitor");
       }
    }
    Html::back();
@@ -64,10 +64,25 @@ if (isset($_POST["unlock_monitor"])) {
    foreach ($actions as $lock => $field) {
       if (isset($_POST[$lock]) && count($_POST[$lock])) {
          foreach ($_POST[$lock] as $key => $val) {
-            OcsServer::deleteInOcsArray($_POST["id"], $key, $field);
+            PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST["id"], $key, $field);
          }
       }
    }
+   Html::back();
+
+} else if (isset($_POST["force_ocs_resynch"])) {
+   $computer->check($_POST['id'], 'w');
+   //Get the ocs server id associated with the machine
+   $ocsservers_id = PluginOcsinventoryngOcsServer::getByMachineID($_POST["id"]);
+   //Update the computer
+   PluginOcsinventoryngOcsServer::updateComputer($_POST["resynch_id"], $ocsservers_id, 1, 1);
+   Html::back();
+
+} else if (isset ($_POST["update"])) {
+   $link = new PluginOcsinventoryngOcslink();
+   $values["id"] = $_POST["link_id"];
+   $values["use_auto_update"] = $_POST["use_auto_update"];
+   $link->update($values);
    Html::back();
 
 } else {
