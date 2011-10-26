@@ -2489,7 +2489,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          }
       }
 
-      $query = "SELECT *
+      $query = "SELECT `ocsid`
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `plugin_ocsinventoryng_ocsservers_id`
                            = '$plugin_ocsinventoryng_ocsservers_id'";
