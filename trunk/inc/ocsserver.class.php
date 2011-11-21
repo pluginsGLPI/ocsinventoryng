@@ -1041,9 +1041,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $msg .= ', '.$LANG['plugin_ocsinventoryng']['config'][38]. " : ".
                        $ocsServer['use_soft_dict'];
          }
+         echo wordwrap($msg."\n", $width, "\n\t\t");
+         echo "\n</pre></td></tr>";
       }
-      echo wordwrap($msg."\n", $width, "\n\t\t");
-      echo "\n</pre></td></tr>";
    }
 
 
