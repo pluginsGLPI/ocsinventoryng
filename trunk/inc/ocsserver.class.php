@@ -4823,7 +4823,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                //Software might be created in another entity, depending on the entity's configuration
                $target_entity = EntityData::getUsedConfig('entities_id_software', $entity, '', true);
                //Do not change software's entity except if the dictionnary explicity changes it
-               if ($target_entity == -2) {
+               if ($target_entity < 0) {
                   $target_entity = $entity;
                }
 
