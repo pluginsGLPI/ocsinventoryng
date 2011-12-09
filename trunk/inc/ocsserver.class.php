@@ -561,8 +561,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
            "</td>\n<td>";
       Dropdown::showFromArray("deconnection_behavior",
                               array(''       => $LANG['buttons'][49],
-                                    "trash"  => $LANG['plugin_ocsinventoryng']['config'][49],
-                                    "delete" => $LANG['plugin_ocsinventoryng']['config'][50]),
+                                    "trash"  => $LANG['buttons'][6],
+                                    "delete" => $LANG['buttons'][22]),
                               array('value' => $this->fields["deconnection_behavior"]));
       echo "</td></tr>\n";
 
