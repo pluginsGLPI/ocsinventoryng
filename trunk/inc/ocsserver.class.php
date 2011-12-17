@@ -4622,7 +4622,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                      $disk['device']     = $line['VOLUMN'];
                   }
 
-                  $disk['name']           = $disk['mountpoint'];
+                  if ($line['FILESYSTEM'] == "vmfs") {
+                     $disk['name'] = basename($line['TYPE']);
+                  } else {
+                     $disk['name']  = $disk['mountpoint'];
+                  }
                   $disk['filesystems_id'] = Dropdown::importExternal('Filesystem',
                                                                      $line["FILESYSTEM"]);
 
