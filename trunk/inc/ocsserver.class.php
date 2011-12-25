@@ -1037,7 +1037,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $msg .= $LANG['plugin_ocsinventoryng']['config'][2]." : '".$ocsServer['ocs_db_host']."'";
                $msg .= ', '.(self::checkOCSconnection($ocsServer['id'])
                              ?$LANG['plugin_ocsinventoryng'][18]
-                             :$LANG['plugin_ocsinventoryng'][18]);
+                             :$LANG['plugin_ocsinventoryng'][21]);
                $msg .= ', '.$LANG['plugin_ocsinventoryng']['config'][38]. " : ".
                        $ocsServer['use_soft_dict'];
          }
