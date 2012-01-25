@@ -72,7 +72,7 @@ function readargs () {
 
 function exit_if_soft_lock() {
 
-   if (file_exists(PLUGIN_OCSINVENTORYNG_LOCKFILE)) {
+   if (file_exists(GLPI_LOCK_DIR."/massocsimport.lock")) {
       echo "Software lock : script can't run !\n";
       exit (1);
    }
