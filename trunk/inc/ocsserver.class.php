@@ -4530,13 +4530,14 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       $virtualmachine = new ComputerVirtualMachine();
       if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
-         while ($line = $PluginOcsinventoryngDBocs->fetch_array($result)) {
+         while ($line = $PluginOcsinventoryngDBocs->fetch_assoc($result)) {
             $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
-            $vm['name'] = $line['NAME'];
-            $vm['vcpu'] = $line['VCPU'];
-            $vm['ram']  = $line['MEMORY'];
-            $vm['uuid'] = $line['UUID'];
-            $vm['computers_id'] = $computers_id;
+            $vm                  = array();
+            $vm['name']          = $line['NAME'];
+            $vm['vcpu']          = $line['VCPU'];
+            $vm['ram']           = $line['MEMORY'];
+            $vm['uuid']          = $line['UUID'];
+            $vm['computers_id']  = $computers_id;
 
             $vm['virtualmachinestates_id']  = Dropdown::importExternal('VirtualMachineState',
                                                                        $line['STATUS']);
