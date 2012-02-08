@@ -3766,9 +3766,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                         }
                         $netport = array();
                         $netport["mac"]      = $line2["MACADDR"];
-                        $netport["networkinterfaces_id"]
-                                             = Dropdown::importExternal('NetworkInterface',
-                                                                        $line2["TYPE"]);
+                        // Does not exist anymore in networkports
+//                        $netport["networkinterfaces_id"]
+//                                             = Dropdown::importExternal('NetworkInterface',
+//                                                                        $line2["TYPE"]);
                         $netport["name"]     = $line2["DESCRIPTION"];
                         $netport["items_id"] = $computers_id;
                         $netport["itemtype"] = 'Computer';
