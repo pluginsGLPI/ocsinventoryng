@@ -8,10 +8,86 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-08 17:38+0100\n"
+"POT-Creation-Date: 2012-02-09 10:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: hook.php:916
+msgid "Restart import"
+msgstr ""
+
+#: hook.php:917
+msgid "Import in the entity"
+msgstr ""
+
+#: hook.php:923
+msgid "Link computer whith another one present in GLPI"
+msgstr ""
+
+#: hook.php:927
+msgid "Delete computer in OCS"
+msgstr ""
+
+#: hook.php:937
+msgid "Force synchronization OCSNG"
+msgstr ""
+
+#: hook.php:938
+msgid "(Unlock fields"
+msgstr ""
+
+#: hook.php:939
+msgid "Unlock monitors"
+msgstr ""
+
+#: hook.php:940
+msgid "Unlock peripherals"
+msgstr ""
+
+#: hook.php:941
+msgid "Unlock printers"
+msgstr ""
+
+#: hook.php:942
+msgid "Unlock software"
+msgstr ""
+
+#: hook.php:943
+msgid "Unlock IP"
+msgstr ""
+
+#: hook.php:944
+msgid "Unclok volumes"
+msgstr ""
+
+#: hook.php:1152
+msgid "GLPI import date"
+msgstr ""
+
+#: hook.php:1159
+msgid "Last Inventory OCSNG"
+msgstr ""
+
+#: hook.php:1167
+msgid "Automatic update OCSNG"
+msgstr ""
+
+#: hook.php:1173
+msgid "Inventory agent"
+msgstr ""
+
+#: hook.php:1179
+msgid "TAG OCSNG"
+msgstr ""
+
+#: hook.php:1186
+msgid "Registry: Key/Value"
+msgstr ""
+
+#: hook.php:1193
+msgid "Registry: OCSNG name"
+msgstr ""

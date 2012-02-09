@@ -131,7 +131,7 @@ function plugin_init_ocsinventoryng() {
 **/
 function plugin_version_ocsinventoryng() {
 
-   return array('name'           => "__('Mode OCSNG')",
+   return array('name'           => "__('OCSNG Mode')",
                 'version'        => '1.0.0',
                 'author'         => 'Remi Colet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud',
                 'homepage'       => 'https://forge.indepnet.net/repositories/show/ocsinventoryng',
