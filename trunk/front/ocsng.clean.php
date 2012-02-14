@@ -38,7 +38,7 @@ if (!defined('GLPI_ROOT')) {
 }
 include (GLPI_ROOT . "/inc/includes.php");
 
-Html::header($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
+Html::header(__('OCS Inventory NG'), "", "plugins","ocsinventoryng");
 
 if (!isset($_POST["clean_ok"])) {
    plugin_ocsinventoryng_checkRight("clean_ocsng", "r");
@@ -50,18 +50,20 @@ if (!isset($_POST["clean_ok"])) {
       $_GET['start'] = 0;
    }
    PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-   PluginOcsinventoryngOcsServer::showComputersToClean($_SESSION["plugin_ocsinventoryng_ocsservers_id"], $_GET['check'], $_GET['start']);
+   PluginOcsinventoryngOcsServer::showComputersToClean($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                                                       $_GET['check'], $_GET['start']);
 
 } else {
    plugin_ocsinventoryng_checkRight("clean_ocsng", "w");
    if (count($_POST['toclean']) >0) {
-      PluginOcsinventoryngOcsServer::cleanLinksFromList($_SESSION["plugin_ocsinventoryng_ocsservers_id"], $_POST['toclean']);
-      echo "<div class='center b'>".$LANG['plugin_ocsinventoryng'][3]." - ".$LANG['log'][45]."<br>";
+      PluginOcsinventoryngOcsServer::cleanLinksFromList($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                                                        $_POST['toclean']);
+      echo "<div class='center b'>".__('Clean links between GLPI and OCSNG')."<br>".__('Successful').
+           "<br>";
       displayBackLink();
       echo "</div>";
    }
 }
 
 Html::footer();
-
 ?>

@@ -40,7 +40,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 plugin_ocsinventoryng_checkRight("ocsng","w");
 
-Html::header($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
+Html::header(__('OCS Inventory NG'), "", "plugins", "ocsinventoryng");
 
 $display_list = true;
 
@@ -52,8 +52,11 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
 
 
       $key    = array_pop($_SESSION["ocs_update"]['computers']);
-      $action = PluginOcsinventoryngOcsServer::updateComputer($key, $_SESSION["plugin_ocsinventoryng_ocsservers_id"], 2);
-      PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_update"]['statistics'], $action['status']);
+      $action = PluginOcsinventoryngOcsServer::updateComputer($key,
+                                                              $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                                                              2);
+      PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_update"]['statistics'],
+                                                            $action['status']);
       PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_update"]['statistics']);
       displayProgressBar(400, $percent);
 
@@ -64,7 +67,7 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
       unset($_SESSION["ocs_update"]);
       $display_list = false;
       echo "<div class='center b'><br>";
-      echo "<a href='".$_SERVER['PHP_SELF']."'>".$LANG['buttons'][13]."</a></div>";
+      echo "<a href='".$_SERVER['PHP_SELF']."'>".__('Back')."</a></div>";
    }
 }
 
@@ -77,7 +80,8 @@ if (!isset($_POST["update_ok"])) {
    }
    PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($display_list) {
-      PluginOcsinventoryngOcsServer::showComputersToUpdate($_SESSION["plugin_ocsinventoryng_ocsservers_id"], $_GET['check'], $_GET['start']);
+      PluginOcsinventoryngOcsServer::showComputersToUpdate($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                                                           $_GET['check'], $_GET['start']);
    }
 
 } else {
@@ -95,5 +99,4 @@ if (!isset($_POST["update_ok"])) {
 }
 
 Html::footer();
-
 ?>

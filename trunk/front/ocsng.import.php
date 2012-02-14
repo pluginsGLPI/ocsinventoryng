@@ -39,9 +39,9 @@ if (!defined('GLPI_ROOT')) {
 
 include (GLPI_ROOT . "/inc/includes.php");
 
-plugin_ocsinventoryng_checkRight("ocsng","w");
+plugin_ocsinventoryng_checkRight("ocsng", "w");
 
-Html::header($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
+Html::header(__('OCS Inventory NG'), "", "plugins", "ocsinventoryng");
 
 $display_list = true;
 //First time this screen is displayed : set the import mode to 'basic'
@@ -80,8 +80,11 @@ if (isset($_SESSION["ocs_import"]["id"])) {
       }
 
       $conf   = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-      $action = PluginOcsinventoryngOcsServer::processComputer($key, $_SESSION["plugin_ocsinventoryng_ocsservers_id"], 0, $entity, $location);
-      PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_import"]['statistics'], $action['status']);
+      $action = PluginOcsinventoryngOcsServer::processComputer($key,
+                                                               $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                                                               0, $entity, $location);
+      PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_import"]['statistics'],
+                                                            $action['status']);
       PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_import"]['statistics']);
       displayProgressBar(400, $percent);
       Html::back();
@@ -92,7 +95,7 @@ if (isset($_SESSION["ocs_import"]["id"])) {
       unset($_SESSION["ocs_import"]);
 
       echo "<div class='center b'><br>";
-      echo "<a href='".$_SERVER['PHP_SELF']."'>".$LANG['buttons'][13]."</a></div>";
+      echo "<a href='".$_SERVER['PHP_SELF']."'>".__('Back')."</a></div>";
       $display_list = false;
    }
 }
@@ -109,8 +112,10 @@ if (!isset($_POST["import_ok"])) {
    }
    PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($display_list) {
-      PluginOcsinventoryngOcsServer::showComputersToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"], $_SESSION["change_import_mode"],
-                                    $_GET['check'], $_GET['start'], $_SESSION['glpiactiveentities']);
+      PluginOcsinventoryngOcsServer::showComputersToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                                                        $_SESSION["change_import_mode"],
+                                                        $_GET['check'], $_GET['start'],
+                                                        $_SESSION['glpiactiveentities']);
    }
 
 } else {
@@ -135,5 +140,4 @@ if (!isset($_POST["import_ok"])) {
 }
 
 Html::footer();
-
 ?>

@@ -40,7 +40,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 plugin_ocsinventoryng_checkRight("ocsng","w");
 
-Html::header($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
+Html::header(__('OCS Inventory NG'), "", "plugins", "ocsinventoryng");
 
 $CFG_GLPI["use_ajax"] = 1;
 
@@ -67,15 +67,17 @@ if (isset($_SESSION["ocs_link"])) {
       displayProgressBar(400,$percent);
 
       $key = array_pop($_SESSION["ocs_link"]);
-      PluginOcsinventoryngOcsServer::linkComputer($key["ocsid"], $_SESSION["plugin_ocsinventoryng_ocsservers_id"], $key["computers_id"]);
+      PluginOcsinventoryngOcsServer::linkComputer($key["ocsid"],
+                                                  $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                                                  $key["computers_id"]);
       Html::back();
 
    } else {
       displayProgressBar(400,100);
 
       unset($_SESSION["ocs_link"]);
-      echo "<div class='center b'>".$LANG['plugin_ocsinventoryng'][8]."<br>";
-      echo "<a href='".$_SERVER['PHP_SELF']."'>".$LANG['buttons'][13]."</a></div>";
+      echo "<div class='center b'>".__('Successful importation')."<br>";
+      echo "<a href='".$_SERVER['PHP_SELF']."'>".__('Back')."</a></div>";
    }
 }
 
@@ -87,9 +89,10 @@ if (!isset($_POST["import_ok"])) {
       $_GET['start'] = 0;
    }
    PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-   PluginOcsinventoryngOcsServer::showComputersToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"], $_SESSION["change_import_mode"],
-                                 $_GET['check'], $_GET['start'], $_SESSION['glpiactiveentities'],
-                                 1);
+   PluginOcsinventoryngOcsServer::showComputersToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                                                     $_SESSION["change_import_mode"], $_GET['check'],
+                                                     $_GET['start'], $_SESSION['glpiactiveentities'],
+                                                     1);
 
 } else {
    if (isset($_POST['tolink']) && count($_POST['tolink']) >0) {
@@ -107,5 +110,4 @@ if (!isset($_POST["import_ok"])) {
 }
 
 Html::footer();
-
 ?>
