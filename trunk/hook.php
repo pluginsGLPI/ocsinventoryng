@@ -463,14 +463,13 @@ function plugin_ocsinventoryng_install() {
                               '".$thread['last_inventory']."', '".$thread['reason']."')";
             $DB->queryOrDie($query, $DB->error());
          }
-      }
 
-      $migration->renameTable("glpi_plugin_massocsimport_notimported",
-                              "backup_glpi_plugin_massocsimport_notimported");
+         $migration->renameTable("glpi_plugin_massocsimport_notimported",
+                                 "backup_glpi_plugin_massocsimport_notimported");
+      }
 
       $migration->changeField("glpi_plugin_ocsinventoryng_notimported", "ocsservers_id",
                               "`plugin_ocsinventoryng_ocsservers_id", 'integer');
-
 
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_servers` (
                   `id` int(11) NOT NULL AUTO_INCREMENT,
