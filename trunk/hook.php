@@ -59,9 +59,9 @@ function plugin_ocsinventoryng_install() {
          $query = "INSERT INTO `glpi_plugin_ocsinventoryng_profiles`
                           (`profiles_id`, `ocsng`, `sync_ocsng`, `view_ocsng`, `clean_ocsng`,
                            `rule_ocs`)
-                   VALUES (SELECT `id`, `ocsng`, `sync_ocsng`, `view_ocsng`, `clean_ocsng`,
+                           SELECT `id`, `ocsng`, `sync_ocsng`, `view_ocsng`, `clean_ocsng`,
                                   `rule_ocs`
-                           FROM `glpi_profiles`)";
+                           FROM `glpi_profiles`";
             $DB->queryOrDie($query, "1.0.0 insert profiles for OCS in plugin");
 
          //Suppression des champs dans le profile du core
@@ -450,25 +450,19 @@ function plugin_ocsinventoryng_install() {
 
       $DB->queryOrDie($query, $DB->error());
 
-      foreach (getAllDatasFromTable('glpi_plugin_massocsimport_notimported') as $thread) {
+      if (TableExists("glpi_plugin_massocsimport_notimported")) {
+         foreach (getAllDatasFromTable('glpi_plugin_massocsimport_notimported') as $thread) {
 
-         $query = "INSERT INTO `glpi_plugin_ocsinventoryng_notimported`
-                   VALUES ('".$thread['id']."',
-                           '".$thread['entities_id']."',
-                           '".$thread['rules_id']."',
-                           '".$thread['comment']."',
-                           '".$thread['ocsid']."',
-                           '".$thread['ocsservers_id']."',
-                           '".$thread['ocs_deviceid']."',
-                           '".$thread['useragent']."',
-                           '".$thread['tag']."',
-                           '".$thread['serial']."',
-                           '".$thread['name']."',
-                           '".$thread['ipaddr']."',
-                           '".$thread['domain']."',
-                           '".$thread['last_inventory']."',
-                           '".$thread['reason']."');";
-         $DB->queryOrDie($query, $DB->error());
+            $query = "INSERT INTO `glpi_plugin_ocsinventoryng_notimported`
+                      VALUES ('".$thread['id']."', '".$thread['entities_id']."',
+                              '".$thread['rules_id']."', '".$thread['comment']."',
+                              '".$thread['ocsid']."', '".$thread['ocsservers_id']."',
+                              '".$thread['ocs_deviceid']."', '".$thread['useragent']."',
+                              '".$thread['tag']."', '".$thread['serial']."', '".$thread['name']."',
+                              '".$thread['ipaddr']."', '".$thread['domain']."',
+                              '".$thread['last_inventory']."', '".$thread['reason']."')";
+            $DB->queryOrDie($query, $DB->error());
+         }
       }
 
       $migration->renameTable("glpi_plugin_massocsimport_notimported",
