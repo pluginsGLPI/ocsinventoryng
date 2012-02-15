@@ -1,6 +1,4 @@
 <?php
-
-
 /*
  * @version $Id: HEADER 14684 2011-06-11 06:32:40Z remi $
  -------------------------------------------------------------------------
@@ -39,18 +37,19 @@ if (!defined('GLPI_ROOT')) {
 }
 
 include (GLPI_ROOT . "/inc/includes.php");
-   
+
+
 plugin_ocsinventoryng_checkRight("ocsng", "w");
 
+
 function configHeader() {
-   global $LANG;
 
    echo "<div class='center'>";
    echo "<table class='tab_cadre_fixe'>";
-   echo "<tr><th colspan='2'>" . $LANG["plugin_ocsinventoryng"]["config"][101] . "</th></tr>";
+   echo "<tr><th colspan='2'>" . __('?????') . "</th></tr>";
    echo "<tr class='tab_bg_1'><td class='center'>";
    echo "<a href='https://forge.indepnet.net/projects/ocsinventoryng/wiki' target='_blank'>" .
-          $LANG["plugin_ocsinventoryng"]["setup"][8] . "</a></td></tr>";
+          __('Use mode') . "</a></td></tr>";
 }
 
 $config = new PluginOcsinventoryngConfig();

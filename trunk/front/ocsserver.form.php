@@ -47,7 +47,7 @@ if (!isset($_GET["id"])) {
    $_GET["id"] = "";
 }
 
-Html::header($LANG['plugin_ocsinventoryng'][0], '', "plugins", "ocsinventoryng");
+Html::header(__('OCS Inventory NG'), '', "plugins", "ocsinventoryng");
 
 //Delete template or server
 if (isset ($_POST["delete"])) {

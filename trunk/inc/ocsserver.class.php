@@ -105,10 +105,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    const PLUGIN_OCSINVENTORYNG_HISTORY_OCS_LINK       = 11;
 
 
-   static function getTypeName() {
-      global $LANG;
-
-      return $LANG['plugin_ocsinventoryng'][29];
+   static function getTypeName($nb=0) {
+      return __('OCSNG server');
    }
 
 
@@ -123,7 +121,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
-      global $LANG;
 
       if (!$withtemplate) {
          switch ($item->getType()) {
@@ -134,8 +131,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                    && self::checkConfig(1)
                    && self::checkConfig(2)
                    && self::checkConfig(8)) {
-                  $ong[2] = $LANG['plugin_ocsinventoryng']['config'][5];
-                  $ong[3] = $LANG['plugin_ocsinventoryng']['config'][27];
+                  $ong[2] = __('Import options');
+                  $ong[3] = __('General information');
                }
                return $ong;
          }
@@ -182,39 +179,39 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       global $LANG;
 
       $tab = array();
-      $tab['common'] = $LANG['plugin_ocsinventoryng'][29];
+      $tab['common']             = self::getTypeName();
 
-      $tab[1]['table']         = $this->getTable();
-      $tab[1]['field']         = 'name';
-      $tab[1]['name']          = $LANG['common'][16];
-      $tab[1]['datatype']      = 'itemlink';
-      $tab[1]['itemlink_type'] = $this->getType();
-      $tab[1]['massiveaction'] = false;
+      $tab[1]['table']           = $this->getTable();
+      $tab[1]['field']           = 'name';
+      $tab[1]['name']            = __('Name');
+      $tab[1]['datatype']        = 'itemlink';
+      $tab[1]['itemlink_type']   = $this->getType();
+      $tab[1]['massiveaction']   = false;
 
-      $tab[2]['table']         = $this->getTable();
-      $tab[2]['field']         = 'id';
-      $tab[2]['name']          = $LANG['common'][2];
-      $tab[2]['massiveaction'] = false;
+      $tab[2]['table']           = $this->getTable();
+      $tab[2]['field']           = 'id';
+      $tab[2]['name']            = __('ID');
+      $tab[2]['massiveaction']   = false;
 
-      $tab[3]['table']  = $this->getTable();
-      $tab[3]['field']  = 'ocs_db_host';
-      $tab[3]['name']   = $LANG['common'][52];
+      $tab[3]['table']           = $this->getTable();
+      $tab[3]['field']           = 'ocs_db_host';
+      $tab[3]['name']            = __('Server');
 
-      $tab[6]['table']    = $this->getTable();
-      $tab[6]['field']    = 'is_active';
-      $tab[6]['name']     = $LANG['common'][60];
-      $tab[6]['datatype'] = 'bool';
+      $tab[6]['table']           = $this->getTable();
+      $tab[6]['field']           = 'is_active';
+      $tab[6]['name']            = __('Active');
+      $tab[6]['datatype']        = 'bool';
 
-      $tab[19]['table']         = $this->getTable();
-      $tab[19]['field']         = 'date_mod';
-      $tab[19]['name']          = $LANG['common'][26];
-      $tab[19]['datatype']      = 'datetime';
-      $tab[19]['massiveaction'] = false;
+      $tab[19]['table']          = $this->getTable();
+      $tab[19]['field']          = 'date_mod';
+      $tab[19]['name']           = __('Last update');
+      $tab[19]['datatype']       = 'datetime';
+      $tab[19]['massiveaction']  = false;
 
-      $tab[16]['table']    = $this->getTable();
-      $tab[16]['field']    = 'comment';
-      $tab[16]['name']     = $LANG['common'][25];
-      $tab[16]['datatype'] = 'text';
+      $tab[16]['table']          = $this->getTable();
+      $tab[16]['field']          = 'comment';
+      $tab[16]['name']           = __('Comments');
+      $tab[16]['datatype']       = 'text';
 
       return $tab;
    }
@@ -228,7 +225,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
     * @return Nothing (display)
    **/
    static function ocsMenu($plugin_ocsinventoryng_ocsservers_id) {
-      global $LANG, $CFG_GLPI, $DB;
+      global $CFG_GLPI, $DB;
 
       $name = "";
       if (isset($plugin_ocsinventoryng_ocsservers_id)) {
@@ -246,87 +243,89 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       echo "<div class='center'>";
       echo "<img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/ocsinventoryng.png' ".
-             "alt='".$LANG['plugin_ocsinventoryng'][0]."' title=\"".$LANG['plugin_ocsinventoryng'][0]."\">";
+             "alt='".__s('OCS Inventory NG')."' title=\"".__s('OCS Inventory NG')."\">";
       echo "</div>";
 
       echo "<div class='center'><table class='tab_cadre'>";
-      echo "<tr><th colspan='4'>" . $LANG['plugin_ocsinventoryng'][0] . " " . $name . "</th></tr>";
+      echo "<tr><th colspan='4'>" . sprintf(__('OCSNG server: %s'), $name) . "</th></tr>";
 
       if (plugin_ocsinventoryng_haveRight('ocsng','w')) {
          //config server
-         echo "<tr class='tab_bg_1'>
-               <td class='center b' colspan='2'>
+         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                <a href='ocsserver.form.php?id=".$plugin_ocsinventoryng_ocsservers_id."'>
-                  <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsserver.png' ".
-                   "alt='".$LANG['plugin_ocsinventoryng'][17] . "' ".
-                   "title=\"" . $LANG['plugin_ocsinventoryng'][17] . "\">
-                  <br>".$LANG['plugin_ocsinventoryng'][17]." ".$name.
-              "</a></td>";
+                <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsserver.png' ".
+                  "alt='".__s("OCSNG server 's configuration")."' ".
+                  "title=\"".__s("OCSNG server 's configuration")."\">
+                <br>".sprintf(__("Configuration of OCSNG server %s"), $name)."
+               </a></td>";
          //config massimport
-         echo "<td class='center b' colspan='2'><a href='config.form.php'>
+         echo "<td class='center b' colspan='2'>
+               <a href='config.form.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro.png' ".
-                 "alt='".$LANG['plugin_ocsinventoryng'][25] . "' ".
-                 "title=\"" . $LANG['plugin_ocsinventoryng'][25] . "\">
-                <br>".$LANG['plugin_ocsinventoryng'][25].
-              "</a></td></tr>";
+                  "alt='".__s("Automatic synchronization's configuration")."' ".
+                  "title=\"".__s("Automatic synchronization's configuration")."\">
+                  <br>".__("Automatic synchronization's configuration")."
+               </a></td></tr>";
 
          //manual import
-         echo "<tr class='tab_bg_1'>
-               <td class='center b' colspan='2'><a href='ocsng.import.php'>
+         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+               <a href='ocsng.import.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' ".
-                 "alt='" .$LANG['plugin_ocsinventoryng'][2] . "' ".
-                 "title=\"" . $LANG['plugin_ocsinventoryng'][2] . "\">
-                <br>".$LANG['plugin_ocsinventoryng'][2].
-              "</a></td>";
+                  "alt='".__s('Import new computers')."' title=\"".__s('Import new computers')."\">
+                  <br>".__('Import new computers')."
+               </a></td>";
          //threads
-         echo "<td class='center b' colspan='2'><a href='thread.php'>
+         echo "<td class='center b' colspan='2'>
+               <a href='thread.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/thread.png' ".
-                 "alt='" .$LANG["plugin_ocsinventoryng"]["common"][1] . "' ".
-                 "title=\"" . $LANG["plugin_ocsinventoryng"]["common"][1] . "\">
-                <br>".$LANG["plugin_ocsinventoryng"]["common"][1].
-              "</a></td></tr>";
+                  "alt='".__s('Scripts execution of automatic task'). "' ".
+                  "title=\"" . __s('Scripts execution of automatic task') . "\">
+                  <br>".__('Scripts execution of automatic task')."
+               </a></td></tr>";
 
          //manual synchro
-         echo "<tr class='tab_bg_1'>
-               <td class='center b' colspan='2'><a href='ocsng.sync.php'>
+         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+               <a href='ocsng.sync.php'>
                 <img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/synchro1.png' ".
-                 "alt='" .$LANG['plugin_ocsinventoryng'][1] . "' ".
-                 "title=\"" . $LANG['plugin_ocsinventoryng'][1] . "\">
-                <br>".$LANG['plugin_ocsinventoryng'][1].
-              "</a></td>";
+                  "alt='" .__s('Synchronize computers already imported'). "' ".
+                  "title=\"" .__s('Synchronize computers already imported'). "\">
+                  <br>".__('Synchronize computers already imported')."
+               </a></td>";
          //host imported by thread
-         echo "<td class='center b' colspan='2'><a href='detail.php'>
+         echo "<td class='center b' colspan='2'>
+               <a href='detail.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/detail.png' ".
-                 "alt='" .$LANG["plugin_ocsinventoryng"]["common"][21] . "' ".
-                 "title=\"" . $LANG["plugin_ocsinventoryng"]["common"][21] . "\">
-                <br>".$LANG["plugin_ocsinventoryng"]["common"][21].
-              "</a></td></tr>";
+                  "alt='" .__s('Computers imported by automatic task'). "' ".
+                  "title=\"" .__s('Computers imported by automatic task'). "\">
+                  <br>".__('Computers imported by automatic task')."
+               </a></td></tr>";
 
          //link
-         echo "<tr class='tab_bg_1'>
-               <td class='center b' colspan='2'><a href='ocsng.link.php'>
+         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+               <a href='ocsng.link.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' ".
-                 "alt='" .$LANG['plugin_ocsinventoryng'][4] . "' ".
-                 "title=\"" . $LANG['plugin_ocsinventoryng'][4] . "\">
-                <br>".$LANG['plugin_ocsinventoryng'][4].
-              "</a></td>";
+                  "alt='" .__s('Link new OCS computers to existing GLPI computers'). "' ".
+                  "title=\"" .__s('Link new OCS computers to existing GLPI computers'). "\">
+                  <br>".__('Link new OCS computers to existing GLPI computers')."
+               </a></td>";
          //host not imported by thread
-         echo "<td class='center b' colspan='2'><a href='notimported.php'>
+         echo "<td class='center b' colspan='2'>
+               <a href='notimported.php'>
                 <img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/notimported.png' ".
-                 "alt='" .$LANG["plugin_ocsinventoryng"]["common"][18] . "' ".
-                 "title=\"" . $LANG["plugin_ocsinventoryng"]["common"][18] . "\" >
-                <br>".$LANG["plugin_ocsinventoryng"]["common"][18].
-              "</a></td></tr>";
-
+                  "alt='" .__s('Computers not imported by automatic task'). "' ".
+                  "title=\"" . __s('Computers not imported by automatic task'). "\" >
+                  <br>".__('Computers not imported by automatic task')."
+               </a></td></tr>";
       }
 
       if (plugin_ocsinventoryng_haveRight('clean_ocsng','r')) {
-         echo "<tr class='tab_bg_1'><td class='center b' colspan='4'><a href='ocsng.clean.php'>
+         echo "<tr class='tab_bg_1'><td class='center b' colspan='4'>
+               <a href='ocsng.clean.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/clean.png' ".
-                 "alt='" .$LANG['plugin_ocsinventoryng'][3] . "' ".
-                 "title=\"" . $LANG['plugin_ocsinventoryng'][3] . "\" >
-                <br>".$LANG['plugin_ocsinventoryng'][3].
-              "</a></td><tr>";
+                 "alt='" .__s('Clean links between GLPI and OCSNG'). "' ".
+                 "title=\"" .__s('Clean links between GLPI and OCSNG'). "\" >
+                  <br>".__('Clean links between GLPI and OCSNG')."
+               </a></td><tr>";
       }
 
       echo "</table></div>";
@@ -342,7 +341,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
     * @return Nothing (display)
    **/
    function ocsFormConfig($target, $ID) {
-      global $LANG;
 
       if (!plugin_ocsinventoryng_haveRight("ocsng", "w")) {
          return false;
@@ -352,61 +350,61 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<form name='formconfig' action=\"$target\" method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
       echo "<tr>
-            <th><input type='hidden' name='id' value='$ID'>&nbsp;".
-                 $LANG['plugin_ocsinventoryng']['config'][27] ." ".$LANG['Menu'][0]. "&nbsp;</th>\n";
-      echo "<th>&nbsp;" . Toolbox::ucfirst($LANG['log'][18]) . "&nbsp;</th>\n";
-      echo "<th>&nbsp;" . $LANG['plugin_ocsinventoryng']['config'][43] . "&nbsp;</th></tr>\n";
+            <th><input type='hidden' name='id' value='$ID'>".__('General information')."</th>\n";
+      echo "<th>"._n('Component', 'Components', 2) ."</th>\n";
+      echo "<th>" . __('OCSNG administrative information') . "</th></tr>\n";
 
       echo "<tr class='tab_bg_2'>\n";
       echo "<td class='top'>\n";
 
       echo "<table width='100%'>";
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['common'][16] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Name') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_name", $this->fields["import_general_name"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['computers'][9] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Operating system') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_os", $this->fields["import_general_os"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['computers'][10] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Serial of the operating system')."</td>\n<td>";
       Dropdown::showYesNo("import_os_serial", $this->fields["import_os_serial"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['common'][19] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Serial number') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_serial", $this->fields["import_general_serial"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['common'][22] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Model') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_model", $this->fields["import_general_model"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['common'][5] . "</td>\n<td>";
-      Dropdown::showYesNo("import_general_manufacturer", $this->fields["import_general_manufacturer"]);
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Manufacturer') . "</td>\n<td>";
+      Dropdown::showYesNo("import_general_manufacturer",
+                          $this->fields["import_general_manufacturer"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['common'][17] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Type') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_type", $this->fields["import_general_type"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['setup'][89] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Domain') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_domain", $this->fields["import_general_domain"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['common'][18] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Alternate username') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_contact", $this->fields["import_general_contact"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['common'][25] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Comments') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_comment", $this->fields["import_general_comment"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['networking'][14] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('IP') . "</td>\n<td>";
       Dropdown::showYesNo("import_ip", $this->fields["import_ip"]);
       echo "</td></tr>\n";
 
       if (self::checkOCSconnection($ID) && strpos(self::checkVersion(),'2.0') > 0) {
-         echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['computers'][58] . "</td>\n<td>";
+         echo "<tr class='tab_bg_2'><td class='center'>" . __('UUID') . "</td>\n<td>";
          Dropdown::showYesNo("import_general_uuid", $this->fields["import_general_uuid"]);
          echo "</td></tr>\n";
       } else {
@@ -423,41 +421,39 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<td class='tab_bg_2 top'>\n";
 
       echo "<table width='100%'>";
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['devices'][4] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Processor') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_processor", $this->fields["import_device_processor"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['devices'][6] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Memory') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_memory", $this->fields["import_device_memory"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['devices'][1] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Hard Drive') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_hdd", $this->fields["import_device_hdd"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['devices'][3] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Network Card') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_iface", $this->fields["import_device_iface"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['devices'][2] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Graphics Card') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_gfxcard", $this->fields["import_device_gfxcard"]);
       echo "&nbsp;&nbsp;</td></tr>";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['devices'][7] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Soundcard') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_sound", $this->fields["import_device_sound"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['devices'][19] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . _n('Drive', 'Drives', 2) . "</td>\n<td>";
       Dropdown::showYesNo("import_device_drive", $this->fields["import_device_drive"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>".$LANG['plugin_ocsinventoryng']['config'][36].
-           "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Modems') ."</td>\n<td>";
       Dropdown::showYesNo("import_device_modem", $this->fields["import_device_modem"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>".$LANG['plugin_ocsinventoryng']['config'][37].
-           "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>"._n('Port', 'Ports', 2)."</td>\n<td>";
       Dropdown::showYesNo("import_device_port", $this->fields["import_device_port"]);
       echo "</td></tr>\n";
       echo "</table>";
@@ -466,37 +462,37 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<td class='tab_bg_2 top'>\n";
 
       echo "<table width='100%'>";
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['common'][20] . " </td>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Inventory number'). " </td>\n";
       echo "<td><select name='import_otherserial'>\n";
-      echo "<option value=''>" . $LANG['plugin_ocsinventoryng']['config'][11] . "</option>\n";
+      echo "<option value=''>" .__('No import'). "</option>\n";
       $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "otherserial");
       echo $listColumnOCS;
       echo "</select>&nbsp;&nbsp;</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['common'][15] . " </td>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Location') . " </td>\n";
       echo "<td><select name='import_location'>\n";
-      echo "<option value=''>" . $LANG['plugin_ocsinventoryng']['config'][11] . "</option>\n";
+      echo "<option value=''>" .__('No import') . "</option>\n";
       $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "locations_id");
       echo $listColumnOCS;
       echo "</select></td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['common'][35] . " </td>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Group') . " </td>\n";
       echo "<td><select name='import_group'>\n";
-      echo "<option value=''>" . $LANG['plugin_ocsinventoryng']['config'][11] . "</option>\n";
+      echo "<option value=''>" . __('No import') . "</option>\n";
       $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "groups_id");
       echo $listColumnOCS;
       echo "</select></td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['common'][21] . " </td>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" .__('Alternate username number'). " </td>\n";
       echo "<td><select name='import_contact_num'>\n";
-      echo "<option value=''>" . $LANG['plugin_ocsinventoryng']['config'][11] . "</option>\n";
+      echo "<option value=''>" . __('No import') . "</option>\n";
       $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "contact_num");
       echo $listColumnOCS;
       echo "</select></td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['setup'][88] . " </td>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Network') . " </td>\n";
       echo "<td><select name='import_network'>\n";
-      echo "<option value=''>" . $LANG['plugin_ocsinventoryng']['config'][11] . "</option>\n";
+      echo "<option value=''>" .__('No import') . "</option>\n";
       $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "networks_id");
       echo $listColumnOCS;
       echo "</select></td></tr>\n";
@@ -504,15 +500,14 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       echo "</td></tr>\n";
 
-      echo "<tr><th>&nbsp;".$LANG['plugin_ocsinventoryng']['config'][27]." ".$LANG['Menu'][3].
-           "&nbsp;</th>\n";
+      echo "<tr><th>". _n('Monitor', 'Monitors', 2)."</th>\n";
       echo "<th colspan='2'>&nbsp;</th></tr>\n";
 
       echo "<tr class='tab_bg_2'>\n";
       echo "<td class='tab_bg_2 top'>\n";
 
       echo "<table width='100%'>";
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['common'][25] . " </td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Comments') . " </td>\n<td>";
       Dropdown::showYesNo("import_monitor_comment", $this->fields["import_monitor_comment"]);
       echo "</td></tr>\n";
       echo "</table>";
@@ -522,43 +517,41 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "</table>\n";
 
       echo "<p class='submit'>";
-      echo "<input type='submit' name='update_server' class='submit' value=\"".$LANG['buttons'][2]."\">";
+      echo "<input type='submit' name='update_server' class='submit' value=\"".
+            _sx('button', 'Save')."\">";
       echo "</p></form></div>\n";
    }
 
 
    function ocsFormImportOptions($target, $ID, $withtemplate='', $templateid='') {
-      global $LANG;
 
       $this->getFromDB($ID);
       echo "<br><div class='center'>";
       echo "<form name='formconfig' action=\"$target\" method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['plugin_ocsinventoryng']['config'][59];
+      echo "<tr class='tab_bg_2'><td class='center'>" .__('Web address of the OCSNG console');
       echo "<input type='hidden' name='id' value='$ID'>" . " </td>\n";
       echo "<td><input type='text' size='30' name='ocs_url' value=\"".$this->fields["ocs_url"]."\">";
       echo "</td></tr>\n";
 
-      echo "<tr><th colspan='2'>" . $LANG['plugin_ocsinventoryng']['config'][5] . "</th></tr>\n";
+      echo "<tr><th colspan='2'>" . __('Import options'). "</th></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>".$LANG['plugin_ocsinventoryng']['config'][17].
-           "</td>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>".
+             __('Limit the import to the following tags (separator $, nothing for all)')."</td>\n";
       echo "<td><input type='text' size='30' name='tag_limit' value='".$this->fields["tag_limit"]."'>";
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>".$LANG['plugin_ocsinventoryng']['config'][9].
-           "</td>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>".
+             __('Exclude the following tags (separator $, nothing for all)')."</td>\n";
       echo "<td><input type='text' size='30' name='tag_exclude' value='".
                  $this->fields["tag_exclude"]."'></td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>".$LANG['plugin_ocsinventoryng']['config'][16].
-           "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Default status')."</td>\n<td>";
       Dropdown::show('State', array('name'   => 'states_id_default',
                                     'value'  => $this->fields["states_id_default"]));
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>".$LANG['plugin_ocsinventoryng']['config'][48].
-           "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Behavior when disconnecting')."</td>\n<td>";
       Dropdown::showFromArray("deconnection_behavior",
                               array(''       => $LANG['buttons'][49],
                                     "trash"  => $LANG['buttons'][6],
@@ -566,54 +559,55 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                               array('value' => $this->fields["deconnection_behavior"]));
       echo "</td></tr>\n";
 
-      $import_array  = array("0" => $LANG['plugin_ocsinventoryng']['config'][11],
-                             "1" => $LANG['plugin_ocsinventoryng']['config'][10],
-                             "2" => $LANG['plugin_ocsinventoryng']['config'][12]);
+      $import_array  = array("0" => __('No import'),
+                             "1" => __('Global import'),
+                             "2" => __('Unit import'));
 
-      $import_array2 = array("0" => $LANG['plugin_ocsinventoryng']['config'][11],
-                             "1" => $LANG['plugin_ocsinventoryng']['config'][10],
-                             "2" => $LANG['plugin_ocsinventoryng']['config'][12],
-                             "3" => $LANG['plugin_ocsinventoryng']['config'][19]);
+      $import_array2 = array("0" => __('No import'),
+                             "1" => __('Global import'),
+                             "2" => __('Unit import'),
+                             "3" => __('Unit import on serial number'),
+                             "4" => __('Unit import serial number only'));
 
       $periph   = $this->fields["import_periph"];
       $monitor  = $this->fields["import_monitor"];
       $printer  = $this->fields["import_printer"];
       $software = $this->fields["import_software"];
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['Menu'][16] . " </td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" ._n('Device', 'Devices', 2). " </td>\n<td>";
       Dropdown::showFromArray("import_periph", $import_array, array('value' => $periph));
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['Menu'][3] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" ._n('Monitor', 'Monitors', 2). "</td>\n<td>";
       Dropdown::showFromArray("import_monitor", $import_array2, array('value' => $monitor));
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['Menu'][2] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" ._n('Printer', 'Printers', 2). "</td>\n<td>";
       Dropdown::showFromArray("import_printer", $import_array, array('value' => $printer));
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['Menu'][4] . "</td>\n<td>";
-      $import_array = array("0" => $LANG['plugin_ocsinventoryng']['config'][11],
-                            "1" => $LANG['plugin_ocsinventoryng']['config'][12]);
+      echo "<tr class='tab_bg_2'><td class='center'>". _n('Software', 'Software', 2)."</td>\n<td>";
+      $import_array = array("0" => __('No import'),
+                            "1" => __('Unit import'));
       Dropdown::showFromArray("import_software", $import_array, array('value' => $software));
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['computers'][8] . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . _n('Volume', 'Volumes', 2) . "</td>\n<td>";
       Dropdown::showYesNo("import_disk", $this->fields["import_disk"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>".$LANG['plugin_ocsinventoryng']['config'][38].
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Use the OCSNG software dictionary').
            "</td>\n<td>";
       Dropdown::showYesNo("use_soft_dict", $this->fields["use_soft_dict"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>".$LANG['plugin_ocsinventoryng']['config'][41].
-           "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Registry')."</td>\n<td>";
       Dropdown::showYesNo("import_registry", $this->fields["import_registry"]);
       echo "</td></tr>\n";
 
       //check version
       if ($this->fields['ocs_version'] > self::OCS1_3_VERSION_LIMIT) {
-         echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['computers'][57] . "</td>\n<td>";
+         echo "<tr class='tab_bg_2'><td class='center'>".
+                _n('Virtual machine', 'Virtual machines', 2) . "</td>\n<td>";
          Dropdown::showYesNo("import_vms", $this->fields["import_vms"]);
          echo "</td></tr>\n";
       } else {
@@ -621,31 +615,31 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<input type='hidden' name='import_vms' value='0'>";
          echo "</td></tr>\n";
       }
-      echo "<tr class='tab_bg_2'><td class='center'>".$LANG['plugin_ocsinventoryng']['config'][40].
-           "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>".
+             __('Number of items to synchronize via the automatic OCSNG action')."</td>\n<td>";
       Dropdown::showInteger('cron_sync_number', $this->fields["cron_sync_number"], 1, 100, 1,
-                            array(0 => $LANG['common'][49]));
+                            array(0 => __('None')));
       echo "</td></tr>";
 
-      echo "<tr class='tab_bg_2'><td class='center'>".$LANG['plugin_ocsinventoryng']['config'][20].
-           "</td>";
+      echo "<tr class='tab_bg_2'><td class='center'>".
+             __('Behavior to the deletion of a computer in OCSNG')."</td>";
       echo "<td>";
       $actions[0] = Dropdown::EMPTY_VALUE;
-      $actions[1] = $LANG['ldap'][47];
+      $actions[1] = __('Put in the dustbin');
       foreach (getAllDatasFromTable('glpi_states') as $state) {
-         $actions['STATE_'.$state['id']] = $LANG['setup'][819].' '.$state['name'];
+         $actions['STATE_'.$state['id']] = sprintf(__('Change to state %s'), $state['name']);
       }
       Dropdown::showFromArray('deleted_behavior', $actions,
                               array('value' => $this->fields['deleted_behavior']));
 
       echo "</table>\n";
 
-      echo "<br>" . $LANG['plugin_ocsinventoryng']['config'][15];
-      echo "<br>" . $LANG['plugin_ocsinventoryng']['config'][14];
-      echo "<br>" . $LANG['plugin_ocsinventoryng']['config'][13];
+      echo "<br>".__('No import: the plugin will not import these elements');
+      echo "<br>".__('Global import: everything is imported but the material is globally managed (without duplicate)');
+      echo "<br>".__("Unit import: everything is imported as it is");
 
       echo "<p class='submit'><input type='submit' name='update_server' class='submit' value='" .
-             $LANG['buttons'][2] . "'></p>";
+             _sx('button', 'Save') . "'></p>";
       echo "</form></div>";
    }
 
@@ -713,7 +707,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
     * @return Nothing (display)
    **/
    function showForm($ID, $options=array()) {
-      global $LANG;
 
       if (!plugin_ocsinventoryng_haveRight("ocsng", "w")) {
          return false;
@@ -721,7 +714,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       $rowspan = 5;
       //If no ID provided, or if the server is created using an existing template
-      if (empty ($ID)) {
+      if (empty($ID)) {
          $this->getEmpty();
          $rowspan++;
       } else {
@@ -731,58 +724,51 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $this->showTabs($options);
       $this->showFormHeader($options);
 
-      echo "<tr class='tab_bg_1'><td class='center'>" . $LANG['common'][16] . "&nbsp;: </td>\n";
+      echo "<tr class='tab_bg_1'><td class='center'>" . __('Name')."</td>\n";
       echo "<td><input type='text' name='name' value=\"" . $this->fields["name"] ."\"></td>\n";
-      echo "<td class='center'>" . $LANG['rulesengine'][78] . "&nbsp;: </td>\n";
+      echo "<td class='center'>" . _n('Version', 'Versions',1)."</td>\n";
       echo "<td>".$this->fields["ocs_version"]."</td></tr>\n";
 
-      echo "<tr class='tab_bg_1'><td class='center'>" . $LANG['ocsconfig'][2] . "&nbsp;: </td>\n";
+      echo "<tr class='tab_bg_1'><td class='center'>".__('Host for the OCSNG database')."</td>\n";
       echo "<td><input type='text' name='ocs_db_host' value=\"" .
                   $this->fields["ocs_db_host"] ."\"></td>\n";
-      echo "<td class='center' rowspan='$rowspan'>" . $LANG['common'][25] . "&nbsp;: </td>\n";
+      echo "<td class='center' rowspan='$rowspan'>" . __('Comments') . "</td>\n";
       echo "<td rowspan='$rowspan'>";
       echo "<textarea cols='45' rows='5' name='comment' >".$this->fields["comment"]."</textarea>";
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td class='center'>".$LANG['plugin_ocsinventoryng']['config'][4]."&nbsp;: </td>\n";
+      echo "<td class='center'>".__('Name of the OCSNG database')."</td>\n";
       echo "<td><input type='text' name='ocs_db_name' value=\"".$this->fields["ocs_db_name"]."\">".
            "</td></tr>\n";
 
-      echo "<tr class='tab_bg_1'><td class='center'>".$LANG['plugin_ocsinventoryng']['config'][1].
-           "&nbsp;: </td>\n";
+      echo "<tr class='tab_bg_1'><td class='center'>".__('OCSNG database user')."</td>\n";
       echo "<td><input type='text' name='ocs_db_user' value=\"".$this->fields["ocs_db_user"]."\">";
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_1'><td class='center'>".$LANG['plugin_ocsinventoryng']['config'][3].
-           "&nbsp;: </td>\n";
-      echo "<td><input type='password' name='ocs_db_passwd' value='' autocomplete='off'>";
+      echo "<tr class='tab_bg_1'><td class='center'>".__('OCSNG user password') . "</td>\n";
+      echo "<td><input type='password' name='ocs_db_passwd' value=''>";
       if ($ID > 0) {
-         echo "<br><input type='checkbox' name='_blank_passwd'>&nbsp;".$LANG['setup'][284];
+         echo "<br><input type='checkbox' name='_blank_passwd'>&nbsp;".$__('Clear');
       }
+      echo "</td></tr>\n";
 
-      echo "</td>";
-
-      echo "</tr>\n";
-      echo "<tr class='tab_bg_1'><td class='center'>" .
-                     $LANG['plugin_ocsinventoryng']['config'][7] . "&nbsp;: </td>\n";
+      echo "<tr class='tab_bg_1'><td class='center'>" .__('OCSNG database in UTF8') . "</td>\n";
       echo "<td>";
       Dropdown::showYesNo('ocs_db_utf8',$this->fields["ocs_db_utf8"]);
       echo "</td>";
       echo "</tr>\n";
 
-      echo "</tr>\n";
-      echo "<tr class='tab_bg_1'><td class='center'>" .
-                     $LANG['common'][60] . "&nbsp;: </td>\n";
+      echo "<tr class='tab_bg_1'><td class='center'>" .__('Active') . "</td>\n";
       echo "<td>";
       Dropdown::showYesNo('is_active',$this->fields["is_active"]);
       echo "</td>";
 
       if (!empty ($ID)) {
-         echo "<td>".$LANG['common'][26]."&nbsp;: </td>";
+         echo "<td>".__('Last update')."</td>";
          echo "<td>";
          echo ($this->fields["date_mod"] ? Html::convDateTime($this->fields["date_mod"])
-                                         : $LANG['setup'][307]);
+                                         : __('Never'));
          echo "</td>";
       }
 

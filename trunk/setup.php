@@ -134,6 +134,7 @@ function plugin_version_ocsinventoryng() {
    return array('name'           => "__('OCSNG Mode')",
                 'version'        => '1.0.0',
                 'author'         => 'Remi Colet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud',
+                'license'        => 'GPLv2+',
                 'homepage'       => 'https://forge.indepnet.net/repositories/show/ocsinventoryng',
                 'minGlpiVersion' => '0.84');// For compatibility / no install in version < 0.80
 
@@ -209,7 +210,7 @@ function plugin_ocsinventoryng_checkRight($module, $right) {
          Html::redirect($CFG_GLPI["root_doc"] . "/index.php");
          exit ();
       }
-      displayRightError();
+      Html::displayRightError();
    }
 }
 

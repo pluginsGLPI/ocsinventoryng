@@ -39,10 +39,10 @@ if (!defined('GLPI_ROOT')) {
 }
 include (GLPI_ROOT . "/inc/includes.php");
 
-plugin_ocsinventoryng_checkSeveralRightsOr(array('ocsng' => 'r',
-                           'clean_ocsng'  => 'r'));
+plugin_ocsinventoryng_checkSeveralRightsOr(array('ocsng'       => 'r',
+                                                 'clean_ocsng' => 'r'));
 
-Html::header($LANG['plugin_ocsinventoryng'][0], "", "plugins","ocsinventoryng");
+Html::header(__('OCS Inventory NG'), "", "plugins","ocsinventoryng");
 if (isset ($_SESSION["ocs_import"])) {
    unset ($_SESSION["ocs_import"]);
 }
@@ -53,8 +53,9 @@ if (isset ($_SESSION["ocs_update"])) {
    unset ($_SESSION["ocs_update"]);
 }
 
-if (isset($_GET["plugin_ocsinventoryng_ocsservers_id"]) && $_GET["plugin_ocsinventoryng_ocsservers_id"]) {
-   
+if (isset($_GET["plugin_ocsinventoryng_ocsservers_id"])
+    && $_GET["plugin_ocsinventoryng_ocsservers_id"]) {
+
    PluginOcsinventoryngOcsServer::ocsMenu($_GET["plugin_ocsinventoryng_ocsservers_id"]);
 
    PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
@@ -63,5 +64,4 @@ if (isset($_GET["plugin_ocsinventoryng_ocsservers_id"]) && $_GET["plugin_ocsinve
    PluginOcsinventoryngOcsServer::showFormServerChoice();
 }
 Html::footer();
-
 ?>

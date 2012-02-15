@@ -35,10 +35,9 @@
 class PluginOcsinventoryngConfig extends CommonDBTM {
 
 
-   static function getTypeName() {
-      global $LANG;
+   static function getTypeName($nb=0) {
 
-      return $LANG['plugin_ocsinventoryng'][25];
+      return __("Automatic synchronization's configuration");
    }
 
 

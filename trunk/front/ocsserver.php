@@ -39,9 +39,10 @@ if (!defined('GLPI_ROOT')) {
 }
 include (GLPI_ROOT . "/inc/includes.php");
 
+Plugin::load('ocsinventoryng', true);
 plugin_ocsinventoryng_checkRight("ocsng", "r");
 
-Html::header($LANG['plugin_ocsinventoryng'][0], '', "plugins", "ocsinventoryng");
+Html::header(__('OCS Inventory NG'), '', "plugins", "ocsinventoryng");
 
 Search::show('PluginOcsinventoryngOcsServer');
 
