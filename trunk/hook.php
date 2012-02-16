@@ -1149,7 +1149,6 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
          break;
 
       case "plugin_ocsinventoryng_force_ocsng_update" :
-
          // First time
          if (!isset($_GET['multiple_actions'])) {
             $_SESSION['glpi_massiveaction']['POST']      = $_POST;
@@ -1162,30 +1161,44 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
             }
             $_SESSION['glpi_massiveaction']['item_count']
                   = count($_SESSION['glpi_massiveaction']['items']);
+            $_SESSION['glpi_massiveaction']['items_ok']        = 0;
+            $_SESSION['glpi_massiveaction']['items_ko']        = 0;
+            $_SESSION['glpi_massiveaction']['items_nbnoright'] = 0;
             Html::redirect($_SERVER['PHP_SELF'].'?multiple_actions=1');
 
          } else {
             if (count($_SESSION['glpi_massiveaction']['items']) > 0) {
                $key = array_pop($_SESSION['glpi_massiveaction']['items']);
-               //Try to get the OCS server whose machine belongs
-               $query = "SELECT `plugin_ocsinventoryng_ocsservers_id`, `id`
-                         FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                         WHERE `computers_id` = '".$key."'";
-               $result = $DB->query($query);
-               if ($DB->numrows($result) == 1) {
-                  $data = $DB->fetch_assoc($result);
-                  if ($data['plugin_ocsinventoryng_ocsservers_id'] != -1) {
-                     //Force update of the machine
-                     PluginOcsinventoryngOcsServer::updateComputer($data['id'],
-                                                                   $data['plugin_ocsinventoryng_ocsservers_id'],
-                                                                   1, 1);
+               if ($item->can($key,'w')) {
+                  //Try to get the OCS server whose machine belongs
+                  $query = "SELECT `plugin_ocsinventoryng_ocsservers_id`, `id`
+                            FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                            WHERE `computers_id` = '".$key."'";
+                  $result = $DB->query($query);
+                  if ($DB->numrows($result) == 1) {
+                     $data = $DB->fetch_assoc($result);
+                     if ($data['plugin_ocsinventoryng_ocsservers_id'] != -1) {
+                        //Force update of the machine
+                        PluginOcsinventoryngOcsServer::updateComputer($data['id'],
+                                                                      $data['plugin_ocsinventoryng_ocsservers_id'],
+                                                                      1, 1);
+                        $_SESSION['glpi_massiveaction']['items_ok']++;
+                     } else {
+                        $_SESSION['glpi_massiveaction']['items_ko']++;
+                     }
+                  } else {
+                     $_SESSION['glpi_massiveaction']['items_ko']++;
                   }
+               } else {
+                  $_SESSION['glpi_massiveaction']['items_nbnoright']++;
                }
                Html::redirect($_SERVER['PHP_SELF'].'?multiple_actions=1');
             } else {
-               $REDIRECT = $_SESSION['glpi_massiveaction']['REDIRECT'];
+               $REDIRECT  = $_SESSION['glpi_massiveaction']['REDIRECT'];
+               $nbok      = $_SESSION['glpi_massiveaction']['items_ok'];
+               $nbko      = $_SESSION['glpi_massiveaction']['items_ko'];
+               $nbnoright = $_SESSION['glpi_massiveaction']['items_nbnoright'];
                unset($_SESSION['glpi_massiveaction']);
-               Html::redirect($REDIRECT);
             }
          }
          break;
