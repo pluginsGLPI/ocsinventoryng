@@ -992,9 +992,10 @@ function plugin_ocsinventoryng_MassiveActionsDisplay($options=array()) {
                echo "<input type='submit' name='massiveaction' class='submit' value='".
                       _sx('button', 'Post')."'>\n";
                break;
+
             case "plugin_ocsinventoryng_unlock_ocsng_field" :
                $fields['all'] = $LANG['common'][66];
-               $fields       += Computer::getLockableFields();
+               $fields       += PluginOcsinventoryngOcsServer::getLockableFields();
                Dropdown::showFromArray("field", $fields);
                echo "&nbsp;<input type='submit' name='massiveaction' class='submit' value='".
                             _sx('button', 'Post')."'>";
@@ -1052,16 +1053,29 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
          }
          break;
       case "plugin_ocsinventoryng_unlock_ocsng_field" :
-         $fields = Computer::getLockableFields();
+         $fields = PluginOcsinventoryngOcsServer::getLockableFields();
          if ($_POST['field'] == 'all' || isset($fields[$_POST['field']])) {
             foreach ($_POST["item"] as $key => $val) {
                if ($val == 1) {
-                  if ($_POST['field'] == 'all') {
-                     PluginOcsinventoryngOcsServer::replaceOcsArray($key, array(),
-                                                                    "computer_update");
+                  if ($item->can($key,'w')) {
+                     if ($_POST['field'] == 'all') {
+                        if (PluginOcsinventoryngOcsServer::replaceOcsArray($key, array(),
+                                                                           "computer_update")) {
+                           $nbok++;
+                        } else {
+                           $nbko++;
+                        }
+                     } else {
+                        if (PluginOcsinventoryngOcsServer::deleteInOcsArray($key, $_POST['field'],
+                                                                            "computer_update",
+                                                                            true)) {
+                           $nbok++;
+                        } else {
+                           $nbko++;
+                        }
+                     }
                   } else {
-                     PluginOcsinventoryngOcsServer::deleteInOcsArray($key, $_POST['field'],
-                                                                     "computer_update", true);
+                     $nbnoright++;
                   }
                }
             }
@@ -1076,30 +1090,59 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
       case "plugin_ocsinventoryng_unlock_ocsng_disk" :
          foreach ($_POST["item"] as $key => $val) {
             if ($val == 1) {
-               switch ($_POST["action"]) {
-                  case "plugin_ocsinventoryng_unlock_ocsng_monitor" :
-                     PluginOcsinventoryngOcsServer::unlockItems($key, "import_monitor");
-                     break;
+               if ($tiem->can($key, 'w')) {
+                  switch ($_POST["action"]) {
+                     case "plugin_ocsinventoryng_unlock_ocsng_monitor" :
+                        if (PluginOcsinventoryngOcsServer::unlockItems($key, "import_monitor")) {
+                           $nbok++;
+                        } else {
+                           $nbko++;
+                        }
+                        break;
 
-                  case "plugin_ocsinventoryng_unlock_ocsng_printer" :
-                     PluginOcsinventoryngOcsServer::unlockItems($key, "import_printer");
-                     break;
+                     case "plugin_ocsinventoryng_unlock_ocsng_printer" :
+                        if (PluginOcsinventoryngOcsServer::unlockItems($key, "import_printer")) {
+                           $nbok++;
+                        } else {
+                           $nbko++;
+                        }
+                        break;
 
-                  case "plugin_ocsinventoryng_unlock_ocsng_peripheral" :
-                     PluginOcsinventoryngOcsServer::unlockItems($key, "import_peripheral");
-                     break;
+                     case "plugin_ocsinventoryng_unlock_ocsng_peripheral" :
+                        if (PluginOcsinventoryngOcsServer::unlockItems($key, "import_peripheral")) {
+                           $nbok++;
+                        } else {
+                           $nbko++;
+                        }
+                        break;
 
-                  case "plugin_ocsinventoryng_unlock_ocsng_software" :
-                     PluginOcsinventoryngOcsServer::unlockItems($key, "import_software");
-                     break;
+                     case "plugin_ocsinventoryng_unlock_ocsng_software" :
+                        if (PluginOcsinventoryngOcsServer::unlockItems($key, "import_software")) {
+                           $nbok++;
+                        } else {
+                           $nbko++;
+                        }
+                        break;
 
-                  case "plugin_ocsinventoryng_unlock_ocsng_ip" :
-                     PluginOcsinventoryngOcsServer::unlockItems($key, "import_ip");
-                     break;
+                     case "plugin_ocsinventoryng_unlock_ocsng_ip" :
+                        if (PluginOcsinventoryngOcsServer::unlockItems($key, "import_ip")) {
+                           $nbok++;
+                        } else {
+                           $nbko++;
+                        }
+                        break;
 
-                  case "plugin_ocsinventoryng_unlock_ocsng_disk" :
-                     PluginOcsinventoryngOcsServer::unlockItems($key, "import_disk");
-                     break;
+                     case "plugin_ocsinventoryng_unlock_ocsng_disk" :
+                        if (PluginOcsinventoryngOcsServer::unlockItems($key, "import_disk")) {
+                           $nbok++;
+                        } else {
+                           $nbko++;
+                        }
+                        break;
+
+                  }
+               } else {
+                  $nbnoright++;
                }
             }
          }

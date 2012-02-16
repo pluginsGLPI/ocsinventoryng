@@ -431,7 +431,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                      echo "<tr><th colspan='2'>" .$LANG['plugin_ocsinventoryng'][50]. "</th></tr>\n";
                      $first = false;
                   }
-                  echo "<tr class='tab_bg_1'><td class='right' width='50%'>" . $val . "</td>";
+                  echo "<tr class='tab_bg_1'><td class='right' width='50%'>" .
+                         str_replace(PluginOcsinventoryngOcsServer::FIELD_SEPARATOR, ' / ', $val) .
+                       "</td>";
                   echo "<td class='left' width='50%'>";
                   echo "<input type='checkbox' name='lockip[" . $key . "]'></td></tr>\n";
                }
