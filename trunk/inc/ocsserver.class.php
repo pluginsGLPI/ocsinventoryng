@@ -5174,6 +5174,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $query = "SELECT DISTINCT `CAPTION`, `MANUFACTURER`, `DESCRIPTION`, `SERIAL`, `TYPE`
                          FROM `monitors`
                          WHERE `HARDWARE_ID` = '$ocsid'";
+               // Config says import monitor with serial number only
+               // Restrict SQL query ony for monitors with serial present
+               if ($cfg_ocs["import_monitor"]==4) {
+                  $query = $query." AND `SERIAL` NOT LIKE ''";
+               }
                $result = $PluginOcsinventoryngDBocs->query($query);
                $lines       = array();
                $checkserial = true;
