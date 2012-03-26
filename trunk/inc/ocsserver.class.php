@@ -429,15 +429,15 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       Dropdown::showYesNo("import_device_memory", $this->fields["import_device_memory"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Hard Drive') . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Hard drive') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_hdd", $this->fields["import_device_hdd"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Network Card') . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Network card') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_iface", $this->fields["import_device_iface"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Graphics Card') . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Graphics card') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_gfxcard", $this->fields["import_device_gfxcard"]);
       echo "&nbsp;&nbsp;</td></tr>";
 
@@ -1677,7 +1677,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                      break;
 
                   case 'contact' :
-                    if ($users_id = User::getIDByName($ocs_fields[$ocs_field])) {
+                    if ($users_id = User::getIDByField('name', $ocs_fields[$ocs_field])) {
                        $input[$glpi_field] = $users_id;
                     }
                      break;
