@@ -188,24 +188,18 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
       echo "</tr>";
 
       echo "<tr class='tab_bg_2'>";
-      echo "<td>".__('OCSNG')."</td><td>";
+      echo "<td>"._n('Server', 'Servers', 2)."</td><td>";
       Profile::dropdownNoneReadWrite("ocsng", $this->fields["ocsng"], 1, 0, 1);
       echo "</td>";
-      echo "<td>".__('Manually OCSNG synchronization')."</td><td>";
+      echo "<td>".__('Manually synchronization')."</td><td>";
       Profile::dropdownNoneReadWrite("sync_ocsng", $this->fields["sync_ocsng"], 1, 0, 1);
       echo "</td></tr>\n";
       echo "<tr class='tab_bg_2'>";
-      echo "<td>".__('See OCSNG information')."</td><td>";
+      echo "<td>".__('See information')."</td><td>";
       Profile::dropdownNoneReadWrite("view_ocsng", $this->fields["view_ocsng"], 1, 1, 0);
-      echo "<td>".__('Clean links GLPI / OCSNG')."</td><td>";
+      echo "<td>".__('Clean links GLPI / OCS')."</td><td>";
       Profile::dropdownNoneReadWrite("clean_ocsng", $this->fields["clean_ocsng"], 1, 1, 1);
       echo "</td></tr>\n";
-      echo "<tr class='tab_bg_2'>";
-      echo "<td>".__('Rules for assigning a computer to an entity')."</td><td>";
-      Profile::dropdownNoneReadWrite("rule_ocs", $this->fields["rule_ocs"], 1, 1, 1);
-      echo "</td>";
-      echo "<td colspan='2'></td>";
-      echo "</tr>\n";
 
       echo "<input type='hidden' name='id' value=".$this->fields["id"].">";
 

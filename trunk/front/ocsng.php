@@ -42,7 +42,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 plugin_ocsinventoryng_checkSeveralRightsOr(array('ocsng'       => 'r',
                                                  'clean_ocsng' => 'r'));
 
-Html::header(__('OCS Inventory NG'), "", "plugins","ocsinventoryng");
+Html::header('OCS Inventory NG', "", "plugins","ocsinventoryng");
 if (isset ($_SESSION["ocs_import"])) {
    unset ($_SESSION["ocs_import"]);
 }

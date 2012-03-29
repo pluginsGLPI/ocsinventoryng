@@ -41,14 +41,14 @@ function plugin_ocsinventoryng_install() {
 
 
    if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
-       && !TableExists("glpi_ocsservers")) {
+       && !TableExists("OCS_glpi_ocsservers")) {
 
       $install = true;
       $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.0-empty.sql");
       CronTask::Register('PluginOcsinventoryngOcsServer', 'ocsng', MINUTE_TIMESTAMP*5);
 
    } else if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
-              && TableExists("glpi_ocsservers")) {
+              && TableExists("OCS_glpi_ocsservers")) {
 
       $update = true;
       $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.0-update.sql");
@@ -69,7 +69,6 @@ function plugin_ocsinventoryng_install() {
          $migration->dropField('glpi_profiles', 'sync_ocsng');
          $migration->dropField('glpi_profiles', 'view_ocsng');
          $migration->dropField('glpi_profiles', 'clean_ocsng');
-         $migration->dropField('glpi_profiles', 'rule_ocs');
       }
 
    }
