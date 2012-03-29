@@ -1,5 +1,4 @@
 <?php
-
 /*
  * @version $Id: ocsserver.form.php 14685 2011-06-11 06:40:30Z remi $
  -------------------------------------------------------------------------
@@ -47,7 +46,7 @@ if (!isset($_GET["id"])) {
    $_GET["id"] = "";
 }
 
-Html::header(__('OCS Inventory NG'), '', "plugins", "ocsinventoryng");
+Html::header('OCS Inventory NG', '', "plugins", "ocsinventoryng");
 
 //Delete template or server
 if (isset ($_POST["delete"])) {

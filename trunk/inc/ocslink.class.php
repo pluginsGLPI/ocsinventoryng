@@ -41,10 +41,8 @@ if (!defined('GLPI_ROOT')) {
 class PluginOcsinventoryngOcslink extends CommonDBTM {
 
 
-   static function getTypeName() {
-      global $LANG;
-
-      return $LANG['plugin_ocsinventoryng'][58];
+   static function getTypeName($nb=0) {
+      return _n('OCSNG link', 'OCSNG links', $nb);
    }
 
 

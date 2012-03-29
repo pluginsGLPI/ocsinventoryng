@@ -700,8 +700,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    /**
     * Print simple ocs config form (database part)
     *
-    * @param $ID Integer : Id of the ocs config
-    * @param $options array
+    * @param $ID        integer : Id of the ocs config
+    * @param $options   array
     *     - target form target
     *
     * @return Nothing (display)
@@ -729,31 +729,31 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<td class='center'>" . _n('Version', 'Versions',1)."</td>\n";
       echo "<td>".$this->fields["ocs_version"]."</td></tr>\n";
 
-      echo "<tr class='tab_bg_1'><td class='center'>".__('Host for the OCSNG database')."</td>\n";
-      echo "<td><input type='text' name='ocs_db_host' value=\"" .
-                  $this->fields["ocs_db_host"] ."\"></td>\n";
+      echo "<tr class='tab_bg_1'><td class='center'>".__('Host for the database')."</td>\n";
+      echo "<td><input type='text' name='ocs_db_host' value=\"" .$this->fields["ocs_db_host"] ."\">".
+           "</td>\n";
       echo "<td class='center' rowspan='$rowspan'>" . __('Comments') . "</td>\n";
       echo "<td rowspan='$rowspan'>";
       echo "<textarea cols='45' rows='5' name='comment' >".$this->fields["comment"]."</textarea>";
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td class='center'>".__('Name of the OCSNG database')."</td>\n";
+      echo "<td class='center'>".__('Name of the database')."</td>\n";
       echo "<td><input type='text' name='ocs_db_name' value=\"".$this->fields["ocs_db_name"]."\">".
            "</td></tr>\n";
 
-      echo "<tr class='tab_bg_1'><td class='center'>".__('OCSNG database user')."</td>\n";
+      echo "<tr class='tab_bg_1'><td class='center'>".__('User of the database')."</td>\n";
       echo "<td><input type='text' name='ocs_db_user' value=\"".$this->fields["ocs_db_user"]."\">";
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_1'><td class='center'>".__('OCSNG user password') . "</td>\n";
+      echo "<tr class='tab_bg_1'><td class='center'>".__('User password') . "</td>\n";
       echo "<td><input type='password' name='ocs_db_passwd' value='' autocomplete='off'>";
       if ($ID > 0) {
-         echo "<br><input type='checkbox' name='_blank_passwd'>&nbsp;".$__('Clear');
+         echo "<br><input type='checkbox' name='_blank_passwd'>&nbsp;"._sx('button','Clear');
       }
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_1'><td class='center'>" .__('OCSNG database in UTF8') . "</td>\n";
+      echo "<tr class='tab_bg_1'><td class='center'>" .__('Database in UTF8') . "</td>\n";
       echo "<td>";
       Dropdown::showYesNo('ocs_db_utf8',$this->fields["ocs_db_utf8"]);
       echo "</td>";
@@ -784,23 +784,23 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       $out="<br><div class='center'>\n";
       $out.="<table class='tab_cadre_fixe'>";
-      $out.="<tr><th>" .$LANG['plugin_ocsinventoryng']['config'][6] . "</th></tr>\n";
+      $out.="<tr><th>" .__('Connecting to the database'). "</th></tr>\n";
       $out.="<tr class='tab_bg_2'><td class='center'>";
       if ($ID != -1) {
          if (!self::checkOCSconnection($ID)) {
-            $out .= $LANG['plugin_ocsinventoryng'][21];
+            $out .= __('Connection to the database failed');
          } else if (!self::checkConfig(1)) {
-            $out .= $LANG['plugin_ocsinventoryng'][20];
+            $out .= __('Invalid OCSNG Version: RC3 is required');
          } else if (!self::checkConfig(2)) {
-            $out .= $LANG['plugin_ocsinventoryng'][42];
+            $out .= __('Invalid OCSNG configuration (TRACE_DELETED must be active)');
          } else if (!self::checkConfig(4)) {
-            $out .= $LANG['plugin_ocsinventoryng'][43];
+            $out .= __('Access denied on database (Need write rights on hardware.CHECKSUM necessary)');
          } else if (!self::checkConfig(8)) {
-            $out .= $LANG['plugin_ocsinventoryng'][44];
+            $out .= __('Access denied on database (Delete rights in deleted_equiv table necessary)');
          } else {
-            $out .= $LANG['plugin_ocsinventoryng'][18];
+            $out .= __('Connection to database successful');
             $out .= "</td></tr>\n<tr class='tab_bg_2'>".
-                    "<td class='center'>".$LANG['plugin_ocsinventoryng'][19];
+                    "<td class='center'>".__('Valid OCSNG configuration and version');
          }
       }
       $out .= "</td></tr>\n";
@@ -1107,7 +1107,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       $query = "SELECT *
                 FROM `glpi_plugin_ocsinventoryng_ocsservers`
-                WHERE `id` = '$id' AND `is_active`='1'";
+                WHERE `id` = '$id'";
       $result = $DB->query($query);
 
       if ($result) {

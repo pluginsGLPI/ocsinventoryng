@@ -131,7 +131,7 @@ function plugin_init_ocsinventoryng() {
 **/
 function plugin_version_ocsinventoryng() {
 
-   return array('name'           => "__('OCSNG Mode')",
+   return array('name'           => "OCS Inventory NG",
                 'version'        => '1.0.0',
                 'author'         => 'Remi Colet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud',
                 'license'        => 'GPLv2+',

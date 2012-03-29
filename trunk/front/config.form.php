@@ -67,19 +67,19 @@ if (isset ($_POST["soft_unlock"])) {
 
 $plugin = new Plugin();
 if ($plugin->isInstalled("ocsinventoryng") && $plugin->isActivated("ocsinventoryng")) {
-   Html::header($LANG["plugin_ocsinventoryng"]["common"][1], "", "plugins", "ocsinventoryng");
+   Html::header(__('History of automatic tasks'), "", "plugins", "ocsinventoryng");
 
    if (!countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers")) {
       configHeader();
-      echo "<tr class='tab_bg_2'><td class='center'>" . $LANG["plugin_ocsinventoryng"]["setup"][1];
-      echo "<a href='".getItemTypeSearchURL("PluginOcsinventoryngOcsServer")."'>" . $LANG["plugin_ocsinventoryng"]["setup"][2];
-      echo "</a></th></tr>";
+      echo "<tr class='tab_bg_2'><td class='center'>". __('No server configured');
+      echo "<a href='".getItemTypeSearchURL("PluginOcsinventoryngOcsServer")."'>".
+             __('Configuration')."</a></th></tr>";
       echo "</table></div>";
    } else {
       $config->showConfigForm($_SERVER['PHP_SELF']);
    }
 } else {
-   Html::header($LANG["common"][12], "", "config", "plugins");
+   Html::header(__('Number of processed computers'), "", "config", "plugins");
    echo "<div class='center'><br><br>";
    echo "<img src=\"" . $CFG_GLPI["root_doc"] . "/pics/warning.png\" alt=\"warning\"><br><br>";
    echo "<b>Please activate the plugin</b></div>";

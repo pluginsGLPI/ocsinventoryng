@@ -61,7 +61,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
                return array('1' => self::getTypeName());
 
             case 'PluginOcsinventoryngOcsServer' :
-               return array('1' => $LANG['plugin_ocsinventoryng']["notimported"][2]);
+               return array('1' => __('web address of the OCS console'));
          }
       }
       return '';
@@ -76,6 +76,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
             break;
 
          case 'PluginOcsinventoryngOcsServer' :
+         	toolbox::logdebug("id", $item->getID());
             self::showOcsReportsConsole($item->getID());
             break;
       }

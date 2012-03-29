@@ -39,10 +39,9 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginOcsinventoryngRegistryKey extends CommonDBTM {
 
-   static function getTypeName() {
-      global $LANG;
-
-      return $LANG['title'][43];
+   static function getTypeName($nb=0) {
+      // No plural
+      return __('Registry');
    }
 
 
