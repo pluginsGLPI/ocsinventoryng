@@ -2,29 +2,28 @@
 /*
  * @version $Id: ocsserver.class.php 14704 2011-06-17 12:07:54Z yllen $
  -------------------------------------------------------------------------
- GLPI - Gestionnaire Libre de Parc Informatique
- Copyright (C) 2003-2011 by the INDEPNET Development Team.
+ ocinventoryng - TreeView browser plugin for GLPI
+ Copyright (C) 2012 by the ocinventoryng Development Team.
 
- http://indepnet.net/   http://glpi-project.org
+ https://forge.indepnet.net/projects/ocinventoryng
  -------------------------------------------------------------------------
 
  LICENSE
 
- This file is part of GLPI.
+ This file is part of ocinventoryng.
 
- GLPI is free software; you can redistribute it and/or modify
+ ocinventoryng is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- GLPI is distributed in the hope that it will be useful,
+ ocinventoryng is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with GLPI; if not, write to the Free Software Foundation, Inc.,
- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ along with ocinventoryng; If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
@@ -163,7 +162,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
 
    function defineTabs($options=array()) {
-      global $LANG;
 
       $ong = array();
       $this->addStandardTab(__CLASS__, $ong, $options);
@@ -176,9 +174,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
 
    function getSearchOptions() {
-      global $LANG;
 
-      $tab = array();
+      $tab                       = array();
+
       $tab['common']             = self::getTypeName();
 
       $tab[1]['table']           = $this->getTable();
@@ -243,11 +241,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       echo "<div class='center'>";
       echo "<img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/ocsinventoryng.png' ".
-             "alt='".__s('OCS Inventory NG')."' title=\"".__s('OCS Inventory NG')."\">";
+             "alt='OCS Inventory NG' title='OCS Inventory NG'>";
       echo "</div>";
 
       echo "<div class='center'><table class='tab_cadre'>";
-      echo "<tr><th colspan='4'>" . sprintf(__('OCSNG server: %s'), $name) . "</th></tr>";
+      echo "<tr><th colspan='4'>".sprintf(__('%1$s: %2$s'), __('OCSNG server'), $name)."</th></tr>";
 
       if (plugin_ocsinventoryng_haveRight('ocsng','w')) {
          //config server
@@ -366,7 +364,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       Dropdown::showYesNo("import_general_os", $this->fields["import_general_os"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Serial of the operating system')."</td>\n<td>";
+      echo "<tr class='tab_bg_2'>";
+      echo "<td class='center'>".__('Serial of the operating system')."</td>\n<td>";
       Dropdown::showYesNo("import_os_serial", $this->fields["import_os_serial"]);
       echo "</td></tr>\n";
 
@@ -523,6 +522,12 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    }
 
 
+   /**
+    * @param $target
+    * @param $ID
+    * @param $withtemplate    (default '')
+    * @param $templateid      (default '')
+   **/
    function ocsFormImportOptions($target, $ID, $withtemplate='', $templateid='') {
 
       $this->getFromDB($ID);
@@ -547,15 +552,15 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                  $this->fields["tag_exclude"]."'></td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>".__('Default status')."</td>\n<td>";
-      Dropdown::show('State', array('name'   => 'states_id_default',
-                                    'value'  => $this->fields["states_id_default"]));
+      State::dropdown(array('name'   => 'states_id_default',
+                            'value'  => $this->fields["states_id_default"]));
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>".__('Behavior when disconnecting')."</td>\n<td>";
       Dropdown::showFromArray("deconnection_behavior",
-                              array(''       => $LANG['buttons'][49],
-                                    "trash"  => $LANG['buttons'][6],
-                                    "delete" => $LANG['buttons'][22]),
+                              array(''       => __('Preserve'),
+                                    "trash"  => __('Delete'),
+                                    "delete" => __('Purge')),
                               array('value' => $this->fields["deconnection_behavior"]));
       echo "</td></tr>\n";
 

@@ -2,36 +2,31 @@
 /*
  * @version $Id: ruleocscollection.class.php 14685 2011-06-11 06:40:30Z remi $
  -------------------------------------------------------------------------
- GLPI - Gestionnaire Libre de Parc Informatique
- Copyright (C) 2003-2011 by the INDEPNET Development Team.
+ ocinventoryng - TreeView browser plugin for GLPI
+ Copyright (C) 2012 by the ocinventoryng Development Team.
 
- http://indepnet.net/   http://glpi-project.org
+ https://forge.indepnet.net/projects/ocinventoryng
  -------------------------------------------------------------------------
 
  LICENSE
 
- This file is part of GLPI.
+ This file is part of ocinventoryng.
 
- GLPI is free software; you can redistribute it and/or modify
+ ocinventoryng is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- GLPI is distributed in the hope that it will be useful,
+ ocinventoryng is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with GLPI; if not, write to the Free Software Foundation, Inc.,
- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ along with ocinventoryng; If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
-// ----------------------------------------------------------------------
-// Original Author of file: Walid Nouh
-// Purpose of file:
-// ----------------------------------------------------------------------
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
@@ -41,7 +36,6 @@ class PluginOcsinventoryngRuleOcsCollection extends RuleCollection {
 
    // From RuleCollection
    public $stop_on_first_match = true;
-   //TODO : how change this ?
    public $right               = 'rule_ocs';
    public $menu_option         = 'ocs';
 
@@ -53,7 +47,7 @@ class PluginOcsinventoryngRuleOcsCollection extends RuleCollection {
    /**
     * Constructor
     *
-    * @param $ocsservers_id ID of the OCS server
+    * @param $ocsservers_id ID of the OCS server (default -1)
    **/
    function __construct($ocsservers_id=-1) {
       $this->ocsservers_id = $ocsservers_id;
@@ -61,19 +55,21 @@ class PluginOcsinventoryngRuleOcsCollection extends RuleCollection {
 
 
    function canList() {
-      global $CFG_GLPI;
-
       return $this->canView();
    }
 
 
    function getTitle() {
-      global $LANG;
-
-      return $LANG['rulesengine'][18];
+      return __('Rules for assigning a computer to an entity');
    }
 
 
+   /**
+    * @see inc/RuleCollection::prepareInputDataForProcess()
+    *
+    * @param $input           input data
+    * @param $computers_id
+   **/
    function prepareInputDataForProcess($input, $computers_id) {
       global $PluginOcsinventoryngDBocs;
 
@@ -93,7 +89,7 @@ class PluginOcsinventoryngRuleOcsCollection extends RuleCollection {
 
             //TAG and DOMAIN should come from the OCS DB
             default :
-               $select_sql .= ($select_sql != "" ? " , " : "") . $field;
+               $select_sql .= (($select_sql != "") ? " , " : "") . $field;
          }
       }
 
@@ -101,7 +97,7 @@ class PluginOcsinventoryngRuleOcsCollection extends RuleCollection {
       //Remove all the non duplicated table names
       $from_sql = "FROM `hardware` ";
       foreach ($tables as $table => $linkfield) {
-         if ($table!='hardware' && !empty($linkfield)) {
+         if (($table != 'hardware') && !empty($linkfield)) {
             $from_sql .= " LEFT JOIN `$table` ON (`$table`.`$linkfield` = `hardware`.`ID`)";
          }
       }
@@ -113,15 +109,15 @@ class PluginOcsinventoryngRuleOcsCollection extends RuleCollection {
                  WHERE `hardware`.`ID` = '$computers_id'";
 
          PluginOcsinventoryngOcsServer::checkOCSconnection($this->ocsservers_id);
-         $result = $PluginOcsinventoryngDBocs->query($sql);
-         $ocs_datas = array();
-         $fields = $this->getFieldsForQuery(1);
+         $result     = $PluginOcsinventoryngDBocs->query($sql);
+         $ocs_datas  = array();
+         $fields     = $this->getFieldsForQuery(1);
 
          //May have more than one line : for example in case of multiple network cards
          if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
             while ($datas = $PluginOcsinventoryngDBocs->fetch_array($result)) {
                foreach ($fields as $field) {
-                  if ($field != "OCS_SERVER" && isset($datas[$field])) {
+                  if (($field != "OCS_SERVER") && isset($datas[$field])) {
                      $ocs_datas[$field][] = $datas[$field];
                   }
                }
@@ -151,7 +147,7 @@ class PluginOcsinventoryngRuleOcsCollection extends RuleCollection {
       $tables = array();
       foreach ($rule->getCriterias() as $criteria) {
          if ((!isset($criteria['virtual']) || !$criteria['virtual'])
-             && $criteria['table'] != ''
+             && ($criteria['table'] != '')
              && !isset($tables[$criteria["table"]])) {
 
             $tables[$criteria['table']] = $criteria['linkfield'];
@@ -162,9 +158,9 @@ class PluginOcsinventoryngRuleOcsCollection extends RuleCollection {
 
 
    /**
-    *  * Get fields needed to process criterias
+    * Get fields needed to process criterias
     *
-    * @param $withouttable fields without tablename ?
+    * @param $withouttable fields without tablename ? (default 0)
     *
     * @return an array of needed fields
    **/
@@ -189,7 +185,7 @@ class PluginOcsinventoryngRuleOcsCollection extends RuleCollection {
             }
 
             //If the field name is not null AND a table name is provided
-            if (($criteria['field'] != ''
+            if ((($criteria['field'] != '')
                  && (!isset($criteria['virtual']) || !$criteria['virtual']))) {
                if ( $criteria['table'] != '') {
                   $fields[] = $criteria['table'].".".$criteria['field'].$as;
@@ -217,7 +213,7 @@ class PluginOcsinventoryngRuleOcsCollection extends RuleCollection {
       foreach ($rule->getCriterias() as $criteria) {
          //If the field name is not null AND a table name is provided
          if ((!isset($criteria['virtual']) || !$criteria['virtual'])
-             && $criteria['linkfield'] != '') {
+             && ($criteria['linkfield'] != '')) {
             $fields[] = $criteria['table'].".".$criteria['linkfield'];
          }
       }

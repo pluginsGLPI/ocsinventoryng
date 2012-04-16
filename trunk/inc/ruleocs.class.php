@@ -2,36 +2,31 @@
 /*
  * @version $Id: ruleocs.class.php 14685 2011-06-11 06:40:30Z remi $
  -------------------------------------------------------------------------
- GLPI - Gestionnaire Libre de Parc Informatique
- Copyright (C) 2003-2011 by the INDEPNET Development Team.
+ ocinventoryng - TreeView browser plugin for GLPI
+ Copyright (C) 2012 by the ocinventoryng Development Team.
 
- http://indepnet.net/   http://glpi-project.org
+ https://forge.indepnet.net/projects/ocinventoryng
  -------------------------------------------------------------------------
 
  LICENSE
 
- This file is part of GLPI.
+ This file is part of ocinventoryng.
 
- GLPI is free software; you can redistribute it and/or modify
+ ocinventoryng is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- GLPI is distributed in the hope that it will be useful,
+ ocinventoryng is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with GLPI; if not, write to the Free Software Foundation, Inc.,
- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ along with ocinventoryng; If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
-// ----------------------------------------------------------------------
-// Original Author of file: Walid Nouh
-// Purpose of file:
-// ----------------------------------------------------------------------
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
@@ -40,14 +35,12 @@ if (!defined('GLPI_ROOT')) {
 class PluginOcsinventoryngRuleOcs extends Rule {
 
    // From Rule
-   //TODO : how change this ?
    public $right    = 'rule_ocs';
    public $can_sort = true;
 
-   function getTitle() {
-      global $LANG;
 
-      return $LANG['rulesengine'][18];
+   function getTitle() {
+      return __('Rules for assigning a computer to an entity');
    }
 
 
@@ -57,11 +50,22 @@ class PluginOcsinventoryngRuleOcs extends Rule {
    }
 
 
+   /**
+    * @see inc/Rule::preProcessPreviewResults()
+    *
+    * @param $output
+   **/
    function preProcessPreviewResults($output) {
       return $output;
    }
 
 
+   /**
+    * @see inc/Rule::executeActions()
+    *
+    * @param $output
+    * @param $params
+   **/
    function executeActions($output,$params) {
 
       if (count($this->actions)) {
@@ -94,80 +98,77 @@ class PluginOcsinventoryngRuleOcs extends Rule {
 
 
    function getCriterias() {
-      global $LANG;
 
-      $criterias = array();
+      $criterias                                = array();
 
-      $criterias['TAG']['table']     = 'accountinfo';
-      $criterias['TAG']['field']     = 'TAG';
-      $criterias['TAG']['name']      = $LANG['ocsconfig'][39];
-      $criterias['TAG']['linkfield'] = 'HARDWARE_ID';
+      $criterias['TAG']['table']                = 'accountinfo';
+      $criterias['TAG']['field']                = 'TAG';
+      $criterias['TAG']['name']                 = __('OCSNG TAG');
+      $criterias['TAG']['linkfield']            = 'HARDWARE_ID';
 
-      $criterias['DOMAIN']['table']     = 'hardware';
-      $criterias['DOMAIN']['field']     = 'WORKGROUP';
-      $criterias['DOMAIN']['name']      = $LANG['setup'][89];
-      $criterias['DOMAIN']['linkfield'] = '';
+      $criterias['DOMAIN']['table']             = 'hardware';
+      $criterias['DOMAIN']['field']             = 'WORKGROUP';
+      $criterias['DOMAIN']['name']              = __('Domain');
+      $criterias['DOMAIN']['linkfield']         = '';
 
-      $criterias['OCS_SERVER']['table']     = 'glpi_plugin_ocsinventoryng_ocsservers';
-      $criterias['OCS_SERVER']['field']     = 'name';
-      $criterias['OCS_SERVER']['name']      = $LANG['ocsng'][29];
-      $criterias['OCS_SERVER']['linkfield'] = '';
-      $criterias['OCS_SERVER']['type']      = 'dropdown';
-      $criterias['OCS_SERVER']['virtual']   = true;
-      $criterias['OCS_SERVER']['id']        = 'ocs_server';
+      $criterias['OCS_SERVER']['table']         = 'glpi_plugin_ocsinventoryng_ocsservers';
+      $criterias['OCS_SERVER']['field']         = 'name';
+      $criterias['OCS_SERVER']['name']          = __('OCSNG server');
+      $criterias['OCS_SERVER']['linkfield']     = '';
+      $criterias['OCS_SERVER']['type']          = 'dropdown';
+      $criterias['OCS_SERVER']['virtual']       = true;
+      $criterias['OCS_SERVER']['id']            = 'ocs_server';
 
-      $criterias['IPSUBNET']['table']     = 'networks';
-      $criterias['IPSUBNET']['field']     = 'IPSUBNET';
-      $criterias['IPSUBNET']['name']      = $LANG['networking'][61];
-      $criterias['IPSUBNET']['linkfield'] = 'HARDWARE_ID';
+      $criterias['IPSUBNET']['table']           = 'networks';
+      $criterias['IPSUBNET']['field']           = 'IPSUBNET';
+      $criterias['IPSUBNET']['name']            = __('Subnet');
+      $criterias['IPSUBNET']['linkfield']       = 'HARDWARE_ID';
 
-      $criterias['IPADDRESS']['table']     = 'networks';
-      $criterias['IPADDRESS']['field']     = 'IPADDRESS';
-      $criterias['IPADDRESS']['name']      = $LANG['financial'][44]." ".
-                                                $LANG['networking'][14];
-      $criterias['IPADDRESS']['linkfield'] = 'HARDWARE_ID';
+      $criterias['IPADDRESS']['table']          = 'networks';
+      $criterias['IPADDRESS']['field']          = 'IPADDRESS';
+      $criterias['IPADDRESS']['name']           = __('IP address');
+      $criterias['IPADDRESS']['linkfield']      = 'HARDWARE_ID';
 
-      $criterias['MACHINE_NAME']['table']     = 'hardware';
-      $criterias['MACHINE_NAME']['field']     = 'NAME';
-      $criterias['MACHINE_NAME']['name']      = $LANG['rulesengine'][25];
-      $criterias['MACHINE_NAME']['linkfield'] = '';
+      $criterias['MACHINE_NAME']['table']       = 'hardware';
+      $criterias['MACHINE_NAME']['field']       = 'NAME';
+      $criterias['MACHINE_NAME']['name']        = __("Computer's name");
+      $criterias['MACHINE_NAME']['linkfield']   = '';
 
-      $criterias['DESCRIPTION']['table']     = 'hardware';
-      $criterias['DESCRIPTION']['field']     = 'DESCRIPTION';
-      $criterias['DESCRIPTION']['name']      = $LANG['joblist'][6];
-      $criterias['DESCRIPTION']['linkfield'] = '';
+      $criterias['DESCRIPTION']['table']        = 'hardware';
+      $criterias['DESCRIPTION']['field']        = 'DESCRIPTION';
+      $criterias['DESCRIPTION']['name']         = __('Description');
+      $criterias['DESCRIPTION']['linkfield']    = '';
 
-      $criterias['SSN']['table']     = 'bios';
-      $criterias['SSN']['field']     = 'SSN';
-      $criterias['SSN']['name']      = $LANG['common'][19];
-      $criterias['SSN']['linkfield'] = 'HARDWARE_ID';
+      $criterias['SSN']['table']                = 'bios';
+      $criterias['SSN']['field']                = 'SSN';
+      $criterias['SSN']['name']                 = __('Serial number');
+      $criterias['SSN']['linkfield']            = 'HARDWARE_ID';
 
       return $criterias;
    }
 
 
    function getActions() {
-      global $LANG;
 
-      $actions = array();
-      $actions['entities_id']['name']  = $LANG['entity'][0];
-      $actions['entities_id']['type']  = 'dropdown';
-      $actions['entities_id']['table'] = 'glpi_entities';
+      $actions                                           = array();
 
-      $actions['locations_id']['name']  = $LANG['common'][15];
-      $actions['locations_id']['type']  = 'dropdown';
-      $actions['locations_id']['table'] = 'glpi_locations';
+      $actions['entities_id']['name']                    = __('Entity');
+      $actions['entities_id']['type']                    = 'dropdown';
+      $actions['entities_id']['table']                   = 'glpi_entities';
 
-      $actions['_affect_entity_by_tag']['name'] = $LANG['rulesengine'][131];
-      $actions['_affect_entity_by_tag']['type'] = 'text';
+      $actions['locations_id']['name']                   = __('Location');
+      $actions['locations_id']['type']                   = 'dropdown';
+      $actions['locations_id']['table']                  = 'glpi_locations';
+
+      $actions['_affect_entity_by_tag']['name']          = __('Entity from TAG');
+      $actions['_affect_entity_by_tag']['type']          = 'text';
       $actions['_affect_entity_by_tag']['force_actions'] = array('regex_result');
 
-      $actions['_ignore_ocs_import']['name'] = $LANG['rulesengine'][132];
-      $actions['_ignore_ocs_import']['type'] = 'yesonly';
+      $actions['_ignore_ocs_import']['name']             = __('To be unaware of import');
+      $actions['_ignore_ocs_import']['type']             = 'yesonly';
 
       return $actions;
    }
 
 }
-
 ?>

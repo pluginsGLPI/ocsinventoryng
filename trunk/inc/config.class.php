@@ -2,41 +2,35 @@
 /*
  * @version $Id: HEADER 14684 2011-06-11 06:32:40Z remi $
  -------------------------------------------------------------------------
- GLPI - Gestionnaire Libre de Parc Informatique
- Copyright (C) 2003-2011 by the INDEPNET Development Team.
+ ocinventoryng - TreeView browser plugin for GLPI
+ Copyright (C) 2012 by the ocinventoryng Development Team.
 
- http://indepnet.net/   http://glpi-project.org
+ https://forge.indepnet.net/projects/ocinventoryng
  -------------------------------------------------------------------------
 
  LICENSE
 
- This file is part of GLPI.
+ This file is part of ocinventoryng.
 
- GLPI is free software; you can redistribute it and/or modify
+ ocinventoryng is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- GLPI is distributed in the hope that it will be useful,
+ ocinventoryng is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with GLPI; if not, write to the Free Software Foundation, Inc.,
- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ along with ocinventoryng; If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
 */
-
-// Original Author of file: Walid Nouh
-// Purpose of file:
-// ----------------------------------------------------------------------
 
 class PluginOcsinventoryngConfig extends CommonDBTM {
 
 
    static function getTypeName($nb=0) {
-
       return __("Automatic synchronization's configuration");
    }
 
@@ -52,7 +46,6 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
-      global $LANG;
 
       if (!$withtemplate) {
          switch ($item->getType()) {
@@ -76,7 +69,6 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
             break;
 
          case 'PluginOcsinventoryngOcsServer' :
-         	toolbox::logdebug("id", $item->getID());
             self::showOcsReportsConsole($item->getID());
             break;
       }
@@ -85,7 +77,6 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
 
    function defineTabs($options=array()) {
-      global $LANG;
 
       $ong = array();
       $this->addStandardTab(__CLASS__, $ong, $options);
@@ -94,40 +85,39 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
 
    function showConfigForm($target) {
-      global $LANG;
 
       $this->getFromDB(1);
       $this->showTabs();
       $this->showFormHeader();
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td class='right' colspan='2'> " .$LANG["plugin_ocsinventoryng"]["config"][121]."</td>";
+      echo "<td class='right' colspan='2'> " .__('Default OCS server')."</td>";
       echo "<td colspan='2'>&nbsp;&nbsp;&nbsp;";
       Dropdown::showFromArray("plugin_ocsinventoryng_ocsservers_id", $this->getAllOcsServers(),
                               array('value' => $this->fields["plugin_ocsinventoryng_ocsservers_id"]));
       echo "</td></tr>";
 
-      echo "<tr><th colspan='4'>" . $LANG["plugin_ocsinventoryng"]["config"][116]."</th></tr>";
+      echo "<tr><th colspan='4'>" . __('Display')."</th></tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td> " .$LANG["plugin_ocsinventoryng"]["config"][105] . " </td><td>";
+      echo "<td> " .__('Show processes where nothing was changed') . " </td><td>";
       Dropdown::showYesNo("is_displayempty", $this->fields["is_displayempty"]);
       echo "</td>";
-      echo "<td rowspan='3' class='middle right'> " .$LANG['common'][25]."</td>";
+      echo "<td rowspan='3' class='middle right'> " .__('Comments')."</td>";
       echo "<td class='center middle' rowspan='3'>";
       echo "<textarea cols='40' rows='5' name='comment' >".$this->fields["comment"]."</textarea>";
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td> " .$LANG["plugin_ocsinventoryng"]["setup"][3] . " </td><td>";
+      echo "<td> " .__('Authorize the OCS update') . " </td><td>";
       Dropdown::showYesNo('allow_ocs_update',$this->fields['allow_ocs_update']);
       echo "</td>";
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td> " .$LANG["plugin_ocsinventoryng"]["config"][114] . " </td><td>";
+      echo "<td> " .__('Refresh information of a process every') . " </td><td>";
       Html::autocompletionTextField($this,"delay_refresh", array('size' => 5));
-      echo "&nbsp;".$LANG["plugin_ocsinventoryng"]["time"][3]."</td>";
+      echo "&nbsp;"._x('second', 'seconds', 2)."</td>";
       echo "</tr>";
 
       $this->showFormButtons(array('canedit' => true,
@@ -138,30 +128,28 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
 
    function showScriptLock() {
-      global $LANG;
 
       echo "<div class='center'>";
       echo "<form name='lock' action=\"".$_SERVER['HTTP_REFERER']."\" method='post'>";
       echo "<input type='hidden' name='id' value='1'>";
       echo "<table class='tab_cadre'>";
       echo "<tr class='tab_bg_2'>";
-      echo "<th>&nbsp;" . $LANG["plugin_ocsinventoryng"]["config"][107] ." ".
-             $LANG["plugin_ocsinventoryng"]["config"][108]."&nbsp;</th></tr>";
+      echo "<th>&nbsp;" . __('Check OCS import script')."&nbsp;</th></tr>";
 
       echo "<tr class='tab_bg_2'>";
       echo "<td class='center'>";
       $status = $this->isScriptLocked();
       if (!$status) {
-         echo $LANG["plugin_ocsinventoryng"]["config"][109]."&nbsp;<img src='../pics/export.png'>";
+         echo __('Lock not activated')."&nbsp;<img src='../pics/export.png'>";
       } else {
-         echo $LANG["plugin_ocsinventoryng"]["config"][110]."&nbsp;<img src='../pics/ok2.png'>";
+         echo __('Lock activated')."&nbsp;<img src='../pics/ok2.png'>";
       }
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td colspan='2' class='center'>";
       echo "<input type='submit' name='".(!$status?"soft_lock":"soft_unlock")."' class='submit' ".
-            "value='".(!$status?$LANG["plugin_ocsinventoryng"]["config"][117]
-                               :$LANG["plugin_ocsinventoryng"]["config"][118])."'>";
+            "value='".(!$status?_sx('button','Lock')
+                               :_sx('button', 'Unlock'))."'>";
       echo "</td/></tr/></table><br>";
       echo "</form></div>";
 
@@ -174,6 +162,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
 
    function setScriptLock() {
+
       $fp = fopen(PLUGIN_OCSINVENTORYNG_LOCKFILE, "w+");
       fclose($fp);
    }
@@ -188,9 +177,9 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
 
    function getAllOcsServers() {
-      global $DB, $LANG;
+      global $DB;
 
-      $servers[-1] = $LANG["plugin_ocsinventoryng"]["config"][122];
+      $servers[-1] = __('All servers');
 
       $sql     = "SELECT `id`, `name`
                   FROM `glpi_plugin_ocsinventoryng_ocsservers`";
@@ -205,7 +194,6 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
 
    static function showOcsReportsConsole($id) {
-      global $LANG;
 
       $ocsconfig = PluginOcsinventoryngOcsServer::getConfig($id);
 
