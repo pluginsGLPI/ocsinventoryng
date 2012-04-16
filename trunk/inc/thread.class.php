@@ -1,75 +1,75 @@
 <?php
-
 /*
  * @version $Id: HEADER 14684 2011-06-11 06:32:40Z remi $
  -------------------------------------------------------------------------
- GLPI - Gestionnaire Libre de Parc Informatique
- Copyright (C) 2003-2011 by the INDEPNET Development Team.
+ ocinventoryng - TreeView browser plugin for GLPI
+ Copyright (C) 2012 by the ocinventoryng Development Team.
 
- http://indepnet.net/   http://glpi-project.org
+ https://forge.indepnet.net/projects/ocinventoryng
  -------------------------------------------------------------------------
 
  LICENSE
 
- This file is part of GLPI.
+ This file is part of ocinventoryng.
 
- GLPI is free software; you can redistribute it and/or modify
+ ocinventoryng is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- GLPI is distributed in the hope that it will be useful,
+ ocinventoryng is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with GLPI; if not, write to the Free Software Foundation, Inc.,
- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ along with ocinventoryng; If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
 */
-
-// Original Author of file: Walid Nouh
-// Purpose of file:
-// ----------------------------------------------------------------------
 
 class PluginOcsinventoryngThread extends CommonDBTM {
 
 
+   /**
+    * @param $processid
+   **/
    function deleteThreadsByProcessId($processid) {
       global $DB;
 
-
-      foreach($DB->request($this->getTable(), array('processid'=>$processid)) as $data) {
+      foreach($DB->request($this->getTable(), array('processid' => $processid)) as $data) {
          // Requires to clean details
          $this->delete(array('id'=>$data['id']), true);
       }
    }
 
-   function cleanDBonPurge() {
 
+   function cleanDBonPurge() {
       PluginOcsinventoryngDetail::deleteThreadDetailsByProcessID($this->fields['id']);
    }
 
-   function title() {
-      global $LANG;
 
-      $buttons = array ();
-      $title = "";
-      $buttons["thread.php"] = $LANG['plugin_ocsinventoryng']["display"][4];
+   function title() {
+
+      $buttons                = array ();
+      $title                  = "";
+      $buttons["thread.php"]  = __('Back to processes list');
       displayTitle("", "", $title, $buttons);
       echo "<br>";
    }
 
 
+   /**
+    * @param $pid
+    * @param $options   array
+   **/
    function showForm($pid, $options=array()) {
-      global $DB, $LANG;
+      global $DB;
 
       $config = new PluginOcsinventoryngConfig();
       $config->getFromDB(1);
 
       $finished = true;
-      $total = 0;
+      $total    = 0;
       $sql = "SELECT `id`, `threadid`, `status`, `total_number_machines`, `processid`,
                      `start_time` AS starting_date, `end_time` AS ending_date,
                      TIME_TO_SEC(`end_time`) - TIME_TO_SEC(`start_time`) AS duree,
@@ -79,7 +79,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                      `linked_machines_number` AS linked_machines,
                      `notupdated_machines_number` AS notupdated_machines,
                      `not_unique_machines_number` AS not_unique_machines_number,
-                     `link_refused_machines_number` AS link_refused_machines_number 
+                     `link_refused_machines_number` AS link_refused_machines_number
               FROM `" . $this->getTable() . "`
               WHERE `processid` = '$pid'
               ORDER BY `threadid` ASC";
@@ -88,22 +88,25 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "<div class='center' id='tabsbody'>";
       echo "<form name=cas action='' method='post'>";
       echo "<table class='tab_cadre' cellpadding='11'>";
-      echo "<tr><th colspan='14'>" . $LANG['plugin_ocsinventoryng']["common"][8] . " : " . $pid . "</th></tr>";
+      echo "<tr><th colspan='14'>".sprintf(__('%1$s: %2$s'), __('Process information'), $pid).
+           "</th></tr>";
       echo "<tr>";
-      echo "<th>" . $LANG['plugin_ocsinventoryng']["common"][9] . "</th>";
-      echo "<th>" . $LANG['plugin_ocsinventoryng']["common"][10] . "</th>";
-      echo "<th>" . $LANG['plugin_ocsinventoryng']["common"][2] . "</th>";
-      echo "<th>" . $LANG['plugin_ocsinventoryng']["common"][3] . "</th>";
-      echo "<th>" . $LANG['plugin_ocsinventoryng']["common"][5] . "</th>";
-      echo "<th>" . $LANG['plugin_ocsinventoryng']["common"][6] . "</th>";
-      echo "<th>" . $LANG['plugin_ocsinventoryng']["common"][19] . "</th>";
-      echo "<th>" . $LANG['plugin_ocsinventoryng']["common"][18] . "</th>";
-      echo "<th>" . $LANG['plugin_ocsinventoryng']["common"][20] . "</th>";
-      echo "<th>" . $LANG['plugin_ocsinventoryng']["common"][33] . "</th>";
-      echo "<th>" . $LANG['plugin_ocsinventoryng']["common"][38] . "</th>";
-      echo "<th>" . $LANG['plugin_ocsinventoryng']["common"][7] . "</th>";
-      echo "<th>" . $LANG['plugin_ocsinventoryng']["common"][17] . "</th>";
-      echo "<th>" . $LANG['plugin_ocsinventoryng']["common"][15] . "</th>";
+      echo "<th>" . __('Thread') . "</th>";
+      echo "<th>" . __('Status') . "</th>";
+      echo "<th>" . __('Beginning date of execution'). "</th>";
+      echo "<th>" . __('Ending date of execution') . "</th>";
+      echo "<th>" . _n('Imported computer by automatic task',
+                       'Imported computers by automatic task', 2) . "</th>";
+      echo "<th>" . _n('Synchronized computer', 'Synchronized computers', 2) . "</th>";
+      echo "<th>" . _n('Linked computer', 'Linked computers', 2). "</th>";
+      echo "<th>" . _n('Not imported computer by automatic task',
+                       'Not imported computers by automatic task', 2) . "</th>";
+      echo "<th>" . _n('Not modified computer', 'Not modified computers', 2). "</th>";
+      echo "<th>" . _n('Not unique computer', 'Not unique computers', 2). "</th>";
+      echo "<th>" . _n('Refused computer', 'Refused computers', 2) . "</th>";
+      echo "<th>" . __('Process time execution') . "</th>";
+      echo "<th>" . __('Total of computers to be treated') . "</th>";
+      echo "<th>" . __('performed percentage') . "</th>";
       echo "</th></tr>";
 
       if ($DB->numrows($result)) {
@@ -158,10 +161,11 @@ class PluginOcsinventoryngThread extends CommonDBTM {
          }
       }
       echo "<tr class='tab_bg_2'>";
-      echo "<td colspan='14' class='center'>" . $LANG['plugin_ocsinventoryng']["common"][12] . " : " .
-             $total . "</td></tr>";
+      echo "<td colspan='14' class='center'>".sprintf(__('%1$s: %2$s'),
+                                                      __('Total of treated computers'), $total) .
+           "</td></tr>";
 
-      if ($config->fields["delay_refresh"] > 0 && !$finished) {
+      if (($config->fields["delay_refresh"] > 0) && !$finished) {
          echo "<meta http-equiv='refresh' content=\"" .
                 $config->fields["delay_refresh"] . "\"; url=\"#\" />";
       }
@@ -172,14 +176,17 @@ class PluginOcsinventoryngThread extends CommonDBTM {
    }
 
 
+   /**
+    * @param $pid
+   **/
    function getProcessStatus($pid) {
       global $DB;
 
       $sql = "SELECT `status`
               FROM `" . $this->getTable() . "`
               WHERE `processid` = '$pid'";
-      $result = $DB->query($sql);
-      $status = 0;
+      $result        = $DB->query($sql);
+      $status        = 0;
       $thread_number = 0;
 
       $thread_number = $DB->numrows($result);
@@ -190,12 +197,14 @@ class PluginOcsinventoryngThread extends CommonDBTM {
 
       if ($status < $thread_number * PLUGIN_OCSINVENTORYNG_STATE_FINISHED) {
          return PLUGIN_OCSINVENTORYNG_STATE_RUNNING;
-      } else {
-         return PLUGIN_OCSINVENTORYNG_STATE_FINISHED;
       }
+      return PLUGIN_OCSINVENTORYNG_STATE_FINISHED;
    }
 
 
+   /**
+    * @param $delete_frequency
+   **/
    function deleteOldProcesses($delete_frequency) {
       global $DB;
 
@@ -217,21 +226,24 @@ class PluginOcsinventoryngThread extends CommonDBTM {
    }
 
 
+   /**
+    * @param $target
+   **/
    function showProcesses($target) {
-      global $DB,$LANG,$CFG_GLPI;
+      global $DB, $CFG_GLPI;
 
-      $canedit= plugin_ocsinventoryng_haveRight("ocsng","w");
+      $canedit = plugin_ocsinventoryng_haveRight("ocsng","w");
 
-      $config = new PluginOcsinventoryngConfig();
+      $config  = new PluginOcsinventoryngConfig();
       $config->getFromDB(1);
 
       $minfreq = 9999;
-      $task = new CronTask();
+      $task    = new CronTask();
       if ($task->getFromDBbyName('PluginOcsinventoryngThread', 'CleanOldThreads')) {
          //First of all, deleted old processes
          $this->deleteOldProcesses($task->fields['param']);
 
-         if ($task->fields['param']>0) {
+         if ($task->fields['param'] > 0) {
             $minfreq=$task->fields['param'];
          }
       }
@@ -265,35 +277,38 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "<div class='center'>";
       echo "<form name='processes' id='processes' action='$target' method='post'>";
       echo "<table class='tab_cadrehov'>";
-      echo "<tr><th colspan='16'>" . $LANG['plugin_ocsinventoryng']["common"][1] . "</th></tr>";
+      echo "<tr><th colspan='16'>" . __('Processes execution of automatic task') . "</th></tr>";
       echo "<tr>";
       echo"<th>&nbsp;</th>";
       echo"<th>&nbsp;</th>";
-      echo"<th>".$LANG['plugin_ocsinventoryng']["common"][10]."</th>";
-      echo"<th>".$LANG['plugin_ocsinventoryng']["common"][4]."</th>";
-      echo"<th>".$LANG['plugin_ocsinventoryng']["common"][2]."</th>";
-      echo"<th>".$LANG['plugin_ocsinventoryng']["common"][3]."</th>";
-      echo"<th>".$LANG['plugin_ocsinventoryng']["common"][5]."</th>";
-      echo"<th>".$LANG['plugin_ocsinventoryng']["common"][6]."</th>";
-      echo"<th>".$LANG['plugin_ocsinventoryng']["common"][19]."</th>";
-      echo"<th>".$LANG['plugin_ocsinventoryng']["common"][18]."</th>";
-      echo"<th>".$LANG['plugin_ocsinventoryng']["common"][20]."</th>";
-      echo"<th>".$LANG['plugin_ocsinventoryng']["common"][33]."</th>";
-      echo"<th>".$LANG['plugin_ocsinventoryng']["common"][38] . "</th>";
-      echo"<th>".$LANG['plugin_ocsinventoryng']["common"][7]."</th>";
-      echo"<th>".$LANG['plugin_ocsinventoryng']["common"][11]."</th>";
+      echo"<th>".__('Status')."</th>";
+      echo"<th>".__('Number of threads')."</th>";
+      echo"<th>".__('Beginning date of execution')."</th>";
+      echo"<th>".__('Ending date of execution')."</th>";
+      echo"<th>"._n('Imported computer by automatic task', 'Imported computers by automatic task', 2).
+          "</th>";
+      echo"<th>"._n('Synchronized computer', 'Synchronized computers', 2) ."</th>";
+      echo"<th>"._n('Linked computer', 'Linked computers', 2)."</th>";
+      echo"<th>"._n('Not imported computer by automatic task',
+                    'Not imported computers by automatic task', 2)."</th>";
+      echo"<th>"._n('Not modified computer', 'Not modified computers', 2)."</th>";
+      echo"<th>"._n('Not unique computer', 'Not unique computers', 2)."</th>";
+      echo"<th>"._n('Refused computer', 'Refused computers', 2) . "</th>";
+      echo"<th>".__('Process time execution')."</th>";
+      echo"<th>".__('Server')."</th>";
       echo"<th>&nbsp;</th>";
       echo "</th></tr>\n";
 
       if ($DB->numrows($result)) {
          while ($thread = $DB->fetch_array($result)) {
             if ($config->fields["is_displayempty"]
-                || $thread["status"] != PLUGIN_OCSINVENTORYNG_STATE_FINISHED
+                || ($thread["status"] != PLUGIN_OCSINVENTORYNG_STATE_FINISHED)
                 || (!$config->fields["is_displayempty"]
-                    && $thread["total_machines"] > 0
-                    && $thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED)) {
+                    && ($thread["total_machines"] > 0)
+                    && ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED))) {
 
-               if ($thread["DoStat"] && $thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED) {
+               if ($thread["DoStat"]
+                   && ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED)) {
                   $imported_number->AddValue($thread["imported_machines"]);
                   $synchronized_number->AddValue($thread["synchronized_machines"]);
                   $linked_number->AddValue($thread["linked_machines"]);
@@ -302,7 +317,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                   $notunique_number->AddValue($thread["not_unique_machines_number"]);
                   $linkedrefused_number->AddValue($thread["link_refused_machines_number"]);
                   $process_time->AddValue($thread["duree"]);
-               } else if ($imported_number->GetCount()>0) {
+               } else if ($imported_number->GetCount() > 0) {
                   $this->showshowStat($minfreq, $imported_number, $synchronized_number,
                                       $linked_number, $failed_number, $notupdated_number,
                                       $notunique_number, $linkedrefused_number,$process_time);
@@ -319,8 +334,8 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                echo "</td>";
 
                echo "<td class='center'>";
-               echo "<a href=\"./thread.form.php?pid=".
-                      $thread["processid"]."\">".$thread["processid"]."</a></td>";
+               echo "<a href=\"./thread.form.php?pid=".$thread["processid"]."\">".
+                     $thread["processid"]."</a></td>";
                echo "<td class='center'>";
                $this->displayProcessStatusIcon($this->getProcessStatus($thread["processid"]));
                echo "</td>";
@@ -349,7 +364,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                   echo "<a href=\"ocsserver.form.php?id=".$ocsConfig["id"]."\">".
                          $ocsConfig["name"]."</a>";
                } else {
-                  echo $LANG["plugin_ocsinventoryng"]["config"][122];
+                  _e('All servers');
                }
                echo "</td>";
                echo "<td class='center'>";
@@ -361,7 +376,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
          }
       }
 
-      if ($imported_number->GetCount()>0) {
+      if ($imported_number->GetCount() > 0) {
          $this->showshowStat($minfreq, $imported_number, $synchronized_number, $linked_number,
                              $failed_number, $notupdated_number, $notunique_number,
                              $linkedrefused_number,$process_time);
@@ -370,26 +385,37 @@ class PluginOcsinventoryngThread extends CommonDBTM {
 
       if ($canedit) {
          Html::openArrowMassives("processes");
-         Html::closeArrowMassives(array("delete_processes"=>$LANG["buttons"][6]));
+         Html::closeArrowMassives(array("delete_processes" => __('Delete')));
       }
    }
 
 
-   function showshowStat($duree, &$imported, &$synchronized, &$linked, &$failed, &$notupdated, 
+   /**
+    * @param $duree
+    * @param $imported
+    * @param $synchronized
+    * @param $linked
+    * @param $failed
+    * @param $notupdated
+    * @param $notunique
+    * @param $linkedrefused
+    * @param $time
+   **/
+   function showshowStat($duree, &$imported, &$synchronized, &$linked, &$failed, &$notupdated,
                          &$notunique,&$linkedrefused, &$time) {
-      global $LANG;
 
-      echo "<tr><th colspan='16'>" . $LANG['plugin_ocsinventoryng']["common"][30];
+      $title = _('Statistics');
       if ($duree < 9999) {
-         echo " (" . $duree . " " . $LANG['plugin_ocsinventoryng']["time"][1] . ")";
+         $title = sprintf(__('%1$s (%2$s)'), $title,
+                          sprintf(__('%1$s %2$s'), $duree, _n('hour', 'hours', $duree)));
       }
-      echo "</th></tr>";
+      echo "<tr><th colspan='16'>" . $title. "</th></tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td class='right' colspan='6'>" . $LANG['plugin_ocsinventoryng']["common"][25] .
-             "<br />" . $LANG['plugin_ocsinventoryng']["common"][26] .
-             "<br />" . $LANG['plugin_ocsinventoryng']["common"][27] .
-             "<br />" . $LANG['plugin_ocsinventoryng']["common"][28] . "</td>";
+      echo "<td class='right' colspan='6'>" . __('Minimum') .
+             "<br />" . __('Maximum') .
+             "<br />" . __('Average') .
+             "<br />" . __('Total') . "</td>";
       echo "<td class='center'>" . $imported->GetMinimum() .
              "<br />" . $imported->GetMaximum() .
              "<br />" . round($imported->GetAverage(),2) .
@@ -423,15 +449,19 @@ class PluginOcsinventoryngThread extends CommonDBTM {
              timestampToString(round($time->GetAverage())) .
              "<br />" . timestampToString($time->GetTotal()) . "</td>";
       if ($time->GetTotal()>0) {
-         echo "<td class='center' colspan='2'>" . $LANG['plugin_ocsinventoryng']["common"][29] . "<br />" .
-                round(($imported->GetTotal() + $synchronized->GetTotal() + $linked->GetTotal()
-                       + $failed->GetTotal() + $notunique->getTotal())
-                      /$time->GetTotal(),2) . " pc/s</td>";
+         echo "<td class='center' colspan='2'>" . __('Speed') . "<br />" .
+                sprintf(__('%1$s %2$s'),
+                        round(($imported->GetTotal() + $synchronized->GetTotal()
+                               + $linked->GetTotal() + $failed->GetTotal()
+                               + $notunique->getTotal())
+                              /$time->GetTotal(), 2),
+                       //TRANS: means computers by second
+                       __('pc/s'))."</td>";
       } else {
          echo "<td>&nbsp;</td><td>&nbsp;</td>";
       }
       echo "</tr>\n";
-      echo "<tr><th colspan='16'>-----</th></tr>\n";
+      echo "<tr><th colspan='16'>".Dropdown::EMPTY_VALUE."<th></tr>\n";
    }
 
 
@@ -442,21 +472,21 @@ class PluginOcsinventoryngThread extends CommonDBTM {
          return false;
       }
 
-      $size=filesize($fic);
+      $size = filesize($fic);
 
-      if ($size>20000) {
-         $logfile=file_get_contents($fic,0,NULL,$size-20000,20000);
-         $events = explode("\n", $logfile);
+      if ($size > 20000) {
+         $logfile = file_get_contents($fic,0,NULL,$size-20000,20000);
+         $events  = explode("\n", $logfile);
          // Remove fist partial event
          array_shift($events);
       } else {
-         $logfile=file_get_contents($fic);
-         $events = explode("\n\n", $logfile);
+         $logfile = file_get_contents($fic);
+         $events  = explode("\n\n", $logfile);
       }
 
       // Remove last empty event
       array_pop($events);
-      $number = count($events);
+      $number        = count($events);
       $SEARCH_OPTION = getSearchOptions();
 
       if (isset($_REQUEST["start"])) {
@@ -473,7 +503,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       }
 
       // Display the pager
-      printAjaxPager("Logfile : ocsng_fullsync.log",$start,$number);
+      Html::printAjaxPager("Logfile: ocsng_fullsync.log", $start, $number);
 
       // Output events
       echo "<div class='center'><table class='tab_cadre_fixe'>";
@@ -500,6 +530,9 @@ class PluginOcsinventoryngThread extends CommonDBTM {
    }
 
 
+   /**
+    * @param $status
+   **/
    function displayProcessStatusIcon($status) {
 
       switch ($status) {
@@ -520,16 +553,20 @@ class PluginOcsinventoryngThread extends CommonDBTM {
    }
 
 
+   /**
+    * @param $name
+   **/
    static function cronInfo($name) {
       global $LANG;
 
       switch ($name) {
          case "CleanOldThreads" :
-            return array('description' => $LANG["plugin_ocsinventoryng"]["config"][102],
-                         'parameter'   => $LANG["plugin_ocsinventoryng"]["config"][106]);
+            return array('description' => __('Cleann processes'),
+                         'parameter'   => __('Delete processes after'));
       }
       return array();
    }
+
 
    /**
     * Run for cleaning logs (old processes)
@@ -542,11 +579,11 @@ class PluginOcsinventoryngThread extends CommonDBTM {
    static function cronCleanOldThreads($task) {
 
       $thread = new self();
-      $nb = $thread->deleteOldProcesses($task->fields['param']);
+      $nb     = $thread->deleteOldProcesses($task->fields['param']);
       $task->setVolume($nb);
 
       return $nb;
    }
-}
 
+}
 ?>

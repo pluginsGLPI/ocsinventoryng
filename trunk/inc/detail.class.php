@@ -2,92 +2,95 @@
 /*
  * @version $Id: HEADER 14684 2011-06-11 06:32:40Z remi $
  -------------------------------------------------------------------------
- GLPI - Gestionnaire Libre de Parc Informatique
- Copyright (C) 2003-2011 by the INDEPNET Development Team.
+ ocinventoryng - TreeView browser plugin for GLPI
+ Copyright (C) 2012 by the ocinventoryng Development Team.
 
- http://indepnet.net/   http://glpi-project.org
+ https://forge.indepnet.net/projects/ocinventoryng
  -------------------------------------------------------------------------
 
  LICENSE
 
- This file is part of GLPI.
+ This file is part of ocinventoryng.
 
- GLPI is free software; you can redistribute it and/or modify
+ ocinventoryng is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- GLPI is distributed in the hope that it will be useful,
+ ocinventoryng is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with GLPI; if not, write to the Free Software Foundation, Inc.,
- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ along with ocinventoryng; If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
 */
-
-// Original Author of file: Walid Nouh
-// Purpose of file:
-// ----------------------------------------------------------------------
 
 class PluginOcsinventoryngDetail extends CommonDBTM {
 
 
    function getSearchOptions() {
-      global $LANG;
 
-      $tab = array ();
-      $tab['common'] = $LANG['plugin_ocsinventoryng']["common"][23];
+      $tab                    = array ();
 
-      $tab[1]['table']     = $this->getTable();
-      $tab[1]['field']     = 'ocsid';
-      $tab[1]['name']      = $LANG['ocsng'][45];
-      $tab[1]['datatype']  = 'integer';
+      $tab['common']          = __('Not imported computers');
 
-      $tab[2]['table']         = $this->getTable();
-      $tab[2]['field']         = 'plugin_ocsinventoryng_ocsservers_id';
-      $tab[2]['name']          = $LANG['ocsng'][29];
-      $tab[2]['searchtype'] = 'equals';
+      $tab[1]['table']        = $this->getTable();
+      $tab[1]['field']        = 'ocsid';
+      $tab[1]['name']         = __('ID');
+      $tab[1]['datatype']     = 'integer';
 
-      $tab[3]['table']     = $this->getTable();
-      $tab[3]['field']     = 'process_time';
-      $tab[3]['name']      = $LANG['plugin_ocsinventoryng']["common"][31];
-      $tab[3]['datatype']  = 'datetime';
+      $tab[2]['table']        = $this->getTable();
+      $tab[2]['field']        = 'plugin_ocsinventoryng_ocsservers_id';
+      $tab[2]['name']         = __('Server');
+      $tab[2]['searchtype']   = 'equals';
 
-      $tab[4]['table']     = $this->getTable();
-      $tab[4]['field']     = 'action';
-      $tab[4]['name']      = $LANG['rulesengine'][11];
-      $tab[4]['searchtype'] = 'equals';
+      $tab[3]['table']        = $this->getTable();
+      $tab[3]['field']        = 'process_time';
+      $tab[3]['name']         = __('Process time');
+      $tab[3]['datatype']     = 'datetime';
 
-      $tab[5]['table']     = 'glpi_plugin_ocsinventoryng_threads';
-      $tab[5]['field']     = 'processid';
-      $tab[5]['name']      = $LANG['plugin_ocsinventoryng']["common"][32];
-      $tab[5]['datatype']  = 'integer';
+      $tab[4]['table']        = $this->getTable();
+      $tab[4]['field']        = 'action';
+      $tab[4]['name']         = __('Action');
+      $tab[4]['searchtype']   = 'equals';
 
-      $tab[6]['table']         = $this->getTable();
-      $tab[6]['field']         = 'computers_id';
-      $tab[6]['name']          = $LANG['help'][25];
+      $tab[5]['table']        = 'glpi_plugin_ocsinventoryng_threads';
+      $tab[5]['field']        = 'processid';
+      $tab[5]['name']         = __('Process');
+      $tab[5]['datatype']     = 'integer';
 
-      $tab[7]['table']     = $this->getTable();
-      $tab[7]['field']     = 'threadid';
-      $tab[7]['name']      = $LANG['plugin_ocsinventoryng']["common"][9];
-      $tab[7]['datatype']  = 'integer';
+      $tab[6]['table']        = $this->getTable();
+      $tab[6]['field']        = 'computers_id';
+      $tab[6]['name']         = __('Computer');
 
-      $tab[8]['table']     = $this->getTable();
-      $tab[8]['field']     = 'rules_id';
-      $tab[8]['name']      = $LANG['plugin_ocsinventoryng']["common"][39];
-      $tab[8]['datatype']  = 'text';
+      $tab[7]['table']        = $this->getTable();
+      $tab[7]['field']        = 'threadid';
+      $tab[7]['name']         = __('Thread');
+      $tab[7]['datatype']     = 'integer';
 
-      $tab[80]['table'] = 'glpi_entities';
-      $tab[80]['field'] = 'completename';
-      $tab[80]['name']  = $LANG['entity'][0];
-      $tab[80]['searchtype'] = 'equals';
+      $tab[8]['table']        = $this->getTable();
+      $tab[8]['field']        = 'rules_id';
+      $tab[8]['name']         = __('Rules checked');
+      $tab[8]['datatype']     = 'text';
+
+      $tab[80]['table']       = 'glpi_entities';
+      $tab[80]['field']       = 'completename';
+      $tab[80]['name']        = __('Entity');
+      $tab[80]['searchtype']  = 'equals';
 
       return $tab;
    }
 
+
+   /**
+    * @param $ocsid
+    * @param $ocsservers_id
+    * @param $action
+    * @param $threadid
+    * @param $threads_id
+   **/
    function logProcessedComputer ($ocsid, $ocsservers_id, $action, $threadid, $threads_id) {
 
       $input["ocsid"] = $ocsid;
@@ -96,10 +99,10 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
       } else {
          $input["rules_id"] = "";
       }
-      $input["threadid"] = $threadid;
-      $input["plugin_ocsinventoryng_threads_id"] = $threads_id;
-      $input["plugin_ocsinventoryng_ocsservers_id"] = $ocsservers_id;
-      $input["action"] = $action['status'];
+      $input["threadid"]                              = $threadid;
+      $input["plugin_ocsinventoryng_threads_id"]      = $threads_id;
+      $input["plugin_ocsinventoryng_ocsservers_id"]   = $ocsservers_id;
+      $input["action"]                                = $action['status'];
       if (isset($action["entities_id"])) {
          $input["entities_id"] = $action['entities_id'];
       } else {
@@ -114,6 +117,9 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
    }
 
 
+   /**
+    * @param $threads_id
+   **/
    static function deleteThreadDetailsByProcessID($threads_id) {
 
       $temp = new self();
@@ -121,31 +127,47 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
    }
 
 
+   /**
+    * @param $action
+   **/
    static function giveActionNameByActionID($action) {
+
       $actions = self::getActions();
       if (isset($actions[$action])) {
          return $actions[$action];
-      } else {
-         return '';
       }
+      return '';
    }
+
 
    static function getActions() {
-      global $LANG;
-      return array(PluginOcsinventoryngOcsServer::COMPUTER_FAILED_IMPORT => $LANG['plugin_ocsinventoryng']["common"][18],
-                   PluginOcsinventoryngOcsServer::COMPUTER_IMPORTED      => $LANG['plugin_ocsinventoryng']["common"][5],
-                   PluginOcsinventoryngOcsServer::COMPUTER_LINKED        => $LANG['plugin_ocsinventoryng']["common"][19],
-                   PluginOcsinventoryngOcsServer::COMPUTER_NOTUPDATED    => $LANG['plugin_ocsinventoryng']["common"][20],
-                   PluginOcsinventoryngOcsServer::COMPUTER_SYNCHRONIZED  => $LANG['plugin_ocsinventoryng']["common"][6],
-                   PluginOcsinventoryngOcsServer::COMPUTER_NOT_UNIQUE    => $LANG['plugin_ocsinventoryng']["common"][33],
-                   PluginOcsinventoryngOcsServer::COMPUTER_LINK_REFUSED   => $LANG['plugin_ocsinventoryng']["common"][37]);
+
+      return array(PluginOcsinventoryngOcsServer::COMPUTER_FAILED_IMPORT
+                                                            => __('Not imported computers'),
+                   PluginOcsinventoryngOcsServer::COMPUTER_IMPORTED
+                                                            => __('Imported computers'),
+                   PluginOcsinventoryngOcsServer::COMPUTER_LINKED
+                                                            => __('Linked computers'),
+                   PluginOcsinventoryngOcsServer::COMPUTER_NOTUPDATED
+                                                            => __('Not updated computers'),
+                   PluginOcsinventoryngOcsServer::COMPUTER_SYNCHRONIZED
+                                                            => __('Synchronized computers'),
+                   PluginOcsinventoryngOcsServer::COMPUTER_NOT_UNIQUE
+                                                            => __('Not unique computers'),
+                   PluginOcsinventoryngOcsServer::COMPUTER_LINK_REFUSED
+                                                            => __('Import refused by rule'));
    }
 
+
+   /**
+    * @param $name
+    * @param $value     (default 0)
+   **/
    static function showActions($name, $value=0) {
+
       $actions = self::getActions();
-      Dropdown::showFromArray($name,$actions, array('value' => $value));
+      Dropdown::showFromArray($name, $actions, array('value' => $value));
    }
 
 }
-
 ?>

@@ -2,36 +2,30 @@
 /*
  * @version $Id: ocslink.class.php 14685 2011-06-11 06:40:30Z remi $
  -------------------------------------------------------------------------
- GLPI - Gestionnaire Libre de Parc Informatique
- Copyright (C) 2003-2011 by the INDEPNET Development Team.
+ ocinventoryng - TreeView browser plugin for GLPI
+ Copyright (C) 2012 by the ocinventoryng Development Team.
 
- http://indepnet.net/   http://glpi-project.org
+ https://forge.indepnet.net/projects/ocinventoryng
  -------------------------------------------------------------------------
 
  LICENSE
 
- This file is part of GLPI.
+ This file is part of ocinventoryng.
 
- GLPI is free software; you can redistribute it and/or modify
+ ocinventoryng is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- GLPI is distributed in the hope that it will be useful,
+ ocinventoryng is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with GLPI; if not, write to the Free Software Foundation, Inc.,
- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ along with ocinventoryng; If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
-
-// ----------------------------------------------------------------------
-// Original Author of file: Julien Dombre
-// Purpose of file:
-// ----------------------------------------------------------------------
 
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
@@ -59,13 +53,13 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    /**
    * Show OcsLink of an item
    *
-   * @param $item CommonDBTM object
-   * @param $withtemplate integer : withtemplate param
+   * @param $item                   CommonDBTM object
+   * @param $withtemplate  integer  withtemplate param (default '')
    *
    * @return nothing
    **/
    static function showForItem(CommonDBTM $item, $withtemplate='') {
-      global $DB, $LANG;
+      global $DB;
 
       $target = Toolbox::getItemTypeFormURL(__CLASS__);
 
@@ -79,7 +73,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             $query = "SELECT *
                       FROM `glpi_plugin_ocsinventoryng_ocslinks`
                       WHERE `computers_id` = '$items_id' ".
-                            getEntitiesRestrictRequest("AND","glpi_plugin_ocsinventoryng_ocslinks");
+                            getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
 
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
@@ -91,14 +85,13 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "<form method='post' action=\"$target\">";
                   echo "<input type='hidden' name='id' value='$items_id'>";
                   echo "<table class='tab_cadre_fixe'>";
-                  echo "<tr><th colspan = '4'>" . $LANG['plugin_ocsinventoryng'][0] . "</th>";
+                  echo "<tr><th colspan = '4'>OCS Inventory NG</th>";
 
                   echo "<tr class='tab_bg_1'>";
-                  echo "<td class='center' colspan='2'>";
-
-                  echo $LANG['common'][52]." <a href='ocsserver.form.php?id=".
-                       PluginOcsinventoryngOcsServer::getByMachineID($items_id)."'>".
-                       PluginOcsinventoryngOcsServer::getServerNameByID($items_id)."</a>";
+                  echo "<td class='center' colspan='2'>".__('Server')."&nbsp;";
+                  echo "<a href='ocsserver.form.php?id=".
+                         PluginOcsinventoryngOcsServer::getByMachineID($items_id)."'>".
+                         PluginOcsinventoryngOcsServer::getServerNameByID($items_id)."</a>";
 
                   $query = "SELECT `ocs_agent_version`, `ocsid`
                             FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -110,25 +103,26 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   $ocs_config = PluginOcsinventoryngOcsServer::getConfig(PluginOcsinventoryngOcsServer::getByMachineID($items_id));
 
                   //If have write right on OCS and ocsreports url is not empty in OCS config
-                  if (plugin_ocsinventoryng_haveRight("ocsng","w") && $ocs_config["ocs_url"] != '') {
+                  if (plugin_ocsinventoryng_haveRight("ocsng","w")
+                      && ($ocs_config["ocs_url"] != '')) {
                      echo ", ".PluginOcsinventoryngOcsServer::getComputerLinkToOcsConsole(PluginOcsinventoryngOcsServer::getByMachineID($items_id),
                                                                                           $data_version["ocsid"],
-                                                                                          $LANG['plugin_ocsinventoryng'][57]);
+                                                                                          __('Interface'));
                   }
 
                   if ($data_version["ocs_agent_version"] != NULL) {
-                     echo " , ".$LANG['plugin_ocsinventoryng'][49]."&nbsp;: ".
-                          $data_version["ocs_agent_version"];
+                     echo " , ".sprintf(__('%1$s: %2$s'), __('Inventory agent'),
+                                        $data_version["ocs_agent_version"]);
                   }
 
                   echo "</td>";
 
                   echo "<td class='center' colspan='2'>";
-                  echo $LANG['plugin_ocsinventoryng'][14]."&nbsp;: ".
-                       Html::convDateTime($data["last_ocs_update"]);
+                  printf(__('%1$s: %2$s'), __('Date of last OCS inventory'),
+                         Html::convDateTime($data["last_ocs_update"]));
                   echo "<br>";
-                  echo $LANG['plugin_ocsinventoryng'][13]."&nbsp;: ".
-                       Html::convDateTime($data["last_update"]);
+                  printf(__('%1$s: %2$s'), __('Date of import in GLPI'),
+                         Html::convDateTime($data["last_update"]));
                   echo "</td></tr>";
 
                   echo "<tr class='tab_bg_1'>";
@@ -138,21 +132,20 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                       && plugin_ocsinventoryng_haveRight("sync_ocsng","w")) {
 
                      $colspan = 2;
-                     echo "<td class='center'>".$LANG['plugin_ocsinventoryng'][6]." ".
-                            $LANG['plugin_ocsinventoryng']['profile'][1]."&nbsp;:</td>";
+                     echo "<td class='center'>".__('Automatic OCS update')."</td>";
                      echo "<td class='left'>";
-                     Dropdown::showYesNo("use_auto_update",$data["use_auto_update"]);
+                     Dropdown::showYesNo("use_auto_update", $data["use_auto_update"]);
                      echo "</td>";
                   }
-                  echo "<td class='center' colspan='$colspan'>".
-                         $LANG['plugin_ocsinventoryng']['config'][39]."&nbsp;: ".$data['tag'].
-                       "</td></tr>";
+                  echo "<td class='center' colspan='".$colspan."'>";
+                  printf(__('%1$s: %2$s'), __('TAG'), $data['tag']);
+                  echo "</td></tr>";
 
                   echo "<tr class='tab_bg_1'>";
                   echo "<td class='center' colspan='4'>";
                   echo "<input type='hidden' name='link_id' value='" . $data["id"] . "'>";
                   echo "<input class=submit type='submit' name='update' value=\"" .
-                         $LANG['buttons'][2] . "\">";
+                         _sx('button', 'validate')."\">";
                   echo "</td></tr>";
                   echo "</table>\n";
                   echo "</form>\n";
@@ -167,19 +160,19 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    /**
     * Update lockable fields of an item
     *
-    * @param $item CommonDBTM object
-    * @param $withtemplate integer : withtemplate param
+    * @param $item                     CommonDBTM object
+    * @param $withtemplate    integer  withtemplate param (default '')
     *
     * @return nothing
    **/
    static function updateComputer(CommonDBTM $item, $withtemplate='') {
-      global $DB, $LANG;
+      global $DB;
 
       // Manage changes for OCS if more than 1 element (date_mod)
       // Need dohistory==1 if dohistory==2 no locking fields
       if ($item->fields["is_ocs_import"]
-          && $item->dohistory == 1
-          && count($item->updates) > 1) {
+          && ($item->dohistory == 1)
+          && (count($item->updates) > 1)) {
 
          PluginOcsinventoryngOcsServer::mergeOcsArray($item->fields["id"], $item->updates,
                                                       "computer_update");
@@ -197,13 +190,13 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    /**
     * Update lockable linked items of an item
     *
-    * @param $item CommonDBTM object
-    * @param $withtemplate integer : withtemplate param
+    * @param $item                     CommonDBTM object
+    * @param $withtemplate    integer  withtemplate param (default '')
     *
     * @return nothing
    **/
    static function addComputer_Item(CommonDBTM $item, $withtemplate='') {
-      global $DB, $LANG;
+      global $DB;
 
       switch ($item->input['itemtype']) {
          case 'Monitor' :
@@ -239,7 +232,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                          AND `glpi_computers_items`.`itemtype` = '".$item->input['itemtype']."'";
          $result = $DB->query($query);
 
-         while ($data=$DB->fetch_assoc($result)) {
+         while ($data = $DB->fetch_assoc($result)) {
             $temp = clone $item;
             $temp->delete($data);
             if ($ocstab) {
@@ -251,7 +244,11 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    }
 
 
-   //if Computer deleted
+   /**
+    * if Computer deleted
+    *
+    * @param $comp   Computer object
+   **/
    static function purgeComputer(Computer $comp) {
 
       $link = new self();
@@ -262,14 +259,21 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    }
 
 
-   //if Computer_Item deleted
+   /**
+    * if Computer_Item deleted
+    *
+    * @param $comp   Computer_Item object
+   **/
    static function purgeComputer_Item(Computer_Item $comp) {
       //TODO see Computer_Item function cleanDBonPurge()
    }
 
 
+   /**
+    * @param $comp   Computer object
+   **/
    static function editLock(Computer $comp) {
-      global $DB, $LANG;
+      global $DB;
 
       $ID     = $comp->getID();
       $target = Toolbox::getItemTypeFormURL(__CLASS__);
@@ -291,7 +295,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             echo "<tr class='tab_bg_1'><td class='center'>";
             echo "<input type='hidden' name='resynch_id' value='" . $data["id"] . "'>";
             echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
-                   $LANG['plugin_ocsinventoryng'][24] . "\">";
+                   _sx('button', 'Force synchronization'). "\">";
             echo "</table>\n";
             echo "</form>\n";
          }
@@ -308,11 +312,11 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          $lockable_fields = PluginOcsinventoryngOcsServer::getLockableFields();
          $locked          = importArrayFromDB($data["computer_update"]);
 
-         if (!in_array(PluginOcsinventoryngOcsServer::IMPORT_TAG_078,$locked)) {
+         if (!in_array(PluginOcsinventoryngOcsServer::IMPORT_TAG_078, $locked)) {
             $locked = PluginOcsinventoryngOcsServer::migrateComputerUpdates($ID, $locked);
          }
 
-         if (count($locked)>0) {
+         if (count($locked) > 0) {
             foreach ($locked as $key => $val) {
                if (!isset($lockable_fields[$val])) {
                   unset($locked[$key]);
@@ -322,7 +326,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          if (count($locked)) {
             $header = true;
-            echo "<tr><th colspan='2'>" . $LANG['plugin_ocsinventoryng'][16] . "&nbsp;:</th></tr>\n";
+            echo "<tr><th colspan='2'>". _n('Locked field', 'Locked fields', 2)."</th></tr>\n";
 
             foreach ($locked as $key => $val) {
                echo "<tr class='tab_bg_1'>";
@@ -346,8 +350,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                if ($DB->numrows($resultSearchMonitor) == 0) {
                   $header = true;
                   if ($first) {
-                     echo "<tr><th colspan='2'>".$LANG['plugin_ocsinventoryng'][30]."&nbsp;:".
-                          "</th></tr>\n";
+                     echo "<tr><th colspan='2'>"._n('Locked monitor', 'Locked monitors', 2)."</th>".
+                          "</tr>\n";
                      $first = false;
                   }
 
@@ -371,7 +375,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             if ($DB->numrows($resultSearchPrinter) == 0) {
                $header = true;
                if ($first) {
-                  echo "<tr><th colspan='2'>" . $LANG['plugin_ocsinventoryng'][34] . "</th></tr>\n";
+                  echo "<tr><th colspan='2'>"._n('Locked printer', 'Locked printers', 2)."</th>".
+                       "</tr>\n";
                   $first = false;
                }
 
@@ -394,7 +399,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             if ($DB->numrows($resultSearchPeriph) == 0) {
                $header = true;
                if ($first) {
-                  echo "<tr><th colspan='2'>" . $LANG['plugin_ocsinventoryng'][32] . "</th></tr>\n";
+                  echo "<tr><th colspan='2'>"._n('Locked device', 'Locked devices', 2)."</th>".
+                       "</tr>\n";
                   $first = false;
                }
 
@@ -426,7 +432,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                if ($DB->numrows($resultSearchIP) == 0) {
                   $header = true;
                   if ($first) {
-                     echo "<tr><th colspan='2'>" .$LANG['plugin_ocsinventoryng'][50]. "</th></tr>\n";
+                     echo "<tr><th colspan='2'>" ._n('Locked IP', 'Locked IP', 2). "</th></tr>\n";
                      $first = false;
                   }
                   echo "<tr class='tab_bg_1'><td class='right' width='50%'>" .
@@ -452,7 +458,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                if ($DB->numrows($resultSearchSoft) == 0) {
                   $header = true;
                   if ($first) {
-                     echo "<tr><th colspan='2'>" .$LANG['plugin_ocsinventoryng'][52]. "</th></tr>\n";
+                     echo "<tr><th colspan='2'>"._n('Locked software', 'Locked software', 2).
+                          "</th></tr>\n";
                      $first = false;
                   }
                   echo "<tr class='tab_bg_1'>";
@@ -476,7 +483,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             if ($DB->numrows($resultSearchDisk) == 0) {
                $header = true;
                if ($first) {
-                  echo "<tr><th colspan='2'>" . $LANG['plugin_ocsinventoryng'][55] . "</th></tr>\n";
+                  echo "<tr><th colspan='2'>" ._n('Locked disk', 'Locked disks', 2). "</th></tr>\n";
                   $first = false;
                }
                echo "<tr class='tab_bg_1'><td class='right' width='50%'>" . $val . "</td>";
@@ -494,7 +501,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             if ($nb == 0) {
                $header = true;
                if ($first) {
-                  echo "<tr><th colspan='2'>" . $LANG['computers'][57] . "</th></tr>\n";
+                  echo "<tr><th colspan='2'>"._n('Virtual machine', 'Virtual machines', 2)."</th>".
+                       "</tr>\n";
                   $first = false;
                }
                echo "<tr class='tab_bg_1'><td class='right' width='50%'>" . $val . "</td>";
@@ -523,7 +531,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             if (!$compdev->getFromDB($iddev)) {
                $header = true;
                if ($first) {
-                  echo "<tr><th colspan='2'>" . $LANG['plugin_ocsinventoryng'][56] . "</th></tr>\n";
+                  echo "<tr><th colspan='2'>"._n('Locked component', 'Locked components', 2).
+                       "</th></tr>\n";
                   $first = false;
                }
                $device = new $types[$type]();
@@ -536,11 +545,11 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          if ($header) {
             echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
-            echo "<input class='submit' type='submit' name='unlock' value='" .
-                  $LANG['buttons'][38] . "'></td></tr>";
+            echo "<input class='submit' type='submit' name='unlock' value='".
+                  _sx('button', 'Unlock'). "'></td></tr>";
          } else {
             echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
-            echo $LANG['plugin_ocsinventoryng'][15]."</td></tr>";
+            echo __('No locked field')."</td></tr>";
          }
 
          echo "</table></form>";
@@ -549,21 +558,31 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    }
 
 
+   /**
+    * @see inc/CommonGLPI::getTabNameForItem()
+    *
+    * @param $item               CommonGLPI object
+    * @param$withtemplate        (default 0)
+   **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
-      global $LANG;
 
       if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))
           && $this->canView()) {
 
          switch ($item->getType()) {
             case 'PluginOcsinventoryngOcsServer' :
-               return array('1' => $LANG['plugin_ocsinventoryng']['title'][1]);
+               return array('1' => __('OCS mode'));
          }
       }
       return '';
    }
 
 
+   /**
+    * @param $item            CommonGLPI object
+    * @param $tabnum          (default 1)
+    * @param $withtemplate    (default 0)
+   **/
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
 
       if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))) {
@@ -576,5 +595,6 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       }
       return true;
    }
+
 }
 ?>

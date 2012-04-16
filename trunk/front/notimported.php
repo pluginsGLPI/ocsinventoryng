@@ -35,8 +35,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 Session::checkRight("logs", "r");
 
-Html::header(__('Information about scripts execution of automatic task'), "", "plugins",
-             "ocsinventoryng");
+Html::header(__('Processes execution of automatic task'), "", "plugins", "ocsinventoryng");
 
 Search::show('PluginOcsinventoryngNotimported');
 

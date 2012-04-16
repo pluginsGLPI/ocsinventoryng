@@ -1224,7 +1224,7 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
 
          $sopt[103]['table']         ='glpi_plugin_ocsinventoryng_ocslinks';
          $sopt[103]['field']         ='last_update';
-         $sopt[103]['name']          = __('Last Inventory OCSNG');
+         $sopt[103]['name']          = __('Last OCS inventory');
          $sopt[103]['datatype']      = 'datetime';
          $sopt[103]['massiveaction'] = false;
          $sopt[103]['joinparams']    = array('jointype' => 'child');
