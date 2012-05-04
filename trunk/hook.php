@@ -55,20 +55,17 @@ function plugin_ocsinventoryng_install() {
 
       // recuperation des droits du core
       // creation de la table glpi_plugin_ocsinventoryng_profiles vide
-      If (FieldExists("glpi_profiles", "ocsng")) {
+      If (TableExists("OCS_glpi_profiles")
+          && (TableExists('OCS_glpi_ocsservers')
+              && countElementsInTable('OCS_glpi_ocsservers') > 0)) {
+
          $query = "INSERT INTO `glpi_plugin_ocsinventoryng_profiles`
                           (`profiles_id`, `ocsng`, `sync_ocsng`, `view_ocsng`, `clean_ocsng`,
                            `rule_ocs`)
                            SELECT `id`, `ocsng`, `sync_ocsng`, `view_ocsng`, `clean_ocsng`,
                                   `rule_ocs`
                            FROM `glpi_profiles`";
-            $DB->queryOrDie($query, "1.0.0 insert profiles for OCS in plugin");
-
-         //Suppression des champs dans le profile du core
-         $migration->dropField('glpi_profiles', 'ocsng');
-         $migration->dropField('glpi_profiles', 'sync_ocsng');
-         $migration->dropField('glpi_profiles', 'view_ocsng');
-         $migration->dropField('glpi_profiles', 'clean_ocsng');
+         $DB->queryOrDie($query, "1.0.0 insert profiles for OCS in plugin");
       }
 
    }
