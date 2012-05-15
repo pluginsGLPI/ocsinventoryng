@@ -6001,27 +6001,26 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
 
    static function getLockableFields() {
-      global $LANG;
 
-      return array("name"                           => $LANG['common'][16],
-                   "computertypes_id"               => $LANG['common'][17],
-                   "manufacturers_id"               => $LANG['common'][5],
-                   "computermodels_id"              => $LANG['common'][22],
-                   "serial"                         => $LANG['common'][19],
-                   "otherserial"                    => $LANG['common'][20],
-                   "comment"                        => $LANG['common'][25],
-                   "contact"                        => $LANG['common'][18],
-                   "contact_num"                    => $LANG['common'][21],
-                   "domains_id"                     => $LANG['setup'][89],
-                   "networks_id"                    => $LANG['setup'][88],
-                   "operatingsystems_id"            => $LANG['computers'][9],
-                   "operatingsystemservicepacks_id" => $LANG['computers'][53],
-                   "operatingsystemversions_id"     => $LANG['computers'][52],
-                   "os_license_number"              => $LANG['computers'][10],
-                   "os_licenseid"                   => $LANG['computers'][11],
-                   "users_id"                       => $LANG['common'][34],
-                   "locations_id"                   => $LANG['common'][15],
-                   "groups_id"                      => $LANG['common'][35]);
+     return array("name"                            => __('Name'),
+                   "computertypes_id"               => __('Type'),
+                   "manufacturers_id"               => __('Manufacturer'),
+                   "computermodels_id"              => __('Model'),
+                   "serial"                         => __('Serial number'),
+                   "otherserial"                    => __('Inventory number'),
+                   "comment"                        => __('Comments'),
+                   "contact"                        => __('Alternate username'),
+                   "contact_num"                    => __('Alternate username number'),
+                   "domains_id"                     => __('Domain'),
+                   "networks_id"                    => __('Network'),
+                   "operatingsystems_id"            => __('Operating system'),
+                   "operatingsystemservicepacks_id" => __('Service pack'),
+                   "operatingsystemversions_id"     => __('Version of the operating system'),
+                   "os_license_number"              => __('Serial of the operating system'),
+                   "os_licenseid"                   => __('Product ID of the operating system'),
+                   "users_id"                       => __('User'),
+                   "locations_id"                   => __('Location'),
+                   "groups_id"                      => __('Group'));
    }
 
 

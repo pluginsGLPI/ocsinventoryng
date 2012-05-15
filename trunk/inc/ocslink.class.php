@@ -570,7 +570,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
           && $this->canView()) {
 
          switch ($item->getType()) {
-            case 'PluginOcsinventoryngOcsServer' :
+            case 'Computer' :
                return array('1' => __('OCS mode'));
          }
       }
@@ -587,7 +587,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
       if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))) {
          switch ($item->getType()) {
-            case 'PluginOcsinventoryngOcsServer' :
+            case 'Computer' :
                self::showForItem($item, $withtemplate);
                self::editLock($item);
                break;

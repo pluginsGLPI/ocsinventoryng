@@ -51,6 +51,10 @@ function plugin_init_ocsinventoryng() {
                               = array('Profile' =>  array('PluginOcsinventoryngProfile',
                                                           'purgeProfiles'));
 
+   Plugin::registerClass('PluginOcsinventoryngOcslink',
+                         array('forwardentityfrom' => 'Computer',
+                               'addtabon'          => 'Computer'));
+
    Plugin::registerClass('PluginOcsinventoryngOcsServer',
                          array('massiveaction_noupdate_types' => true));
 
