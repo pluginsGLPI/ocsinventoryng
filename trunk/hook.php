@@ -885,7 +885,10 @@ function plugin_ocsinventoryngs_getDatabaseRelations() {
                               "glpi_plugin_ocsinventoryng_registrykeys" => "computers_id"),
 
                    "glpi_profiles"
-                     => array("glpi_plugin_ocsinventoryng_profiles" => "profiles_id"));
+                     => array("glpi_plugin_ocsinventoryng_profiles" => "profiles_id"),
+
+                   "glpi_states"
+                     => array("glpi_plugin_ocsinventoryng_ocsservers" => "states_id_default"));
    }
    return array ();
 }

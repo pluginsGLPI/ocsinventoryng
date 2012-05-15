@@ -4664,8 +4664,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
                         // Update on type, total size change or variation of 5%
                         if ($d->fields['totalsize']!=$disk['totalsize']
-                            || $d->fields['filesystems_id']!=$disk['filesystems_id']
-                            || (abs($disk['freesize']-$d->fields['freesize'])/$disk['totalsize']) > 0.05) {
+                            || ($d->fields['filesystems_id'] != $disk['filesystems_id'])
+                            || ((abs($disk['freesize']-$d->fields['freesize'])
+                                 /$disk['totalsize']) > 0.05)) {
 
                            $toupdate['id']              = $id;
                            $toupdate['totalsize']       = $disk['totalsize'];
