@@ -53,8 +53,6 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
                //If connection to the OCS DB  is ok, and all rights are ok too
                return array('1' => self::getTypeName());
 
-            case 'PluginOcsinventoryngOcsServer' :
-               return array('1' => __('web address of the OCS console'));
          }
       }
       return '';
@@ -68,9 +66,6 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
             $item->showScriptLock();
             break;
 
-         case 'PluginOcsinventoryngOcsServer' :
-            self::showOcsReportsConsole($item->getID());
-            break;
       }
       return true;
    }
@@ -190,18 +185,6 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       }
 
       return $servers;
-   }
-
-
-   static function showOcsReportsConsole($id) {
-
-      $ocsconfig = PluginOcsinventoryngOcsServer::getConfig($id);
-
-      echo "<div class='center'>";
-      if ($ocsconfig["ocs_url"] != '') {
-         echo "<iframe src='".$ocsconfig["ocs_url"]."/index.php?multi=4' width='95%' height='650'>";
-      }
-      echo "</div>";
    }
 
 

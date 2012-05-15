@@ -87,8 +87,8 @@ function plugin_init_ocsinventoryng() {
       }
 
       if (plugin_ocsinventoryng_haveRight("ocsng", "w") || Session::haveRight("config", "w")) {
-         $PLUGIN_HOOKS['config_page']['ocsinventoryng']              = 'front/ocsserver.php';
-         $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['config']  = 'front/ocsserver.php';
+         $PLUGIN_HOOKS['config_page']['ocsinventoryng']              = 'front/config.php';
+         $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['config']  = 'front/config.php';
 
          if ($_SERVER['PHP_SELF']
                   == $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.php"

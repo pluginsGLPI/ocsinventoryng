@@ -35,5 +35,18 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 plugin_ocsinventoryng_checkRight("ocsng", "w");
 
-Html::redirect("config.form.php");
+Html::header('OCSInventory NG', "", "plugins", "ocsinventoryng");
+// choose config server or config synchro
+echo "<table class='tab_cadre'>";
+echo "<tr><th>".__('Configuration')."</th></tr>";
+echo "<tr class='tab_bg_1'><td class='center b'>";
+echo "<a href='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsserver.php'>".
+       __('OCS server')."</a>";
+echo "</td></tr>";
+
+echo "<tr class='tab_bg_1'><td class='center b'>";
+echo "<a href='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/config.form.php'>".
+       __('Synchronization')."</a>";
+echo "</td></tr>";
+echo "</table>";
 ?>

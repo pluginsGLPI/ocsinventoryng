@@ -133,8 +133,12 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   $ong[2] = __('Import options');
                   $ong[3] = __('General information');
                }
+               if ($item->getField('ocs_url')) {
+                  $ong[4] = __('OCS console');
+               }
+
                return $ong;
-         }
+        }
       }
       return '';
    }
@@ -155,6 +159,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             case 3 :
                $item->ocsFormConfig($_POST['target'], $item->getID());
                break;
+
+            case 4 :
+               self::showOcsReportsConsole($item->getID());
+               break;
+
          }
       }
       return true;
@@ -6013,6 +6022,18 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                    "users_id"                       => $LANG['common'][34],
                    "locations_id"                   => $LANG['common'][15],
                    "groups_id"                      => $LANG['common'][35]);
+   }
+
+
+   static function showOcsReportsConsole($id) {
+
+      $ocsconfig = PluginOcsinventoryngOcsServer::getConfig($id);
+
+      echo "<div class='center'>";
+      if ($ocsconfig["ocs_url"] != '') {
+         echo "<iframe src='".$ocsconfig["ocs_url"]."/index.php?multi=4' width='95%' height='650'>";
+      }
+      echo "</div>";
    }
 
 }
