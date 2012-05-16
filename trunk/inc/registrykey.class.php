@@ -127,8 +127,8 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
           && $this->canView()) {
 
          switch ($item->getType()) {
-            case 'PluginOcsinventoryngOcsServer' :
-               return array('1' => $LANG['plugin_ocsinventoryng']['config'][41]);
+            case 'Computer' :
+               return self::getTypeName(2);
          }
       }
       return '';
@@ -139,7 +139,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
 
       if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))) {
          switch ($item->getType()) {
-            case 'PluginOcsinventoryngOcsServer' :
+            case 'Computer' :
                self::showForComputer($item->getField('id'));
                break;
          }

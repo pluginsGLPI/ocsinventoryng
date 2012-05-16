@@ -55,6 +55,9 @@ function plugin_init_ocsinventoryng() {
                          array('forwardentityfrom' => 'Computer',
                                'addtabon'          => 'Computer'));
 
+   Plugin::registerClass('PluginOcsinventoryngRegistryKey',
+                         array('addtabon'          => 'Computer'));
+
    Plugin::registerClass('PluginOcsinventoryngOcsServer',
                          array('massiveaction_noupdate_types' => true));
 

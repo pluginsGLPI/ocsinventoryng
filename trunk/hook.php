@@ -1222,12 +1222,13 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
          $sopt[102]['massiveaction'] = false;
          $sopt[102]['joinparams']    = array('jointype' => 'child');
 
-         $sopt[103]['table']         ='glpi_plugin_ocsinventoryng_ocslinks';
-         $sopt[103]['field']         ='last_update';
+         $sopt[103]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
+         $sopt[103]['field']         = 'last_ocs_update';
          $sopt[103]['name']          = __('Last OCS inventory');
          $sopt[103]['datatype']      = 'datetime';
          $sopt[103]['massiveaction'] = false;
          $sopt[103]['joinparams']    = array('jointype' => 'child');
+
 
          $sopt[101]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
          $sopt[101]['field']         = 'use_auto_update';
@@ -1248,6 +1249,15 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
          $sopt[105]['datatype']      = 'string';
          $sopt[105]['massiveaction'] = false;
          $sopt[105]['joinparams']    = array('jointype' => 'child');
+
+         $sopt[106]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
+         $sopt[106]['field']         = 'ocsid';
+         $sopt[106]['name']          = __('OCS ID');
+         $sopt[106]['datatype']      = 'number';
+         $sopt[106]['massiveaction'] = false;
+         $sopt[106]['joinparams']    = array('jointype' => 'child');
+
+         $sopt['registry']           = __('Registry');
 
          $sopt[110]['table']         = 'glpi_plugin_ocsinventoryng_registrykeys';
          $sopt[110]['field']         = 'value';
