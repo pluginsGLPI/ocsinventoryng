@@ -658,6 +658,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    }
 
 
+   // fonction jamais appeléee
    function ocsFormAutomaticLinkConfig($target, $ID, $withtemplate='', $templateid='') {
       global $LANG;
 
@@ -793,8 +794,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    }
 
 
+   /**
+    * @param $ID
+   **/
    function showDBConnectionStatus($ID) {
-      global $LANG;
 
       $out="<br><div class='center'>\n";
       $out.="<table class='tab_cadre_fixe'>";
@@ -919,7 +922,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
 
    function prepareInputForAdd($input) {
-      global $LANG, $DB;
+      global $DB;
 
       // Check if server config does not exists
       $query = "SELECT *
@@ -927,7 +930,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                 WHERE `name` = '".$input['name']."';";
       $result = $DB->query($query);
       if ($DB->numrows($result)>0) {
-         Session::addMessageAfterRedirect($LANG['plugin_ocsinventoryng']['config'][8], false, ERROR);
+         Session::addMessageAfterRedirect(__('Unable to add. The OCSNG server already exists.'),
+                                          false, ERROR);
          return false;
       }
 
@@ -1024,22 +1028,22 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    }
 
 
+   /**
+    * @param $width
+   **/
    function showSystemInformations($width) {
-      global $LANG;
 
       $ocsServers = getAllDatasFromTable('glpi_plugin_ocsinventoryng_ocsservers');
       if (!empty($ocsServers)) {
-         echo "\n<tr class='tab_bg_2'><th>" . $LANG['plugin_ocsinventoryng'][0] . "</th></tr>\n";
+         echo "\n<tr class='tab_bg_2'><th>OCS Inventory NG</th></tr>\n";
          echo "<tr class='tab_bg_1'><td><pre>\n&nbsp;\n";
 
          $msg = '';
          foreach ($ocsServers as $ocsServer) {
-               $msg .= $LANG['plugin_ocsinventoryng']['config'][2]." : '".$ocsServer['ocs_db_host']."'";
-               $msg .= ', '.(self::checkOCSconnection($ocsServer['id'])
-                             ?$LANG['plugin_ocsinventoryng'][18]
-                             :$LANG['plugin_ocsinventoryng'][21]);
-               $msg .= ', '.$LANG['plugin_ocsinventoryng']['config'][38]. " : ".
-                       $ocsServer['use_soft_dict'];
+               $msg .= "Host: '".$ocsServer['ocs_db_host']."'";
+               $msg .= ", Connection: ".(self::checkOCSconnection($ocsServer['id']) ? "Ok" : "KO");
+               $msg .= ", Use the OCSNG software dictionary: ".
+                     ($ocsServer['use_soft_dict'] ? 'Yes' : 'No');
          }
          echo wordwrap($msg."\n", $width, "\n\t\t");
          echo "\n</pre></td></tr>";
@@ -1209,8 +1213,13 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    }
 
 
+      /**
+    * @param $ocsid
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param $computers_id
+   **/
    static function linkComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $computers_id) {
-      global $DB, $PluginOcsinventoryngDBocs, $LANG, $CFG_GLPI;
+      global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
 
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
@@ -1261,11 +1270,12 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          self::setChecksumForComputer($ocsid, self::MAX_CHECKSUM);
 
          if ($ocs_id_change
-             || $idlink = self::ocsLink($ocsid, $plugin_ocsinventoryng_ocsservers_id,
-                                        $computers_id)) {
+             || ($idlink = self::ocsLink($ocsid, $plugin_ocsinventoryng_ocsservers_id,
+                                         $computers_id))) {
 
              // automatic transfer computer
-             if ($CFG_GLPI['transfers_id_auto']>0 && Session::isMultiEntitiesMode()) {
+             if (($CFG_GLPI['transfers_id_auto'] > 0)
+                 && Session::isMultiEntitiesMode()) {
 
                 // Retrieve data from glpi_plugin_ocsinventoryng_ocslinks
                 $ocsLink = new PluginOcsinventoryngOcslink();
@@ -1293,7 +1303,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
             // Not already import from OCS / mark default state
             if (!$ocs_id_change
-                || (!$comp->fields['is_ocs_import'] && $ocsConfig["states_id_default"]>0)) {
+                || (!$comp->fields['is_ocs_import']
+                    && ($ocsConfig["states_id_default"] > 0))) {
                $input["states_id"] = $ocsConfig["states_id_default"];
             }
             $comp->update($input);
@@ -1363,7 +1374,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          }
 
       } else {
-         Session::addMessageAfterRedirect($ocsid . " - " . $LANG['plugin_ocsinventoryng'][23],
+        //TRANS: %s is the OCS id
+         Session::addMessageAfterRedirect(sprintf(__('Unable to import, GLPI computer is already related to an element of OCSNG (%d)'),
+                                                  $ocsid),
                                           false, ERROR);
       }
       return false;
@@ -2467,7 +2480,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
     * @return nothing
    **/
    static function showComputersToClean($plugin_ocsinventoryng_ocsservers_id, $check, $start) {
-      global $DB, $PluginOcsinventoryngDBocs, $LANG, $CFG_GLPI;
+      global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
 
@@ -2554,7 +2567,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       }
 
       echo "<div class='center'>";
-      echo "<h2>" . $LANG['plugin_ocsinventoryng'][3] . "</h2>";
+      echo "<h2>" . __('Clean links between GLPI and OCSNG') . "</h2>";
 
       $target = $CFG_GLPI['root_doc'].'/plugins/ocsinventoryng/front/ocsng.clean.php';
       if (($numrows = count($already_linked)) > 0) {
@@ -2571,19 +2584,13 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
          echo "<form method='post' id='ocsng_form' name='ocsng_form' action='".$target."'>";
          if ($canedit) {
-            echo "<a href='".$target."?check=all' ".
-                  "onclick= \"if (markCheckboxes('ocsng_form')) return false;\">" .
-                  $LANG['buttons'][18] . "</a>&nbsp;/&nbsp;\n";
-            echo "<a href='".$target."?check=none' ".
-                  "onclick= \"if ( unMarkCheckboxes('ocsng_form') ) return false;\">" .
-                  $LANG['buttons'][19] . "</a>\n";
+            self::checkBox($target);
          }
          echo "<table class='tab_cadre'>";
-         echo "<tr><th>" . $LANG['common'][1]."</th><th>".$LANG['plugin_ocsinventoryng'][13]."</th>";
-         echo "<th>" . $LANG['plugin_ocsinventoryng'][59] . "</th>";
-         echo "<th>" . $LANG['plugin_ocsinventoryng'][60] . "</th>";
+         echo "<tr><th>" . __('Item')."</th><th>".__('Import date in GLPI')."</th>";
+         echo "<th>" . __('Existing in GLPI') . "</th><th>" . __('Existing in OCSNG') . "</th>";
          if (Session::isMultiEntitiesMode()) {
-            echo "<th>" . $LANG['entity'][0] . "</th>";
+            echo "<th>" . __('Entity'). "</th>";
          }
          if ($canedit) {
             echo "<th>&nbsp;</th>";
@@ -2593,7 +2600,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<tr class='tab_bg_1'><td colspan='6' class='center'>";
          if ($canedit) {
             echo "<input class='submit' type='submit' name='clean_ok' value=\"".
-                   $LANG['buttons'][53]."\">";
+                   _sx('button','Clean')."\">";
          }
          echo "</td></tr>\n";
 
@@ -2601,14 +2608,14 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             echo "<tr class='tab_bg_2 center'>";
             echo "<td>" . $tab["ocs_deviceid"] . "</td>\n";
             echo "<td>" . Html::convDateTime($tab["date"]) . "</td>\n";
-            echo "<td>" . $LANG['choice'][$tab["in_glpi"]] . "</td>\n";
-            echo "<td>" . $LANG['choice'][$tab["in_ocs"]] . "</td>\n";
+            echo "<td>" . Dropdown::getYesNo($tab["in_glpi"]) . "</td>\n";
+            echo "<td>" . Dropdown::getYesNo($tab["in_ocs"]) . "</td>\n";
             if (Session::isMultiEntitiesMode()) {
                echo "<td>".Dropdown::getDropdownName('glpi_entities', $tab['entities_id'])."</td>\n";
             }
             if ($canedit) {
                echo "<td><input type='checkbox' name='toclean[" . $tab["id"] . "]' " .
-                          ($check == "all" ? "checked" : "") . "></td>";
+                          (($check == "all") ? "checked" : "") . "></td>";
             }
             echo "</tr>\n";
          }
@@ -2616,14 +2623,14 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<tr class='tab_bg_1'><td colspan='6' class='center'>";
          if ($canedit) {
             echo "<input class='submit' type='submit' name='clean_ok' value=\"".
-                   $LANG['buttons'][53]."\">";
+                   _sx('button','Clean')."\">";
          }
          echo "</td></tr>";
          echo "</table></form>\n";
          Html::printPager($start, $numrows, $target, $parameters);
 
       } else {
-         echo "<div class='center'><strong>" . $LANG['plugin_ocsinventoryng'][61] . "</strong></div>";
+         echo "<div class='center b '>" . __('No item to clean') . "</div>";
          displayBackLink();
       }
       echo "</div>";
@@ -2687,7 +2694,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
 
    static function showComputersToUpdate($plugin_ocsinventoryng_ocsservers_id, $check, $start) {
-      global $DB, $PluginOcsinventoryngDBocs, $LANG, $CFG_GLPI;
+      global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       if (!plugin_ocsinventoryng_haveRight("ocsng", "w")) {
@@ -2741,7 +2748,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             }
          }
          echo "<div class='center'>";
-         echo "<h2>" . $LANG['plugin_ocsinventoryng'][10] . "</h2>";
+         echo "<h2>" . __('Computers updated in OCSNG') . "</h2>";
 
          $target = $CFG_GLPI['root_doc'].'/plugins/ocsinventoryng/front/ocsng.sync.php';
          if (($numrows = count($already_linked)) > 0) {
@@ -2756,22 +2763,16 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             }
 
             echo "<form method='post' id='ocsng_form' name='ocsng_form' action='".$target."'>";
-            echo "<a href='".$target."?check=all' ".
-                   "onclick= \"if (markCheckboxes('ocsng_form')) return false;\">" .
-                   $LANG['buttons'][18] . "</a>&nbsp;/&nbsp;\n";
-            echo "<a href='".$target."?check=none' ".
-                   "onclick= \"if ( unMarkCheckboxes('ocsng_form') ) return false;\">" .
-                   $LANG['buttons'][19] . "</a>\n";
+            self::checkBox($target);
+
             echo "<table class='tab_cadre_fixe'>";
             echo "<tr class='tab_bg_1'><td colspan='5' class='center'>";
             echo "<input class='submit' type='submit' name='update_ok' value=\"".
-                   $LANG['ldap'][15]."\">";
+                   _sx('button','Synchronize')."\">";
             echo "</td></tr>\n";
 
-            echo "<tr><th>" . $LANG['plugin_ocsinventoryng'][11] . "</th>";
-            echo "<th>" . $LANG['plugin_ocsinventoryng'][13] . "</th>";
-            echo "<th>" . $LANG['plugin_ocsinventoryng'][14] . "</th>";
-            echo "<th>" . $LANG['plugin_ocsinventoryng'][6] . "</th>";
+            echo "<tr><th>". __('Update computers')."</th><th>".__('Import date in GLPI')."</th>";
+            echo "<th>" . __('Last OCSNG inventory date')."</th><th>". __('Auto update')."</th>";
             echo "<th>&nbsp;</th></tr>\n";
 
             foreach ($already_linked as $ID => $tab) {
@@ -2780,35 +2781,30 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                           $tab["computers_id"] . "'>" . $tab["name"] . "</a></td>\n";
                echo "<td>" . Html::convDateTime($tab["date"]) . "</td>\n";
                echo "<td>" . Html::convDateTime($hardware[$tab["ocsid"]]["date"]) . "</td>\n";
-               echo "<td>" . $LANG['choice'][$tab["use_auto_update"]] . "</td>\n";
+               echo "<td>" . Dropdown::getYesNo($tab["use_auto_update"]) . "</td>\n";
                echo "<td><input type='checkbox' name='toupdate[" . $tab["id"] . "]' " .
-                          ($check == "all" ? "checked" : "") . "></td></tr>\n";
+                          (($check == "all") ? "checked" : "") . "></td></tr>\n";
             }
 
             echo "<tr class='tab_bg_1'><td colspan='5' class='center'>";
             echo "<input class='submit' type='submit' name='update_ok' value=\"".
-                   $LANG['ldap'][15]."\">";
+                   _sx('button','Synchronize')."\">";
             echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' ".
                    "value='$plugin_ocsinventoryng_ocsservers_id'>";
             echo "</td></tr>";
 
             echo "<tr class='tab_bg_1'><td colspan='5' class='center'>";
-            echo "<a href='".$target."?check=all' ".
-                   "onclick= \"if (markCheckboxes('ocsng_form')) return false;\">" .
-                   $LANG['buttons'][18] . "</a>&nbsp;/&nbsp;\n";
-            echo "<a href='".$target."?check=none' ".
-                   "onclick= \"if ( unMarkCheckboxes('ocsng_form') ) return false;\">" .
-                   $LANG['buttons'][19] . "</a></td></tr>\n";
+            self::checkBox($target);
             echo "</table></form>\n";
             Html::printPager($start, $numrows, $target, $parameters);
 
          } else {
-            echo "<br><strong>" . $LANG['plugin_ocsinventoryng'][11] . "</strong>";
+            echo "<br><span class='b'>" . __('Update computers') . "</span>";
          }
          echo "</div>";
 
       } else {
-         echo "<div class='center'><strong>" . $LANG['plugin_ocsinventoryng'][12] . "</strong></div>";
+         echo "<div class='center b'>" . __('No new computer to be updated') . "</div>";
       }
    }
 
@@ -2925,7 +2921,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    **/
    static function showComputersToAdd($plugin_ocsinventoryng_ocsservers_id, $advanced, $check,
                                       $start, $entity=0, $tolinked=false) {
-      global $DB, $PluginOcsinventoryngDBocs, $LANG, $CFG_GLPI;
+      global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
 
       if (!plugin_ocsinventoryng_haveRight("ocsng", "w")) {
          return false;
@@ -3009,7 +3005,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          }
 
          if ($tolinked && count($hardware)) {
-            echo "<div class='center b'>" . $LANG['plugin_ocsinventoryng'][22] . "</div>";
+            echo "<div class='center b'>" .
+                  __('Caution! The imported data (see your configuration) will overwrite the existing one').
+                  "</div>";
          }
          echo "<div class='center'>";
 
@@ -3031,7 +3029,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                echo "<form method='post' name='ocsng_import_mode' id='ocsng_import_mode'
                       action='$target'>\n";
                echo "<table class='tab_cadre_fixe'>";
-               echo "<tr><th>" . $LANG['plugin_ocsinventoryng'][41] . "</th></tr>\n";
+               echo "<tr><th>". __('Manual import mode'). "</th></tr>\n";
                echo "<tr class='tab_bg_1'><td class='center'>";
                if ($advanced) {
                   $status = "false";
@@ -3040,40 +3038,35 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                }
                echo "<a href='" . $target . "?change_import_mode=" . $status . "'>";
                if ($advanced) {
-                  echo $LANG['plugin_ocsinventoryng'][38];
+                  _e('Disable preview');
                } else {
-                  echo $LANG['plugin_ocsinventoryng'][37];
+                  _e('Enable preview');
                }
                echo "</a></td></tr>";
 
-               echo "<tr class='tab_bg_1'><";
-               echo "td class='center b'>".$LANG['plugin_ocsinventoryng']['config'][18] . "<br>";
+               echo "<tr class='tab_bg_1'><td class='center b'>".
+                     __('Check first that duplicates have been correctly managed in OCSNG')."</td>";
                echo "</tr></table></form></div>";
             }
 
             echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
             if (!$tolinked) {
-               echo "<a href='".$target."?check=all&amp;start=$start' onclick= ".
-                     "\"if ( markCheckboxes('ocsng_form') ) return false;\">" .$LANG['buttons'][18].
-                     "</a>&nbsp;/&nbsp;<a href='".$target."?check=none&amp;start=".
-                     "$start' onclick= \"if ( unMarkCheckboxes('ocsng_form') ) return false;\">" .
-                     $LANG['buttons'][19] . "</a>\n";
+               self::checkBox($target);
             }
             echo "<table class='tab_cadre_fixe'>";
 
             echo "<tr class='tab_bg_1'><td colspan='" . ($advanced ? 8 : 5) . "' class='center'>";
             echo "<input class='submit' type='submit' name='import_ok' value=\"".
-                   $LANG['buttons'][37]."\">";
+                   _sx('button', 'Import')."\">";
             echo "</td></tr>\n";
 
-            echo "<tr><th>" . $LANG['plugin_ocsinventoryng'][5] . "</th>\n";
-            echo "<th>".$LANG['common'][5]." / ".$LANG['common'][22]." / ".$LANG['common'][19].
-                 "</th>\n";
-            echo "<th>" . $LANG['common'][27] . "</th>\n<th>TAG</th>\n";
+            echo "<tr><th>".__('Import new computers'). "</th>\n<th>".__('Manufacturer')."</th>\n";
+            echo "<th>" .__('Model')."</th><th>".__('Serial number')."</th>\n";
+            echo "<th>" . __('Date') . "</th>\n<th>TAG</th>\n";
             if ($advanced && !$tolinked) {
-               echo "<th>" . $LANG['plugin_ocsinventoryng'][40] . "</th>\n";
-               echo "<th>" . $LANG['plugin_ocsinventoryng'][36] . "</th>\n";
-               echo "<th>" . $LANG['plugin_ocsinventoryng'][39] . "</th>\n";
+               echo "<th>" . __('Match the rule ?') . "</th>\n";
+               echo "<th>" . __('Destination entity') . "</th>\n";
+               echo "<th>" . __('Target location') . "</th>\n";
             }
             echo "<th>&nbsp;</th></tr>\n";
 
@@ -3087,7 +3080,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   $data = $rule->processAllRules(array(), array(), $tab["id"]);
                }
                echo "<tr class='tab_bg_2'><td>" . $tab["name"] . "</td>\n";
-               echo "<td>".$tab["manufacturer"]." / ".$tab["model"]." / ".$tab["serial"]."</td>\n";
+               echo "<td>".$tab["manufacturer"]."</td><td>".$tab["model"]."</td>";
+               echo "<td>".$tab["serial"]."</td>\n";
                echo "<td>" . Html::convDateTime($tab["date"]) . "</td>\n";
                echo "<td>" . $tab["TAG"] . "</td>\n";
                if ($advanced && !$tolinked) {
@@ -3107,21 +3101,19 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                      echo "</td>\n";
                   }
                   echo "<td>";
-                  Dropdown::show('Entity',
-                                 array('name'     => "toimport_entities[".$tab["id"]."]=".
-                                                      $data['entities_id'],
-                                       'value'    => $data['entities_id'],
-                                       'comments' => 0));
+                  Entity::dropdown(array('name'     => "toimport_entities[".$tab["id"]."]=".
+                                                         $data['entities_id'],
+                                          'value'    => $data['entities_id'],
+                                         'comments' => 0));
                   echo "</td>\n";
                   echo "<td>";
                   if (!isset($data['locations_id'])) {
                      $data['locations_id'] = 0;
                   }
-                  Dropdown::show('Location',
-                                 array('name'     => "toimport_locations[".$tab["id"]."]=".
-                                                      $data['locations_id'],
-                                       'value'    => $data['locations_id'],
-                                       'comments' => 0));
+                  Location::dropdown(array('name'     => "toimport_locations[".$tab["id"]."]=".
+                                                           $data['locations_id'],
+                                           'value'    => $data['locations_id'],
+                                           'comments' => 0));
                   echo "</td>\n";
                }
                echo "<td>";
@@ -3148,7 +3140,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                         $options['entity'] = $entity;
                      }
 
-                     Dropdown::show('Computer', $options);
+                     Computer::dropdown($options);
                   } else {
                      echo "<img src='".GLPI_ROOT. "/pics/redbutton.png'>";
                   }
@@ -3158,27 +3150,22 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
             echo "<tr class='tab_bg_1'><td colspan='" . ($advanced ? 8 : 5) . "' class='center'>";
             echo "<input class='submit' type='submit' name='import_ok' value=\"".
-                   $LANG['buttons'][37]."\">\n";
+                   _sx('button', 'Import')."\">\n";
             echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' ".
                    "value='$plugin_ocsinventoryng_ocsservers_id'>";
             echo "</td></tr>";
             echo "</table></form>\n";
 
             if (!$tolinked) {
-               echo "<a href='".$target."?check=all&amp;start=$start' onclick=".
-                      "\"if ( markCheckboxes('ocsng_form') ) return false;\">".$LANG['buttons'][18].
-                    "</a>&nbsp;/&nbsp;".
-                    "<a href='".$target."?check=none&amp;start=".
-                      "$start' onclick=\"if (unMarkCheckboxes('ocsng_form')) return false;\">" .
-                      $LANG['buttons'][19] . "</a>\n";
+               self::checkBox($target);
             }
 
             Html::printPager($start, $numrows, $target, $parameters);
 
          } else {
             echo "<table class='tab_cadre_fixe'>";
-            echo "<tr><th>" . $LANG['plugin_ocsinventoryng'][2] . "</th></tr>\n";
-            echo "<tr class='tab_bg_1'><td class='center b'>".$LANG['plugin_ocsinventoryng'][9].
+            echo "<tr><th>" . __('Import new computers') . "</th></tr>\n";
+            echo "<tr class='tab_bg_1'><td class='center b'>".__('No new computer to be imported').
                  "</td></tr>\n";
             echo "</table>";
          }
@@ -3187,8 +3174,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       } else {
          echo "<div class='center'>";
          echo "<table class='tab_cadre_fixe'>";
-         echo "<tr><th>" . $LANG['plugin_ocsinventoryng'][2] . "</th></tr>\n";
-         echo "<tr class='tab_bg_1'><td class='center b'>" . $LANG['plugin_ocsinventoryng'][9] .
+         echo "<tr><th>" .__('Import new computers') . "</th></tr>\n";
+         echo "<tr class='tab_bg_1'><td class='center b'>" .__('No new computer to be imported').
               "</td></tr>\n";
          echo "</table></div>";
       }
@@ -4195,7 +4182,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
     * @return nothing.
    **/
    static function showFormServerChoice() {
-      global $DB, $LANG, $CFG_GLPI;
+      global $DB, $CFG_GLPI;
 
       $query = "SELECT *
                 FROM `glpi_plugin_ocsinventoryng_ocsservers`
@@ -4206,9 +4193,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       if ($DB->numrows($result) > 1) {
          echo "<form action=\"".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsng.php\" method='get'>";
          echo "<div class='center'><table class='tab_cadre'>";
-         echo "<tr class='tab_bg_2'><th colspan='2'>" . $LANG['plugin_ocsinventoryng'][26] . "</th></tr>\n";
+         echo "<tr class='tab_bg_2'><th colspan='2'>".__('Choice of an OCSNG server')."</th></tr>\n";
 
-         echo "<tr class='tab_bg_2'><td class='center'>" . $LANG['common'][16] . "</td>";
+         echo "<tr class='tab_bg_2'><td class='center'>" .  __('Name'). "</td>";
          echo "<td class='center'>";
          echo "<select name='plugin_ocsinventoryng_ocsservers_id'>";
          while ($ocs = $DB->fetch_array($result)) {
@@ -4218,7 +4205,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
          echo "<tr class='tab_bg_2'><td class='center' colspan=2>";
          echo "<input class='submit' type='submit' name='ocs_showservers' value=\"".
-                $LANG['buttons'][2]."\"></td></tr>";
+                __sx('button','Post')."\"></td></tr>";
          echo "</table></div></form>\n";
 
       } else if ($DB->numrows($result) == 1) {
@@ -4227,9 +4214,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       } else {
          echo "<div class='center'><table class='tab_cadre'>";
-         echo "<tr class='tab_bg_2'><th colspan='2'>" . $LANG['plugin_ocsinventoryng'][26] . "</th></tr>\n";
+         echo "<tr class='tab_bg_2'><th colspan='2'>".__('Choice of an OCSNG server')."</th></tr>\n";
 
-         echo "<tr class='tab_bg_2'><td class='center' colspan=2>".$LANG['plugin_ocsinventoryng'][27]."</td></tr>";
+         echo "<tr class='tab_bg_2'><td class='center' colspan=2>".__('No OCSNG server defined').
+              "</td></tr>";
          echo "</table></div>\n";
       }
    }
@@ -4738,19 +4726,20 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
     *
     * This function create a new software in GLPI with some general datas.
     *
-    * @param $computers_id integer : glpi computer id.
-    * @param $entity integer : entity of the computer
-    * @param $ocsid integer : ocs computer id (ID).
-    * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
-    * @param $cfg_ocs array : ocs config
-    * @param $import_software array : already imported softwares
-    * @param $dohistory boolean : log changes ?
+    * @param $computers_id                         integer : glpi computer id.
+    * @param $entity                               integer : entity of the computer
+    * @param $ocsid                                integer : ocs computer id (ID).
+    * @param $plugin_ocsinventoryng_ocsservers_id  integer : ocs server id
+    * @param $cfg_ocs                              array   : ocs config
+    * @param $import_software                      array   : already imported softwares
+    * @param $dohistory                            boolean : log changes ?
     *
     * @return Nothing (void).
    **/
-   static function updateSoftware($computers_id, $entity, $ocsid, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs,
-                                  $import_software, $dohistory) {
-      global $DB, $PluginOcsinventoryngDBocs, $LANG;
+   static function updateSoftware($computers_id, $entity, $ocsid,
+                                  $plugin_ocsinventoryng_ocsservers_id, array $cfg_ocs,
+                                  array $import_software, $dohistory) {
+      global $DB, $PluginOcsinventoryngDBocs;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       if ($cfg_ocs["import_software"]) {
@@ -4985,7 +4974,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                             && countElementsInTable('glpi_softwareversions',
                                     "softwares_id = '".$vers->fields['softwares_id']."'") == 1) {
                            // 1 is the current to be removed
-                           $soft->putInTrash($vers->fields['softwares_id'], $LANG['plugin_ocsinventoryng'][54]);
+                           $soft->putInTrash($vers->fields['softwares_id'],
+                                             __('Software deleted by OCSNG synchronization'));
                         }
                         $vers->delete(array("id" => $data['softwareversions_id']));
                      }
@@ -5655,14 +5645,13 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
 
    static function cronInfo($name) {
-      global $LANG;
-
-      return array('description' => $LANG['plugin_ocsinventoryng']['config'][28]);
+      // no translation for the name of the project
+      return array('description' => 'OCS Inventory NG');
    }
 
 
    static function cronOcsng($task) {
-      global $DB, $CFG_GLPI, $LANG;
+      global $DB, $CFG_GLPI;
 
       //Get a randon server id
       $plugin_ocsinventoryng_ocsservers_id = self::getRandomServerID();
@@ -5711,7 +5700,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          if ($nbcomp > 0) {
             while ($data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs)) {
                $task->addVolume(1);
-               $task->log($LANG['help'][25] . " : " . $data["DEVICEID"] . " (" . $data["ID"] . ")\n");
+               $task->log(sprintf(__('%1$s: %2$s'), __('Computer'),
+                                  sprintf(__('%1$s (%2$s)'), $data["DEVICEID"], $data["ID"])));
                self::processComputer($data["ID"], $plugin_ocsinventoryng_ocsservers_id, 0);
             }
          } else {
@@ -5735,16 +5725,16 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       }
    }
 
-   static function getAvailableStatistics() {
-      global $LANG;
 
-      $stats = array('imported_machines_number'      => $LANG['plugin_ocsinventoryng'][70],
-                     'synchronized_machines_number'  => $LANG['plugin_ocsinventoryng'][71],
-                     'linked_machines_number'        => $LANG['plugin_ocsinventoryng'][73],
-                     'notupdated_machines_number'    => $LANG['plugin_ocsinventoryng'][74],
-                     'failed_rules_machines_number'  => $LANG['plugin_ocsinventoryng'][72],
-                     'not_unique_machines_number'    => $LANG['plugin_ocsinventoryng'][75],
-                     'link_refused_machines_number'  => $LANG['plugin_ocsinventoryng'][80]);
+   static function getAvailableStatistics() {
+
+      $stats = array('imported_machines_number'     => __('Imported computers'),
+                     'synchronized_machines_number' => __('Synchronized computers'),
+                     'linked_machines_number'       => __('Linked computers'),
+                     'notupdated_machines_number'   => __('Unmodified computers'),
+                     'failed_rules_machines_number' => __("Computers don't check any rule"),
+                     'not_unique_machines_number'   => __('Duplicate computers'),
+                     'link_refused_machines_number' => __('Computers whose import is refused by a rule'));
       return $stats;
    }
 
@@ -5790,12 +5780,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
 
    static function showStatistics($statistics=array(), $finished=false) {
-      global $LANG;
 
       echo "<div class='center b'>";
-      echo "<table class='tab_cadre_fixe'><th colspan='2'>".$LANG['plugin_ocsinventoryng'][76];
+      echo "<table class='tab_cadre_fixe'><th colspan='2'>".__('Statistics of the OCS link');
       if ($finished) {
-         echo " : ".$LANG['plugin_ocsinventoryng'][77];
+         _e('Process completed');
       }
       echo "</th>";
 
@@ -5920,25 +5909,24 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
 
    static function previewRuleImportProcess($output) {
-      global $LANG;
 
       //If ticket is assign to an object, display this information first
       if (isset($output["action"])) {
          echo "<tr class='tab_bg_2'>";
-         echo "<td>".$LANG['rulesengine'][11]."</td>";
+         echo "<td>".__('Action type')."</td>";
          echo "<td>";
 
          switch ($output["action"]) {
             case self::LINK_RESULT_LINK :
-               echo $LANG['plugin_ocsinventoryng'][67];
+               _e('Link possible');
                break;
 
             case self::LINK_RESULT_NO_IMPORT:
-               echo $LANG['plugin_ocsinventoryng'][68];
+               _e('Import refused');
                break;
 
             case self::LINK_RESULT_IMPORT:
-               echo $LANG['plugin_ocsinventoryng'][69];
+               _e('New computer created in GLPI');
                break;
          }
 
@@ -5949,7 +5937,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             echo "<tr class='tab_bg_2'>";
             $item = new Computer;
             if ($item->getFromDB($output["found_computers"][0])) {
-               echo "<td>".$LANG['rulesengine'][155]."</td>";
+               echo "<td>".__('Link with computer')."</td>";
                echo "<td>".$item->getLink(true)."</td>";
             }
             echo "</tr>";
@@ -6033,6 +6021,22 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<iframe src='".$ocsconfig["ocs_url"]."/index.php?multi=4' width='95%' height='650'>";
       }
       echo "</div>";
+   }
+
+
+   /**
+    * @since version 0.84
+    *
+    * @param $target
+   **/
+   static function checkBox($target) {
+
+      echo "<a href='".$target."?check=all' ".
+             "onclick= \"if (markCheckboxes('ocsng_form')) return false;\">".__('Check all').
+             "</a>&nbsp;/&nbsp;\n";
+      echo "<a href='".$target."?check=none' ".
+             "onclick= \"if ( unMarkCheckboxes('ocsng_form') ) return false;\">" .
+              __('Uncheck all') . "</a>\n";
    }
 
 }

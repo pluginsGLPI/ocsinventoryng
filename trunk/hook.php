@@ -993,11 +993,11 @@ function plugin_ocsinventoryng_MassiveActionsDisplay($options=array()) {
                break;
 
             case "plugin_ocsinventoryng_unlock_ocsng_field" :
-               $fields['all'] = $LANG['common'][66];
+               $fields['all'] = __('All');
                $fields       += PluginOcsinventoryngOcsServer::getLockableFields();
                Dropdown::showFromArray("field", $fields);
-               echo "&nbsp;<input type='submit' name='massiveaction' class='submit' value='".
-                            _sx('button', 'Post')."'>";
+               echo "<br><br><input type='submit' name='massiveaction' class='submit' value='".
+                              _sx('button', 'Post')."'>";
                break;
 
             case "plugin_ocsinventoryng_unlock_ocsng_monitor" :
@@ -1007,7 +1007,7 @@ function plugin_ocsinventoryng_MassiveActionsDisplay($options=array()) {
             case "plugin_ocsinventoryng_unlock_ocsng_disk" :
             case "plugin_ocsinventoryng_unlock_ocsng_ip" :
                echo "<input type='submit' name='massiveaction' class='submit' value='".
-                      _sx('button', 'Post')."'>";
+                      __s('Unlock')."'>";
                break;
          }
    }
