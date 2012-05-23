@@ -223,7 +223,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          default :
             return false;
       }
-
+      if (!$link->getFromDB($item->input['items_id'])) {
+         return false;
+      }
       if (!$link->getField('is_global') ) {
          // Handle case where already used, should never happen (except from OCS sync)
          $query = "SELECT `id`, `computers_id`

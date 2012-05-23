@@ -897,7 +897,10 @@ function plugin_ocsinventoryngs_getDatabaseRelations() {
 function plugin_ocsinventoryng_postinit() {
    global $CFG_GLPI, $PLUGIN_HOOKS;
 
-   $PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng']  = array();
+   $PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng']
+                              = array('Profile' =>  array('PluginOcsinventoryngProfile',
+                                                          'purgeProfiles'));
+
    $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng']    = array();
    $PLUGIN_HOOKS['item_update']['ocsinventoryng']     = array();
 
@@ -912,6 +915,7 @@ function plugin_ocsinventoryng_postinit() {
       $PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng'][$type]
          = array('Computer'      => array('PluginOcsinventoryngOcslink', 'purgeComputer'),
                  'Computer_Item' => array('PluginOcsinventoryngOcslink', 'purgeComputer_Item'));
+
 
       CommonGLPI::registerStandardTab($type, 'PluginOcsinventoryngOcsServer');
    }
@@ -970,11 +974,11 @@ function plugin_ocsinventoryng_MassiveActionsDisplay($options=array()) {
       case 'PluginOcsinventoryngNotimported' :
          switch ($options['action']) {
             case "plugin_ocsinventoryng_import" :
-               Dropdown::show('Entity', array('name' => 'entity'));
+               Entity::dropdown(array('name' => 'entity'));
                break;
 
             case "plugin_ocsinventoryng_link" :
-               Dropdown::show('Computer', array('name' => 'computers_id'));
+               Computer::dropdown(array('name' => 'computers_id'));
                break;
 
             case "plugin_ocsinventoryng_replayrules" :

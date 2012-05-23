@@ -701,8 +701,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       echo "<tr class='tab_bg_2'><td>" . $LANG['plugin_ocsinventoryng']['config'][55]."</td>\n";
       echo "<td colspan='3'>";
-      Dropdown::show('State', array('value' => $this->fields["states_id_linkif"],
-                                    'name'  => "states_id_linkif"));
+      State::dropdown(array('value' => $this->fields["states_id_linkif"],
+                            'name'  => "states_id_linkif"));
       echo "</td></tr>\n";
       echo "</table><br>".$LANG['plugin_ocsinventoryng']['config'][58];
 

@@ -47,10 +47,6 @@ function plugin_init_ocsinventoryng() {
    $PLUGIN_HOOKS['change_profile']['ocsinventoryng'] = array('PluginOcsinventoryngProfile',
                                                              'changeProfile');
 
-   $PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng']
-                              = array('Profile' =>  array('PluginOcsinventoryngProfile',
-                                                          'purgeProfiles'));
-
    Plugin::registerClass('PluginOcsinventoryngOcslink',
                          array('forwardentityfrom' => 'Computer',
                                'addtabon'          => 'Computer'));
@@ -59,7 +55,8 @@ function plugin_init_ocsinventoryng() {
                          array('addtabon'          => 'Computer'));
 
    Plugin::registerClass('PluginOcsinventoryngOcsServer',
-                         array('massiveaction_noupdate_types' => true));
+                         array('massiveaction_noupdate_types' => true,
+                               'systeminformations_types'     => true));
 
    Plugin::registerClass('PluginOcsinventoryngRuleOcsCollection',
                          array('rulecollections_types' => true));
