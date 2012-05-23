@@ -33,6 +33,10 @@ if (!defined('GLPI_ROOT')) {
 
 // CLASSES PluginOcsinventoryngOcslink
 class PluginOcsinventoryngOcslink extends CommonDBTM {
+   const HISTORY_OCS_IMPORT         = 8;
+   const HISTORY_OCS_DELETE         = 9;
+   const HISTORY_OCS_IDCHANGED      = 10;
+   const HISTORY_OCS_LINK           = 11;
 
 
    static function getTypeName($nb=0) {
@@ -598,5 +602,26 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       return true;
    }
 
+
+   static function getHistoryEntry($data) {
+
+      if (plugin_ocsinventoryng_haveRight('ocsng', 'r')) {
+         switch($data['linked_action'] - Log::HISTORY_PLUGIN) {
+            case self::HISTORY_OCS_IMPORT :
+               return sprintf(__('%1$s: %2$s'), __('Imported from OCSNG'), $data['new_value']);
+
+            case self::HISTORY_OCS_DELETE :
+               return sprintf(__('%1$s: %2$s'), __('Deleted in OCSNG'), $data['old_value']);
+
+            case self::HISTORY_OCS_LINK :
+               return sprintf(__('%1$s: %2$s'), __('Linked with an OCSNG computer'), $data['new_value']);
+
+            case self::HISTORY_OCS_IDCHANGED :
+               return  sprintf(__('The OCSNG ID of the computer changed from %1$s to %2$s'),
+                                  $data['old_value'], $data['new_value']);
+         }
+      }
+      return '';
+   }
 }
 ?>
