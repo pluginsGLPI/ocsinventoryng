@@ -58,9 +58,6 @@ function plugin_init_ocsinventoryng() {
                          array('massiveaction_noupdate_types' => true,
                                'systeminformations_types'     => true));
 
-   Plugin::registerClass('PluginOcsinventoryngRuleOcsCollection',
-                         array('rulecollections_types' => true));
-
    Plugin::registerClass('PluginOcsinventoryngRuleImportComputerCollection',
                          array('rulecollections_types' => true));
 

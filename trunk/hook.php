@@ -72,17 +72,6 @@ function plugin_ocsinventoryng_install() {
 
    PluginOcsinventoryngProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
 
-   //TODO : use glpi generic rules
-   $restrict = "`sub_type`= 'RuleOcs' ";
-   $rules    = getAllDatasFromTable("glpi_rules", $restrict);
-
-   if (!empty($rules)) {
-      $query = "UPDATE `glpi_rules`
-                SET `sub_type` = 'PluginOcsinventoryngRuleOcs'
-                WHERE `sub_type` = 'RuleOcs';";
-      $result = $DB->query($query);
-   }
-
    // Si massocsimport import est installe, on verifie qu'il soit bien dans la dernière version
    if (TableExists("glpi_plugin_mass_ocs_import")) { //1.1 ou 1.2
       if (!FieldExists('glpi_plugin_mass_ocs_import_config','warn_if_not_imported')) { //1.1

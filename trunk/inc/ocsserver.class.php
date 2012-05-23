@@ -952,7 +952,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $admin = new PluginOcsinventoryngOcsAdminInfosLink();
       $admin->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
 
-      // ocsservers_id for RuleImportComputer, OCS_SERVER for RuleOcs
+      // ocsservers_id for RuleImportComputer, OCS_SERVER for RuleImportEntity
       Rule::cleanForItemCriteria($this);
       Rule::cleanForItemCriteria($this, 'OCS_SERVER');
 
@@ -1749,7 +1749,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       //No entity predefined, check rules
       if ($defaultentity == -1 || $defaultlocation == -1) {
          //Try to affect computer to an entity
-         $rule = new PluginOcsinventoryngRuleOcsCollection($plugin_ocsinventoryng_ocsservers_id);
+         $rule = new RuleImportEntity($plugin_ocsinventoryng_ocsservers_id);
          $data = array();
          $data = $rule->processAllRules(array(), array(), $ocsid);
       } else {
@@ -1768,7 +1768,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
          //Store rule that matched
          if (isset($data['_ruleid'])) {
-            $rules_matched['RuleOcs'] = $data['_ruleid'];
+            $rules_matched['RuleImportEntity'] = $data['_ruleid'];
          }
 
          //New machine to import
@@ -3070,7 +3070,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             }
             echo "<th>&nbsp;</th></tr>\n";
 
-            $rule = new PluginOcsinventoryngRuleOcsCollection($plugin_ocsinventoryng_ocsservers_id);
+            $rule = new RuleImportEntityCollection($plugin_ocsinventoryng_ocsservers_id);
             foreach ($hardware as $ID => $tab) {
                $comp = new Computer();
                $comp->fields["id"] = $tab["id"];
@@ -3092,7 +3092,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                      echo "<td class='center'>";
                      //echo "<td class='center'><img src=\"".GLPI_ROOT. "/pics/greenbutton.png\">";
                      //echo "&nbsp;";
-                     $tmprule = new PluginOcsinventoryngRuleOcs();
+                     $tmprule = new RuleImportEntity();
                      if ($tmprule->can($data['_ruleid'],'r')) {
                         echo "<a href='". $tmprule->getLinkURL()."'>".$tmprule->getName()."</a>";
                      }  else {
@@ -5807,7 +5807,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
 
       // Get all rules for the current plugin_ocsinventoryng_ocsservers_id
-      $rules = new PluginOcsinventoryngRuleOcsCollection($line_links["plugin_ocsinventoryng_ocsservers_id"]);
+      $rules = new RuleImportEntityCollection($line_links["plugin_ocsinventoryng_ocsservers_id"]);
 
       $data = array();
       $data = $rules->processAllRules(array(), array(), $line_links["ocsid"]);
