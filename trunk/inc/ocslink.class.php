@@ -37,6 +37,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    const HISTORY_OCS_DELETE         = 9;
    const HISTORY_OCS_IDCHANGED      = 10;
    const HISTORY_OCS_LINK           = 11;
+   const HISTORY_OCS_TAGCHANGED     = 12;
 
 
    static function getTypeName($nb=0) {
@@ -603,6 +604,26 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    }
 
 
+   /**
+    * Add an history entry to a computer
+    *
+    * @param $computers_id Integer, ID of the computer
+    * @param $changes      Array, see Log::history
+    * @param $action       Integer in PluginOcsinventoryngOcslink::HISTORY_OCS_*
+    *
+    * @return Integer id of the inserted entry
+   **/
+   static function history($computers_id, $changes, $action) {
+      return Log::history($computers_id, 'Computer', $changes, __CLASS__, Log::HISTORY_PLUGIN+$action);
+   }
+
+   /**
+    * Get an history entry message
+    *
+    * @param $data Array from glpi_logs table
+    *
+    * @return string
+   **/
    static function getHistoryEntry($data) {
 
       if (plugin_ocsinventoryng_haveRight('ocsng', 'r')) {
@@ -618,6 +639,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
             case self::HISTORY_OCS_IDCHANGED :
                return  sprintf(__('The OCSNG ID of the computer changed from %1$s to %2$s'),
+                                  $data['old_value'], $data['new_value']);
+
+            case self::HISTORY_OCS_TAGCHANGED :
+               return  sprintf(__('The OCSNG TAG of the computer changed from %1$s to %2$s'),
                                   $data['old_value'], $data['new_value']);
          }
       }

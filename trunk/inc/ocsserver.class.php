@@ -98,11 +98,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    const LINK_RESULT_NO_IMPORT = 1;
    const LINK_RESULT_LINK      = 2;
 
-   const PLUGIN_OCSINVENTORYNG_HISTORY_OCS_IMPORT     = 8;
-   const PLUGIN_OCSINVENTORYNG_HISTORY_OCS_DELETE     = 9;
-   const PLUGIN_OCSINVENTORYNG_HISTORY_OCS_IDCHANGED  = 10;
-   const PLUGIN_OCSINVENTORYNG_HISTORY_OCS_LINK       = 11;
-
 
    static function getTypeName($nb=0) {
       return __('OCSNG server');
@@ -1257,8 +1252,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $changes[1] = $data["ocsid"];
                //New ocsid
                $changes[2] = $ocsid;
-               Log::history($computers_id, 'Computer', $changes, 0,
-                            self::PLUGIN_OCSINVENTORYNG_HISTORY_OCS_IDCHANGED);
+               PluginOcsinventoryngOcslink::history($computers_id, $changes,
+                                                    PluginOcsinventoryngOcslink::HISTORY_OCS_IDCHANGED);
             }
          }
       }
@@ -1365,8 +1360,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $changes[0] = '0';
                $changes[1] = "";
                $changes[2] = $ocsid;
-               Log::history($computers_id, 'Computer', $changes, 0,
-                            self::PLUGIN_OCSINVENTORYNG_HISTORY_OCS_LINK);
+               PluginOcsinventoryngOcslink::history($computers_id, $changes,
+                                                    PluginOcsinventoryngOcslink::HISTORY_OCS_LINK);
             }
 
             self::updateComputer($idlink, $plugin_ocsinventoryng_ocsservers_id, 0);
@@ -1586,9 +1581,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                            $changes[1] = $del;
                            //New ocsid
                            $changes[2] = $data["ID"];
-                           Log::history($DB->result($res_id, 0, "computers_id"), 'Computer',
-                                        $changes, 0,
-                                        self::PLUGIN_OCSINVENTORYNG_HISTORY_OCS_IDCHANGED);
+                           PluginOcsinventoryngOcslink::history($DB->result($res_id, 0, "computers_id"), $changes,
+                                                                PluginOcsinventoryngOcslink::HISTORY_OCS_IDCHANGED);
                         }
                      }
                   }
@@ -1830,8 +1824,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $changes[0] = '0';
                $changes[1] = "";
                $changes[2] = $ocsid;
-               Log::history($computers_id, 'Computer', $changes, 0,
-                            self::PLUGIN_OCSINVENTORYNG_HISTORY_OCS_IMPORT);
+               PluginOcsinventoryngOcslink::history($computers_id, $changes,
+                                                    PluginOcsinventoryngOcslink::HISTORY_OCS_IMPORT);
 
                if ($idlink = self::ocsLink($line['ID'], $plugin_ocsinventoryng_ocsservers_id,
                                            $computers_id)) {
@@ -2680,8 +2674,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $changes[0] = '0';
                $changes[1] = $data["ocsid"];
                $changes[2] = "";
-               Log::history($data["computers_id"], 'Computer', $changes, 0,
-                            self::PLUGIN_OCSINVENTORYNG_HISTORY_OCS_DELETE);
+               PluginOcsinventoryngOcslink::history($data["computers_id"], $changes,
+                                                    PluginOcsinventoryngOcslink::HISTORY_OCS_DELETE);
 
                $query = "DELETE
                          FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -5901,7 +5895,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             $changes[1] = $line_links["tag"];
             $changes[2] = $data_ocs["TAG"];
 
-            Log::history($line_links["id"], 'Ocslink', $changes, 0, self::PLUGIN_OCSINVENTORYNG_HISTORY_OCS_LINK);
+            PluginOcsinventoryngOcslink::history($line_links["computers_id"], $changes,
+                                                 PluginOcsinventoryngOcslink::HISTORY_OCS_TAGCHANGED);
             return $data_ocs["TAG"];
          }
       }
