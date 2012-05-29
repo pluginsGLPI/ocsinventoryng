@@ -940,7 +940,7 @@ function plugin_ocsinventoryng_MassiveActions($type) {
             return array(// Specific one
                          "plugin_ocsinventoryng_force_ocsng_update"
                                                                => __('Force synchronization OCSNG'),
-                         "plugin_ocsinventoryng_unlock_ocsng_field"      => _('(Unlock fields'),
+                         "plugin_ocsinventoryng_unlock_ocsng_field"      => __('Unlock fields'),
                          "plugin_ocsinventoryng_unlock_ocsng_monitor"    => __('Unlock monitors'),
                          "plugin_ocsinventoryng_unlock_ocsng_peripheral" => __('Unlock peripherals'),
                          "plugin_ocsinventoryng_unlock_ocsng_printer"    => __('Unlock printers'),

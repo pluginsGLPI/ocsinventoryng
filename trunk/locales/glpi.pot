@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-29 16:21+0200\n"
+"POT-Creation-Date: 2012-05-29 16:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgid "Force synchronization OCSNG"
 msgstr ""
 
 #: hook.php:943
-msgid "(Unlock fields"
+msgid "Unlock fields"
 msgstr ""
 
 #: hook.php:944
@@ -564,7 +564,7 @@ msgid "pc/s"
 msgstr ""
 
 #: inc/thread.class.php:564
-msgid "Cleann processes"
+msgid "Clean processes"
 msgstr ""
 
 #: inc/thread.class.php:565
