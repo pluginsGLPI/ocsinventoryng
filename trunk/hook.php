@@ -64,7 +64,7 @@ function plugin_ocsinventoryng_install() {
                            `rule_ocs`)
                            SELECT `id`, `ocsng`, `sync_ocsng`, `view_ocsng`, `clean_ocsng`,
                                   `rule_ocs`
-                           FROM `glpi_profiles`";
+                           FROM `OCS_glpi_profiles`";
          $DB->queryOrDie($query, "1.0.0 insert profiles for OCS in plugin");
       }
 
