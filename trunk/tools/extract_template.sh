@@ -13,7 +13,7 @@ xgettext *.php */*.php  -o locales/glpi.pot -L PHP --add-comments=TRANS \
 
 
 ### for using tx :
-##tx set --execute --auto-local -r GLPI.glpipot 'locales/<lang>.po' --source-lang en --source-file locales/glpi.pot
+##tx set --execute --auto-local -r GLPI_ocsinventoryng.glpi_ocsinventoryng-version-100 'locales/<lang>.po' --source-lang en --source-file locales/glpi.pot
 ## tx push -s
 ## tx pull -a
 
