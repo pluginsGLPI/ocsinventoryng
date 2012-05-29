@@ -3,28 +3,19 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Damien Touraine <glpi@damien-touraine.net>, 2012.
-# David Durieux <d.durieux@siprossii.com>, 2012.
-# DOMBRE Julien <moyo@indepnet.net>, 2012.
-# Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2012.
-# Remi Collet <fedora@famillecollet.com>, 2012.
-#   <sylvain@briallon.fr>, 2012.
-# Sylvain Briallon <sylvain@briallon.fr>, 2012.
-# Walid Nouh <walid.nouh@gmail.com>, 2012.
-# Xavier CAILLAUD <tsmr@thetsmr.fr>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-29 16:39+0200\n"
-"PO-Revision-Date: 2012-05-29 14:47+0000\n"
+"PO-Revision-Date: 2012-05-29 14:48+0000\n"
 "Last-Translator: DOMBRE Julien <moyo@indepnet.net>\n"
-"Language-Team: French (France) (http://www.transifex.net/projects/p/GLPI_ocsinventoryng/language/fr_FR/)\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr_FR\n"
-"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"Language: ro_RO\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1))\n"
 
 #: hook.php:921
 msgid "Restart import"
@@ -97,7 +88,7 @@ msgstr ""
 
 #: hook.php:1248 inc/notimported.class.php:54 inc/notimported.class.php:221
 msgid "OCS ID"
-msgstr "ID OCS"
+msgstr "OCS ID"
 
 #: hook.php:1257
 msgid "Registry: Key/Value"
@@ -109,7 +100,7 @@ msgstr ""
 
 #: setup.php:171
 msgid "Installed / not configured"
-msgstr "Installé / non configuré"
+msgstr ""
 
 #: front/config.form.php:42
 msgid "?????"
@@ -146,7 +137,7 @@ msgstr ""
 
 #: front/logs.php:38 inc/notimported.class.php:97
 msgid "Logs"
-msgstr "Journaux"
+msgstr "Logari"
 
 #: front/notimported.php:38 front/thread.php:39 inc/thread.class.php:280
 msgid "Processes execution of automatic task"
@@ -181,7 +172,7 @@ msgstr ""
 
 #: inc/config.class.php:95
 msgid "Display"
-msgstr "Afficher"
+msgstr "Afiseaza"
 
 #: inc/config.class.php:98
 msgid "Show processes where nothing was changed"
@@ -253,6 +244,7 @@ msgid "Not imported computer"
 msgid_plural "Not imported computers"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: inc/notimported.class.php:51
 msgid "Verified rules"
@@ -265,7 +257,7 @@ msgstr ""
 #: inc/notimported.class.php:67 inc/notimported.class.php:249
 #: inc/ocslink.class.php:146
 msgid "TAG"
-msgstr "Balise"
+msgstr ""
 
 #: inc/notimported.class.php:95 inc/ocsserver.class.php:132
 msgid "OCS console"
@@ -312,42 +304,49 @@ msgid "Locked field"
 msgid_plural "Locked fields"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: inc/ocslink.class.php:360
 msgid "Locked monitor"
 msgid_plural "Locked monitors"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: inc/ocslink.class.php:385
 msgid "Locked printer"
 msgid_plural "Locked printers"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: inc/ocslink.class.php:409
 msgid "Locked device"
 msgid_plural "Locked devices"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: inc/ocslink.class.php:468
 msgid "Locked software"
 msgid_plural "Locked software"
-msgstr[0] "Logiciels verrouillés"
-msgstr[1] "Logiciels verrouillés"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: inc/ocslink.class.php:493
 msgid "Locked disk"
 msgid_plural "Locked disks"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: inc/ocslink.class.php:541
 msgid "Locked component"
 msgid_plural "Locked components"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: inc/ocslink.class.php:559
 msgid "No locked field"
@@ -359,15 +358,15 @@ msgstr ""
 
 #: inc/ocslink.class.php:632
 msgid "Imported from OCSNG"
-msgstr "Importé depuis OCSNG"
+msgstr "Importat din OCSNG"
 
 #: inc/ocslink.class.php:635
 msgid "Deleted in OCSNG"
-msgstr "Supprimé d'OCSNG"
+msgstr ""
 
 #: inc/ocslink.class.php:638
 msgid "Linked with an OCSNG computer"
-msgstr "Lié avec un ordinateur d'OCSNG"
+msgstr ""
 
 #: inc/ocslink.class.php:641
 #, php-format
@@ -400,7 +399,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:455
 msgid "Modems"
-msgstr "Modems"
+msgstr "Modemuri"
 
 #: inc/ocsserver.class.php:742
 msgid "Host for the database"
@@ -446,7 +445,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:3061
 msgid "Match the rule ?"
-msgstr "Vérifie la règle ?"
+msgstr "Se potrivește regula?"
 
 #: inc/profile.class.php:43
 msgid "Rights management"
@@ -454,7 +453,7 @@ msgstr ""
 
 #: inc/profile.class.php:75
 msgid "OCSNG Mode"
-msgstr "Mode OCSNG"
+msgstr ""
 
 #. TRANS: %$ is a profile name
 #: inc/profile.class.php:186
@@ -495,42 +494,49 @@ msgid "Imported computer by automatic task"
 msgid_plural "Imported computers by automatic task"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: inc/thread.class.php:100 inc/thread.class.php:290
 msgid "Synchronized computer"
 msgid_plural "Synchronized computers"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: inc/thread.class.php:101 inc/thread.class.php:291
 msgid "Linked computer"
 msgid_plural "Linked computers"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: inc/thread.class.php:102 inc/thread.class.php:292
 msgid "Not imported computer by automatic task"
 msgid_plural "Not imported computers by automatic task"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: inc/thread.class.php:104 inc/thread.class.php:294
 msgid "Not modified computer"
 msgid_plural "Not modified computers"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: inc/thread.class.php:105 inc/thread.class.php:295
 msgid "Not unique computer"
 msgid_plural "Not unique computers"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: inc/thread.class.php:106 inc/thread.class.php:296
 msgid "Refused computer"
 msgid_plural "Refused computers"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: inc/thread.class.php:107 inc/thread.class.php:297
 msgid "Process time execution"
@@ -557,6 +563,7 @@ msgid "hour"
 msgid_plural "hours"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: inc/thread.class.php:415
 msgid "Minimum"
