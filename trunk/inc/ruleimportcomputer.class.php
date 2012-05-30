@@ -63,9 +63,8 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
 
 
    function getTitle() {
-      global $LANG;
 
-      return $LANG['rulesengine'][57];
+      return __('Rules for import and link computers');
    }
 
 
@@ -223,7 +222,7 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
    }
 
 
-   function displayAdditionalRuleAction($action, $params=array()) {
+   function displayAdditionalRuleAction(array $action) {
       global $LANG;
 
       switch ($action['type']) {

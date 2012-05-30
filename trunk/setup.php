@@ -47,6 +47,8 @@ function plugin_init_ocsinventoryng() {
    $PLUGIN_HOOKS['change_profile']['ocsinventoryng'] = array('PluginOcsinventoryngProfile',
                                                              'changeProfile');
 
+   $PLUGIN_HOOKS['import_item']['ocsinventoryng'] = array('Computer');
+
    Plugin::registerClass('PluginOcsinventoryngOcslink',
                          array('forwardentityfrom' => 'Computer',
                                'addtabon'          => 'Computer'));
