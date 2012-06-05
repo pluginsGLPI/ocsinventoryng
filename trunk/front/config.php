@@ -32,7 +32,6 @@ if (!defined('GLPI_ROOT')) {
 }
 
 include (GLPI_ROOT . "/inc/includes.php");
-
 plugin_ocsinventoryng_checkRight("ocsng", "w");
 
 Html::header('OCSInventory NG', "", "plugins", "ocsinventoryng");
@@ -41,7 +40,7 @@ echo "<table class='tab_cadre'>";
 echo "<tr><th>".__('Configuration')."</th></tr>";
 echo "<tr class='tab_bg_1'><td class='center b'>";
 echo "<a href='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsserver.php'>".
-       __('OCS server')."</a>";
+       __('OCSNG server')."</a>";
 echo "</td></tr>";
 
 echo "<tr class='tab_bg_1'><td class='center b'>";

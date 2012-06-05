@@ -197,7 +197,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
       echo "<tr class='tab_bg_2'>";
       echo "<td>".__('See information')."</td><td>";
       Profile::dropdownNoneReadWrite("view_ocsng", $this->fields["view_ocsng"], 1, 1, 0);
-      echo "<td>".__('Clean links GLPI / OCS')."</td><td>";
+      echo "<td>".__('Clean links GLPI / OCSNG')."</td><td>";
       Profile::dropdownNoneReadWrite("clean_ocsng", $this->fields["clean_ocsng"], 1, 1, 1);
       echo "</td></tr>\n";
 

@@ -34,7 +34,7 @@ if (!defined('GLPI_ROOT')){
 
 // Class NotificationTarget
 class PluginOcsinventoryngNotificationTargetNotImported extends NotificationTarget {
-   
+
    function getEvents() {
       global $LANG;
       return array ('not_imported' => $LANG['plugin_ocsinventoryng']["common"][18]);
@@ -42,10 +42,10 @@ class PluginOcsinventoryngNotificationTargetNotImported extends NotificationTarg
 
    function getDatasForTemplate($event,$options=array()) {
       global $LANG, $CFG_GLPI, $DB;
-      
+
       $this->datas['##notimported.entity##'] = Dropdown::getDropdownName('glpi_entities',
                                                                          $options['entities_id']);
-         
+
       foreach($options['notimported'] as $id => $item) {
          $tmp = array();
 
@@ -59,7 +59,7 @@ class PluginOcsinventoryngNotificationTargetNotImported extends NotificationTarg
          $tmp['##notimported.ocsserver##'] = Dropdown::getDropdownName('glpi_plugin_ocsinventoryng_ocsservers',
                                                                        $item['ocsid']);
          $tmp['##notimported.reason##'] = PluginOcsinventoryngNotimported::getReason($item['reason']);
-                                                       
+
          $url = $CFG_GLPI["url_base"]."/index.php?redirect=plugin_ocsinventoryng_".$item['id'];
          $tmp['##notimported.url##'] = urldecode($url);
 
@@ -72,7 +72,7 @@ class PluginOcsinventoryngNotificationTargetNotImported extends NotificationTarg
          }
       }
    }
-   
+
    function getTags() {
       global $LANG;
 
@@ -81,11 +81,11 @@ class PluginOcsinventoryngNotificationTargetNotImported extends NotificationTarg
                     'notimported.tag'          => $LANG['ocsconfig'][39],
                     'notimported.name'         => $LANG['common'][16],
                     'notimported.action'       => $LANG['plugin_ocsinventoryng']["common"][18],
-                    'notimported.ocsid'        => 'ID OCS',
+                    'notimported.ocsid'        => 'ID OCSNG',
                     'notimported.deviceid'     => $LANG['plugin_ocsinventoryng']["common"][22],
                     'notimported.reason'       => $LANG['plugin_ocsinventoryng']["common"][34],
                     'notimported.serial'       => $LANG['common'][19]);
-                    
+
       foreach ($tags as $tag => $label) {
          $this->addTagToList(array('tag'=>$tag,'label'=>$label,
                                    'value'=>true));

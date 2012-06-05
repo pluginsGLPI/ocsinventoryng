@@ -86,7 +86,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       $this->showFormHeader();
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td class='right' colspan='2'> " .__('Default OCS server')."</td>";
+      echo "<td class='right' colspan='2'> " .__('Default OCSNG server')."</td>";
       echo "<td colspan='2'>&nbsp;&nbsp;&nbsp;";
       Dropdown::showFromArray("plugin_ocsinventoryng_ocsservers_id", $this->getAllOcsServers(),
                               array('value' => $this->fields["plugin_ocsinventoryng_ocsservers_id"]));
@@ -104,7 +104,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td> " .__('Authorize the OCS update') . " </td><td>";
+      echo "<td> " .__('Authorize the OCSNG update') . " </td><td>";
       Dropdown::showYesNo('allow_ocs_update',$this->fields['allow_ocs_update']);
       echo "</td>";
       echo "</tr>";
@@ -129,7 +129,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "<input type='hidden' name='id' value='1'>";
       echo "<table class='tab_cadre'>";
       echo "<tr class='tab_bg_2'>";
-      echo "<th>&nbsp;" . __('Check OCS import script')."&nbsp;</th></tr>";
+      echo "<th>&nbsp;" . __('Check OCSNG import script')."&nbsp;</th></tr>";
 
       echo "<tr class='tab_bg_2'>";
       echo "<td class='center'>";

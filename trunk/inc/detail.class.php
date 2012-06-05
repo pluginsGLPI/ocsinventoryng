@@ -34,7 +34,7 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
 
       $tab                    = array ();
 
-      $tab['common']          = __('Not imported computers');
+      $tab['common']          = _n('Not imported computer', 'Not imported computers', 2);
 
       $tab[1]['table']        = $this->getTable();
       $tab[1]['field']        = 'ocsid';
@@ -143,7 +143,8 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
    static function getActions() {
 
       return array(PluginOcsinventoryngOcsServer::COMPUTER_FAILED_IMPORT
-                                                            => __('Not imported computers'),
+                                                            => _n('Not imported computer',
+                                                                  'Not imported computers', 2),
                    PluginOcsinventoryngOcsServer::COMPUTER_IMPORTED
                                                             => __('Imported computers'),
                    PluginOcsinventoryngOcsServer::COMPUTER_LINKED

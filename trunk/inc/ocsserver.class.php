@@ -129,7 +129,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   $ong[3] = __('General information');
                }
                if ($item->getField('ocs_url')) {
-                  $ong[4] = __('OCS console');
+                  $ong[4] = __('OCSNG console');
                }
 
                return $ong;
@@ -306,9 +306,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                <a href='ocsng.link.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' ".
-                  "alt='" .__s('Link new OCS computers to existing GLPI computers'). "' ".
-                  "title=\"" .__s('Link new OCS computers to existing GLPI computers'). "\">
-                  <br>".__('Link new OCS computers to existing GLPI computers')."
+                  "alt='" .__s('Link new OCSNG computers to existing GLPI computers'). "' ".
+                  "title=\"" .__s('Link new OCSNG computers to existing GLPI computers'). "\">
+                  <br>".__('Link new OCSNG computers to existing GLPI computers')."
                </a></td>";
          //host not imported by thread
          echo "<td class='center b' colspan='2'>
@@ -5776,7 +5776,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    static function showStatistics($statistics=array(), $finished=false) {
 
       echo "<div class='center b'>";
-      echo "<table class='tab_cadre_fixe'><th colspan='2'>".__('Statistics of the OCS link');
+      echo "<table class='tab_cadre_fixe'><th colspan='2'>".__('Statistics of the OCSNG link');
       if ($finished) {
          _e('Process completed');
       }

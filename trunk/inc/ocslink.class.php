@@ -123,7 +123,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "</td>";
 
                   echo "<td class='center' colspan='2'>";
-                  printf(__('%1$s: %2$s'), __('Date of last OCS inventory'),
+                  printf(__('%1$s: %2$s'), __('Date of last OCSNG inventory'),
                          Html::convDateTime($data["last_ocs_update"]));
                   echo "<br>";
                   printf(__('%1$s: %2$s'), __('Date of import in GLPI'),
@@ -137,7 +137,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                       && plugin_ocsinventoryng_haveRight("sync_ocsng","w")) {
 
                      $colspan = 2;
-                     echo "<td class='center'>".__('Automatic OCS update')."</td>";
+                     echo "<td class='center'>".__('Automatic OCSNG update')."</td>";
                      echo "<td class='left'>";
                      Dropdown::showYesNo("use_auto_update", $data["use_auto_update"]);
                      echo "</td>";
@@ -578,7 +578,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          switch ($item->getType()) {
             case 'Computer' :
-               return array('1' => __('OCS mode'));
+               return array('1' => __('OCSNG mode'));
          }
       }
       return '';
@@ -629,7 +629,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       if (plugin_ocsinventoryng_haveRight('ocsng', 'r')) {
          switch($data['linked_action'] - Log::HISTORY_PLUGIN) {
             case self::HISTORY_OCS_IMPORT :
-               return sprintf(__('%1$s: %2$s'), __('Imported from OCSNG'), $data['new_value']);
+               return sprintf(__('%1$s: %2$s'), __('Imported from OCS'), $data['new_value']);
 
             case self::HISTORY_OCS_DELETE :
                return sprintf(__('%1$s: %2$s'), __('Deleted in OCSNG'), $data['old_value']);
