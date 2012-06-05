@@ -701,8 +701,7 @@ function plugin_ocsinventoryng_upgrademassocsimport13to14() {
    $migration->executeMigration();
 }
 
-
-function plugin_ocsinventoryng_massocsimport_upgrade14to15() {
+function plugin_ocsinventoryng_upgrademassocsimport14to15() {
    global $DB;
 
    $migration = new Migration(15);
@@ -929,7 +928,7 @@ function plugin_ocsinventoryng_MassiveActions($type) {
          }
          $plugin = new Plugin;
          if ($plugin->isActivated("uninstall")) {
-            $actions["plugin_ocsinventoryng_delete"]   = __('Delete computer in OCS');
+            $actions["plugin_ocsinventoryng_delete"]   = __('Delete computer in OCSNG');
          }
          return $actions;
 
@@ -1217,7 +1216,7 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
 
          $sopt[103]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
          $sopt[103]['field']         = 'last_ocs_update';
-         $sopt[103]['name']          = __('Last OCS inventory');
+         $sopt[103]['name']          = __('Last OCSNG inventory');
          $sopt[103]['datatype']      = 'datetime';
          $sopt[103]['massiveaction'] = false;
          $sopt[103]['joinparams']    = array('jointype' => 'child');
@@ -1245,7 +1244,7 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
 
          $sopt[106]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
          $sopt[106]['field']         = 'ocsid';
-         $sopt[106]['name']          = __('OCS ID');
+         $sopt[106]['name']          = __('OCSNG ID');
          $sopt[106]['datatype']      = 'number';
          $sopt[106]['massiveaction'] = false;
          $sopt[106]['joinparams']    = array('jointype' => 'child');
