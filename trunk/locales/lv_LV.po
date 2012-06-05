@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-29 16:39+0200\n"
-"PO-Revision-Date: 2012-05-29 14:48+0000\n"
-"Last-Translator: DOMBRE Julien <moyo@indepnet.net>\n"
+"POT-Creation-Date: 2012-05-29 19:43+0200\n"
+"PO-Revision-Date: 2012-05-29 17:29+0000\n"
+"Last-Translator: Nelly Mahu-Lasson <nini.lasson@orange.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -30,7 +30,7 @@ msgid "Link computer whith another one present in GLPI"
 msgstr ""
 
 #: hook.php:932
-msgid "Delete computer in OCS"
+msgid "Delete computer in OCSNG"
 msgstr ""
 
 #: hook.php:942
@@ -70,7 +70,7 @@ msgid "GLPI import date"
 msgstr ""
 
 #: hook.php:1220 inc/notimported.class.php:79 inc/notimported.class.php:264
-msgid "Last OCS inventory"
+msgid "Last OCSNG inventory"
 msgstr ""
 
 #: hook.php:1229
@@ -87,8 +87,8 @@ msgid "TAG OCSNG"
 msgstr ""
 
 #: hook.php:1248 inc/notimported.class.php:54 inc/notimported.class.php:221
-msgid "OCS ID"
-msgstr "OCS ID"
+msgid "OCSNG ID"
+msgstr ""
 
 #: hook.php:1257
 msgid "Registry: Key/Value"
@@ -124,10 +124,6 @@ msgstr ""
 
 #: front/config.form.php:75
 msgid "Number of processed computers"
-msgstr ""
-
-#: front/config.php:44
-msgid "OCS server"
 msgstr ""
 
 #: front/detail.php:38 inc/ocsserver.class.php:300 inc/ocsserver.class.php:301
@@ -167,7 +163,7 @@ msgid "Automatic synchronization's configuration"
 msgstr ""
 
 #: inc/config.class.php:89
-msgid "Default OCS server"
+msgid "Default OCSNG server"
 msgstr ""
 
 #: inc/config.class.php:95
@@ -179,7 +175,7 @@ msgid "Show processes where nothing was changed"
 msgstr ""
 
 #: inc/config.class.php:107
-msgid "Authorize the OCS update"
+msgid "Authorize the OCSNG update"
 msgstr ""
 
 #: inc/config.class.php:113
@@ -192,7 +188,7 @@ msgid "seconds"
 msgstr ""
 
 #: inc/config.class.php:132
-msgid "Check OCS import script"
+msgid "Check OCSNG import script"
 msgstr ""
 
 #: inc/config.class.php:138
@@ -208,8 +204,12 @@ msgid "All servers"
 msgstr ""
 
 #: inc/detail.class.php:37 inc/detail.class.php:146
-msgid "Not imported computers"
-msgstr ""
+#: inc/notimported.class.php:40 inc/notimported.class.php:216
+msgid "Not imported computer"
+msgid_plural "Not imported computers"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: inc/detail.class.php:51
 msgid "Process time"
@@ -227,24 +227,17 @@ msgstr ""
 msgid "Rules checked"
 msgstr ""
 
-#: inc/detail.class.php:152
+#: inc/detail.class.php:153
 msgid "Not updated computers"
 msgstr ""
 
-#: inc/detail.class.php:156
+#: inc/detail.class.php:157
 msgid "Not unique computers"
 msgstr ""
 
-#: inc/detail.class.php:158 inc/notimported.class.php:399
+#: inc/detail.class.php:159 inc/notimported.class.php:399
 msgid "Import refused by rule"
 msgstr ""
-
-#: inc/notimported.class.php:40
-msgid "Not imported computer"
-msgid_plural "Not imported computers"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
 
 #: inc/notimported.class.php:51
 msgid "Verified rules"
@@ -260,15 +253,11 @@ msgid "TAG"
 msgstr ""
 
 #: inc/notimported.class.php:95 inc/ocsserver.class.php:132
-msgid "OCS console"
-msgstr ""
-
-#: inc/notimported.class.php:216
-msgid "Not imported computerss"
+msgid "OCSNG console"
 msgstr ""
 
 #: inc/notimported.class.php:226
-msgid "OCS name"
+msgid "OCSNG name"
 msgstr ""
 
 #: inc/notimported.class.php:393
@@ -276,7 +265,7 @@ msgid "Can't affect an entity"
 msgstr ""
 
 #: inc/notimported.class.php:396
-msgid "Unicity criteria not verifiedC"
+msgid "Unicity criteria not verified"
 msgstr ""
 
 #: inc/notimported.class.php:416
@@ -287,8 +276,15 @@ msgstr ""
 msgid "Send OCSNG not imported computers alert failed"
 msgstr ""
 
+#: inc/ocslink.class.php:44
+msgid "OCS link"
+msgid_plural "OCS links"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
 #: inc/ocslink.class.php:126
-msgid "Date of last OCS inventory"
+msgid "Date of last OCSNG inventory"
 msgstr ""
 
 #: inc/ocslink.class.php:129
@@ -296,7 +292,7 @@ msgid "Date of import in GLPI"
 msgstr ""
 
 #: inc/ocslink.class.php:140
-msgid "Automatic OCS update"
+msgid "Automatic OCSNG update"
 msgstr ""
 
 #: inc/ocslink.class.php:336
@@ -353,12 +349,12 @@ msgid "No locked field"
 msgstr ""
 
 #: inc/ocslink.class.php:581
-msgid "OCS mode"
+msgid "OCSNG mode"
 msgstr ""
 
 #: inc/ocslink.class.php:632
-msgid "Imported from OCSNG"
-msgstr "Importēts no OCSNG"
+msgid "Imported from OCS"
+msgstr ""
 
 #: inc/ocslink.class.php:635
 msgid "Deleted in OCSNG"
@@ -390,6 +386,11 @@ msgstr ""
 #: inc/ocsserver.class.php:283 inc/ocsserver.class.php:284
 #: inc/ocsserver.class.php:285
 msgid "Scripts execution of automatic task"
+msgstr ""
+
+#: inc/ocsserver.class.php:309 inc/ocsserver.class.php:310
+#: inc/ocsserver.class.php:311
+msgid "Link new OCSNG computers to existing GLPI computers"
 msgstr ""
 
 #: inc/ocsserver.class.php:317 inc/ocsserver.class.php:318
@@ -447,6 +448,10 @@ msgstr ""
 msgid "Match the rule ?"
 msgstr ""
 
+#: inc/ocsserver.class.php:5779
+msgid "Statistics of the OCSNG link"
+msgstr ""
+
 #: inc/profile.class.php:43
 msgid "Rights management"
 msgstr ""
@@ -470,7 +475,7 @@ msgid "See information"
 msgstr ""
 
 #: inc/profile.class.php:200
-msgid "Clean links GLPI / OCS"
+msgid "Clean links GLPI / OCSNG"
 msgstr ""
 
 #: inc/thread.class.php:55
