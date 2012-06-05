@@ -258,7 +258,7 @@ function plugin_ocsinventoryng_install() {
 
       if (TableExists('glpi_plugin_massocsimport_threads')
          && !FieldExists('glpi_plugin_massocsimport_threads','not_unique_machines_number')) {
-            plugin_ocsinventoryng_massocsimport_upgrade14to15();
+            plugin_ocsinventoryng_upgrademassocsimport14to15();
       }
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_threads` (
                   `id` int(11) NOT NULL auto_increment,
@@ -454,7 +454,7 @@ function plugin_ocsinventoryng_install() {
       }
 
       $migration->changeField("glpi_plugin_ocsinventoryng_notimported", "ocsservers_id",
-                              "`plugin_ocsinventoryng_ocsservers_id", 'integer');
+                              "plugin_ocsinventoryng_ocsservers_id", 'integer');
 
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_servers` (
                   `id` int(11) NOT NULL AUTO_INCREMENT,
