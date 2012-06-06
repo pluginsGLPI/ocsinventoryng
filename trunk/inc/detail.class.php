@@ -63,7 +63,7 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
 
       $tab[6]['table']        = $this->getTable();
       $tab[6]['field']        = 'computers_id';
-      $tab[6]['name']         = __('Computer');
+      $tab[6]['name']         = _n('Computer', 'Computers', 1);
 
       $tab[7]['table']        = $this->getTable();
       $tab[7]['field']        = 'threadid';

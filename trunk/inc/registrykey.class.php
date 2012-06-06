@@ -91,12 +91,13 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
       if ($result = $DB->query($query)) {
          if ($DB->numrows($result)!=0) {
             echo "<div class='center'><table class='tab_cadre_fixe'>";
-            echo "<tr><th colspan='4'>".$DB->numrows($result)." ".$LANG['plugin_ocsinventoryng']['registry'][4]."</th></tr>\n";
+            echo "<tr><th colspan='4'>".sprintf(__('%d registry key found'), $DB->numrows($result));
+            echo "</th></tr>\n";
 
-            echo "<tr><th>".$LANG['plugin_ocsinventoryng']['registry'][6]."</th>";
-            echo "<th>".$LANG['plugin_ocsinventoryng']['registry'][1]."</th>";
-            echo "<th>".$LANG['plugin_ocsinventoryng']['registry'][2]."</th>";
-            echo "<th>".$LANG['plugin_ocsinventoryng']['registry'][3]."</th></tr>\n";
+            echo "<tr><th>".__('OCSNG Nname')."</th>";
+            echo "<th>".__('Hive')."</th>";
+            echo "<th>".__('Path')."</th>";
+            echo "<th>".__('Key/value')."</th></tr>\n";
             while ($data=$DB->fetch_assoc($result)) {
                echo "<tr class='tab_bg_1'>";
                echo "<td>".$data["ocs_name"]."</td>";
@@ -112,8 +113,9 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
             echo "</table></div>\n\n";
          } else {
             echo "<div class='center'><table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_2'><th>".$LANG['plugin_ocsinventoryng']['config'][41]."</th></tr>";
-            echo "<tr class='tab_bg_2'><td class='center b'>".$LANG['plugin_ocsinventoryng']['registry'][5]."</td></tr>";
+            echo "<tr class='tab_bg_2'><th>".__('Registry')."</th></tr>";
+            echo "<tr class='tab_bg_2'>";
+            echo "<td class='center b'>".__('No key found in registry')."</td></tr>";
             echo "</table></div>";
          }
       }

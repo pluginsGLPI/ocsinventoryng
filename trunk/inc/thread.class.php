@@ -97,8 +97,8 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "<th>" . __('Ending date of execution') . "</th>";
       echo "<th>" . _n('Imported computer by automatic task',
                        'Imported computers by automatic task', 2) . "</th>";
-      echo "<th>" . _n('Synchronized computer', 'Synchronized computers', 2) . "</th>";
-      echo "<th>" . _n('Linked computer', 'Linked computers', 2). "</th>";
+      echo "<th>" . __('Synchronized computers') . "</th>";
+      echo "<th>" . __('Linked computers'). "</th>";
       echo "<th>" . _n('Not imported computer by automatic task',
                        'Not imported computers by automatic task', 2) . "</th>";
       echo "<th>" . _n('Not modified computer', 'Not modified computers', 2). "</th>";
@@ -287,8 +287,8 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo"<th>".__('Ending date of execution')."</th>";
       echo"<th>"._n('Imported computer by automatic task', 'Imported computers by automatic task', 2).
           "</th>";
-      echo"<th>"._n('Synchronized computer', 'Synchronized computers', 2) ."</th>";
-      echo"<th>"._n('Linked computer', 'Linked computers', 2)."</th>";
+      echo"<th>".__('Synchronized computers') ."</th>";
+      echo"<th>".__('Linked computers')."</th>";
       echo"<th>"._n('Not imported computer by automatic task',
                     'Not imported computers by automatic task', 2)."</th>";
       echo"<th>"._n('Not modified computer', 'Not modified computers', 2)."</th>";

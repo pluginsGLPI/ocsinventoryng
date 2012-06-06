@@ -381,7 +381,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       Dropdown::showYesNo("import_general_model", $this->fields["import_general_model"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Manufacturer') . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'>";
+      echo "<td class='center'>" . _n('Manufacturer', 'Manufacturers', 1) . "</td>\n<td>";
       Dropdown::showYesNo("import_general_manufacturer",
                           $this->fields["import_general_manufacturer"]);
       echo "</td></tr>\n";
@@ -5694,7 +5695,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          if ($nbcomp > 0) {
             while ($data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs)) {
                $task->addVolume(1);
-               $task->log(sprintf(__('%1$s: %2$s'), __('Computer'),
+               $task->log(sprintf(__('%1$s: %2$s'), _n('Computer', 'Computer', 1),
                                   sprintf(__('%1$s (%2$s)'), $data["DEVICEID"], $data["ID"])));
                self::processComputer($data["ID"], $plugin_ocsinventoryng_ocsservers_id, 0);
             }

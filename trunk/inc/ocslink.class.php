@@ -123,7 +123,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "</td>";
 
                   echo "<td class='center' colspan='2'>";
-                  printf(__('%1$s: %2$s'), __('Date of last OCSNG inventory'),
+                  printf(__('%1$s: %2$s'), __('Last OCSNG inventory date'),
                          Html::convDateTime($data["last_ocs_update"]));
                   echo "<br>";
                   printf(__('%1$s: %2$s'), __('Date of import in GLPI'),
