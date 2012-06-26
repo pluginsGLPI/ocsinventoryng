@@ -557,7 +557,6 @@ class PluginOcsinventoryngThread extends CommonDBTM {
     * @param $name
    **/
    static function cronInfo($name) {
-      global $LANG;
 
       switch ($name) {
          case "CleanOldThreads" :

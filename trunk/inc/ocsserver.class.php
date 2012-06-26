@@ -656,7 +656,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
    // fonction jamais appeléee
    function ocsFormAutomaticLinkConfig($target, $ID, $withtemplate='', $templateid='') {
-      global $LANG;
 
       if (!plugin_ocsinventoryng_haveRight("ocsng", "w")) {
          return false;
@@ -665,45 +664,44 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<br><div class='center'>";
       echo "<form name='formconfig' action=\"$target\" method='post'>\n";
       echo "<table class='tab_cadre_fixe'>\n";
-      echo "<tr><th colspan='4'>" . $LANG['plugin_ocsinventoryng']['config'][52];
+      echo "<tr><th colspan='4'>". __('Automatic connection of computers');
       echo "<input type='hidden' name='id' value='$ID'></th></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td>" . $LANG['plugin_ocsinventoryng']['config'][53] . " </td>\n";
+      echo "<tr class='tab_bg_2'><td>" .__('Enable the automatic link'). " </td>\n";
       echo "<td colspan='3'>";
       Dropdown::showYesNo("is_glpi_link_enabled", $this->fields["is_glpi_link_enabled"]);
       echo "</td></tr>\n";
 
-      echo "<tr><th colspan='4'>" . $LANG['plugin_ocsinventoryng']['config'][54] . "</th></tr>\n";
+      echo "<tr><th colspan='4'>" . __('Existence criteria of a computer') . "</th></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td>" . $LANG['networking'][14] . " </td>\n<td>";
+      echo "<tr class='tab_bg_2'><td>" .__('IP') . " </td>\n<td>";
       Dropdown::showYesNo("use_ip_to_link", $this->fields["use_ip_to_link"]);
       echo "</td>\n";
-      echo "<td>" . $LANG['device_iface'][2] . " </td>\n<td>";
+      echo "<td>" . __('Mac address') . " </td>\n<td>";
       Dropdown::showYesNo("use_mac_to_link", $this->fields["use_mac_to_link"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td>" . $LANG['rulesengine'][25] . " </td>\n<td>";
-      $link_array = array("0" => $LANG['choice'][0],
-                          "1" => $LANG['choice'][1]."&nbsp;: ".
-                                 $LANG['plugin_ocsinventoryng']['config'][57],
-                          "2" => $LANG['choice'][1]."&nbsp;: ".
-                                 $LANG['plugin_ocsinventoryng']['config'][56]);
+      echo "<tr class='tab_bg_2'><td>" . __("Computer's name") . " </td>\n<td>";
+      $link_array = array("0" => __('No'),
+                          "1" => sprintf(__('%1$s: %2$s'), __('Yes'), __('equal')),
+                          "2" => sprintf(__('%1$s: %2$s'), __('Yes'), __('empty')));
       Dropdown::showFromArray("use_name_to_link", $link_array,
                               array('value' => $this->fields["use_name_to_link"]));
       echo "</td>\n";
-      echo "<td>" . $LANG['common'][19] . " </td>\n<td>";
+      echo "<td>" . __('Serial number') . " </td>\n<td>";
       Dropdown::showYesNo("use_serial_to_link", $this->fields["use_serial_to_link"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td>" . $LANG['plugin_ocsinventoryng']['config'][55]."</td>\n";
+      echo "<tr class='tab_bg_2'><td>". __('Find computers in GLPI having the status')."</td>\n";
       echo "<td colspan='3'>";
       State::dropdown(array('value' => $this->fields["states_id_linkif"],
                             'name'  => "states_id_linkif"));
       echo "</td></tr>\n";
-      echo "</table><br>".$LANG['plugin_ocsinventoryng']['config'][58];
+      echo "</table><br>".__('The link automatically connects a GLPI computer with one in OCSNG.').
+           "<br>". __('This option is taken into account during manual link and by synchronization scripts."');
 
       echo "<p class='submit'><input type='submit' name='update_server' class='submit' value='" .
-             $LANG['buttons'][2] . "'></p>";
+             _sx('Button', 'Post') . "'></p>";
       echo "</form></div>";
    }
 
@@ -1788,7 +1786,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             $params           = array('entities_id'   => $data['entities_id'],
                                       'plugin_ocsinventoryng_ocsservers_id'
                                                       => $plugin_ocsinventoryng_ocsservers_id);
-            $rulelink_results = $rulelink->processAllRules(Toolbox::stripslashes_deep($input), array(), $params);
+            $rulelink_results = $rulelink->processAllRules(Toolbox::stripslashes_deep($input),
+                                                           array(), $params);
 
             //If at least one rule matched
             //else do import as usual
@@ -3121,7 +3120,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   $params           = array('entities_id' => $entity,
                                             'plugin_ocsinventoryng_ocsservers_id'
                                                           => $plugin_ocsinventoryng_ocsservers_id);
-                  $rulelink_results = $rulelink->processAllRules(Toolbox::stripslashes_deep($tab), array(), $params);
+                  $rulelink_results = $rulelink->processAllRules(Toolbox::stripslashes_deep($tab),
+                                                                 array(), $params);
 
                   //Look for the computer using automatic link criterias as defined in OCSNG configuration
                   $options       = array('name' => "tolink[".$tab["id"]."]");
@@ -4838,7 +4838,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                if (!$cfg_ocs["use_soft_dict"]) {
                   //Software dictionnary
                   $rulecollection = new RuleDictionnarySoftwareCollection();
-                  $res_rule = $rulecollection->processAllRules(Toolbox::stripslashes_deep(array("name"         => $name,
+                  $res_rule = $rulecollection->processAllRules(Toolbox::stripslashes_deep(array("name" => $name,
                                                                      "manufacturer" => $manufacturer,
                                                                      "old_version"  => $version,
                                                                      "entities_id"  => $entity)),
@@ -4853,7 +4853,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                      $modified_version = $res_rule["version"];
                   }
 
-                  if (isset($res_rule["is_helpdesk_visible"]) && strlen($res_rule["is_helpdesk_visible"])) {
+                  if (isset($res_rule["is_helpdesk_visible"])
+                      && strlen($res_rule["is_helpdesk_visible"])) {
+
                      $is_helpdesk_visible = $res_rule["is_helpdesk_visible"];
                   }
 

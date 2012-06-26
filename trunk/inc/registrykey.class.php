@@ -70,7 +70,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
    *
    */
    static function showForComputer($ID) {
-      global $DB, $LANG;
+      global $DB;
 
       if (!Session::haveRight("computer","r")) {
          return false;
@@ -123,7 +123,6 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
 
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
-      global $LANG;
 
       if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))
           && $this->canView()) {

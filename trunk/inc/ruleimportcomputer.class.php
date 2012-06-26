@@ -75,68 +75,75 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
 
 
    function getCriterias() {
-      global $LANG;
 
       $criterias = array();
-      $criterias['entities_id']['table']     = 'glpi_entities';
-      $criterias['entities_id']['field']     = 'entities_id';
-      $criterias['entities_id']['name']      = $LANG['rulesengine'][152].' : '.$LANG['ocsng'][62];
-      $criterias['entities_id']['linkfield'] = 'entities_id';
-      $criterias['entities_id']['type']      = 'dropdown';
+      $criterias['entities_id']['table']         = 'glpi_entities';
+      $criterias['entities_id']['field']         = 'entities_id';
+      $criterias['entities_id']['name']          = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+                                                           __('target entity for the computer'));
+      $criterias['entities_id']['linkfield']     = 'entities_id';
+      $criterias['entities_id']['type']          = 'dropdown';
 
       $criterias['states_id']['table']           = 'glpi_states';
       $criterias['states_id']['field']           = 'name';
-      $criterias['states_id']['name']            = $LANG['ocsconfig'][55];
+      $criterias['states_id']['name']            = __('Find computers in GLPI having the status');
       $criterias['states_id']['linkfield']       = 'state';
       $criterias['states_id']['type']            = 'dropdown';
       //Means that this criterion can only be used in a global search query
       $criterias['states_id']['is_global']       = true;
       $criterias['states_id']['allow_condition'] = array(Rule::PATTERN_IS, Rule::PATTERN_IS_NOT);
 
-      $criterias['ocsservers_id']['table']     = 'glpi_plugin_ocsinventoryng_ocsservers';
-      $criterias['ocsservers_id']['field']     = 'name';
-      $criterias['ocsservers_id']['name']      = $LANG['ocsng'][29];
-      $criterias['ocsservers_id']['linkfield'] = '';
-      $criterias['ocsservers_id']['type']      = 'dropdown';
+      $criterias['ocsservers_id']['table']       = 'glpi_plugin_ocsinventoryng_ocsservers';
+      $criterias['ocsservers_id']['field']       = 'name';
+      $criterias['ocsservers_id']['name']        = __('OCSNG server');
+      $criterias['ocsservers_id']['linkfield']   = '';
+      $criterias['ocsservers_id']['type']        = 'dropdown';
 
-      $criterias['TAG']['name']        = $LANG['rulesengine'][152].' : '.$LANG['ocsconfig'][39];
+      $criterias['TAG']['name']              = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+                                                       __('OCSNG TAG'));
 
-      $criterias['DOMAIN']['name']     = $LANG['rulesengine'][152].' : '.$LANG['setup'][89];
+      $criterias['DOMAIN']['name']           = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+                                                       __('Domain'));
 
-      $criterias['IPSUBNET']['name']   = $LANG['rulesengine'][152].' : '.$LANG['networking'][61];
+      $criterias['IPSUBNET']['name']         = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+                                                       __('Subnet'));
 
-      $criterias['MACADDRESS']['name'] = $LANG['rulesengine'][152].' : '.$LANG['device_iface'][2];
+      $criterias['MACADDRESS']['name']       = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+                                                       __('Mac address'));
 
-      $criterias['IPADDRESS']['name']  = $LANG['rulesengine'][152].' : '.
-                                         $LANG['financial'][44]." ". $LANG['networking'][14];
+      $criterias['IPADDRESS']['name']        = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+                                                       __('IP Address'));
 
-      $criterias['name']['name']            = $LANG['rulesengine'][152].' : '.
-                                                        $LANG['rulesengine'][25];
+      $criterias['name']['name']             = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+                                                       __("Computer's name"));
       $criterias['name']['allow_condition'] = array(Rule::PATTERN_IS, Rule::PATTERN_IS_NOT,
                                                     self::PATTERN_IS_EMPTY, Rule::PATTERN_FIND);
 
-      $criterias['DESCRIPTION']['name']   = $LANG['rulesengine'][152].' : '.$LANG['joblist'][6];
+      $criterias['DESCRIPTION']['name']      = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+                                                       __('Description'));
 
-      $criterias['serial']['name']        = $LANG['rulesengine'][152].' : '.$LANG['common'][19];
+      $criterias['serial']['name']           = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+                                                       __('Serial number'));
 
       // Model as Text to allow text criteria (contains, regex, ...)
-      $criterias['model']['name']         = $LANG['rulesengine'][152].' : '.$LANG['common'][22];
+      $criterias['model']['name']            = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+                                                       __('Model'));
 
       // Manufacturer as Text to allow text criteria (contains, regex, ...)
-      $criterias['manufacturer']['name']  = $LANG['rulesengine'][152].' : '.$LANG['common'][5];
+      $criterias['manufacturer']['name']     = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+                                                       __('Manufacturer'));
 
       return $criterias;
    }
 
 
    function getActions() {
-      global $LANG;
 
       $actions = array();
-      $actions['_fusion']['name']        = $LANG['ocsng'][58];
+      $actions['_fusion']['name']        = __('OCSNG link');
       $actions['_fusion']['type']        = 'fusion_type';
 
-      $actions['_ignore_import']['name'] = $LANG['rulesengine'][132];
+      $actions['_ignore_import']['name'] = __('To be unaware of import');
       $actions['_ignore_import']['type'] = 'yesonly';
 
       return $actions;
@@ -144,10 +151,9 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
 
 
    static function getRuleActionValues() {
-      global $LANG;
 
-      return array(self::RULE_ACTION_LINK_OR_IMPORT    => $LANG['ocsng'][79],
-                   self::RULE_ACTION_LINK_OR_NO_IMPORT => $LANG['ocsng'][78]);
+      return array(self::RULE_ACTION_LINK_OR_IMPORT    => __('Link if possible'),
+                   self::RULE_ACTION_LINK_OR_NO_IMPORT => __('Link if possible, otherwise imports declined'));
    }
 
 
@@ -159,7 +165,6 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
     * @return the label's value or ''
    **/
    function displayAdditionRuleActionValue($value) {
-      global $LANG;
 
       $values = self::getRuleActionValues();
       if (isset($values[$value])) {
@@ -170,13 +175,12 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
 
 
    function manageSpecificCriteriaValues($criteria, $name, $value) {
-      global $LANG;
 
       switch ($criteria['type']) {
          case "state" :
-            $link_array = array("0" => $LANG['choice'][0],
-                                "1" => $LANG['choice'][1]." : ".$LANG['ocsconfig'][57],
-                                "2" => $LANG['choice'][1]." : ".$LANG['ocsconfig'][56]);
+            $link_array = array("0" => __('No'),
+                                "1" => sprintf(__('%1$s: %2$s'), __('Yes'), __('equal')),
+                                "2" => sprintf(__('%1$s: %2$s'), __('Yes'), __('empty')));
 
             Dropdown::showFromArray($name, $link_array, array('value' => $value));
       }
@@ -188,18 +192,16 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
     * Add more criteria specific to this type of rule
    **/
    static function addMoreCriteria($criterion='') {
-      global $LANG;
 
-      return array(Rule::PATTERN_FIND     => $LANG['rulesengine'][151],
-                   self::PATTERN_IS_EMPTY => $LANG['rulesengine'][154]);
+      return array(Rule::PATTERN_FIND     => __('is already present in GLPI'),
+                   self::PATTERN_IS_EMPTY => __('is empty in GLPI'));
    }
 
 
    function getAdditionalCriteriaDisplayPattern($ID, $condition, $pattern) {
-      global $LANG;
 
       if ($condition == self::PATTERN_IS_EMPTY) {
-          return $LANG['choice'][1];
+          return __('Yes');
       }
       return false;
    }
@@ -223,7 +225,6 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
 
 
    function displayAdditionalRuleAction(array $action) {
-      global $LANG;
 
       switch ($action['type']) {
          case 'fusion_type' :

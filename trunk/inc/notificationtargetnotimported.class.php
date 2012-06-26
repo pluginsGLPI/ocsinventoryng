@@ -36,12 +36,12 @@ if (!defined('GLPI_ROOT')){
 class PluginOcsinventoryngNotificationTargetNotImported extends NotificationTarget {
 
    function getEvents() {
-      global $LANG;
-      return array ('not_imported' => $LANG['plugin_ocsinventoryng']["common"][18]);
+      return array ('not_imported' => __('Computers not imported by automatic task'));
    }
 
+
    function getDatasForTemplate($event,$options=array()) {
-      global $LANG, $CFG_GLPI, $DB;
+      global $CFG_GLPI, $DB;
 
       $this->datas['##notimported.entity##'] = Dropdown::getDropdownName('glpi_entities',
                                                                          $options['entities_id']);
@@ -49,13 +49,13 @@ class PluginOcsinventoryngNotificationTargetNotImported extends NotificationTarg
       foreach($options['notimported'] as $id => $item) {
          $tmp = array();
 
-         $tmp['##notimported.name##']     = $item['name'];
-         $tmp['##notimported.serial##']   = $item['serial'];
-         $tmp['##notimported.entity##']   = Dropdown::getDropdownName('glpi_entities',
-                                                                      $options['entities_id']);
-         $tmp['##notimported.ocsid##']    = $item['ocsid'];
-         $tmp['##notimported.deviceid##'] = $item['ocs_deviceid'];
-         $tmp['##notimported.tag##']      = $item['tag'];
+         $tmp['##notimported.name##']      = $item['name'];
+         $tmp['##notimported.serial##']    = $item['serial'];
+         $tmp['##notimported.entity##']    = Dropdown::getDropdownName('glpi_entities',
+                                                                       $options['entities_id']);
+         $tmp['##notimported.ocsid##']     = $item['ocsid'];
+         $tmp['##notimported.deviceid##']  = $item['ocs_deviceid'];
+         $tmp['##notimported.tag##']       = $item['tag'];
          $tmp['##notimported.ocsserver##'] = Dropdown::getDropdownName('glpi_plugin_ocsinventoryng_ocsservers',
                                                                        $item['ocsid']);
          $tmp['##notimported.reason##'] = PluginOcsinventoryngNotimported::getReason($item['reason']);
@@ -74,17 +74,16 @@ class PluginOcsinventoryngNotificationTargetNotImported extends NotificationTarg
    }
 
    function getTags() {
-      global $LANG;
 
-      $tags = array('notimported.id'           => 'ID',
-                    'notimported.url'          => $LANG['document'][33],
-                    'notimported.tag'          => $LANG['ocsconfig'][39],
-                    'notimported.name'         => $LANG['common'][16],
-                    'notimported.action'       => $LANG['plugin_ocsinventoryng']["common"][18],
-                    'notimported.ocsid'        => 'ID OCSNG',
-                    'notimported.deviceid'     => $LANG['plugin_ocsinventoryng']["common"][22],
-                    'notimported.reason'       => $LANG['plugin_ocsinventoryng']["common"][34],
-                    'notimported.serial'       => $LANG['common'][19]);
+      $tags = array('notimported.id'           => __('ID'),
+                    'notimported.url'          => __('Web link'),
+                    'notimported.tag'          => __('OCSNG TAG'),
+                    'notimported.name'         => __('Name'),
+                    'notimported.action'       => __('Computers not impmorted by automatic task'),
+                    'notimported.ocsid'        => __('OCSNG ID'),
+                    'notimported.deviceid'     => __('Device ID'),
+                    'notimported.reason'       => __('Reject cause'),
+                    'notimported.serial'       => __('Serial number'));
 
       foreach ($tags as $tag => $label) {
          $this->addTagToList(array('tag'=>$tag,'label'=>$label,
