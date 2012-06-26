@@ -2932,7 +2932,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       $query_ocs = "SELECT `hardware`.*,
                            `accountinfo`.`TAG` AS TAG,
-                           `bios`.`SSN` AS SERIAL
+                           `bios`.`SSN` AS SERIAL,
                            `bios`.`SMODEL`,
                            `bios`.`SMANUFACTURER`
                     FROM `hardware`
