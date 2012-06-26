@@ -1788,7 +1788,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             $params           = array('entities_id'   => $data['entities_id'],
                                       'plugin_ocsinventoryng_ocsservers_id'
                                                       => $plugin_ocsinventoryng_ocsservers_id);
-            $rulelink_results = $rulelink->processAllRules($input, array(), $params);
+            $rulelink_results = $rulelink->processAllRules(Toolbox::stripslashes_deep($input), array(), $params);
 
             //If at least one rule matched
             //else do import as usual
@@ -3121,7 +3121,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   $params           = array('entities_id' => $entity,
                                             'plugin_ocsinventoryng_ocsservers_id'
                                                           => $plugin_ocsinventoryng_ocsservers_id);
-                  $rulelink_results = $rulelink->processAllRules($tab, array(), $params);
+                  $rulelink_results = $rulelink->processAllRules(Toolbox::stripslashes_deep($tab), array(), $params);
 
                   //Look for the computer using automatic link criterias as defined in OCSNG configuration
                   $options       = array('name' => "tolink[".$tab["id"]."]");
@@ -4838,13 +4838,12 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                if (!$cfg_ocs["use_soft_dict"]) {
                   //Software dictionnary
                   $rulecollection = new RuleDictionnarySoftwareCollection();
-                  $res_rule = $rulecollection->processAllRules(array("name"         => $name,
+                  $res_rule = $rulecollection->processAllRules(Toolbox::stripslashes_deep(array("name"         => $name,
                                                                      "manufacturer" => $manufacturer,
                                                                      "old_version"  => $version,
-                                                                     "entities_id"  => $entity),
+                                                                     "entities_id"  => $entity)),
                                                                array(),
-                                                               array('version' => $version));
-                  $res_rule = Toolbox::addslashes_deep($res_rule);
+                                                               Toolbox::stripslashes_deep(array('version' => $version)));
 
                   if (isset($res_rule["name"]) && $res_rule["name"]) {
                      $modified_name = $res_rule["name"];
@@ -5082,7 +5081,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $glpi_column = $links_glpi_ocs['glpi_column'];
 
                if (isset ($data_ocs[$ocs_column]) && !in_array($glpi_column, $computer_updates)) {
-                  $var = $data_ocs[$ocs_column];
+                  $var = addslashes($data_ocs[$ocs_column]);
                   switch ($glpi_column) {
                      case "groups_id" :
                         $var = self::importGroup($var, $entity);
@@ -5393,7 +5392,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
                      if (!empty ($print["name"])) {
                         $rulecollection = new RuleDictionnaryPrinterCollection();
-                        $res_rule = Toolbox::addslashes_deep($rulecollection->processAllRules($params,
+                        $res_rule = Toolbox::addslashes_deep($rulecollection->processAllRules(Toolbox::stripslashes_deep($params),
                                                                                      array(),
                                                                                      array()));
 
