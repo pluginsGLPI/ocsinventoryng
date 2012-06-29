@@ -369,7 +369,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                echo "</td>";
                echo "<td class='center'>";
                echo "<a href=\"detail.php?reset=reset_before&field[0]=".
-                      "5&contains[0]=".$thread["processid"]."\">".
+                      "5&contains[0]=^".$thread["processid"].'$">'.
                       "<img  src='".$CFG_GLPI["root_doc"]."/pics/rdv.png'</a></td>";
                echo "</tr>\n";
             }
