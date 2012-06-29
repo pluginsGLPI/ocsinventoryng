@@ -109,7 +109,11 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
          $input['entities_id'] = 0;
       }
       if (isset($action['computers_id'])) {
-         $input["computers_id"] = $action['computers_id'];
+         $comp = new Computer();
+         if ($comp->getFromDB($action['computers_id'])) {
+            $input['computers_id'] = $comp->getID();
+            $input['entities_id']  = $comp->getEntityID();
+         }
       }
       $input["process_time"] = date("Y-m-d H:i:s");
 
