@@ -523,7 +523,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<p class='submit'>";
       echo "<input type='submit' name='update_server' class='submit' value=\"".
             _sx('button', 'Save')."\">";
-      echo "</p></form></div>\n";
+      echo "</p>";
+      Html::closeForm();
+      echo "</div>\n";
    }
 
 
@@ -650,7 +652,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       echo "<p class='submit'><input type='submit' name='update_server' class='submit' value='" .
              _sx('button', 'Save') . "'></p>";
-      echo "</form></div>";
+             Html::closeForm();
+      echo "</div>";
    }
 
 
@@ -702,7 +705,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       echo "<p class='submit'><input type='submit' name='update_server' class='submit' value='" .
              _sx('Button', 'Post') . "'></p>";
-      echo "</form></div>";
+      Html::closeForm();
+      echo "</div>";
    }
 
 
@@ -2620,7 +2624,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                    _sx('button','Clean')."\">";
          }
          echo "</td></tr>";
-         echo "</table></form>\n";
+         echo "</table>\n";
+         Html::closeForm();
          Html::printPager($start, $numrows, $target, $parameters);
 
       } else {
@@ -2789,7 +2794,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
             echo "<tr class='tab_bg_1'><td colspan='5' class='center'>";
             self::checkBox($target);
-            echo "</table></form>\n";
+            echo "</table>\n";
+            Html::closeForm();
             Html::printPager($start, $numrows, $target, $parameters);
 
          } else {
@@ -3026,21 +3032,19 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                echo "<tr><th>". __('Manual import mode'). "</th></tr>\n";
                echo "<tr class='tab_bg_1'><td class='center'>";
                if ($advanced) {
-                  $status = "false";
+                  Html::showSimpleForm($target, 'change_import_mode', _e('Disable preview'),
+                                       array('id' => 'false'));
                } else {
-                  $status = "true";
+                  Html::showSimpleForm($target, 'change_import_mode', _e('Enable preview'),
+                                       array('id' => 'true'));
                }
-               echo "<a href='" . $target . "?change_import_mode=" . $status . "'>";
-               if ($advanced) {
-                  _e('Disable preview');
-               } else {
-                  _e('Enable preview');
-               }
-               echo "</a></td></tr>";
+               echo "</td></tr>";
 
                echo "<tr class='tab_bg_1'><td class='center b'>".
                      __('Check first that duplicates have been correctly managed in OCSNG')."</td>";
-               echo "</tr></table></form></div>";
+               echo "</tr></table>";
+               Html::closeForm();
+               echo "</div>";
             }
 
             echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
@@ -3149,7 +3153,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' ".
                    "value='$plugin_ocsinventoryng_ocsservers_id'>";
             echo "</td></tr>";
-            echo "</table></form>\n";
+            echo "</table>\n";
+            Html::closeForm();
 
             if (!$tolinked) {
                self::checkBox($target);
@@ -4186,7 +4191,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $result = $DB->query($query);
 
       if ($DB->numrows($result) > 1) {
-         echo "<form action=\"".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsng.php\" method='get'>";
+         echo "<form action=\"".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsng.php\" method='post'>";
          echo "<div class='center'><table class='tab_cadre'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>".__('Choice of an OCSNG server')."</th></tr>\n";
 
@@ -4201,7 +4206,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<tr class='tab_bg_2'><td class='center' colspan=2>";
          echo "<input class='submit' type='submit' name='ocs_showservers' value=\"".
                 __sx('button','Post')."\"></td></tr>";
-         echo "</table></div></form>\n";
+         echo "</table></div>\n";
+         Html::closeForm();
 
       } else if ($DB->numrows($result) == 1) {
          $ocs = $DB->fetch_array($result);

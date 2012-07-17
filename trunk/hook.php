@@ -1043,7 +1043,11 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
             }
          }
          break;
+
       case "plugin_ocsinventoryng_unlock_ocsng_field" :
+         $nbok      = 0;
+         $nbnoright = 0;
+         $nbko      = 0;
          $fields = PluginOcsinventoryngOcsServer::getLockableFields();
          if ($_POST['field'] == 'all' || isset($fields[$_POST['field']])) {
             foreach ($_POST["item"] as $key => $val) {

@@ -146,7 +146,8 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
             "value='".(!$status?_sx('button','Lock')
                                :_sx('button', 'Unlock'))."'>";
       echo "</td/></tr/></table><br>";
-      echo "</form></div>";
+      Html::closeForm();
+      echo "</div>";
 
    }
 

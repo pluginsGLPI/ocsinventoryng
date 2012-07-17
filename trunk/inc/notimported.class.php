@@ -421,7 +421,9 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
       Dropdown::showForMassiveAction('PluginOcsinventoryngNotimported', 0,
                                      array('action'=>'massive'));
       echo "</td></tr>";
-      echo "</table></form></div>";
+      echo "</table>";
+      Html::closeForm();
+      echo "</div>";
    }
 
 

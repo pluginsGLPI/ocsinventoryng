@@ -44,6 +44,8 @@ define("PLUGIN_OCSINVENTORYNG_LOCKFILE", GLPI_LOCK_DIR . "/ocsinventoryng.lock")
 function plugin_init_ocsinventoryng() {
    global $PLUGIN_HOOKS, $CFG_GLPI;
 
+   $PLUGIN_HOOKS['csrf_compliant']['ocsinventoryng'] = true;
+
    $PLUGIN_HOOKS['change_profile']['ocsinventoryng'] = array('PluginOcsinventoryngProfile',
                                                              'changeProfile');
 

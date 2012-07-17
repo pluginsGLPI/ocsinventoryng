@@ -153,7 +153,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                          _sx('button', 'validate')."\">";
                   echo "</td></tr>";
                   echo "</table>\n";
-                  echo "</form>\n";
+                  Html::closeForm();
                   echo "</div>";
                }
             }
@@ -304,7 +304,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
                    _sx('button', 'Force synchronization'). "\">";
             echo "</table>\n";
-            echo "</form>\n";
+            eHtml::closeForm();
          }
 
          echo "</table></div>";
@@ -559,7 +559,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             echo __('No locked field')."</td></tr>";
          }
 
-         echo "</table></form>";
+         echo "</table>";
+         Html::closeForm();
          echo "</div>\n";
       }
    }

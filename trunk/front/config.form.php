@@ -47,14 +47,14 @@ function configHeader() {
 
 $config = new PluginOcsinventoryngConfig();
 
-if (isset ($_POST["update"])) {
+if (isset($_POST["update"])) {
    $config->update($_POST);
    Html::back();
 }
-if (isset ($_POST["soft_lock"])) {
+if (isset($_POST["soft_lock"])) {
    $config->setScriptLock();
 }
-if (isset ($_POST["soft_unlock"])) {
+if (isset($_POST["soft_unlock"])) {
    $config->removeScriptLock();
 }
 
