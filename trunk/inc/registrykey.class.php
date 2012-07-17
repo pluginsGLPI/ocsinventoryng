@@ -94,7 +94,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
             echo "<tr><th colspan='4'>".sprintf(__('%d registry key found'), $DB->numrows($result));
             echo "</th></tr>\n";
 
-            echo "<tr><th>".__('OCSNG Nname')."</th>";
+            echo "<tr><th>".__('OCSNG Name')."</th>";
             echo "<th>".__('Hive')."</th>";
             echo "<th>".__('Path')."</th>";
             echo "<th>".__('Key/value')."</th></tr>\n";

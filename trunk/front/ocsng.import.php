@@ -45,7 +45,6 @@ if (!isset($_SESSION["change_import_mode"])) {
 
 //Changing the import mode
 if (isset($_POST["change_import_mode"])) {
-
    if ('id' == "false") {
       $_SESSION["change_import_mode"] = false;
    } else {

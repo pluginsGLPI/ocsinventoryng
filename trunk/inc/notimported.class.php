@@ -76,7 +76,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
                          'label' => __('Domain'),
                          'type'  => 'echo'),
                    array('name'  => 'last_inventory',
-                         'label' => __('Last OCSNG inventory'),
+                         'label' => __('Last OCSNG inventory date'),
                          'type'  => 'echo_datetime'));
    }
 
@@ -261,7 +261,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
       $tab[9]['table']           = $this->getTable();
       $tab[9]['field']           = 'last_inventory';
       $tab[9]['linkfield']       = '';
-      $tab[9]['name']            = __('Last OCSNG inventory');
+      $tab[9]['name']            = __('Last OCSNG inventory date');
       $tab[9]['datatype']        = 'datetime';
 
       $tab[10]['table']          = $this->getTable();
