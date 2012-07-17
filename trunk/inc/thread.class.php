@@ -407,7 +407,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       $title = _('Statistics');
       if ($duree < 9999) {
          $title = sprintf(__('%1$s (%2$s)'), $title,
-                          sprintf(__('%1$s %2$s'), $duree, _n('hour', 'hours', $duree)));
+                          sprintf(_n('%d hour', '%d hours' ,$duree), $duree));
       }
       echo "<tr><th colspan='16'>" . $title. "</th></tr>";
 
