@@ -16,9 +16,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-17 14:22+0200\n"
-"PO-Revision-Date: 2012-07-17 12:41+0000\n"
-"Last-Translator: DOMBRE Julien <moyo@indepnet.net>\n"
+"POT-Creation-Date: 2012-07-17 16:55+0200\n"
+"PO-Revision-Date: 2012-07-17 15:58+0000\n"
+"Last-Translator: Nelly Mahu-Lasson <nini.lasson@orange.fr>\n"
 "Language-Team: French (France) (http://www.transifex.com/projects/p/GLPI_ocsinventoryng/language/fr_FR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -37,11 +37,11 @@ msgstr "Importer dans l'enité"
 #: hook.php:927 inc/ocsserver.class.php:309 inc/ocsserver.class.php:310
 #: inc/ocsserver.class.php:311
 msgid "Link new OCSNG computers to existing GLPI computers"
-msgstr ""
+msgstr "Lier les nouveaux ordinateurs d'OCSNG avec ceux existants dans GLPI"
 
 #: hook.php:931
 msgid "Delete computer in OCSNG"
-msgstr ""
+msgstr "Supprimer l'ordinateur d'OCSNG"
 
 #: hook.php:941
 msgid "Force synchronization OCSNG"
@@ -49,7 +49,7 @@ msgstr "Forcer la synchronisation OCSNG"
 
 #: hook.php:942
 msgid "Unlock fields"
-msgstr ""
+msgstr "Déverrouiller les champs"
 
 #: hook.php:943
 msgid "Unlock monitors"
@@ -84,8 +84,9 @@ msgid "GLPI import date"
 msgstr "Date d'import dans GLPI"
 
 #: hook.php:1223 inc/notimported.class.php:79 inc/notimported.class.php:264
-msgid "Last OCSNG inventory"
-msgstr ""
+#: inc/ocslink.class.php:126 inc/ocsserver.class.php:2774
+msgid "Last OCSNG inventory date"
+msgstr "Date dernier inventaire OCSNG"
 
 #: hook.php:1232
 msgid "Automatic update OCSNG"
@@ -103,7 +104,7 @@ msgstr "TAG OCSNG"
 #: hook.php:1251 inc/notificationtargetnotimported.class.php:83
 #: inc/notimported.class.php:54 inc/notimported.class.php:221
 msgid "OCSNG ID"
-msgstr ""
+msgstr "ID OCSNG"
 
 #: hook.php:1256 hook.php:1260 hook.php:1267 inc/ocsserver.class.php:615
 #: inc/registrykey.class.php:44 inc/registrykey.class.php:116
@@ -112,7 +113,7 @@ msgstr "Base de registre"
 
 #: hook.php:1260 hook.php:1267
 #, php-format
-msgid "%1$s:$2$s"
+msgid "%1$s: $2$s"
 msgstr ""
 
 #: hook.php:1260
@@ -149,7 +150,7 @@ msgstr "Configuration"
 
 #: front/config.form.php:75
 msgid "Number of processed computers"
-msgstr ""
+msgstr "Nombre d'ordinateurs traités"
 
 #: front/detail.php:38 inc/ocsserver.class.php:300 inc/ocsserver.class.php:301
 #: inc/ocsserver.class.php:302
@@ -199,7 +200,7 @@ msgstr "Configuration de la synchronisation automatique"
 
 #: inc/config.class.php:89
 msgid "Default OCSNG server"
-msgstr ""
+msgstr "Serveur OCSNG par défaut"
 
 #: inc/config.class.php:95
 msgid "Display"
@@ -207,11 +208,11 @@ msgstr "Afficher"
 
 #: inc/config.class.php:98
 msgid "Show processes where nothing was changed"
-msgstr ""
+msgstr "Montrer les traitements quand rien n'a changé"
 
 #: inc/config.class.php:107
 msgid "Authorize the OCSNG update"
-msgstr ""
+msgstr "Authoriser la mise à jour d'OCSNG"
 
 #: inc/config.class.php:113
 msgid "Refresh information of a process every"
@@ -224,7 +225,7 @@ msgstr ""
 
 #: inc/config.class.php:132
 msgid "Check OCSNG import script"
-msgstr ""
+msgstr "Contrôler le script d'import OCSNG"
 
 #: inc/config.class.php:138
 msgid "Lock not activated"
@@ -247,19 +248,19 @@ msgstr[1] "Ordinateurs non importés"
 
 #: inc/detail.class.php:51
 msgid "Process time"
-msgstr ""
+msgstr "Heure de traitemen"
 
 #: inc/detail.class.php:61
 msgid "Process"
-msgstr ""
+msgstr "Processus"
 
 #: inc/detail.class.php:70 inc/thread.class.php:94
 msgid "Thread"
-msgstr ""
+msgstr "Thread"
 
 #: inc/detail.class.php:75
 msgid "Rules checked"
-msgstr ""
+msgstr "Règles contrôlées"
 
 #: inc/detail.class.php:153 inc/ocsserver.class.php:5740
 msgid "Imported computers"
@@ -290,7 +291,7 @@ msgstr "Import refusé par une règle"
 #: inc/notificationtargetnotimported.class.php:39 inc/ocsserver.class.php:317
 #: inc/ocsserver.class.php:318 inc/ocsserver.class.php:319
 msgid "Computers not imported by automatic task"
-msgstr ""
+msgstr "Ordinateurs non importés par action automatique"
 
 #: inc/notificationtargetnotimported.class.php:82
 msgid "Computers not impmorted by automatic task"
@@ -299,7 +300,7 @@ msgstr ""
 #: inc/notificationtargetnotimported.class.php:84 inc/notimported.class.php:61
 #: inc/notimported.class.php:239
 msgid "Device ID"
-msgstr ""
+msgstr "ID du matériel"
 
 #: inc/notificationtargetnotimported.class.php:85
 msgid "Reject cause"
@@ -316,7 +317,7 @@ msgstr "Balise"
 
 #: inc/notimported.class.php:95 inc/ocsserver.class.php:132
 msgid "OCSNG console"
-msgstr ""
+msgstr "Console OCSNG"
 
 #: inc/notimported.class.php:393
 msgid "Can't affect an entity"
@@ -324,7 +325,7 @@ msgstr "Impossible d'affecté une entité"
 
 #: inc/notimported.class.php:396
 msgid "Unicity criteria not verified"
-msgstr ""
+msgstr "Critères d'unicité non vériffiés"
 
 #: inc/notimported.class.php:416
 msgid "Actions to be made on the computer"
@@ -332,7 +333,7 @@ msgstr "Actions à faire sur l'ordinateur"
 
 #: inc/notimported.class.php:581
 msgid "Send OCSNG not imported computers alert failed"
-msgstr ""
+msgstr "Echec de l'envoi de l'alerte concernant les ordinateurs on importés d'OCSNG"
 
 #: inc/ocslink.class.php:44 inc/ruleimportcomputer.class.php:142
 msgid "OCSNG link"
@@ -340,17 +341,13 @@ msgid_plural "OCSNG links"
 msgstr[0] "Liaison OCSNG"
 msgstr[1] "Liaisons OCSNG"
 
-#: inc/ocslink.class.php:126 inc/ocsserver.class.php:2774
-msgid "Last OCSNG inventory date"
-msgstr "Date dernier inventaire OCSNG"
-
 #: inc/ocslink.class.php:129
 msgid "Date of import in GLPI"
-msgstr ""
+msgstr "Date de l'import dans GLPI"
 
 #: inc/ocslink.class.php:140
 msgid "Automatic OCSNG update"
-msgstr ""
+msgstr "Mise à jour automatiques OCSNG"
 
 #: inc/ocslink.class.php:336
 msgid "Locked field"
@@ -373,8 +370,8 @@ msgstr[1] "Imprimantes verrouillées"
 #: inc/ocslink.class.php:409
 msgid "Locked device"
 msgid_plural "Locked devices"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Matériel verrouillé"
+msgstr[1] "Matériels verrouillés"
 
 #: inc/ocslink.class.php:442
 msgid "Locked IP"
@@ -391,14 +388,14 @@ msgstr[1] "Logiciels verrouillés"
 #: inc/ocslink.class.php:493
 msgid "Locked disk"
 msgid_plural "Locked disks"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Disque verrouillé"
+msgstr[1] "Disques verrouillés"
 
 #: inc/ocslink.class.php:541
 msgid "Locked component"
 msgid_plural "Locked components"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Composant verrouillé"
+msgstr[1] "Composants verrouillés"
 
 #: inc/ocslink.class.php:559
 msgid "No locked field"
@@ -445,7 +442,7 @@ msgstr "Configuration sur server OCSNG"
 #: inc/ocsserver.class.php:261
 #, php-format
 msgid "Configuration of OCSNG server %s"
-msgstr ""
+msgstr "Configuration du server OCSNG %s"
 
 #: inc/ocsserver.class.php:276 inc/ocsserver.class.php:277
 #: inc/ocsserver.class.php:3061 inc/ocsserver.class.php:3167
@@ -456,7 +453,7 @@ msgstr "Importation de nouveaux ordinateurs"
 #: inc/ocsserver.class.php:283 inc/ocsserver.class.php:284
 #: inc/ocsserver.class.php:285
 msgid "Scripts execution of automatic task"
-msgstr ""
+msgstr "Scripts d'execution d'action automatique"
 
 #: inc/ocsserver.class.php:292 inc/ocsserver.class.php:293
 #: inc/ocsserver.class.php:294
@@ -739,7 +736,7 @@ msgstr "Ordinateurs dont l'import est refusé par une règle"
 
 #: inc/ocsserver.class.php:5794
 msgid "Statistics of the OCSNG link"
-msgstr ""
+msgstr "Statistiques concerant la liaison OCSNG"
 
 #: inc/ocsserver.class.php:5796
 msgid "Process completed"
@@ -763,7 +760,7 @@ msgstr "Lier avec l'ordinateur"
 
 #: inc/profile.class.php:43
 msgid "Rights management"
-msgstr ""
+msgstr "Gestion des droits"
 
 #: inc/profile.class.php:75
 msgid "OCSNG Mode"
@@ -777,7 +774,7 @@ msgstr ""
 
 #: inc/profile.class.php:194
 msgid "Manually synchronization"
-msgstr ""
+msgstr "Synchronisation manuelle"
 
 #: inc/profile.class.php:198
 msgid "See information"
@@ -793,7 +790,7 @@ msgid "%d registry key found"
 msgstr ""
 
 #: inc/registrykey.class.php:97
-msgid "OCSNG Nname"
+msgid "OCSNG Name"
 msgstr ""
 
 #: inc/registrykey.class.php:98
@@ -831,7 +828,7 @@ msgstr "Adresse IP"
 
 #: inc/thread.class.php:55
 msgid "Back to processes list"
-msgstr ""
+msgstr "Retour à la lise des processus"
 
 #: inc/thread.class.php:91
 msgid "Process information"
@@ -839,11 +836,11 @@ msgstr ""
 
 #: inc/thread.class.php:96 inc/thread.class.php:286
 msgid "Beginning date of execution"
-msgstr ""
+msgstr "Date de début d'exécution"
 
 #: inc/thread.class.php:97 inc/thread.class.php:287
 msgid "Ending date of execution"
-msgstr ""
+msgstr "Date de fin d'exécution"
 
 #: inc/thread.class.php:98 inc/thread.class.php:288
 msgid "Imported computer by automatic task"
@@ -893,7 +890,7 @@ msgstr "Total d'ordinateurs traités"
 
 #: inc/thread.class.php:285
 msgid "Number of threads"
-msgstr ""
+msgstr "Nombre de threads"
 
 #: inc/thread.class.php:410
 msgid "hour"
@@ -903,11 +900,11 @@ msgstr[1] "heures"
 
 #: inc/thread.class.php:415
 msgid "Minimum"
-msgstr ""
+msgstr "Minimum"
 
 #: inc/thread.class.php:416
 msgid "Maximum"
-msgstr ""
+msgstr "Maximum"
 
 #. TRANS: means computers by second
 #: inc/thread.class.php:459
@@ -916,8 +913,8 @@ msgstr ""
 
 #: inc/thread.class.php:563
 msgid "Clean processes"
-msgstr ""
+msgstr "Nettoyer les processus"
 
 #: inc/thread.class.php:564
 msgid "Delete processes after"
-msgstr ""
+msgstr "Supprimer les processus après"

@@ -183,7 +183,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
 
       echo "<tr class='tab_bg_2'>";
       //TRANS: %$ is a profile name
-      echo "<th colspan='4' class='center b'>".sprintf(__('Rights management %s'),
+      echo "<th colspan='4' class='center b'>".sprintf(__('%1$s - %2$s'), __('Rights management'),
                                                        $prof->fields["name"])."</th>";
       echo "</tr>";
 
@@ -197,7 +197,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
       echo "<tr class='tab_bg_2'>";
       echo "<td>".__('See information')."</td><td>";
       Profile::dropdownNoneReadWrite("view_ocsng", $this->fields["view_ocsng"], 1, 1, 0);
-      echo "<td>".__('Clean links betwenn GLPI and OCSNG')."</td><td>";
+      echo "<td>".__('Clean links between GLPI and OCSNG')."</td><td>";
       Profile::dropdownNoneReadWrite("clean_ocsng", $this->fields["clean_ocsng"], 1, 1, 1);
       echo "</td></tr>\n";
 

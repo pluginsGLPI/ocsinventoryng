@@ -79,7 +79,7 @@ class PluginOcsinventoryngNotificationTargetNotImported extends NotificationTarg
                     'notimported.url'          => __('Web link'),
                     'notimported.tag'          => __('OCSNG TAG'),
                     'notimported.name'         => __('Name'),
-                    'notimported.action'       => __('Computers not impmorted by automatic task'),
+                    'notimported.action'       => __('Computers not imported by automatic task'),
                     'notimported.ocsid'        => __('OCSNG ID'),
                     'notimported.deviceid'     => __('Device ID'),
                     'notimported.reason'       => __('Reject cause'),

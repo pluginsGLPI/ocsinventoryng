@@ -112,7 +112,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
       echo "<td> " .__('Refresh information of a process every') . " </td><td>";
       Html::autocompletionTextField($this,"delay_refresh", array('size' => 5));
-      echo "&nbsp;"._x('second', 'seconds', 2)."</td>";
+      echo "&nbsp;"._n('second', 'seconds', 2)."</td>";
       echo "</tr>";
 
       $this->showFormButtons(array('canedit' => true,
