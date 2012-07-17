@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-17 14:22+0200\n"
+"POT-Creation-Date: 2012-07-17 16:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,7 +76,8 @@ msgid "GLPI import date"
 msgstr ""
 
 #: hook.php:1223 inc/notimported.class.php:79 inc/notimported.class.php:264
-msgid "Last OCSNG inventory"
+#: inc/ocslink.class.php:126 inc/ocsserver.class.php:2774
+msgid "Last OCSNG inventory date"
 msgstr ""
 
 #: hook.php:1232
@@ -104,7 +105,7 @@ msgstr ""
 
 #: hook.php:1260 hook.php:1267
 #, php-format
-msgid "%1$s:$2$s"
+msgid "%1$s: $2$s"
 msgstr ""
 
 #: hook.php:1260
@@ -331,10 +332,6 @@ msgid "OCSNG link"
 msgid_plural "OCSNG links"
 msgstr[0] ""
 msgstr[1] ""
-
-#: inc/ocslink.class.php:126 inc/ocsserver.class.php:2774
-msgid "Last OCSNG inventory date"
-msgstr ""
 
 #: inc/ocslink.class.php:129
 msgid "Date of import in GLPI"
@@ -785,7 +782,7 @@ msgid "%d registry key found"
 msgstr ""
 
 #: inc/registrykey.class.php:97
-msgid "OCSNG Nname"
+msgid "OCSNG Name"
 msgstr ""
 
 #: inc/registrykey.class.php:98
