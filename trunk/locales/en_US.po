@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-07-17 14:22+0200\n"
-"PO-Revision-Date: 2012-07-17 12:42+0000\n"
+"PO-Revision-Date: 2012-07-17 12:39+0000\n"
 "Last-Translator: DOMBRE Julien <moyo@indepnet.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: el_GR\n"
+"Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 #: hook.php:920
@@ -68,7 +68,7 @@ msgstr ""
 
 #: hook.php:1002
 msgid "Unlock"
-msgstr "Ξεκλείδωμα"
+msgstr "Unlock"
 
 #: hook.php:1216
 msgid "GLPI import date"
@@ -99,7 +99,7 @@ msgstr ""
 #: hook.php:1256 hook.php:1260 hook.php:1267 inc/ocsserver.class.php:615
 #: inc/registrykey.class.php:44 inc/registrykey.class.php:116
 msgid "Registry"
-msgstr "Μητρώο"
+msgstr "Registry"
 
 #: hook.php:1260 hook.php:1267
 #, php-format
@@ -108,15 +108,15 @@ msgstr ""
 
 #: hook.php:1260
 msgid "Key/Value"
-msgstr "Κλειδί/τιμή"
+msgstr "Key/value"
 
 #: hook.php:1267 inc/notimported.class.php:226
 msgid "OCSNG name"
-msgstr "Ονομασία OCSNG"
+msgstr "OCSNG name"
 
 #: setup.php:175
 msgid "Installed / not configured"
-msgstr "Εγκατεστημένο / μη ρυθμισμένο"
+msgstr "Installed / not configured"
 
 #: front/config.form.php:42
 msgid "?????"
@@ -149,7 +149,7 @@ msgstr ""
 
 #: front/logs.php:38 inc/notimported.class.php:97
 msgid "Logs"
-msgstr "Καταγραφές"
+msgstr "Logs"
 
 #: front/notimported.php:38 front/thread.php:39 inc/thread.class.php:280
 msgid "Processes execution of automatic task"
@@ -159,11 +159,11 @@ msgstr ""
 #: inc/ocsserver.class.php:328 inc/ocsserver.class.php:329
 #: inc/ocsserver.class.php:2568
 msgid "Clean links between GLPI and OCSNG"
-msgstr "Καθάρισμα συνδέσμων μεταξύ GLPI και OCSNG"
+msgstr "Clean links between GLPI and OCSNG"
 
 #: front/ocsng.clean.php:56
 msgid "Successful"
-msgstr "Επιτυχώς"
+msgstr "Successful"
 
 #: front/popup.php:44
 msgctxt "button"
@@ -194,7 +194,7 @@ msgstr ""
 
 #: inc/config.class.php:95
 msgid "Display"
-msgstr "Δείξε"
+msgstr "Display"
 
 #: inc/config.class.php:98
 msgid "Show processes where nothing was changed"
@@ -254,12 +254,12 @@ msgstr ""
 
 #: inc/detail.class.php:153 inc/ocsserver.class.php:5740
 msgid "Imported computers"
-msgstr "Εισηγμένοι υπολογιστές"
+msgstr "Imported computers"
 
 #: inc/detail.class.php:155 inc/ocsserver.class.php:5742
 #: inc/thread.class.php:101 inc/thread.class.php:291
 msgid "Linked computers"
-msgstr "Συνδεδεμένοι υπολογιστές"
+msgstr "Linked computers"
 
 #: inc/detail.class.php:157
 msgid "Not updated computers"
@@ -268,7 +268,7 @@ msgstr ""
 #: inc/detail.class.php:159 inc/ocsserver.class.php:5741
 #: inc/thread.class.php:100 inc/thread.class.php:290
 msgid "Synchronized computers"
-msgstr "Συγχρονισμένοι υπολογιστές"
+msgstr "Synchronized computers"
 
 #: inc/detail.class.php:161
 msgid "Not unique computers"
@@ -303,7 +303,7 @@ msgstr ""
 #: inc/notimported.class.php:67 inc/notimported.class.php:249
 #: inc/ocslink.class.php:146
 msgid "TAG"
-msgstr "Ετικέτα"
+msgstr "Tag"
 
 #: inc/notimported.class.php:95 inc/ocsserver.class.php:132
 msgid "OCSNG console"
@@ -328,12 +328,12 @@ msgstr ""
 #: inc/ocslink.class.php:44 inc/ruleimportcomputer.class.php:142
 msgid "OCSNG link"
 msgid_plural "OCSNG links"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "OCSNG link"
+msgstr[1] "OCSNG links"
 
 #: inc/ocslink.class.php:126 inc/ocsserver.class.php:2774
 msgid "Last OCSNG inventory date"
-msgstr "Τελευταία ημερομηνία OCSNG  απογραφής"
+msgstr "Last OCSNG inventory date"
 
 #: inc/ocslink.class.php:129
 msgid "Date of import in GLPI"
@@ -376,8 +376,8 @@ msgstr[1] ""
 #: inc/ocslink.class.php:468
 msgid "Locked software"
 msgid_plural "Locked software"
-msgstr[0] "Κλειδωμένο λογισμικό"
-msgstr[1] "Κλειδωμένο λογισμικό"
+msgstr[0] ""
+msgstr[1] ""
 
 #: inc/ocslink.class.php:493
 msgid "Locked disk"
@@ -397,7 +397,7 @@ msgstr ""
 
 #: inc/ocslink.class.php:582
 msgid "OCSNG mode"
-msgstr ""
+msgstr "OCSNG mode"
 
 #: inc/ocslink.class.php:633
 msgid "Imported from OCS"
@@ -405,11 +405,11 @@ msgstr ""
 
 #: inc/ocslink.class.php:636
 msgid "Deleted in OCSNG"
-msgstr "Διαγράφτηκε στο OCSNG"
+msgstr "Deleted in OCSNG"
 
 #: inc/ocslink.class.php:639
 msgid "Linked with an OCSNG computer"
-msgstr "Συνδεδεμένο με έναν OCSNG υπολογιστή"
+msgstr "Linked with an OCSNG computer"
 
 #: inc/ocslink.class.php:642
 #, php-format
@@ -423,11 +423,11 @@ msgstr ""
 
 #: inc/ocsserver.class.php:128 inc/ocsserver.class.php:549
 msgid "Import options"
-msgstr "Επιλογές εισαγωγής"
+msgstr "Import Options"
 
 #: inc/ocsserver.class.php:129 inc/ocsserver.class.php:355
 msgid "General information"
-msgstr "Γενικές Πληροφορίες"
+msgstr "General information"
 
 #: inc/ocsserver.class.php:259 inc/ocsserver.class.php:260
 msgid "OCSNG server 's configuration"
@@ -442,7 +442,7 @@ msgstr ""
 #: inc/ocsserver.class.php:3061 inc/ocsserver.class.php:3167
 #: inc/ocsserver.class.php:3177
 msgid "Import new computers"
-msgstr "Εισαγωγή νέων υπολογιστών"
+msgstr "Import new computers"
 
 #: inc/ocsserver.class.php:283 inc/ocsserver.class.php:284
 #: inc/ocsserver.class.php:285
@@ -452,11 +452,11 @@ msgstr ""
 #: inc/ocsserver.class.php:292 inc/ocsserver.class.php:293
 #: inc/ocsserver.class.php:294
 msgid "Synchronize computers already imported"
-msgstr "Συγχρονισμός υπολογιστών που έχουν εισαχθεί ήδη"
+msgstr "Synchronize computers already imported"
 
 #: inc/ocsserver.class.php:357
 msgid "OCSNG administrative information"
-msgstr "OCS Διαχειριστικές πληροφορίες"
+msgstr "OCSNG Administrative Information"
 
 #: inc/ocsserver.class.php:456
 msgid "Modems"
@@ -464,52 +464,52 @@ msgstr "Modems"
 
 #: inc/ocsserver.class.php:544
 msgid "Web address of the OCSNG console"
-msgstr "URL της OCSNG κονσόλας"
+msgstr "Web address of the OCSNG console"
 
 #: inc/ocsserver.class.php:552
 msgid "Limit the import to the following tags (separator $, nothing for all)"
-msgstr "Να εισαχθούν μόνο τα παρακάτω (διαχωριστή $, τίποτα για όλα)"
+msgstr "Limit the import to the following tags (separator $, nothing for all)"
 
 #: inc/ocsserver.class.php:557
 msgid "Exclude the following tags (separator $, nothing for all)"
-msgstr "Εξαίρεσε τις ακόλουθες ετικέτες(διαχωριστής $, τίποτα για όλα)"
+msgstr "Exclude the following tags (separator $, nothing for all)"
 
 #: inc/ocsserver.class.php:561
 msgid "Default status"
-msgstr "Προεπιλεγμένη Κατάσταση"
+msgstr "Default status"
 
 #: inc/ocsserver.class.php:566
 msgid "Behavior when disconnecting"
-msgstr "Συμπεριφορά στην αποσύνδεση"
+msgstr "Behavior when disconnecting"
 
 #: inc/ocsserver.class.php:575 inc/ocsserver.class.php:579
 msgid "Global import"
-msgstr "Οικουμενική εισαγωγή"
+msgstr "Global import"
 
 #: inc/ocsserver.class.php:576 inc/ocsserver.class.php:580
 #: inc/ocsserver.class.php:602
 msgid "Unit import"
-msgstr "Εισαγωγή μονάδας"
+msgstr "Unit import"
 
 #: inc/ocsserver.class.php:581
 msgid "Unit import on serial number"
-msgstr "Εισαγωγή μονάδας σε αριθμό σειράς"
+msgstr "Unit import on serial number"
 
 #: inc/ocsserver.class.php:582
 msgid "Unit import serial number only"
-msgstr ""
+msgstr "Unit import serial number only"
 
 #: inc/ocsserver.class.php:610
 msgid "Use the OCSNG software dictionary"
-msgstr "Χρησιμοποιήσε το λεξικό λογισμικού του OCSNG"
+msgstr "Use the OCSNG software dictionary"
 
 #: inc/ocsserver.class.php:631
 msgid "Number of items to synchronize via the automatic OCSNG action"
-msgstr "Αριθμός αντικειμένων για συγχρονισμό χρησιμοποιώντας την αυτόματη ενέργεια του OCSNG"
+msgstr "Number of items to synchronize via the automatic OCSNG action"
 
 #: inc/ocsserver.class.php:637
 msgid "Behavior to the deletion of a computer in OCSNG"
-msgstr ""
+msgstr "Behavior to the deletion of a computer in OCSNG"
 
 #: inc/ocsserver.class.php:640
 msgid "Put in the dustbin"
@@ -518,11 +518,11 @@ msgstr ""
 #: inc/ocsserver.class.php:642
 #, php-format
 msgid "Change to state %s"
-msgstr "Αλλαγή σε κατάσταση %s"
+msgstr "Change to state %s"
 
 #: inc/ocsserver.class.php:649
 msgid "No import: the plugin will not import these elements"
-msgstr "Όχι εισαγωγή: το plugin δεν θα εισάγει αυτά τα στοιχεία"
+msgstr "No import: the plugin will not import these elements"
 
 #: inc/ocsserver.class.php:650
 msgid ""
@@ -536,27 +536,27 @@ msgstr ""
 
 #: inc/ocsserver.class.php:670
 msgid "Automatic connection of computers"
-msgstr "Αυτόματη σύνδεση υπολογιστών"
+msgstr "Automatic connection of computers"
 
 #: inc/ocsserver.class.php:673
 msgid "Enable the automatic link"
-msgstr "Ενεργοποίηση αυτόματου συνδέσμου"
+msgstr "Enable the automatic link"
 
 #: inc/ocsserver.class.php:678
 msgid "Existence criteria of a computer"
-msgstr "Κριτήρια ύπαρξης υπολογιστή"
+msgstr "Existence criteria of a computer"
 
 #: inc/ocsserver.class.php:683 inc/ruleimportcomputer.class.php:111
 msgid "Mac address"
-msgstr "Διεύθυνση MAC"
+msgstr "Mac address"
 
 #: inc/ocsserver.class.php:689 inc/ruleimportcomputer.class.php:181
 msgid "equal"
-msgstr "ίσον"
+msgstr "equal"
 
 #: inc/ocsserver.class.php:690 inc/ruleimportcomputer.class.php:182
 msgid "empty"
-msgstr "Κενό"
+msgstr "empty"
 
 #: inc/ocsserver.class.php:703
 msgid "The link automatically connects a GLPI computer with one in OCSNG."
@@ -598,7 +598,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:808
 msgid "Invalid OCSNG Version: RC3 is required"
-msgstr "Λάθος OCSNG έκδοση: χρειάζεται το RC3"
+msgstr "Invalid OCSNG Version: RC3 is required"
 
 #: inc/ocsserver.class.php:810
 msgid "Invalid OCSNG configuration (TRACE_DELETED must be active)"
@@ -620,11 +620,11 @@ msgstr ""
 
 #: inc/ocsserver.class.php:818
 msgid "Valid OCSNG configuration and version"
-msgstr "Επικυρωμένες OCSNG ρυθμίσεις και έκδοση"
+msgstr "Valid OCSNG configuration and version"
 
 #: inc/ocsserver.class.php:931
 msgid "Unable to add. The OCSNG server already exists."
-msgstr ""
+msgstr "Unable to add. The OCSNG server already exists."
 
 #. TRANS: %s is the OCS id
 #: inc/ocsserver.class.php:1376
@@ -636,35 +636,35 @@ msgstr ""
 
 #: inc/ocsserver.class.php:2588 inc/ocsserver.class.php:2773
 msgid "Import date in GLPI"
-msgstr "Εισαγωγή ημερομηνίας στο GLPI"
+msgstr "Import date in GLPI"
 
 #: inc/ocsserver.class.php:2589
 msgid "Existing in GLPI"
-msgstr "Υπάρχει στο GLPI"
+msgstr "Existing in GLPI"
 
 #: inc/ocsserver.class.php:2589
 msgid "Existing in OCSNG"
-msgstr "Υπάρχει στο OCSNG"
+msgstr "Existing in OCSNG"
 
 #: inc/ocsserver.class.php:2632
 msgid "No item to clean"
-msgstr "Δεν υπάρχει αντικείμενο για καθαρισμό"
+msgstr "No item to clean"
 
 #: inc/ocsserver.class.php:2750
 msgid "Computers updated in OCSNG"
-msgstr "Οι υπολογιστές ενημερώθηκαν στο OCSNG"
+msgstr "Computers updated in OCSNG"
 
 #: inc/ocsserver.class.php:2773 inc/ocsserver.class.php:2802
 msgid "Update computers"
-msgstr "Ενημέρωση Υπολογιστών"
+msgstr "Update computers"
 
 #: inc/ocsserver.class.php:2774
 msgid "Auto update"
-msgstr "Αυτόματη ενημέρωση"
+msgstr "Auto update"
 
 #: inc/ocsserver.class.php:2807
 msgid "No new computer to be updated"
-msgstr "Δεν υπάρχουν νέοι υπολογιστές για ενημέρωση"
+msgstr "No new computer to be updated"
 
 #: inc/ocsserver.class.php:3009
 msgid ""
@@ -674,7 +674,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:3032
 msgid "Manual import mode"
-msgstr "Χειροκίνητη εισαγωγή"
+msgstr "Manual import mode"
 
 #: inc/ocsserver.class.php:3035
 msgid "Disable preview"
@@ -682,39 +682,39 @@ msgstr ""
 
 #: inc/ocsserver.class.php:3038
 msgid "Enable preview"
-msgstr "Ενεργοποίησε τη προεπισκόπιση"
+msgstr "Enable preview"
 
 #: inc/ocsserver.class.php:3044
 msgid "Check first that duplicates have been correctly managed in OCSNG"
-msgstr "Πρώτα, ελέγξτε εάν η διπλοεγγραφές διαχειρίζονται σωστά στο OCSNG"
+msgstr "Check first that duplicates have been correctly managed in OCSNG"
 
 #: inc/ocsserver.class.php:3065
 msgid "Match the rule ?"
-msgstr "Κανόνας ταιριάσματος;"
+msgstr "Match the rule ?"
 
 #: inc/ocsserver.class.php:3067
 msgid "Target location"
-msgstr "Τοποθεσία στόχου"
+msgstr "Target location"
 
 #: inc/ocsserver.class.php:3168 inc/ocsserver.class.php:3178
 msgid "No new computer to be imported"
-msgstr "Δεν υπάρχουν νέοι υπολογιστές για εισαγωγή"
+msgstr "No new computer to be imported"
 
 #: inc/ocsserver.class.php:4196 inc/ocsserver.class.php:4218
 msgid "Choice of an OCSNG server"
-msgstr "Επιλογή διακομιστή OCSNG"
+msgstr "Choice of an OCSNG server"
 
 #: inc/ocsserver.class.php:4220
 msgid "No OCSNG server defined"
-msgstr "Δεν ορίστηκαν διακομιστές OCSNG"
+msgstr "No OCSNG server defined"
 
 #: inc/ocsserver.class.php:4987
 msgid "Software deleted by OCSNG synchronization"
-msgstr "Λογισμικό διεγράφη κατά τον συγχρονισμό με OCSNG"
+msgstr "Software deleted by OCSNG synchronization"
 
 #: inc/ocsserver.class.php:5743
 msgid "Unmodified computers"
-msgstr "Υπολογιστές χωρίς τροποποιήσεις"
+msgstr "Unmodified computers"
 
 #: inc/ocsserver.class.php:5744
 msgid "Computers don't check any rule"
@@ -722,11 +722,11 @@ msgstr ""
 
 #: inc/ocsserver.class.php:5745
 msgid "Duplicate computers"
-msgstr "Διπλότυποι υπολογιστές"
+msgstr "Duplicate computers"
 
 #: inc/ocsserver.class.php:5746
 msgid "Computers whose import is refused by a rule"
-msgstr "Υπολογιστές που η εισαγωγή τους απορρίφθηκε από κανόνα"
+msgstr "Computers whose import is refused by a rule"
 
 #: inc/ocsserver.class.php:5794
 msgid "Statistics of the OCSNG link"
@@ -734,23 +734,23 @@ msgstr ""
 
 #: inc/ocsserver.class.php:5796
 msgid "Process completed"
-msgstr "Επεξεργασία ολοκληρώθηκε"
+msgstr "process completed"
 
 #: inc/ocsserver.class.php:5931
 msgid "Link possible"
-msgstr "Σύνδεση δυνατή"
+msgstr "Link possible"
 
 #: inc/ocsserver.class.php:5935
 msgid "Import refused"
-msgstr "Άρνηση εισαγωγής"
+msgstr "Import refused"
 
 #: inc/ocsserver.class.php:5939
 msgid "New computer created in GLPI"
-msgstr "Νέος υπολογιστής δημιουργήθηκε στο GLPI"
+msgstr "New computer created in GLPI"
 
 #: inc/ocsserver.class.php:5950
 msgid "Link with computer"
-msgstr "Σύνδεση με υπολογιστή"
+msgstr "Link with computer"
 
 #: inc/profile.class.php:43
 msgid "Rights management"
@@ -758,7 +758,7 @@ msgstr ""
 
 #: inc/profile.class.php:75
 msgid "OCSNG Mode"
-msgstr ""
+msgstr "OCSNG mode"
 
 #. TRANS: %$ is a profile name
 #: inc/profile.class.php:186
@@ -793,15 +793,15 @@ msgstr "Hive"
 
 #: inc/registrykey.class.php:99
 msgid "Path"
-msgstr "Διαδρομή"
+msgstr "Path"
 
 #: inc/registrykey.class.php:100
 msgid "Key/value"
-msgstr "Κλειδί/τιμή"
+msgstr "Key/value"
 
 #: inc/registrykey.class.php:118
 msgid "No key found in registry"
-msgstr "Δεν Βρέθηκε καταχωρημένο κλειδί"
+msgstr "No key found in registry"
 
 #: inc/ruleimportcomputer.class.php:81 inc/ruleimportcomputer.class.php:101
 #: inc/ruleimportcomputer.class.php:104 inc/ruleimportcomputer.class.php:107
@@ -810,11 +810,11 @@ msgstr "Δεν Βρέθηκε καταχωρημένο κλειδί"
 #: inc/ruleimportcomputer.class.php:124 inc/ruleimportcomputer.class.php:128
 #: inc/ruleimportcomputer.class.php:132
 msgid "Computer to import"
-msgstr "Υπολογιστής προς εισαγωγή"
+msgstr "Computer to import"
 
 #: inc/ruleimportcomputer.class.php:82
 msgid "target entity for the computer"
-msgstr "Οντότητα στόχου για τον υπολογιστή"
+msgstr "target entity for the computer"
 
 #: inc/ruleimportcomputer.class.php:114
 msgid "IP Address"

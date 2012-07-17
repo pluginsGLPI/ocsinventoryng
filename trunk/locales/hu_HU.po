@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-05 20:34+0200\n"
-"PO-Revision-Date: 2012-06-05 18:20+0000\n"
-"Last-Translator: Nelly Mahu-Lasson <nini.lasson@orange.fr>\n"
+"POT-Creation-Date: 2012-07-17 14:22+0200\n"
+"PO-Revision-Date: 2012-07-17 12:43+0000\n"
+"Last-Translator: DOMBRE Julien <moyo@indepnet.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,8 +25,9 @@ msgstr ""
 msgid "Import in the entity"
 msgstr ""
 
-#: hook.php:927
-msgid "Link computer whith another one present in GLPI"
+#: hook.php:927 inc/ocsserver.class.php:309 inc/ocsserver.class.php:310
+#: inc/ocsserver.class.php:311
+msgid "Link new OCSNG computers to existing GLPI computers"
 msgstr ""
 
 #: hook.php:931
@@ -65,52 +66,55 @@ msgstr ""
 msgid "Unclok volumes"
 msgstr ""
 
-#: hook.php:988
-msgid "All"
-msgstr ""
-
 #: hook.php:1002
 msgid "Unlock"
-msgstr ""
+msgstr "Felold"
 
-#: hook.php:1212
+#: hook.php:1216
 msgid "GLPI import date"
 msgstr ""
 
-#: hook.php:1219 inc/notimported.class.php:79 inc/notimported.class.php:264
+#: hook.php:1223 inc/notimported.class.php:79 inc/notimported.class.php:264
 msgid "Last OCSNG inventory"
 msgstr ""
 
-#: hook.php:1228
+#: hook.php:1232
 msgid "Automatic update OCSNG"
 msgstr ""
 
-#: hook.php:1234 inc/notimported.class.php:70 inc/notimported.class.php:234
+#: hook.php:1238 inc/notimported.class.php:70 inc/notimported.class.php:234
 #: inc/ocslink.class.php:119
 msgid "Inventory agent"
 msgstr ""
 
-#: hook.php:1240
+#: hook.php:1244
 msgid "TAG OCSNG"
 msgstr ""
 
-#: hook.php:1247 inc/notimported.class.php:54 inc/notimported.class.php:221
+#: hook.php:1251 inc/notificationtargetnotimported.class.php:83
+#: inc/notimported.class.php:54 inc/notimported.class.php:221
 msgid "OCSNG ID"
 msgstr ""
 
-#: hook.php:1252 inc/ocsserver.class.php:612 inc/registrykey.class.php:44
+#: hook.php:1256 hook.php:1260 hook.php:1267 inc/ocsserver.class.php:615
+#: inc/registrykey.class.php:44 inc/registrykey.class.php:116
 msgid "Registry"
+msgstr "Registry"
+
+#: hook.php:1260 hook.php:1267
+#, php-format
+msgid "%1$s:$2$s"
 msgstr ""
 
-#: hook.php:1256
-msgid "Registry: Key/Value"
-msgstr ""
+#: hook.php:1260
+msgid "Key/Value"
+msgstr "Kulcs/érték"
 
-#: hook.php:1263
-msgid "Registry: OCSNG name"
-msgstr ""
+#: hook.php:1267 inc/notimported.class.php:226
+msgid "OCSNG name"
+msgstr "OCSNG gépnév"
 
-#: setup.php:173
+#: setup.php:175
 msgid "Installed / not configured"
 msgstr "Telepítve / nincs beállítva"
 
@@ -138,14 +142,6 @@ msgstr ""
 msgid "Number of processed computers"
 msgstr ""
 
-#: front/config.php:43 inc/ocsserver.class.php:103 inc/ocsserver.class.php:252
-msgid "OCSNG server"
-msgstr ""
-
-#: front/config.php:48
-msgid "Synchronization"
-msgstr ""
-
 #: front/detail.php:38 inc/ocsserver.class.php:300 inc/ocsserver.class.php:301
 #: inc/ocsserver.class.php:302
 msgid "Computers imported by automatic task"
@@ -161,29 +157,17 @@ msgstr ""
 
 #: front/ocsng.clean.php:55 inc/ocsserver.class.php:327
 #: inc/ocsserver.class.php:328 inc/ocsserver.class.php:329
-#: inc/ocsserver.class.php:2564
+#: inc/ocsserver.class.php:2568
 msgid "Clean links between GLPI and OCSNG"
-msgstr ""
+msgstr "GLPI-OCS hivatkozások törlése"
 
 #: front/ocsng.clean.php:56
 msgid "Successful"
-msgstr ""
-
-#: front/ocsng.import.php:92 front/ocsng.link.php:74 front/ocsng.sync.php:64
-msgid "Back"
-msgstr ""
-
-#: front/ocsng.link.php:73
-msgid "Successful importation"
-msgstr ""
+msgstr "Sikeres"
 
 #: front/popup.php:44
 msgctxt "button"
 msgid "Test"
-msgstr ""
-
-#: front/popup.php:49
-msgid "Test rules engine"
 msgstr ""
 
 #: front/popup.php:54
@@ -216,12 +200,6 @@ msgstr "Megjelenít"
 msgid "Show processes where nothing was changed"
 msgstr ""
 
-#: inc/config.class.php:101 inc/ocsserver.class.php:215
-#: inc/ocsserver.class.php:401 inc/ocsserver.class.php:513
-#: inc/ocsserver.class.php:745 inc/ocsserver.class.php:5994
-msgid "Comments"
-msgstr ""
-
 #: inc/config.class.php:107
 msgid "Authorize the OCSNG update"
 msgstr ""
@@ -247,27 +225,14 @@ msgstr ""
 msgid "Lock activated"
 msgstr ""
 
-#: inc/config.class.php:177 inc/thread.class.php:367
+#: inc/config.class.php:178 inc/thread.class.php:367
 msgid "All servers"
 msgstr ""
 
-#: inc/detail.class.php:37 inc/detail.class.php:146
+#: inc/detail.class.php:37 inc/detail.class.php:150
 #: inc/notimported.class.php:40 inc/notimported.class.php:216
 msgid "Not imported computer"
 msgid_plural "Not imported computers"
-msgstr[0] ""
-msgstr[1] ""
-
-#: inc/detail.class.php:41 inc/ocsserver.class.php:195
-msgid "ID"
-msgstr ""
-
-#: inc/detail.class.php:46 inc/notimported.class.php:57
-#: inc/notimported.class.php:244 inc/ocslink.class.php:96
-#: inc/ocsserver.class.php:200 inc/profile.class.php:191
-#: inc/thread.class.php:298
-msgid "Server"
-msgid_plural "Servers"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -275,16 +240,8 @@ msgstr[1] ""
 msgid "Process time"
 msgstr ""
 
-#: inc/detail.class.php:56
-msgid "Action"
-msgstr ""
-
 #: inc/detail.class.php:61
 msgid "Process"
-msgstr ""
-
-#: inc/detail.class.php:66 inc/ocsserver.class.php:5697
-msgid "Computer"
 msgstr ""
 
 #: inc/detail.class.php:70 inc/thread.class.php:94
@@ -295,51 +252,52 @@ msgstr ""
 msgid "Rules checked"
 msgstr ""
 
-#: inc/detail.class.php:80 inc/notimported.class.php:279
-#: inc/ocsserver.class.php:2587
-msgid "Entity"
-msgstr ""
-
-#: inc/detail.class.php:149 inc/ocsserver.class.php:5725
+#: inc/detail.class.php:153 inc/ocsserver.class.php:5740
 msgid "Imported computers"
-msgstr ""
+msgstr "Importált számítógépek"
 
-#: inc/detail.class.php:151 inc/ocsserver.class.php:5727
+#: inc/detail.class.php:155 inc/ocsserver.class.php:5742
+#: inc/thread.class.php:101 inc/thread.class.php:291
 msgid "Linked computers"
-msgstr ""
+msgstr "Hivatkozott számítógépek"
 
-#: inc/detail.class.php:153
+#: inc/detail.class.php:157
 msgid "Not updated computers"
 msgstr ""
 
-#: inc/detail.class.php:155 inc/ocsserver.class.php:5726
+#: inc/detail.class.php:159 inc/ocsserver.class.php:5741
+#: inc/thread.class.php:100 inc/thread.class.php:290
 msgid "Synchronized computers"
-msgstr ""
+msgstr "Szinkronizált számítógépek"
 
-#: inc/detail.class.php:157
+#: inc/detail.class.php:161
 msgid "Not unique computers"
 msgstr ""
 
-#: inc/detail.class.php:159 inc/notimported.class.php:399
+#: inc/detail.class.php:163 inc/notimported.class.php:399
 msgid "Import refused by rule"
 msgstr ""
 
-#: inc/notimported.class.php:48 inc/notimported.class.php:270
-msgid "Reason of rejection"
+#: inc/notificationtargetnotimported.class.php:39 inc/ocsserver.class.php:317
+#: inc/ocsserver.class.php:318 inc/ocsserver.class.php:319
+msgid "Computers not imported by automatic task"
+msgstr ""
+
+#: inc/notificationtargetnotimported.class.php:82
+msgid "Computers not impmorted by automatic task"
+msgstr ""
+
+#: inc/notificationtargetnotimported.class.php:84 inc/notimported.class.php:61
+#: inc/notimported.class.php:239
+msgid "Device ID"
+msgstr ""
+
+#: inc/notificationtargetnotimported.class.php:85
+msgid "Reject cause"
 msgstr ""
 
 #: inc/notimported.class.php:51
 msgid "Verified rules"
-msgstr ""
-
-#: inc/notimported.class.php:61 inc/notimported.class.php:239
-msgid "Device ID"
-msgstr ""
-
-#: inc/notimported.class.php:64 inc/notimported.class.php:275
-#: inc/ocsserver.class.php:376 inc/ocsserver.class.php:3058
-#: inc/ocsserver.class.php:5992
-msgid "Serial number"
 msgstr ""
 
 #: inc/notimported.class.php:67 inc/notimported.class.php:249
@@ -347,22 +305,8 @@ msgstr ""
 msgid "TAG"
 msgstr "TAG"
 
-#: inc/notimported.class.php:73 inc/notimported.class.php:254
-#: inc/ocsserver.class.php:405
-msgid "IP"
-msgstr ""
-
-#: inc/notimported.class.php:76 inc/notimported.class.php:259
-#: inc/ocsserver.class.php:393 inc/ocsserver.class.php:5997
-msgid "Domain"
-msgstr ""
-
 #: inc/notimported.class.php:95 inc/ocsserver.class.php:132
 msgid "OCSNG console"
-msgstr ""
-
-#: inc/notimported.class.php:226
-msgid "OCSNG name"
 msgstr ""
 
 #: inc/notimported.class.php:393
@@ -377,38 +321,19 @@ msgstr ""
 msgid "Actions to be made on the computer"
 msgstr ""
 
-#: inc/notimported.class.php:458 inc/ocsserver.class.php:380
-#: inc/ocsserver.class.php:3058 inc/ocsserver.class.php:5991
-msgid "Model"
-msgstr ""
-
-#: inc/notimported.class.php:578 inc/ocslink.class.php:119
-#: inc/ocslink.class.php:126 inc/ocslink.class.php:129
-#: inc/ocslink.class.php:146 inc/ocslink.class.php:632
-#: inc/ocslink.class.php:635 inc/ocslink.class.php:638
-#: inc/ocsserver.class.php:252 inc/ocsserver.class.php:5697
-#: inc/thread.class.php:91 inc/thread.class.php:164
-#, php-format
-msgid "%1$s: %2$s"
-msgstr ""
-
-#: inc/notimported.class.php:579
+#: inc/notimported.class.php:581
 msgid "Send OCSNG not imported computers alert failed"
 msgstr ""
 
-#: inc/ocslink.class.php:44
+#: inc/ocslink.class.php:44 inc/ruleimportcomputer.class.php:142
 msgid "OCSNG link"
 msgid_plural "OCSNG links"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "OCSNG hivatkozás"
+msgstr[1] "OCSNG hivatkozások"
 
-#: inc/ocslink.class.php:115
-msgid "Interface"
-msgstr ""
-
-#: inc/ocslink.class.php:126
-msgid "Date of last OCSNG inventory"
-msgstr ""
+#: inc/ocslink.class.php:126 inc/ocsserver.class.php:2774
+msgid "Last OCSNG inventory date"
+msgstr "Utolsó frissítés az OCS-ben"
 
 #: inc/ocslink.class.php:129
 msgid "Date of import in GLPI"
@@ -460,12 +385,6 @@ msgid_plural "Locked disks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/ocslink.class.php:511 inc/ocsserver.class.php:619
-msgid "Virtual machine"
-msgid_plural "Virtual machines"
-msgstr[0] ""
-msgstr[1] ""
-
 #: inc/ocslink.class.php:541
 msgid "Locked component"
 msgid_plural "Locked components"
@@ -476,53 +395,39 @@ msgstr[1] ""
 msgid "No locked field"
 msgstr ""
 
-#: inc/ocslink.class.php:581
+#: inc/ocslink.class.php:582
 msgid "OCSNG mode"
-msgstr ""
+msgstr "OCSNG mód"
 
-#: inc/ocslink.class.php:632
+#: inc/ocslink.class.php:633
 msgid "Imported from OCS"
 msgstr ""
 
-#: inc/ocslink.class.php:635
+#: inc/ocslink.class.php:636
 msgid "Deleted in OCSNG"
 msgstr "OCS-ban törölve"
 
-#: inc/ocslink.class.php:638
+#: inc/ocslink.class.php:639
 msgid "Linked with an OCSNG computer"
 msgstr "Egy OCS géphez kapcsolva"
 
-#: inc/ocslink.class.php:641
+#: inc/ocslink.class.php:642
 #, php-format
 msgid "The OCSNG ID of the computer changed from %1$s to %2$s"
 msgstr ""
 
-#: inc/ocslink.class.php:645
+#: inc/ocslink.class.php:646
 #, php-format
 msgid "The OCSNG TAG of the computer changed from %1$s to %2$s"
 msgstr ""
 
-#: inc/ocsserver.class.php:128 inc/ocsserver.class.php:546
+#: inc/ocsserver.class.php:128 inc/ocsserver.class.php:549
 msgid "Import options"
-msgstr ""
+msgstr "Import lehetőségek"
 
 #: inc/ocsserver.class.php:129 inc/ocsserver.class.php:355
 msgid "General information"
-msgstr ""
-
-#: inc/ocsserver.class.php:188 inc/ocsserver.class.php:363
-#: inc/ocsserver.class.php:737 inc/ocsserver.class.php:4192
-#: inc/ocsserver.class.php:5988
-msgid "Name"
-msgstr ""
-
-#: inc/ocsserver.class.php:204 inc/ocsserver.class.php:772
-msgid "Active"
-msgstr ""
-
-#: inc/ocsserver.class.php:209 inc/ocsserver.class.php:778
-msgid "Last update"
-msgstr ""
+msgstr "Általános számítógép információk"
 
 #: inc/ocsserver.class.php:259 inc/ocsserver.class.php:260
 msgid "OCSNG server 's configuration"
@@ -534,10 +439,10 @@ msgid "Configuration of OCSNG server %s"
 msgstr ""
 
 #: inc/ocsserver.class.php:276 inc/ocsserver.class.php:277
-#: inc/ocsserver.class.php:3057 inc/ocsserver.class.php:3161
-#: inc/ocsserver.class.php:3171
+#: inc/ocsserver.class.php:3061 inc/ocsserver.class.php:3167
+#: inc/ocsserver.class.php:3177
 msgid "Import new computers"
-msgstr ""
+msgstr "Új gépek importálása"
 
 #: inc/ocsserver.class.php:283 inc/ocsserver.class.php:284
 #: inc/ocsserver.class.php:285
@@ -547,480 +452,305 @@ msgstr ""
 #: inc/ocsserver.class.php:292 inc/ocsserver.class.php:293
 #: inc/ocsserver.class.php:294
 msgid "Synchronize computers already imported"
-msgstr ""
-
-#: inc/ocsserver.class.php:309 inc/ocsserver.class.php:310
-#: inc/ocsserver.class.php:311
-msgid "Link new OCSNG computers to existing GLPI computers"
-msgstr ""
-
-#: inc/ocsserver.class.php:317 inc/ocsserver.class.php:318
-#: inc/ocsserver.class.php:319
-msgid "Computers not imported by automatic task"
-msgstr ""
-
-#: inc/ocsserver.class.php:356
-msgid "Component"
-msgid_plural "Components"
-msgstr[0] ""
-msgstr[1] ""
+msgstr "Már importált gépek szinkronizálása"
 
 #: inc/ocsserver.class.php:357
 msgid "OCSNG administrative information"
-msgstr ""
+msgstr "OCS Adminisztratív beállítások"
 
-#: inc/ocsserver.class.php:367 inc/ocsserver.class.php:5999
-msgid "Operating system"
-msgstr ""
-
-#: inc/ocsserver.class.php:372 inc/ocsserver.class.php:6002
-msgid "Serial of the operating system"
-msgstr ""
-
-#: inc/ocsserver.class.php:384 inc/ocsserver.class.php:3057
-#: inc/ocsserver.class.php:5990
-msgid "Manufacturer"
-msgstr ""
-
-#: inc/ocsserver.class.php:389 inc/ocsserver.class.php:5989
-msgid "Type"
-msgstr ""
-
-#: inc/ocsserver.class.php:397 inc/ocsserver.class.php:5995
-msgid "Alternate username"
-msgstr ""
-
-#: inc/ocsserver.class.php:410
-msgid "UUID"
-msgstr ""
-
-#: inc/ocsserver.class.php:427
-msgid "Processor"
-msgstr ""
-
-#: inc/ocsserver.class.php:431
-msgid "Memory"
-msgstr ""
-
-#: inc/ocsserver.class.php:435
-msgid "Hard drive"
-msgstr ""
-
-#: inc/ocsserver.class.php:439
-msgid "Network card"
-msgstr ""
-
-#: inc/ocsserver.class.php:443
-msgid "Graphics card"
-msgstr ""
-
-#: inc/ocsserver.class.php:447
-msgid "Soundcard"
-msgstr ""
-
-#: inc/ocsserver.class.php:451
-msgid "Drive"
-msgid_plural "Drives"
-msgstr[0] ""
-msgstr[1] ""
-
-#: inc/ocsserver.class.php:455
+#: inc/ocsserver.class.php:456
 msgid "Modems"
 msgstr "Modemek"
 
-#: inc/ocsserver.class.php:459
-msgid "Port"
-msgid_plural "Ports"
-msgstr[0] ""
-msgstr[1] ""
-
-#: inc/ocsserver.class.php:468 inc/ocsserver.class.php:5993
-msgid "Inventory number"
-msgstr ""
-
-#: inc/ocsserver.class.php:470 inc/ocsserver.class.php:477
-#: inc/ocsserver.class.php:484 inc/ocsserver.class.php:491
-#: inc/ocsserver.class.php:498 inc/ocsserver.class.php:571
-#: inc/ocsserver.class.php:575 inc/ocsserver.class.php:598
-msgid "No import"
-msgstr ""
-
-#: inc/ocsserver.class.php:475 inc/ocsserver.class.php:6005
-msgid "Location"
-msgstr ""
-
-#: inc/ocsserver.class.php:482 inc/ocsserver.class.php:6006
-msgid "Group"
-msgstr ""
-
-#: inc/ocsserver.class.php:489 inc/ocsserver.class.php:5996
-msgid "Alternate username number"
-msgstr ""
-
-#: inc/ocsserver.class.php:496 inc/ocsserver.class.php:5998
-msgid "Network"
-msgstr ""
-
-#: inc/ocsserver.class.php:506 inc/ocsserver.class.php:589
-msgid "Monitor"
-msgid_plural "Monitors"
-msgstr[0] ""
-msgstr[1] ""
-
-#: inc/ocsserver.class.php:541
+#: inc/ocsserver.class.php:544
 msgid "Web address of the OCSNG console"
-msgstr ""
+msgstr "OCS felület címe"
 
-#: inc/ocsserver.class.php:549
+#: inc/ocsserver.class.php:552
 msgid "Limit the import to the following tags (separator $, nothing for all)"
-msgstr ""
+msgstr "Az import szűkítése a következőkkel (elválasztó $, ha üres, mindent behoz)"
 
-#: inc/ocsserver.class.php:554
+#: inc/ocsserver.class.php:557
 msgid "Exclude the following tags (separator $, nothing for all)"
-msgstr ""
+msgstr "Kihagyja a következő címkéket (elválasztó : $, üresen hagy : minden)"
 
-#: inc/ocsserver.class.php:558
+#: inc/ocsserver.class.php:561
 msgid "Default status"
-msgstr ""
+msgstr "Alapértelmezett állapot"
 
-#: inc/ocsserver.class.php:563
+#: inc/ocsserver.class.php:566
 msgid "Behavior when disconnecting"
-msgstr ""
+msgstr "Működés kapcsolat bontásakor"
 
-#: inc/ocsserver.class.php:565
-msgid "Preserve"
-msgstr ""
-
-#: inc/ocsserver.class.php:566 inc/thread.class.php:388
-msgid "Delete"
-msgstr ""
-
-#: inc/ocsserver.class.php:567
-msgid "Purge"
-msgstr ""
-
-#: inc/ocsserver.class.php:572 inc/ocsserver.class.php:576
+#: inc/ocsserver.class.php:575 inc/ocsserver.class.php:579
 msgid "Global import"
-msgstr ""
+msgstr "Globális import"
 
-#: inc/ocsserver.class.php:573 inc/ocsserver.class.php:577
-#: inc/ocsserver.class.php:599
+#: inc/ocsserver.class.php:576 inc/ocsserver.class.php:580
+#: inc/ocsserver.class.php:602
 msgid "Unit import"
-msgstr ""
+msgstr "Egyedi importálás"
 
-#: inc/ocsserver.class.php:578
+#: inc/ocsserver.class.php:581
 msgid "Unit import on serial number"
-msgstr ""
+msgstr "Egység importálás sorozatszámra"
 
-#: inc/ocsserver.class.php:579
+#: inc/ocsserver.class.php:582
 msgid "Unit import serial number only"
-msgstr ""
+msgstr "Csak sorozatszám importálása"
 
-#: inc/ocsserver.class.php:585
-msgid "Device"
-msgid_plural "Devices"
-msgstr[0] ""
-msgstr[1] ""
-
-#: inc/ocsserver.class.php:593
-msgid "Printer"
-msgid_plural "Printers"
-msgstr[0] ""
-msgstr[1] ""
-
-#: inc/ocsserver.class.php:597
-msgid "Software"
-msgid_plural "Software"
-msgstr[0] ""
-msgstr[1] ""
-
-#: inc/ocsserver.class.php:603
-msgid "Volume"
-msgid_plural "Volumes"
-msgstr[0] ""
-msgstr[1] ""
-
-#: inc/ocsserver.class.php:607
+#: inc/ocsserver.class.php:610
 msgid "Use the OCSNG software dictionary"
-msgstr ""
+msgstr "Az OCS szoftver-kategóriáinak használata"
 
-#: inc/ocsserver.class.php:628
+#: inc/ocsserver.class.php:631
 msgid "Number of items to synchronize via the automatic OCSNG action"
-msgstr ""
-
-#: inc/ocsserver.class.php:630
-msgid "None"
-msgstr ""
-
-#: inc/ocsserver.class.php:634
-msgid "Behavior to the deletion of a computer in OCSNG"
-msgstr ""
+msgstr "Cron-al szinkronizálandó gépek száma"
 
 #: inc/ocsserver.class.php:637
+msgid "Behavior to the deletion of a computer in OCSNG"
+msgstr "Viselkedés OCSNG-ből törölt számítógép esetén"
+
+#: inc/ocsserver.class.php:640
 msgid "Put in the dustbin"
 msgstr ""
 
-#: inc/ocsserver.class.php:639
+#: inc/ocsserver.class.php:642
 #, php-format
 msgid "Change to state %s"
-msgstr ""
+msgstr "Állapot módosítása %s"
 
-#: inc/ocsserver.class.php:646
+#: inc/ocsserver.class.php:649
 msgid "No import: the plugin will not import these elements"
-msgstr ""
+msgstr "Nincs import: a bővítmény nem fogja importálni ezeket az elemeket"
 
-#: inc/ocsserver.class.php:647
+#: inc/ocsserver.class.php:650
 msgid ""
 "Global import: everything is imported but the material is globally managed "
 "(without duplicate)"
 msgstr ""
 
-#: inc/ocsserver.class.php:648
+#: inc/ocsserver.class.php:651
 msgid "Unit import: everything is imported as it is"
 msgstr ""
 
-#: inc/ocsserver.class.php:739
-msgid "Version"
-msgid_plural "Versions"
-msgstr[0] ""
-msgstr[1] ""
+#: inc/ocsserver.class.php:670
+msgid "Automatic connection of computers"
+msgstr "Számítógépek automatikus kapcsolása"
 
-#: inc/ocsserver.class.php:742
+#: inc/ocsserver.class.php:673
+msgid "Enable the automatic link"
+msgstr "Automatikus hivatkozás aktiválása"
+
+#: inc/ocsserver.class.php:678
+msgid "Existence criteria of a computer"
+msgstr "Számítógép létezésének kritériuma"
+
+#: inc/ocsserver.class.php:683 inc/ruleimportcomputer.class.php:111
+msgid "Mac address"
+msgstr "Mac cím"
+
+#: inc/ocsserver.class.php:689 inc/ruleimportcomputer.class.php:181
+msgid "equal"
+msgstr "egyenlő"
+
+#: inc/ocsserver.class.php:690 inc/ruleimportcomputer.class.php:182
+msgid "empty"
+msgstr "üres"
+
+#: inc/ocsserver.class.php:703
+msgid "The link automatically connects a GLPI computer with one in OCSNG."
+msgstr ""
+
+#: inc/ocsserver.class.php:704
+msgid ""
+"This option is taken into account during manual link and by synchronization "
+"scripts.\""
+msgstr ""
+
+#: inc/ocsserver.class.php:745
 msgid "Host for the database"
 msgstr ""
 
-#: inc/ocsserver.class.php:751
+#: inc/ocsserver.class.php:754
 msgid "Name of the database"
 msgstr ""
 
-#: inc/ocsserver.class.php:755
+#: inc/ocsserver.class.php:758
 msgid "User of the database"
 msgstr ""
 
-#: inc/ocsserver.class.php:759
+#: inc/ocsserver.class.php:762
 msgid "User password"
 msgstr ""
 
-#: inc/ocsserver.class.php:766
+#: inc/ocsserver.class.php:769
 msgid "Database in UTF8"
 msgstr ""
 
-#: inc/ocsserver.class.php:781
-msgid "Never"
-msgstr ""
-
-#: inc/ocsserver.class.php:799
+#: inc/ocsserver.class.php:802
 msgid "Connecting to the database"
 msgstr ""
 
-#: inc/ocsserver.class.php:803
+#: inc/ocsserver.class.php:806
 msgid "Connection to the database failed"
 msgstr ""
 
-#: inc/ocsserver.class.php:805
+#: inc/ocsserver.class.php:808
 msgid "Invalid OCSNG Version: RC3 is required"
-msgstr ""
+msgstr "Érvénytelen OCS NG verzió: RC3 szükséges"
 
-#: inc/ocsserver.class.php:807
+#: inc/ocsserver.class.php:810
 msgid "Invalid OCSNG configuration (TRACE_DELETED must be active)"
 msgstr ""
 
-#: inc/ocsserver.class.php:809
+#: inc/ocsserver.class.php:812
 msgid ""
 "Access denied on database (Need write rights on hardware.CHECKSUM necessary)"
 msgstr ""
 
-#: inc/ocsserver.class.php:811
+#: inc/ocsserver.class.php:814
 msgid ""
 "Access denied on database (Delete rights in deleted_equiv table necessary)"
 msgstr ""
 
-#: inc/ocsserver.class.php:813
+#: inc/ocsserver.class.php:816
 msgid "Connection to database successful"
 msgstr ""
 
-#: inc/ocsserver.class.php:815
+#: inc/ocsserver.class.php:818
 msgid "Valid OCSNG configuration and version"
-msgstr ""
+msgstr "Érvényes OCS NG verzió"
 
-#: inc/ocsserver.class.php:928
+#: inc/ocsserver.class.php:931
 msgid "Unable to add. The OCSNG server already exists."
-msgstr ""
+msgstr "Nem lehet hozzáadni. Az OCSNG szerver már létezik."
 
 #. TRANS: %s is the OCS id
-#: inc/ocsserver.class.php:1373
+#: inc/ocsserver.class.php:1376
 #, php-format
 msgid ""
 "Unable to import, GLPI computer is already related to an element of OCSNG "
 "(%d)"
 msgstr ""
 
-#: inc/ocsserver.class.php:2584
-msgid "Item"
-msgstr ""
-
-#: inc/ocsserver.class.php:2584 inc/ocsserver.class.php:2768
+#: inc/ocsserver.class.php:2588 inc/ocsserver.class.php:2773
 msgid "Import date in GLPI"
-msgstr ""
+msgstr "GLPI-be importálás dátuma"
 
-#: inc/ocsserver.class.php:2585
+#: inc/ocsserver.class.php:2589
 msgid "Existing in GLPI"
-msgstr ""
+msgstr "Létezik a GLPI-ben"
 
-#: inc/ocsserver.class.php:2585
+#: inc/ocsserver.class.php:2589
 msgid "Existing in OCSNG"
-msgstr ""
+msgstr "Létezik OCSNG-ben"
 
-#: inc/ocsserver.class.php:2627
+#: inc/ocsserver.class.php:2632
 msgid "No item to clean"
-msgstr ""
+msgstr "Nincs törlendő elem"
 
-#: inc/ocsserver.class.php:2745
+#: inc/ocsserver.class.php:2750
 msgid "Computers updated in OCSNG"
-msgstr ""
+msgstr "OCS-ben frissült számítógépek"
 
-#: inc/ocsserver.class.php:2768 inc/ocsserver.class.php:2796
+#: inc/ocsserver.class.php:2773 inc/ocsserver.class.php:2802
 msgid "Update computers"
-msgstr ""
+msgstr "Számítógépek frissítése"
 
-#: inc/ocsserver.class.php:2769
-msgid "Last OCSNG inventory date"
-msgstr ""
-
-#: inc/ocsserver.class.php:2769
+#: inc/ocsserver.class.php:2774
 msgid "Auto update"
-msgstr ""
+msgstr "Automata frissítés"
 
-#: inc/ocsserver.class.php:2801
+#: inc/ocsserver.class.php:2807
 msgid "No new computer to be updated"
-msgstr ""
+msgstr "Nincs frissítendő új gép"
 
-#: inc/ocsserver.class.php:3003
+#: inc/ocsserver.class.php:3009
 msgid ""
 "Caution! The imported data (see your configuration) will overwrite the "
 "existing one"
 msgstr ""
 
-#: inc/ocsserver.class.php:3026
+#: inc/ocsserver.class.php:3032
 msgid "Manual import mode"
-msgstr ""
+msgstr "Manuális import mód"
 
 #: inc/ocsserver.class.php:3035
 msgid "Disable preview"
 msgstr ""
 
-#: inc/ocsserver.class.php:3037
+#: inc/ocsserver.class.php:3038
 msgid "Enable preview"
-msgstr ""
+msgstr "Előnézet bekapcsolása"
 
-#: inc/ocsserver.class.php:3042
+#: inc/ocsserver.class.php:3044
 msgid "Check first that duplicates have been correctly managed in OCSNG"
-msgstr ""
+msgstr "Először ellenőrizd a duplikátumok kezelését az OCSNG-ben"
 
-#: inc/ocsserver.class.php:3059
-msgid "Date"
-msgstr ""
-
-#: inc/ocsserver.class.php:3061
+#: inc/ocsserver.class.php:3065
 msgid "Match the rule ?"
 msgstr "Illeszkedik a szabály ?"
 
-#: inc/ocsserver.class.php:3062
-msgid "Destination entity"
-msgstr ""
-
-#: inc/ocsserver.class.php:3063
+#: inc/ocsserver.class.php:3067
 msgid "Target location"
-msgstr ""
+msgstr "Cél hely"
 
-#: inc/ocsserver.class.php:3162 inc/ocsserver.class.php:3172
+#: inc/ocsserver.class.php:3168 inc/ocsserver.class.php:3178
 msgid "No new computer to be imported"
-msgstr ""
+msgstr "Nincs új importálandó gép"
 
-#: inc/ocsserver.class.php:4190 inc/ocsserver.class.php:4211
+#: inc/ocsserver.class.php:4196 inc/ocsserver.class.php:4218
 msgid "Choice of an OCSNG server"
-msgstr ""
+msgstr "OCS kiszolgáló választás"
 
-#: inc/ocsserver.class.php:4213
+#: inc/ocsserver.class.php:4220
 msgid "No OCSNG server defined"
-msgstr ""
+msgstr "Nincs megadva OCS kiszolgáló"
 
-#: inc/ocsserver.class.php:4972
+#: inc/ocsserver.class.php:4987
 msgid "Software deleted by OCSNG synchronization"
-msgstr ""
+msgstr "OCS szinkron törölte a szoftvert"
 
-#: inc/ocsserver.class.php:5698 inc/thread.class.php:409
-#, php-format
-msgid "%1$s (%2$s)"
-msgstr ""
-
-#: inc/ocsserver.class.php:5728
+#: inc/ocsserver.class.php:5743
 msgid "Unmodified computers"
-msgstr ""
+msgstr "Nem módosult számítógépek"
 
-#: inc/ocsserver.class.php:5729
+#: inc/ocsserver.class.php:5744
 msgid "Computers don't check any rule"
 msgstr ""
 
-#: inc/ocsserver.class.php:5730
+#: inc/ocsserver.class.php:5745
 msgid "Duplicate computers"
-msgstr ""
+msgstr "Duplikált számítógépek"
 
-#: inc/ocsserver.class.php:5731
+#: inc/ocsserver.class.php:5746
 msgid "Computers whose import is refused by a rule"
-msgstr ""
+msgstr "Szabály alapján nem importált számítógépek"
 
-#: inc/ocsserver.class.php:5779
+#: inc/ocsserver.class.php:5794
 msgid "Statistics of the OCSNG link"
 msgstr ""
 
-#: inc/ocsserver.class.php:5781
+#: inc/ocsserver.class.php:5796
 msgid "Process completed"
-msgstr ""
+msgstr "művelet befejeződött"
 
-#: inc/ocsserver.class.php:5911
-msgid "Action type"
-msgstr ""
-
-#: inc/ocsserver.class.php:5916
+#: inc/ocsserver.class.php:5931
 msgid "Link possible"
-msgstr ""
-
-#: inc/ocsserver.class.php:5920
-msgid "Import refused"
-msgstr ""
-
-#: inc/ocsserver.class.php:5924
-msgid "New computer created in GLPI"
-msgstr ""
+msgstr "Hivatkozás lehetséges"
 
 #: inc/ocsserver.class.php:5935
+msgid "Import refused"
+msgstr "Import visszautasítva"
+
+#: inc/ocsserver.class.php:5939
+msgid "New computer created in GLPI"
+msgstr "Új számítógép létrehozva GLPI-ben"
+
+#: inc/ocsserver.class.php:5950
 msgid "Link with computer"
-msgstr ""
-
-#: inc/ocsserver.class.php:6000
-msgid "Service pack"
-msgstr ""
-
-#: inc/ocsserver.class.php:6001
-msgid "Version of the operating system"
-msgstr ""
-
-#: inc/ocsserver.class.php:6003
-msgid "Product ID of the operating system"
-msgstr ""
-
-#: inc/ocsserver.class.php:6004
-msgid "User"
-msgstr ""
-
-#: inc/ocsserver.class.php:6030
-msgid "Check all"
-msgstr ""
-
-#: inc/ocsserver.class.php:6034
-msgid "Uncheck all"
-msgstr ""
+msgstr "Hivatkozás számítógépre"
 
 #: inc/profile.class.php:43
 msgid "Rights management"
@@ -1045,12 +775,49 @@ msgid "See information"
 msgstr ""
 
 #: inc/profile.class.php:200
-msgid "Clean links GLPI / OCSNG"
+msgid "Clean links betwenn GLPI and OCSNG"
 msgstr ""
 
-#: inc/ruleimportcomputer.class.php:67
-#: inc/ruleimportcomputercollection.class.php:62
-msgid "Rules for import and link computers"
+#: inc/registrykey.class.php:94
+#, php-format
+msgid "%d registry key found"
+msgstr ""
+
+#: inc/registrykey.class.php:97
+msgid "OCSNG Nname"
+msgstr ""
+
+#: inc/registrykey.class.php:98
+msgid "Hive"
+msgstr "Gyűjtő"
+
+#: inc/registrykey.class.php:99
+msgid "Path"
+msgstr "Útvonal"
+
+#: inc/registrykey.class.php:100
+msgid "Key/value"
+msgstr "Kulcs/érték"
+
+#: inc/registrykey.class.php:118
+msgid "No key found in registry"
+msgstr "Nem található regisztrációs kulcs"
+
+#: inc/ruleimportcomputer.class.php:81 inc/ruleimportcomputer.class.php:101
+#: inc/ruleimportcomputer.class.php:104 inc/ruleimportcomputer.class.php:107
+#: inc/ruleimportcomputer.class.php:110 inc/ruleimportcomputer.class.php:113
+#: inc/ruleimportcomputer.class.php:116 inc/ruleimportcomputer.class.php:121
+#: inc/ruleimportcomputer.class.php:124 inc/ruleimportcomputer.class.php:128
+#: inc/ruleimportcomputer.class.php:132
+msgid "Computer to import"
+msgstr "Importálandó számítógép"
+
+#: inc/ruleimportcomputer.class.php:82
+msgid "target entity for the computer"
+msgstr "számítógép cél cége"
+
+#: inc/ruleimportcomputer.class.php:114
+msgid "IP Address"
 msgstr ""
 
 #: inc/thread.class.php:55
@@ -1059,10 +826,6 @@ msgstr ""
 
 #: inc/thread.class.php:91
 msgid "Process information"
-msgstr ""
-
-#: inc/thread.class.php:95 inc/thread.class.php:284
-msgid "Status"
 msgstr ""
 
 #: inc/thread.class.php:96 inc/thread.class.php:286
@@ -1076,18 +839,6 @@ msgstr ""
 #: inc/thread.class.php:98 inc/thread.class.php:288
 msgid "Imported computer by automatic task"
 msgid_plural "Imported computers by automatic task"
-msgstr[0] ""
-msgstr[1] ""
-
-#: inc/thread.class.php:100 inc/thread.class.php:290
-msgid "Synchronized computer"
-msgid_plural "Synchronized computers"
-msgstr[0] ""
-msgstr[1] ""
-
-#: inc/thread.class.php:101 inc/thread.class.php:291
-msgid "Linked computer"
-msgid_plural "Linked computers"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -1135,15 +886,6 @@ msgstr ""
 msgid "Number of threads"
 msgstr ""
 
-#: inc/thread.class.php:407
-msgid "Statistics"
-msgstr ""
-
-#: inc/thread.class.php:410 inc/thread.class.php:453
-#, php-format
-msgid "%1$s %2$s"
-msgstr ""
-
 #: inc/thread.class.php:410
 msgid "hour"
 msgid_plural "hours"
@@ -1158,27 +900,15 @@ msgstr ""
 msgid "Maximum"
 msgstr ""
 
-#: inc/thread.class.php:417
-msgid "Average"
-msgstr ""
-
-#: inc/thread.class.php:418
-msgid "Total"
-msgstr ""
-
-#: inc/thread.class.php:452
-msgid "Speed"
-msgstr ""
-
 #. TRANS: means computers by second
 #: inc/thread.class.php:459
 msgid "pc/s"
 msgstr ""
 
-#: inc/thread.class.php:564
+#: inc/thread.class.php:563
 msgid "Clean processes"
 msgstr ""
 
-#: inc/thread.class.php:565
+#: inc/thread.class.php:564
 msgid "Delete processes after"
 msgstr ""
