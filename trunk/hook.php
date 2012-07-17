@@ -1257,14 +1257,14 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
 
          $sopt[110]['table']         = 'glpi_plugin_ocsinventoryng_registrykeys';
          $sopt[110]['field']         = 'value';
-         $sopt[110]['name']          = sprintf(__('%1$s: $2$s'), __('Registry'), __('Key/Value'));
+         $sopt[110]['name']          = sprintf(__('%1$s: %2$s'), __('Registry'), __('Key/Value'));
          $sopt[110]['forcegroupby']  = true;
          $sopt[110]['massiveaction'] = false;
          $sopt[110]['joinparams']    = array('jointype' => 'child');
 
          $sopt[111]['table']         = 'glpi_plugin_ocsinventoryng_registrykeys';
          $sopt[111]['field']         = 'ocs_name';
-         $sopt[111]['name']          = sprintf(__('%1$s: $2$s'), __('Registry'), __('OCSNG name'));
+         $sopt[111]['name']          = sprintf(__('%1$s: %2$s'), __('Registry'), __('OCSNG name'));
          $sopt[111]['forcegroupby']  = true;
          $sopt[111]['massiveaction'] = false;
          $sopt[111]['joinparams']    = array('jointype' => 'child');
