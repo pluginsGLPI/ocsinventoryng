@@ -26,10 +26,10 @@
  along with GLPI; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  --------------------------------------------------------------------------
-// ----------------------------------------------------------------------
-// Original Author of file: CAILLAUD Xavier
-// Purpose of file: plugin ocsinventoryng v 1.0.0 - GLPI 0.83
-// ----------------------------------------------------------------------
+ // ----------------------------------------------------------------------
+ // Original Author of file: CAILLAUD Xavier
+ // Purpose of file: plugin ocsinventoryng v 1.0.0 - GLPI 0.83
+ // ----------------------------------------------------------------------
  */
 
 function plugin_ocsinventoryng_install() {
@@ -1401,4 +1401,252 @@ function plugin_ocsinventoryng_searchOptionsValues($params=array()) {
    }
    return false;
 }
+
+/**
+ *
+ * Criteria for rules
+ * @since 0.84
+ * @param $params           input data
+ * @return an array of criteria
+ */
+function plugin_ocsinventoryng_getRuleCriteria($params) {
+   global $LANG;
+   $criteria = array();
+
+   switch ($params['rule_itemtype']) {
+      case 'RuleImportEntity':
+         $criteria['TAG']['table']                = 'accountinfo';
+         $criteria['TAG']['field']                = 'TAG';
+         $criteria['TAG']['name']                 = __('OCSNG TAG');
+         $criteria['TAG']['linkfield']            = 'HARDWARE_ID';
+   
+         $criteria['DOMAIN']['table']             = 'hardware';
+         $criteria['DOMAIN']['field']             = 'WORKGROUP';
+         $criteria['DOMAIN']['name']              = __('Domain');
+         $criteria['DOMAIN']['linkfield']         = '';
+   
+         $criteria['OCS_SERVER']['table']         = 'glpi_plugin_ocsinventoryng_ocsservers';
+         $criteria['OCS_SERVER']['field']         = 'name';
+         $criteria['OCS_SERVER']['name']          = _n('OCSNG server', 'OCSNG servers', 1);
+         $criteria['OCS_SERVER']['linkfield']     = '';
+         $criteria['OCS_SERVER']['type']          = 'dropdown';
+         $criteria['OCS_SERVER']['virtual']       = true;
+         $criteria['OCS_SERVER']['id']            = 'ocs_server';
+   
+         $criteria['IPSUBNET']['table']           = 'networks';
+         $criteria['IPSUBNET']['field']           = 'IPSUBNET';
+         $criteria['IPSUBNET']['name']            = __('Subnet');
+         $criteria['IPSUBNET']['linkfield']       = 'HARDWARE_ID';
+   
+         $criteria['IPADDRESS']['table']          = 'networks';
+         $criteria['IPADDRESS']['field']          = 'IPADDRESS';
+         $criteria['IPADDRESS']['name']           = __('IP address');
+         $criteria['IPADDRESS']['linkfield']      = 'HARDWARE_ID';
+   
+         $criteria['MACHINE_NAME']['table']       = 'hardware';
+         $criteria['MACHINE_NAME']['field']       = 'NAME';
+         $criteria['MACHINE_NAME']['name']        = __("Computer's name");
+         $criteria['MACHINE_NAME']['linkfield']   = '';
+   
+         $criteria['DESCRIPTION']['table']        = 'hardware';
+         $criteria['DESCRIPTION']['field']        = 'DESCRIPTION';
+         $criteria['DESCRIPTION']['name']         = __('Description');
+         $criteria['DESCRIPTION']['linkfield']    = '';
+   
+         $criteria['SSN']['table']                = 'bios';
+         $criteria['SSN']['field']                = 'SSN';
+         $criteria['SSN']['name']                 = __('Serial number');
+         $criteria['SSN']['linkfield']            = 'HARDWARE_ID';
+         break;
+      
+   }
+
+   return $criteria;
+}
+
+/**
+ * @see inc/RuleCollection::prepareInputDataForProcess()
+ * @since 0.84
+ * @param $params           input data
+ * @return an array of criteria value to add for processing
+ **/
+function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params) {
+   global $PluginOcsinventoryngDBocs;
+
+   switch ($params['rule_itemtype']) {
+      case 'RuleImportEntity':
+         $ocsservers_id   = $params['values']['input']['ocsservers_id'];
+         $tables          = plugin_ocsinventoryng_getTablesForQuery();
+         $fields          = plugin_ocsinventoryng_getFieldsForQuery();
+         $rule_parameters = array();
+         $select_sql      = "";
+      
+         if (isset($params['values']['params']['ocsid'])) {
+            $ocsid = $params['values']['params']['ocsid'];
+         } elseif ($params['values']['input']['id']) {
+            $ocsid = $params['values']['input']['id'];
+         }
+         
+         //Get information about network ports
+         $query = "SELECT *
+                   FROM `networks`
+                   WHERE `HARDWARE_ID` = '$ocsid'";
+      
+         $ipblacklist  = Blacklist::getIPs();
+         $macblacklist = Blacklist::getMACs();
+      
+         foreach ($PluginOcsinventoryngDBocs->request($query) as $data) {
+            if (isset($data['IPSUBNET'])) {
+               $rule_parameters['IPSUBNET'][] = $data['IPSUBNET'];
+            }
+            if (isset($data['MACADDR']) && !in_array($data['MACADDR'], $macblacklist)) {
+               $rule_parameters['MACADDRESS'][] = $data['MACADDR'];
+            }
+            if (isset($data['IPADDRESS']) && !in_array($data['IPADDRESS'], $ipblacklist)) {
+               $rule_parameters['IPADDRESS'][] = $data['IPADDRESS'];
+            }
+         }
+      
+         //Build the select request
+         foreach ($fields as $field) {
+            switch (Toolbox::strtoupper($field)) {
+               //OCS server ID is provided by extra_params -> get the configuration associated with the ocs server
+               case "OCS_SERVER" :
+                  $rule_parameters["OCS_SERVER"] = $ocsservers_id;
+                  break;
+      
+                  //TAG and DOMAIN should come from the OCS DB
+               default :
+                  $select_sql .= ($select_sql != "" ? " , " : "") . $field;
+            }
+         }
+      
+         //Build the FROM part of the request
+         //Remove all the non duplicated table names
+         $from_sql = "FROM `hardware` ";
+         foreach ($tables as $table => $linkfield) {
+            if ($table!='hardware' && !empty($linkfield)) {
+               $from_sql .= " LEFT JOIN `$table` ON (`$table`.`$linkfield` = `hardware`.`ID`)";
+            }
+         }
+      
+         if ($select_sql != "") {
+            //Build the all request
+            $sql = "SELECT $select_sql
+                    $from_sql
+                    WHERE `hardware`.`ID` = '$ocsid'";
+      
+            PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id);
+            $result    = $PluginOcsinventoryngDBocs->query($sql);
+            $ocs_data  = array();
+            $fields    = plugin_ocsinventoryng_getFieldsForQuery(1);
+      
+            //May have more than one line : for example in case of multiple network cards
+            if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
+               while ($datas = $PluginOcsinventoryngDBocs->fetch_assoc($result)) {
+                  foreach ($fields as $field) {
+                     if ($field != "OCS_SERVER" && isset($datas[$field])) {
+                        $ocs_data[$field][] = $datas[$field];
+                     }
+                  }
+               }
+            }
+            
+            //This cas should never happend but...
+            //Sometimes OCS can't find network ports but fill the right ip in hardware table...
+            //So let's use the ip to proceed rules (if IP is a criteria of course)
+            if (in_array("IPADDRESS",$fields) && !isset($ocs_data['IPADDRESS'])) {
+               $ocs_data['IPADDRESS']
+                  = PluginOcsinventoryngOcsServer::getGeneralIpAddress($ocsservers_id, $computers_id);
+            }
+            return array_merge($rule_parameters, $ocs_data);
+         }
+         return $rule_parameters;
+   }
+   return array();
+}
+
+
+/**
+ * Get the list of all tables to include in the query
+ *
+ * @return an array of table names
+ **/
+function plugin_ocsinventoryng_getTablesForQuery() {
+
+   $tables = array();
+   foreach (plugin_ocsinventoryng_getRuleCriteria(array('rule_itemtype' => 'RuleImportEntity')) as $criteria) {
+      if ((!isset($criteria['virtual'])
+         || !$criteria['virtual'])
+            && $criteria['table'] != ''
+               && !isset($tables[$criteria["table"]])) {
+
+         $tables[$criteria['table']] = $criteria['linkfield'];
+      }
+   }
+   return $tables;
+}
+
+
+/**
+ *  * Get fields needed to process criterias
+ *
+ * @param $withouttable fields without tablename ? (default 0)
+ *
+ * @return an array of needed fields
+ **/
+function plugin_ocsinventoryng_getFieldsForQuery($withouttable=0) {
+
+   $fields = array();
+   foreach (plugin_ocsinventoryng_getRuleCriteria(array('rule_itemtype' => 'RuleImportEntity')) as $key => $criteria) {
+      if ($withouttable) {
+         if (strcasecmp($key,$criteria['field']) != 0) {
+            $fields[] = $key;
+         } else {
+            $fields[] = $criteria['field'];
+         }
+
+      } else {
+         //If the field is different from the key
+         if (strcasecmp($key,$criteria['field']) != 0) {
+            $as = " AS ".$key;
+         } else {
+            $as = "";
+         }
+
+         //If the field name is not null AND a table name is provided
+         if (($criteria['field'] != ''
+         && (!isset($criteria['virtual']) || !$criteria['virtual']))) {
+            if ( $criteria['table'] != '') {
+               $fields[] = $criteria['table'].".".$criteria['field'].$as;
+            } else {
+               $fields[] = $criteria['field'].$as;
+            }
+         } else {
+            $fields[] = $criteria['id'];
+         }
+      }
+   }
+   return $fields;
+}
+
+
+/**
+ * Get foreign fields needed to process criterias
+ *
+ * @return an array of needed fields
+ **/
+function plugin_ocsinventoryng_getFKFieldsForQuery() {
+
+   $fields = array();
+   foreach (plugin_ocsinventoryng_getRuleCriteria(array('rule_itemtype' => 'RuleImportEntity')) as $criteria) {
+      //If the field name is not null AND a table name is provided
+      if ((!isset($criteria['virtual']) || !$criteria['virtual'])
+      && $criteria['linkfield'] != '') {
+         $fields[] = $criteria['table'].".".$criteria['linkfield'];
+      }
+   }
+   return $fields;
+}
+
 ?>

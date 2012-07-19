@@ -45,6 +45,7 @@ function plugin_init_ocsinventoryng() {
    global $PLUGIN_HOOKS, $CFG_GLPI;
 
    $PLUGIN_HOOKS['csrf_compliant']['ocsinventoryng'] = true;
+   $PLUGIN_HOOKS['use_rules']['ocsinventoryng']      = true;
 
    $PLUGIN_HOOKS['change_profile']['ocsinventoryng'] = array('PluginOcsinventoryngProfile',
                                                              'changeProfile');
@@ -77,9 +78,8 @@ function plugin_init_ocsinventoryng() {
                          array ('massiveaction_noupdate_types' => true,
                                 'massiveaction_nodelete_types' => true));
 
-
    if (Session::getLoginUserID()) {
-
+      
       // Display a menu entry ?
       if (plugin_ocsinventoryng_haveRight("ocsng","r")) {
          $PLUGIN_HOOKS['menu_entry']['ocsinventoryng']               = 'front/ocsng.php';

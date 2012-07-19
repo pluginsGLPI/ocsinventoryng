@@ -45,7 +45,7 @@ if (!isset($_SESSION["change_import_mode"])) {
 
 //Changing the import mode
 if (isset($_POST["change_import_mode"])) {
-   if ('id' == "false") {
+   if ($_POST['id'] == "false") {
       $_SESSION["change_import_mode"] = false;
    } else {
       $_SESSION["change_import_mode"] = true;
@@ -79,7 +79,7 @@ if (isset($_SESSION["ocs_import"]["id"])) {
       PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_import"]['statistics'],
                                                             $action['status']);
       PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_import"]['statistics']);
-      displayProgressBar(400, $percent);
+      Html::displayProgressBar(400, $percent);
       Html::back();
 
    } else {

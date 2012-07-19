@@ -1722,12 +1722,15 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    }
 
 
-   static function setChecksumForComputer($ocsid,$checksum) {
+   static function setChecksumForComputer($ocsid,$checksum,$escape=false) {
       global $PluginOcsinventoryngDBocs;
 
-            // Set OCS checksum to max value
+      // Set OCS checksum to max value
+      if (!$escape) {
+         $checksum = "'" . $checksum . "'";
+      }
       $query = "UPDATE `hardware`
-                SET `CHECKSUM` = '" . $checksum . "'
+                SET `CHECKSUM` = $checksum
                 WHERE `ID` = '$ocsid'";
       $PluginOcsinventoryngDBocs->query($query);
    }
@@ -1746,9 +1749,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       //No entity predefined, check rules
       if ($defaultentity == -1 || $defaultlocation == -1) {
          //Try to affect computer to an entity
-         $rule = new RuleImportEntity($plugin_ocsinventoryng_ocsservers_id);
+         $rule = new RuleImportEntityCollection();
          $data = array();
-         $data = $rule->processAllRules(array(), array(), $ocsid);
+         $data = $rule->processAllRules(array('ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id),
+                                        array(), array('ocsid' => $ocsid));
       } else {
          //An entity has already been defined via the web interface
          $data['entities_id']  = $defaultentity;
@@ -1796,7 +1800,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             //If at least one rule matched
             //else do import as usual
             if (isset($rulelink_results['action'])) {
-               $rules_matched['RuleImportComputer'] = $rulelink_results['_ruleid'];
+               $rules_matched['RuleImportEntity'] = $rulelink_results['_ruleid'];
 
                switch ($rulelink_results['action']) {
                   case self::LINK_RESULT_NO_IMPORT :
@@ -1812,9 +1816,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                            if (self::linkComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id,
                                                   $computers_id)) {
                               return array('status'       => self::COMPUTER_LINKED,
-                                           'entities_id'  => $data['entities_id'],
-                                           'rule_matched' => $rules_matched,
-                                           'computers_id' => $computers_id);
+                                            'entities_id'  => $data['entities_id'],
+                                            'rule_matched' => $rules_matched,
+                                            'computers_id' => $computers_id);
                            }
                         }
                      break;
@@ -1838,13 +1842,13 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
                //Return code to indicates that the machine was imported
                return array('status'       => self::COMPUTER_IMPORTED,
-                            'entities_id'  => $data['entities_id'],
-                            'rule_matched' => $rules_matched,
-                            'computers_id' => $computers_id);
+                             'entities_id'  => $data['entities_id'],
+                             'rule_matched' => $rules_matched,
+                             'computers_id' => $computers_id);
             }
             return array('status'       => self::COMPUTER_NOT_UNIQUE,
-                         'entities_id'  => $data['entities_id'],
-                         'rule_matched' => $rules_matched) ;
+                          'entities_id'  => $data['entities_id'],
+                          'rule_matched' => $rules_matched) ;
          }
 
          if ($lock) {
@@ -1853,7 +1857,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       }
       //ELSE Return code to indicates that the machine was not imported because it doesn't matched rules
       return array('status'       => self::COMPUTER_FAILED_IMPORT,
-                   'rule_matched' => $rules_matched);
+                    'rule_matched' => $rules_matched);
    }
 
 
@@ -1914,7 +1918,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
             if ($force) {
                $ocs_checksum = self::MAX_CHECKSUM;
-               self::setChecksumForComputer($line['ocsid'],$ocs_checksum);
+               self::setChecksumForComputer($line['ocsid'], $ocs_checksum);
             } else {
                $ocs_checksum = $data_ocs["CHECKSUM"];
             }
@@ -2073,7 +2077,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
                // Update OCS Cheksum
                $newchecksum = "(CHECKSUM - $mixed_checksum)";
-               self::setChecksumForComputer($line['ocsid'],$newchecksum);
+               self::setChecksumForComputer($line['ocsid'], $newchecksum, true);
 
                //Return code to indicate that computer was synchronized
                return array('status'       => self::COMPUTER_SYNCHRONIZED,
@@ -3023,10 +3027,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                array_splice($hardware, 0, $start);
             }
 
-            //Show preview form only in import and in multi-entity mode
-            if (!$tolinked && Session::isMultiEntitiesMode()) {
+            //Show preview form only in import even in multi-entity mode because computer import
+            //can be refused by a rule
+            if (!$tolinked) {
                echo "<div class='firstbloc'>";
-               echo "<form method='post' name='ocsng_import_mode' id='ocsng_import_mode'
+               echo "<form method='post' name='ocsng_import' id='ocsng_import'
                       action='$target'>\n";
                echo "<table class='tab_cadre_fixe'>";
                echo "<tr><th>". __('Manual import mode'). "</th></tr>\n";
@@ -3039,7 +3044,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                                        array('id' => 'true'));
                }
                echo "</td></tr>";
-
                echo "<tr class='tab_bg_1'><td class='center b'>".
                      __('Check first that duplicates have been correctly managed in OCSNG')."</td>";
                echo "</tr></table>";
@@ -3075,9 +3079,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $data = array();
 
                if ($advanced && !$tolinked) {
-                  $data = $rule->processAllRules(array(), array(), $tab["id"]);
+                  $data = $rule->processAllRules(array('ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id),
+                                                 array(), array('ocsid' =>$tab["id"]));
                }
-               echo "<tr class='tab_bg_2'><td>" . $tab["name"] . "</td>\n";
+               echo "<tr class='tab_bg_2'><td>". $tab["name"] . "</td>\n";
                echo "<td>".$tab["manufacturer"]."</td><td>".$tab["model"]."</td>";
                echo "<td>".$tab["serial"]."</td>\n";
                echo "<td>" . Html::convDateTime($tab["date"]) . "</td>\n";
@@ -3687,7 +3692,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)) {
                      $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      if ($cfg_ocs["import_device_iface"]) {
-                        $network["designation"] = $line2["DESCRIPTION"];
+                        if (!Toolbox::seems_utf8($line2["DESCRIPTION"])) {
+                           $network["designation"] = Toolbox::encodeInUtf8($line2["DESCRIPTION"]);
+                        } else {
+                           $network["designation"] = $line2["DESCRIPTION"];
+                        }
 
                         // MAC must be unique, except for wmware (internal/external use same MAC)
                         if (preg_match('/^vm(k|nic)([0-9]+)$/', $line2['DESCRIPTION'])
@@ -4831,7 +4840,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                $manufacturer         = Manufacturer::processName($data2["PUBLISHER"]);
 
                //Software might be created in another entity, depending on the entity's configuration
-               $target_entity = EntityData::getUsedConfig('entities_id_software', $entity, '', true);
+               $target_entity = Entity::getUsedConfig('entities_id_software', $entity, '', true);
                //Do not change software's entity except if the dictionnary explicity changes it
                if ($target_entity < 0) {
                   $target_entity = $entity;
@@ -5816,11 +5825,12 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
 
       // Get all rules for the current plugin_ocsinventoryng_ocsservers_id
-      $rules = new RuleImportEntityCollection($line_links["plugin_ocsinventoryng_ocsservers_id"]);
+      $rules = new RuleImportEntityCollection();
 
       $data = array();
-      $data = $rules->processAllRules(array(), array(), $line_links["ocsid"]);
-
+      $data = $rule->processAllRules(array('ocsservers_id' => $line_links["plugin_ocsinventoryng_ocsservers_id"]),
+                                     array(), array('ocsid' => $line_links["ocsid"]));
+      
       // If entity is changing move items to the new entities_id
       if (isset($data['entities_id'])
           && $data['entities_id'] != $line_links['entities_id']) {
