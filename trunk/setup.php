@@ -77,7 +77,7 @@ function plugin_init_ocsinventoryng() {
    Plugin::registerClass('PluginOcsinventoryngDetail',
                          array ('massiveaction_noupdate_types' => true,
                                 'massiveaction_nodelete_types' => true));
-
+                         
    if (Session::getLoginUserID()) {
       
       // Display a menu entry ?
@@ -94,7 +94,15 @@ function plugin_init_ocsinventoryng() {
       if (plugin_ocsinventoryng_haveRight("ocsng", "w") || Session::haveRight("config", "w")) {
          $PLUGIN_HOOKS['config_page']['ocsinventoryng']              = 'front/config.php';
          $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['config']  = 'front/config.php';
-
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['ocsserver']['title']
+               = __s("OCSNG server 's configuration");
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['ocsserver']['page']
+               = '/plugins/ocsinventoryng/front/ocsserver.php';
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['config']['title']
+               = __s("Automatic synchronization's configuration");
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['config']['page']
+               = '/plugins/ocsinventoryng/front/config.form.php';
+               
          if ($_SERVER['PHP_SELF']
                   == $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.php"
              || $_SERVER['PHP_SELF']
@@ -103,6 +111,36 @@ function plugin_init_ocsinventoryng() {
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['add']     = 'front/ocsserver.form.php';
          }
 
+         
+         if (plugin_ocsinventoryng_haveRight("ocsng", "w")) {
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['import']['title']
+               = __s('Import new computers');
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['import']['page']
+               = '/plugins/ocsinventoryng/front/ocsng.import.php';
+   
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['sync']['title']
+               = __s('Synchronize computers already imported');
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['sync']['page']
+               = '/plugins/ocsinventoryng/front/ocsng.sync.php';
+   
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['link']['title']
+               = __s('Link new OCSNG computers to existing GLPI computers');
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['link']['page']
+               = '/plugins/ocsinventoryng/front/ocsng.link.php';
+
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['thread']['title']
+               = __s('Scripts execution of automatic task');
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['thread']['page']
+               = '/plugins/ocsinventoryng/front/thread.php';
+               
+            if (plugin_ocsinventoryng_haveRight('clean_ocsng','r')) {
+               $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['clean']['title']
+                  = __s('Clean links between GLPI and OCSNG');
+               $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['clean']['page']
+                  = '/plugins/ocsinventoryng/front/ocsng.clean.php';
+            }
+         }
+         
         /*if (Session::haveRecursiveAccessToEntity(0)) {
          $image = "<img src='".$CFG_GLPI["root_doc"]."/pics/stats_item.png' title='".
                    $LANG["plugin_ocsinventoryng"]["common"][1]."' alt='".$LANG["plugin_ocsinventoryng"]["common"][1]."'>";

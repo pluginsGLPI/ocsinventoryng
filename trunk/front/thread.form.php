@@ -35,7 +35,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 Session::checkRight("logs", "r");
 
-Html::header(__('Information about the script'), "", "plugins", "ocsinventoryng");
+Html::header(__('Information about the script'), "", "plugins", "ocsinventoryng", "thread");
 
 $thread = new PluginOcsinventoryngThread();
 $thread->title();

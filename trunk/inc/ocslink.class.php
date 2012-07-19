@@ -257,7 +257,6 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * @param $comp   Computer object
    **/
    static function purgeComputer(Computer $comp) {
-
       $link = new self();
       $link->deleteByCriteria(array('computers_id' => $comp->getField("id")));
 

@@ -36,7 +36,8 @@ include (GLPI_ROOT . "/inc/includes.php");
 Session::checkRight("logs", "r");
 
 if (Session::haveRecursiveAccessToEntity(0)) {
-   Html::header(__('Processes execution of automatic task'), "", "plugins", "ocsinventoryng");
+   Html::header(__('Processes execution of automatic task'), "", "plugins", "ocsinventoryng",
+                "thread");
    $thread = new PluginOcsinventoryngThread();
 
    if (isset ($_POST["delete_processes"])) {

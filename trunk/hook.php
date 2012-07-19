@@ -892,18 +892,17 @@ function plugin_ocsinventoryng_postinit() {
    $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng']    = array();
    $PLUGIN_HOOKS['item_update']['ocsinventoryng']     = array();
 
-   foreach (PluginOcsinventoryngOcsServer::getTypes(true) as $type) {
-
-      $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng'][$type]
+      $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng']
          = array('Computer_Item' => array('PluginOcsinventoryngOcslink', 'addComputer_Item'));
 
-      $PLUGIN_HOOKS['item_update']['ocsinventoryng'][$type]
+      $PLUGIN_HOOKS['item_update']['ocsinventoryng']
          = array('Computer' => array('PluginOcsinventoryngOcslink', 'updateComputer'));
 
-      $PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng'][$type]
+      $PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng']
          = array('Computer'      => array('PluginOcsinventoryngOcslink', 'purgeComputer'),
                  'Computer_Item' => array('PluginOcsinventoryngOcslink', 'purgeComputer_Item'));
-
+   
+   foreach (PluginOcsinventoryngOcsServer::getTypes(true) as $type) {
 
       CommonGLPI::registerStandardTab($type, 'PluginOcsinventoryngOcsServer');
    }
@@ -1458,7 +1457,6 @@ function plugin_ocsinventoryng_getRuleCriteria($params) {
          $criteria['SSN']['name']                 = __('Serial number');
          $criteria['SSN']['linkfield']            = 'HARDWARE_ID';
          break;
-      
    }
 
    return $criteria;

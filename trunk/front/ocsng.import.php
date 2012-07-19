@@ -35,7 +35,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 plugin_ocsinventoryng_checkRight("ocsng", "w");
 
-Html::header('OCS Inventory NG', "", "plugins", "ocsinventoryng");
+Html::header('OCS Inventory NG', "", "plugins", "ocsinventoryng", "import");
 
 $display_list = true;
 //First time this screen is displayed : set the import mode to 'basic'

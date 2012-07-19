@@ -35,7 +35,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 Plugin::load('ocsinventoryng', true);
 plugin_ocsinventoryng_checkRight("ocsng", "r");
 
-Html::header('OCS Inventory NG', '', "plugins", "ocsinventoryng");
+Html::header('OCS Inventory NG', '', "plugins", "ocsinventoryng", "ocsserver");
 
 Search::show('PluginOcsinventoryngOcsServer');
 

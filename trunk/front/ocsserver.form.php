@@ -40,7 +40,7 @@ if (!isset($_GET["id"])) {
    $_GET["id"] = "";
 }
 
-Html::header('OCS Inventory NG', '', "plugins", "ocsinventoryng");
+Html::header('OCS Inventory NG', '', "plugins", "ocsinventoryng", "ocsserver");
 
 //Delete template or server
 if (isset ($_POST["delete"])) {

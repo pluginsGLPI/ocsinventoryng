@@ -60,7 +60,7 @@ if (isset($_POST["soft_unlock"])) {
 
 $plugin = new Plugin();
 if ($plugin->isInstalled("ocsinventoryng") && $plugin->isActivated("ocsinventoryng")) {
-   Html::header(__('History of automatic tasks'), "", "plugins", "ocsinventoryng");
+   Html::header(__('History of automatic tasks'), "", "plugins", "ocsinventoryng", "config");
 
    if (!countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers")) {
       configHeader();
@@ -72,7 +72,7 @@ if ($plugin->isInstalled("ocsinventoryng") && $plugin->isActivated("ocsinventory
       $config->showConfigForm($_SERVER['PHP_SELF']);
    }
 } else {
-   Html::header(__('Number of processed computers'), "", "config", "plugins");
+   Html::header(__('Number of processed computers'), "", "plugins", "ocsinventoryng", "config");
    echo "<div class='center'><br><br>";
    echo "<img src=\"" . $CFG_GLPI["root_doc"] . "/pics/warning.png\" alt=\"warning\"><br><br>";
    echo "<b>Please activate the plugin</b></div>";

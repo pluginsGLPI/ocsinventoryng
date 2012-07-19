@@ -34,7 +34,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 plugin_ocsinventoryng_checkRight("ocsng","w");
 
-Html::header('OCS Inventory NG', "", "plugins", "ocsinventoryng");
+Html::header('OCS Inventory NG', "", "plugins", "ocsinventoryng", "link");
 
 $CFG_GLPI["use_ajax"] = 1;
 

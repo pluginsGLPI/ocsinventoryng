@@ -32,7 +32,7 @@ if (!defined('GLPI_ROOT')) {
 }
 include (GLPI_ROOT . "/inc/includes.php");
 
-Html::header('OCS Inventory NG', "", "plugins","ocsinventoryng");
+Html::header('OCS Inventory NG', "", "plugins","ocsinventoryng", "clean");
 
 if (!isset($_POST["clean_ok"])) {
    plugin_ocsinventoryng_checkRight("clean_ocsng", "r");
