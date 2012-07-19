@@ -52,7 +52,7 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
       PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_update"]['statistics'],
                                                             $action['status']);
       PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_update"]['statistics']);
-      displayProgressBar(400, $percent);
+      Html::displayProgressBar(400, $percent);
 
       Html::back();
 

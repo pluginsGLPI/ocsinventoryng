@@ -1639,7 +1639,8 @@ function plugin_ocsinventoryng_getFieldsForQuery($withouttable=0) {
 function plugin_ocsinventoryng_getFKFieldsForQuery() {
 
    $fields = array();
-   foreach (plugin_ocsinventoryng_getRuleCriteria(array('rule_itemtype' => 'RuleImportEntity')) as $criteria) {
+   foreach (plugin_ocsinventoryng_getRuleCriteria(array('rule_itemtype'
+                                                      => 'RuleImportEntity')) as $criteria) {
       //If the field name is not null AND a table name is provided
       if ((!isset($criteria['virtual']) || !$criteria['virtual'])
       && $criteria['linkfield'] != '') {

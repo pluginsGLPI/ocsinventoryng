@@ -1746,15 +1746,15 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $rules_matched = array();
       self::setChecksumForComputer($ocsid, self::MAX_CHECKSUM);
 
-      //No entity predefined, check rules
-      if ($defaultentity == -1 || $defaultlocation == -1) {
+      //No entity or location predefined, check rules
+      if ($defaultentity == -1 || $defaultlocation == 0) {
          //Try to affect computer to an entity
          $rule = new RuleImportEntityCollection();
          $data = array();
          $data = $rule->processAllRules(array('ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id),
                                         array(), array('ocsid' => $ocsid));
       } else {
-         //An entity has already been defined via the web interface
+         //An entity or a location has already been defined via the web interface
          $data['entities_id']  = $defaultentity;
          $data['locations_id'] = $defaultlocation;
       }
@@ -3031,7 +3031,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             //can be refused by a rule
             if (!$tolinked) {
                echo "<div class='firstbloc'>";
-               echo "<form method='post' name='ocsng_import' id='ocsng_import'
+               echo "<form method='post' name='ocsng_import_mode' id='ocsng_import_mode'
                       action='$target'>\n";
                echo "<table class='tab_cadre_fixe'>";
                echo "<tr><th>". __('Manual import mode'). "</th></tr>\n";
@@ -5825,10 +5825,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
 
       // Get all rules for the current plugin_ocsinventoryng_ocsservers_id
-      $rules = new RuleImportEntityCollection();
+      $rule = new RuleImportEntityCollection();
 
       $data = array();
-      $data = $rule->processAllRules(array('ocsservers_id' => $line_links["plugin_ocsinventoryng_ocsservers_id"]),
+      $data = $rule->processAllRules(array('ocsservers_id'
+                                       => $line_links["plugin_ocsinventoryng_ocsservers_id"]),
                                      array(), array('ocsid' => $line_links["ocsid"]));
       
       // If entity is changing move items to the new entities_id
