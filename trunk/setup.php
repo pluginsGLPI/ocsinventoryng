@@ -132,6 +132,16 @@ function plugin_init_ocsinventoryng() {
                = __s('Scripts execution of automatic task');
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['thread']['page']
                = '/plugins/ocsinventoryng/front/thread.php';
+
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['detail']['title']
+               = __('Computers imported by automatic task');
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['detail']['page']
+               = '/plugins/ocsinventoryng/front/detail.php';
+
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['notimported']['title']
+               = __s('Computers not imported by automatic task');
+            $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['notimported']['page']
+               = '/plugins/ocsinventoryng/front/notimported.php';
                
             if (plugin_ocsinventoryng_haveRight('clean_ocsng','r')) {
                $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['clean']['title']

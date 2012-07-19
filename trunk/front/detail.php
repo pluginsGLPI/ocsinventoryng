@@ -35,7 +35,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 Session::checkRight("logs", "r");
 
-Html::header(__('Computers imported by automatic task'), "", "plugins", "ocsinventoryng");
+Html::header(__('Computers imported by automatic task'), "", "plugins", "ocsinventoryng", "detail");
 
 Search::show('PluginOcsinventoryngDetail');
 
