@@ -254,7 +254,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       if (plugin_ocsinventoryng_haveRight('ocsng','w')) {
          //config server
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-               <a href='ocsserver.php'>
+               <a href='ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsserver.png' ".
                   "alt='".__s("OCSNG server 's configuration")."' ".
                   "title=\"".__s("OCSNG server 's configuration")."\">
