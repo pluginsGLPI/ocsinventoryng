@@ -1651,7 +1651,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                    'comment'                          => 'DESCRIPTION',
                    'serial'                           => 'SSN',
                    'model'                            => 'SMODEL',
-                   'computermodels_id'                => 'SMODEL');
+                   'computermodels_id'                => 'SMODEL',
+                   'TAG'                              => 'TAG');
    }
 
 
@@ -1773,8 +1774,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          }
 
          //New machine to import
-         $query = "SELECT `hardware`.*, `bios`.*
+         $query = "SELECT `hardware`.*, `bios`.*, accountinfo.*
                    FROM `hardware`
+                   LEFT JOIN `accountinfo` ON (`accountinfo`.`HARDWARE_ID`=`hardware`.`ID`)
                    LEFT JOIN `bios` ON (`bios`.`HARDWARE_ID`=`hardware`.`ID`)
                    WHERE `hardware`.`ID` = '$ocsid'";
          $result = $PluginOcsinventoryngDBocs->query($query);
@@ -3037,10 +3039,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                echo "<tr><th>". __('Manual import mode'). "</th></tr>\n";
                echo "<tr class='tab_bg_1'><td class='center'>";
                if ($advanced) {
-                  Html::showSimpleForm($target, 'change_import_mode', _e('Disable preview'),
+                  Html::showSimpleForm($target, 'change_import_mode', __('Disable preview'),
                                        array('id' => 'false'));
                } else {
-                  Html::showSimpleForm($target, 'change_import_mode', _e('Enable preview'),
+                  Html::showSimpleForm($target, 'change_import_mode', __('Enable preview'),
                                        array('id' => 'true'));
                }
                echo "</td></tr>";
@@ -3093,8 +3095,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                      $data['entities_id'] = -1;
                   } else {
                      echo "<td class='center'>";
-                     //echo "<td class='center'><img src=\"".GLPI_ROOT. "/pics/greenbutton.png\">";
-                     //echo "&nbsp;";
                      $tmprule = new RuleImportEntity();
                      if ($tmprule->can($data['_ruleid'],'r')) {
                         echo "<a href='". $tmprule->getLinkURL()."'>".$tmprule->getName()."</a>";
