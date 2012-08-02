@@ -1457,9 +1457,43 @@ function plugin_ocsinventoryng_getRuleCriteria($params) {
          $criteria['SSN']['name']                 = __('Serial number');
          $criteria['SSN']['linkfield']            = 'HARDWARE_ID';
          break;
+         
+      case 'RuleImportComputer':
+         $criteria['ocsservers_id']['table']       = 'glpi_ocsservers';
+         $criteria['ocsservers_id']['field']       = 'name';
+         $criteria['ocsservers_id']['name']        = _n('OCSNG server', 'OCSNG servers', 1);
+         $criteria['ocsservers_id']['linkfield']   = '';
+         $criteria['ocsservers_id']['type']        = 'dropdown';
+   
+         $criteria['TAG']['name']                  = __('OCSNG TAG');
+         break;
    }
 
    return $criteria;
+}
+
+/**
+ *
+ * Actions for rules
+ * @since 0.84
+ * @param $params           input data
+ * @return an array of actions
+ */
+function plugin_ocsinventoryng_getRuleActions($params) {
+   global $LANG;
+   
+   switch ($params['rule_itemtype']) {
+      case 'RuleImportEntity':
+         $actions['_affect_entity_by_tag']['name']          = __('Entity from TAG');
+         $actions['_affect_entity_by_tag']['type']          = 'text';
+         $actions['_affect_entity_by_tag']['force_actions'] = array('regex_result');
+         
+         break;
+      case 'RuleImportComputer':
+         $actions['_fusion']['name']        = __('OCSNG link');
+         $actions['_fusion']['type']        = 'fusion_type';
+      break;
+   }
 }
 
 /**
@@ -1564,6 +1598,45 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
    return array();
 }
 
+/**
+ *
+ * Actions for rules
+ * @since 0.84
+ * @param $params           input data
+ * @return an array of actions
+ */
+function plugin_ocsinventoryng_executeActions($params) {
+   global $LANG;
+   $action = $params['action'];
+   $output = array();
+   
+   switch ($params['params']['rule_itemtype']) {
+      case 'RuleImportComputer':
+         if ($action->fields['field'] == '_fusion') {
+            if ($action->fields["value"] == self::RULE_ACTION_LINK_OR_IMPORT) {
+               if (isset($this->criterias_results['found_computers'])) {
+                  $output['found_computers'] = $this->criterias_results['found_computers'];
+                  $output['action']          = PluginOcsinventoryngOcsServer::LINK_RESULT_LINK;
+               } else {
+                  $output['action'] = PluginOcsinventoryngOcsServer::LINK_RESULT_IMPORT;
+               }
+
+            } else if ($action->fields["value"] == self::RULE_ACTION_LINK_OR_NO_IMPORT) {
+               if (isset($this->criterias_results['found_computers'])) {
+                  $output['found_computers'] = $this->criterias_results['found_computers'];
+                  $output['action']          = OcsServer::LINK_RESULT_LINK;
+               } else {
+                  $output['action'] = PluginOcsinventoryngOcsServer::LINK_RESULT_NO_IMPORT;
+               }
+            }
+         } else {
+            $output['action'] = PluginOcsinventoryngOcsServer::LINK_RESULT_NO_IMPORT;
+         }
+         break;
+   }
+
+   return $output;
+}
 
 /**
  * Get the list of all tables to include in the query
@@ -1573,7 +1646,8 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
 function plugin_ocsinventoryng_getTablesForQuery() {
 
    $tables = array();
-   foreach (plugin_ocsinventoryng_getRuleCriteria(array('rule_itemtype' => 'RuleImportEntity')) as $criteria) {
+   $crits = plugin_ocsinventoryng_getRuleCriteria(array('rule_itemtype' => 'RuleImportEntity'));
+   foreach ($crits as $criteria) {
       if ((!isset($criteria['virtual'])
          || !$criteria['virtual'])
             && $criteria['table'] != ''

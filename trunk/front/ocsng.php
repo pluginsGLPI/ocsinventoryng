@@ -45,16 +45,14 @@ if (isset ($_SESSION["ocs_link"])) {
 if (isset ($_SESSION["ocs_update"])) {
    unset ($_SESSION["ocs_update"]);
 }
-
-if (isset($_GET["plugin_ocsinventoryng_ocsservers_id"])
-    && $_GET["plugin_ocsinventoryng_ocsservers_id"]) {
-
-   PluginOcsinventoryngOcsServer::ocsMenu($_GET["plugin_ocsinventoryng_ocsservers_id"]);
-
-   PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-
-} else {
-   PluginOcsinventoryngOcsServer::showFormServerChoice();
+if (isset($_POST["plugin_ocsinventoryng_ocsservers_id"])) {
+   $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = $_POST["plugin_ocsinventoryng_ocsservers_id"];
+} elseif (!isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
+   $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = PluginOcsinventoryngOcsServer::getFirstServer();
 }
+
+PluginOcsinventoryngOcsServer::ocsMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+
 Html::footer();
 ?>

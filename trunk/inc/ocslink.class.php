@@ -303,7 +303,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
                    _sx('button', 'Force synchronization'). "\">";
             echo "</table>\n";
-            eHtml::closeForm();
+            Html::closeForm();
          }
 
          echo "</table></div>";

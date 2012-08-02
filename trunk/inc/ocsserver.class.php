@@ -218,7 +218,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       return $tab;
    }
 
-
    /**
     * Print ocs menu
     *
@@ -230,9 +229,28 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       global $CFG_GLPI, $DB;
 
       $name = "";
-      if (isset($plugin_ocsinventoryng_ocsservers_id)) {
-         $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = $plugin_ocsinventoryng_ocsservers_id;
+
+      echo "<div class='center'>";
+      echo "<img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/ocsinventoryng.png' ".
+             "alt='OCS Inventory NG' title='OCS Inventory NG'>";
+      echo "</div>";
+      $numberAciveServers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers',
+                                                 "`is_active`='1'");
+      if ($numberAciveServers > 1) {
+         echo "<form action=\"".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsng.php\" method='post'>";
+         echo "<div class='center'><table class='tab_cadre'>";
+         echo "<tr class='tab_bg_2'><th colspan='2'>".__('Choice of an OCSNG server')."</th></tr>\n";
+   
+         echo "<tr class='tab_bg_2'><td class='center'>" .  __('Name'). "</td>";
+         echo "<td class='center'>";
+         Dropdown::show('PluginOcsinventoryngOcsServer',array("condition"=> "`is_active`='1'",
+                                                              "value" => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                                                              "on_change" => "submit()",
+                                                              "display_emptychoice" => false));
+         echo "</td></tr></table></div>";
+         Html::closeForm();
       }
+
       $sql = "SELECT `name`
               FROM `glpi_plugin_ocsinventoryng_ocsservers`
               WHERE `id` = '".$plugin_ocsinventoryng_ocsservers_id."'";
@@ -243,10 +261,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          $name  = " : " . $datas["name"];
       }
 
-      echo "<div class='center'>";
-      echo "<img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/ocsinventoryng.png' ".
-             "alt='OCS Inventory NG' title='OCS Inventory NG'>";
-      echo "</div>";
 
       echo "<div class='center'><table class='tab_cadre'>";
       echo "<tr><th colspan='4'>".sprintf(__('%1$s: %2$s'), __('OCSNG server'), $name)."</th></tr>";
@@ -1752,7 +1766,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          //Try to affect computer to an entity
          $rule = new RuleImportEntityCollection();
          $data = array();
-         $data = $rule->processAllRules(array('ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id),
+         $data = $rule->processAllRules(array('ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                               '_source'       => 'ocsinventoryng'),
                                         array(), array('ocsid' => $ocsid));
       } else {
          //An entity or a location has already been defined via the web interface
@@ -1791,7 +1806,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                                                      $data['entities_id'], $locations_id);
 
             //Check if machine could be linked with another one already in DB
-            $rulelink         = new PluginOcsinventoryngRuleImportComputerCollection();
+            $rulelink         = new RuleImportComputerCollection();
             $rulelink_results = array();
             $params           = array('entities_id'   => $data['entities_id'],
                                       'plugin_ocsinventoryng_ocsservers_id'
@@ -1802,11 +1817,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             //If at least one rule matched
             //else do import as usual
             if (isset($rulelink_results['action'])) {
-               $rules_matched['RuleImportEntity'] = $rulelink_results['_ruleid'];
+               $rules_matched['RuleImportComputer'] = $rulelink_results['_ruleid'];
 
                switch ($rulelink_results['action']) {
                   case self::LINK_RESULT_NO_IMPORT :
-                     return array('status'       => self::COMPUTER_LINK_REFUSED,
+                     return array('status'     => self::COMPUTER_LINK_REFUSED,
                                   'entities_id'  => $data['entities_id'],
                                   'rule_matched' => $rules_matched);
 
@@ -3074,14 +3089,15 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             }
             echo "<th>&nbsp;</th></tr>\n";
 
-            $rule = new RuleImportEntityCollection($plugin_ocsinventoryng_ocsservers_id);
+            $rule = new RuleImportEntityCollection();
             foreach ($hardware as $ID => $tab) {
                $comp = new Computer();
                $comp->fields["id"] = $tab["id"];
                $data = array();
 
                if ($advanced && !$tolinked) {
-                  $data = $rule->processAllRules(array('ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id),
+                  $data = $rule->processAllRules(array('ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                                        '_source'       => 'ocsinventoryng'),
                                                  array(), array('ocsid' =>$tab["id"]));
                }
                echo "<tr class='tab_bg_2'><td>". $tab["name"] . "</td>\n";
@@ -3124,7 +3140,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   echo "<input type='checkbox' name='toimport[" . $tab["id"] . "]' " .
                          ($check == "all" ? "checked" : "") . ">";
                } else {
-                  $rulelink         = new PluginOcsinventoryngRuleImportComputerCollection();
+                  $rulelink         = new RuleImportComputerCollection();
                   $rulelink_results = array();
                   $params           = array('entities_id' => $entity,
                                             'plugin_ocsinventoryng_ocsservers_id'
@@ -4214,7 +4230,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
          echo "<tr class='tab_bg_2'><td class='center' colspan=2>";
          echo "<input class='submit' type='submit' name='ocs_showservers' value=\"".
-                __sx('button','Post')."\"></td></tr>";
+                _sx('button','Post')."\"></td></tr>";
          echo "</table></div>\n";
          Html::closeForm();
 
@@ -5829,7 +5845,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       $data = array();
       $data = $rule->processAllRules(array('ocsservers_id'
-                                       => $line_links["plugin_ocsinventoryng_ocsservers_id"]),
+                                       => $line_links["plugin_ocsinventoryng_ocsservers_id"],
+                                            '_source'       => 'ocsinventoryng'),
                                      array(), array('ocsid' => $line_links["ocsid"]));
       
       // If entity is changing move items to the new entities_id
@@ -6058,6 +6075,19 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<a href='".$target."?check=none' ".
              "onclick= \"if ( unMarkCheckboxes('ocsng_form') ) return false;\">" .
               __('Uncheck all') . "</a>\n";
+   }
+
+   static function getFirstServer() {
+      global $DB;
+      $query = "SELECT `id`
+                FROM `glpi_plugin_ocsinventoryng_ocsservers`
+                WHERE `is_active`='1' ORDER BY `id` ASC LIMIT 1 ";
+      $results = $DB->query($query);
+      if ($DB->numrows($results) > 0) {
+         return $DB->result($results, 0, 'id');
+      } else {
+         return -1;
+      }
    }
 }
 ?>
