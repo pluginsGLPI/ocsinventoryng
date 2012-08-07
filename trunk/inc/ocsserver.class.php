@@ -240,7 +240,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<form action=\"".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsng.php\" method='post'>";
          echo "<div class='center'><table class='tab_cadre'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>".__('Choice of an OCSNG server')."</th></tr>\n";
-   
+
          echo "<tr class='tab_bg_2'><td class='center'>" .  __('Name'). "</td>";
          echo "<td class='center'>";
          Dropdown::show('PluginOcsinventoryngOcsServer',array("condition"=> "`is_active`='1'",
@@ -1727,7 +1727,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                          && $ocs_fields["DESCRIPTION"] != NOT_AVAILABLE) {
                         $input[$glpi_field] .= $ocs_fields["DESCRIPTION"] . "\r\n";
                      }
-                     $input[$glpi_field] .= "Swap: " . $ocs_fields["SWAP"];
+                     $input[$glpi_field] .= addslashes(sprintf(__('%1$s %2$s'), $input[$glpi_field],
+                                                               sprintf(__('%1$s: %2$s'), __('Swap'),
+                                                                       $ocs_fields["SWAP"])));
                      break;
                }
             }
@@ -4869,7 +4871,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                if (!$cfg_ocs["use_soft_dict"]) {
                   //Software dictionnary
                   $rulecollection = new RuleDictionnarySoftwareCollection();
-                  $res_rule = $rulecollection->processAllRules(Toolbox::stripslashes_deep(array("name" => $name,
+                  $res_rule
+                     = $rulecollection->processAllRules(Toolbox::stripslashes_deep(array("name" => $name,
                                                                      "manufacturer" => $manufacturer,
                                                                      "old_version"  => $version,
                                                                      "entities_id"  => $entity)),
@@ -5848,7 +5851,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                                        => $line_links["plugin_ocsinventoryng_ocsservers_id"],
                                             '_source'       => 'ocsinventoryng'),
                                      array(), array('ocsid' => $line_links["ocsid"]));
-      
+
       // If entity is changing move items to the new entities_id
       if (isset($data['entities_id'])
           && $data['entities_id'] != $line_links['entities_id']) {
