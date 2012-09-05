@@ -104,12 +104,12 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    }
 
 
-   function canCreate() {
+   static function canCreate() {
       return plugin_ocsinventoryng_haveRight('ocsng', 'w');
    }
 
 
-   function canView() {
+   static function canView() {
       return plugin_ocsinventoryng_haveRight('ocsng', 'r');
    }
 

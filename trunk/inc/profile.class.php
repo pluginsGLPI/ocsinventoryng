@@ -44,12 +44,12 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
    }
 
 
-   function canCreate() {
+   static function canCreate() {
       return Session::haveRight('profile', 'w');
    }
 
 
-   function canView() {
+   static function canView() {
       return Session::haveRight('profile', 'r');
    }
 

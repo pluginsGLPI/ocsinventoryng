@@ -45,13 +45,13 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
    }
 
 
-   function canCreate() {
+   static function canCreate() {
       // Only create on ocsng sync
       return plugin_ocsinventoryng_haveRight('sync_ocsng', 'w');
    }
 
 
-   function canView() {
+   static function canView() {
       return plugin_ocsinventoryng_haveRight('ocsng', 'r');
    }
 

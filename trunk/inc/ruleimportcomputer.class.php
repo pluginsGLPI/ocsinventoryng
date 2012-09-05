@@ -51,12 +51,12 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
    public $can_sort = true;
 
 
-   function canCreate() {
+   static function canCreate() {
       return plugin_ocsinventoryng_haveRight('rule_ocs', 'w');
    }
 
 
-   function canView() {
+   static function canView() {
       return plugin_ocsinventoryng_haveRight('rule_ocs', 'r');
    }
 
