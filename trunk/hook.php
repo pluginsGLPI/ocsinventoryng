@@ -1459,7 +1459,7 @@ function plugin_ocsinventoryng_getRuleCriteria($params) {
          break;
          
       case 'RuleImportComputer':
-         $criteria['ocsservers_id']['table']       = 'glpi_ocsservers';
+         $criteria['ocsservers_id']['table']       = 'glpi_plugin_ocsinventoryng_ocsservers';
          $criteria['ocsservers_id']['field']       = 'name';
          $criteria['ocsservers_id']['name']        = _n('OCSNG server', 'OCSNG servers', 1);
          $criteria['ocsservers_id']['linkfield']   = '';
