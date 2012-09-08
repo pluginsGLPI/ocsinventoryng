@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-17 14:22+0200\n"
-"PO-Revision-Date: 2012-07-17 12:46+0000\n"
+"POT-Creation-Date: 2012-07-19 21:20+0200\n"
+"PO-Revision-Date: 2012-07-19 19:20+0000\n"
 "Last-Translator: DOMBRE Julien <moyo@indepnet.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: sl_SI\n"
-"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3)\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);\n"
 
 #: hook.php:920
 msgid "Restart import"
@@ -75,8 +75,9 @@ msgid "GLPI import date"
 msgstr ""
 
 #: hook.php:1223 inc/notimported.class.php:79 inc/notimported.class.php:264
-msgid "Last OCSNG inventory"
-msgstr ""
+#: inc/ocslink.class.php:126 inc/ocsserver.class.php:2774
+msgid "Last OCSNG inventory date"
+msgstr "Zadnji OCS inventory datum"
 
 #: hook.php:1232
 msgid "Automatic update OCSNG"
@@ -103,7 +104,7 @@ msgstr "Register"
 
 #: hook.php:1260 hook.php:1267
 #, php-format
-msgid "%1$s:$2$s"
+msgid "%1$s: $2$s"
 msgstr ""
 
 #: hook.php:1260
@@ -140,6 +141,11 @@ msgstr ""
 
 #: front/config.form.php:75
 msgid "Number of processed computers"
+msgstr ""
+
+#: front/config.php:43 inc/ocsserver.class.php:103 inc/ocsserver.class.php:252
+#: inc/ruleimportcomputer.class.php:97
+msgid "OCSNG server"
 msgstr ""
 
 #: front/detail.php:38 inc/ocsserver.class.php:300 inc/ocsserver.class.php:301
@@ -285,6 +291,11 @@ msgstr ""
 msgid "Computers not imported by automatic task"
 msgstr ""
 
+#: inc/notificationtargetnotimported.class.php:80
+#: inc/ruleimportcomputer.class.php:102
+msgid "OCSNG TAG"
+msgstr ""
+
 #: inc/notificationtargetnotimported.class.php:82
 msgid "Computers not impmorted by automatic task"
 msgstr ""
@@ -334,10 +345,6 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 msgstr[3] ""
-
-#: inc/ocslink.class.php:126 inc/ocsserver.class.php:2774
-msgid "Last OCSNG inventory date"
-msgstr "Zadnji OCS inventory datum"
 
 #: inc/ocslink.class.php:129
 msgid "Date of import in GLPI"
@@ -804,7 +811,7 @@ msgid "%d registry key found"
 msgstr ""
 
 #: inc/registrykey.class.php:97
-msgid "OCSNG Nname"
+msgid "OCSNG Name"
 msgstr ""
 
 #: inc/registrykey.class.php:98
