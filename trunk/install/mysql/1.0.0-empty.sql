@@ -132,6 +132,29 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_registrykeys` (
   KEY `computers_id` (`computers_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+### Dump table glpi_networkports
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_networkports`;
+CREATE TABLE `glpi_plugin_ocsinventoryng_networkports` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `networkports_id` int(11) NOT NULL DEFAULT '0',
+  `networkinterface_name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `MIB` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `netpoints_id` int(11) NOT NULL DEFAULT '0',
+  `ip` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `netmask` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `gateway` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `subnet` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `invalid_ip` tinyint(1) NOT NULL DEFAULT '0',
+  `invalid_network_interface` tinyint(1) NOT NULL DEFAULT '0',
+  `comment` text COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `networkports_id` (`networkports_id`),
+  KEY `networkinterface_name` (`networkinterface_name`),
+  KEY `netpoints_id` (`netpoints_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
 INSERT INTO `glpi_plugin_ocsinventoryng_ocsservers` VALUES ('1','localhost','ocs','ocs','localhost','ocsweb','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','',NULL,'0','1',NULL,'',NULL,NULL,'1','1','0','0',NULL);
 
 INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginOcsinventoryngOcsServer','3','1','0');
