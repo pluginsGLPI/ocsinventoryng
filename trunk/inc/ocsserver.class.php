@@ -718,7 +718,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
            "<br>". __('This option is taken into account during manual link and by synchronization scripts."');
 
       echo "<p class='submit'><input type='submit' name='update_server' class='submit' value='" .
-             _sx('Button', 'Post') . "'></p>";
+             _sx('button', 'Post') . "'></p>";
       Html::closeForm();
       echo "</div>";
    }
@@ -3364,8 +3364,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $prevalue = $devicetype.self::FIELD_SEPARATOR;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
-      $types      = Computer_Device::getDeviceTypes();
-      $CompDevice = new Computer_Device($types[$devicetype]);
+      $types      = Item_Devices::getDeviceTypes();
+      $CompDevice = new Item_Devices($types[$devicetype]);
       $do_clean   = false;
 
       switch ($devicetype) {

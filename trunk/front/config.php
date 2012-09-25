@@ -34,11 +34,11 @@ if (!defined('GLPI_ROOT')) {
 include (GLPI_ROOT . "/inc/includes.php");
 
 $plugin = new Plugin();
-	if ($plugin->isActivated("ocsinventoryng") 
+	if ($plugin->isActivated("ocsinventoryng")
          && plugin_ocsinventoryng_haveRight("ocsng", "w")) {
 
       Html::header('OCSInventory NG', "", "plugins", "ocsinventoryng");
-      
+
       // choose config server or config synchro
       echo "<table class='tab_cadre'>";
       echo "<tr><th>".__('Configuration')."</th></tr>";
@@ -53,13 +53,12 @@ $plugin = new Plugin();
       echo "</td></tr>";
       echo "</table>";
 
-	} else {
-		Html::header(__('Setup'),'',"config","plugins");
-		echo "<div align='center'><br><br>";
-		echo "<img src=\"".$CFG_GLPI["root_doc"]."/pics/warning.png\" alt=\"warning\"><br><br>";
-		echo "<b>".__('Please activate the plugin')."</b></div>";
-	}
+   } else {
+      Html::header(__('Setup'),'',"config","plugins");
+      echo "<div class='center'><br><br>";
+      echo "<img src=\"".$CFG_GLPI["root_doc"]."/pics/warning.png\" alt=\"warning\"><br><br>";
+      echo "<b>".__('Please activate the plugin')."</b></div>";
+   }
 
 Html::footer();
-
 ?>

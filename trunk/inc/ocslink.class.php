@@ -542,7 +542,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   $first = false;
                }
                $device = new $types[$type]();
-               echo "<tr class='tab_bg_1'><td align='right' width='50%'>";
+               echo "<tr class='tab_bg_1'><td class='right' width='50%'>";
                echo $device->getTypeName()."&nbsp;: $nomdev</td>";
                echo "<td class='left' width='50%'>";
                echo "<input type='checkbox' name='lockdevice[" . $key . "]'></td></tr>\n";
