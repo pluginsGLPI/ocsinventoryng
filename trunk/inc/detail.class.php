@@ -34,7 +34,8 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
 
       $tab                    = array ();
 
-      $tab['common']          = _n('Not imported computer', 'Not imported computers', 2);
+      $tab['common']          = _n('Computer not imported', 'Computers not imported', 2,
+                                   'ocsinventoryng');
 
       $tab[1]['table']        = $this->getTable();
       $tab[1]['field']        = 'ocsid';
@@ -48,17 +49,17 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
 
       $tab[3]['table']        = $this->getTable();
       $tab[3]['field']        = 'process_time';
-      $tab[3]['name']         = __('Process time');
+      $tab[3]['name']         = __('Process time', 'ocsinventoryng');
       $tab[3]['datatype']     = 'datetime';
 
       $tab[4]['table']        = $this->getTable();
       $tab[4]['field']        = 'action';
-      $tab[4]['name']         = __('Action');
+      $tab[4]['name']         = __('Action type');
       $tab[4]['searchtype']   = 'equals';
 
       $tab[5]['table']        = 'glpi_plugin_ocsinventoryng_threads';
       $tab[5]['field']        = 'processid';
-      $tab[5]['name']         = __('Process');
+      $tab[5]['name']         = __('Process', 'ocsinventoryng');
       $tab[5]['datatype']     = 'integer';
 
       $tab[6]['table']        = $this->getTable();
@@ -67,12 +68,12 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
 
       $tab[7]['table']        = $this->getTable();
       $tab[7]['field']        = 'threadid';
-      $tab[7]['name']         = __('Thread');
+      $tab[7]['name']         = __('Thread', 'ocsinventoryng');
       $tab[7]['datatype']     = 'integer';
 
       $tab[8]['table']        = $this->getTable();
       $tab[8]['field']        = 'rules_id';
-      $tab[8]['name']         = __('Rules checked');
+      $tab[8]['name']         = __('Rules checked', 'ocsinventoryng');
       $tab[8]['datatype']     = 'text';
 
       $tab[80]['table']       = 'glpi_entities';
@@ -147,18 +148,24 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
    static function getActions() {
 
       return array(PluginOcsinventoryngOcsServer::COMPUTER_FAILED_IMPORT
-                                                            => _n('Not imported computer',
-                                                                  'Not imported computers', 2),
+                                                            => _n('Computer not imported',
+                                                                  'Computers not imported', 2,
+                                                                  'ocsinventoryng'),
                    PluginOcsinventoryngOcsServer::COMPUTER_IMPORTED
-                                                            => __('Imported computers'),
+                                                            => __('Computers imported',
+                                                                  'ocsinventoryng'),
                    PluginOcsinventoryngOcsServer::COMPUTER_LINKED
-                                                            => __('Linked computers'),
+                                                            => __('Computers linked',
+                                                                  'ocsinventoryng'),
                    PluginOcsinventoryngOcsServer::COMPUTER_NOTUPDATED
-                                                            => __('Not updated computers'),
+                                                            => __('Computers not updated',
+                                                                  'ocsinventoryng'),
                    PluginOcsinventoryngOcsServer::COMPUTER_SYNCHRONIZED
-                                                            => __('Synchronized computers'),
+                                                            => __('Computers synchronized',
+                                                                  'ocsinventoryng'),
                    PluginOcsinventoryngOcsServer::COMPUTER_NOT_UNIQUE
-                                                            => __('Not unique computers'),
+                                                            => __('Computers not unique',
+                                                                  'ocsinventoryng'),
                    PluginOcsinventoryngOcsServer::COMPUTER_LINK_REFUSED
                                                             => __('Import refused by rule'));
    }

@@ -36,7 +36,8 @@ if (!defined('GLPI_ROOT')){
 class PluginOcsinventoryngNotificationTargetNotImported extends NotificationTarget {
 
    function getEvents() {
-      return array ('not_imported' => __('Computers not imported by automatic task'));
+      return array ('not_imported' => __('Computers not imported by automatic actions',
+                                         'ocsinventoryng'));
    }
 
 
@@ -77,10 +78,11 @@ class PluginOcsinventoryngNotificationTargetNotImported extends NotificationTarg
 
       $tags = array('notimported.id'           => __('ID'),
                     'notimported.url'          => __('Web link'),
-                    'notimported.tag'          => __('OCSNG TAG'),
+                    'notimported.tag'          => __('OCSNG TAG', 'ocsinventoryng'),
                     'notimported.name'         => __('Name'),
-                    'notimported.action'       => __('Computers not imported by automatic task'),
-                    'notimported.ocsid'        => __('OCSNG ID'),
+                    'notimported.action'       => __('Computers not imported by automatic actions',
+                                                     'ocsinventoryng'),
+                    'notimported.ocsid'        => __('OCSNG ID', 'ocsinventoryng'),
                     'notimported.deviceid'     => __('Device ID'),
                     'notimported.reason'       => __('Reject cause'),
                     'notimported.serial'       => __('Serial number'));
@@ -92,5 +94,4 @@ class PluginOcsinventoryngNotificationTargetNotImported extends NotificationTarg
       asort($this->tag_descriptions);
    }
 }
-
 ?>

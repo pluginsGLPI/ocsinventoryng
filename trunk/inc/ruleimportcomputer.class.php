@@ -62,8 +62,7 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
 
 
    function getTitle() {
-
-      return __('Rules for import and link computers');
+      return __('Rules for import and link computers', 'ocsinventoryng');
    }
 
 
@@ -78,14 +77,17 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
       $criterias = array();
       $criterias['entities_id']['table']         = 'glpi_entities';
       $criterias['entities_id']['field']         = 'entities_id';
-      $criterias['entities_id']['name']          = sprintf(__('%1$s: %2$s'), __('Computer to import'),
-                                                           __('target entity for the computer'));
+      $criterias['entities_id']['name']          = sprintf(__('%1$s: %2$s'),
+                                                           __('Computer to import', 'ocsinventoryng'),
+                                                           __('target entity for the computer',
+                                                              'ocsinventoryng'));
       $criterias['entities_id']['linkfield']     = 'entities_id';
       $criterias['entities_id']['type']          = 'dropdown';
 
       $criterias['states_id']['table']           = 'glpi_states';
       $criterias['states_id']['field']           = 'name';
-      $criterias['states_id']['name']            = __('Find computers in GLPI having the status');
+      $criterias['states_id']['name']            = __('Find computers in GLPI having the status',
+                                                      'ocsinventoryng');
       $criterias['states_id']['linkfield']       = 'state';
       $criterias['states_id']['type']            = 'dropdown';
       //Means that this criterion can only be used in a global search query
@@ -94,42 +96,52 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
 
       $criterias['ocsservers_id']['table']       = 'glpi_plugin_ocsinventoryng_ocsservers';
       $criterias['ocsservers_id']['field']       = 'name';
-      $criterias['ocsservers_id']['name']        = __('OCSNG server');
+      $criterias['ocsservers_id']['name']        = __('OCSNG server, 'ocsinventoryng'');
       $criterias['ocsservers_id']['linkfield']   = '';
       $criterias['ocsservers_id']['type']        = 'dropdown';
 
-      $criterias['TAG']['name']              = sprintf(__('%1$s: %2$s'), __('Computer to import'),
-                                                       __('OCSNG TAG'));
+      $criterias['TAG']['name']              = sprintf(__('%1$s: %2$s'),
+                                                       __('Computer to import', 'ocsinventoryng'),
+                                                       __('OCSNG TAG', 'ocsinventoryng'));
 
-      $criterias['DOMAIN']['name']           = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+      $criterias['DOMAIN']['name']           = sprintf(__('%1$s: %2$s'),
+                                                       __('Computer to import', 'ocsinventoryng'),
                                                        __('Domain'));
 
       $criterias['IPSUBNET']['name']         = sprintf(__('%1$s: %2$s'), __('Computer to import'),
                                                        __('Subnet'));
 
-      $criterias['MACADDRESS']['name']       = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+      $criterias['MACADDRESS']['name']       = sprintf(__('%1$s: %2$s'),
+                                                       __('Computer to import', 'ocsinventoryng'),
                                                        __('Mac address'));
 
-      $criterias['IPADDRESS']['name']        = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+      $criterias['IPADDRESS']['name']        = sprintf(__('%1$s: %2$s'),
+                                                       __('Computer to import', 'ocsinventoryng'),
                                                        __('IP Address'));
 
-      $criterias['name']['name']             = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+      $criterias['name']['name']             = sprintf(__('%1$s: %2$s'),
+                                                       __('Computer to import', 'ocsinventoryng'),
                                                        __("Computer's name"));
+
       $criterias['name']['allow_condition'] = array(Rule::PATTERN_IS, Rule::PATTERN_IS_NOT,
                                                     Rule::PATTERN_IS_EMPTY, Rule::PATTERN_FIND);
 
-      $criterias['DESCRIPTION']['name']      = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+      $criterias['DESCRIPTION']['name']      = sprintf(__('%1$s: %2$s'),
+                                                       __('Computer to import', 'ocsinventoryng'),
                                                        __('Description'));
 
-      $criterias['serial']['name']           = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+      $criterias['serial']['name']           = sprintf(__('%1$s: %2$s'),
+                                                       __('Computer to import', 'ocsinventoryng'),
                                                        __('Serial number'));
 
       // Model as Text to allow text criteria (contains, regex, ...)
-      $criterias['model']['name']            = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+      $criterias['model']['name']            = sprintf(__('%1$s: %2$s'),
+                                                       __('Computer to import', 'ocsinventoryng'),
                                                        __('Model'));
 
       // Manufacturer as Text to allow text criteria (contains, regex, ...)
-      $criterias['manufacturer']['name']     = sprintf(__('%1$s: %2$s'), __('Computer to import'),
+      $criterias['manufacturer']['name']     = sprintf(__('%1$s: %2$s'),
+                                                       __('Computer to import', 'ocsinventoryng'),
                                                        __('Manufacturer'));
 
       return $criterias;
@@ -139,10 +151,10 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
    function getActions() {
 
       $actions = array();
-      $actions['_fusion']['name']        = __('OCSNG link');
+      $actions['_fusion']['name']        = _n('OCSNG link', 'OCSNG links', 1, 'ocsinventoryng');
       $actions['_fusion']['type']        = 'fusion_type';
 
-      $actions['_ignore_import']['name'] = __('To be unaware of import');
+      $actions['_ignore_import']['name'] = __('To be unaware of import', 'ocsinventoryng');
       $actions['_ignore_import']['type'] = 'yesonly';
 
       return $actions;
@@ -151,8 +163,9 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
 
    static function getRuleActionValues() {
 
-      return array(self::RULE_ACTION_LINK_OR_IMPORT    => __('Link if possible'),
-                   self::RULE_ACTION_LINK_OR_NO_IMPORT => __('Link if possible, otherwise imports declined'));
+      return array(self::RULE_ACTION_LINK_OR_IMPORT    => __('Link if possible', 'ocsinventoryng'),
+                   self::RULE_ACTION_LINK_OR_NO_IMPORT => __('Link if possible, otherwise imports declined',
+                                                             'ocsinventoryng'));
    }
 
 
@@ -192,8 +205,8 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
    **/
    static function addMoreCriteria($criterion='') {
 
-      return array(Rule::PATTERN_FIND     => __('is already present in GLPI'),
-                   Rule::PATTERN_IS_EMPTY => __('is empty in GLPI'));
+      return array(Rule::PATTERN_FIND     => __('is already present in GLPI', 'ocsinventoryng'),
+                   Rule::PATTERN_IS_EMPTY => __('is empty in GLPI', 'ocsinventoryng'));
    }
 
 
@@ -447,5 +460,4 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
    }
 
 }
-
 ?>

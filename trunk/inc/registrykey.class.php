@@ -41,7 +41,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
 
    static function getTypeName($nb=0) {
       // No plural
-      return __('Registry');
+      return __('Registry', 'ocsinventoryng');
    }
 
 
@@ -91,13 +91,14 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
       if ($result = $DB->query($query)) {
          if ($DB->numrows($result)!=0) {
             echo "<div class='center'><table class='tab_cadre_fixe'>";
-            echo "<tr><th colspan='4'>".sprintf(__('%d registry key found'), $DB->numrows($result));
+            echo "<tr><th colspan='4'>".sprintf(__('%d registry key found', 'ocsinventoryng'),
+                                                $DB->numrows($result));
             echo "</th></tr>\n";
 
             echo "<tr><th>".__('OCSNG Name')."</th>";
             echo "<th>".__('Hive')."</th>";
             echo "<th>".__('Path')."</th>";
-            echo "<th>".__('Key/value')."</th></tr>\n";
+            echo "<th>".__('Key/Value', 'ocsinventoryng')."</th></tr>\n";
             while ($data=$DB->fetch_assoc($result)) {
                echo "<tr class='tab_bg_1'>";
                echo "<td>".$data["ocs_name"]."</td>";
@@ -113,9 +114,9 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
             echo "</table></div>\n\n";
          } else {
             echo "<div class='center'><table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_2'><th>".__('Registry')."</th></tr>";
+            echo "<tr class='tab_bg_2'><th>".__('Registry', 'ocsinventoryng')."</th></tr>";
             echo "<tr class='tab_bg_2'>";
-            echo "<td class='center b'>".__('No key found in registry')."</td></tr>";
+            echo "<td class='center b'>".__('No key found in registry', 'ocsinventoryng')."</td></tr>";
             echo "</table></div>";
          }
       }
@@ -148,5 +149,4 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
       return true;
    }
 }
-
 ?>

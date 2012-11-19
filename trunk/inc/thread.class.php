@@ -52,7 +52,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
 
       $buttons                = array ();
       $title                  = "";
-      $buttons["thread.php"]  = __('Back to processes list');
+      $buttons["thread.php"]  = __('Back to processes list', 'ocsinventoryng');
       displayTitle("", "", $title, $buttons);
       echo "<br>";
    }
@@ -91,22 +91,21 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "<tr><th colspan='14'>".sprintf(__('%1$s: %2$s'), __('Process information'), $pid).
            "</th></tr>";
       echo "<tr>";
-      echo "<th>" . __('Thread') . "</th>";
+      echo "<th>" . __('Thread', 'ocsinventoryng') . "</th>";
       echo "<th>" . __('Status') . "</th>";
-      echo "<th>" . __('Beginning date of execution'). "</th>";
-      echo "<th>" . __('Ending date of execution') . "</th>";
-      echo "<th>" . _n('Imported computer by automatic task',
-                       'Imported computers by automatic task', 2) . "</th>";
-      echo "<th>" . __('Synchronized computers') . "</th>";
-      echo "<th>" . __('Linked computers'). "</th>";
-      echo "<th>" . _n('Not imported computer by automatic task',
-                       'Not imported computers by automatic task', 2) . "</th>";
-      echo "<th>" . _n('Not modified computer', 'Not modified computers', 2). "</th>";
-      echo "<th>" . _n('Not unique computer', 'Not unique computers', 2). "</th>";
-      echo "<th>" . _n('Refused computer', 'Refused computers', 2) . "</th>";
-      echo "<th>" . __('Process time execution') . "</th>";
-      echo "<th>" . __('Total of computers to be treated') . "</th>";
-      echo "<th>" . __('performed percentage') . "</th>";
+      echo "<th>" . __('Beginning date of execution', 'ocsinventoryng'). "</th>";
+      echo "<th>" . __('Ending date of execution', 'ocsinventoryng') . "</th>";
+      echo "<th>" . __('Computers imported by automatic actions', 'ocsinventoryng') . "</th>";
+      echo "<th>" . __('Computers synchronized',  'ocsinventoryng') . "</th>";
+      echo "<th>" . __('Computers linked',  'ocsinventoryng'). "</th>";
+      echo "<th>" . __('Computers not imported computer by automatic actions',
+                       'ocsinventoryng') . "</th>";
+      echo "<th>" . __('Computers not modified computer', 'ocsinventoryng'). "</th>";
+      echo "<th>" . __('Computers not unique', 'ocsinventoryng'). "</th>";
+      echo "<th>" . __('Computers refused', 'ocsinventoryng') . "</th>";
+      echo "<th>" . __('Process time execution', 'ocsinventoryng') . "</th>";
+      echo "<th>" . __('Total of computers to be treated', 'ocsinventoryng') . "</th>";
+      echo "<th>" . __('performed percentage', 'ocsinventoryng') . "</th>";
       echo "</th></tr>";
 
       if ($DB->numrows($result)) {
@@ -162,7 +161,8 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       }
       echo "<tr class='tab_bg_2'>";
       echo "<td colspan='14' class='center'>".sprintf(__('%1$s: %2$s'),
-                                                      __('Total of treated computers'), $total) .
+                                                      __('Total of treated computers', 'ocsinventoryng'),
+                                                      $total) .
            "</td></tr>";
 
       if (($config->fields["delay_refresh"] > 0) && !$finished) {
@@ -277,24 +277,23 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "<div class='center'>";
       echo "<form name='processes' id='processes' action='$target' method='post'>";
       echo "<table class='tab_cadrehov'>";
-      echo "<tr><th colspan='16'>" . __('Processes execution of automatic task') . "</th></tr>";
+      echo "<tr><th colspan='16'>".__('Processes execution of automatic action', 'ocsinventoryng') .
+           "</th></tr>";
       echo "<tr>";
       echo"<th>&nbsp;</th>";
       echo"<th>&nbsp;</th>";
       echo"<th>".__('Status')."</th>";
-      echo"<th>".__('Number of threads')."</th>";
-      echo"<th>".__('Beginning date of execution')."</th>";
-      echo"<th>".__('Ending date of execution')."</th>";
-      echo"<th>"._n('Imported computer by automatic task', 'Imported computers by automatic task', 2).
-          "</th>";
-      echo"<th>".__('Synchronized computers') ."</th>";
-      echo"<th>".__('Linked computers')."</th>";
-      echo"<th>"._n('Not imported computer by automatic task',
-                    'Not imported computers by automatic task', 2)."</th>";
-      echo"<th>"._n('Not modified computer', 'Not modified computers', 2)."</th>";
-      echo"<th>"._n('Not unique computer', 'Not unique computers', 2)."</th>";
-      echo"<th>"._n('Refused computer', 'Refused computers', 2) . "</th>";
-      echo"<th>".__('Process time execution')."</th>";
+      echo"<th>".__('Number of threads', 'ocsinventoryng')."</th>";
+      echo"<th>".__('Beginning date of execution', 'ocsinventoryng')."</th>";
+      echo"<th>".__('Ending date of execution', 'ocsinventoryng')."</th>";
+      echo"<th>".__('Computers imported computer by an automatic action', 'ocsinventoryng')."</th>";
+      echo"<th>".__('Computers synchronized', 'ocsinventoryng') ."</th>";
+      echo"<th>".__('Computers linked', 'ocsinventoryng')."</th>";
+      echo"<th>".__('Computers not imported computer by automatic actions', 'ocsinventoryng')."</th>";
+      echo"<th>".__('Computers not modified', 'ocsinventoryng')."</th>";
+      echo"<th>".__('Computers not unique', 'ocsinventoryng')."</th>";
+      echo"<th>".__('Computers refused computer', 'ocsinventoryng') . "</th>";
+      echo"<th>".__('Process time execution', 'ocsinventoryng')."</th>";
       echo"<th>".__('Server')."</th>";
       echo"<th>&nbsp;</th>";
       echo "</th></tr>\n";
@@ -385,7 +384,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
 
       if ($canedit) {
          Html::openArrowMassives("processes");
-         Html::closeArrowMassives(array("delete_processes" => __('Delete')));
+         Html::closeArrowMassives(array("delete_processes" => __x('Delete permanently')));
       }
    }
 
@@ -413,7 +412,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
       echo "<td class='right' colspan='6'>" . __('Minimum') .
-             "<br />" . __('Maximum') .
+             "<br />" . __('Maximum', 'ocsinventoryng') .
              "<br />" . __('Average') .
              "<br />" . __('Total') . "</td>";
       echo "<td class='center'>" . $imported->GetMinimum() .
@@ -456,7 +455,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                                + $notunique->getTotal())
                               /$time->GetTotal(), 2),
                        //TRANS: means computers by second
-                       __('pc/s'))."</td>";
+                       __('pc/s', 'ocsinventoryng'))."</td>";
       } else {
          echo "<td>&nbsp;</td><td>&nbsp;</td>";
       }
@@ -475,7 +474,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       $size = filesize($fic);
 
       if ($size > 20000) {
-         $logfile = file_get_contents($fic,0,NULL,$size-20000,20000);
+         $logfile = file_get_contents($fic, 0, NULL, $size-20000,20000);
          $events  = explode("\n", $logfile);
          // Remove fist partial event
          array_shift($events);
@@ -560,8 +559,8 @@ class PluginOcsinventoryngThread extends CommonDBTM {
 
       switch ($name) {
          case "CleanOldThreads" :
-            return array('description' => __('Clean processes'),
-                         'parameter'   => __('Delete processes after'));
+            return array('description' => __('Clean processes', 'ocsinventoryng'),
+                         'parameter'   => __('Delete processes after', 'ocsinventoryng'));
       }
       return array();
    }

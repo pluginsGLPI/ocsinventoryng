@@ -52,8 +52,8 @@ if (!isset($_POST["clean_ok"])) {
    if (count($_POST['toclean']) > 0) {
       PluginOcsinventoryngOcsServer::cleanLinksFromList($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                         $_POST['toclean']);
-      echo "<div class='center b'>".__('Clean links between GLPI and OCSNG')."<br>".
-             __('Successful')."<br>";
+      echo "<div class='center b'>".__('Clean links between GLPI and OCSNG', 'ocsinventoryng').
+            "<br>". __('Operation successful')."<br>";
       displayBackLink();
       echo "</div>";
    }

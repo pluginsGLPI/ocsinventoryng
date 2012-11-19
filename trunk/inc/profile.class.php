@@ -72,7 +72,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
 
       if ($item->getType()=='Profile' && $item->getField('interface')!='helpdesk') {
-         return __('OCSNG Mode');
+         return __('OCSNG Mode', 'ocsinventoryng');
       }
       return '';
    }
@@ -191,13 +191,13 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
       echo "<td>"._n('Server', 'Servers', 2)."</td><td>";
       Profile::dropdownNoneReadWrite("ocsng", $this->fields["ocsng"], 1, 0, 1);
       echo "</td>";
-      echo "<td>".__('Manually synchronization')."</td><td>";
+      echo "<td>".__('Manually synchronization', 'ocsinventoryng')."</td><td>";
       Profile::dropdownNoneReadWrite("sync_ocsng", $this->fields["sync_ocsng"], 1, 0, 1);
       echo "</td></tr>\n";
       echo "<tr class='tab_bg_2'>";
-      echo "<td>".__('See information')."</td><td>";
+      echo "<td>".__('See information', 'ocsinventoryng')."</td><td>";
       Profile::dropdownNoneReadWrite("view_ocsng", $this->fields["view_ocsng"], 1, 1, 0);
-      echo "<td>".__('Clean links between GLPI and OCSNG')."</td><td>";
+      echo "<td>".__('Clean links between GLPI and OCSNG', 'ocsinventoryng')."</td><td>";
       Profile::dropdownNoneReadWrite("clean_ocsng", $this->fields["clean_ocsng"], 1, 1, 1);
       echo "</td></tr>\n";
 

@@ -42,7 +42,7 @@ function configHeader() {
    echo "<tr><th colspan='2'>" . __('?????') . "</th></tr>";
    echo "<tr class='tab_bg_1'><td class='center'>";
    echo "<a href='https://forge.indepnet.net/projects/ocsinventoryng/wiki' target='_blank'>" .
-          __('Use mode') . "</a></td></tr>";
+          __('Use mode', 'ocsinventoryng') . "</a></td></tr>";
 }
 
 $config = new PluginOcsinventoryngConfig();
@@ -60,22 +60,24 @@ if (isset($_POST["soft_unlock"])) {
 
 $plugin = new Plugin();
 if ($plugin->isInstalled("ocsinventoryng") && $plugin->isActivated("ocsinventoryng")) {
-   Html::header(__('History of automatic tasks'), "", "plugins", "ocsinventoryng", "config");
+   Html::header(__('History of automatic actions', 'ocsinventoryng'), "", "plugins",
+                "ocsinventoryng", "config");
 
    if (!countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers")) {
       configHeader();
-      echo "<tr class='tab_bg_2'><td class='center'>". __('No server configured');
+      echo "<tr class='tab_bg_2'><td class='center'>". __('No server configured',  'ocsinventoryng');
       echo "<a href='".getItemTypeSearchURL("PluginOcsinventoryngOcsServer")."'>".
-             __('Configuration')."</a></th></tr>";
+             __('Configuration', 'ocsinventoryng')."</a></th></tr>";
       echo "</table></div>";
    } else {
       $config->showConfigForm($_SERVER['PHP_SELF']);
    }
 } else {
-   Html::header(__('Number of processed computers'), "", "plugins", "ocsinventoryng", "config");
+   Html::header(__('Number of processed computers', 'ocsinventoryng'), "", "plugins",
+                "ocsinventoryng", "config");
    echo "<div class='center'><br><br>";
-   echo "<img src=\"" . $CFG_GLPI["root_doc"] . "/pics/warning.png\" alt=\"warning\"><br><br>";
-   echo "<b>Please activate the plugin</b></div>";
+   echo "<img src=\"" . $CFG_GLPI["root_doc"] . "/pics/warning.png\" alt='".__s('Warning')."'><br><br>";
+   echo "<b>__('Please activate the plugin', 'ocsinventoryng')</b></div>";
 }
 
 Html::footer();

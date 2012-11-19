@@ -42,11 +42,10 @@ if (!defined('GLPI_ROOT')) {
 class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
 
    function cleanForOcsServer($ID) {
-      
+
       $temp = new self();
       $temp->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $ID));
 
    }
 }
-
 ?>

@@ -44,7 +44,7 @@ $plugin = new Plugin();
       echo "<tr><th>".__('Configuration')."</th></tr>";
       echo "<tr class='tab_bg_1'><td class='center b'>";
       echo "<a href='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsserver.php'>".
-             __('OCSNG server')."</a>";
+             __('OCSNG server', 'ocsinventoryng')."</a>";
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'><td class='center b'>";
@@ -56,8 +56,8 @@ $plugin = new Plugin();
    } else {
       Html::header(__('Setup'),'',"config","plugins");
       echo "<div class='center'><br><br>";
-      echo "<img src=\"".$CFG_GLPI["root_doc"]."/pics/warning.png\" alt=\"warning\"><br><br>";
-      echo "<b>".__('Please activate the plugin')."</b></div>";
+      echo "<img src=\"".$CFG_GLPI["root_doc"]."/pics/warning.png\" alt='".__s('Warning')."'><br><br>";
+      echo "<b>".__('Please activate the plugin', 'ocsinventoryng')."</b></div>";
    }
 
 Html::footer();

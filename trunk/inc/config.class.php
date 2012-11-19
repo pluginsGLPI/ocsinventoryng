@@ -86,16 +86,16 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       $this->showFormHeader();
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td class='right' colspan='2'> " .__('Default OCSNG server')."</td>";
+      echo "<td class='right' colspan='2'> " .__('Default OCSNG server', 'ocsinventoryng')."</td>";
       echo "<td colspan='2'>&nbsp;&nbsp;&nbsp;";
       Dropdown::showFromArray("plugin_ocsinventoryng_ocsservers_id", $this->getAllOcsServers(),
                               array('value' => $this->fields["plugin_ocsinventoryng_ocsservers_id"]));
       echo "</td></tr>";
 
-      echo "<tr><th colspan='4'>" . __('Display')."</th></tr>";
+      echo "<tr><th colspan='4'>" . __('Display', 'ocsinventoryng')."</th></tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td> " .__('Show processes where nothing was changed') . " </td><td>";
+      echo "<td> " .__('Show processes where nothing was changed', 'ocsinventoryng') . " </td><td>";
       Dropdown::showYesNo("is_displayempty", $this->fields["is_displayempty"]);
       echo "</td>";
       echo "<td rowspan='3' class='middle right'> " .__('Comments')."</td>";
@@ -104,15 +104,15 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td> " .__('Authorize the OCSNG update') . " </td><td>";
+      echo "<td> " .__('Authorize the OCSNG update', 'ocsinventoryng') . " </td><td>";
       Dropdown::showYesNo('allow_ocs_update',$this->fields['allow_ocs_update']);
       echo "</td>";
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td> " .__('Refresh information of a process every') . " </td><td>";
+      echo "<td> " .__('Refresh information of a process every', 'ocsinventoryng') . " </td><td>";
       Html::autocompletionTextField($this,"delay_refresh", array('size' => 5));
-      echo "&nbsp;"._n('second', 'seconds', 2)."</td>";
+      echo "&nbsp;"._n('second', 'seconds', 2, 'ocsinventoryng')."</td>";
       echo "</tr>";
 
       $this->showFormButtons(array('canedit' => true,
@@ -129,22 +129,22 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "<input type='hidden' name='id' value='1'>";
       echo "<table class='tab_cadre'>";
       echo "<tr class='tab_bg_2'>";
-      echo "<th>&nbsp;" . __('Check OCSNG import script')."&nbsp;</th></tr>";
+      echo "<th>&nbsp;" . __('Check OCSNG import script', 'ocsinventoryng')."&nbsp;</th></tr>";
 
       echo "<tr class='tab_bg_2'>";
       echo "<td class='center'>";
       $status = $this->isScriptLocked();
       if (!$status) {
-         echo __('Lock not activated')."&nbsp;<img src='../pics/export.png'>";
+         echo __('Lock not activated', 'ocsinventoryng')."&nbsp;<img src='../pics/export.png'>";
       } else {
-         echo __('Lock activated')."&nbsp;<img src='../pics/ok2.png'>";
+         echo __('Lock activated', 'ocsinventoryng')."&nbsp;<img src='../pics/ok2.png'>";
       }
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td colspan='2' class='center'>";
       echo "<input type='submit' name='".(!$status?"soft_lock":"soft_unlock")."' class='submit' ".
-            "value='".(!$status?_sx('button','Lock')
-                               :_sx('button', 'Unlock'))."'>";
+            "value='".(!$status?_sx('button', 'Lock', 'ocsinventoryng')
+                               :_sx('button', 'Unlock', 'ocsinventoryng'))."'>";
       echo "</td/></tr/></table><br>";
       Html::closeForm();
       echo "</div>";

@@ -58,8 +58,7 @@ class PluginOcsinventoryngRuleImportComputerCollection extends RuleCollection {
 
 
    function getTitle() {
-
-      return __('Rules for import and link computers');
+      return __('Rules for import and link computers', 'ocsinventoryng');
    }
 
 
@@ -95,5 +94,4 @@ class PluginOcsinventoryngRuleImportComputerCollection extends RuleCollection {
    }
 
 }
-
 ?>

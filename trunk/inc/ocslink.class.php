@@ -41,7 +41,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
 
    static function getTypeName($nb=0) {
-      return _n('OCSNG link', 'OCSNG links', $nb);
+      return _n('OCSNG link', 'OCSNG links', $nb, 'ocsinventoryng');
    }
 
 
@@ -116,17 +116,17 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   }
 
                   if ($data_version["ocs_agent_version"] != NULL) {
-                     echo " , ".sprintf(__('%1$s: %2$s'), __('Inventory agent'),
+                     echo " , ".sprintf(__('%1$s: %2$s'), __('Inventory agent', 'ocsinventoryng'),
                                         $data_version["ocs_agent_version"]);
                   }
 
                   echo "</td>";
 
                   echo "<td class='center' colspan='2'>";
-                  printf(__('%1$s: %2$s'), __('Last OCSNG inventory date'),
+                  printf(__('%1$s: %2$s'), __('Last OCSNG inventory date', 'ocsinventoryng'),
                          Html::convDateTime($data["last_ocs_update"]));
                   echo "<br>";
-                  printf(__('%1$s: %2$s'), __('Date of import in GLPI'),
+                  printf(__('%1$s: %2$s'), __('Date of import in GLPI',  'ocsinventoryng'),
                          Html::convDateTime($data["last_update"]));
                   echo "</td></tr>";
 
@@ -137,20 +137,21 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                       && plugin_ocsinventoryng_haveRight("sync_ocsng","w")) {
 
                      $colspan = 2;
-                     echo "<td class='center'>".__('Automatic OCSNG update')."</td>";
+                     echo "<td class='center'>".__('Automatic OCSNG update', 'ocsinventoryng').
+                          "</td>";
                      echo "<td class='left'>";
                      Dropdown::showYesNo("use_auto_update", $data["use_auto_update"]);
                      echo "</td>";
                   }
                   echo "<td class='center' colspan='".$colspan."'>";
-                  printf(__('%1$s: %2$s'), __('TAG'), $data['tag']);
+                  printf(__('%1$s: %2$s'), __('OCSNG TAG', 'ocsinventoryng'), $data['tag']);
                   echo "</td></tr>";
 
                   echo "<tr class='tab_bg_1'>";
                   echo "<td class='center' colspan='4'>";
                   echo "<input type='hidden' name='link_id' value='" . $data["id"] . "'>";
                   echo "<input class=submit type='submit' name='update' value=\"" .
-                         _sx('button', 'validate')."\">";
+                         _sx('button', 'Save')."\">";
                   echo "</td></tr>";
                   echo "</table>\n";
                   Html::closeForm();
@@ -301,7 +302,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             echo "<tr class='tab_bg_1'><td class='center'>";
             echo "<input type='hidden' name='resynch_id' value='" . $data["id"] . "'>";
             echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
-                   _sx('button', 'Force synchronization'). "\">";
+                   _sx('button', 'Force synchronization', 'ocsinventoryng'). "\">";
             echo "</table>\n";
             Html::closeForm();
          }
@@ -332,7 +333,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          if (count($locked)) {
             $header = true;
-            echo "<tr><th colspan='2'>". _n('Locked field', 'Locked fields', 2)."</th></tr>\n";
+            echo "<tr><th colspan='2'>". __('Locked field', 'Locked fields', 2, 'ocsinventoryng').
+                 "</th></tr>\n";
 
             foreach ($locked as $key => $val) {
                echo "<tr class='tab_bg_1'>";
@@ -356,7 +358,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                if ($DB->numrows($resultSearchMonitor) == 0) {
                   $header = true;
                   if ($first) {
-                     echo "<tr><th colspan='2'>"._n('Locked monitor', 'Locked monitors', 2)."</th>".
+                     echo "<tr><th colspan='2'>"._n('Locked monitor', 'Locked monitors', 2,
+                                                    'ocsinventoryng')."</th>".
                           "</tr>\n";
                      $first = false;
                   }
@@ -381,7 +384,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             if ($DB->numrows($resultSearchPrinter) == 0) {
                $header = true;
                if ($first) {
-                  echo "<tr><th colspan='2'>"._n('Locked printer', 'Locked printers', 2)."</th>".
+                  echo "<tr><th colspan='2'>"._n('Locked printer', 'Locked printers', 2,
+                                                 'ocsinventoryng')."</th>".
                        "</tr>\n";
                   $first = false;
                }
@@ -405,7 +409,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             if ($DB->numrows($resultSearchPeriph) == 0) {
                $header = true;
                if ($first) {
-                  echo "<tr><th colspan='2'>"._n('Locked device', 'Locked devices', 2)."</th>".
+                  echo "<tr><th colspan='2'>"._n('Locked device', 'Locked devices', 2,
+                                                 'ocsinventoryng')."</th>".
                        "</tr>\n";
                   $first = false;
                }
@@ -438,7 +443,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                if ($DB->numrows($resultSearchIP) == 0) {
                   $header = true;
                   if ($first) {
-                     echo "<tr><th colspan='2'>" ._n('Locked IP', 'Locked IP', 2). "</th></tr>\n";
+                     echo "<tr><th colspan='2'>" ._n('Locked IP', 'Locked IP', 2, 'ocsinventoryng').
+                          "</th></tr>\n";
                      $first = false;
                   }
                   echo "<tr class='tab_bg_1'><td class='right' width='50%'>" .
@@ -464,8 +470,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                if ($DB->numrows($resultSearchSoft) == 0) {
                   $header = true;
                   if ($first) {
-                     echo "<tr><th colspan='2'>"._n('Locked software', 'Locked software', 2).
-                          "</th></tr>\n";
+                     echo "<tr><th colspan='2'>"._n('Locked software', 'Locked software', 2,
+                                                    'ocsinventoryng'). "</th></tr>\n";
                      $first = false;
                   }
                   echo "<tr class='tab_bg_1'>";
@@ -489,7 +495,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             if ($DB->numrows($resultSearchDisk) == 0) {
                $header = true;
                if ($first) {
-                  echo "<tr><th colspan='2'>" ._n('Locked disk', 'Locked disks', 2). "</th></tr>\n";
+                  echo "<tr><th colspan='2'>" ._n('Locked disk', 'Locked disks', 2, 'ocsinventoryng').
+                       "</th></tr>\n";
                   $first = false;
                }
                echo "<tr class='tab_bg_1'><td class='right' width='50%'>" . $val . "</td>";
@@ -537,8 +544,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             if (!$compdev->getFromDB($iddev)) {
                $header = true;
                if ($first) {
-                  echo "<tr><th colspan='2'>"._n('Locked component', 'Locked components', 2).
-                       "</th></tr>\n";
+                  echo "<tr><th colspan='2'>"._n('Locked component', 'Locked components', 2,
+                                                 'ocsinventoryng')."</th></tr>\n";
                   $first = false;
                }
                $device = new $types[$type]();
@@ -552,10 +559,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          if ($header) {
             echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
             echo "<input class='submit' type='submit' name='unlock' value='".
-                  _sx('button', 'Unlock'). "'></td></tr>";
+                  _sx('button', 'Unlock', 'ocsinventoryng'). "'></td></tr>";
          } else {
             echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
-            echo __('No locked field')."</td></tr>";
+            echo __('No locked field', 'ocsinventoryng')."</td></tr>";
          }
 
          echo "</table>";
@@ -578,7 +585,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          switch ($item->getType()) {
             case 'Computer' :
-               return array('1' => __('OCSNG mode'));
+               return array('1' => __('OCSNG mode', 'ocsinventoryng'));
          }
       }
       return '';
@@ -614,7 +621,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * @return Integer id of the inserted entry
    **/
    static function history($computers_id, $changes, $action) {
-      return Log::history($computers_id, 'Computer', $changes, __CLASS__, Log::HISTORY_PLUGIN+$action);
+
+      return Log::history($computers_id, 'Computer', $changes, __CLASS__,
+                          Log::HISTORY_PLUGIN+$action);
    }
 
    /**
@@ -629,21 +638,26 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       if (plugin_ocsinventoryng_haveRight('ocsng', 'r')) {
          switch($data['linked_action'] - Log::HISTORY_PLUGIN) {
             case self::HISTORY_OCS_IMPORT :
-               return sprintf(__('%1$s: %2$s'), __('Imported from OCS'), $data['new_value']);
+               return sprintf(__('%1$s: %2$s'), __('Imported from OCSNG', 'ocsinventoryng'),
+                              $data['new_value']);
 
             case self::HISTORY_OCS_DELETE :
-               return sprintf(__('%1$s: %2$s'), __('Deleted in OCSNG'), $data['old_value']);
+               return sprintf(__('%1$s: %2$s'), __('Deleted in OCSNG', 'ocsinventoryng'),
+                              $data['old_value']);
 
             case self::HISTORY_OCS_LINK :
-               return sprintf(__('%1$s: %2$s'), __('Linked with an OCSNG computer'), $data['new_value']);
+               return sprintf(__('%1$s: %2$s'), __('Linked with an OCSNG computer', 'ocsinventoryng'),
+                              $data['new_value']);
 
             case self::HISTORY_OCS_IDCHANGED :
-               return  sprintf(__('The OCSNG ID of the computer changed from %1$s to %2$s'),
-                                  $data['old_value'], $data['new_value']);
+               return  sprintf(__('The OCSNG ID of the computer changed from %1$s to %2$s',
+                                  'ocsinventoryng'),
+                               $data['old_value'], $data['new_value']);
 
             case self::HISTORY_OCS_TAGCHANGED :
-               return  sprintf(__('The OCSNG TAG of the computer changed from %1$s to %2$s'),
-                                  $data['old_value'], $data['new_value']);
+               return  sprintf(__('The OCSNG TAG of the computer changed from %1$s to %2$s',
+                                  'ocsinventoryng'),
+                               $data['old_value'], $data['new_value']);
          }
       }
       return '';

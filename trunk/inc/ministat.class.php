@@ -33,7 +33,7 @@
 // ----------------------------------------------------------------------
 
 class PluginOcsinventoryngMiniStat {
- 
+
    public $Min = 0;
    public $Max = 0;
    public $Tot = 0;
@@ -81,5 +81,4 @@ class PluginOcsinventoryngMiniStat {
    }
 
 }
-
 ?>

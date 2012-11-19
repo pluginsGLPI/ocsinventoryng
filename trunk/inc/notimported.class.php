@@ -37,7 +37,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
 
 
    static function getTypeName($nb=0) {
-      return _n('Not imported computer', 'Not imported computers', $nb);
+      return _n('Computer not imported', 'Computers not imported', $nb, 'ocsinventoryng');
    }
 
 
@@ -48,10 +48,10 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
                          'label' => __('Reason of rejection'),
                          'type'  => 'reason'),
                    array('name'  => 'rules_id',
-                         'label' => __('Verified rules'),
+                         'label' => __('Verified rules', 'ocsinventoryng'),
                          'type'  => 'echo_rule'),
                    array('name'  => 'ocsid',
-                         'label' => __('OCSNG ID'),
+                         'label' => __('OCSNG ID', 'ocsinventoryng'),
                          'type'  => 'echo'),
                    array('name'  => 'plugin_ocsinventoryng_ocsservers_id',
                          'label' => __('Server'),
@@ -64,10 +64,10 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
                          'label' => __('Serial number'),
                          'type'  => ($can_update?'text':'echo')),
                    array('name'  => 'tag',
-                         'label' => __('TAG'),
+                         'label' => __('OCSNG TAG', 'ocsinventoryng'),
                          'type'  => ($can_update?'text':'echo')),
                    array('name'  => 'useragent',
-                         'label' => __('Inventory agent'),
+                         'label' => __('Inventory agent', 'ocsinventoryng'),
                          'type'  => 'echo'),
                    array('name'  => 'ipaddr',
                          'label' => __('IP'),
@@ -76,7 +76,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
                          'label' => __('Domain'),
                          'type'  => 'echo'),
                    array('name'  => 'last_inventory',
-                         'label' => __('Last OCSNG inventory date'),
+                         'label' => __('Last OCSNG inventory date', 'ocsinventoryng'),
                          'type'  => 'echo_datetime'));
    }
 
@@ -94,7 +94,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
                                                                      true) != '') {
          $ong[3]  = __('OCSNG console');
       }
-      $ong[12] = __('Logs');
+      $ong[12] = _n('Log', 'Logs', 2);
       return $ong;
    }
 
@@ -213,17 +213,18 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
 
       $tab                       = array();
 
-      $tab['common']             = _n('Not imported computer', 'Not imported computers', 2);
+      $tab['common']             = _n('Computer not imported', 'Computers not imported', 2,
+                                      'ocsinventoryng');
 
       $tab[1]['table']           = $this->getTable();
       $tab[1]['field']           = 'ocsid';
       $tab[1]['linkfield']       = '';
-      $tab[1]['name']            = __('OCSNG ID');
+      $tab[1]['name']            = __('OCSNG ID', 'ocsinventoryng');
 
       $tab[2]['table']           = $this->getTable();
       $tab[2]['field']           = 'name';
       $tab[2]['linkfield']       = '';
-      $tab[2]['name']            = __('OCSNG name');
+      $tab[2]['name']            = __('OCSNG name', 'ocsinventoryng');
       $tab[2]['datatype']        = 'itemlink';
       $tab[2]['itemlink_type']   = $this->getType();
       $tab[2]['massiveaction']   = false;
@@ -231,7 +232,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
       $tab[3]['table']           = $this->getTable();
       $tab[3]['field']           = 'useragent';
       $tab[3]['linkfield']       = '';
-      $tab[3]['name']            = __('Inventory agent');
+      $tab[3]['name']            = __('Inventory agent', 'ocsinventoryng');
 
       $tab[4]['table']           = $this->getTable();
       $tab[4]['field']           = 'ocs_deviceid';
@@ -246,7 +247,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
       $tab[6]['table']           = $this->getTable();
       $tab[6]['field']           = 'tag';
       $tab[6]['linkfield']       = '';
-      $tab[6]['name']            = __('TAG');
+      $tab[6]['name']            = __('OCSNG TAG', 'ocsinventoryng');
 
       $tab[7]['table']           = $this->getTable();
       $tab[7]['field']           = 'ipaddr';
@@ -261,7 +262,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
       $tab[9]['table']           = $this->getTable();
       $tab[9]['field']           = 'last_inventory';
       $tab[9]['linkfield']       = '';
-      $tab[9]['name']            = __('Last OCSNG inventory date');
+      $tab[9]['name']            = __('Last OCSNG inventory date', 'ocsinventoryng');
       $tab[9]['datatype']        = 'datetime';
 
       $tab[10]['table']          = $this->getTable();
@@ -390,13 +391,13 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
 
       switch ($reason) {
          case PluginOcsinventoryngOcsServer::COMPUTER_FAILED_IMPORT :
-            return __("Can't affect an entity");
+            return __("Can't affect an entity", 'ocsinventoryng');
 
          case PluginOcsinventoryngOcsServer::COMPUTER_NOT_UNIQUE :
-            return __('Unicity criteria not verified');
+            return __('Unicity criteria not verified', 'ocsinventoryng');
 
          case PluginOcsinventoryngOcsServer::COMPUTER_LINK_REFUSED :
-            return __('Import refused by rule');
+            return __('Import refused by rule', 'ocsinventoryng');
 
          default:
                return "";
@@ -413,13 +414,14 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
       echo "<form name='actions' id='actions' method='post' value='".getItemTypeFormURL(__CLASS__)."'>";
       echo "<table class='tab_cadre_fixe'>";
       echo "<tr class='tab_bg_2'>";
-      echo "<th class='center'>".__('Actions to be made on the computer')."</th></tr>";
+      echo "<th class='center'>".__('Actions to be made on the computer', 'ocsinventoryng').
+           "</th></tr>";
 
       echo "<tr class='tab_bg_2'><td class='center'>";
       echo "<input type='hidden' name='id' value='".$notimported->fields['id']."'>";
       echo "<input type='hidden' name='action' value='massive'>";
       Dropdown::showForMassiveAction('PluginOcsinventoryngNotimported', 0,
-                                     array('action'=>'massive'));
+                                     array('action' => 'massive'));
       echo "</td></tr>";
       echo "</table>";
       Html::closeForm();
@@ -578,7 +580,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
             }
          } else {
             logDebug(__('%1$s: %2$s')."\n", Dropdown::getDropdownName("glpi_entities", $entity),
-                     __('Send OCSNG not imported computers alert failed'));
+                     __('Send OCSNG not imported computers alert failed', 'ocsinventoryng'));
          }
       }
    }

@@ -66,5 +66,4 @@ class PluginOcsinventoryngDBocs extends DBmysql {
    }
 
 }
-
 ?>

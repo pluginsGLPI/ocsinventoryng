@@ -55,7 +55,7 @@ if (isset($_SESSION["glpipopup"]["name"])) {
          include GLPI_ROOT . "/front/rule.cache.php";
          break;
    }
-   echo "<div class='center'><br><a href='javascript:window.close()'>"._x('button', 'Close')."</a>";
+   echo "<div class='center'><br><a href='javascript:window.close()'>".__('Close')."</a>";
    echo "</div>";
    popFooter();
 }
