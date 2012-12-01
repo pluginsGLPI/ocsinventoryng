@@ -94,11 +94,11 @@ function plugin_init_ocsinventoryng() {
          $PLUGIN_HOOKS['config_page']['ocsinventoryng']              = 'front/config.php';
          $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['config']  = 'front/config.php';
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['ocsserver']['title']
-               = __s("OCSNG server 's configuration");
+               = __s("OCSNG server 's configuration", 'ocsinventoryng');
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['ocsserver']['page']
                = '/plugins/ocsinventoryng/front/ocsserver.php';
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['config']['title']
-               = __s("Automatic synchronization's configuration");
+               = __s("Automatic synchronization's configuration", 'ocsinventoryng');
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['config']['page']
                = '/plugins/ocsinventoryng/front/config.form.php';
 
@@ -128,17 +128,17 @@ function plugin_init_ocsinventoryng() {
                = '/plugins/ocsinventoryng/front/ocsng.link.php';
 
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['thread']['title']
-               = __s('Scripts execution of automatic task');
+               = __s('Scripts execution of automatic actions', 'ocsinventoryng');
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['thread']['page']
                = '/plugins/ocsinventoryng/front/thread.php';
 
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['detail']['title']
-               = __('Computers imported by automatic task');
+               = __('Computers imported by automatic actions', 'ocsinventoryng');
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['detail']['page']
                = '/plugins/ocsinventoryng/front/detail.php';
 
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['notimported']['title']
-               = __s('Computers not imported by automatic task');
+               = __s('Computers not imported by automatic actions', 'ocsinventoryng');
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['notimported']['page']
                = '/plugins/ocsinventoryng/front/notimported.php';
 

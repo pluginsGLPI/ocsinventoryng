@@ -47,7 +47,7 @@ if (isset ($_SESSION["ocs_update"])) {
 }
 if (isset($_POST["plugin_ocsinventoryng_ocsservers_id"])) {
    $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = $_POST["plugin_ocsinventoryng_ocsservers_id"];
-} elseif (!isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
+} else if (!isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
    $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = PluginOcsinventoryngOcsServer::getFirstServer();
 }
 

@@ -5866,7 +5866,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             $item = new Computer;
             if ($item->getFromDB($output["found_computers"][0])) {
                echo "<td>".__('Link with computer')."</td>";
-               echo "<td>".$item->getLink(true)."</td>";
+               echo "<td>".$item->getLink(array('comments' => true))."</td>";
             }
             echo "</tr>";
          }

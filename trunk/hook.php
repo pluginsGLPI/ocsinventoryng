@@ -1510,7 +1510,7 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
 
          if (isset($params['values']['params']['ocsid'])) {
             $ocsid = $params['values']['params']['ocsid'];
-         } elseif ($params['values']['input']['id']) {
+         } else if ($params['values']['input']['id']) {
             $ocsid = $params['values']['input']['id'];
          }
 
