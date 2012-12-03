@@ -3203,7 +3203,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                echo "</td></tr>\n";
             }
 
-            echo "<tr class='tab_bg_1'><td colspan='" . ($advanced ? 8 : 5) . "' class='center'>";
+            echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
             echo "<input class='submit' type='submit' name='import_ok' value=\"".
                    _sx('button', 'Import', 'ocsinventoryng')."\">\n";
             echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' ".
