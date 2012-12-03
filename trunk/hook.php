@@ -1476,7 +1476,9 @@ function plugin_ocsinventoryng_getRuleCriteria($params) {
  */
 function plugin_ocsinventoryng_getRuleActions($params) {
    global $LANG;
-
+   
+   $actions = array();
+   
    switch ($params['rule_itemtype']) {
       case 'RuleImportEntity':
          $actions['_affect_entity_by_tag']['name']          = __('Entity from TAG');
@@ -1489,6 +1491,8 @@ function plugin_ocsinventoryng_getRuleActions($params) {
          $actions['_fusion']['type']        = 'fusion_type';
       break;
    }
+   
+   return $actions;
 }
 
 /**
