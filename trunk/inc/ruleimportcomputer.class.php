@@ -47,7 +47,7 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
 
    // From Rule
    //TODO : how change this ?
-   public $right    = 'rule_ocs';
+   static public $right    = 'rule_ocs';
    public $can_sort = true;
 
 
@@ -96,7 +96,7 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
 
       $criterias['ocsservers_id']['table']       = 'glpi_plugin_ocsinventoryng_ocsservers';
       $criterias['ocsservers_id']['field']       = 'name';
-      $criterias['ocsservers_id']['name']        = __('OCSNG server, 'ocsinventoryng'');
+      $criterias['ocsservers_id']['name']        = __('OCSNG server', 'ocsinventoryng');
       $criterias['ocsservers_id']['linkfield']   = '';
       $criterias['ocsservers_id']['type']        = 'dropdown';
 
@@ -460,4 +460,5 @@ class PluginOcsinventoryngRuleImportComputer extends Rule {
    }
 
 }
+
 ?>

@@ -276,16 +276,16 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                <a href='ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsserver.png' ".
-                  "alt='"._s("OCSNG server 's configuration", 'ocsinventoryng')."' ".
-                  "title=\""._s("OCSNG server 's configuration", 'ocsinventoryng')."\">
+                  "alt='".__s("OCSNG server 's configuration", 'ocsinventoryng')."' ".
+                  "title=\"".__s("OCSNG server 's configuration", 'ocsinventoryng')."\">
                 <br>".sprintf(__("Configuration of OCSNG server %s"), $name, 'ocsinventoryng')."
                </a></td>";
          //config massimport
          echo "<td class='center b' colspan='2'>
                <a href='config.form.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro.png' ".
-                  "alt='"._s("Automatic synchronization's configuration", 'ocsinventoryng')."' ".
-                  "title=\""._s("Automatic synchronization's configuration", 'ocsinventoryng')."\">
+                  "alt='".__s("Automatic synchronization's configuration", 'ocsinventoryng')."' ".
+                  "title=\"".__s("Automatic synchronization's configuration", 'ocsinventoryng')."\">
                   <br>".__("Automatic synchronization's configuration", 'ocsinventoryng')."
                </a></td></tr>";
 
@@ -293,16 +293,16 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                <a href='ocsng.import.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' ".
-                  "alt='"._s('Import new computers', 'ocsinventoryng')."' ".
-                  "title=\""._s('Import new computers', 'ocsinventoryng')."\">
+                  "alt='".__s('Import new computers', 'ocsinventoryng')."' ".
+                  "title=\"".__s('Import new computers', 'ocsinventoryng')."\">
                   <br>".__('Import new computers', 'ocsinventoryng')."
                </a></td>";
          //threads
          echo "<td class='center b' colspan='2'>
                <a href='thread.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/thread.png' ".
-                  "alt='"._s('Scripts execution of automatic actions', 'ocsinventoryng'). "' ".
-                  "title=\"" . _s('Scripts execution of automatic actions', 'ocsinventoryng') . "\">
+                  "alt='".__s('Scripts execution of automatic actions', 'ocsinventoryng'). "' ".
+                  "title=\"" . __s('Scripts execution of automatic actions', 'ocsinventoryng') . "\">
                   <br>".__('Scripts execution of automatic actions', 'ocsinventoryng')."
                </a></td></tr>";
 
@@ -310,16 +310,16 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                <a href='ocsng.sync.php'>
                 <img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/synchro1.png' ".
-                  "alt='" ._s('Synchronize computers already imported', 'ocsinventoryng'). "' ".
-                  "title=\"" ._s('Synchronize computers already imported', 'ocsinventoryng'). "\">
+                  "alt='" .__s('Synchronize computers already imported', 'ocsinventoryng'). "' ".
+                  "title=\"" .__s('Synchronize computers already imported', 'ocsinventoryng'). "\">
                   <br>".__('Synchronize computers already imported', 'ocsinventoryng')."
                </a></td>";
          //host imported by thread
          echo "<td class='center b' colspan='2'>
                <a href='detail.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/detail.png' ".
-                  "alt='" ._s('Computers imported by automatic actions', 'ocsinventoryng'). "' ".
-                  "title=\"" ._s('Computers imported by automatic actions', 'ocsinventoryng'). "\">
+                  "alt='" .__s('Computers imported by automatic actions', 'ocsinventoryng'). "' ".
+                  "title=\"" .__s('Computers imported by automatic actions', 'ocsinventoryng'). "\">
                   <br>".__('Computers imported by automatic actions', 'ocsinventoryng')."
                </a></td></tr>";
 
@@ -327,9 +327,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                <a href='ocsng.link.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' ".
-                  "alt='" ._s('Link new OCSNG computers to existing GLPI computers',
+                  "alt='" .__s('Link new OCSNG computers to existing GLPI computers',
                               'ocsinventoryng'). "' ".
-                  "title=\"" ._s('Link new OCSNG computers to existing GLPI computers',
+                  "title=\"" .__s('Link new OCSNG computers to existing GLPI computers',
                                  'ocsinventoryng'). "\">
                   <br>".__('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng')."
                </a></td>";
@@ -337,8 +337,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<td class='center b' colspan='2'>
                <a href='notimported.php'>
                 <img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/notimported.png' ".
-                  "alt='" ._s('Computers not imported by automatic actions', 'ocsinventoryng'). "' ".
-                  "title=\"" . _s('Computers not imported by automatic actions', 'ocsinventoryng'). "\" >
+                  "alt='" .__s('Computers not imported by automatic actions', 'ocsinventoryng'). "' ".
+                  "title=\"" . __s('Computers not imported by automatic actions', 'ocsinventoryng'). "\" >
                   <br>".__('Computers not imported by automatic actions', 'ocsinventoryng')."
                </a></td></tr>";
       }
