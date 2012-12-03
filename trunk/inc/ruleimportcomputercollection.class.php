@@ -42,7 +42,7 @@ class PluginOcsinventoryngRuleImportComputerCollection extends RuleCollection {
    // From RuleCollection
    public $stop_on_first_match = true;
    //TODO : how change this ?
-   public $right               = 'rule_ocs';
+   static public $right               = 'rule_ocs';
    public $menu_option         = 'linkcomputer';
 
    // Specific ones
