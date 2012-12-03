@@ -1357,28 +1357,28 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   self::resetDropdown($computers_id, "operatingsystems_id", "glpi_operatingsystems");
                }
                if ($cfg_ocs["import_device_processor"]) {
-                  Computer_Device::resetDevices($computers_id, 'DeviceProcessor');
+                  self::resetDevices($computers_id, 'DeviceProcessor');
                }
                if ($cfg_ocs["import_device_iface"]) {
-                  Computer_Device::resetDevices($computers_id, 'DeviceNetworkCard');
+                  self::resetDevices($computers_id, 'DeviceNetworkCard');
                }
                if ($cfg_ocs["import_device_memory"]) {
-                  Computer_Device::resetDevices($computers_id, 'DeviceMemory');
+                  self::resetDevices($computers_id, 'DeviceMemory');
                }
                if ($cfg_ocs["import_device_hdd"]) {
-                  Computer_Device::resetDevices($computers_id, 'DeviceHardDrive');
+                  self::resetDevices($computers_id, 'DeviceHardDrive');
                }
                if ($cfg_ocs["import_device_sound"]) {
-                  Computer_Device::resetDevices($computers_id, 'DeviceSoundCard');
+                  self::resetDevices($computers_id, 'DeviceSoundCard');
                }
                if ($cfg_ocs["import_device_gfxcard"]) {
-                  Computer_Device::resetDevices($computers_id, 'DeviceGraphicCard');
+                  self::resetDevices($computers_id, 'DeviceGraphicCard');
                }
                if ($cfg_ocs["import_device_drive"]) {
-                  Computer_Device::resetDevices($computers_id, 'DeviceDrive');
+                  self::resetDevices($computers_id, 'DeviceDrive');
                }
                if ($cfg_ocs["import_device_modem"] || $cfg_ocs["import_device_port"]) {
-                  Computer_Device::resetDevices($computers_id, 'DevicePci');
+                  self::resetDevices($computers_id, 'DevicePci');
                }
                if ($cfg_ocs["import_software"]) {
                   self::resetSoftwares($computers_id);
@@ -5980,5 +5980,26 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       }
       return -1;
    }
+
+
+   /**
+    * Delete old devices settings
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    * @param $itemtype integer : device type identifier.
+    *
+    * @return nothing.
+    **/
+   static function resetDevices($glpi_computers_id, $itemtype) {
+      global $DB;
+
+      $linktable = getTableForItemType('Computer_'.$itemtype);
+
+      $query = "DELETE
+                FROM `$linktable`
+                WHERE `computers_id` = '$glpi_computers_id'";
+      $DB->query($query);
+   }
+
 }
 ?>
