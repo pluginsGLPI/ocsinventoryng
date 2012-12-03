@@ -384,7 +384,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
 
       if ($canedit) {
          Html::openArrowMassives("processes");
-         Html::closeArrowMassives(array("delete_processes" => __x('Delete permanently')));
+         Html::closeArrowMassives(array("delete_processes" => _x('button','Delete permanently')));
       }
    }
 
