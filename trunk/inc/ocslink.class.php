@@ -529,7 +529,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          if (!in_array(PluginOcsinventoryngOcsServer::IMPORT_TAG_078, $locked_dev)) {
             $locked_dev = PluginOcsinventoryngOcsServer::migrateImportDevice($ID, $locked_dev);
          }
-         $types = Computer_Device::getDeviceTypes();
+         $types = Item_Devices::getDeviceTypes();
          $first = true;
          foreach ($locked_dev as $key => $val) {
             if (!$key) { // OcsServer::IMPORT_TAG_078
@@ -540,7 +540,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             if (!isset($types[$type])) { // should never happen
                continue;
             }
-            $compdev = new Computer_Device($types[$type]);
+            $compdev = new Item_Devices($types[$type]);
             if (!$compdev->getFromDB($iddev)) {
                $header = true;
                if ($first) {
