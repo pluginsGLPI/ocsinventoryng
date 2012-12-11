@@ -1330,7 +1330,7 @@ function plugin_ocsinventoryng_addWhere($link, $nott, $type, $ID, $val) {
    $table      = $searchopt[$ID]["table"];
    $field      = $searchopt[$ID]["field"];
 
-   $SEARCH     = makeTextSearch($val,$nott);
+   $SEARCH     = Search::makeTextSearch($val,$nott);
     switch ($table.".".$field) {
          case "glpi_plugin_ocsinventoryng_details.action" :
                return $link." `$table`.`$field` = '$val' ";
