@@ -413,7 +413,7 @@ function plugin_ocsinventoryng_install() {
       $DB->queryOrDie($query, $DB->error());
 
 
-      $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_notimported` (
+      $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_notimporteds` (
                   `id` INT( 11 ) NOT NULL  auto_increment,
                   `entities_id` int(11) NOT NULL default '0',
                   `rules_id` TEXT,
@@ -438,7 +438,7 @@ function plugin_ocsinventoryng_install() {
       if (TableExists("glpi_plugin_massocsimport_notimported")) {
          foreach (getAllDatasFromTable('glpi_plugin_massocsimport_notimported') as $thread) {
 
-            $query = "INSERT INTO `glpi_plugin_ocsinventoryng_notimported`
+            $query = "INSERT INTO `glpi_plugin_ocsinventoryng_notimporteds`
                       VALUES ('".$thread['id']."', '".$thread['entities_id']."',
                               '".$thread['rules_id']."', '".$thread['comment']."',
                               '".$thread['ocsid']."', '".$thread['ocsservers_id']."',
@@ -453,7 +453,7 @@ function plugin_ocsinventoryng_install() {
                                  "backup_glpi_plugin_massocsimport_notimported");
       }
 
-      $migration->changeField("glpi_plugin_ocsinventoryng_notimported", "ocsservers_id",
+      $migration->changeField("glpi_plugin_ocsinventoryng_notimporteds", "ocsservers_id",
                               "plugin_ocsinventoryng_ocsservers_id", 'integer');
 
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_servers` (
@@ -778,6 +778,7 @@ function plugin_ocsinventoryng_uninstall() {
                    "glpi_plugin_ocsinventoryng_threads",
                    "glpi_plugin_ocsinventoryng_servers",
                    "glpi_plugin_ocsinventoryng_configs",
+                   "glpi_plugin_ocsinventoryng_notimported",
                    "glpi_plugin_ocsinventoryng_notimported",
                    "glpi_plugin_ocsinventoryng_details",
                    "glpi_plugin_ocsinventoryng_registrykeys");
