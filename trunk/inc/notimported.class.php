@@ -554,10 +554,10 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
       $message     = array();
       $items_infos = array();
 
-     $query = "SELECT `glpi_plugin_ocsinventoryng_notimported`.*
+     $query = "SELECT `glpi_plugin_ocsinventoryng_notimporteds`.*
                FROM `glpi_plugin_ocsinventoryng_notimported`
                LEFT JOIN `glpi_alerts`
-                  ON (`glpi_plugin_ocsinventoryng_notimported`.`id` = `glpi_alerts`.`items_id`
+                  ON (`glpi_plugin_ocsinventoryng_notimporteds`.`id` = `glpi_alerts`.`items_id`
                       AND `glpi_alerts`.`itemtype` = 'PluginOcsinventoryngNotimported'
                       AND `glpi_alerts`.`type` = '".Alert::END."')
                WHERE `glpi_alerts`.`date` IS NULL";
