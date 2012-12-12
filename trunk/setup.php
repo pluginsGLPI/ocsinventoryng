@@ -116,17 +116,17 @@ function plugin_init_ocsinventoryng() {
 
          if (plugin_ocsinventoryng_haveRight("ocsng", "w")) {
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['import']['title']
-               = __s('Import new computers');
+               = __s('Import new computers', 'ocsinventoryng');
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['import']['page']
                = '/plugins/ocsinventoryng/front/ocsng.import.php';
 
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['sync']['title']
-               = __s('Synchronize computers already imported');
+               = __s('Synchronize computers already imported', 'ocsinventoryng');
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['sync']['page']
                = '/plugins/ocsinventoryng/front/ocsng.sync.php';
 
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['link']['title']
-               = __s('Link new OCSNG computers to existing GLPI computers');
+               = __s('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng');
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['link']['page']
                = '/plugins/ocsinventoryng/front/ocsng.link.php';
 
@@ -147,7 +147,7 @@ function plugin_init_ocsinventoryng() {
 
             if (plugin_ocsinventoryng_haveRight('clean_ocsng','r')) {
                $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['clean']['title']
-                  = __s('Clean links between GLPI and OCSNG');
+                  = __s('Clean links between GLPI and OCSNG', 'ocsinventoryng');
                $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['clean']['page']
                   = '/plugins/ocsinventoryng/front/ocsng.clean.php';
             }
