@@ -302,7 +302,7 @@ function plugin_ocsinventoryng_checkSeveralRightsOr($modules) {
          Html::redirect($CFG_GLPI["root_doc"] . "/index.php");
          exit ();
       }
-      displayRightError();
+      Html::displayRightError();
    }
 }
 ?>
