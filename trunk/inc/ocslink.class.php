@@ -91,7 +91,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo '<tr><td>'.__('Date of import in GLPI',  'ocsinventoryng');
                   echo "</td><td>".Html::convDateTime($data["last_update"]).'</td></tr>';
                   echo '<tr><td>'.__('Inventory agent',  'ocsinventoryng');
-                  echo "</td><td>".Html::convDateTime($data["ocs_agent_version"]).'</td></tr>';
+                  echo "</td><td>".$data["ocs_agent_version"].'</td></tr>';
                   echo '<tr><td>'.__('Server');
                   echo "</td><td>";
                   if (plugin_ocsinventoryng_haveRight("ocsng","r")) {
@@ -158,52 +158,13 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "<tr><th colspan = '4'>OCS Inventory NG</th>";
 
                   echo "<tr class='tab_bg_1'>";
-                  echo "<td>".__('Server')."</td><td>";
-                  echo "<a href='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsserver.form.php?id=".
-                         $ocs_config['id']."'>".
-                         $ocs_config['name']."</a>";
-                  echo "</td>";
-                  //If have write right on OCS and ocsreports url is not empty in OCS config
-                  if (plugin_ocsinventoryng_haveRight("ocsng","w")
-                      && ($ocs_config["ocs_url"] != '')) {
-                     echo "<td>";
-                     echo PluginOcsinventoryngOcsServer::getComputerLinkToOcsConsole($ocs_config['id'],
-                                                                                    $data["ocsid"],
-                                                                                    __('OCS NG Interface','ocsinventoryng'));
-                     echo "</td>";
-                  } else {
-                     echo "<td colspan='2'>&nbsp;</td>";
-                  }
-                  echo "</tr>";
-                  
-                  echo "<tr class='tab_bg_1'>";
-                  echo "<td>";
-                  _e('Last OCSNG inventory date', 'ocsinventoryng');
-                  echo "</td><td>";
-                  echo Html::convDateTime($data["last_ocs_update"]);
-                  echo "</td>";
-                  echo "<td>";
-                  _e('Date of import in GLPI',  'ocsinventoryng');
-                  echo "</td><td>";
-                  echo Html::convDateTime($data["last_update"]);
-                  echo "</td></tr>";
-               
-
-
-                  if ($data["ocs_agent_version"] != NULL) {
-                     echo "<tr><td>".__('Inventory agent', 'ocsinventoryng');
-                     echo "</td><td>".$data["ocs_agent_version"].'</td>';
-                     echo "<td colspan='2'>&nbsp;</td>";
-                  }
-
-                  echo "<tr class='tab_bg_1'>";
 
                   $colspan = 4;
                   if (plugin_ocsinventoryng_haveRight("view_ocsng","r")
                       && plugin_ocsinventoryng_haveRight("sync_ocsng","w")) {
 
                      $colspan = 2;
-                     echo "<td class='center'>".__('Automatic OCSNG update', 'ocsinventoryng').
+                     echo "<td class='center'>".__('Automatic update OCSNG', 'ocsinventoryng').
                           "</td>";
                      echo "<td class='left'>";
                      Dropdown::showYesNo("use_auto_update", $data["use_auto_update"]);
