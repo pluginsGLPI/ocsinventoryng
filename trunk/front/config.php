@@ -44,7 +44,7 @@ $plugin = new Plugin();
       echo "<tr><th>".__('Configuration')."</th></tr>";
       echo "<tr class='tab_bg_1'><td class='center b'>";
       echo "<a href='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsserver.php'>".
-             __('OCSNG server', 'ocsinventoryng')."</a>";
+             _n('OCSNG server', 'OCSNG servers', 1,'ocsinventoryng')."</a>";
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'><td class='center b'>";

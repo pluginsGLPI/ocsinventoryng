@@ -31,7 +31,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
 
    static function getTypeName($nb=0) {
-      return __("Automatic synchronization's configuration");
+      return __("Automatic synchronization's configuration", 'ocsinventoryng');
    }
 
 
@@ -175,7 +175,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
    function getAllOcsServers() {
       global $DB;
 
-      $servers[-1] = __('All servers');
+      $servers[-1] = __('All servers', 'ocsinventoryng');
 
       $sql     = "SELECT `id`, `name`
                   FROM `glpi_plugin_ocsinventoryng_ocsservers`";

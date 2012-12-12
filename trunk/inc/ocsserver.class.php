@@ -100,7 +100,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
 
    static function getTypeName($nb=0) {
-      return __('OCSNG server', 'ocsinventoryng');
+      return _n('OCSNG server', 'OCSNG servers', $nb,'ocsinventoryng');
    }
 
 
@@ -276,9 +276,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                <a href='ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsserver.png' ".
-                  "alt='".__s("OCSNG server 's configuration", 'ocsinventoryng')."' ".
-                  "title=\"".__s("OCSNG server 's configuration", 'ocsinventoryng')."\">
-                <br>".sprintf(__("Configuration of OCSNG server %s"), $name, 'ocsinventoryng')."
+                  "alt='".__s("Configuration of OCSNG server", 'ocsinventoryng')."' ".
+                  "title=\"".__s("Configuration of OCSNG server", 'ocsinventoryng')."\">
+                <br>".sprintf(__('Configuration of OCSNG server %s', 'ocsinventoryng'),
+                                                   $name)."
                </a></td>";
          //config massimport
          echo "<td class='center b' colspan='2'>
@@ -375,7 +376,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<form name='formconfig' action=\"$target\" method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
       echo "<tr>
-            <th><input type='hidden' name='id' value='$ID'>".__('General information')."</th>\n";
+            <th><input type='hidden' name='id' value='$ID'>".__('General information', 'ocsinventoryng')."</th>\n";
       echo "<th>"._n('Component', 'Components', 2) ."</th>\n";
       echo "<th>" . __('OCSNG administrative information', 'ocsinventoryng') . "</th></tr>\n";
 
@@ -2614,7 +2615,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       }
 
       echo "<div class='center'>";
-      echo "<h2>" . __('Clean links between GLPI and OCSNG') . "</h2>";
+      echo "<h2>" . __('Clean links between GLPI and OCSNG', 'ocsinventoryng') . "</h2>";
 
       $target = $CFG_GLPI['root_doc'].'/plugins/ocsinventoryng/front/ocsng.clean.php';
       if (($numrows = count($already_linked)) > 0) {
