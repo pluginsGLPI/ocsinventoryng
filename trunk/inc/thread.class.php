@@ -100,7 +100,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "<th>" . __('Computers linked',  'ocsinventoryng'). "</th>";
       echo "<th>" . __('Computers not imported by automatic actions',
                        'ocsinventoryng') . "</th>";
-      echo "<th>" . __('Computers not modified', 'ocsinventoryng'). "</th>";
+      echo "<th>" . __('Computers not updated', 'ocsinventoryng'). "</th>";
       echo "<th>" . __('Computers not unique', 'ocsinventoryng'). "</th>";
       echo "<th>" . __('Computers refused', 'ocsinventoryng') . "</th>";
       echo "<th>" . __('Process time execution', 'ocsinventoryng') . "</th>";
@@ -290,7 +290,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo"<th>".__('Computers synchronized', 'ocsinventoryng') ."</th>";
       echo"<th>".__('Computers linked', 'ocsinventoryng')."</th>";
       echo"<th>".__('Computers not imported by automatic actions', 'ocsinventoryng')."</th>";
-      echo"<th>".__('Computers not modified', 'ocsinventoryng')."</th>";
+      echo"<th>".__('Computers not updated', 'ocsinventoryng')."</th>";
       echo"<th>".__('Computers not unique', 'ocsinventoryng')."</th>";
       echo"<th>".__('Computers refused', 'ocsinventoryng') . "</th>";
       echo"<th>".__('Process time execution', 'ocsinventoryng')."</th>";

@@ -5652,7 +5652,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $stats = array('imported_machines_number'     => __('Computers imported', 'ocsinventoryng'),
                      'synchronized_machines_number' => __('Computers synchronized', 'ocsinventoryng'),
                      'linked_machines_number'       => __('Computers linked', 'ocsinventoryng'),
-                     'notupdated_machines_number'   => __('Computers unmodified', 'ocsinventoryng'),
+                     'notupdated_machines_number'   => __('Computers not updated', 'ocsinventoryng'),
                      'failed_rules_machines_number' => __("Computers don't check any rule",
                                                           'ocsinventoryng'),
                      'not_unique_machines_number'   => __('Duplicate computers', 'ocsinventoryng'),

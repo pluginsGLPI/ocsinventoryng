@@ -46,7 +46,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
 
    static function getTypeName($nb=0) {
-       return __('OCS Inventory NG not defined type', 'ocsinventoryng');
+      return _n('Network port import', 'Network ports import', $nb, 'ocsinventoryng');
    }
 
 
