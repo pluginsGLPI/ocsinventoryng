@@ -399,7 +399,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          if (count($locked)) {
             $header = true;
-            echo "<tr><th colspan='2'>". __('Locked field', 'Locked fields', 2, 'ocsinventoryng').
+            echo "<tr><th colspan='2'>". _n('Locked field', 'Locked fields', 2, 'ocsinventoryng').
                  "</th></tr>\n";
 
             foreach ($locked as $key => $val) {
