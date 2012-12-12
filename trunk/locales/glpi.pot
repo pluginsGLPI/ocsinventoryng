@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-12 14:35+0100\n"
+"POT-Creation-Date: 2012-12-12 15:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -255,7 +255,8 @@ msgstr ""
 msgid "Computers linked"
 msgstr ""
 
-#: inc/detail.class.php:161
+#: inc/detail.class.php:161 inc/ocsserver.class.php:5655
+#: inc/thread.class.php:103 inc/thread.class.php:293
 msgid "Computers not updated"
 msgstr ""
 
@@ -266,10 +267,6 @@ msgstr ""
 
 #: inc/detail.class.php:167 inc/thread.class.php:104 inc/thread.class.php:294
 msgid "Computers not unique"
-msgstr ""
-
-#: inc/networkport.class.php:49
-msgid "OCS Inventory NG not defined type"
 msgstr ""
 
 #: inc/notimported.class.php:51
@@ -675,10 +672,6 @@ msgstr ""
 msgid "No OCSNG server defined"
 msgstr ""
 
-#: inc/ocsserver.class.php:5655
-msgid "Computers unmodified"
-msgstr ""
-
 #: inc/ocsserver.class.php:5656
 msgid "Computers don't check any rule"
 msgstr ""
@@ -777,10 +770,6 @@ msgstr ""
 
 #: inc/thread.class.php:97 inc/thread.class.php:288
 msgid "Ending date of execution"
-msgstr ""
-
-#: inc/thread.class.php:103 inc/thread.class.php:293
-msgid "Computers not modified"
 msgstr ""
 
 #: inc/thread.class.php:105 inc/thread.class.php:295
