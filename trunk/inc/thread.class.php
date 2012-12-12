@@ -286,7 +286,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo"<th>".__('Number of threads', 'ocsinventoryng')."</th>";
       echo"<th>".__('Beginning date of execution', 'ocsinventoryng')."</th>";
       echo"<th>".__('Ending date of execution', 'ocsinventoryng')."</th>";
-      echo"<th>".__('Computers imported computer by an automatic action', 'ocsinventoryng')."</th>";
+      echo"<th>".__('Computers imported by automatic actions', 'ocsinventoryng')."</th>";
       echo"<th>".__('Computers synchronized', 'ocsinventoryng') ."</th>";
       echo"<th>".__('Computers linked', 'ocsinventoryng')."</th>";
       echo"<th>".__('Computers not imported by automatic actions', 'ocsinventoryng')."</th>";
