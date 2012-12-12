@@ -591,10 +591,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                             'value'  => $this->fields["states_id_default"]));
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Behavior when disconnecting')."</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Behavior when disconnecting', 'ocsinventoryng')."</td>\n<td>";
       Dropdown::showFromArray("deconnection_behavior",
                               array(''       => __('Preserve'),
-                                    "trash"  => _x('button', 'Put in trash'),
+                                    "trash"  => _x('button', 'Put in dustbin'),
                                     "delete" => _x('button', 'Delete permanently')),
                               array('value' => $this->fields["deconnection_behavior"]));
       echo "</td></tr>\n";
@@ -666,7 +666,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
              __('Behavior to the deletion of a computer in OCSNG', 'ocsinventoryng')."</td>";
       echo "<td>";
       $actions[0] = Dropdown::EMPTY_VALUE;
-      $actions[1] = __('Put in the dustbin');
+      $actions[1] = __('Put in dustbin');
       foreach (getAllDatasFromTable('glpi_states') as $state) {
          $actions['STATE_'.$state['id']] = sprintf(__('Change to state %s', 'ocsinventoryng'),
                                                    $state['name']);
@@ -798,7 +798,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<tr class='tab_bg_1'><td class='center'>".__('Password') . "</td>\n";
       echo "<td><input type='password' name='ocs_db_passwd' value='' autocomplete='off'>";
       if ($ID > 0) {
-         echo "<br><input type='checkbox' name='_blank_passwd'>&nbsp;"._sx('button','Clear');
+         echo "<br><input type='checkbox' name='_blank_passwd'>&nbsp;".__('Clear');
       }
       echo "</td></tr>\n";
 
@@ -3114,7 +3114,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                    _sx('button', 'Import', 'ocsinventoryng')."\">";
             echo "</td></tr>\n";
 
-            echo "<tr><th>".__('Import new computers', 'ocsinventoryng'). "</th>\n";
+            echo "<tr><th>".__('Name'). "</th>\n";
             echo "<th>".__('Manufacturer')."</th>\n";
             echo "<th>" .__('Model')."</th><th>".__('Serial number')."</th>\n";
             echo "<th>" . __('Date') . "</th>\n<th>TAG</th>\n";
