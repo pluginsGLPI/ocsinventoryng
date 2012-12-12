@@ -1507,7 +1507,7 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
    switch ($params['rule_itemtype']) {
       case 'RuleImportEntity':
       case 'RuleImportComputer':
-         Toolbox::logDebug($params);
+         
          if ($params['rule_itemtype'] == 'RuleImportEntity') {
             $ocsservers_id   = $params['values']['input']['ocsservers_id'];
          } else {
