@@ -1614,7 +1614,7 @@ function plugin_ocsinventoryng_executeActions($params) {
       case 'RuleImportComputer':
          if ($action->fields['field'] == '_fusion') {
             if ($action->fields["value"] == RuleImportComputer::RULE_ACTION_LINK_OR_IMPORT) {
-               if (isset($this->criterias_results['found_computers'])) {
+               if (isset($$params['params']['criterias_results']['found_computers'])) {
                   $output['found_computers'] = $params['params']['criterias_results']['found_computers'];
                   $output['action']          = PluginOcsinventoryngOcsServer::LINK_RESULT_LINK;
                } else {
@@ -1622,7 +1622,7 @@ function plugin_ocsinventoryng_executeActions($params) {
                }
 
             } else if ($action->fields["value"] == RuleImportComputer::RULE_ACTION_LINK_OR_NO_IMPORT) {
-               if (isset($this->criterias_results['found_computers'])) {
+               if (isset($params['params']['criterias_results']['found_computers'])) {
                   $output['found_computers'] = $params['params']['criterias_results']['found_computers'];;
                   $output['action']          = PluginOcsinventoryngOcsServer::LINK_RESULT_LINK;
                } else {
