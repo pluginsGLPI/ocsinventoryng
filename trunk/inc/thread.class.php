@@ -98,9 +98,9 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "<th>" . __('Computers imported by automatic actions', 'ocsinventoryng') . "</th>";
       echo "<th>" . __('Computers synchronized',  'ocsinventoryng') . "</th>";
       echo "<th>" . __('Computers linked',  'ocsinventoryng'). "</th>";
-      echo "<th>" . __('Computers not imported computer by automatic actions',
+      echo "<th>" . __('Computers not imported by automatic actions',
                        'ocsinventoryng') . "</th>";
-      echo "<th>" . __('Computers not modified computer', 'ocsinventoryng'). "</th>";
+      echo "<th>" . __('Computers not modified', 'ocsinventoryng'). "</th>";
       echo "<th>" . __('Computers not unique', 'ocsinventoryng'). "</th>";
       echo "<th>" . __('Computers refused', 'ocsinventoryng') . "</th>";
       echo "<th>" . __('Process time execution', 'ocsinventoryng') . "</th>";
@@ -277,7 +277,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "<div class='center'>";
       echo "<form name='processes' id='processes' action='$target' method='post'>";
       echo "<table class='tab_cadrehov'>";
-      echo "<tr><th colspan='16'>".__('Processes execution of automatic action', 'ocsinventoryng') .
+      echo "<tr><th colspan='16'>".__('Processes execution of automatic actions', 'ocsinventoryng') .
            "</th></tr>";
       echo "<tr>";
       echo"<th>&nbsp;</th>";
@@ -289,10 +289,10 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo"<th>".__('Computers imported computer by an automatic action', 'ocsinventoryng')."</th>";
       echo"<th>".__('Computers synchronized', 'ocsinventoryng') ."</th>";
       echo"<th>".__('Computers linked', 'ocsinventoryng')."</th>";
-      echo"<th>".__('Computers not imported computer by automatic actions', 'ocsinventoryng')."</th>";
+      echo"<th>".__('Computers not imported by automatic actions', 'ocsinventoryng')."</th>";
       echo"<th>".__('Computers not modified', 'ocsinventoryng')."</th>";
       echo"<th>".__('Computers not unique', 'ocsinventoryng')."</th>";
-      echo"<th>".__('Computers refused computer', 'ocsinventoryng') . "</th>";
+      echo"<th>".__('Computers refused', 'ocsinventoryng') . "</th>";
       echo"<th>".__('Process time execution', 'ocsinventoryng')."</th>";
       echo"<th>".__('Server')."</th>";
       echo"<th>&nbsp;</th>";
