@@ -180,7 +180,7 @@ function plugin_ocsinventoryng_install() {
       $DB->queryOrDie($query, $DB->error());
 
 
-      $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_notimported` (
+      $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_notimporteds` (
                   `id` INT( 11 ) NOT NULL  auto_increment,
                   `entities_id` int(11) NOT NULL default '0',
                   `rules_id` TEXT,
@@ -1588,7 +1588,7 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
             //So let's use the ip to proceed rules (if IP is a criteria of course)
             if (in_array("IPADDRESS",$fields) && !isset($ocs_data['IPADDRESS'])) {
                $ocs_data['IPADDRESS']
-                  = PluginOcsinventoryngOcsServer::getGeneralIpAddress($ocsservers_id, $computers_id);
+                  = PluginOcsinventoryngOcsServer::getGeneralIpAddress($ocsservers_id, $ocsid);
             }
             return array_merge($rule_parameters, $ocs_data);
          }
@@ -1612,18 +1612,18 @@ function plugin_ocsinventoryng_executeActions($params) {
    switch ($params['params']['rule_itemtype']) {
       case 'RuleImportComputer':
          if ($action->fields['field'] == '_fusion') {
-            if ($action->fields["value"] == PluginOcsinventoryngRuleImportComputer::RULE_ACTION_LINK_OR_IMPORT) {
-               if (isset($rule->criterias_results['found_computers'])) {
-                  $output['found_computers'] = $rule->criterias_results['found_computers'];
+            if ($action->fields["value"] == RuleImportComputer::RULE_ACTION_LINK_OR_IMPORT) {
+               if (isset($this->criterias_results['found_computers'])) {
+                  $output['found_computers'] = $params['params']['criterias_results']['found_computers'];
                   $output['action']          = PluginOcsinventoryngOcsServer::LINK_RESULT_LINK;
                } else {
                   $output['action'] = PluginOcsinventoryngOcsServer::LINK_RESULT_IMPORT;
                }
 
-            } else if ($action->fields["value"] == PluginOcsinventoryngRuleImportComputer::RULE_ACTION_LINK_OR_NO_IMPORT) {
-               if (isset($rule->criterias_results['found_computers'])) {
-                  $output['found_computers'] = $rule->criterias_results['found_computers'];
-                  $output['action']          = OcsServer::LINK_RESULT_LINK;
+            } else if ($action->fields["value"] == RuleImportComputer::RULE_ACTION_LINK_OR_NO_IMPORT) {
+               if (isset($this->criterias_results['found_computers'])) {
+                  $output['found_computers'] = $params['params']['criterias_results']['found_computers'];;
+                  $output['action']          = PluginOcsinventoryngOcsServer::LINK_RESULT_LINK;
                } else {
                   $output['action'] = PluginOcsinventoryngOcsServer::LINK_RESULT_NO_IMPORT;
                }
