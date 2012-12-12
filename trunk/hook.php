@@ -1504,10 +1504,16 @@ function plugin_ocsinventoryng_getRuleActions($params) {
  **/
 function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params) {
    global $PluginOcsinventoryngDBocs;
-
    switch ($params['rule_itemtype']) {
       case 'RuleImportEntity':
-         $ocsservers_id   = $params['values']['input']['ocsservers_id'];
+      case 'RuleImportComputer':
+         Toolbox::logDebug($params);
+         if ($params['rule_itemtype'] == 'RuleImportEntity') {
+            $ocsservers_id   = $params['values']['input']['ocsservers_id'];
+         } else {
+            $ocsservers_id   = $params['values']['params']['plugin_ocsinventoryng_ocsservers_id'];
+         }
+         
          $tables          = plugin_ocsinventoryng_getTablesForQuery();
          $fields          = plugin_ocsinventoryng_getFieldsForQuery();
          $rule_parameters = array();
