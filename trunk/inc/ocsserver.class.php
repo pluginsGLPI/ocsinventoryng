@@ -373,8 +373,31 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       }
       $this->getFromDB($ID);
       echo "<br><div class='center'>";
-      echo "<form name='formconfig' action=\"$target\" method='post'>";
+      echo "<form name='formconfig' id='formconfig' action=\"$target\" method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
+      echo "<tr><th colspan ='2'>";
+      _e('All');
+      echo $JS = <<<JAVASCRIPT
+         <script type='text/javascript'>
+            function form_init_all(form, index) {
+               var elem = document.getElementById('formconfig').elements;
+               for(var i = 0; i < elem.length; i++) {
+                  if (elem[i].type == "select-one" 
+                     && elem[i].name != "import_otherserial"
+                        && elem[i].name != "import_location"
+                           && elem[i].name != "import_group"
+                              && elem[i].name != "import_contact_num"
+                                 && elem[i].name != "import_network") {
+                     elem[i].selectedIndex = index;
+                  }
+               }
+            }
+         </script>
+JAVASCRIPT;
+      Dropdown::showYesNo('init_all', 0, -1, array(
+         'on_change' => "form_init_all(this.form, this.selectedIndex);"
+      ));
+      echo "</th><th></th></tr>";
       echo "<tr>
             <th><input type='hidden' name='id' value='$ID'>".__('General information', 'ocsinventoryng')."</th>\n";
       echo "<th>"._n('Component', 'Components', 2) ."</th>\n";
@@ -626,8 +649,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>". _n('Software', 'Software', 2)."</td>\n<td>";
-      $import_array = array("0" => __('No import'),
-                            "1" => __('Unit import'));
+      $import_array = array("0" => __('No import', 'ocsinventoryng'),
+                            "1" => __('Unit import', 'ocsinventoryng'));
       Dropdown::showFromArray("import_software", $import_array, array('value' => $software));
       echo "</td></tr>\n";
 
