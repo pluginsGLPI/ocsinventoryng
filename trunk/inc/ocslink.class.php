@@ -580,7 +580,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                                                  'ocsinventoryng')."</th></tr>\n";
                   $first = false;
                }
-               $device = new $types[$type]();
+
+               $deviceclass = str_replace('Item_','',$types[$type]);
+               $device = new $deviceclass();
                echo "<tr class='tab_bg_1'><td class='right' width='50%'>";
                echo $device->getTypeName()."&nbsp;: $nomdev</td>";
                echo "<td class='left' width='50%'>";
