@@ -30,7 +30,7 @@
 // Ensure current directory when run from crontab
 chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
 
-define('GLPI_ROOT', '..');
+define('GLPI_ROOT', '../../..');
 include (GLPI_ROOT . "/inc/includes.php");
 
 ini_set('display_errors',1);
