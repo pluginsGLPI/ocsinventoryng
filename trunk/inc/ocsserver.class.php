@@ -1838,7 +1838,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             $rulelink_results = array();
             $params           = array('entities_id'   => $data['entities_id'],
                                       'plugin_ocsinventoryng_ocsservers_id'
-                                                      => $plugin_ocsinventoryng_ocsservers_id);
+                                                      => $plugin_ocsinventoryng_ocsservers_id,
+                                       'ocsid'        => $ocsid);
             $rulelink_results = $rulelink->processAllRules(Toolbox::stripslashes_deep($input),
                                                            array(), $params);
 
@@ -3400,12 +3401,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $prevalue = $devicetype.self::FIELD_SEPARATOR;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
-      $types      = Item_Devices::getDeviceTypes();
-      $CompDevice = new Item_Devices($types[$devicetype]);
       $do_clean   = false;
 
       switch ($devicetype) {
          case self::RAM_DEVICE :
+            $CompDevice = new Item_DeviceMemory();
             //Memoire
             if ($cfg_ocs["import_device_memory"]) {
                $do_clean = true;
@@ -3486,6 +3486,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             break;
 
          case self::HDD_DEVICE :
+            $CompDevice = new Item_DeviceHardDrive();
             //Disque Dur
             if ($cfg_ocs["import_device_hdd"]) {
                $do_clean = true;
@@ -3541,6 +3542,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             break;
 
          case self::DRIVE_DEVICE :
+            $CompDevice = new Item_DeviceDrive();
             //lecteurs
             if ($cfg_ocs["import_device_drive"]) {
                $do_clean = true;
@@ -3589,6 +3591,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             break;
 
          case self::PCI_DEVICE :
+            $CompDevice = new Item_DevicePci();
             //Modems
             if ($cfg_ocs["import_device_modem"]) {
                $do_clean = true;
@@ -3674,6 +3677,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             break;
 
          case self::PROCESSOR_DEVICE :
+            $CompDevice = new Item_DeviceProcessor();
             //Processeurs :
             if ($cfg_ocs["import_device_processor"]) {
                $do_clean = true;
@@ -3697,11 +3701,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                         $DeviceProcessor = new DeviceProcessor();
                         $proc_id         = $DeviceProcessor->import($processor);
                         if ($proc_id) {
-                           $devID = $CompDevice->add(array('computers_id'  => $computers_id,
-                                                           '_itemtype'     => 'DeviceProcessor',
+                           $devID = $CompDevice->add(array('computers_id'       => $computers_id,
+                                                           '_itemtype'           => 'DeviceProcessor',
                                                            'deviceprocessors_id' => $proc_id,
-                                                           'specificity'   => $line["PROCESSORS"],
-                                                           '_no_history'   => !$dohistory));
+                                                           'specificity'         => $line["PROCESSORS"],
+                                                           '_no_history'         => !$dohistory));
                            self::addToOcsArray($computers_id,
                                                array($prevalue.$devID
                                                             => $prevalue.$processor["designation"]),
@@ -3722,6 +3726,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             break;
 
          case self::NETWORK_DEVICE :
+            $CompDevice = new Item_DeviceNetworkCard();
             //Carte reseau
             if ($cfg_ocs["import_device_iface"] || $cfg_ocs["import_ip"]) {
                PluginOcsinventoryngNetworkPort::importNetwork($import_ip,
@@ -3734,6 +3739,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             break;
 
          case self::GFX_DEVICE :
+            $CompDevice = new Item_DeviceGraphicCard();
             //carte graphique
             if ($cfg_ocs["import_device_gfxcard"]) {
                $do_clean = true;
@@ -3781,6 +3787,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             break;
 
          case self::SND_DEVICE :
+            $CompDevice = new Item_DeviceSoundCard();
             //carte son
             if ($cfg_ocs["import_device_sound"]) {
                $do_clean = true;

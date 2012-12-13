@@ -1518,13 +1518,12 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
          $fields          = plugin_ocsinventoryng_getFieldsForQuery();
          $rule_parameters = array();
          $select_sql      = "";
-
          if (isset($params['values']['params']['ocsid'])) {
             $ocsid = $params['values']['params']['ocsid'];
          } else if ($params['values']['input']['id']) {
             $ocsid = $params['values']['input']['id'];
          }
-
+          
          //Get information about network ports
          $query = "SELECT *
                    FROM `networks`
