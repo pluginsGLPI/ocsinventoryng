@@ -41,226 +41,6 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
-   public $canHaveVLAN = true;
-   public $haveMAC     = true;
-
-
-   static function getTypeName($nb=0) {
-      return _n('Network port import', 'Network ports import', $nb, 'ocsinventoryng');
-   }
-
-
-   static function getMotives() {
-
-      return array('invalid_ip'                => __('Invalid IP address'),
-                   'invalid_network_interface' => __('Invalid network interface') );
-       }
-
-
-   function prepareInputForUpdate($input) {
-
-      if (isset($input['transform_to'])) {
-         $networkport = new NetworkPort();
-         if ($networkport->getFromDB($this->fields['networkports_id'])) {
-            if ($networkport->switchInstantiationType($input['transform_to']) !== false) {
-               $instantiation = $networkport->getInstantiation();
-               $input         = $this->fields;
-                unset($input['id']);
-                var_dump($input);
-                $instantiation->add($input);
-                exit();
-                return false;
-            }
-         }
-      }
-      exit();
-
-      // Return false because the current element does not exist any more ...
-       return $input;
-   }
-
-
-   function showInstantiationForm(NetworkPort $netport, $options=array(), $recursiveItems) {
-
-      $options['canedit'] = false;
-
-      echo "<tr class='tab_bg_1'><td>" .__('Transform this network port to');
-      echo "</td><td>";
-      Dropdown::showItemTypes('transform_to', NetworkPort::getNetworkPortInstantiations(),
-                              array('value' => "NetworkPortEthernet"));
-      echo "</td>";
-      echo "<td>" . __('Motive of not standard network port instantiation') ."</td>";
-      $motives = array();
-      foreach (self::getMotives() as $field => $name) {
-         if ($this->fields[$field] == 1) {
-            $motives[] = $name;
-         }
-      }
-      echo "<td>".implode('<br>', $motives)."&nbsp;</td>\n";
-      echo "</tr>\n";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>" . __('MAC') ."</td><td>".$netport->fields['mac']."</td>\n";
-      echo "</tr>\n";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>" . __('Network interface name') . "</td>";
-      if ($this->fields['invalid_network_interface']) {
-         $cell_delimiter = 'th';
-      } else {
-        $cell_delimiter = 'td';
-      }
-      echo "<$cell_delimiter>" . $this->fields['networkinterface_name'] . "</$cell_delimiter>";
-      echo "<td>" . __('Management Information Base (MIB)') . "</td>";
-      echo "<td>" .$this->fields['MIB']."</td>";
-      echo "</tr>\n";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>" . IPAddress::getTypeName(1) . "</td>";
-      if ($this->fields['invalid_ip']) {
-         $cell_delimiter = 'th';
-      } else {
-         $cell_delimiter = 'td';
-      }
-      echo "<$cell_delimiter>" . $this->fields['ip']."</$cell_delimiter>";
-      echo "<td>" . IPNetmask::getTypeName(1) . "</td><td>" . $this->fields['netmask']."</td>";
-      echo "</tr>\n";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>" . __('Gateway') . "</td><td>" . $this->fields['gateway']."</td>";
-      echo "<td>" . IPNetwork::getTypeName(1) . "</td><td>" . $this->fields['subnet']."</td>";
-      echo "</tr>\n";
-   }
-
-
-   /**
-    * @param $group              HTMLTable_Group object
-    * @param $super              HTMLTable_SuperHeader object
-    * @param $options   array
-   **/
-   function getInstantiationHTMLTable_Headers(HTMLTable_Group $group, HTMLTable_SuperHeader $super,
-                                              HTMLTable_SuperHeader $internet_super = NULL,
-                                              HTMLTable_Header $father=NULL,
-                                              array $options=array()) {
-
-
-      $group->addHeader('Motive', __('Motive'), $super);
-
-      $group->addHeader('InterfaceName', __('Network interface name'), $super);
-      $group->addHeader('MIB', __('Management Information Base (MIB)'), $super);
-
-      $group->addHeader('IPAddress', IPAddress::getTypeName(1), $super);
-      $group->addHeader('Netmask', IPNetmask::getTypeName(1), $super);
-      $group->addHeader('Gateway', __('Gateway'), $super);
-      $group->addHeader('Subnet', IPNetwork::getTypeName(1), $super);
-
-      parent::getInstantiationHTMLTable_Headers($group, $super, $internet_super, $father, $options);
-
-      return NULL;
-   }
-
-
-   /**
-    * @see inc/NetworkPortInstantiation::getInstantiationHTMLTable_()
-   **/
-   function getInstantiationHTMLTable_(NetworkPort $netport, HTMLTable_Row $row,
-                                       HTMLTable_Cell $father=NULL, array $options=array()) {
-
-
-      foreach (self::getMotives() as $field => $name) {
-         if ($this->fields[$field] == 1) {
-            $row->addCell($row->getHeaderByName('Instantiation', 'Motive'), $name);
-         }
-      }
-      $row->addCell($row->getHeaderByName('Instantiation', 'InterfaceName'),
-                                          $this->fields['networkinterface_name']);
-      $row->addCell($row->getHeaderByName('Instantiation', 'MIB'), $this->fields['MIB']);
-      $row->addCell($row->getHeaderByName('Instantiation', 'IPAddress'), $this->fields['ip']);
-      $row->addCell($row->getHeaderByName('Instantiation', 'Netmask'), $this->fields['netmask']);
-      $row->addCell($row->getHeaderByName('Instantiation', 'Gateway'), $this->fields['gateway']);
-      $row->addCell($row->getHeaderByName('Instantiation', 'Subnet'), $this->fields['subnet']);
-
-      parent::getInstantiationHTMLTable_($netport, $row, $father, $options);
-
-      return NULL;
-   }
-
-
-   function getSpecificMassiveActions($checkitem=NULL) {
-
-      $isadmin = $this->canUpdate();
-      $actions = parent::getSpecificMassiveActions($checkitem);
-
-      if ($isadmin) {
-         $actions['transform_to'] = __('Transform this network port to');
-      }
-      return $actions;
-   }
-
-
-   function showSpecificMassiveActionsParameters($input = array()) {
-
-      switch ($input['action']) {
-         case "transform_to" :
-            Dropdown::showItemTypes('transform_to', NetworkPort::getNetworkPortInstantiations(),
-                                    array('value' => 'NetworkPortEthernet'));
-            echo "<br><br><input type='submit' name='massiveaction' class='submit' value='".
-                           _sx('button', 'Save')."'>";
-            return true;
-
-         default :
-            return parent::showSpecificMassiveActionsParameters($input);
-      }
-
-      return false;
-   }
-
-
-   function doSpecificMassiveActions($input = array()) {
-
-      $res = array('ok'      => 0,
-                   'ko'      => 0,
-                   'noright' => 0);
-
-      switch ($input['action']) {
-         case "transform_to" :
-            if (isset($input["transform_to"]) && !empty($input["transform_to"])) {
-               $networkport = new NetworkPort();
-               foreach ($input["item"] as $key => $val) {
-                  if ($val == 1) {
-                     if ($networkport->can($key,'w') && $this->can($key,'d')) {
-                        if ($networkport->switchInstantiationType($input['transform_to']) !== false) {
-                           $instantiation             = $networkport->getInstantiation();
-                           $input2                    = $item->fields;
-                           $input2['networkports_id'] = $input2['id'];
-                           unset($input2['id']);
-                           if ($instantiation->add($input2)) {
-                              $this->delete(array('id' => $key));
-                              $res['ok']++;
-                           } else {
-                              $res['ko']++;
-                           }
-                        } else {
-                           $res['ko']++;
-                        }
-                     } else {
-                        $res['noright']++;
-                     }
-                  }
-               }
-            } else {
-               $res['ko']++;
-            }
-            break;
-
-         default :
-            return parent::doSpecificMassiveActions($input);
-      }
-
-      return $res;
-   }
-
-
    static function importNetwork($import_ip, $PluginOcsinventoryngDBocs, $cfg_ocs, $ocsid,
                                  $CompDevice, $computers_id, $prevalue, $import_device,
                                  $dohistory) {
@@ -308,11 +88,11 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                      $DeviceNetworkCard = new DeviceNetworkCard();
                      $net_id = $DeviceNetworkCard->import($network);
                      if ($net_id) {
-                        $devID = $CompDevice->add(array('computers_id'          => $computers_id,
-                                                        '_itemtype'             => 'DeviceNetworkCard',
-                                                        'devicenetworkcards_id' => $net_id,
-                                                        'specificity'           => $line2["MACADDR"],
-                                                        '_no_history'           => !$dohistory));
+                        $devID = $CompDevice->add(array('items_id'              => $computers_id,
+                                                        'itemtype'               => 'Computer',
+                                                        'devicenetworkcards_id'  => $net_id,
+                                                        'mac'                    => $line2["MACADDR"],
+                                                        '_no_history'            => !$dohistory));
                         PluginOcsinventoryngOcsServer::addToOcsArray($computers_id,
                                                                      array($prevalue.$devID
                                                                            => $prevalue.$network["designation"]),
@@ -323,8 +103,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                          $import_device);
                      list($type, $id) = explode(PluginOcsinventoryngOcsServer::FIELD_SEPARATOR, $tmp);
                      $CompDevice->update(array('id'          => $id,
-                                               'specificity' => $line2["MACADDR"],
-                                               '_itemtype'   => 'DeviceNetworkCard'));
+                                               'mac' => $line2["MACADDR"]));
                      unset ($import_device[$tmp]);
                   }
                }
@@ -494,6 +273,6 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          }
       }
    }
-
 }
+
 ?>
