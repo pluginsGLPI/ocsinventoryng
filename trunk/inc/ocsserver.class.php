@@ -3503,8 +3503,7 @@ JAVASCRIPT;
                                                $import_device);
                            list($type,$id) = explode(self::FIELD_SEPARATOR, $tmp);
                            $CompDevice->update(array('id'          => $id,
-                                                     'specificity' => $line2["CAPACITY"],
-                                                     '_itemtype'   => 'DeviceMemory',));
+                                                     'size' => $line2["CAPACITY"]));
                            unset ($import_device[$tmp]);
                         }
                      }
@@ -3559,8 +3558,7 @@ JAVASCRIPT;
                                                $import_device);
                            list($type,$id) = explode(self::FIELD_SEPARATOR, $tmp);
                            $CompDevice->update(array('id'          => $id,
-                                                     'specificity' => $line2["DISKSIZE"],
-                                                     '_itemtype'   => 'DeviceHardDrive',));
+                                                     'capacity' => $line2["DISKSIZE"]));
                            unset ($import_device[$tmp]);
                         }
                      }
@@ -3744,8 +3742,7 @@ JAVASCRIPT;
                                             $import_device);
                         list($type,$id) = explode(self::FIELD_SEPARATOR,$tmp);
                         $CompDevice->update(array('id'          => $id,
-                                                  'specificity' => $line["PROCESSORS"],
-                                                  '_itemtype'   => 'DeviceProcessor',));
+                                                  'frequency' => $line["PROCESSORS"]));
                         unset ($import_device[$tmp]);
                      }
                   }
@@ -3805,8 +3802,7 @@ JAVASCRIPT;
                                             $import_device);
                         list($type,$id) = explode(self::FIELD_SEPARATOR,$tmp);
                         $CompDevice->update(array('id'          => $id,
-                                                  'specificity' => $line2["MEMORY"],
-                                                  '_itemtype'   => 'DeviceGraphicCard',));
+                                                  'memory' => $line2["MEMORY"]));
                         unset ($import_device[$tmp]);
                      }
                   }
@@ -5366,10 +5362,6 @@ JAVASCRIPT;
                               }
                            }
 
-//                            if (isset($res_rule['is_global'])) {
-//                               logDebug($res_rule);
-//                            }
-
                            if (isset($res_rule['is_global'])) {
                               if (!$res_rule['is_global']) {
                                  $management_process = 2;
@@ -5409,9 +5401,6 @@ JAVASCRIPT;
                                     }
                                     $input["entities_id"] = $entity;
 
-//                                     if (isset($res_rule['is_global'])) {
-//                                        logDebug("global",$input);
-//                                     }
                                     $id_printer = $p->add($input);
                                  }
 
@@ -5426,9 +5415,6 @@ JAVASCRIPT;
                                  }
                                  $input["entities_id"] = $entity;
 
-//                                  if (isset($res_rule['is_global'])) {
-//                                     logDebug("unitary",$input);
-//                                  }
                                  $id_printer = $p->add($input);
                               }
 
