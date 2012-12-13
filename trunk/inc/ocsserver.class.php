@@ -6024,11 +6024,12 @@ JAVASCRIPT;
    static function resetDevices($glpi_computers_id, $itemtype) {
       global $DB;
 
-      $linktable = getTableForItemType('Computer_'.$itemtype);
+      $linktable = getTableForItemType('Item_'.$itemtype);
 
       $query = "DELETE
                 FROM `$linktable`
-                WHERE `computers_id` = '$glpi_computers_id'";
+                WHERE `items_id` = '$glpi_computers_id'
+                     AND `itemtype` = 'Computer'";
       $DB->query($query);
    }
 
