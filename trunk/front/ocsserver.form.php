@@ -36,7 +36,7 @@ plugin_ocsinventoryng_checkRight("ocsng", "w");
 
 $ocs = new PluginOcsinventoryngOcsServer();
 
-if (!isset($_GET["id"])) {
+if (!isset($_GET["id"]) || $_GET["id"] == -1) {
    $_GET["id"] = "";
 }
 

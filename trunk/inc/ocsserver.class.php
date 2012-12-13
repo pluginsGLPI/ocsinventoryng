@@ -1011,6 +1011,11 @@ JAVASCRIPT;
 
       $admin = new PluginOcsinventoryngOcsAdminInfosLink();
       $admin->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
+      
+      $server = new PluginOcsinventoryngServer();
+		$server->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
+		
+		unset($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
 
       // ocsservers_id for RuleImportComputer, OCS_SERVER for RuleImportEntity
       Rule::cleanForItemCriteria($this);
@@ -1494,13 +1499,13 @@ JAVASCRIPT;
                                                       WHERE `NAME` = 'GUI_VERSION'");
 
          // Update OCS version on ocsservers
-         if ($PluginOcsinventoryngDBocs->numrows($result)) {
+         if ($result && $PluginOcsinventoryngDBocs->numrows($result)) {
             $server = new PluginOcsinventoryngOcsServer();
             $server->update(array('id'          => $PluginOcsinventoryngDBocs->ocsservers_id,
                                   'ocs_version' => $PluginOcsinventoryngDBocs->result($result,0,0)));
          }
 
-         if ($PluginOcsinventoryngDBocs->numrows($result) != 1
+         if (!$result || $PluginOcsinventoryngDBocs->numrows($result) != 1
              || ($PluginOcsinventoryngDBocs->result($result, 0, 0) < self::OCS_VERSION_LIMIT
                  && strpos($PluginOcsinventoryngDBocs->result($result, 0, 0),'2.0') !== 0)) { // hack for 2.0 RC
             return false;
