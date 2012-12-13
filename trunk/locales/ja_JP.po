@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-12 18:36+0100\n"
-"PO-Revision-Date: 2012-12-12 17:38+0000\n"
-"Last-Translator: DOMBRE Julien <moyo@indepnet.net>\n"
+"POT-Creation-Date: 2012-12-13 10:32+0100\n"
+"PO-Revision-Date: 2012-12-13 09:42+0000\n"
+"Last-Translator: The tsmr <tsmr@thetsmr.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,101 +18,102 @@ msgstr ""
 "Language: ja_JP\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: hook.php:900
+#: hook.php:905
 msgid "Restart import"
 msgstr ""
 
-#: hook.php:901
+#: hook.php:906
 msgid "Import in the entity"
 msgstr ""
 
-#: hook.php:908 setup.php:129 inc/ocsserver.class.php:331
+#: hook.php:913 setup.php:129 inc/ocsserver.class.php:331
 #: inc/ocsserver.class.php:333 inc/ocsserver.class.php:335
 msgid "Link new OCSNG computers to existing GLPI computers"
 msgstr ""
 
-#: hook.php:913
+#: hook.php:918
 msgid "Delete computer in OCSNG"
 msgstr ""
 
-#: hook.php:924
+#: hook.php:929
 msgid "Force synchronization OCSNG"
 msgstr ""
 
-#: hook.php:926
+#: hook.php:931
 msgid "Unlock fields"
 msgstr ""
 
-#: hook.php:928
+#: hook.php:933
 msgid "Unlock monitors"
 msgstr ""
 
-#: hook.php:930
+#: hook.php:935
 msgid "Unlock peripherals"
 msgstr ""
 
-#: hook.php:932
+#: hook.php:937
 msgid "Unlock printers"
 msgstr ""
 
-#: hook.php:934
+#: hook.php:939
 msgid "Unlock software"
 msgstr ""
 
-#: hook.php:936
+#: hook.php:941
 msgid "Unlock IP"
 msgstr ""
 
-#: hook.php:938
+#: hook.php:943
 msgid "Unclok volumes"
 msgstr ""
 
-#: hook.php:993
+#: hook.php:998
 msgid "Unlock"
 msgstr "ロックを解除"
 
-#: hook.php:1207
+#: hook.php:1212 inc/ocslink.class.php:91
 msgid "GLPI import date"
 msgstr ""
 
-#: hook.php:1214 inc/notimported.class.php:79 inc/notimported.class.php:265
-#: inc/ocslink.class.php:89 inc/ocsserver.class.php:2826
+#: hook.php:1219 inc/notimportedcomputer.class.php:79
+#: inc/notimportedcomputer.class.php:265 inc/ocslink.class.php:89
+#: inc/ocsserver.class.php:2827
 msgid "Last OCSNG inventory date"
 msgstr "前回のOCSNG一覧日付"
 
-#: hook.php:1223 inc/ocslink.class.php:167
+#: hook.php:1228 inc/ocslink.class.php:167
 msgid "Automatic update OCSNG"
 msgstr ""
 
-#: hook.php:1229 inc/notimported.class.php:70 inc/notimported.class.php:235
-#: inc/ocslink.class.php:93
+#: hook.php:1234 inc/notimportedcomputer.class.php:70
+#: inc/notimportedcomputer.class.php:235 inc/ocslink.class.php:93
 msgid "Inventory agent"
 msgstr ""
 
-#: hook.php:1235 hook.php:1413 hook.php:1464
-#: inc/notificationtargetnotimported.class.php:81 inc/notimported.class.php:67
-#: inc/notimported.class.php:250 inc/ocslink.class.php:174
-#: inc/ruleimportcomputer.class.php:105
+#: hook.php:1240 hook.php:1418 hook.php:1469
+#: inc/notificationtargetnotimportedcomputer.class.php:81
+#: inc/notimportedcomputer.class.php:67 inc/notimportedcomputer.class.php:250
+#: inc/ocslink.class.php:174
 msgid "OCSNG TAG"
 msgstr ""
 
-#: hook.php:1242 inc/notificationtargetnotimported.class.php:85
-#: inc/notimported.class.php:54 inc/notimported.class.php:222
+#: hook.php:1247 inc/notificationtargetnotimportedcomputer.class.php:85
+#: inc/notimportedcomputer.class.php:54 inc/notimportedcomputer.class.php:222
 msgid "OCSNG ID"
 msgstr ""
 
-#: hook.php:1247 inc/ocsserver.class.php:643 inc/registrykey.class.php:44
+#: hook.php:1252 inc/ocsserver.class.php:643 inc/registrykey.class.php:44
 #: inc/registrykey.class.php:117
 msgid "Registry"
 msgstr "レジストリ"
 
-#: hook.php:1423 hook.php:1459 front/config.php:47 inc/ocsserver.class.php:103
-#: inc/ocsserver.class.php:271 inc/ruleimportcomputer.class.php:99
+#: hook.php:1428 hook.php:1464 inc/config.class.php:88
+#: inc/ocsserver.class.php:103 inc/ocsserver.class.php:271
 msgid "OCSNG server"
 msgid_plural "OCSNG servers"
 msgstr[0] ""
 
-#: hook.php:1491 inc/ocslink.class.php:44 inc/ruleimportcomputer.class.php:154
+#: hook.php:1496 inc/ocslink.class.php:44
 msgid "OCSNG link"
 msgid_plural "OCSNG links"
 msgstr[0] ""
@@ -121,13 +122,14 @@ msgstr[0] ""
 msgid "OCSNG server 's configuration"
 msgstr ""
 
-#: setup.php:104 inc/config.class.php:34 inc/ocsserver.class.php:288
-#: inc/ocsserver.class.php:289 inc/ocsserver.class.php:290
+#: setup.php:104 inc/config.class.php:34 inc/config.class.php:93
+#: inc/ocsserver.class.php:288 inc/ocsserver.class.php:289
+#: inc/ocsserver.class.php:290
 msgid "Automatic synchronization's configuration"
 msgstr ""
 
 #: setup.php:119 inc/ocsserver.class.php:297 inc/ocsserver.class.php:298
-#: inc/ocsserver.class.php:299 inc/ocsserver.class.php:3235
+#: inc/ocsserver.class.php:299 inc/ocsserver.class.php:3236
 msgid "Import new computers"
 msgstr "新しいコンピュータをインポート"
 
@@ -147,16 +149,17 @@ msgstr ""
 msgid "Computers imported by automatic actions"
 msgstr ""
 
-#: setup.php:144 inc/notificationtargetnotimported.class.php:39
-#: inc/notificationtargetnotimported.class.php:83 inc/ocsserver.class.php:341
-#: inc/ocsserver.class.php:342 inc/ocsserver.class.php:343
-#: inc/thread.class.php:101 inc/thread.class.php:292
+#: setup.php:144 inc/notificationtargetnotimportedcomputer.class.php:39
+#: inc/notificationtargetnotimportedcomputer.class.php:83
+#: inc/ocsserver.class.php:341 inc/ocsserver.class.php:342
+#: inc/ocsserver.class.php:343 inc/thread.class.php:101
+#: inc/thread.class.php:292
 msgid "Computers not imported by automatic actions"
 msgstr ""
 
 #: setup.php:150 front/ocsng.clean.php:55 inc/ocsserver.class.php:351
 #: inc/ocsserver.class.php:352 inc/ocsserver.class.php:353
-#: inc/ocsserver.class.php:2618 inc/profile.class.php:200
+#: inc/ocsserver.class.php:2619 inc/profile.class.php:200
 msgid "Clean links between GLPI and OCSNG"
 msgstr "GLPI-OCSNG間のリンクを整理"
 
@@ -180,11 +183,12 @@ msgstr ""
 msgid "Number of processed computers"
 msgstr ""
 
-#: front/config.php:60
+#: front/config.php:49
 msgid "Please activate the plugin"
 msgstr ""
 
-#: front/notimported.php:38 front/thread.php:39 inc/thread.class.php:280
+#: front/notimportedcomputer.php:38 front/thread.php:39
+#: inc/thread.class.php:280
 msgid "Processes execution of automatic actions"
 msgstr ""
 
@@ -192,59 +196,59 @@ msgstr ""
 msgid "Information about the script"
 msgstr ""
 
-#: inc/config.class.php:89
+#: inc/config.class.php:105
 msgid "Default OCSNG server"
 msgstr ""
 
-#: inc/config.class.php:95
+#: inc/config.class.php:111
 msgid "Display"
 msgstr "表示"
 
-#: inc/config.class.php:98
+#: inc/config.class.php:114
 msgid "Show processes where nothing was changed"
 msgstr ""
 
-#: inc/config.class.php:107
+#: inc/config.class.php:123
 msgid "Authorize the OCSNG update"
 msgstr ""
 
-#: inc/config.class.php:113
+#: inc/config.class.php:129
 msgid "Refresh information of a process every"
 msgstr ""
 
-#: inc/config.class.php:115
+#: inc/config.class.php:131
 msgid "second"
 msgid_plural "seconds"
 msgstr[0] ""
 
-#: inc/config.class.php:132
+#: inc/config.class.php:148
 msgid "Check OCSNG import script"
 msgstr ""
 
-#: inc/config.class.php:138
+#: inc/config.class.php:154
 msgid "Lock not activated"
 msgstr ""
 
-#: inc/config.class.php:140
+#: inc/config.class.php:156
 msgid "Lock activated"
 msgstr ""
 
-#: inc/config.class.php:146
+#: inc/config.class.php:162
 msgctxt "button"
 msgid "Lock"
 msgstr ""
 
-#: inc/config.class.php:147 inc/ocslink.class.php:589
+#: inc/config.class.php:163 inc/ocslink.class.php:589
 msgctxt "button"
 msgid "Unlock"
 msgstr ""
 
-#: inc/config.class.php:178 inc/thread.class.php:366
+#: inc/config.class.php:194 inc/thread.class.php:366
 msgid "All servers"
 msgstr ""
 
 #: inc/detail.class.php:37 inc/detail.class.php:151
-#: inc/notimported.class.php:40 inc/notimported.class.php:216
+#: inc/notimportedcomputer.class.php:40 inc/notimportedcomputer.class.php:216
 msgid "Computer not imported"
 msgid_plural "Computers not imported"
 msgstr[0] ""
@@ -265,21 +269,21 @@ msgstr ""
 msgid "Rules checked"
 msgstr ""
 
-#: inc/detail.class.php:155 inc/ocsserver.class.php:5653
+#: inc/detail.class.php:155 inc/ocsserver.class.php:5660
 msgid "Computers imported"
 msgstr ""
 
-#: inc/detail.class.php:158 inc/ocsserver.class.php:5655
+#: inc/detail.class.php:158 inc/ocsserver.class.php:5662
 #: inc/thread.class.php:100 inc/thread.class.php:291
 msgid "Computers linked"
 msgstr ""
 
-#: inc/detail.class.php:161 inc/ocsserver.class.php:5656
+#: inc/detail.class.php:161 inc/ocsserver.class.php:5663
 #: inc/thread.class.php:103 inc/thread.class.php:293
 msgid "Computers not updated"
 msgstr ""
 
-#: inc/detail.class.php:164 inc/ocsserver.class.php:5654
+#: inc/detail.class.php:164 inc/ocsserver.class.php:5661
 #: inc/thread.class.php:99 inc/thread.class.php:290
 msgid "Computers synchronized"
 msgstr ""
@@ -293,36 +297,32 @@ msgid "Network port import"
 msgid_plural "Network ports import"
 msgstr[0] ""
 
-#: inc/notimported.class.php:51
+#: inc/notimportedcomputer.class.php:51
 msgid "Verified rules"
 msgstr ""
 
-#: inc/notimported.class.php:227
+#: inc/notimportedcomputer.class.php:227
 msgid "OCSNG name"
 msgstr "OCSNG名"
 
-#: inc/notimported.class.php:394
+#: inc/notimportedcomputer.class.php:394
 msgid "Can't affect an entity"
 msgstr ""
 
-#: inc/notimported.class.php:397
+#: inc/notimportedcomputer.class.php:397
 msgid "Unicity criteria not verified"
 msgstr ""
 
-#: inc/notimported.class.php:400
+#: inc/notimportedcomputer.class.php:400
 msgid "Import refused by rule"
 msgstr ""
 
-#: inc/notimported.class.php:417
+#: inc/notimportedcomputer.class.php:417
 msgid "Actions to be made on the computer"
 msgstr ""
 
-#: inc/notimported.class.php:583
+#: inc/notimportedcomputer.class.php:583
 msgid "Send OCSNG not imported computers alert failed"
-msgstr ""
-
-#: inc/ocslink.class.php:91
-msgid "Date of import in GLPI"
 msgstr ""
 
 #: inc/ocslink.class.php:110
@@ -416,8 +416,8 @@ msgstr "一般情報"
 msgid "OCSNG console"
 msgstr ""
 
-#: inc/ocsserver.class.php:243 inc/ocsserver.class.php:4106
-#: inc/ocsserver.class.php:4129
+#: inc/ocsserver.class.php:243 inc/ocsserver.class.php:4113
+#: inc/ocsserver.class.php:4136
 msgid "Choice of an OCSNG server"
 msgstr "OCSNGサーバの選択"
 
@@ -582,103 +582,103 @@ msgid ""
 "(%d)"
 msgstr ""
 
-#: inc/ocsserver.class.php:1757 inc/ocsserver.class.php:2274
+#: inc/ocsserver.class.php:1757 inc/ocsserver.class.php:2275
 msgid "Swap"
 msgstr ""
 
-#: inc/ocsserver.class.php:2638 inc/ocsserver.class.php:2825
+#: inc/ocsserver.class.php:2639 inc/ocsserver.class.php:2826
 msgid "Import date in GLPI"
 msgstr "GLPIにインポートされた日付"
 
-#: inc/ocsserver.class.php:2639
+#: inc/ocsserver.class.php:2640
 msgid "Existing in GLPI"
 msgstr ""
 
-#: inc/ocsserver.class.php:2640
+#: inc/ocsserver.class.php:2641
 msgid "Existing in OCSNG"
 msgstr ""
 
-#: inc/ocsserver.class.php:2683
+#: inc/ocsserver.class.php:2684
 msgid "No item to clean"
 msgstr ""
 
-#: inc/ocsserver.class.php:2801
+#: inc/ocsserver.class.php:2802
 msgid "Computers updated in OCSNG"
 msgstr "コンピュータをOCSNGに更新"
 
-#: inc/ocsserver.class.php:2821 inc/ocsserver.class.php:2843
+#: inc/ocsserver.class.php:2822 inc/ocsserver.class.php:2844
 msgctxt "button"
 msgid "Synchronize"
 msgstr "同期を取る"
 
-#: inc/ocsserver.class.php:2827
+#: inc/ocsserver.class.php:2828
 msgid "Auto update"
 msgstr "自動更新"
 
-#: inc/ocsserver.class.php:2855
+#: inc/ocsserver.class.php:2856
 msgid "Update computers"
 msgstr "コンピュータをアップデート"
 
-#: inc/ocsserver.class.php:2860
+#: inc/ocsserver.class.php:2861
 msgid "No new computer to be updated"
 msgstr "新しく更新されたコンピュータはありません"
 
-#: inc/ocsserver.class.php:3062
+#: inc/ocsserver.class.php:3063
 msgid ""
 "Caution! The imported data (see your configuration) will overwrite the "
 "existing one"
 msgstr ""
 
-#: inc/ocsserver.class.php:3086
+#: inc/ocsserver.class.php:3087
 msgid "Manual import mode"
 msgstr "手動インポートモード"
 
-#: inc/ocsserver.class.php:3090
+#: inc/ocsserver.class.php:3091
 msgid "Disable preview"
 msgstr ""
 
-#: inc/ocsserver.class.php:3094
+#: inc/ocsserver.class.php:3095
 msgid "Enable preview"
 msgstr "プレビューを有効にする"
 
-#: inc/ocsserver.class.php:3099
+#: inc/ocsserver.class.php:3100
 msgid "Check first that duplicates have been correctly managed in OCSNG"
 msgstr ""
 
-#: inc/ocsserver.class.php:3114 inc/ocsserver.class.php:3209
+#: inc/ocsserver.class.php:3115 inc/ocsserver.class.php:3210
 msgctxt "button"
 msgid "Import"
 msgstr "インポート"
 
-#: inc/ocsserver.class.php:3122
+#: inc/ocsserver.class.php:3123
 msgid "Match the rule ?"
 msgstr "ルールに適合していますか？"
 
-#: inc/ocsserver.class.php:3124
+#: inc/ocsserver.class.php:3125
 msgid "Target location"
 msgstr ""
 
-#: inc/ocsserver.class.php:3226 inc/ocsserver.class.php:3237
+#: inc/ocsserver.class.php:3227 inc/ocsserver.class.php:3238
 msgid "No new computer to be imported"
 msgstr "新しくインポートされたコンピュータはありません"
 
-#: inc/ocsserver.class.php:4132
+#: inc/ocsserver.class.php:4139
 msgid "No OCSNG server defined"
 msgstr "OCSNGサーバが定義されていません"
 
-#: inc/ocsserver.class.php:5657
+#: inc/ocsserver.class.php:5664
 msgid "Computers don't check any rule"
 msgstr ""
 
-#: inc/ocsserver.class.php:5659
+#: inc/ocsserver.class.php:5666
 msgid "Duplicate computers"
 msgstr ""
 
-#: inc/ocsserver.class.php:5660
+#: inc/ocsserver.class.php:5667
 msgid "Computers whose import is refused by a rule"
 msgstr ""
 
-#: inc/ocsserver.class.php:5710
+#: inc/ocsserver.class.php:5717
 msgid "Statistics of the OCSNG link"
 msgstr ""
 
@@ -706,47 +706,6 @@ msgstr "キー/値"
 #: inc/registrykey.class.php:119
 msgid "No key found in registry"
 msgstr "登録にキーが見つかりません"
-
-#: inc/ruleimportcomputer.class.php:65
-#: inc/ruleimportcomputercollection.class.php:61
-msgid "Rules for import and link computers"
-msgstr ""
-
-#: inc/ruleimportcomputer.class.php:81 inc/ruleimportcomputer.class.php:104
-#: inc/ruleimportcomputer.class.php:108 inc/ruleimportcomputer.class.php:115
-#: inc/ruleimportcomputer.class.php:119 inc/ruleimportcomputer.class.php:123
-#: inc/ruleimportcomputer.class.php:130 inc/ruleimportcomputer.class.php:134
-#: inc/ruleimportcomputer.class.php:139 inc/ruleimportcomputer.class.php:144
-msgid "Computer to import"
-msgstr ""
-
-#: inc/ruleimportcomputer.class.php:82
-msgid "target entity for the computer"
-msgstr ""
-
-#: inc/ruleimportcomputer.class.php:89
-msgid "Find computers in GLPI having the status"
-msgstr ""
-
-#: inc/ruleimportcomputer.class.php:157
-msgid "To be unaware of import"
-msgstr "インポートを意識しないためには"
-
-#: inc/ruleimportcomputer.class.php:166
-msgid "Link if possible"
-msgstr ""
-
-#: inc/ruleimportcomputer.class.php:167
-msgid "Link if possible, otherwise imports declined"
-msgstr ""
-
-#: inc/ruleimportcomputer.class.php:208
-msgid "is already present in GLPI"
-msgstr ""
-
-#: inc/ruleimportcomputer.class.php:209
-msgid "is empty in GLPI"
-msgstr ""
 
 #: inc/thread.class.php:55
 msgid "Back to processes list"
