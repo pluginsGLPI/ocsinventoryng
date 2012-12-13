@@ -39,12 +39,12 @@ restore_error_handler();
 $_GET = array();
 if (isset($_SERVER['argv'])) {
    for ($i=1 ; $i<$_SERVER['argc'] ; $i++) {
-      $it = explode("=",$_SERVER['argv'][$i],2);
-      $it[0] = preg_replace('/^--/','',$it[0]);
-
-      $_GET[$it[0]] = (isset($it[1]) ? $it[1] : true);
+      $it            = explode("=",$_SERVER['argv'][$i],2);
+      $it[0]         = preg_replace('/^--/','',$it[0]);
+      $_GET[$it[0]]  = (isset($it[1]) ? $it[1] : true);
    }
 }
+
 if (isset($_GET['help']) || !count($_GET)) {
    echo "Usage : php checkocslinks.php [ options ]\n";
    echo "Options values :\n";
@@ -54,6 +54,7 @@ if (isset($_GET['help']) || !count($_GET)) {
    echo "\t--clean  : delete invalid link\n";
    exit (0);
 }
+
 $tps    = microtime(true);
 $nbchk  = 0;
 $nbdel  = 0;
@@ -113,7 +114,7 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
       $nb = $DBocs->numrows($result_ocs);
       if ($nb > 0) {
          for ($i=1 ; $data = $DBocs->fetch_array($result_ocs) ; $i++) {
-            $data = clean_cross_side_scripting_deep(addslashes_deep($data));
+            $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
             $hardware[$data["ID"]] = $data["DEVICEID"];
             echo "$i/$nb\r";
          }
@@ -130,7 +131,7 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
       if ($nb > 0) {
          for ($i=1 ; $data = $DB->fetch_array($result) ; $i++) {
             $nbchk++;
-            $data = clean_cross_side_scripting_deep(addslashes_deep($data));
+            $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
             if (isset ($hardware[$data["ocsid"]])) {
                echo "$i/$nb\r";
             } else {
@@ -198,4 +199,5 @@ if (isset($_GET['clean'])) {
 } else {
    printf("Corrupt links : %d\n", $nbtodo);
 }
-printf("Done in %s\n", timestampToString(round($tps,0),true));
+printf("Done in %s\n", Html::timestampToString(round($tps,0),true));
+?>
