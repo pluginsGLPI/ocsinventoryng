@@ -376,20 +376,10 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                $netport['gateway'] = $line2['IPGATEWAY'];
                $netport['subnet']  = $line2['IPSUBNET'];
 
-               switch ($line2['SPEED']) {
-                  case "1 Gb/s"   :
-                     $netport['speed'] = 1000;
-                     break;
-
-                  case "100 Mb/s" :
-                     $netport['speed'] =  100;
-                     break;
-
-                  default:
-                     $netport['speed'] =   10;
-                     break;
+               $netport['speed'] = NetworkPortEthernet::transformPortSpeed($line2['SPEED'], false);
+               if ($netport['speed'] === false) {
+                  $netport['speed'] = 10;
                }
-
                $netport['invalid_network_interface'] = 0;
                switch ($line2["TYPE"]) {
                   case 'Ethernet':
@@ -455,7 +445,9 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                      $netport['instantiation_type'] = $instantiation_type;
                      $netport['NetworkName_name']   = 'OCS-INVENTORY-NG-'.str_replace('.', '-',
                                                                                       $ip_address);
-                     $netport['NetworkName__ipaddresses'] = array($ip_address);
+                     // Warning : index must be negative, otherwise, the address will be
+                     //           considered to be updated, not added !
+                     $netport['NetworkName__ipaddresses'] = array('-1' => $ip_address);
                   } else {
                      // In case of invalid IP we force the NetworkPort to be a
                      // PluginOcsinventoryngNetworkPort, thus we will keep the IP !
