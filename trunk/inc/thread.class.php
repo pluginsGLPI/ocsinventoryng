@@ -53,7 +53,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       $buttons                = array ();
       $title                  = "";
       $buttons["thread.php"]  = __('Back to processes list', 'ocsinventoryng');
-      displayTitle("", "", $title, $buttons);
+      Html::displayTitle("", "", $title, $buttons);
       echo "<br>";
    }
 
@@ -386,6 +386,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
          Html::openArrowMassives("processes");
          Html::closeArrowMassives(array("delete_processes" => _x('button','Delete permanently')));
       }
+      Html::closeForm();
    }
 
 

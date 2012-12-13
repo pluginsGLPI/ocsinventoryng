@@ -62,7 +62,11 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
       //Count old ip in GLPI
       $count_ip = count($import_ip);
-
+      
+      if (isset($devID)) {
+         unset($devID);
+      }
+      
       // Add network device
       if ($PluginOcsinventoryngDBocs->numrows($result2) > 0) {
          $mac_already_imported = array();
@@ -151,10 +155,13 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                $netport["itemtype"]              = 'Computer';
                $netport['networkinterface_name'] = $line2["TYPE"];
                $netport['MIB']                   = $line2["TYPEMIB"];
-               $netport['netmask'] = $line2['IPMASK'];
-               $netport['gateway'] = $line2['IPGATEWAY'];
-               $netport['subnet']  = $line2['IPSUBNET'];
-
+               $netport['netmask']               = $line2['IPMASK'];
+               $netport['gateway']               = $line2['IPGATEWAY'];
+               $netport['subnet']                = $line2['IPSUBNET'];
+               
+               if (isset($devID)) {
+                  $netport['items_devicenetworkcards_id'] = $devID;
+               }
                $netport['speed'] = NetworkPortEthernet::transformPortSpeed($line2['SPEED'], false);
                if ($netport['speed'] === false) {
                   $netport['speed'] = 10;

@@ -66,7 +66,7 @@ if (phpversion() < "5") {
    die("PHP version:".phpversion()." - "."You must install at least PHP5.\n\n");
 }
 // Chech Memory_limit - sometine cli limit (php-cli.ini) != module limit (php.ini)
-$mem = getMemoryLimit();
+$mem = Toolbox::getMemoryLimit();
 if (($mem > 0) && ($mem < (64 * 1024 * 1024))) {
    die("PHP memory_limit = ".$mem." - "."A minimum of 64Mio is commonly required for GLPI.'\n\n");
 }
@@ -143,7 +143,7 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
    if (isset ($_GET["process_id"])) {
       $fields["processid"] = $_GET["process_id"];
    }
-   $thread = new PluginOcsinventoryngThread;
+   $thread = new PluginOcsinventoryngThread();
 
    //Prepare datas to log in db
    $fields["start_time"]                           = date("Y-m-d H:i:s");
@@ -263,7 +263,7 @@ function FirstPass($ocsservers_id) {
 **/
 function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields, $config) {
 
-   $server  = new PluginOcsinventoryngServer;
+   $server  = new PluginOcsinventoryngServer();
    $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
 
    if (!$server->getFromDB($ocsservers_id)) {

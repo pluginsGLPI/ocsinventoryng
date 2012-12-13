@@ -152,7 +152,7 @@ file_put_contents($pidfile, getmypid());
 
 fwrite($log, date("r") . " " . $_SERVER["argv"][0] . " started\n");
 
-$cmd="php -q -d -f ocsng_fullsync.php --plugin_ocsinventoryng_ocsservers_id=$server_id --managedeleted=1";
+$cmd="php -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --managedeleted=1";
 $out=array();
 $ret=0;
 exec($cmd, $out, $ret);
