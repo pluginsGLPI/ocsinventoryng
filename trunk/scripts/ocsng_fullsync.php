@@ -200,10 +200,6 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
    echo "=====================================================\n";
 }
 
-//Send notifications if needed
-PluginOcsinventoryngNotimportedcomputer::sendAlert();
-
-
 /**
  * @param $ocsservers_id   integer  the OCS server id
 **/

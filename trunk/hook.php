@@ -511,6 +511,13 @@ function plugin_ocsinventoryng_install() {
 
    $migration->executeMigration();
 
+   $cron = new CronTask();
+   if (!$cron->getFromDBbyName('PluginMassocsimportNotimportedcomputer','SendAlerts')) {
+      // creation du cron - param = duree de conservation
+      CronTask::Register('PluginMassocsimportNotimported', 'SendAlerts', 10 * MINUTE_TIMESTAMP,
+                         array('param' => 24));
+   }
+       
    return true;
 }
 

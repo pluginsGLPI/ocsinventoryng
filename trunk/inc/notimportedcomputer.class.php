@@ -596,5 +596,19 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
       $DB->query($query);
    }
 
+   
+   static function cronInfo($name) {
+      global $LANG;
+   
+      switch ($name) {
+         case "sendAlerts" :
+            return array('description' => $LANG["massocsimport"]["config"][23]);
+        }
+   }
+        
+   static function cronSendAlerts($task) {
+      self::sendAlert();
+      $task->setVolume(1);
+   }
 }
 ?>
