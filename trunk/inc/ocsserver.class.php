@@ -3491,7 +3491,7 @@ JAVASCRIPT;
                               $devID = $CompDevice->add(array('items_id'  => $computers_id,
                                                               'itemtype'     => 'Computer',
                                                               'devicememories_id' => $ram_id,
-                                                              'specificity'   => $line2["CAPACITY"],
+                                                              'size'   => $line2["CAPACITY"],
                                                               '_no_history'   => !$dohistory));
                               self::addToOcsArray($computers_id,
                                                   array($prevalue.$devID
@@ -3547,7 +3547,7 @@ JAVASCRIPT;
                               $devID = $CompDevice->add(array('items_id'  => $computers_id,
                                                               'itemtype'     => 'Computer',
                                                               'deviceharddrives_id' => $dd_id,
-                                                              'specificity'   => $line2["DISKSIZE"],
+                                                              'capacity'   => $line2["DISKSIZE"],
                                                               '_no_history'   => !$dohistory));
                               self::addToOcsArray($computers_id,
                                                   array($prevalue.$devID
@@ -3732,7 +3732,7 @@ JAVASCRIPT;
                            $devID = $CompDevice->add(array('items_id'  => $computers_id,
                                                             'itemtype'     => 'Computer',
                                                            'deviceprocessors_id' => $proc_id,
-                                                           'specificity'         => $line["PROCESSORS"],
+                                                           'frequency'         => $line["PROCESSORS"],
                                                            '_no_history'         => !$dohistory));
                            self::addToOcsArray($computers_id,
                                                array($prevalue.$devID
@@ -3793,7 +3793,7 @@ JAVASCRIPT;
                            $devID = $CompDevice->add(array('items_id'  => $computers_id,
                                                            'itemtype'     => 'Computer',
                                                            'devicegraphiccards_id' => $video_id,
-                                                           'specificity'   => $line2["MEMORY"],
+                                                           'memory'   => $line2["MEMORY"],
                                                            '_no_history'   => !$dohistory));
                            self::addToOcsArray($computers_id,
                                                array($prevalue.$devID
