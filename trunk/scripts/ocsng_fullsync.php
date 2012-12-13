@@ -232,12 +232,12 @@ function FirstPass($ocsservers_id) {
       }
 
       // Store result for second pass (multi-thread)
-      $server                                         = new PluginOcsinventoryngOcsServer();
+      $server                                         = new PluginOcsinventoryngServer();
       $fields["max_ocsid"]                            = $max_id;
       $fields["max_glpidate"]                         = $max_date;
       $fields["plugin_ocsinventoryng_ocsservers_id"]  = $ocsservers_id;
 
-      if ($server->getFromDB($ocsservers_id)) {
+      if ($server->getFromDBbyOcsServer($ocsservers_id)) {
          $fields["id"] = $server->fields["id"];
          $server->update($fields);
       } else {
@@ -263,18 +263,26 @@ function FirstPass($ocsservers_id) {
  * @param $config
 **/
 function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields, $config) {
-
-   $server  = new PluginOcsinventoryngOcsServer();
-   $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
-
-   if (!$server->getFromDB($ocsservers_id)) {
-      echo "\tThread #" . $threadid .": cannot get server information: ".$cfg_ocs["name"] . "\n\n";
-      return false;
-   }
+   
+   $server  = new PluginOcsinventoryngServer();
+   $ocsserver  = new PluginOcsinventoryngOcsServer();
+   
    if (!PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id)) {
-      echo "\tThread #" . $threadid . ": cannot contact server: " . $cfg_ocs["name"] . "\n\n";
+      echo "\tThread #" . $threadid . ": cannot contact server\n\n";
       return false;
    }
+   
+   if (!$ocsserver->getFromDB($ocsservers_id)) {
+      echo "\tThread #" . $threadid .": cannot get OCS server information\n\n";
+      return false;
+   }
+   
+   if (!$server->getFromDBbyOcsServer($ocsservers_id)) {
+      echo "\tThread #" . $threadid .": cannot get server information\n\n";
+      return false;
+   }
+   
+   $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
    
    return plugin_ocsinventoryng_importFromOcsServer($threads_id,$cfg_ocs, $server, $thread_nbr,
                                                     $threadid, $fields, $config);

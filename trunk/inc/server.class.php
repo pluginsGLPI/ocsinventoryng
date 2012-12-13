@@ -38,5 +38,25 @@ class PluginOcsinventoryngServer extends CommonDBTM {
    function getIndexName() {
       return "plugin_ocsinventoryng_ocsservers_id";
    }
+   
+   function getFromDBbyOcsServer($id) {
+      global $DB;
+
+      $query = "SELECT *
+                FROM `".$this->getTable()."`
+                WHERE `plugin_ocsinventoryng_ocsservers_id` = '$id'";
+
+      if ($result = $DB->query($query)) {
+         if ($DB->numrows($result) != 1) {
+            return false;
+         }
+         $this->fields = $DB->fetch_assoc($result);
+         if (is_array($this->fields) && count($this->fields)) {
+            return true;
+         }
+         toolbox::logdebug($this->fields);
+      }
+      return false;
+   }
 }
 ?>
