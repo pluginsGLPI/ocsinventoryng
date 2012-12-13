@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
 */
 
-class PluginOcsinventoryngNotimported extends CommonDropdown {
+class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
 
    // From CommonDBTM
    public $dohistory          = true;
@@ -406,9 +406,9 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
 
 
    /**
-    * @param $notimported  PluginOcsinventoryngNotimported object
+    * @param $notimported  PluginOcsinventoryngNotimportedcomputer object
    **/
-   static function showActions(PluginOcsinventoryngNotimported $notimported) {
+   static function showActions(PluginOcsinventoryngNotimportedcomputer $notimported) {
 
       echo "<div class='spaced'>";
       echo "<form name='actions' id='actions' method='post' value='".getItemTypeFormURL(__CLASS__)."'>";
@@ -420,7 +420,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
       echo "<tr class='tab_bg_2'><td class='center'>";
       echo "<input type='hidden' name='id' value='".$notimported->fields['id']."'>";
       echo "<input type='hidden' name='action' value='massive'>";
-      Dropdown::showForMassiveAction('PluginOcsinventoryngNotimported', 0,
+      Dropdown::showForMassiveAction('PluginOcsinventoryngNotimportedcomputer', 0,
                                      array('action' => 'massive'));
       echo "</td></tr>";
       echo "</table>";
@@ -435,7 +435,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
    static function computerImport($params=array()) {
 
       if (isset($params['id'])) {
-         $notimported = new PluginOcsinventoryngNotimported;
+         $notimported = new PluginOcsinventoryngNotimportedcomputer;
          $notimported->getFromDB($params['id']);
          $changes     = self::getOcsComputerInfos($notimported->fields);
          if (isset($params['force'])) {
@@ -483,7 +483,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
    static function linkComputer($params=array()) {
 
       if (isset($params['id'])) {
-         $notimported = new PluginOcsinventoryngNotimported;
+         $notimported = new PluginOcsinventoryngNotimportedcomputer;
          $notimported->getFromDB($params['id']);
          $changes     = self::getOcsComputerInfos($notimported->fields);
 
@@ -554,11 +554,11 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
       $message     = array();
       $items_infos = array();
 
-     $query = "SELECT `glpi_plugin_ocsinventoryng_notimporteds`.*
-               FROM `glpi_plugin_ocsinventoryng_notimported`
+     $query = "SELECT `glpi_plugin_ocsinventoryng_notimportedcomputers`.*
+               FROM `glpi_plugin_ocsinventoryng_notimportedcomputers`
                LEFT JOIN `glpi_alerts`
-                  ON (`glpi_plugin_ocsinventoryng_notimporteds`.`id` = `glpi_alerts`.`items_id`
-                      AND `glpi_alerts`.`itemtype` = 'PluginOcsinventoryngNotimported'
+                  ON (`glpi_plugin_ocsinventoryng_notimportedcomputers`.`id` = `glpi_alerts`.`items_id`
+                      AND `glpi_alerts`.`itemtype` = 'PluginOcsinventoryngNotimportedcomputer'
                       AND `glpi_alerts`.`type` = '".Alert::END."')
                WHERE `glpi_alerts`.`date` IS NULL";
 
@@ -567,11 +567,11 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
       }
 
       foreach ($items_infos as $entity => $items) {
-         if (NotificationEvent::raiseEvent('not_imported', new PluginOcsinventoryngNotimported(),
+         if (NotificationEvent::raiseEvent('not_imported', new PluginOcsinventoryngNotimportedcomputer(),
                                            array('entities_id' => $entity,
                                                  'notimported' => $items))) {
             $alert             = new Alert();
-            $input["itemtype"] = 'PluginOcsinventoryngNotimported';
+            $input["itemtype"] = 'PluginOcsinventoryngNotimportedcomputer';
             $input["type"]     = Alert::END;
             foreach ($items as $id => $item) {
                $input["items_id"] = $id;
@@ -591,7 +591,7 @@ class PluginOcsinventoryngNotimported extends CommonDropdown {
 
       $query = "DELETE
                 FROM `glpi_alerts`
-                WHERE `itemtype` = 'PluginOcsinventoryngNotimported'
+                WHERE `itemtype` = 'PluginOcsinventoryngNotimportedcomputer'
                       AND `items_id` = '".$this->fields['id']."'";
       $DB->query($query);
    }

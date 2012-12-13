@@ -40,18 +40,7 @@ $plugin = new Plugin();
       Html::header('OCSInventory NG', "", "plugins", "ocsinventoryng");
 
       // choose config server or config synchro
-      echo "<table class='tab_cadre'>";
-      echo "<tr><th>".__('Configuration')."</th></tr>";
-      echo "<tr class='tab_bg_1'><td class='center b'>";
-      echo "<a href='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsserver.php'>".
-             _n('OCSNG server', 'OCSNG servers', 1,'ocsinventoryng')."</a>";
-      echo "</td></tr>";
-
-      echo "<tr class='tab_bg_1'><td class='center b'>";
-      echo "<a href='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/config.form.php'>".
-             __('Synchronization')."</a>";
-      echo "</td></tr>";
-      echo "</table>";
+      PluginOcsinventoryngConfig::showMenu();
 
    } else {
       Html::header(__('Setup'),'',"config","plugins");

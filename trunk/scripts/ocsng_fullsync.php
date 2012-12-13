@@ -90,7 +90,7 @@ $fields        = array ();
 
 //Get script configuration
 $config     = new PluginOcsinventoryngConfig();
-$notimport  = new PluginOcsinventoryngNotimported();
+$notimport  = new PluginOcsinventoryngNotimportedcomputer();
 $config->getFromDB(1);
 
 if (!isset ($_GET["ocs_server_id"]) || ($_GET["ocs_server_id"] == '')) {
@@ -201,7 +201,7 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
 }
 
 //Send notifications if needed
-PluginOcsinventoryngNotimported::sendAlert();
+PluginOcsinventoryngNotimportedcomputer::sendAlert();
 
 
 /**
@@ -337,7 +337,7 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id,$cfg_ocs, $server
    $fields["total_number_machines"] += $nb;
 
    $thread     = new PluginOcsinventoryngThread();
-   $notimport  = new PluginOcsinventoryngNotimported();
+   $notimport  = new PluginOcsinventoryngNotimportedcomputer();
    for ($i = 0 ; $data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs) ; $i++) {
       if ($i == $config->fields["thread_log_frequency"]) {
          $fields["status"] = PLUGIN_OCSINVENTORYNG_STATE_RUNNING;

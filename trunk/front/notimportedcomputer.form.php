@@ -32,7 +32,7 @@ if (!defined('GLPI_ROOT')) {
 }
 include (GLPI_ROOT . "/inc/includes.php");
 
-$dropdown = new PluginOcsinventoryngNotimported();
+$dropdown = new PluginOcsinventoryngNotimportedcomputer();
 
 if (isset($_POST['action'])) {
    switch ($_POST['action']) {
@@ -40,10 +40,10 @@ if (isset($_POST['action'])) {
          $_POST['force'] = true;
 
       case 'plugin_ocsinventoryng_replayrules' :
-         if (PluginOcsinventoryngNotimported::computerImport($_POST)) {
+         if (PluginOcsinventoryngNotimportedcomputer::computerImport($_POST)) {
             $dropdown->redirectToList();
          } else {
-            Html::redirect(Html::getItemTypeFormURL('PluginOcsinventoryngNotimported').
+            Html::redirect(Html::getItemTypeFormURL('PluginOcsinventoryngNotimportedcomputer').
                            '?id='.$_POST['id']);
          }
          break;

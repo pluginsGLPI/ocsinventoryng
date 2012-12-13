@@ -239,7 +239,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       if ($numberAciveServers > 1) {
          echo "<form action=\"".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsng.php\"
                 method='post'>";
-         echo "<div class='center'><table class='tab_cadre'>";
+         echo "<div class='center'><table class='tab_cadre' width='40%'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>".__('Choice of an OCSNG server', 'ocsinventoryng').
               "</th></tr>\n";
 
@@ -266,7 +266,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       }
 
 
-      echo "<div class='center'><table class='tab_cadre'>";
+      echo "<div class='center'><table class='tab_cadre' width='40%'>";
       echo "<tr><th colspan='4'>";
       printf(__('%1$s: %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
       echo "</th></tr>";
@@ -336,7 +336,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                </a></td>";
          //host not imported by thread
          echo "<td class='center b' colspan='2'>
-               <a href='notimported.php'>
+               <a href='notimportedcomputer.php'>
                 <img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/notimported.png' ".
                   "alt='" .__s('Computers not imported by automatic actions', 'ocsinventoryng'). "' ".
                   "title=\"" . __s('Computers not imported by automatic actions', 'ocsinventoryng'). "\" >

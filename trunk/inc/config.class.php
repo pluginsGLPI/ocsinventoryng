@@ -78,7 +78,23 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       return $ong;
    }
 
+   static function showMenu() {
+      global $CFG_GLPI;
+      
+      echo "<table class='tab_cadre_fixe'>";
+      echo "<tr><th>".__('Configuration')."</th></tr>";
+      echo "<tr class='tab_bg_1'><td class='center b'>";
+      echo "<a href='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsserver.php'>".
+             _n('OCSNG server', 'OCSNG servers', 2,'ocsinventoryng')."</a>";
+      echo "</td></tr>";
 
+      echo "<tr class='tab_bg_1'><td class='center b'>";
+      echo "<a href='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/config.form.php'>".
+             __("Automatic synchronization's configuration", 'ocsinventoryng')."</a>";
+      echo "</td></tr>";
+      echo "</table>";
+   }
+   
    function showConfigForm($target) {
 
       $this->getFromDB(1);
@@ -202,7 +218,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
    **/
    function showDebug() {
 
-      NotificationEvent::debugEvent(new PluginOcsinventoryngNotimported(),
+      NotificationEvent::debugEvent(new PluginOcsinventoryngNotimportedcomputer(),
                                     array('entities_id' => 0 ,
                                           'notimported' => array()));
    }

@@ -56,6 +56,6 @@ if (Session::haveRecursiveAccessToEntity(0)) {
    Html::footer();
 }
 else {
-   Html::redirect(getItemTypeSearchURL('PluginOcsinventoryngNotImported'));
+   Html::redirect(getItemTypeSearchURL('PluginOcsinventoryngNotimportedcomputer'));
 }
 ?>

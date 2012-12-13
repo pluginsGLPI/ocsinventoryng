@@ -33,7 +33,7 @@ if (!defined('GLPI_ROOT')){
 }
 
 // Class NotificationTarget
-class PluginOcsinventoryngNotificationTargetNotImported extends NotificationTarget {
+class PluginOcsinventoryngNotificationTargetNotImportedcomputer extends NotificationTarget {
 
    function getEvents() {
       return array ('not_imported' => __('Computers not imported by automatic actions',
@@ -59,7 +59,7 @@ class PluginOcsinventoryngNotificationTargetNotImported extends NotificationTarg
          $tmp['##notimported.tag##']       = $item['tag'];
          $tmp['##notimported.ocsserver##'] = Dropdown::getDropdownName('glpi_plugin_ocsinventoryng_ocsservers',
                                                                        $item['ocsid']);
-         $tmp['##notimported.reason##'] = PluginOcsinventoryngNotimported::getReason($item['reason']);
+         $tmp['##notimported.reason##'] = PluginOcsinventoryngNotimportedcomputer::getReason($item['reason']);
 
          $url = $CFG_GLPI["url_base"]."/index.php?redirect=plugin_ocsinventoryng_".$item['id'];
          $tmp['##notimported.url##'] = urldecode($url);

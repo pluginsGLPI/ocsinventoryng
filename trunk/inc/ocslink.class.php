@@ -88,7 +88,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "<th colspan='2'>".__('OCS Inventory NG')."</th>";
                   echo '<tr><td>'.__('Last OCSNG inventory date', 'ocsinventoryng');
                   echo "</td><td>".Html::convDateTime($data["last_ocs_update"]).'</td></tr>';
-                  echo '<tr><td>'.__('Date of import in GLPI',  'ocsinventoryng');
+                  echo '<tr><td>'.__('GLPI import date',  'ocsinventoryng');
                   echo "</td><td>".Html::convDateTime($data["last_update"]).'</td></tr>';
                   echo '<tr><td>'.__('Inventory agent',  'ocsinventoryng');
                   echo "</td><td>".$data["ocs_agent_version"].'</td></tr>';

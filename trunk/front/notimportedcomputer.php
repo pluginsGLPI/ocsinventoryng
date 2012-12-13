@@ -38,7 +38,7 @@ Session::checkRight("logs", "r");
 Html::header(__('Processes execution of automatic actions', 'ocsinventoryng'), "", "plugins",
              "ocsinventoryng", "notimported");
 
-Search::show('PluginOcsinventoryngNotimported');
+Search::show('PluginOcsinventoryngNotimportedcomputer');
 
 Html::footer();
 ?>

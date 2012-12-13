@@ -69,7 +69,7 @@ function plugin_init_ocsinventoryng() {
    Plugin::registerClass('PluginOcsinventoryngProfile',
                          array('addtabon' => 'Profile'));
 
-   Plugin::registerClass('PluginOcsinventoryngNotimported',
+   Plugin::registerClass('PluginOcsinventoryngNotimportedcomputer',
                          array ('massiveaction_noupdate_types' => true,
                                 'massiveaction_nodelete_types' => true,
                                 'notificationtemplates_types'  => true));
@@ -90,7 +90,7 @@ function plugin_init_ocsinventoryng() {
 
       if (plugin_ocsinventoryng_haveRight("ocsng","w") || Session::haveRight("config","w")) {
          $PLUGIN_HOOKS['use_massive_action']['ocsinventoryng'] = 1;
-         $PLUGIN_HOOKS['redirect_page']['ocsinventoryng']      = "front/notimported.form.php";
+         $PLUGIN_HOOKS['redirect_page']['ocsinventoryng']      = "front/notimportedcomputer.form.php";
       }
 
       if (plugin_ocsinventoryng_haveRight("ocsng", "w") || Session::haveRight("config", "w")) {
