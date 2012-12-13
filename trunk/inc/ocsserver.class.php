@@ -3140,8 +3140,10 @@ JAVASCRIPT;
 
             echo "<tr><th>".__('Name'). "</th>\n";
             echo "<th>".__('Manufacturer')."</th>\n";
-            echo "<th>" .__('Model')."</th><th>".__('Serial number')."</th>\n";
-            echo "<th>" . __('Date') . "</th>\n<th>TAG</th>\n";
+            echo "<th>" .__('Model')."</th>\n";
+            echo "<th>".__('Serial number')."</th>\n";
+            echo "<th>" . __('Date')."</th>\n";
+            echo "<th>".__('OCSNG TAG', 'ocsinventoryng')."</th>\n";
             if ($advanced && !$tolinked) {
                echo "<th>" . __('Match the rule ?', 'ocsinventoryng') . "</th>\n";
                echo "<th>" . __('Destination entity') . "</th>\n";
@@ -3369,9 +3371,13 @@ JAVASCRIPT;
                      case "import_ip" :
                         $querySearchLocked = "SELECT *
                                               FROM `glpi_networkports`
-                                              WHERE `items_id` = '$computers_id'
-                                                    AND `itemtype` = 'Computer'
-                                                    AND `ip` = '$val'";
+                                              LEFT JOIN `glpi_networknames` 
+                                              ON (`glpi_networkports`.`id` = `glpi_networknames`.`items_id`)
+                                              LEFT JOIN `glpi_ipaddresses`
+                                              ON (`glpi_ipaddresses`.`items_id` = `glpi_networknames`.`id`)
+                                              WHERE `glpi_networkports`.`items_id` = '$computers_id'
+                                                    AND `glpi_networkports`.`itemtype` = 'Computer'
+                                                    AND `glpi_ipaddresses`.`name` = '$val'";
                         break;
 
                      case "import_disk" :
