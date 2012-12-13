@@ -163,6 +163,7 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
 
    $tid           = $thread->add($fields);
    $fields["id"]  = $tid;
+
    if ($ocsservers_id != -1) {
       $result = SecondPass($tid,$ocsservers_id, $thread_nbr, $threadid, $fields, $config);
       if ($result) {
@@ -231,7 +232,7 @@ function FirstPass($ocsservers_id) {
       }
 
       // Store result for second pass (multi-thread)
-      $server                                         = new PluginOcsinventoryngServer;
+      $server                                         = new PluginOcsinventoryngOcsServer();
       $fields["max_ocsid"]                            = $max_id;
       $fields["max_glpidate"]                         = $max_date;
       $fields["plugin_ocsinventoryng_ocsservers_id"]  = $ocsservers_id;
@@ -263,7 +264,7 @@ function FirstPass($ocsservers_id) {
 **/
 function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields, $config) {
 
-   $server  = new PluginOcsinventoryngServer();
+   $server  = new PluginOcsinventoryngOcsServer();
    $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
 
    if (!$server->getFromDB($ocsservers_id)) {
@@ -274,6 +275,7 @@ function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields
       echo "\tThread #" . $threadid . ": cannot contact server: " . $cfg_ocs["name"] . "\n\n";
       return false;
    }
+   
    return plugin_ocsinventoryng_importFromOcsServer($threads_id,$cfg_ocs, $server, $thread_nbr,
                                                     $threadid, $fields, $config);
 }
