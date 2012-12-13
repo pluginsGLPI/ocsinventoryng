@@ -338,10 +338,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          $header = false;
          echo "<div width='50%'>";
-         echo "<form method='post' action=\"$target\">";
+         echo "<form method='post' id='ocsng_form' name='ocsng_form' action=\"$target\">";
          echo "<input type='hidden' name='id' value='$ID'>\n";
          echo "<table class='tab_cadre_fixe'>";
-
+         
          // Print lock fields for OCSNG
          $lockable_fields = PluginOcsinventoryngOcsServer::getLockableFields();
          $locked          = importArrayFromDB($data["computer_update"]);
@@ -586,7 +586,13 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                echo "<input type='checkbox' name='lockdevice[" . $key . "]'></td></tr>\n";
             }
          }
-
+         
+         if ($header) {
+            echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
+            PluginOcsinventoryngOcsServer::checkBox($target);
+            echo "</td></tr>";
+         }
+         
          if ($header) {
             echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
             echo "<input class='submit' type='submit' name='unlock' value='".
@@ -616,7 +622,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          switch ($item->getType()) {
             case 'Computer' :
-               return array('1' => __('OCSNG mode', 'ocsinventoryng'));
+               return array('1' => _n('OCSNG link', 'OCSNG links', 1, 'ocsinventoryng'));
          }
       }
       return '';
