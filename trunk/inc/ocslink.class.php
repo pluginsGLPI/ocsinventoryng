@@ -571,7 +571,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             if (!isset($types[$type])) { // should never happen
                continue;
             }
-            $compdev = new Item_Devices($types[$type]);
+
+            $compdev = new $types[$type]();
             if (!$compdev->getFromDB($iddev)) {
                $header = true;
                if ($first) {
