@@ -461,10 +461,14 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                $tmp = explode(PluginOcsinventoryngOcsServer::FIELD_SEPARATOR,$val);
                $querySearchLockedIP = "SELECT *
                                        FROM `glpi_networkports`
-                                       WHERE `items_id` = '$ID'
-                                             AND `itemtype` = 'Computer'
-                                             AND `ip` = '".$tmp[0]."'
-                                             AND `mac` = '".$tmp[1]."'";
+                                       LEFT JOIN `glpi_networknames` 
+                                          ON (`glpi_networkports`.`id` = `glpi_networknames`.`items_id`)
+                                       LEFT JOIN `glpi_ipaddresses` 
+                                          ON (`glpi_ipaddresses`.`items_id` = `glpi_networknames`.`id`)
+                                       WHERE `glpi_networkports`.`items_id` = '$ID'
+                                             AND `glpi_networkports`.`itemtype` = 'Computer'
+                                             AND `glpi_ipaddresses`.`name` = '".$tmp[0]."'
+                                             AND `glpi_networkports`.`mac` = '".$tmp[1]."'";
                $resultSearchIP = $DB->query($querySearchLockedIP);
 
                if ($DB->numrows($resultSearchIP) == 0) {
