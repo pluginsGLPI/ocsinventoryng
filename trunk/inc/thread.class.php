@@ -128,7 +128,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
             echo "<td class='center'>" . $thread["link_refused_machines_number"] . "</td>";
             echo "<td class='center'>";
             if ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED) {
-               echo timestampToString($thread["duree"]);
+               echo Html::timestampToString($thread["duree"]);
             } else {
                echo Dropdown::EMPTY_VALUE;
                $finished = false;
@@ -351,7 +351,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
 
                echo "<td class='center'>";
                if ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED) {
-                  echo timestampToString($thread["duree"]);
+                  echo Html::timestampToString($thread["duree"]);
                } else {
                    echo Dropdown::EMPTY_VALUE;
                }
@@ -444,10 +444,10 @@ class PluginOcsinventoryngThread extends CommonDBTM {
              "<br />" . $linkedrefused->GetMaximum() .
              "<br />" . round($linkedrefused->GetAverage(),2) .
              "<br />&nbsp;</td>";
-      echo "<td class='center'>" . timestampToString($time->GetMinimum()) .
-             "<br />" . timestampToString($time->GetMaximum()) . "<br />" .
-             timestampToString(round($time->GetAverage())) .
-             "<br />" . timestampToString($time->GetTotal()) . "</td>";
+      echo "<td class='center'>" . Html::timestampToString($time->GetMinimum()) .
+             "<br />" . Html::timestampToString($time->GetMaximum()) . "<br />" .
+             Html::timestampToString(round($time->GetAverage())) .
+             "<br />" . Html::timestampToString($time->GetTotal()) . "</td>";
       if ($time->GetTotal()>0) {
          echo "<td class='center' colspan='2'>" . __('Speed') . "<br />" .
                 sprintf(__('%1$s %2$s'),
@@ -461,7 +461,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
          echo "<td>&nbsp;</td><td>&nbsp;</td>";
       }
       echo "</tr>\n";
-      echo "<tr><th colspan='16'>".Dropdown::EMPTY_VALUE."<th></tr>\n";
+      echo "<tr><th colspan='15'>".Dropdown::EMPTY_VALUE."<th></tr>\n";
    }
 
 
