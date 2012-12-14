@@ -404,7 +404,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
    function showshowStat($duree, &$imported, &$synchronized, &$linked, &$failed, &$notupdated,
                          &$notunique,&$linkedrefused, &$time) {
 
-      $title = _('Statistics');
+      $title = __('Statistics');
       if ($duree < 9999) {
          $title = sprintf(__('%1$s (%2$s)'), $title,
                           sprintf(_n('%d hour', '%d hours' ,$duree), $duree));
