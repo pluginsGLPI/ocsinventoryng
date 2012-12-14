@@ -58,7 +58,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
                          'type'  => 'echo_dropdown',
                          'table' => 'glpi_plugin_ocsinventoryng_ocsservers'),
                    array('name'  => 'ocs_deviceid',
-                         'label' => __('Device ID'),
+                         'label' => __('Device ID', 'ocsinventoryng'),
                          'type'  => 'echo'),
                    array('name'  => 'serial',
                          'label' => __('Serial number'),
@@ -146,10 +146,13 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
       $message = array();
       if ($rule_list != '') {
          foreach (json_decode($rule_list,true) as $key => $value) {
-            if ($rule = getItemForItemtype($key)
-                && $rule->can($value,'r')) {
-               $url = $rule->getLinkURL();
-               $message[] = "<a href='$url'>".$rule->getName()."</a>";
+            if ($rule = getItemForItemtype($key)) {
+            
+               $rule = new $key();
+               if ($rule->can($value,'r')) {
+                  $url = $rule->getLinkURL();
+                  $message[] = "<a href='$url'>".$rule->getName()."</a>";
+               }
             }
          }
          return implode(' => ',$message);

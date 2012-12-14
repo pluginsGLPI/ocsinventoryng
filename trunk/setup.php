@@ -143,7 +143,7 @@ function plugin_init_ocsinventoryng() {
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['notimported']['title']
                = __s('Computers not imported by automatic actions', 'ocsinventoryng');
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['notimported']['page']
-               = '/plugins/ocsinventoryng/front/notimported.php';
+               = '/plugins/ocsinventoryng/front/notimportedcomputer.php';
 
             if (plugin_ocsinventoryng_haveRight('clean_ocsng','r')) {
                $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['clean']['title']

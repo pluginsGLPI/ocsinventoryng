@@ -35,10 +35,11 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 Session::checkRight("logs", "r");
 
+$thread = new PluginOcsinventoryngThread();
+
 if (Session::haveRecursiveAccessToEntity(0)) {
    Html::header(__('Processes execution of automatic actions',  'ocsinventoryng'), "", "plugins",
                 "ocsinventoryng", "thread");
-   $thread = new PluginOcsinventoryngThread();
 
    if (isset ($_POST["delete_processes"])) {
       //checkRight("ocsng", "w");
@@ -56,6 +57,7 @@ if (Session::haveRecursiveAccessToEntity(0)) {
    Html::footer();
 }
 else {
-   Html::redirect(getItemTypeSearchURL('PluginOcsinventoryngNotimportedcomputer'));
+   $thread->redirectToList();
 }
+
 ?>

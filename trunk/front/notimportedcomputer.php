@@ -41,4 +41,5 @@ Html::header(__('Processes execution of automatic actions', 'ocsinventoryng'), "
 Search::show('PluginOcsinventoryngNotimportedcomputer');
 
 Html::footer();
+
 ?>
