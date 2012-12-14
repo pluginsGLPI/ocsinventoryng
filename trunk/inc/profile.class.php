@@ -40,7 +40,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
 
 
    static function getTypeName($nb=0) {
-      return __('Rights management');
+      return __('Rights management', 'ocsinventoryng');
    }
 
 
@@ -72,7 +72,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
 
       if ($item->getType()=='Profile' && $item->getField('interface')!='helpdesk') {
-         return __('OCSNG Mode', 'ocsinventoryng');
+         return __('OCSNG link', 'ocsinventoryng');
       }
       return '';
    }
@@ -188,7 +188,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
       echo "</tr>";
 
       echo "<tr class='tab_bg_2'>";
-      echo "<td>"._n('Server', 'Servers', 2)."</td><td>";
+      echo "<td>"._n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng')."</td><td>";
       Profile::dropdownNoneReadWrite("ocsng", $this->fields["ocsng"], 1, 0, 1);
       echo "</td>";
       echo "<td>".__('Manually synchronization', 'ocsinventoryng')."</td><td>";
