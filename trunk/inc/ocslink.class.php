@@ -299,7 +299,46 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * @param $comp   Computer_Item object
    **/
    static function purgeComputer_Item(Computer_Item $comp) {
-      //TODO see Computer_Item function cleanDBonPurge()
+      
+      if ($device = getItemForItemtype($comp->fields['itemtype'])) {
+         if ($device->getFromDB($comp->fields['items_id'])) {
+            
+            if (isset($comp->input['_ocsservers_id'])) {
+               $ocsservers_id = $comp->input['_ocsservers_id'];
+            } else {
+               $ocsservers_id = PluginOcsinventoryngOcsServer::getByMachineID($comp->fields['computers_id']);
+            }
+
+            if ($ocsservers_id > 0) {
+               //Get OCS configuration
+               $ocs_config = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
+
+               //Get the management mode for this device
+               $mode = PluginOcsinventoryngOcsServer::getDevicesManagementMode($ocs_config, 
+                                                                              $comp->fields['itemtype']);
+               $decoConf = $ocs_config["deconnection_behavior"];
+
+               //Change status if :
+               // 1 : the management mode IS NOT global
+               // 2 : a deconnection's status have been defined
+               // 3 : unique with serial
+               if (($mode >= 2)
+               && (strlen($decoConf) > 0)) {
+
+                  //Delete periph from glpi
+                  if ($decoConf == "delete") {
+                     $tmp["id"] = $comp->fields['items_id'];
+                     $device->delete($tmp, 1);
+
+                  //Put periph in dustbin
+                  } else if ($decoConf == "trash") {
+                     $tmp["id"] = $comp->fields['items_id'];
+                     $device->delete($tmp, 0);
+                  }
+               }
+            } // $ocsservers_id>0
+         }
+      }
    }
 
 
