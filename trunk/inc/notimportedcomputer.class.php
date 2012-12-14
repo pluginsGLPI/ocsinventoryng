@@ -240,7 +240,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
       $tab[4]['table']           = $this->getTable();
       $tab[4]['field']           = 'ocs_deviceid';
       $tab[4]['linkfield']       = '';
-      $tab[4]['name']            = __('Device ID');
+      $tab[4]['name']            = __('Device ID', 'ocsinventoryng');
 
       $tab[5]['table']           = 'glpi_plugin_ocsinventoryng_ocsservers';
       $tab[5]['field']           = 'name';

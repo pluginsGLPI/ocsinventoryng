@@ -83,8 +83,8 @@ class PluginOcsinventoryngNotificationTargetNotImportedcomputer extends Notifica
                     'notimported.action'       => __('Computers not imported by automatic actions',
                                                      'ocsinventoryng'),
                     'notimported.ocsid'        => __('OCSNG ID', 'ocsinventoryng'),
-                    'notimported.deviceid'     => __('Device ID'),
-                    'notimported.reason'       => __('Reject cause'),
+                    'notimported.deviceid'     => __('Device ID', 'ocsinventoryng'),
+                    'notimported.reason'       => __('Reason of rejection'),
                     'notimported.serial'       => __('Serial number'));
 
       foreach ($tags as $tag => $label) {

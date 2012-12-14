@@ -5606,7 +5606,7 @@ JAVASCRIPT;
          //Initialize the server connection
          $PluginOcsinventoryngDBocs   = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
          $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
-         $task->log("Check updates from server " . $cfg_ocs['name'] . "\n");
+         $task->log(__('Check updates from server', 'ocsinventoryng')." " . $cfg_ocs['name'] . "\n");
 
          if (!$cfg_ocs["cron_sync_number"]) {
             return 0;
