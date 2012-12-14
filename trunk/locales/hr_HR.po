@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-14 11:27+0100\n"
-"PO-Revision-Date: 2012-12-14 10:35+0000\n"
+"POT-Creation-Date: 2012-12-14 13:38+0100\n"
+"PO-Revision-Date: 2012-12-14 12:47+0000\n"
 "Last-Translator: The tsmr <tsmr@thetsmr.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -108,6 +108,7 @@ msgstr "Registry"
 
 #: hook.php:1453 hook.php:1489 inc/config.class.php:88
 #: inc/ocsserver.class.php:103 inc/ocsserver.class.php:271
+#: inc/profile.class.php:191
 msgid "OCSNG server"
 msgid_plural "OCSNG servers"
 msgstr[0] ""
@@ -115,6 +116,7 @@ msgstr[1] ""
 msgstr[2] ""
 
 #: hook.php:1521 inc/ocslink.class.php:44 inc/ocslink.class.php:628
+#: inc/profile.class.php:75
 msgid "OCSNG link"
 msgid_plural "OCSNG links"
 msgstr[0] ""
@@ -706,8 +708,8 @@ msgstr ""
 msgid "Statistics of the OCSNG link"
 msgstr ""
 
-#: inc/profile.class.php:75
-msgid "OCSNG Mode"
+#: inc/profile.class.php:43
+msgid "Rights management"
 msgstr ""
 
 #: inc/profile.class.php:194
