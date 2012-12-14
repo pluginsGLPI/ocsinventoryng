@@ -67,6 +67,24 @@ function plugin_ocsinventoryng_install() {
                            FROM `OCS_glpi_profiles`";
          $DB->queryOrDie($query, "1.0.0 insert profiles for OCS in plugin");
       }
+      
+      $rule = new RuleImportEntity();
+      $values["entities_id"] = 0;
+      $values["sub_type"] = "RuleImportEntity";
+      $values["name"] = "OCS Rule";
+      $values["is_active"] = "1";
+      $values["is_recursive"] = "1";
+
+      $newid = $rule->add($values);
+
+      $query = "INSERT INTO `glpi_rulecriterias` VALUES (NULL,'".$newid."','TAG','0','*');";
+      $DB->queryOrDie($query, $DB->error());
+
+      $query = "INSERT INTO `glpi_rulecriterias` VALUES (NULL,'".$newid."','OCS_SERVER','0','1');";
+      $DB->queryOrDie($query, $DB->error());
+
+      $query = "INSERT INTO `glpi_ruleactions` VALUES (NULL,'".$newid."','assign','entities_id','0');";
+      $DB->queryOrDie($query, $DB->error());
 
    }
 
