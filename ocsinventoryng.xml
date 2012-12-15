@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+   <name>OCS Inventory NG</name>
+   <key>ocsinventoryng</key>
+   <state>stable</state>
+   <logo>https://forge.indepnet.net/svn/ocsinventoryng/ocsinventoryng.png</logo>
+   <description>
+      <short>
+         <fr><![CDATA[Synchronisation OCSInventory-NG]]></fr>
+         <en><![CDATA[OCSInventory-NG synchronisation]]></en>
+      </short>
+      <long>
+         <fr><![CDATA[Ce plugin permet de synchroniser GLPI avec la solution d'inventaire OCS Inventory NG. Il est destiné à remplacer le mode OCS natif de GLPI et d'apporter les fonctionnalités du plugin massocsimport afin d'offrir une meilleure compatibilité et évolutivité avec OCS Inventory. Il est composée d’un script (PHP ou Shell) permettant d’automatiser l’import et la mise à jour des machines (le mode OCSNG doit être opérationnel).<br />Une interface affiche la liste des scripts en cours ou terminés, ainsi que l'ensemble des données qui s'y rattachent.]]></fr>
+         <en><![CDATA[This plugin allows you to synchronize with GLPI inventory solution OCS Inventory NG. It's intended to replace native mode OCS of GLPI and use the plugin massocsimport functionalities to provide better compatibility and expandability with OCS. It's composed of a script (PHP or Shell) to automate import or synchronisation of computers (need that OCS mode is operational)<br />A graphical interface displays the list of scripts running or finished and all the datas related ot them.]]></en>
+      </long>
+   </description>
+   <homepage>https://forge.indepnet.net/projects/show/ocsinventoryng</homepage>
+   <download>https://forge.indepnet.net/projects/ocsinventoryng/files</download>
+   <authors>
+      <author>Xavier Caillaud</author>
+      <author>Walid Nouh</author>
+      <author>Remi Collet</author>
+      <author>Nelly Lasson</author>
+      <author>David Durieux</author>
+   </authors>
+   <versions>
+      <version>
+          <num>1.0.0</num>
+          <compatibility>0.84</compatibility>
+      </version>
+   </versions>
+   <langs>
+      <lang>fr_FR</lang>
+      <lang>en_GB</lang>
+   </langs>
+   <license><![CDATA[GPL v2+]]></license>
+   <category>Injection/import</category>
+   <tags>
+         <fr>
+            <tag>Import</tag>
+            <tag>OCS Inventory NG</tag>
+            <tag>inventaire</tag>
+            <tag>script</tag>
+         </fr>
+         <en>
+            <tag>Import</tag>
+            <tag>OCS Inventory NG</tag>
+            <tag>inventory</tag>
+            <tag>script</tag>
+         </en>
+   </tags>
+</root>
