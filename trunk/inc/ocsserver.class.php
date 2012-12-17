@@ -24,7 +24,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
----------------------------------------------------------------------------------------------------------------------------------------------------- */
+---------------------------------------------------------------------- */
 
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
@@ -5768,8 +5768,8 @@ JAVASCRIPT;
       if (isset($data['entities_id'])
           && $data['entities_id'] != $line_links['entities_id']) {
 
-         if (!isCommandLine() && !haveAccessToEntity($data['entities_id'])) {
-            displayRightError();
+         if (!isCommandLine() && !Session::haveAccessToEntity($data['entities_id'])) {
+            Html::displayRightError();
          }
 
          $transfer = new Transfer();
