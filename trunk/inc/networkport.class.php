@@ -1,31 +1,30 @@
 <?php
 /*
- * @version $Id$
- -------------------------------------------------------------------------
- GLPI - Gestionnaire Libre de Parc Informatique
- Copyright (C) 2003-2012 by the INDEPNET Development Team.
+ * @version $Id: HEADER 15930 2012-12-15 11:10:55Z tsmr $
+-------------------------------------------------------------------------
+Ocsinventoryng plugin for GLPI
+Copyright (C) 2012-2013 by the ocsinventoryng plugin Development Team.
 
- http://indepnet.net/   http://glpi-project.org
- -------------------------------------------------------------------------
+https://forge.indepnet.net/projects/ocsinventoryng
+-------------------------------------------------------------------------
 
- LICENSE
+LICENSE
 
- This file is part of GLPI.
+This file is part of accounts.
 
- GLPI is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+Ocsinventoryng plugin is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
- GLPI is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+Ocsinventoryng plugin is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with GLPI. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
-*/
+You should have received a copy of the GNU General Public License
+along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+--------------------------------------------------------------------------*/
 
 // ----------------------------------------------------------------------
 // Original Author of file: Damien Touraine
@@ -62,11 +61,11 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
       //Count old ip in GLPI
       $count_ip = count($import_ip);
-      
+
       if (isset($devID)) {
          unset($devID);
       }
-      
+
       // Add network device
       if ($PluginOcsinventoryngDBocs->numrows($result2) > 0) {
          $mac_already_imported = array();
@@ -158,7 +157,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                $netport['netmask']               = $line2['IPMASK'];
                $netport['gateway']               = $line2['IPGATEWAY'];
                $netport['subnet']                = $line2['IPSUBNET'];
-               
+
                if (isset($devID)) {
                   $netport['items_devicenetworkcards_id'] = $devID;
                }
@@ -187,19 +186,17 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                   // First, we normalize the IP address to test with common values
                   $ip_object = new IPAddress($ocs_ips[$j]);
                   if ($ip_object->is_valid()) {
-                     $netport['invalid_ip'] = 0;;
                      $ip_address = $ip_object->getTextual();
                   } else { // For instance 192.168.1. or ?? or toto
-                     $netport['invalid_ip'] = 1;;
                      $ip_address = $ocs_ips[$j];
                   }
 
                   //First search : look for the same port (same IP and same MAC)
-                  $id_ip = array_search($ip_address.PluginOcsinventoryngOcsServer::FIELD_SEPARATOR.
+                  $mac_id = array_search($ip_address.PluginOcsinventoryngOcsServer::FIELD_SEPARATOR.
                                         $line2["MACADDR"], $import_ip);
 
                   //Second search : IP may have change, so look only for mac address
-                  if (!$id_ip) {
+                  if (!$mac_id) {
                      //Browse the whole import_ip array
                      foreach ($import_ip as $ID => $ip) {
                         if ($ID > 0) {
@@ -217,14 +214,13 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                                                           "import_ip");
                               $import_ip[$ID] = $ip_address . PluginOcsinventoryngOcsServer::FIELD_SEPARATOR .
                               $line2["MACADDR"];
-                              $id_ip = $ID;
+                              $mac_id = $ID;
                               break;
                            }
                         }
                      }
                   }
                   $netport['_no_history'] =! $dohistory;
-                  $netport['ip']          = $ip_address;
 
                   // Process for NetworkName
                   if ($ip_object->is_valid()) {
@@ -233,35 +229,69 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                                                                       $ip_address);
                      // Warning : index must be negative, otherwise, the address will be
                      //           considered to be updated, not added !
-                     $netport['NetworkName__ipaddresses'] = array('-1' => $ip_address);
                   } else {
                      // In case of invalid IP we force the NetworkPort to be a
                      // PluginOcsinventoryngNetworkPort, thus we will keep the IP !
                      $netport['instantiation_type'] = 'PluginOcsinventoryngNetworkPort';
 
-                     unset($netport['NetworkName__ipaddresses']);
-                     unset($netport['NetworkName_name']);
+                    unset($netport['NetworkName_name']);
                   }
 
 
                    //Update already in DB
-                  if ($id_ip>0) {
+                  if ($mac_id>0) {
                      $netport["logical_number"] = $j;
-                     $netport["id"]             = $id_ip;
+                     $netport["id"]             = $mac_id;
+
+                     if ($ip_object->is_valid()) {
+                        $queryForIP = "SELECT `glpi_networknames`.`id` as names_id,
+                                              `glpi_ipaddresses`.`id` as ip_id,
+                                              `glpi_ipaddresses`.`name`
+                                       FROM `glpi_networknames`
+                                       LEFT JOIN `glpi_ipaddresses` ON (
+                                            `glpi_ipaddresses`.`itemtype` = 'NetworkName'
+                                        AND `glpi_ipaddresses`.`items_id` = `glpi_networknames`.`id`)
+                                       WHERE `glpi_networknames`.`itemtype` = 'NetworkPort'
+                                        AND `glpi_networknames`.`items_id` = '$mac_id'";
+                        $netport['NetworkName__ipaddresses'] = array();
+                        $ip_id = -1;
+                        $name_id = -1;
+                        foreach ($DB->request($queryForIP) as $ip_entry) {
+                           // Clear all otherIPs
+                           $netport['NetworkName__ipaddresses'][$ip_entry['ip_id']] = '';
+                           if (($ip_entry['name'] == $ip_address) && ($ip_id < 0)) {
+                              // If we find the IP, then we stock its ID
+                              $ip_id   = $ip_entry['ip_id'];
+                              $name_id = $ip_entry['names_id'];
+                           }
+                        }
+                        // If the current IP is not found, then we change the last founded IP
+                        if ($ip_id < 0 && isset($ip_entry['ip_id'])) {
+                           $ip_id = $ip_entry['ip_id'];
+                        }
+                        if ($name_id < 0 && isset($ip_entry['names_id'])) {
+                           $name_id = $ip_entry['names_id'];
+                        }
+                        $netport['NetworkName__ipaddresses'][$ip_id] = $ip_address;
+                        $netport['NetworkName_id'] = $name_id;
+                     }
 
                      $np->splitInputForElements($netport);
                      $np->update($netport);
                      $np->updateDependencies(1);
 
-                     unset ($import_ip[$id_ip]);
+                     unset ($import_ip[$mac_id]);
                      $count_ip++;
 
                   } else { //If new IP found
                      unset ($np->fields["netpoints_id"]);
                      unset ($netport["id"]);
                      unset ($np->fields["id"]);
-                     $netport["ip"]             = $ip_address;
                      $netport["logical_number"] = $j;
+
+                     if ($ip_object->is_valid()) {
+                        $netport['NetworkName__ipaddresses'] = array('-1' => $ip_address);
+                     }
 
                      $np->splitInputForElements($netport);
                      $newID = $np->add($netport);
