@@ -381,7 +381,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             function form_init_all(form, index) {
                var elem = document.getElementById('formconfig').elements;
                for(var i = 0; i < elem.length; i++) {
-                  if (elem[i].type == "select-one" 
+                  if (elem[i].type == "select-one"
                      && elem[i].name != "import_otherserial"
                         && elem[i].name != "import_location"
                            && elem[i].name != "import_group"
@@ -3375,7 +3375,7 @@ JAVASCRIPT;
                      case "import_ip" :
                         $querySearchLocked = "SELECT *
                                               FROM `glpi_networkports`
-                                              LEFT JOIN `glpi_networknames` 
+                                              LEFT JOIN `glpi_networknames`
                                               ON (`glpi_networkports`.`id` = `glpi_networknames`.`items_id`)
                                               LEFT JOIN `glpi_ipaddresses`
                                               ON (`glpi_ipaddresses`.`items_id` = `glpi_networknames`.`id`)
@@ -6027,5 +6027,15 @@ JAVASCRIPT;
       $DB->query($query);
    }
 
+   /**
+    *
+    * Enter description here ...
+    * @since
+    * @param unknown $input
+    */
+   static function deleteItem(CommonDBTM $item) {
+      global $CFG_GLPI, $DB;
+
+   }
 }
 ?>

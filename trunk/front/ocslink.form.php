@@ -32,38 +32,32 @@ if (!defined('GLPI_ROOT')) {
 include (GLPI_ROOT . "/inc/includes.php");
 
 Session::checkRight("computer", "r");
-
 $computer = new Computer();
-
-if (isset($_POST["unlock_monitor"])) {
+if (isset($_POST["unlock"])) {
    $computer->check($_POST['id'], 'w');
-   if (isset($_POST["lockmonitor"]) && count($_POST["lockmonitor"])) {
-      foreach ($_POST["lockmonitor"] as $key => $val) {
-         PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST["id"], $key, "import_monitor");
+   $actions = array("Computer_Item", "Computer_SoftwareVersion", "ComputerDisk" ,
+                     "ComputerVirtualMachine");
+   $devices = Item_Devices::getDeviceTypes();
+   $actions = array_merge($actions, array_values($devices));
+   foreach ($actions as $itemtype) {
+      if (isset($_POST[$itemtype]) && count($_POST[$itemtype])) {
+         $item = new $itemtype();
+         foreach ($_POST[$itemtype] as $key => $val) {
+            //Force deletion
+            $item->delete(array('id' => $key), 1);
+         }
       }
    }
-   Html::back();
-
-} else if (isset($_POST["unlock"])) {
-   $computer->check($_POST['id'], 'w');
-   $actions = array("lockprinter" => "import_printer",
-                    "locksoft"    => "import_software",
-                    "lockdisk"    => "import_disk",
-                    "lockmonitor" => "import_monitor",
-                    "lockperiph"  => "import_peripheral",
-                    "lockip"      => "import_ip",
-                    "lockdevice"  => "import_device",
-                    "lockvm"      => "import_vm",
-                    "lockfield"   => "computer_update");
-   foreach ($actions as $lock => $field) {
-      if (isset($_POST[$lock]) && count($_POST[$lock])) {
-         foreach ($_POST[$lock] as $key => $val) {
-            PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST["id"], $key, $field);
+   if (isset($_POST["unlock"])) {
+      $computer->check($_POST['id'], 'w');
+      if (isset($_POST["lockfield"]) && count($_POST["lockfield"])) {
+         foreach ($_POST["lockfield"] as $key => $val) {
+            PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST["id"], $key, "computer_update");
          }
       }
    }
    Html::back();
-
+      
 } else if (isset($_POST["force_ocs_resynch"])) {
    $computer->check($_POST['id'], 'w');
    //Get the ocs server id associated with the machine

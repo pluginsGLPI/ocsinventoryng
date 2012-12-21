@@ -44,11 +44,11 @@ function plugin_init_ocsinventoryng() {
    $PLUGIN_HOOKS['change_profile']['ocsinventoryng'] = array('PluginOcsinventoryngProfile',
                                                              'changeProfile');
 
-   $PLUGIN_HOOKS['import_item']['ocsinventoryng'] = array('Computer');
+   $PLUGIN_HOOKS['import_item']['ocsinventoryng']    = array('Computer' => array('Plugin'));
 
    $PLUGIN_HOOKS['autoinventory_information']['ocsinventoryng'] = array('Computer' => array('PluginOcsinventoryngOcslink',
                                                                                             'showSimpleForItem'));
-   
+
    Plugin::registerClass('PluginOcsinventoryngOcslink',
                          array('forwardentityfrom' => 'Computer',
                                'addtabon'          => 'Computer'));
