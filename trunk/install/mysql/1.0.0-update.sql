@@ -139,3 +139,5 @@ INSERT INTO `glpi_plugin_ocsinventoryng_registrykeys` SELECT * FROM `ocs_glpi_re
 UPDATE `glpi_displaypreferences` SET `itemtype` = 'PluginOcsinventoryngOcsServer' WHERE `itemtype` = 'OcsServer';
 
 UPDATE `glpi_crontasks` SET `itemtype` = 'PluginOcsinventoryngOcsServer' WHERE `itemtype` = 'OcsServer';
+
+UPDATE `glpi_rules` SET `sub_type` =  'RuleImportEntity' WHERE `sub_type` =  'RuleOcs';
