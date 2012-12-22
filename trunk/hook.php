@@ -35,30 +35,30 @@ function plugin_ocsinventoryng_install() {
 
 
    if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
-       && !TableExists("OCS_glpi_ocsservers")) {
+       && !TableExists("ocs_glpi_ocsservers")) {
 
       $install = true;
       $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.0-empty.sql");
       CronTask::Register('PluginOcsinventoryngOcsServer', 'ocsng', MINUTE_TIMESTAMP*5);
 
    } else if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
-              && TableExists("OCS_glpi_ocsservers")) {
+              && TableExists("ocs_glpi_ocsservers")) {
 
       $update = true;
       $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.0-update.sql");
 
       // recuperation des droits du core
       // creation de la table glpi_plugin_ocsinventoryng_profiles vide
-      If (TableExists("OCS_glpi_profiles")
-          && (TableExists('OCS_glpi_ocsservers')
-              && countElementsInTable('OCS_glpi_ocsservers') > 0)) {
+      If (TableExists("ocs_glpi_profiles")
+          && (TableExists('ocs_glpi_ocsservers')
+              && countElementsInTable('ocs_glpi_ocsservers') > 0)) {
 
          $query = "INSERT INTO `glpi_plugin_ocsinventoryng_profiles`
                           (`profiles_id`, `ocsng`, `sync_ocsng`, `view_ocsng`, `clean_ocsng`,
                            `rule_ocs`)
                            SELECT `id`, `ocsng`, `sync_ocsng`, `view_ocsng`, `clean_ocsng`,
                                   `rule_ocs`
-                           FROM `OCS_glpi_profiles`";
+                           FROM `ocs_glpi_profiles`";
          $DB->queryOrDie($query, "1.0.0 insert profiles for OCS in plugin");
       }
       

@@ -23,7 +23,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsadmininfoslinks` (
   KEY `ocsservers_id` (`ocsservers_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `glpi_plugin_ocsinventoryng_ocsadmininfoslinks` SELECT * FROM `OCS_glpi_ocsadmininfoslinks`;
+INSERT INTO `glpi_plugin_ocsinventoryng_ocsadmininfoslinks` SELECT * FROM `ocs_glpi_ocsadmininfoslinks`;
 
 ALTER TABLE `glpi_plugin_ocsinventoryng_ocsadmininfoslinks` 
    CHANGE `ocsservers_id` `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0';
@@ -54,7 +54,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocslinks` (
   KEY `use_auto_update` (`use_auto_update`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `glpi_plugin_ocsinventoryng_ocslinks` SELECT * FROM `OCS_glpi_ocslinks`;
+INSERT INTO `glpi_plugin_ocsinventoryng_ocslinks` SELECT * FROM `ocs_glpi_ocslinks`;
 
 ALTER TABLE `glpi_plugin_ocsinventoryng_ocslinks` 
    CHANGE `ocsservers_id` `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0';
@@ -117,7 +117,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   KEY `is_active` (`is_active`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `glpi_plugin_ocsinventoryng_ocsservers` SELECT * FROM `OCS_glpi_ocsservers`;
+INSERT INTO `glpi_plugin_ocsinventoryng_ocsservers` SELECT * FROM `ocs_glpi_ocsservers`;
 
 ### Alter table glpi_registrykeys
 
@@ -132,7 +132,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_registrykeys` (
   KEY `computers_id` (`computers_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `glpi_plugin_ocsinventoryng_registrykeys` SELECT * FROM `OCS_glpi_registrykeys`;
+INSERT INTO `glpi_plugin_ocsinventoryng_registrykeys` SELECT * FROM `ocs_glpi_registrykeys`;
 
 ### Alter table glpi_displaypreferences
 
