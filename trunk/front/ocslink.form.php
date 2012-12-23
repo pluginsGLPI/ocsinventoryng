@@ -36,7 +36,7 @@ $computer = new Computer();
 if (isset($_POST["unlock"])) {
    $computer->check($_POST['id'], 'w');
    $actions = array("Computer_Item", "Computer_SoftwareVersion", "ComputerDisk" ,
-                     "ComputerVirtualMachine");
+                     "ComputerVirtualMachine", "NetworkPort");
    $devices = Item_Devices::getDeviceTypes();
    $actions = array_merge($actions, array_values($devices));
    foreach ($actions as $itemtype) {

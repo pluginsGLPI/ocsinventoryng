@@ -35,7 +35,7 @@ function plugin_ocsinventoryng_install() {
 
 
    if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
-       && !TableExists("ocs_glpi_ocsservers")) {
+       && !TableExists("OCS_glpi_ocsservers")) {
 
       $install = true;
       $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.0-empty.sql");
@@ -60,23 +60,23 @@ function plugin_ocsinventoryng_install() {
       $DB->queryOrDie($query, $DB->error());
       
    } else if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
-              && TableExists("ocs_glpi_ocsservers")) {
+              && TableExists("OCS_glpi_ocsservers")) {
 
       $update = true;
       $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.0-update.sql");
 
       // recuperation des droits du core
       // creation de la table glpi_plugin_ocsinventoryng_profiles vide
-      If (TableExists("ocs_glpi_profiles")
-          && (TableExists('ocs_glpi_ocsservers')
-              && countElementsInTable('ocs_glpi_ocsservers') > 0)) {
+      If (TableExists("OCS_glpi_profiles")
+          && (TableExists('OCS_glpi_ocsservers')
+              && countElementsInTable('OCS_glpi_ocsservers') > 0)) {
 
          $query = "INSERT INTO `glpi_plugin_ocsinventoryng_profiles`
                           (`profiles_id`, `ocsng`, `sync_ocsng`, `view_ocsng`, `clean_ocsng`,
                            `rule_ocs`)
                            SELECT `id`, `ocsng`, `sync_ocsng`, `view_ocsng`, `clean_ocsng`,
                                   `rule_ocs`
-                           FROM `ocs_glpi_profiles`";
+                           FROM `OCS_glpi_profiles`";
          $DB->queryOrDie($query, "1.0.0 insert profiles for OCS in plugin");
       }
 
@@ -303,7 +303,11 @@ function plugin_ocsinventoryng_install() {
       $migration->addField("glpi_plugin_massocsimport_threads", "rules_id", 'integer');
 
       foreach (getAllDatasFromTable('glpi_plugin_massocsimport_threads') as $thread) {
-
+         if (is_null($thread['rules_id']) || $thread['rules_id'] == '') {
+            $rules_id = 0;
+         } else {
+            $rules_id = $thread['rules_id'];
+         }
          $query = "INSERT INTO `glpi_plugin_ocsinventoryng_threads`
                    VALUES ('".$thread['id']."',
                            '".$thread['threadid']."',
@@ -322,7 +326,7 @@ function plugin_ocsinventoryng_install() {
                            '".$thread['ocsservers_id']."',
                            '".$thread['processid']."',
                            '".$thread['entities_id']."',
-                           '".$thread['rules_id']."');";
+                           '".$rules_id."');";
          $DB->queryOrDie($query, $DB->error());
       }
 
@@ -669,13 +673,12 @@ function plugin_ocsinventoryng_upgrademassocsimport13to14() {
 
    $migration->renameTable("glpi_plugin_massocsimport_config", "glpi_plugin_massocsimport_configs");
 
-   $migration->dropField("glpi_plugin_massocsimport_config", "delete_frequency");
-   $migration->dropField("glpi_plugin_massocsimport_config", "enable_logging");
-   $migration->dropField("glpi_plugin_massocsimport_config", "delete_empty_frequency");
-   $migration->dropField("glpi_plugin_massocsimport_config", "warn_if_not_imported");
-   $migration->dropField("glpi_plugin_massocsimport_config", "delete_frequency");
+   $migration->dropField("glpi_plugin_massocsimport_configs", "delete_frequency");
+   $migration->dropField("glpi_plugin_massocsimport_configs", "enable_logging");
+   $migration->dropField("glpi_plugin_massocsimport_configs", "delete_empty_frequency");
+   $migration->dropField("glpi_plugin_massocsimport_configs", "warn_if_not_imported");
    $migration->dropField("glpi_plugin_massocsimport_configs", "not_imported_threshold");
-
+    
    $migration->changeField("glpi_plugin_massocsimport_configs", "ID", "id", 'autoincrement');
    $migration->changeField("glpi_plugin_massocsimport_configs", "thread_log_frequency",
                            "thread_log_frequency", 'integer', array('value' => 10));
@@ -698,7 +701,7 @@ function plugin_ocsinventoryng_upgrademassocsimport13to14() {
    $migration->changeField("glpi_plugin_massocsimport_details", "ocs_server_id",
                            "ocsservers_id", 'integer', array('value' => 1));
 
-   $migration->migrationOneTable(glpi_plugin_massocsimport_details);
+   $migration->migrationOneTable('glpi_plugin_massocsimport_details');
    $migration->addKey("glpi_plugin_massocsimport_details",
                       array("plugin_massocsimport_threads_id", "threadid"), "process_thread");
 
@@ -742,10 +745,14 @@ function plugin_ocsinventoryng_upgrademassocsimport14to15() {
 
    $migration->addField("glpi_plugin_massocsimport_notimported", "reason", 'integer');
 
-   $query = "INSERT INTO `glpi_displaypreferences`
-                    (`itemtype`, `num`, `rank`, `users_id`)
-             VALUES ('PluginMassocsimportNotimported', 10, 9, 0)";
-   $DB->queryOrDie($query, "1.5 insert into glpi_displaypreferences " .$DB->error());
+   if (!countElementsInTable('glpi_displaypreferences',
+                              "`itemtype`='PluginMassocsimportNotimported'
+                               AND `num`='10' AND `users_id`='0'")) {
+      $query = "INSERT INTO `glpi_displaypreferences`
+                (`itemtype`, `num`, `rank`, `users_id`)
+                VALUES ('PluginMassocsimportNotimported', 10, 9, 0)";
+       $DB->queryOrDie($query, "1.5 insert into glpi_displaypreferences " .$DB->error());
+   }
 
    $migration->addField("glpi_plugin_massocsimport_notimported", "serial", 'string',
                         array('value' => ''));

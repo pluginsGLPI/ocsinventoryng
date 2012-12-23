@@ -68,8 +68,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       if (in_array($item->getType(), array('Computer'))) {
          $items_id = $item->getField('id');
 
-         if (!empty($items_id )
-             && $item->fields["is_ocs_import"]
+         if (!empty($items_id)
+             && $item->fields["is_dynamic"]
              && plugin_ocsinventoryng_haveRight("view_ocsng","r")) {
             $query = "SELECT *
                       FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -480,6 +480,24 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             echo "<input type='checkbox' name='Computer_SoftwareVersion.'[" . $line['id'] . "]'></td></tr>\n";
          }
 
+         $params = array('is_dynamic' => 1, 'is_deleted' => 1, 'items_id' => $comp->getID(),
+                          'itemtype' => 'Computer');
+         $first  = true;
+         $item = new NetworkPort();
+         foreach ($DB->request('glpi_networkports', $params, array('id', 'items_id')) as $line) {
+            $item->getFromDB($line['id']);
+            $header = true;
+            if ($first) {
+               echo "<tr><th colspan='2'>"._n('Locked IP', 'Locked IP', 2, 'ocsinventoryng')."</th>".
+                     "</tr>\n";
+               $first = false;
+            }
+         
+            echo "<tr class='tab_bg_1'><td class='right' width='50%'>" . $item->getName() . "</td>";
+            echo "<td class='left' width='50%'>";
+            echo "<input type='checkbox' name='NetworkPort[" . $line['id'] . "]'></td></tr>\n";
+         }
+          
          /*
          // Search locked IP
          $locked_ip = importArrayFromDB($data["import_ip"]);
