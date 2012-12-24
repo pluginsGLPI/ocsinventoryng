@@ -43,8 +43,8 @@ if (isset($_POST["unlock"])) {
       if (isset($_POST[$itemtype]) && count($_POST[$itemtype])) {
          $item = new $itemtype();
          foreach ($_POST[$itemtype] as $key => $val) {
-            //Force deletion
-            $item->delete(array('id' => $key), 1);
+            //Force unlock
+            $item->update(array('id' => $key, 'is_deleted' => 0));
          }
       }
    }
