@@ -433,7 +433,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             
          }
          
-         $types = array('ComputerDisk' => 'disk', 'ComputerVirtualmachine' => 'Virtual machine');
+         $types = array('ComputerDisk' => 'disk', 'ComputerVirtualMachine' => 'Virtual machine');
          foreach($types as $itemtype => $label) {
             $params = array('is_dynamic' => 1, 'is_deleted' => 1, 'computers_id' => $comp->getID());
 
@@ -454,6 +454,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             }
          }
 
+         //Software versions
          $params = array('is_dynamic' => 1, 'is_deleted' => 1, 'computers_id' => $comp->getID());
          $first  = true;
          $query = "SELECT `csv`.`id` as `id`, `sv`.`name` as `version`, `s`.`name` as `software`
@@ -479,6 +480,32 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             echo "<input type='checkbox' name='Computer_SoftwareVersion[" . $line['id'] . "]'></td></tr>\n";
          }
 
+         //Software licenses
+         $params = array('is_dynamic' => 1, 'is_deleted' => 1, 'computers_id' => $comp->getID());
+         $first  = true;
+         $query = "SELECT `csv`.`id` as `id`, `sv`.`name` as `version`, `s`.`name` as `software`
+                   FROM `glpi_computers_softwarelicenses` AS csv
+                      LEFT JOIN `glpi_softwarelicenses` AS sv
+                         ON (`csv`.`softwarelicenses_id`=`sv`.`id`)
+                      LEFT JOIN `glpi_softwares` AS s
+                         ON (`sv`.`softwares_id`=`s`.`id`)
+                   WHERE `csv`.`is_deleted`='1'
+                      AND `csv`.`is_dynamic`='1'
+                         AND `csv`.`computers_id`='".$comp->getID()."'";
+         foreach ($DB->request($query) as $line) {
+            $header = true;
+            if ($first) {
+               echo "<tr><th colspan='2'>"._n('License', 'Licenses', 2, 'ocsinventoryng')."</th>".
+                     "</tr>\n";
+               $first = false;
+            }
+         
+            echo "<tr class='tab_bg_1'><td class='right' width='50%'>" .
+                  $line['software']." ".$line['version']. "</td>";
+            echo "<td class='left' width='50%'>";
+            echo "<input type='checkbox' name='Computer_SoftwareLicense[" . $line['id'] . "]'></td></tr>\n";
+         }
+          
          $params = array('is_dynamic' => 1, 'is_deleted' => 1, 'items_id' => $comp->getID(),
                           'itemtype' => 'Computer');
          $first  = true;
