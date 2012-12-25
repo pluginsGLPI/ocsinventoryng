@@ -134,7 +134,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          $items_id = $item->getField('id');
 
          if (!empty($items_id )
-             && $item->fields["is_ocs_import"]
+             && $item->fields["is_dynamic"]
              && plugin_ocsinventoryng_haveRight("view_ocsng","r")) {
 
             $query = "SELECT *
@@ -433,8 +433,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             
          }
          
-         $types = array('ComputerDisk' => 'disk', 'ComputerVirtualmachine' => 'Virtual machine',
-                        'Computer_SoftwareVersion' => 'software');
+         $types = array('ComputerDisk' => 'disk', 'ComputerVirtualmachine' => 'Virtual machine');
          foreach($types as $itemtype => $label) {
             $params = array('is_dynamic' => 1, 'is_deleted' => 1, 'computers_id' => $comp->getID());
 
@@ -477,7 +476,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             echo "<tr class='tab_bg_1'><td class='right' width='50%'>" .
                $line['software']." ".$line['version']. "</td>";
             echo "<td class='left' width='50%'>";
-            echo "<input type='checkbox' name='Computer_SoftwareVersion.'[" . $line['id'] . "]'></td></tr>\n";
+            echo "<input type='checkbox' name='Computer_SoftwareVersion[" . $line['id'] . "]'></td></tr>\n";
          }
 
          $params = array('is_dynamic' => 1, 'is_deleted' => 1, 'items_id' => $comp->getID(),
