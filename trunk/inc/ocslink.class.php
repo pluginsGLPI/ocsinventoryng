@@ -135,7 +135,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          if (!empty($items_id )
              && $item->fields["is_dynamic"]
-             && plugin_ocsinventoryng_haveRight("view_ocsng","r")) {
+             && plugin_ocsinventoryng_haveRight("view_ocsng", "r")) {
 
             $query = "SELECT *
                       FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -148,7 +148,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
 
                if (count($data)) {
-                  $ocs_config = PluginOcsinventoryngOcsServer::getConfig(PluginOcsinventoryngOcsServer::getByMachineID($items_id));
+                  $ocs_config
+                     = PluginOcsinventoryngOcsServer::getConfig(PluginOcsinventoryngOcsServer::getByMachineID($items_id));
                
                   echo "<div class='center'>";
                   echo "<form method='post' action=\"$target\">";
@@ -159,8 +160,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "<tr class='tab_bg_1'>";
 
                   $colspan = 4;
-                  if (plugin_ocsinventoryng_haveRight("view_ocsng","r")
-                      && plugin_ocsinventoryng_haveRight("sync_ocsng","w")) {
+                  if (plugin_ocsinventoryng_haveRight("view_ocsng", "r")
+                      && plugin_ocsinventoryng_haveRight("sync_ocsng", "w")) {
 
                      $colspan = 2;
                      echo "<td class='center'>".__('Automatic update OCSNG', 'ocsinventoryng').
@@ -173,12 +174,23 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   printf(__('%1$s: %2$s'), __('OCSNG TAG', 'ocsinventoryng'), $data['tag']);
                   echo "</td></tr>";
 
-                  echo "<tr class='tab_bg_1'>";
-                  echo "<td class='center' colspan='4'>";
-                  echo "<input type='hidden' name='link_id' value='" . $data["id"] . "'>";
-                  echo "<input class=submit type='submit' name='update' value=\"" .
-                         _sx('button', 'Save')."\">";
-                  echo "</td></tr>";
+                  if (plugin_ocsinventoryng_haveRight("sync_ocsng", "w")) {
+                     echo "<tr class='tab_bg_1'>";
+                     $colspan=4;
+                     echo "<td class='center' colspan='2'>";
+                     echo "<input type='hidden' name='resynch_id' value='" . $data["id"] . "'>";
+                     echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
+                           _sx('button', 'Force synchronization', 'ocsinventoryng'). "\">";
+                     echo "</td>";
+                     
+                     //echo "<tr class='tab_bg_1'>";
+                     echo "<td class='center' colspan='2'>";
+                     echo "<input type='hidden' name='link_id' value='" . $data["id"] . "'>";
+                     echo "<input class=submit type='submit' name='update' value=\"" .
+                            _sx('button', 'Save')."\">";
+                     echo "</td></tr>";
+                  }
+                  
                   echo "</table>\n";
                   Html::closeForm();
                   echo "</div>";
@@ -342,46 +354,6 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    }
 
    /**
-    *
-    * Show advanced informations in the OCS Link tab
-    * @since 1.0
-    * @param Computer computer objet
-    * @return boolean
-    */
-   static function showOcsAdvancedInfosForm(Computer $comp) {
-      global $DB;
-      
-      if (!Session::haveRight("computer", "w")) {
-         return false;
-      }
-      //First of all let's look it the computer is managed by OCS Inventory
-      $query = "SELECT *
-      FROM `glpi_plugin_ocsinventoryng_ocslinks`
-      WHERE `computers_id` = '$ID'";
-      
-      $result = $DB->query($query);
-      if ($DB->numrows($result) == 1) {
-         $data = $DB->fetch_assoc($result);
-         
-          if (plugin_ocsinventoryng_haveRight("sync_ocsng","w")) {
-         echo "<form method='post' action=\"$target\">";
-         echo "<input type='hidden' name='id' value='$ID'>";
-         echo "<table class='tab_cadre_fixe'>";
-         echo "<tr class='tab_bg_1'><td class='center'>";
-         echo "<input type='hidden' name='resynch_id' value='" . $data["id"] . "'>";
-         echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
-         _sx('button', 'Force synchronization', 'ocsinventoryng'). "\">";
-         echo "</table>\n";
-         Html::closeForm();
-         echo "</table></div>";
-         }
-      }
-      return true;
-   }
-   
-
-
-   /**
     * @see inc/CommonGLPI::getTabNameForItem()
     *
     * @param $item               CommonGLPI object
@@ -412,7 +384,6 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          switch ($item->getType()) {
             case 'Computer' :
                self::showForItem($item, $withtemplate);
-               self::editLock($item);
                break;
          }
       }

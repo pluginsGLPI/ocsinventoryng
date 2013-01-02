@@ -32,34 +32,10 @@ if (!defined('GLPI_ROOT')) {
 include (GLPI_ROOT . "/inc/includes.php");
 
 Session::checkRight("computer", "r");
-$computer = new Computer();
-if (isset($_POST["unlock"])) {
+if (isset($_POST["force_ocs_resynch"])) {
+   $computer = new Computer();
    $computer->check($_POST['id'], 'w');
-   $actions = array("Computer_Item", "Computer_SoftwareVersion", "ComputerDisk" ,
-                     "ComputerVirtualMachine", "NetworkPort", "Computer_SoftwareLicense");
-   $devices = Item_Devices::getDeviceTypes();
-   $actions = array_merge($actions, array_values($devices));
-   foreach ($actions as $itemtype) {
-      if (isset($_POST[$itemtype]) && count($_POST[$itemtype])) {
-         $item = new $itemtype();
-         foreach ($_POST[$itemtype] as $key => $val) {
-            //Force unlock
-            $item->update(array('id' => $key, 'is_deleted' => 0));
-         }
-      }
-   }
-   if (isset($_POST["unlock"])) {
-      $computer->check($_POST['id'], 'w');
-      if (isset($_POST["lockfield"]) && count($_POST["lockfield"])) {
-         foreach ($_POST["lockfield"] as $key => $val) {
-            PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST["id"], $key, "computer_update");
-         }
-      }
-   }
-   Html::back();
-      
-} else if (isset($_POST["force_ocs_resynch"])) {
-   $computer->check($_POST['id'], 'w');
+   
    //Get the ocs server id associated with the machine
    $ocsservers_id = PluginOcsinventoryngOcsServer::getByMachineID($_POST["id"]);
    //Update the computer
