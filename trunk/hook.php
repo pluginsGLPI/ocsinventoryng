@@ -949,7 +949,7 @@ function plugin_ocsinventoryng_MassiveActions($type) {
       case 'Computer' :
          if (plugin_ocsinventoryng_haveRight("ocsng","w")
              || plugin_ocsinventoryng_haveRight("sync_ocsng","w")) {
-
+/*
             return array(// Specific one
                          "plugin_ocsinventoryng_force_ocsng_update"
                                                                => __('Force synchronization OCSNG',
@@ -967,7 +967,15 @@ function plugin_ocsinventoryng_MassiveActions($type) {
                          "plugin_ocsinventoryng_unlock_ocsng_ip"         => __('Unlock IP',
                                                                                'ocsinventoryng'),
                          "plugin_ocsinventoryng_unlock_ocsng_disk"       => __('Unclok volumes',
-                                                                               'ocsinventoryng'));
+                                                                               'ocsinventoryng'));*/
+
+                return array(// Specific one
+                      "plugin_ocsinventoryng_force_ocsng_update"
+                      => __('Force synchronization OCSNG',
+                            'ocsinventoryng'),
+                      "plugin_ocsinventoryng_unlock_ocsng_field"      => __('Unlock fields',
+                            'ocsinventoryng'));
+                
          }
          break;
    }
@@ -1100,11 +1108,36 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
          break;
 
       case "plugin_ocsinventoryng_unlock_ocsng_monitor" :
+         $stats = PluginOcsinventoryngOcsLink::unlockItems('Monitor', $_POST['item']);
+         $nbok = $stats['ok'];
+         $nbko = $stats['ko'];
+         break;
       case "plugin_ocsinventoryng_unlock_ocsng_printer" :
-      case "plugin_ocsinventoryng_unlock_ocsng_peripheral" :
+         $stats = PluginOcsinventoryngOcsLink::unlockItems('Printer', $_POST['item']);
+         $nbok = $stats['ok'];
+         $nbko = $stats['ko'];
+         break;
+         case "plugin_ocsinventoryng_unlock_ocsng_peripheral" :
+            $stats = PluginOcsinventoryngOcsLink::unlockItems('Peripheral', $_POST['item']);
+            $nbok = $stats['ok'];
+            $nbko = $stats['ko'];
+            break;
       case "plugin_ocsinventoryng_unlock_ocsng_software" :
+            $stats = PluginOcsinventoryngOcsLink::unlockItems('SoftwareLicense', $_POST['item']);
+            $nbok = $stats['ok'];
+            $nbko = $stats['ko'];
+            break;
       case "plugin_ocsinventoryng_unlock_ocsng_ip" :
+         $stats = PluginOcsinventoryngOcsLink::unlockItems('NetworkPort', $_POST['item']);
+         $nbok = $stats['ok'];
+         $nbko = $stats['ko'];
+         break;
       case "plugin_ocsinventoryng_unlock_ocsng_disk" :
+         $stats = PluginOcsinventoryngOcsLink::unlockItems('ComputerDisk', $_POST['item']);
+         $nbok = $stats['ok'];
+         $nbko = $stats['ko'];
+         break;
+          
          foreach ($_POST["item"] as $key => $val) {
             if ($val == 1) {
                if ($tiem->can($key, 'w')) {
@@ -1757,4 +1790,78 @@ function plugin_ocsinventoryng_getFKFieldsForQuery() {
    return $fields;
 }
 
+/**
+ *
+ * Display plugin's entries in unlock fields form
+ * @since 1.0
+ * @param $params an array which contains the item and the header boolean
+ * @return an array
+ */
+function plugin_ocsinventoryng_showLocksForItem($params = array()) {
+   global $DB;
+
+   $comp   = $params['item'];
+   $header = $params['header'];
+   $ID     = $comp->getID();
+
+   if (!Session::haveRight("computer", "w")) {
+      return $params;
+   }
+   //First of all let's look it the computer is managed by OCS Inventory
+   $query = "SELECT *
+   FROM `glpi_plugin_ocsinventoryng_ocslinks`
+   WHERE `computers_id` = '$ID'";
+
+   $result = $DB->query($query);
+   if ($DB->numrows($result) == 1) {
+      $data = $DB->fetch_assoc($result);
+
+      // Print lock fields for OCSNG
+      $lockable_fields = PluginOcsinventoryngOcsServer::getLockableFields();
+      $locked          = importArrayFromDB($data["computer_update"]);
+
+      if (!in_array(PluginOcsinventoryngOcsServer::IMPORT_TAG_078, $locked)) {
+         $locked = PluginOcsinventoryngOcsServer::migrateComputerUpdates($ID, $locked);
+      }
+
+      if (count($locked) > 0) {
+         foreach ($locked as $key => $val) {
+            if (!isset($lockable_fields[$val])) {
+               unset($locked[$key]);
+            }
+         }
+      }
+
+      if (count($locked)) {
+         $header = true;
+         echo "<tr><th colspan='2'>". _n('Locked field', 'Locked fields', 2, 'ocsinventoryng').
+         "</th></tr>\n";
+
+         foreach ($locked as $key => $val) {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td class='right' width='50%'>" . $lockable_fields[$val] . "</td>";
+            echo "<td class='left' width='50%'>";
+            echo "<input type='checkbox' name='lockfield[" . $key . "]'></td></tr>\n";
+         }
+      }
+   }
+   $params['header'] = $header;
+   return $params;
+}
+
+/**
+ *
+ * Unlock fields managed by the plugin
+ * @since 1.0
+ * @param $_POST array
+ */
+function plugin_ocsinventoryng_unlockFields($params = array()) {
+   $computer = new Computer();
+   $computer->check($_POST['id'], 'w');
+   if (isset($_POST["lockfield"]) && count($_POST["lockfield"])) {
+      foreach ($_POST["lockfield"] as $key => $val) {
+         PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST["id"], $key, "computer_update");
+      }
+   }
+}
 ?>

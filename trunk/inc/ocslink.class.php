@@ -202,9 +202,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
       // Manage changes for OCS if more than 1 element (date_mod)
       // Need dohistory==1 if dohistory==2 no locking fields
-      if ($item->fields["is_ocs_import"]
-          && ($item->dohistory == 1)
-          && (count($item->updates) > 1)) {
+      if ($item->fields["is_dynamic"]
+            && countElementsInTable('glpi_plugin_ocsinventoryng_ocslinks', "`computers_id`='".$item->getID()."'")
+               && ($item->dohistory == 1)
+                  && (count($item->updates) > 1)) {
 
          PluginOcsinventoryngOcsServer::mergeOcsArray($item->fields["id"], $item->updates,
                                                       "computer_update");
@@ -340,283 +341,44 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       }
    }
 
-
    /**
-    * @param $comp   Computer object
-   **/
-   static function editLock(Computer $comp) {
+    *
+    * Show advanced informations in the OCS Link tab
+    * @since 1.0
+    * @param Computer computer objet
+    * @return boolean
+    */
+   static function showOcsAdvancedInfosForm(Computer $comp) {
       global $DB;
-
-      $ID     = $comp->getID();
-      $target = Toolbox::getItemTypeFormURL(__CLASS__);
-
-      if (!Session::haveRight("computer","w")) {
+      
+      if (!Session::haveRight("computer", "w")) {
          return false;
       }
+      //First of all let's look it the computer is managed by OCS Inventory
       $query = "SELECT *
-                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                WHERE `computers_id` = '$ID'";
-
+      FROM `glpi_plugin_ocsinventoryng_ocslinks`
+      WHERE `computers_id` = '$ID'";
+      
       $result = $DB->query($query);
       if ($DB->numrows($result) == 1) {
          $data = $DB->fetch_assoc($result);
-         if (plugin_ocsinventoryng_haveRight("sync_ocsng","w")) {
-            echo "<form method='post' action=\"$target\">";
-            echo "<input type='hidden' name='id' value='$ID'>";
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_1'><td class='center'>";
-            echo "<input type='hidden' name='resynch_id' value='" . $data["id"] . "'>";
-            echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
-                   _sx('button', 'Force synchronization', 'ocsinventoryng'). "\">";
-            echo "</table>\n";
-            Html::closeForm();
-         }
-
-         echo "</table></div>";
-
-         $header = false;
-         echo "<div width='50%'>";
-         echo "<form method='post' id='ocsng_form' name='ocsng_form' action=\"$target\">";
-         echo "<input type='hidden' name='id' value='$ID'>\n";
+         
+          if (plugin_ocsinventoryng_haveRight("sync_ocsng","w")) {
+         echo "<form method='post' action=\"$target\">";
+         echo "<input type='hidden' name='id' value='$ID'>";
          echo "<table class='tab_cadre_fixe'>";
-         
-         // Print lock fields for OCSNG
-         $lockable_fields = PluginOcsinventoryngOcsServer::getLockableFields();
-         $locked          = importArrayFromDB($data["computer_update"]);
-
-         if (!in_array(PluginOcsinventoryngOcsServer::IMPORT_TAG_078, $locked)) {
-            $locked = PluginOcsinventoryngOcsServer::migrateComputerUpdates($ID, $locked);
-         }
-
-         if (count($locked) > 0) {
-            foreach ($locked as $key => $val) {
-               if (!isset($lockable_fields[$val])) {
-                  unset($locked[$key]);
-               }
-            }
-         }
-
-         if (count($locked)) {
-            $header = true;
-            echo "<tr><th colspan='2'>". _n('Locked field', 'Locked fields', 2, 'ocsinventoryng').
-                 "</th></tr>\n";
-
-            foreach ($locked as $key => $val) {
-               echo "<tr class='tab_bg_1'>";
-               echo "<td class='right' width='50%'>" . $lockable_fields[$val] . "</td>";
-               echo "<td class='left' width='50%'>";
-               echo "<input type='checkbox' name='lockfield[" . $key . "]'></td></tr>\n";
-            }
-         }
-
-         $types = array('Monitor', 'Printer', 'Peripheral');
-         
-         foreach($types as $itemtype) {
-            $item   = new $itemtype();
-            $params = array('is_dynamic' => 1, 'is_deleted' => 1, 'computers_id' => $comp->getID(),
-                            'itemtype' => $itemtype);
-            $first  = true;
-            $locale = "Locked ".strtolower($itemtype);
-            foreach ($DB->request('glpi_computers_items', $params, array('id', 'items_id')) as $line) {
-               $item->getFromDB($line['items_id']);
-               $header = true;
-               if ($first) {
-                  echo "<tr><th colspan='2'>"._n($locale, $locale.'s', 2, 'ocsinventoryng')."</th>".
-                        "</tr>\n";
-                  $first = false;
-               }
-            
-               echo "<tr class='tab_bg_1'><td class='right' width='50%'>" . $item->getName() . "</td>";
-               echo "<td class='left' width='50%'>";
-               echo "<input type='checkbox' name='Computer_Item[" . $line['id'] . "]'></td></tr>\n";
-            }
-            
-         }
-         
-         $types = array('ComputerDisk' => 'disk', 'ComputerVirtualMachine' => 'Virtual machine');
-         foreach($types as $itemtype => $label) {
-            $params = array('is_dynamic' => 1, 'is_deleted' => 1, 'computers_id' => $comp->getID());
-
-            $first  = true;
-            $locale = "Locked ".$label;
-            foreach ($DB->request(getTableForItemType($itemtype), $params,
-                      array('id', 'name')) as $line) {
-               $header = true;
-               if ($first) {
-                  echo "<tr><th colspan='2'>"._n($locale, $locale.'s', 2, 'ocsinventoryng')."</th>".
-                        "</tr>\n";
-                  $first = false;
-               }
-         
-               echo "<tr class='tab_bg_1'><td class='right' width='50%'>" . $line['name'] . "</td>";
-               echo "<td class='left' width='50%'>";
-               echo "<input type='checkbox' name='".$itemtype."[" . $line['id'] . "]'></td></tr>\n";
-            }
-         }
-
-         //Software versions
-         $params = array('is_dynamic' => 1, 'is_deleted' => 1, 'computers_id' => $comp->getID());
-         $first  = true;
-         $query = "SELECT `csv`.`id` as `id`, `sv`.`name` as `version`, `s`.`name` as `software`
-                   FROM `glpi_computers_softwareversions` AS csv
-                      LEFT JOIN `glpi_softwareversions` AS sv
-                         ON (`csv`.`softwareversions_id`=`sv`.`id`)
-                      LEFT JOIN `glpi_softwares` AS s
-                         ON (`sv`.`softwares_id`=`s`.`id`)
-                   WHERE `csv`.`is_deleted`='1'
-                      AND `csv`.`is_dynamic`='1'
-                         AND `csv`.`computers_id`='".$comp->getID()."'";
-         foreach ($DB->request($query) as $line) {
-            $header = true;
-            if ($first) {
-               echo "<tr><th colspan='2'>"._n('Software', 'Softwares', 2, 'ocsinventoryng')."</th>".
-                     "</tr>\n";
-               $first = false;
-            }
-                
-            echo "<tr class='tab_bg_1'><td class='right' width='50%'>" .
-               $line['software']." ".$line['version']. "</td>";
-            echo "<td class='left' width='50%'>";
-            echo "<input type='checkbox' name='Computer_SoftwareVersion[" . $line['id'] . "]'></td></tr>\n";
-         }
-
-         //Software licenses
-         $params = array('is_dynamic' => 1, 'is_deleted' => 1, 'computers_id' => $comp->getID());
-         $first  = true;
-         $query = "SELECT `csv`.`id` as `id`, `sv`.`name` as `version`, `s`.`name` as `software`
-                   FROM `glpi_computers_softwarelicenses` AS csv
-                      LEFT JOIN `glpi_softwarelicenses` AS sv
-                         ON (`csv`.`softwarelicenses_id`=`sv`.`id`)
-                      LEFT JOIN `glpi_softwares` AS s
-                         ON (`sv`.`softwares_id`=`s`.`id`)
-                   WHERE `csv`.`is_deleted`='1'
-                      AND `csv`.`is_dynamic`='1'
-                         AND `csv`.`computers_id`='".$comp->getID()."'";
-         foreach ($DB->request($query) as $line) {
-            $header = true;
-            if ($first) {
-               echo "<tr><th colspan='2'>"._n('License', 'Licenses', 2, 'ocsinventoryng')."</th>".
-                     "</tr>\n";
-               $first = false;
-            }
-         
-            echo "<tr class='tab_bg_1'><td class='right' width='50%'>" .
-                  $line['software']." ".$line['version']. "</td>";
-            echo "<td class='left' width='50%'>";
-            echo "<input type='checkbox' name='Computer_SoftwareLicense[" . $line['id'] . "]'></td></tr>\n";
-         }
-          
-         $params = array('is_dynamic' => 1, 'is_deleted' => 1, 'items_id' => $comp->getID(),
-                          'itemtype' => 'Computer');
-         $first  = true;
-         $item = new NetworkPort();
-         foreach ($DB->request('glpi_networkports', $params, array('id', 'items_id')) as $line) {
-            $item->getFromDB($line['id']);
-            $header = true;
-            if ($first) {
-               echo "<tr><th colspan='2'>"._n('Locked IP', 'Locked IP', 2, 'ocsinventoryng')."</th>".
-                     "</tr>\n";
-               $first = false;
-            }
-         
-            echo "<tr class='tab_bg_1'><td class='right' width='50%'>" . $item->getName() . "</td>";
-            echo "<td class='left' width='50%'>";
-            echo "<input type='checkbox' name='NetworkPort[" . $line['id'] . "]'></td></tr>\n";
-         }
-          
-         /*
-         // Search locked IP
-         $locked_ip = importArrayFromDB($data["import_ip"]);
-
-         if (!in_array(PluginOcsinventoryngOcsServer::IMPORT_TAG_072,$locked_ip)) {
-            $locked_ip = PluginOcsinventoryngOcsServer::migrateImportIP($ID,$locked_ip);
-         }
-         $first = true;
-
-         foreach ($locked_ip as $key => $val) {
-            if ($key>0) {
-               $tmp = explode(PluginOcsinventoryngOcsServer::FIELD_SEPARATOR,$val);
-               $querySearchLockedIP = "SELECT *
-                                       FROM `glpi_networkports`
-                                       LEFT JOIN `glpi_networknames`
-                                          ON (`glpi_networkports`.`id` = `glpi_networknames`.`items_id`)
-                                       LEFT JOIN `glpi_ipaddresses`
-                                          ON (`glpi_ipaddresses`.`items_id` = `glpi_networknames`.`id`)
-                                       WHERE `glpi_networkports`.`items_id` = '$ID'
-                                             AND `glpi_networkports`.`itemtype` = 'Computer'
-                                             AND `glpi_ipaddresses`.`name` = '".$tmp[0]."'
-                                             AND `glpi_networkports`.`mac` = '".$tmp[1]."'";
-               $resultSearchIP = $DB->query($querySearchLockedIP);
-
-               if ($DB->numrows($resultSearchIP) == 0) {
-                  $header = true;
-                  if ($first) {
-                     echo "<tr><th colspan='2'>" ._n('Locked IP', 'Locked IP', 2, 'ocsinventoryng').
-                          "</th></tr>\n";
-                     $first = false;
-                  }
-                  echo "<tr class='tab_bg_1'><td class='right' width='50%'>" .
-                         str_replace(PluginOcsinventoryngOcsServer::FIELD_SEPARATOR, ' / ', $val) .
-                       "</td>";
-                  echo "<td class='left' width='50%'>";
-                  echo "<input type='checkbox' name='lockip[" . $key . "]'></td></tr>\n";
-               }
-            }
-         }
-         */
-         $types = Item_Devices::getDeviceTypes();
-         $nb    = 0;
-         foreach ($types as $old => $itemtype) {
-            $nb += countElementsInTable(getTableForItemType($itemtype),
-                                          "`items_id`='".$comp->getID()."'
-                                            AND `itemtype`='Computer'
-                                               AND `is_dynamic`='1'
-                                                  AND `is_deleted`='1'");
-         }
-         if ($nb) {
-            $header = true;
-            echo "<tr><th colspan='2'>"._n('Locked component', 'Locked components', 2,
-                  'ocsinventoryng')."</th></tr>\n";
-            foreach ($types as $old => $itemtype) {
-               $associated_type = str_replace('Item_', '', $itemtype);
-               $associated_table = getTableForItemType($associated_type);
-               $fk              = getForeignKeyFieldForTable($associated_table);
-               $query = "SELECT `i`.`id`, `t`.`designation` as `name`
-                         FROM `".getTableForItemType($itemtype)."` as i
-                         LEFT JOIN `$associated_table` as t ON (`t`.`id`=`i`.`$fk`)
-                         WHERE `itemtype`='Computer'
-                            AND `items_id`='".$comp->getID()."'
-                            AND `is_dynamic`='1'
-                            AND `is_deleted`='1'";
-               foreach ($DB->request($query) as $data) {
-                  echo "<tr class='tab_bg_1'><td class='right' width='50%'>";
-                  echo $associated_type::getTypeName()."&nbsp;: ".$data['name']."</td>";
-                  echo "<td class='left' width='50%'>";
-                  echo "<input type='checkbox' name='".$itemtype."[" . $data['id'] . "]'></td></tr>\n";
-               }
-            }
-         }
-
-         if ($header) {
-            echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
-            PluginOcsinventoryngOcsServer::checkBox($target);
-            echo "</td></tr>";
-         }
-         
-         if ($header) {
-            echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
-            echo "<input class='submit' type='submit' name='unlock' value='".
-                  _sx('button', 'Unlock', 'ocsinventoryng'). "'></td></tr>";
-         } else {
-            echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
-            echo __('No locked field', 'ocsinventoryng')."</td></tr>";
-         }
-
-         echo "</table>";
+         echo "<tr class='tab_bg_1'><td class='center'>";
+         echo "<input type='hidden' name='resynch_id' value='" . $data["id"] . "'>";
+         echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
+         _sx('button', 'Force synchronization', 'ocsinventoryng'). "\">";
+         echo "</table>\n";
          Html::closeForm();
-         echo "</div>\n";
+         echo "</table></div>";
+         }
       }
+      return true;
    }
+   
 
 
    /**
@@ -708,6 +470,41 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          }
       }
       return '';
+   }
+
+   /**
+    *
+    * Unlock lockes items
+    * @since 1.0
+    * @param $itemtype itemtype of ids to locks
+    * @param $items array of items to unlock
+    */
+   static function unlockItems($itemtype, $table, $items) {
+      $item = new $itemtype();
+      $ok = 0;
+      $ko = 0;
+      $table     = '';
+      $condition = array();
+/*
+      switch ($itemtype) {
+         case 'Peripheral':
+         case 'Monitor':
+         case 'Printer':
+         case 'Phone':
+            $condition['itemtype'] = $itemtype;
+            $condition['items_id'] = $ite
+      }
+      foreach ($items as $id => $value) {
+         if ($value == 1) {
+            foreach ($db->request($table, array('')))
+            if ($item->update(array('id' => $id, 'is_deleted' => 0))) {
+               $ok++;
+            } else {
+               $ko++;
+            }
+         }
+      }*/
+      return array('ok' => $ok, 'ko' => $ko);
    }
 }
 ?>
