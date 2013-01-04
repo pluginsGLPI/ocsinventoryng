@@ -10,7 +10,7 @@ https://forge.indepnet.net/projects/ocsinventoryng
 
 LICENSE
 
-This file is part of accounts.
+This file is part of ocsinventoryng.
 
 Ocsinventoryng plugin is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -243,31 +243,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    static function addComputer_Item(CommonDBTM $item, $withtemplate='') {
       global $DB;
 
-      switch ($item->input['itemtype']) {
-         case 'Monitor' :
-            $link   = new Monitor();
-            $ocstab = 'import_monitor';
-            break;
-
-         case 'Phone' :
-            // shoul really never occurs as OCS doesn't sync phone
-            $link   = new Phone();
-            $ocstab = '';
-            break;
-
-         case 'Printer' :
-            $link   = new Printer();
-            $ocstab = 'import_printer';
-            break;
-
-         case 'Peripheral' :
-            $link   = new Peripheral();
-            $ocstab = 'import_peripheral';
-            break;
-
-         default :
-            return false;
-      }
+      $link = new $item->input['itemtype'];
       if (!$link->getFromDB($item->input['items_id'])) {
          return false;
       }
@@ -281,11 +257,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          while ($data = $DB->fetch_assoc($result)) {
             $temp = clone $item;
-            $temp->delete($data);
-            if ($ocstab) {
-               PluginOcsinventoryngOcsServer::deleteInOcsArray($data["computers_id"], $data["id"],
-                                                               $ocstab);
-            }
+            $temp->delete($data, true);
          }
       }
    }

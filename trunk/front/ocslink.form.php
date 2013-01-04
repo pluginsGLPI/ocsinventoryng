@@ -10,7 +10,7 @@ https://forge.indepnet.net/projects/ocsinventoryng
 
 LICENSE
 
-This file is part of accounts.
+This file is part of ocsinventoryng.
 
 Ocsinventoryng plugin is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -52,15 +52,4 @@ if (isset($_POST["force_ocs_resynch"])) {
 } else {
    Html::displayErrorAndDie("lost");
 }
-/*
-$link = new PluginOcsinventoryngOcslink();
-
-if (isset ($_POST["update"])) {
-
-   $values["id"] = $_POST["link_id"];
-   $values["use_auto_update"] = $_POST["use_auto_update"];
-   $link->update($values);
-   Html::back();
-}
-*/
 ?>
