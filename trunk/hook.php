@@ -35,7 +35,7 @@ function plugin_ocsinventoryng_install() {
 
 
    if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
-       && !TableExists("OCS_glpi_ocsservers")) {
+       && !TableExists("ocs_glpi_ocsservers")) {
 
       $install = true;
       $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.0-empty.sql");
@@ -60,23 +60,23 @@ function plugin_ocsinventoryng_install() {
       $DB->queryOrDie($query, $DB->error());
       
    } else if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
-              && TableExists("OCS_glpi_ocsservers")) {
+              && TableExists("ocs_glpi_ocsservers")) {
 
       $update = true;
       $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.0-update.sql");
 
       // recuperation des droits du core
       // creation de la table glpi_plugin_ocsinventoryng_profiles vide
-      If (TableExists("OCS_glpi_profiles")
-          && (TableExists('OCS_glpi_ocsservers')
-              && countElementsInTable('OCS_glpi_ocsservers') > 0)) {
+      If (TableExists("ocs_glpi_profiles")
+          && (TableExists('ocs_glpi_ocsservers')
+              && countElementsInTable('ocs_glpi_ocsservers') > 0)) {
 
          $query = "INSERT INTO `glpi_plugin_ocsinventoryng_profiles`
                           (`profiles_id`, `ocsng`, `sync_ocsng`, `view_ocsng`, `clean_ocsng`,
                            `rule_ocs`)
                            SELECT `id`, `ocsng`, `sync_ocsng`, `view_ocsng`, `clean_ocsng`,
                                   `rule_ocs`
-                           FROM `OCS_glpi_profiles`";
+                           FROM `ocs_glpi_profiles`";
          $DB->queryOrDie($query, "1.0.0 insert profiles for OCS in plugin");
       }
 
@@ -1839,9 +1839,11 @@ function plugin_ocsinventoryng_showLocksForItem($params = array()) {
 
          foreach ($locked as $key => $val) {
             echo "<tr class='tab_bg_1'>";
-            echo "<td class='right' width='50%'>" . $lockable_fields[$val] . "</td>";
-            echo "<td class='left' width='50%'>";
-            echo "<input type='checkbox' name='lockfield[" . $key . "]'></td></tr>\n";
+            
+            echo "<td class='center' width='10'>";
+            echo "<input type='checkbox' name='lockfield[" . $key . "]'></td>";
+            echo "<td class='left' width='95%'>" . $lockable_fields[$val] . "</td>";
+            echo "</tr>\n";
          }
       }
    }

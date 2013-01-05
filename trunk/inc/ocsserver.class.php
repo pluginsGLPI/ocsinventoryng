@@ -1378,11 +1378,11 @@ JAVASCRIPT;
             $comp->getFromDB($computers_id);
             $input["id"]            = $computers_id;
             $input["entities_id"]   = $comp->fields['entities_id'];
-            $input["is_ocs_import"] = 1;
+            $input["is_dynamic"] = 1;
 
             // Not already import from OCS / mark default state
             if (!$ocs_id_change
-                || (!$comp->fields['is_ocs_import']
+                || (!$comp->fields['is_dynamic']
                     && ($ocsConfig["states_id_default"] > 0))) {
                $input["states_id"] = $ocsConfig["states_id_default"];
             }
@@ -2764,7 +2764,7 @@ JAVASCRIPT;
                    _sx('button','Synchronize', 'ocsinventoryng')."\">";
             echo "</td></tr>\n";
 
-            echo "<tr><th>". __('Update computers')."</th>";
+            echo "<tr><th>". __('Update computers', 'ocsinventoryng')."</th>";
             echo "<th>".__('Import date in GLPI', 'ocsinventoryng')."</th>";
             echo "<th>" . __('Last OCSNG inventory date', 'ocsinventoryng')."</th>";
             echo "<th>". __('Auto update', 'ocsinventoryng')."</th>";
@@ -3232,7 +3232,7 @@ JAVASCRIPT;
                        'FK_glpi_enterprise'  => 'manufacturers_id',
                        'deleted'             => 'is_deleted',
                        'notes'               => 'notepad',
-                       'ocs_import'          => 'is_ocs_import',
+                       'ocs_import'          => 'is_dynamic',
                        'FK_users'            => 'users_id',
                        'FK_groups'           => 'groups_id',
                        'state'               => 'states_id');
