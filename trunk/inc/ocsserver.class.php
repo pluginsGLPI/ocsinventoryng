@@ -3365,6 +3365,17 @@ JAVASCRIPT;
                           ORDER BY `ID`";
                $result2 = $PluginOcsinventoryngDBocs->query($query2);
                if ($PluginOcsinventoryngDBocs->numrows($result2) > 0){
+                  if (count($import_device)){
+                     $dohistory = false;
+                     foreach ($import_device as $key => $val){
+                        $tmp = explode(self::FIELD_SEPARATOR,$key);
+                        if (isset($tmp[1]) && $tmp[0] == "Item_DeviceMemory"){
+                           $CompDevice->delete(array('id'          => $tmp[1],
+                                                     '_no_history' => true), 1);
+                           unset($import_device[$key]);
+                        }
+                     }
+                  }
                   while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)){
                      $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      if (isset($line2["CAPACITY"]) && $line2["CAPACITY"]!="No"){
@@ -3382,8 +3393,8 @@ JAVASCRIPT;
                            $line2["CAPACITY"] = 0;
                         }
                         $ram["specif_default"] = $line2["CAPACITY"];
-                        if (!in_array($prevalue . $ram["designation"],
-                                                   $import_device)){
+
+                        if (!in_array(stripslashes($prevalue.$ram["designation"]), $import_device)){
                         
                            $ram["frequence"]            = $line2["SPEED"];
                            $ram["devicememorytypes_id"] = Dropdown::importExternal('DeviceMemoryType',
@@ -3399,8 +3410,8 @@ JAVASCRIPT;
                                                               'is_dynamic'          => 1,
                                                               '_no_history'         => !$dohistory));
                            }
-                        } else{
-                           $tmp = array_search($prevalue.$ram["designation"],
+                        } else {
+                           $tmp = array_search(stripslashes($prevalue . $ram["designation"]),
                                                $import_device);
                            list($type,$id) = explode(self::FIELD_SEPARATOR, $tmp);
 
@@ -3743,7 +3754,7 @@ JAVASCRIPT;
             if (!(strpos($key, $devicetype . '$$') === false)){
                list($type,$id) = explode(self::FIELD_SEPARATOR, $key);
                $CompDevice->delete(array('id'          => $id,
-                                         '_no_history' => !$dohistory));
+                                         '_no_history' => !$dohistory, 1));
             }
          }
       }
