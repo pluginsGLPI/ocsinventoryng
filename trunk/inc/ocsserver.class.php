@@ -39,20 +39,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    // From CommonDBTM
    public $dohistory = true;
 
-   // Class constant - still used for import_device field
-   // not used const MOBOARD_DEVICE=1;
-   const PROCESSOR_DEVICE = 2;
-   const RAM_DEVICE       = 3;
-   const HDD_DEVICE       = 4 ;
-   const NETWORK_DEVICE   = 5;
-   const DRIVE_DEVICE     = 6;
-   // not used const CONTROL_DEVICE=7;
-   const GFX_DEVICE       = 8;
-   const SND_DEVICE       = 9;
-   const PCI_DEVICE       = 10;
-   // not used const CASE_DEVICE=11;
-   // not used const POWER_DEVICE=12;
-
    const OCS_VERSION_LIMIT    = 4020;
    const OCS1_3_VERSION_LIMIT = 5004;
    const OCS2_VERSION_LIMIT   = 6000;
@@ -2051,49 +2037,65 @@ JAVASCRIPT;
                }
 
                // Get import devices
-               //$import_device = importArrayFromDB($line["import_device"]);
-
-               // Migrate import device to manage several link tables
-               //if (!in_array(self::IMPORT_TAG_078,$import_device)) {
-               //   $import_device = self::migrateImportDevice($line['computers_id'], $import_device);
-               //}
+               $import_device = array();
+               $types = Item_Devices::getDeviceTypes();
+               foreach ($types as $old => $type) {
+                  $associated_type  = str_replace('Item_', '', $type);
+                  $associated_table = getTableForItemType($associated_type);
+                  $fk               = getForeignKeyFieldForTable($associated_table);
+                  
+                  $query = "SELECT `i`.`id`, `t`.`designation` as `name`
+                            FROM `".getTableForItemType($type)."` as i
+                            LEFT JOIN `$associated_table` as t ON (`t`.`id`=`i`.`$fk`)
+                            WHERE `itemtype`='Computer'
+                               AND `items_id`='".$line['computers_id']."'
+                               AND `is_dynamic`='1'
+                               AND `is_deleted`='0'";
+                  
+                  $prevalue = $type. self::FIELD_SEPARATOR;
+                  foreach ($DB->request($query) as $data) {
+                     
+                     $import_device[$prevalue.$data['id']] = $prevalue.$data["name"];
+                  }
+               }
 
                if ($mixed_checksum & pow(2, self::MEMORIES_FL)) {
-                  self::updateDevices(self::RAM_DEVICE, $line['computers_id'], $line['ocsid'],
+                  self::updateDevices("Item_DeviceMemory", $line['computers_id'], $line['ocsid'],
                                       $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs,
                                       $import_device, '', $dohistory);
                }
 
                if ($mixed_checksum & pow(2, self::STORAGES_FL)) {
-                  self::updateDevices(self::HDD_DEVICE, $line['computers_id'], $line['ocsid'],
+                  self::updateDevices("Item_DeviceHardDrive", $line['computers_id'], $line['ocsid'],
                                       $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs,
                                       $import_device, '', $dohistory);
-                  self::updateDevices(self::DRIVE_DEVICE, $line['computers_id'], $line['ocsid'],
+                  self::updateDevices("Item_DeviceDrive", $line['computers_id'], $line['ocsid'],
                                       $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs,
                                       $import_device, '', $dohistory);
                }
 
                if ($mixed_checksum & pow(2, self::HARDWARE_FL)) {
-                  self::updateDevices(self::PROCESSOR_DEVICE, $line['computers_id'], $line['ocsid'],
+                  self::updateDevices(" Item_DeviceProcessor", $line['computers_id'], $line['ocsid'],
                                       $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs,
                                       $import_device, '', $dohistory);
                }
 
                if ($mixed_checksum & pow(2, self::VIDEOS_FL)) {
-                  self::updateDevices(self::GFX_DEVICE, $line['computers_id'], $line['ocsid'],
+                  self::updateDevices("Item_DeviceGraphicCard", $line['computers_id'], $line['ocsid'],
                                       $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs,
                                       $import_device, '', $dohistory);
                }
 
                if ($mixed_checksum & pow(2, self::SOUNDS_FL)) {
-                  self::updateDevices(self::SND_DEVICE, $line['computers_id'], $line['ocsid'],
+                  self::updateDevices("Item_DeviceSoundCard", $line['computers_id'], $line['ocsid'],
                                       $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs,
                                       $import_device, '', $dohistory);
                }
 
                if ($mixed_checksum & pow(2, self::NETWORKS_FL)) {
+                  //TODO import_ip ?
                   $import_ip = importArrayFromDB($line["import_ip"]);
-                  self::updateDevices(self::NETWORK_DEVICE, $line['computers_id'], $line['ocsid'],
+                  self::updateDevices("Item_DeviceNetworkCard", $line['computers_id'], $line['ocsid'],
                                       $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs,
                                       $import_device, $import_ip,
                                       $dohistory);
@@ -2101,7 +2103,7 @@ JAVASCRIPT;
 
                if ($mixed_checksum & pow(2, self::MODEMS_FL)
                    || $mixed_checksum & pow(2, self::PORTS_FL)) {
-                  self::updateDevices(self::PCI_DEVICE, $line['computers_id'], $line['ocsid'],
+                  self::updateDevices("Item_DevicePci", $line['computers_id'], $line['ocsid'],
                                       $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs,
                                       $import_device, '', $dohistory);
                }
@@ -3352,8 +3354,8 @@ JAVASCRIPT;
       $do_clean   = false;
 
       switch ($devicetype){
-         case self::RAM_DEVICE:
-            $CompDevice = new Item_DeviceMemory();
+         case "Item_DeviceMemory":
+            $CompDevice = new $devicetype();
             //Memoire
             if ($cfg_ocs["import_device_memory"]){
                $do_clean = true;
@@ -3363,24 +3365,6 @@ JAVASCRIPT;
                           ORDER BY `ID`";
                $result2 = $PluginOcsinventoryngDBocs->query($query2);
                if ($PluginOcsinventoryngDBocs->numrows($result2) > 0){
-                  // Drop all memories and force no history
-                  if (!in_array(self::IMPORT_TAG_078,$import_device)){
-                     self::addToOcsArray($computers_id, array(0 => self::IMPORT_TAG_078),
-                                         "import_device");
-                     // Clean memories for this computer
-                     if (count($import_device)){
-                        $dohistory = false;
-                        foreach ($import_device as $key => $val){
-                           $tmp = explode(self::FIELD_SEPARATOR,$key);
-                           if (isset($tmp[1]) && $tmp[0] == self::RAM_DEVICE){
-                              $CompDevice->delete(array('id'          => $tmp[1],
-                                                        '_no_history' => true));
-                              self::deleteInOcsArray($computers_id, $key, "import_device");
-                              unset($import_device[$key]);
-                           }
-                        }
-                     }
-                  }
                   while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)){
                      $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      if (isset($line2["CAPACITY"]) && $line2["CAPACITY"]!="No"){
@@ -3398,8 +3382,9 @@ JAVASCRIPT;
                            $line2["CAPACITY"] = 0;
                         }
                         $ram["specif_default"] = $line2["CAPACITY"];
-                        if (!in_array(stripslashes($prevalue . $ram["designation"]),
+                        if (!in_array($prevalue . $ram["designation"],
                                                    $import_device)){
+                        
                            $ram["frequence"]            = $line2["SPEED"];
                            $ram["devicememorytypes_id"] = Dropdown::importExternal('DeviceMemoryType',
                                                                                    $line2["TYPE"]);
@@ -3407,21 +3392,19 @@ JAVASCRIPT;
                            $DeviceMemory = new DeviceMemory();
                            $ram_id = $DeviceMemory->import($ram);
                            if ($ram_id){
-                              $devID = $CompDevice->add(array('items_id'  => $computers_id,
-                                                              'itemtype'     => 'Computer',
-                                                              'devicememories_id' => $ram_id,
-                                                              'size'   => $line2["CAPACITY"],
-                                                              '_no_history'   => !$dohistory));
-                              self::addToOcsArray($computers_id,
-                                                  array($prevalue.$devID
-                                                                  => $prevalue.$ram["designation"]),
-                                                  "import_device");
+                              $devID = $CompDevice->add(array('items_id'           => $computers_id,
+                                                              'itemtype'            => 'Computer',
+                                                              'devicememories_id'   => $ram_id,
+                                                              'size'                => $line2["CAPACITY"],
+                                                              'is_dynamic'          => 1,
+                                                              '_no_history'         => !$dohistory));
                            }
                         } else{
-                           $tmp = array_search(stripslashes($prevalue.$ram["designation"]),
+                           $tmp = array_search($prevalue.$ram["designation"],
                                                $import_device);
                            list($type,$id) = explode(self::FIELD_SEPARATOR, $tmp);
-                           $CompDevice->update(array('id'          => $id,
+
+                           $CompDevice->update(array('id'  => $id,
                                                      'size' => $line2["CAPACITY"]));
                            unset ($import_device[$tmp]);
                         }
@@ -3431,8 +3414,8 @@ JAVASCRIPT;
             }
             break;
 
-         case self::HDD_DEVICE:
-            $CompDevice = new Item_DeviceHardDrive();
+         case "Item_DeviceHardDrive":
+            $CompDevice = new $devicetype();
             //Disque Dur
             if ($cfg_ocs["import_device_hdd"]){
                $do_clean = true;
@@ -3462,15 +3445,12 @@ JAVASCRIPT;
                            $DeviceHardDrive = new DeviceHardDrive();
                            $dd_id = $DeviceHardDrive->import($dd);
                            if ($dd_id){
-                              $devID = $CompDevice->add(array('items_id'  => $computers_id,
-                                                              'itemtype'     => 'Computer',
+                              $devID = $CompDevice->add(array('items_id'           => $computers_id,
+                                                              'itemtype'            => 'Computer',
                                                               'deviceharddrives_id' => $dd_id,
-                                                              'capacity'   => $line2["DISKSIZE"],
-                                                              '_no_history'   => !$dohistory));
-                              self::addToOcsArray($computers_id,
-                                                  array($prevalue.$devID
-                                                                  => $prevalue.$dd["designation"]),
-                                                  "import_device");
+                                                              'capacity'            => $line2["DISKSIZE"],
+                                                              'is_dynamic'          => 1,
+                                                              '_no_history'         => !$dohistory));
                            }
                         } else{
                            $tmp = array_search(stripslashes($prevalue . $dd["designation"]),
@@ -3486,8 +3466,8 @@ JAVASCRIPT;
             }
             break;
 
-         case self::DRIVE_DEVICE:
-            $CompDevice = new Item_DeviceDrive();
+         case "Item_DeviceDrive":
+            $CompDevice = new $devicetype();
             //lecteurs
             if ($cfg_ocs["import_device_drive"]){
                $do_clean = true;
@@ -3515,14 +3495,11 @@ JAVASCRIPT;
                            $DeviceDrive = new DeviceDrive();
                            $stor_id = $DeviceDrive->import($stor);
                            if ($stor_id){
-                              $devID = $CompDevice->add(array('items_id'  => $computers_id,
-                                                              'itemtype'     => 'Computer',
-                                                              'devicedrives_id' => $stor_id,
-                                                              '_no_history'     => !$dohistory));
-                              self::addToOcsArray($computers_id,
-                                                  array($prevalue.$devID
-                                                                  =>$prevalue.$stor["designation"]),
-                                                  "import_device");
+                              $devID = $CompDevice->add(array('items_id'        => $computers_id,
+                                                              'itemtype'         => 'Computer',
+                                                              'devicedrives_id'  => $stor_id,
+                                                              'is_dynamic'       => 1,
+                                                              '_no_history'      => !$dohistory));
                            }
                         } else{
                            $tmp = array_search(stripslashes($prevalue.$stor["designation"]),
@@ -3535,8 +3512,8 @@ JAVASCRIPT;
             }
             break;
 
-         case self::PCI_DEVICE:
-            $CompDevice = new Item_DevicePci();
+         case "Item_DevicePci":
+            $CompDevice = new $devicetype();
             //Modems
             if ($cfg_ocs["import_device_modem"]){
                $do_clean = true;
@@ -3556,14 +3533,11 @@ JAVASCRIPT;
                         $DevicePci = new DevicePci();
                         $mdm_id = $DevicePci->import($mdm);
                         if ($mdm_id){
-                           $devID = $CompDevice->add(array('items_id'  => $computers_id,
-                                                            'itemtype'     => 'Computer',
-                                                           'devicepcis_id' => $mdm_id,
-                                                           '_no_history'   => !$dohistory));
-                           self::addToOcsArray($computers_id,
-                                               array($prevalue.$devID
-                                                                  => $prevalue.$mdm["designation"]),
-                                               "import_device");
+                           $devID = $CompDevice->add(array('items_id'        => $computers_id,
+                                                            'itemtype'        => 'Computer',
+                                                            'devicepcis_id'   => $mdm_id,
+                                                            'is_dynamic'      => 1,
+                                                            '_no_history'     => !$dohistory));
                         }
                      } else{
                         $tmp = array_search(stripslashes($prevalue.$mdm["designation"]),
@@ -3601,14 +3575,11 @@ JAVASCRIPT;
                            $DevicePci = new DevicePci();
                            $port_id   = $DevicePci->import($port);
                            if ($port_id){
-                           $devID = $CompDevice->add(array('items_id'  => $computers_id,
-                                                           'itemtype'     => 'Computer',
+                           $devID = $CompDevice->add(array('items_id'      => $computers_id,
+                                                           'itemtype'      => 'Computer',
                                                            'devicepcis_id' => $port_id,
+                                                           'is_dynamic'    => 1,
                                                            '_no_history'   => !$dohistory));
-                              self::addToOcsArray($computers_id,
-                                                  array($prevalue.$devID
-                                                                  =>$prevalue.$port["designation"]),
-                                                  "import_device");
                            }
                         } else{
                            $tmp = array_search(stripslashes($prevalue.$port["designation"]),
@@ -3621,8 +3592,8 @@ JAVASCRIPT;
             }
             break;
 
-         case self::PROCESSOR_DEVICE:
-            $CompDevice = new Item_DeviceProcessor();
+         case "Item_DeviceProcessor":
+            $CompDevice = new $devicetype();
             //Processeurs:
             if ($cfg_ocs["import_device_processor"]){
                $do_clean = true;
@@ -3646,15 +3617,12 @@ JAVASCRIPT;
                         $DeviceProcessor = new DeviceProcessor();
                         $proc_id         = $DeviceProcessor->import($processor);
                         if ($proc_id){
-                           $devID = $CompDevice->add(array('items_id'  => $computers_id,
-                                                            'itemtype'     => 'Computer',
-                                                           'deviceprocessors_id' => $proc_id,
-                                                           'frequency'         => $line["PROCESSORS"],
-                                                           '_no_history'         => !$dohistory));
-                           self::addToOcsArray($computers_id,
-                                               array($prevalue.$devID
-                                                            => $prevalue.$processor["designation"]),
-                                               "import_device");
+                           $devID = $CompDevice->add(array('items_id'            => $computers_id,
+                                                            'itemtype'            => 'Computer',
+                                                            'deviceprocessors_id' => $proc_id,
+                                                            'frequency'           => $line["PROCESSORS"],
+                                                            'is_dynamic'          => 1,
+                                                            '_no_history'         => !$dohistory));
                         }
                      } else{
                         $tmp = array_search(stripslashes($prevalue.$processor["designation"]),
@@ -3669,8 +3637,8 @@ JAVASCRIPT;
             }
             break;
 
-         case self::NETWORK_DEVICE:
-            $CompDevice = new Item_DeviceNetworkCard();
+         case "Item_DeviceNetworkCard":
+            $CompDevice = new $devicetype();
             //Carte reseau
             if ($cfg_ocs["import_device_iface"] || $cfg_ocs["import_ip"]){
                PluginOcsinventoryngNetworkPort::importNetwork($import_ip,
@@ -3682,8 +3650,8 @@ JAVASCRIPT;
             }
             break;
 
-         case self::GFX_DEVICE:
-            $CompDevice = new Item_DeviceGraphicCard();
+         case "Item_DeviceGraphicCard":
+            $CompDevice = new $devicetype();
             //carte graphique
             if ($cfg_ocs["import_device_gfxcard"]){
                $do_clean = true;
@@ -3706,15 +3674,12 @@ JAVASCRIPT;
                         $DeviceGraphicCard = new DeviceGraphicCard();
                         $video_id = $DeviceGraphicCard->import($video);
                         if ($video_id){
-                           $devID = $CompDevice->add(array('items_id'  => $computers_id,
-                                                           'itemtype'     => 'Computer',
-                                                           'devicegraphiccards_id' => $video_id,
-                                                           'memory'   => $line2["MEMORY"],
-                                                           '_no_history'   => !$dohistory));
-                           self::addToOcsArray($computers_id,
-                                               array($prevalue.$devID
-                                                               =>$prevalue.$video["designation"]),
-                                               "import_device");
+                           $devID = $CompDevice->add(array('items_id'               => $computers_id,
+                                                           'itemtype'               => 'Computer',
+                                                           'devicegraphiccards_id'  => $video_id,
+                                                           'memory'                 => $line2["MEMORY"],
+                                                           'is_dynamic'             => 1,
+                                                           '_no_history'            => !$dohistory));
                         }
                      } else{
                         $tmp = array_search(stripslashes($prevalue.$video["designation"]),
@@ -3729,8 +3694,8 @@ JAVASCRIPT;
             }
             break;
 
-         case self::SND_DEVICE:
-            $CompDevice = new Item_DeviceSoundCard();
+         case "Item_DeviceSoundCard":
+            $CompDevice = new $devicetype();
             //carte son
             if ($cfg_ocs["import_device_sound"]){
                $do_clean = true;
@@ -3755,14 +3720,11 @@ JAVASCRIPT;
                         $DeviceSoundCard = new DeviceSoundCard();
                         $snd_id          = $DeviceSoundCard->import($snd);
                         if ($snd_id){
-                           $devID = $CompDevice->add(array('items_id'  => $computers_id,
-                                                           'itemtype'     => 'Computer',
+                           $devID = $CompDevice->add(array('items_id'           => $computers_id,
+                                                           'itemtype'            => 'Computer',
                                                            'devicesoundcards_id' => $snd_id,
-                                                           '_no_history'   => !$dohistory));
-                           self::addToOcsArray($computers_id,
-                                               array($prevalue.$devID
-                                                               => $prevalue.$snd["designation"]),
-                                               "import_device");
+                                                           'is_dynamic'          => 1,
+                                                           '_no_history'         => !$dohistory));
                         }
                      } else{
                         $id = array_search(stripslashes($prevalue.$snd["designation"]),
@@ -3782,19 +3744,18 @@ JAVASCRIPT;
                list($type,$id) = explode(self::FIELD_SEPARATOR, $key);
                $CompDevice->delete(array('id'          => $id,
                                          '_no_history' => !$dohistory));
-               self::deleteInOcsArray($computers_id, $key, "import_device");
             }
          }
       }
-
+      
+      //TODO Import IP
       if ($do_clean
           && count($import_ip)
-          && $devicetype == self::NETWORK_DEVICE){
+          && $devicetype == "Item_DeviceNetworkCard"){
          foreach ($import_ip as $key => $val){
             if ($key>0){
                $netport = new NetworkPort();
                $netport->delete(array('id' => $key));
-               self::deleteInOcsArray($computers_id, $key, "import_ip");
             }
          }
       }
