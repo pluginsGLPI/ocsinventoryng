@@ -1792,6 +1792,77 @@ function plugin_ocsinventoryng_getFKFieldsForQuery() {
 
 /**
  *
+ * Add global criteria for ruleImportComputer rules engine
+ * @since 1.0
+ * @param $global_criteria an array of global criteria for this rule engine
+ * @return the array including plugin's criteria
+ */
+function plugin_ocsinventoryng_ruleImportComputer_addGlobalCriteria($global_criteria) {
+   return array_merge($global_criteria, array('IPADDRESS', 'IPSUBNET', 'MACADDRESS'));
+}
+
+/**
+ *
+ * Get SQL restriction for ruleImportComputer
+ * @param params necessary parameters to build SQL restrict requests
+ * @return an array with SQL restrict resquests
+ * @since 1.0
+ */
+function plugin_ocsinventoryng_ruleImportComputer_getSqlRestriction($params = array()) {
+   // Search computer, in entity, not already linked
+   $params['sql_where'] .= " AND `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` IS NULL
+                             AND `glpi_computers`.`entities_id` IN (".$params['where_entity'].")
+                             AND `glpi_computers`.`is_template` = '0' ";
+   
+   $params['sql_from']  = "`glpi_computers`
+                           LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks`
+                              ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`)";
+   
+   $needport = false;
+   $needip   = false;
+   foreach ($params['criteria'] as $criteria) {
+      switch ($criteria->fields['criteria']) {
+         case 'IPADDRESS' :
+            if (count($params['input']["IPADDRESS"])) {
+               $needport   = true;
+               $needip     = true;
+               $params['sql_where'] .= " AND `glpi_ipaddresses`.`name` IN ('";
+               $params['sql_where'] .= implode("','", $params['input']["IPADDRESS"]);
+               $params['sql_where'] .= "')";
+            } else {
+               $params['sql_where'] =  " AND 0 ";
+            }
+            break;
+   
+         case 'MACADDRESS' :
+            if (count($params['input']["MACADDRESS"])) {
+               $needport   = true;
+               $params['sql_where'] .= " AND `glpi_networkports`.`mac` IN ('";
+               $params['sql_where'] .= implode("','",$params['input']['MACADDRESS']);
+               $params['sql_where'] .= "')";
+            } else {
+               $params['sql_where'] =  " AND 0 ";
+            }
+            break;
+      }
+   }
+   
+   if ($needport) {
+      $params['sql_from'] .= " LEFT JOIN `glpi_networkports`
+                               ON (`glpi_computers`.`id` = `glpi_networkports`.`items_id`
+                                  AND `glpi_networkports`.`itemtype` = 'Computer') ";
+   }
+   if ($needip) {
+      $params['sql_from'] .= " LEFT JOIN `glpi_networknames`
+                               ON (`glpi_networkports`.`id` =  `glpi_networknames`.`items_id`
+                                  AND `glpi_networknames`.`itemtype`='NetworkPort')
+                               LEFT JOIN `glpi_ipaddresses`
+                                  ON (`glpi_ipaddresses`.`items_id` = `glpi_networknames`.`id`)";
+   }
+   return $params;
+}
+/**
+ *
  * Display plugin's entries in unlock fields form
  * @since 1.0
  * @param $params an array which contains the item and the header boolean
