@@ -40,28 +40,23 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
-   static function importNetwork($import_ip, $PluginOcsinventoryngDBocs, $cfg_ocs, $ocsid,
-                                 $CompDevice, $computers_id, $prevalue, $import_device,
-                                 $dohistory) {
+   static function importNetwork($PluginOcsinventoryngDBocs, $cfg_ocs, $ocsid,
+                                   $CompDevice, $computers_id, $prevalue,
+                                   $dohistory) {
       global $DB;
 
-      $do_clean = true;
-      //If import_ip doesn't contain _VERSION_072_, then migrate it to the new architecture
-      if (!in_array(PluginOcsinventoryngOcsServer::IMPORT_TAG_072,$import_ip)) {
-         $import_ip = PluginOcsinventoryngOcsServer::migrateImportIP($computers_id, $import_ip);
-      }
       $query2 = "SELECT *
                  FROM `networks`
                  WHERE `HARDWARE_ID` = '$ocsid'
                  ORDER BY `ID`";
 
-      $result2       = $PluginOcsinventoryngDBocs->query($query2);
-      $i             = 0;
-      $manually_link = false;
-
-      //Count old ip in GLPI
-      $count_ip = count($import_ip);
-
+      $result2                 = $PluginOcsinventoryngDBocs->query($query2);
+      $i                       = 0;
+      $manually_link           = false;
+      $already_processed_iface = array();
+      $already_processed_port  = array();
+      $mac_id                 = false;
+      
       if (isset($devID)) {
          unset($devID);
       }
@@ -72,84 +67,65 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)) {
             $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
             if ($cfg_ocs["import_device_iface"]) {
-               if (!Toolbox::seems_utf8($line2["DESCRIPTION"])) {
-                  $network["designation"] = Toolbox::encodeInUtf8($line2["DESCRIPTION"]);
-               } else {
-                  $network["designation"] = $line2["DESCRIPTION"];
-               }
+               $network['designation']
+                  = PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"],
+                                                                       $line2['DESCRIPTION']);
 
                // MAC must be unique, except for wmware (internal/external use same MAC)
                if (preg_match('/^vm(k|nic)([0-9]+)$/', $line2['DESCRIPTION'])
                    || !in_array($line2['MACADDR'], $mac_already_imported)) {
                   $mac_already_imported[] = $line2["MACADDR"];
 
-                  if (!in_array(stripslashes($prevalue.$network["designation"]),
-                                             $import_device)) {
+                  //Try to find if the network card still exists in GLPI
+                  $query   = "SELECT `inc`.`id`
+                              FROM `glpi_items_devicenetworkcards` as `inc`,
+                                   `glpi_devicenetworkcards` as `nc`
+                              WHERE `inc`.`itemtype`='Computer'
+                                 AND `inc`.`items_id`='$computers_id'
+                                 AND `nc`.`designation`='".$network['designation']."'
+                                 AND `inc`.`devicenetworkcards_id`=`nc`.`id`";
+                  $results = $DB->query($query);
+                  $id  = false;
+                  if ($DB->numrows($results) > 0) {
+                     $id = $DB->result($results, 0, 'id');
+                  }
+                  
+                  if (!$id) {
                      if (!empty ($line2["SPEED"])) {
                         $network["bandwidth"] = $line2["SPEED"];
                      }
+                     //Import the card
                      $DeviceNetworkCard = new DeviceNetworkCard();
                      $net_id = $DeviceNetworkCard->import($network);
                      if ($net_id) {
-                        $devID = $CompDevice->add(array('items_id'              => $computers_id,
-                                                        'itemtype'               => 'Computer',
-                                                        'devicenetworkcards_id'  => $net_id,
-                                                        'mac'                    => $line2["MACADDR"],
-                                                        '_no_history'            => !$dohistory));
-                        PluginOcsinventoryngOcsServer::addToOcsArray($computers_id,
-                                                                     array($prevalue.$devID
-                                                                           => $prevalue.$network["designation"]),
-                                                                     "import_device");
+                        //link the network card to the computer
+                        $id = $CompDevice->add(array('items_id'              => $computers_id,
+                                                      'itemtype'               => 'Computer',
+                                                      'devicenetworkcards_id'  => $net_id,
+                                                      'mac'                    => $line2["MACADDR"],
+                                                      '_no_history'            => !$dohistory,
+                                                      'is_dynamic'             => 1,
+                                                      'is_deleted'             => 0));
                      }
                   } else {
-                     $tmp = array_search(stripslashes($prevalue.$network["designation"]),
-                                         $import_device);
-                     list($type, $id) = explode(PluginOcsinventoryngOcsServer::FIELD_SEPARATOR, $tmp);
-                     $CompDevice->update(array('id'          => $id,
-                                               'mac' => $line2["MACADDR"]));
-                     unset ($import_device[$tmp]);
+                     $CompDevice->update(array('id'        => $id,
+                                               'mac'        => $line2["MACADDR"],
+                                               'is_dynamic' => 1));
                   }
                }
+               $already_processed_iface[] = $id;
             }
+            
             if (!empty ($line2["IPADDRESS"]) && $cfg_ocs["import_ip"]) {
                $ocs_ips = explode(",", $line2["IPADDRESS"]);
                $ocs_ips = array_unique($ocs_ips);
                sort($ocs_ips);
 
-               //if never imported (only 0.72 tag in array), check if existing ones match
-               if ($count_ip == 1) {
-                  //get old IP in DB
-                  $querySelectIDandIP = "SELECT PORT.`id` as id, ADDR.`name` as ip
-                                         FROM `glpi_networkports` AS PORT
-                                         LEFT JOIN `glpi_networknames` AS NAME
-                                            ON (NAME.`itemtype` = 'NetworkPort'
-                                                AND NAME.`items_id` = PORT.`id`)
-                                         LEFT JOIN `glpi_ipaddresses` AS ADDR
-                                            ON (ADDR.`itemtype` = 'NetworkName'
-                                                AND ADDR.`items_id` = NAME.`id`)
-                                         WHERE PORT.`itemtype` = 'Computer'
-                                              AND PORT.`items_id` = '$computers_id'
-                                              AND PORT.`mac` = '" . $line2["MACADDR"] . "'
-                                              AND PORT.`name` = '".$line2["DESCRIPTION"]."'";
-                  $result = $DB->query($querySelectIDandIP);
-                  if ($DB->numrows($result) > 0) {
-                     while ($data = $DB->fetch_array($result)) {
-                        //Upate import_ip column and import_ip array
-                        PluginOcsinventoryngOcsServer::addToOcsArray($computers_id,
-                                                                     array($data["id"]
-                                                                            => $data["ip"].
-                                                                               PluginOcsinventoryngOcsServer::FIELD_SEPARATOR.
-                                                                               $line2["MACADDR"]),
-                                                                     "import_ip");
-                        $import_ip[$data["id"]] = $data["ip"].
-                                                  PluginOcsinventoryngOcsServer::FIELD_SEPARATOR.
-                                                  $line2["MACADDR"];
-                     }
-                  }
-               }
                $netport = array();
+               $netport["name"]
+                  = PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"],
+                                                                       $line2["DESCRIPTION"]);
                $netport["mac"]                   = $line2["MACADDR"];
-               $netport["name"]                  = $line2["DESCRIPTION"];
                $netport["items_id"]              = $computers_id;
                $netport["itemtype"]              = 'Computer';
                $netport['networkinterface_name'] = $line2["TYPE"];
@@ -157,9 +133,11 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                $netport['netmask']               = $line2['IPMASK'];
                $netport['gateway']               = $line2['IPGATEWAY'];
                $netport['subnet']                = $line2['IPSUBNET'];
-
+               $netport['is_dynamic']            = 1; //it is a dynamic port, created by OCS
+               $netport['is_deleted']            = 0;
+               
                if (isset($devID)) {
-                  $netport['items_devicenetworkcards_id'] = $devID;
+                  $netport['items_devicenetworkcards_id'] = $id;
                }
                $netport['speed'] = NetworkPortEthernet::transformPortSpeed($line2['SPEED'], false);
                if ($netport['speed'] === false) {
@@ -182,7 +160,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                };
 
                $np = new NetworkPort();
-               for ($j = 0 ; $j<count($ocs_ips) ; $j++) {
+               for ($j = 0 ; $j < count($ocs_ips) ; $j++) {
                   // First, we normalize the IP address to test with common values
                   $ip_object = new IPAddress($ocs_ips[$j]);
                   if ($ip_object->is_valid()) {
@@ -190,36 +168,47 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                   } else { // For instance 192.168.1. or ?? or toto
                      $ip_address = $ocs_ips[$j];
                   }
-
+                  
+                  $is_deleted         = false;
+                  
                   //First search : look for the same port (same IP and same MAC)
-                  $mac_id = array_search($ip_address.PluginOcsinventoryngOcsServer::FIELD_SEPARATOR.
-                                        $line2["MACADDR"], $import_ip);
-
-                  //Second search : IP may have change, so look only for mac address
-                  if (!$mac_id) {
-                     //Browse the whole import_ip array
-                     foreach ($import_ip as $ID => $ip) {
-                        if ($ID > 0) {
-                           $tmp = explode(PluginOcsinventoryngOcsServer::FIELD_SEPARATOR,$ip);
-                           //Port was found by looking at the mac address
-                           if (isset($tmp[1]) && $tmp[1] == $line2["MACADDR"]) {
-                              //Remove port in import_ip
-                              PluginOcsinventoryngOcsServer::deleteInOcsArray($computers_id, $ID,
-                                                                              "import_ip");
-                              PluginOcsinventoryngOcsServer::addToOcsArray($computers_id,
-                                                                           array($ID
-                                                                                 => $ip_address.
-                                                                                   PluginOcsinventoryngOcsServer::FIELD_SEPARATOR.
-                                                                                   $line2["MACADDR"]),
-                                                                          "import_ip");
-                              $import_ip[$ID] = $ip_address . PluginOcsinventoryngOcsServer::FIELD_SEPARATOR .
-                              $line2["MACADDR"];
-                              $mac_id = $ID;
-                              break;
-                           }
-                        }
+                  $querySelectIDandIP = "SELECT PORT.`id` as id, ADDR.`name` as ip,
+                                                PORT.`is_deleted`
+                                          FROM `glpi_networkports` AS PORT
+                                             LEFT JOIN `glpi_networknames` AS NAME
+                                                ON (NAME.`itemtype` = 'NetworkPort'
+                                                   AND NAME.`items_id` = PORT.`id`)
+                                             LEFT JOIN `glpi_ipaddresses` AS ADDR
+                                                ON (ADDR.`itemtype` = 'NetworkName'
+                                                   AND ADDR.`items_id` = NAME.`id`)
+                                          WHERE PORT.`itemtype` = 'Computer'
+                                             AND PORT.`items_id` = '$computers_id'
+                                             AND PORT.`mac` = '" . $line2["MACADDR"] . "'
+                                             AND ADDR.`name` = '".$ip_address."'";
+                  $results = $DB->query($querySelectIDandIP);
+                  if ($DB->numrows($results) > 0) {
+                     $mac_id     = $DB->result($results, 0, 'id');
+                     $is_deleted = $DB->result($results, 0, 'is_deleted');
+                  } else {
+                     //Second search : IP may have change, so look only for mac address
+                     $querySelectIDByMac = "SELECT PORT.`id` as id, PORT.`is_deleted`
+                                            FROM `glpi_networkports` AS PORT
+                                            WHERE PORT.`itemtype` = 'Computer'
+                                               AND PORT.`items_id` = '$computers_id'
+                                               AND PORT.`mac` = '" . $line2["MACADDR"] . "'";
+                     $results = $DB->query($querySelectIDByMac);
+                     if ($DB->numrows($results) > 0) {
+                        $mac_id     = $DB->result($results, 0, 'id');
+                        $is_deleted = $DB->result($results, 0, 'is_deleted');
                      }
                   }
+                  
+                  //If port is locked, do not try to go further
+                  if ($mac_id && $is_deleted) {
+                     $already_processed_port[] = $mac_id;
+                     continue;
+                  }
+                  
                   $netport['_no_history'] =! $dohistory;
 
                   // Process for NetworkName
@@ -237,9 +226,9 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                     unset($netport['NetworkName_name']);
                   }
 
-
                    //Update already in DB
-                  if ($mac_id>0) {
+                  if ($mac_id > 0) {
+                     $already_processed_port[]  = $mac_id;
                      $netport["logical_number"] = $j;
                      $netport["id"]             = $mac_id;
 
@@ -254,7 +243,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                        WHERE `glpi_networknames`.`itemtype` = 'NetworkPort'
                                         AND `glpi_networknames`.`items_id` = '$mac_id'";
                         $netport['NetworkName__ipaddresses'] = array();
-                        $ip_id = -1;
+                        $ip_id   = -1;
                         $name_id = -1;
                         foreach ($DB->request($queryForIP) as $ip_entry) {
                            // Clear all otherIPs
@@ -279,10 +268,6 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                      $np->splitInputForElements($netport);
                      $np->update($netport);
                      $np->updateDependencies(1);
-
-                     unset ($import_ip[$mac_id]);
-                     $count_ip++;
-
                   } else { //If new IP found
                      unset ($np->fields["netpoints_id"]);
                      unset ($netport["id"]);
@@ -296,19 +281,43 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                      $np->splitInputForElements($netport);
                      $newID = $np->add($netport);
                      $np->updateDependencies(1);
-
-                     //ADD to array
-                     PluginOcsinventoryngOcsServer::addToOcsArray($computers_id,
-                                                                  array($newID
-                                                                        => $ip_address.PluginOcsinventoryngOcsServer::FIELD_SEPARATOR.
-                                               $line2["MACADDR"]),
-                                         "import_ip");
-                     $count_ip++;
+                     $already_processed_port[] = $newID;
                   }
                }
             }
          }
       }
+      
+      //Remove unused network devices
+      if ($cfg_ocs["import_device_iface"]) {
+         $query = "SELECT `id`
+                   FROM `glpi_items_devicenetworkcards`
+                   WHERE `is_dynamic`='1'
+                      AND `is_deleted`='0'
+                      AND `itemtype`='Computer'
+                      AND `items_id`='$computers_id'";
+         if (!empty($already_processed_iface)) {
+            $query.= "AND `id` NOT IN (".implode(',',$already_processed_iface).")";
+         }
+         foreach ($DB->request($query) as $data) {
+            $CompDevice->delete($data, true);
+         }
+      }
+      
+      $port  = new NetworkPort();
+      //Remove unused network devices
+      $query = "SELECT `id`
+                FROM `glpi_networkports`
+                WHERE `is_dynamic`='1'
+                   AND `is_deleted`='0'
+                   AND `itemtype`='Computer'
+                   AND `items_id`='$computers_id'";
+      if (!empty($already_processed_port)) {
+         $query.= "AND `id` NOT IN (".implode(',',$already_processed_port).")";
+      }
+      foreach ($DB->request($query) as $data) {
+         $port->delete($data, true);
+       }
    }
 }
 
