@@ -1941,21 +1941,28 @@ function plugin_ocsinventoryng_unlockFields($params = array()) {
 /**
  * Update plugin with new computers_id and new entities_id
  *
- * @param $itemtype
- * @param $ID            old ID
- * @param $newID         new ID
- * @param $entities_id   new entities_id
+ * @param $options    array of possible options
+ * - itemtype
+ * - ID            old ID
+ * - newID         new ID
+ * - entities_id   new entities_id
 **/
-function plugin_ocsinventoryng_item_transfer($itemtype, $ID, $newID, $entities_id) {
+function plugin_ocsinventoryng_item_transfer($options=array()) {
 
-   if ($itemtype == 'Computer') {
+   if ($options['itemtype'] == 'Computer') {
 
       $query = "UPDATE glpi_plugin_ocsinventoryng_ocslinks
-                SET `computers_id` = $newID,
-                    `entities_id` = $entities_id
-                WHERE `computers_id` = '$ID'";
+                SET `computers_id` = '".$options['newID']."',
+                    `entities_id` = '".$options['entities_id']."'
+                WHERE `computers_id` = '".$options['ID'];
 
       $DB->query($query);
+
+      Session::addMessageAfterRedirect("Transfer Computer Hook ". $options['itemtype']." " .
+                                       $options['ID']."->".$options['newID']);
+
+      return false;
+
    }
 }
 ?>
