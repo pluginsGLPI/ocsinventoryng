@@ -1949,7 +1949,8 @@ function plugin_ocsinventoryng_unlockFields($params = array()) {
 **/
 function plugin_ocsinventoryng_item_transfer($options=array()) {
 
-   if ($options['itemtype'] == 'Computer') {
+   Toolbox::logdebug("tableau ",$options);
+   if ($options['type'] == 'Computer') {
 
       $query = "UPDATE glpi_plugin_ocsinventoryng_ocslinks
                 SET `computers_id` = '".$options['newID']."',
