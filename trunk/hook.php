@@ -1955,12 +1955,12 @@ function plugin_ocsinventoryng_item_transfer($options=array()) {
       $query = "UPDATE glpi_plugin_ocsinventoryng_ocslinks
                 SET `computers_id` = '".$options['newID']."',
                     `entities_id` = '".$options['entities_id']."'
-                WHERE `computers_id` = '".$options['ID'];
+                WHERE `computers_id` = '".$options['id'];
 
       $DB->query($query);
 
-      Session::addMessageAfterRedirect("Transfer Computer Hook ". $options['itemtype']." " .
-                                       $options['ID']."->".$options['newID']);
+      Session::addMessageAfterRedirect("Transfer Computer Hook ". $options['type']." " .
+                                       $options['id']."->".$options['newID']);
 
       return false;
 
