@@ -48,11 +48,11 @@ function plugin_init_ocsinventoryng() {
 
    $PLUGIN_HOOKS['autoinventory_information']['ocsinventoryng'] = array('Computer' => array('PluginOcsinventoryngOcslink',
                                                                                             'showSimpleForItem'));
-   
+
    //Locks management
    $PLUGIN_HOOKS['display_locked_fields']['ocsinventoryng'] = 'plugin_ocsinventoryng_showLocksForItem';
    $PLUGIN_HOOKS['unlock_fields']['ocsinventoryng']         = 'plugin_ocsinventoryng_unlockFields';
-    
+
    Plugin::registerClass('PluginOcsinventoryngOcslink',
                          array('forwardentityfrom' => 'Computer',
                                'addtabon'          => 'Computer'));
@@ -78,6 +78,12 @@ function plugin_init_ocsinventoryng() {
 
    Plugin::registerClass('PluginOcsinventoryngNetworkPort',
                          array('networkport_instantiations' => true));
+
+
+   // transfer
+   $PLUGIN_HOOKS['item_transfer']['ocsinventoryng']="plugin_ocsinventoryng_item_transfer";
+
+
    if (Session::getLoginUserID()) {
 
       // Display a menu entry ?
