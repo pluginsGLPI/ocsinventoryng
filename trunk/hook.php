@@ -842,7 +842,8 @@ function plugin_ocsinventoryng_uninstall() {
                    "glpi_plugin_ocsinventoryng_configs",
                    "glpi_plugin_ocsinventoryng_notimportedcomputers",
                    "glpi_plugin_ocsinventoryng_details",
-                   "glpi_plugin_ocsinventoryng_registrykeys");
+                   "glpi_plugin_ocsinventoryng_registrykeys",
+                   "glpi_plugin_ocsinventoryng_networkports");
 
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
