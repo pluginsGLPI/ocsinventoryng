@@ -996,10 +996,10 @@ JAVASCRIPT;
 
       $admin = new PluginOcsinventoryngOcsAdminInfosLink();
       $admin->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
-      
+
       $server = new PluginOcsinventoryngServer();
 		$server->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
-		
+
 		unset($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
 
       // ocsservers_id for RuleImportComputer, OCS_SERVER for RuleImportEntity
@@ -1092,7 +1092,7 @@ JAVASCRIPT;
          return $value;
       }
    }
-   
+
    /**
     * @param $width
    **/
@@ -2043,7 +2043,7 @@ JAVASCRIPT;
                   $associated_type  = str_replace('Item_', '', $type);
                   $associated_table = getTableForItemType($associated_type);
                   $fk               = getForeignKeyFieldForTable($associated_table);
-                  
+
                   $query = "SELECT `i`.`id`, `t`.`designation` as `name`
                             FROM `".getTableForItemType($type)."` as i
                             LEFT JOIN `$associated_table` as t ON (`t`.`id`=`i`.`$fk`)
@@ -2051,10 +2051,10 @@ JAVASCRIPT;
                                AND `items_id`='".$line['computers_id']."'
                                AND `is_dynamic`='1'
                                AND `is_deleted`='0'";
-                  
+
                   $prevalue = $type. self::FIELD_SEPARATOR;
                   foreach ($DB->request($query) as $data) {
-                     
+
                      $import_device[$prevalue.$data['id']] = $prevalue.$data["name"];
                   }
                }
@@ -3407,7 +3407,7 @@ JAVASCRIPT;
                         $ram["specif_default"] = $line2["CAPACITY"];
 
                         if (!in_array(stripslashes($prevalue.$ram["designation"]), $import_device)){
-                        
+
                            $ram["frequence"]            = $line2["SPEED"];
                            $ram["devicememorytypes_id"] = Dropdown::importExternal('DeviceMemoryType',
                                                                                    $line2["TYPE"]);
@@ -3768,7 +3768,7 @@ JAVASCRIPT;
             }
          }
       }
-      
+
       //TODO Import IP
       if ($do_clean
           && count($import_ip)
@@ -4330,7 +4330,7 @@ JAVASCRIPT;
       }
       self::checkOCSconnection($ocsservers_id);
       $already_processed = array();
-      
+
       //Get vms for this host
       $query = "SELECT*
                 FROM `virtualmachines`
@@ -4435,7 +4435,7 @@ JAVASCRIPT;
                $disk                 = array();
                $disk['computers_id'] = $computers_id;
                $disk['is_dynamic']   = 1;
-               
+
                // TYPE : vxfs / ufs  : VOLUMN = mount / FILESYSTEM = device
                if (in_array($line['TYPE'], array("vxfs", "ufs")) ){
                   $disk['name']           = $line['VOLUMN'];
@@ -4482,7 +4482,7 @@ JAVASCRIPT;
                if (isset($disk['name']) && !empty($disk["name"])){
                   $disk['totalsize'] = $line['TOTAL'];
                   $disk['freesize']  = $line['FREE'];
-                  
+
                   $query = "SELECT `id`
                             FROM `glpi_computerdisks`
                             WHERE `computers_id`='$computers_id'
@@ -4492,7 +4492,7 @@ JAVASCRIPT;
                   if ($DB->numrows($results) == 1){
                      $id = $DB->result($results, 0, 'id');
                   }
-                  
+
                   if (!$id){
                      $d->reset();
                      if (!$dohistory){
@@ -4598,7 +4598,7 @@ JAVASCRIPT;
       $alread_processed         = array();
       $is_utf8                  = $cfg_ocs["ocs_db_utf8"];
       $computer_softwareversion = new Computer_SoftwareVersion();
-      
+
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       if ($cfg_ocs["import_software"]) {
 
@@ -4635,13 +4635,13 @@ JAVASCRIPT;
                foreach (array('INITNAME', 'NAME', 'PUBLISHER', 'VERSION') as $field) {
                   $data2[$field] = self::encodeOcsDataInUtf8($is_utf8, $data2[$field]);
                }
-               
+
                //Replay dictionnary on manufacturer
                $manufacturer = Manufacturer::processName($data2["PUBLISHER"]);
                $initname     = $data2['INITNAME'];
                $version      = $data2['VERSION'];
                $name         = $data2['NAME'];
-               
+
                //Software might be created in another entity, depending on the entity's configuration
                $target_entity = Entity::getUsedConfig('entities_id_software', $entity, '', true);
                //Do not change software's entity except if the dictionnary explicity changes it
@@ -4692,7 +4692,7 @@ JAVASCRIPT;
                }
 
                //If software must be imported
-               if (!isset($res_rule["_ignore_ocs_import"]) || !$res_rule["_ignore_ocs_import"]) {
+               if (!isset($res_rule["_ignore_import"]) || !$res_rule["_ignore_import"]) {
                   // Clean software object
                   $soft->reset();
 
@@ -4711,7 +4711,7 @@ JAVASCRIPT;
                   if ($DB->numrows($results)) {
                      $id = $DB->result($results, 0, 'id');
                   }
-                  
+
                   //If name+version not in present for this computer in glpi, add it
                   if (!$id) {
                      //------------------------------------------------------------------------//
@@ -4785,7 +4785,7 @@ JAVASCRIPT;
                   "softwareversions_id = '".$data['softwareversions_id']."'") ==0
                   && countElementsInTable('glpi_softwarelicenses',
                         "softwareversions_id_buy = '".$data['softwareversions_id']."'") == 0) {
-            
+
                $vers = new SoftwareVersion();
                if ($vers->getFromDB($data['softwareversions_id'])
                      && countElementsInTable('glpi_softwarelicenses',
@@ -5380,14 +5380,14 @@ JAVASCRIPT;
       global $PluginOcsinventoryngDBocs, $DB;
 
       self::checkOCSconnection($ocsservers_id);
-      
+
       if ($cfg_ocs["import_monitor"]) {
 
          $already_processed = array();
          $do_clean          = true;
          $m                 = new Monitor();
          $conn              = new Computer_Item();
-          
+
          $query = "SELECT DISTINCT `CAPTION`, `MANUFACTURER`, `DESCRIPTION`, `SERIAL`, `TYPE`
                    FROM `monitors`
                    WHERE `HARDWARE_ID` = '$ocsid'";
@@ -5412,7 +5412,7 @@ JAVASCRIPT;
 
          if (count($lines)>0
                && ($cfg_ocs["import_monitor"] <= 2 || $checkserial)) {
-      
+
             foreach ($lines as $line) {
                $mon         = array();
                $mon["name"] = $line["CAPTION"];
@@ -5445,7 +5445,7 @@ JAVASCRIPT;
                   $id   = $DB->result($results, 0, 'id');
                   $lock = $DB->result($results, 0, 'is_deleted');
                }
-                
+
                if ($id == false) {
                   // Clean monitor object
                   $m->reset();
@@ -5455,7 +5455,7 @@ JAVASCRIPT;
                      $mon["comment"] = $line["DESCRIPTION"];
                   }
                   $id_monitor = 0;
-      
+
                   if ($cfg_ocs["import_monitor"] == 1) {
                      //Config says : manage monitors as global
                      //check if monitors already exists in GLPI
@@ -5466,7 +5466,7 @@ JAVASCRIPT;
                                   AND `is_global` = '1'
                                   AND `entities_id` = '$entity'";
                      $result_search = $DB->query($query);
-      
+
                      if ($DB->numrows($result_search) > 0) {
                         //Periph is already in GLPI
                         //Do not import anything just get periph ID for link
@@ -5479,12 +5479,12 @@ JAVASCRIPT;
                         $input["entities_id"] = $entity;
                         $id_monitor = $m->add($input);
                      }
-      
+
                   } else if ($cfg_ocs["import_monitor"] >= 2) {
                      //Config says : manage monitors as single units
                      //Import all monitors as non global.
                      $mon["is_global"] = 0;
-      
+
                      // Try to find a monitor with the same serial.
                      if (!empty ($mon["serial"])){
                         $query = "SELECT `id`
@@ -5498,7 +5498,7 @@ JAVASCRIPT;
                            $id_monitor = $DB->result($result_search, 0, "id");
                         }
                      }
-      
+
                      //Search by serial failed, search by name
                      if ($cfg_ocs["import_monitor"] == 2 && !$id_monitor) {
                         //Try to find a monitor with no serial, the same name and not already connected.
@@ -5520,7 +5520,7 @@ JAVASCRIPT;
                            }
                         }
                      }
-      
+
                      if (!$id_monitor) {
                         $input = $mon;
                         if ($cfg_ocs["states_id_default"]>0){
@@ -5531,7 +5531,7 @@ JAVASCRIPT;
                         $id_monitor = $m->add($input);
                      }
                   } // ($cfg_ocs["import_monitor"] >= 2)
-      
+
                   if ($id_monitor){
                      //Import unique : Disconnect monitor on other computer done in Connect function
                      $connID = $conn->add(array('computers_id' => $computers_id,
@@ -5541,7 +5541,7 @@ JAVASCRIPT;
                                                 'is_dynamic'   => 1,
                                                 'is_deleted'  => 0));
                      $already_processed[] = $id_monitor;
-                      
+
                      //Update column "is_deleted" set value to 0 and set status to default
                      $input = array();
                      $old   = new Monitor();
@@ -5566,12 +5566,12 @@ JAVASCRIPT;
                         }
                      }
                   }
-      
+
                } else{
                   $already_processed[] = $id;
                }
             } // end foreach
-            
+
             if ($cfg_ocs["import_monitor"]<=2 || $checkserial){
                //Look for all monitors, not locked, not linked to the computer anymore
                $query = "SELECT `id`
@@ -5610,11 +5610,11 @@ JAVASCRIPT;
 
 
        self::checkOCSconnection($ocsservers_id);
-        
+
        if ($cfg_ocs["import_printer"]){
-          
+
           $already_processed = array();
-          
+
           $query  = "SELECT*
                      FROM `printers`
                      WHERE `HARDWARE_ID` = '$ocsid'";
@@ -5645,16 +5645,16 @@ JAVASCRIPT;
                    $res_rule
                       = Toolbox::addslashes_deep($rulecollection->processAllRules(Toolbox::stripslashes_deep($params),
                                                  array(), array()));
-       
-                   if (!isset($res_rule["_ignore_ocs_import"])
-                         || !$res_rule["_ignore_ocs_import"]){
-       
+
+                   if (!isset($res_rule["_ignore_import"])
+                         || !$res_rule["_ignore_import"]){
+
                       foreach ($res_rule as $key => $value){
                          if ($value != '' && $value[0] != '_'){
                             $print[$key] = $value;
                          }
                       }
-       
+
                       if (isset($res_rule['is_global'])){
                          if (!$res_rule['is_global']){
                             $management_process = 2;
@@ -5662,7 +5662,7 @@ JAVASCRIPT;
                             $management_process = 1;
                          }
                       }
-                      
+
                      //Look for a monitor with the same name (and serial if possible) already connected
                      //to this computer
                      $query = "SELECT `p`.`id`, `gci`.`is_deleted`
@@ -5679,7 +5679,7 @@ JAVASCRIPT;
                         $id   = $DB->result($results, 0, 'id');
                         $lock = $DB->result($results, 0, 'is_deleted');
                      }
-                      
+
                      if (!$id){
                          // Clean printer object
                          $p->reset();
@@ -5727,7 +5727,7 @@ JAVASCRIPT;
                             $input['is_dynamic']  = 1;
                             $id_printer           = $p->add($input);
                          }
-       
+
                          if ($id_printer){
                             $already_processed[] = $id_printer;
                             $conn   = new Computer_Item();
@@ -5741,13 +5741,13 @@ JAVASCRIPT;
                             $input["id"]          = $id_printer;
                             $input["is_deleted"]  = 0;
                             $input["entities_id"] = $entity;
-                                
+
                             if ($cfg_ocs["states_id_default"]>0){
                                $input["states_id"] = $cfg_ocs["states_id_default"];
                             }
                             $p->update($input);
                          }
-       
+
                       } else{
                          $already_processed[] = $id;
                       }
@@ -5755,7 +5755,7 @@ JAVASCRIPT;
                 }
              }
           }
-          
+
           //Look for all monitors, not locked, not linked to the computer anymore
           $query = "SELECT `id`
                     FROM `glpi_computers_items`
@@ -5773,7 +5773,7 @@ JAVASCRIPT;
           }
        }
    }
-   
+
    /**
     *
     * Import peripherals from OCS
@@ -5788,25 +5788,25 @@ JAVASCRIPT;
    static function importPeripheral($cfg_ocs, $computers_id, $ocsservers_id, $ocsid, $entity,
                                       $dohistory){
       global $PluginOcsinventoryngDBocs, $DB;
-   
+
       self::checkOCSconnection($ocsservers_id);
       if ($cfg_ocs["import_periph"]){
          $already_processed = array();
          $p                 = new Peripheral();
-      
+
          $query = "SELECT DISTINCT `CAPTION`, `MANUFACTURER`, `INTERFACE`, `TYPE`
                    FROM `inputs`
                    WHERE `HARDWARE_ID` = '$ocsid'
                    AND `CAPTION` <> ''";
          $result = $PluginOcsinventoryngDBocs->query($query);
-      
+
          if ($PluginOcsinventoryngDBocs->numrows($result) > 0){
             while ($line = $PluginOcsinventoryngDBocs->fetch_array($result)){
                $line   = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
                $periph = array();
-      
+
                $periph["name"] = self::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"], $line["CAPTION"]);
-      
+
                //Look for a monitor with the same name (and serial if possible) already connected
                //to this computer
                $query = "SELECT `p`.`id`, `gci`.`is_deleted`
@@ -5823,7 +5823,7 @@ JAVASCRIPT;
                   $id   = $DB->result($results, 0, 'id');
                   $lock = $DB->result($results, 0, 'is_deleted');
                }
-                
+
                if (!$id){
                // Clean peripheral object
                   $p->reset();
