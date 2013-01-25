@@ -133,6 +133,3 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_registrykeys` (
 
 INSERT INTO `glpi_plugin_ocsinventoryng_registrykeys` SELECT * FROM `ocs_glpi_registrykeys`;
 
-### Alter table glpi_displaypreferences
-
-UPDATE `glpi_displaypreferences` SET `itemtype` = 'PluginOcsinventoryngOcsServer' WHERE `itemtype` = 'OcsServer';

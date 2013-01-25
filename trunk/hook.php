@@ -96,6 +96,20 @@ function plugin_ocsinventoryng_install() {
          $DB->queryOrDie($query, "1.0.0 update ocsinventoryng crontask");
       }
 
+      If (TableExists("ocs_glpi_displaypreferences")) {
+         $query = "INSERT INTO `glpi_displaypreferences`
+                          SELECT *
+                          FROM `ocs_glpi_displaypreferences`
+                          WHERE `itemtype` = 'OcsServer'";
+
+         $DB->queryOrDie($query, "1.0.0 insert displaypreferences for plugin ocsinventoryng");
+
+         $query = "UPDATE `glpi_displaypreferences`
+                   SET `itemtype` = 'PluginOcsinventoryngOcsServer'
+                   WHERE `itemtype` = 'OcsServer'";
+         $DB->queryOrDie($query, "1.0.0 update ocsinventoryng displaypreferences");
+      }
+
    }
 
    PluginOcsinventoryngProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
