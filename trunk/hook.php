@@ -80,6 +80,22 @@ function plugin_ocsinventoryng_install() {
          $DB->queryOrDie($query, "1.0.0 insert profiles for OCS in plugin");
       }
 
+
+      // recuperation des paramètres du core
+      If (TableExists("ocs_glpi_crontasks")) {
+         $query = "INSERT INTO `glpi_crontasks`
+                          SELECT *
+                          FROM `ocs_glpi_crontasks`
+                          WHERE `itemtype` = 'OcsServer'";
+
+         $DB->queryOrDie($query, "1.0.0 insert crontasks for plugin ocsinventoryng");
+
+         $query = "UPDATE `glpi_crontasks`
+                   SET `itemtype` = 'PluginOcsinventoryngOcsServer'
+                   WHERE `itemtype` = 'OcsServer'";
+         $DB->queryOrDie($query, "1.0.0 update ocsinventoryng crontask");
+      }
+
    }
 
    PluginOcsinventoryngProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
@@ -814,7 +830,7 @@ function plugin_ocsinventoryng_uninstall() {
                    "glpi_plugin_ocsinventoryng_details",
                    "glpi_plugin_ocsinventoryng_registrykeys");
 
-   foreach($tables as $table) {
+   foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
    }
 
