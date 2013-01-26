@@ -3105,7 +3105,7 @@ JAVASCRIPT;
                echo "<td>" . $tab["TAG"] . "</td>\n";
                if ($advanced && !$tolinked){
                   if (!isset ($data['entities_id']) || $data['entities_id'] == -1){
-                     echo "<td class='center'><img src=\"".GLPI_ROOT. "/pics/redbutton.png\"></td>\n";
+                     echo "<td class='center'><img src=\"".$CFG_GLPI['root_doc']. "/pics/redbutton.png\"></td>\n";
                      $data['entities_id'] = -1;
                   } else{
                      echo "<td class='center'>";
@@ -3160,7 +3160,7 @@ JAVASCRIPT;
 
                      Computer::dropdown($options);
                   } else{
-                     echo "<img src='".GLPI_ROOT. "/pics/redbutton.png'>";
+                     echo "<img src='".$CFG_GLPI['root_doc']. "/pics/redbutton.png'>";
                   }
                }
                echo "</td></tr>\n";

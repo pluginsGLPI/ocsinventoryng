@@ -533,19 +533,20 @@ class PluginOcsinventoryngThread extends CommonDBTM {
     * @param $status
    **/
    function displayProcessStatusIcon($status) {
+      global $CFG_GLPI;
 
       switch ($status) {
          case PLUGIN_OCSINVENTORYNG_STATE_FINISHED :
-            echo "<img src='".GLPI_ROOT."/plugins/ocsinventoryng/pics/export.png'>";
+            echo "<img src='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/pics/export.png'>";
             break;
 
          case PLUGIN_OCSINVENTORYNG_STATE_RUNNING :
-            echo "<img src='".GLPI_ROOT."/plugins/ocsinventoryng/pics/wait.png'>";
+            echo "<img src='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/pics/wait.png'>";
             $finished = false;
             break;
 
          case PLUGIN_OCSINVENTORYNG_STATE_STARTED :
-            echo "<img src='".GLPI_ROOT."/plugins/ocsinventoryng/pics/ok2.png'>";
+            echo "<img src='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/pics/ok2.png'>";
             $finished = false;
             break;
       }
