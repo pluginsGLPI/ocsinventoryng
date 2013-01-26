@@ -2044,18 +2044,12 @@ JAVASCRIPT;
                   $associated_table = getTableForItemType($associated_type);
                   $fk               = getForeignKeyFieldForTable($associated_table);
 
-                  // TODO a revoir
-                  // pour moi il ne faut pas mettre `is_deleted`='0'
-                  // en effet il faut considérer les device "locked" comme
-                  // importé / présente pour ne pas les réimporter.
-                  // c'est le principe du lock
                   $query = "SELECT `i`.`id`, `t`.`designation` as `name`
                             FROM `".getTableForItemType($type)."` as i
                             LEFT JOIN `$associated_table` as t ON (`t`.`id`=`i`.`$fk`)
                             WHERE `itemtype`='Computer'
                                AND `items_id`='".$line['computers_id']."'
-                               AND `is_dynamic`='1'
-                               AND `is_deleted`='0'";
+                               AND `is_dynamic`";
 
                   $prevalue = $type. self::FIELD_SEPARATOR;
                   foreach ($DB->request($query) as $data) {
