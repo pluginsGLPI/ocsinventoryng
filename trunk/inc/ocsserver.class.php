@@ -4367,10 +4367,19 @@ JAVASCRIPT;
             $query = "SELECT `id`
                       FROM `glpi_computervirtualmachines`
                       WHERE `computers_id`='$computers_id'
-                         AND `name`='".$line['ID']."'";
+                         AND `is_dynamic`";
+            if ($line['UUID']) {
+               $query .= " AND `uuid`='".$line['UUID']."'";
+            } else {
+               // Failback on name
+               $query .= " AND `name`='".$line['NAME']."'";
+            }
+
             $results = $DB->query($query);
             if ($DB->numrows($results) > 0){
                $id = $DB->result($results, 0, 'id');
+            } else {
+               $id = 0;
             }
             if (!$id){
                $virtualmachine->reset();
@@ -4379,7 +4388,7 @@ JAVASCRIPT;
                }
                $id_vm = $virtualmachine->add($vm);
                if ($id_vm){
-                  $alread_processed[] = $id_vm;
+                  $already_processed[] = $id_vm;
                }
             } else{
                if ($virtualmachine->getFromDB($id)){
@@ -4396,8 +4405,7 @@ JAVASCRIPT;
       $query = "SELECT `id`
                 FROM `glpi_computervirtualmachines`
                 WHERE `computers_id`='$computers_id'
-                   AND `is_dynamic`='1'
-                   AND `is_deleted`='0'";
+                   AND `is_dynamic`";
       if (!empty($already_processed)){
          $query .= "AND `id` NOT IN (".implode(',', $already_processed).")";
       }
