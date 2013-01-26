@@ -2044,6 +2044,11 @@ JAVASCRIPT;
                   $associated_table = getTableForItemType($associated_type);
                   $fk               = getForeignKeyFieldForTable($associated_table);
 
+                  // TODO a revoir
+                  // pour moi il ne faut pas mettre `is_deleted`='0'
+                  // en effet il faut considérer les device "locked" comme
+                  // importé / présente pour ne pas les réimporter.
+                  // c'est le principe du lock
                   $query = "SELECT `i`.`id`, `t`.`designation` as `name`
                             FROM `".getTableForItemType($type)."` as i
                             LEFT JOIN `$associated_table` as t ON (`t`.`id`=`i`.`$fk`)
@@ -2056,6 +2061,10 @@ JAVASCRIPT;
                   foreach ($DB->request($query) as $data) {
 
                      $import_device[$prevalue.$data['id']] = $prevalue.$data["name"];
+
+                     // TODO voir si il ne serait pas plus simple propre
+                     // en adaptant updateDevices
+                     // $import_device[$type][$data['id']] = $data["name"];
                   }
                }
 
@@ -3377,6 +3386,11 @@ JAVASCRIPT;
                           ORDER BY `ID`";
                $result2 = $PluginOcsinventoryngDBocs->query($query2);
                if ($PluginOcsinventoryngDBocs->numrows($result2) > 0) {
+                  // TODO a revoir
+                  // pourquoi supprimer tous les importés ?
+                  // En 0.83 cette suppression était lié à la présence du tag
+                  // IMPORT_TAG_078, et donc exécuté 1 seule fois pour redressement
+                  // Cela pete, je pense, tous les lock
                   if (count($import_device)){
                      $dohistory = false;
                      foreach ($import_device as $key => $val) {
