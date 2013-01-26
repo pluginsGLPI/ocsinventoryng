@@ -54,6 +54,23 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    }
 
    /**
+    * Show simple inventory information of an computer child item
+    *
+    * @param $item                   CommonDBTM object
+    *
+    * @return nothing
+   **/
+   static function showSimpleForChild(CommonDBTM $item) {
+
+      if ($item->isDynamic()
+          && $item->isField('computers_id')
+          && countElementsInTable('glpi_plugin_ocsinventoryng_ocslinks',
+                                  "`computers_id`='".$item->getField('computers_id')."'")>0) {
+         _e('OCS Inventory NG');
+      }
+   }
+
+   /**
    * Show simple inventory information of an item
    *
    * @param $item                   CommonDBTM object
@@ -82,7 +99,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                if (count($data)) {
                   $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
-            
+
                   echo "<table class='tab_glpi'>";
                   echo "<th colspan='2'>".__('OCS Inventory NG')."</th>";
                   echo '<tr><td>'.__('Last OCSNG inventory date', 'ocsinventoryng');
@@ -116,7 +133,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       }
    }
 
-   
+
    /**
    * Show OcsLink of an item
    *
@@ -150,7 +167,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                if (count($data)) {
                   $ocs_config
                      = PluginOcsinventoryngOcsServer::getConfig(PluginOcsinventoryngOcsServer::getByMachineID($items_id));
-               
+
                   echo "<div class='center'>";
                   echo "<form method='post' action=\"$target\">";
                   echo "<input type='hidden' name='id' value='$items_id'>";
@@ -182,7 +199,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                      echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
                            _sx('button', 'Force synchronization', 'ocsinventoryng'). "\">";
                      echo "</td>";
-                     
+
                      //echo "<tr class='tab_bg_1'>";
                      echo "<td class='center' colspan='2'>";
                      echo "<input type='hidden' name='link_id' value='" . $data["id"] . "'>";
@@ -190,7 +207,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                             _sx('button', 'Save')."\">";
                      echo "</td></tr>";
                   }
-                  
+
                   echo "</table>\n";
                   Html::closeForm();
                   echo "</div>";
@@ -283,10 +300,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * @param $comp   Computer_Item object
    **/
    static function purgeComputer_Item(Computer_Item $comp) {
-      
+
       if ($device = getItemForItemtype($comp->fields['itemtype'])) {
          if ($device->getFromDB($comp->fields['items_id'])) {
-            
+
             if (isset($comp->input['_ocsservers_id'])) {
                $ocsservers_id = $comp->input['_ocsservers_id'];
             } else {
