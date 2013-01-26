@@ -27,7 +27,7 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 ---------------------------------------------------------------------------------------------------------------------------------------------------- */
 
 if (!defined('GLPI_ROOT')) {
-   define('GLPI_ROOT', '../../..');
+   define('GLPI_ROOT', realpath('../../..'));
 }
 include (GLPI_ROOT . "/inc/includes.php");
 
@@ -35,7 +35,7 @@ Session::checkRight("computer", "r");
 if (isset($_POST["force_ocs_resynch"])) {
    $computer = new Computer();
    $computer->check($_POST['id'], 'w');
-   
+
    //Get the ocs server id associated with the machine
    $ocsservers_id = PluginOcsinventoryngOcsServer::getByMachineID($_POST["id"]);
    //Update the computer

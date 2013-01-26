@@ -27,7 +27,7 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 if (!defined('GLPI_ROOT')) {
-   define('GLPI_ROOT', '../../..');
+   define('GLPI_ROOT', realpath('../../..'));
 }
 include (GLPI_ROOT . "/inc/includes.php");
 

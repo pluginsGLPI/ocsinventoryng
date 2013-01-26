@@ -53,7 +53,7 @@ $USEDBREPLICATE        = 0;
 $DBCONNECTION_REQUIRED = 1;
 
 // MASS IMPORT for OCSNG
-define('GLPI_ROOT', '../../..');
+define('GLPI_ROOT', realpath('../../..'));
 
 include (GLPI_ROOT . "/config/based_config.php");
 include (GLPI_ROOT . "/inc/includes.php");
@@ -261,27 +261,27 @@ function FirstPass($ocsservers_id) {
  * @param $config
 **/
 function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields, $config) {
-   
+
    $server  = new PluginOcsinventoryngServer();
    $ocsserver  = new PluginOcsinventoryngOcsServer();
-   
+
    if (!PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id)) {
       echo "\tThread #" . $threadid . ": cannot contact server\n\n";
       return false;
    }
-   
+
    if (!$ocsserver->getFromDB($ocsservers_id)) {
       echo "\tThread #" . $threadid .": cannot get OCS server information\n\n";
       return false;
    }
-   
+
    if (!$server->getFromDBbyOcsServer($ocsservers_id)) {
       echo "\tThread #" . $threadid .": cannot get server information\n\n";
       return false;
    }
-   
+
    $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
-   
+
    return plugin_ocsinventoryng_importFromOcsServer($threads_id,$cfg_ocs, $server, $thread_nbr,
                                                     $threadid, $fields, $config);
 }
