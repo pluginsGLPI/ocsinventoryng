@@ -135,6 +135,22 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
 
    /**
+    * Read ocslink for a given computer
+    *
+    * @param $ID   Integer   ID of the computer
+    *
+    * @return boolean
+   **/
+   function getFromDBforComputer ($ID) {
+
+      if ($this->getFromDBByQuery("WHERE `".$this->getTable()."`.`computers_id` = '$ID'")) {
+            return true;
+      }
+      return false;
+   }
+
+
+   /**
    * Show OcsLink of an item
    *
    * @param $item                   CommonDBTM object
