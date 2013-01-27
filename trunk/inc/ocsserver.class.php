@@ -5718,7 +5718,7 @@ JAVASCRIPT;
                                //Periph is already in GLPI
                                //Do not import anything just get periph ID for link
                                $id_printer        = $DB->result($result_search, 0, "id");
-                               $already_processed = $id_printer;
+                               $already_processed[] = $id_printer;
                             } else{
                                $input = $print;
 
