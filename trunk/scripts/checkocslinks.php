@@ -29,8 +29,7 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 // Ensure current directory when run from crontab
 chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
 
-define('GLPI_ROOT', realpath('../../..'));
-include (GLPI_ROOT . "/inc/includes.php");
+include ('../../../inc/includes.php');
 
 ini_set('display_errors',1);
 restore_error_handler();

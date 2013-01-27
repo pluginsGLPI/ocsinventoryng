@@ -53,10 +53,7 @@ $USEDBREPLICATE        = 0;
 $DBCONNECTION_REQUIRED = 1;
 
 // MASS IMPORT for OCSNG
-define('GLPI_ROOT', realpath('../../..'));
-
-include (GLPI_ROOT . "/config/based_config.php");
-include (GLPI_ROOT . "/inc/includes.php");
+include ('../../../inc/includes.php');
 
 $_SESSION["glpicronuserrunning"] = $_SESSION["glpiname"]= 'ocsinventoryng';
 // Check PHP Version - sometime (debian) cli version != module version
