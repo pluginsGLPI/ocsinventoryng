@@ -4493,7 +4493,6 @@ JAVASCRIPT;
                                                                      $line["FILESYSTEM"]);
                }
 
-               $id = false;
                // Ok import disk
                if (isset($disk['name']) && !empty($disk["name"])){
                   $disk['totalsize'] = $line['TOTAL'];
@@ -4503,10 +4502,12 @@ JAVASCRIPT;
                             FROM `glpi_computerdisks`
                             WHERE `computers_id`='$computers_id'
                                AND `name`='".$disk['name']."'
-                               AND `is_dynamic`='1'";
+                               AND `is_dynamic`";
                   $results = $DB->query($query);
                   if ($DB->numrows($results) == 1){
                      $id = $DB->result($results, 0, 'id');
+                  } else {
+                     $id = false;
                   }
 
                   if (!$id){
@@ -4545,8 +4546,7 @@ JAVASCRIPT;
       $query = "SELECT `id`
                 FROM `glpi_computerdisks`
                 WHERE `computers_id`='$computers_id'
-                   AND `is_dynamic`='1'
-                   AND `is_deleted`='0'";
+                   AND `is_dynamic`";
       if (!empty($already_processed)){
          $query .= "AND `id` NOT IN (".implode(',', $already_processed).")";
       }
