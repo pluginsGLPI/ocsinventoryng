@@ -48,6 +48,7 @@ function plugin_init_ocsinventoryng() {
 
    $PLUGIN_HOOKS['autoinventory_information']['ocsinventoryng']
       = array('Computer'               => array('PluginOcsinventoryngOcslink', 'showSimpleForItem'),
+              'ComputerDisk'           => array('PluginOcsinventoryngOcslink', 'showSimpleForChild'),
               'ComputerVirtualMachine' => array('PluginOcsinventoryngOcslink', 'showSimpleForChild'));
 
    //Locks management
