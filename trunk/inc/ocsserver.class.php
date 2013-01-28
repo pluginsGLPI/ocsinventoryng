@@ -1364,7 +1364,8 @@ JAVASCRIPT;
             $comp->getFromDB($computers_id);
             $input["id"]            = $computers_id;
             $input["entities_id"]   = $comp->fields['entities_id'];
-            $input["is_dynamic"] = 1;
+            $input["is_dynamic"]    = 1;
+            $input["_nolock"]       = true;
 
             // Not already import from OCS / mark default state
             if (!$ocs_id_change
@@ -2358,6 +2359,7 @@ JAVASCRIPT;
       if (count($results['fields'])){
          $results['fields']["id"]          = $p['computers_id'];
          $results['fields']["entities_id"] = $p['entities_id'];
+         $results['fields']["_nolock"]     = true;
          $comp                             = new Computer();
          $comp->update($results['fields'], $p['dohistory']);
       }
@@ -2439,6 +2441,7 @@ JAVASCRIPT;
          if (count($compupdate)) {
             $compupdate["id"]          = $computers_id;
             $compupdate["entities_id"] = $entities_id;
+            $compupdate["_nolock"]     = true;
             $comp                      = new Computer();
             $comp->update($compupdate, $dohistory);
          }
@@ -2681,6 +2684,7 @@ JAVASCRIPT;
                         $tmp['id']          = $data["computers_id"];
                         $tmp['states_id']   = $results[1];
                         $tmp['entities_id'] = $data['entities_id'];
+                        $tmp["_nolock"]     = true;
                         $comp->update($tmp);
                      }
                   }
@@ -4936,6 +4940,7 @@ JAVASCRIPT;
                   $input[$glpi_column]  = $var;
                   $input["id"]          = $computers_id;
                   $input["entities_id"] = $entity;
+                  $input["_nolock"]     = true;
                   $comp->update($input, $dohistory);
                }
             }

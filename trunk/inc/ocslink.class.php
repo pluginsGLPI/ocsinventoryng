@@ -244,13 +244,13 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    **/
    static function updateComputer(CommonDBTM $item, $withtemplate='') {
       global $DB;
-
       // Manage changes for OCS if more than 1 element (date_mod)
       // Need dohistory==1 if dohistory==2 no locking fields
       if ($item->fields["is_dynamic"]
             && countElementsInTable('glpi_plugin_ocsinventoryng_ocslinks', "`computers_id`='".$item->getID()."'")
-               && ($item->dohistory == 1)
-                  && (count($item->updates) > 1)) {
+            && ($item->dohistory == 1)
+            && (count($item->updates) > 1)
+            && (!isset($item->input["_nolock"]))) {
 
          PluginOcsinventoryngOcsServer::mergeOcsArray($item->fields["id"], $item->updates,
                                                       "computer_update");
