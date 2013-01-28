@@ -83,6 +83,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                               WHERE `inc`.`itemtype`='Computer'
                                  AND `inc`.`items_id`='$computers_id'
                                  AND `nc`.`designation`='".$network['designation']."'
+                                 AND `inc`.`mac`='".$line2['MACADDR']."'
                                  AND `inc`.`devicenetworkcards_id`=`nc`.`id`";
                   $results = $DB->query($query);
                   $id  = false;
@@ -128,6 +129,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                $netport["mac"]                   = $line2["MACADDR"];
                $netport["items_id"]              = $computers_id;
                $netport["itemtype"]              = 'Computer';
+               $netport["items_devicenetworkcards_id"] = $id;
                $netport['networkinterface_name'] = $line2["TYPE"];
                $netport['MIB']                   = $line2["TYPEMIB"];
                $netport['netmask']               = $line2['IPMASK'];
