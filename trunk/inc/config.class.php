@@ -87,10 +87,12 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
              _n('OCSNG server', 'OCSNG servers', 2,'ocsinventoryng')."</a>";
       echo "</td></tr>";
 
-      echo "<tr class='tab_bg_1'><td class='center b'>";
-      echo "<a href='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/config.form.php'>".
-             __("Automatic synchronization's configuration", 'ocsinventoryng')."</a>";
-      echo "</td></tr>";
+      if (PluginOcsinventoryngOcsServer::useMassImport()) {
+         echo "<tr class='tab_bg_1'><td class='center b'>";
+         echo "<a href='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/config.form.php'>".
+                __("Automatic synchronization's configuration", 'ocsinventoryng')."</a>";
+         echo "</td></tr>";
+      }
       echo "</table>";
    }
 
