@@ -767,7 +767,7 @@ JAVASCRIPT;
          return false;
       }
 
-      $rowspan = 5;
+      $rowspan = 4;
       //If no ID provided, or if the server is created using an existing template
       if (empty($ID)) {
          $this->getEmpty();
@@ -788,15 +788,19 @@ JAVASCRIPT;
            "</td>\n";
       echo "<td><input type='text' name='ocs_db_host' value=\"" .$this->fields["ocs_db_host"] ."\">".
            "</td>\n";
-      echo "<td class='center' rowspan='$rowspan'>" . __('Comments') . "</td>\n";
-      echo "<td rowspan='$rowspan'>";
-      echo "<textarea cols='45' rows='5' name='comment' >".$this->fields["comment"]."</textarea>";
+      echo "<td class='center'>" . __('Synchornisation method', 'ocsinventoryng')."</td><td>\n";
+      $tabsync = array(0 => __('Standard (allow manual actions)', 'ocsinventoryng'),
+                       1 => __('Expert (Fully automatic, for large configuration)', 'ocsinventoryng'));
+      Dropdown::showFromArray('use_massimport', $tabsync, array('value' => $this->fields['use_massimport']));
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td class='center'>".__('Database')."</td>\n";
-      echo "<td><input type='text' name='ocs_db_name' value=\"".$this->fields["ocs_db_name"]."\">".
-           "</td></tr>\n";
+      echo "<td><input type='text' name='ocs_db_name' value=\"".$this->fields["ocs_db_name"]."\">";
+      echo "<td class='center' rowspan='$rowspan'>" . __('Comments') . "</td>\n";
+      echo "<td rowspan='$rowspan'>";
+      echo "<textarea cols='45' rows='6' name='comment' >".$this->fields["comment"]."</textarea>";
+      echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td class='center'>"._n('User', 'Users', 1)."</td>\n";

@@ -118,6 +118,10 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
 
 INSERT INTO `glpi_plugin_ocsinventoryng_ocsservers` SELECT * FROM `ocs_glpi_ocsservers`;
 
+ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+   ADD `use_massimport` TINYINT( 1 ) NOT NULL DEFAULT '0' AFTER `is_active` ,
+   ADD INDEX `use_massimport` (`use_massimport`);
+
 ### Alter table glpi_registrykeys
 
 CREATE TABLE `glpi_plugin_ocsinventoryng_registrykeys` (

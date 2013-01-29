@@ -101,13 +101,15 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `date_mod` datetime DEFAULT NULL,
   `comment` text COLLATE utf8_unicode_ci,
   `is_active` tinyint(1) NOT NULL DEFAULT '0',
+  `use_massimport` tinyint(1) NOT NULL DEFAULT '0',
   `deleted_behavior` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '1',
   `import_vms` tinyint(1) NOT NULL DEFAULT '0',
   `import_general_uuid` tinyint(1) NOT NULL DEFAULT '0',
   `ocs_version` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `date_mod` (`date_mod`),
-  KEY `is_active` (`is_active`)
+  KEY `is_active` (`is_active`),
+  KEY `use_massimport` (`use_massimport`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ### Dump table glpi_registrykeys
