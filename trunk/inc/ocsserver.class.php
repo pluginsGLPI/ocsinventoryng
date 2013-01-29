@@ -200,6 +200,16 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $tab[16]['name']           = __('Comments');
       $tab[16]['datatype']       = 'text';
 
+      $tab[17]['table']          = $this->getTable();
+      $tab[17]['field']          = 'use_massimport';
+      $tab[17]['name']           = __('Expert sync mode');
+      $tab[17]['datatype']       = 'bool';
+
+      $tab[18]['table']          = $this->getTable();
+      $tab[18]['field']          = 'ocs_db_utf8';
+      $tab[18]['name']           = __('Database in UTF8', 'ocsinventoryng');
+      $tab[18]['datatype']       = 'bool';
+
       return $tab;
    }
 
