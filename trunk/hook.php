@@ -169,7 +169,6 @@ function plugin_ocsinventoryng_install() {
                   `thread_log_frequency` int(11) NOT NULL default '10',
                   `is_displayempty` int(1) NOT NULL default '1',
                   `import_limit` int(11) NOT NULL default '0',
-                  `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL default '-1',
                   `delay_refresh` int(11) NOT NULL default '0',
                   `allow_ocs_update` tinyint(1) NOT NULL default '0',
                   `comment` text,
@@ -397,8 +396,7 @@ function plugin_ocsinventoryng_install() {
       $migration->renameTable("glpi_plugin_massocsimport_configs",
                               "backup_glpi_plugin_massocsimport_configs");
 
-      $migration->changeField("glpi_plugin_ocsinventoryng_configs", "ocsservers_id",
-                              "plugin_ocsinventoryng_ocsservers_id", 'integer');
+      $migration->dropField("glpi_plugin_ocsinventoryng_configs", "ocsservers_id");
 
 
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_details` (

@@ -79,7 +79,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
    static function showMenu() {
       global $CFG_GLPI;
-      
+
       echo "<table class='tab_cadre_fixe'>";
       echo "<tr><th>".__('Configuration')."</th></tr>";
       echo "<tr class='tab_bg_1'><td class='center b'>";
@@ -93,21 +93,12 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "</td></tr>";
       echo "</table>";
    }
-   
+
    function showConfigForm($target) {
 
       $this->getFromDB(1);
       $this->showTabs();
       $this->showFormHeader();
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td class='right' colspan='2'> " .__('Default OCSNG server', 'ocsinventoryng')."</td>";
-      echo "<td colspan='2'>&nbsp;&nbsp;&nbsp;";
-      Dropdown::showFromArray("plugin_ocsinventoryng_ocsservers_id", $this->getAllOcsServers(),
-                              array('value' => $this->fields["plugin_ocsinventoryng_ocsservers_id"]));
-      echo "</td></tr>";
-
-      echo "<tr><th colspan='4'>" . __('Display', 'ocsinventoryng')."</th></tr>";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td> " .__('Show processes where nothing was changed', 'ocsinventoryng') . " </td><td>";
