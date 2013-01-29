@@ -5548,7 +5548,6 @@ JAVASCRIPT;
                            $input["states_id"] = $cfg_ocs["states_id_default"];
                         }
                         $input["entities_id"] = $entity;
-                        $input['is_dynamic']  = 1;
                         $id_monitor = $m->add($input);
                      }
                   } // ($cfg_ocs["import_monitor"] >= 2)
@@ -5731,7 +5730,6 @@ JAVASCRIPT;
                                   $input["states_id"] = $cfg_ocs["states_id_default"];
                                }
                                $input["entities_id"] = $entity;
-                               $input['is_dynamic']  = 1;
                                $id_printer           = $p->add($input);
                             }
 
@@ -5879,7 +5877,6 @@ JAVASCRIPT;
                            $input["states_id"] = $cfg_ocs["states_id_default"];
                         }
                         $input["entities_id"] = $entity;
-                        $input['is_dynamic']  = 1;
                         $id_periph = $p->add($input);
                      }
                   } else if ($cfg_ocs["import_periph"] == 2){
@@ -5891,7 +5888,6 @@ JAVASCRIPT;
                         $input["states_id"] = $cfg_ocs["states_id_default"];
                      }
                      $input["entities_id"] = $entity;
-                     $input['is_dynamic']  = 1;
                      $id_periph = $p->add($input);
                   }
                   if ($id_periph){
