@@ -89,7 +89,7 @@ $notimport  = new PluginOcsinventoryngNotimportedcomputer();
 $config->getFromDB(1);
 
 if (!isset ($_GET["ocs_server_id"]) || ($_GET["ocs_server_id"] == '')) {
-   $ocsservers_id = $config->fields["plugin_ocsinventoryng_ocsservers_id"];
+   $ocsservers_id = -1;
 } else {
    $ocsservers_id = $_GET["ocs_server_id"];
 }
@@ -106,7 +106,9 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
 
       //Import from all the OCS servers
       $query = "SELECT `id`, `name`
-                FROM `glpi_plugin_ocsinventoryng_ocsservers`";
+                FROM `glpi_plugin_ocsinventoryng_ocsservers`
+                WHERE `is_active` = '1'
+                  AND `use_massimport`";
       $result = $DB->query($query);
 
       echo "=====================================================\n";
