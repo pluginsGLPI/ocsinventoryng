@@ -107,7 +107,7 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
       //Import from all the OCS servers
       $query = "SELECT `id`, `name`
                 FROM `glpi_plugin_ocsinventoryng_ocsservers`
-                WHERE `is_active` = '1'
+                WHERE `is_active`
                   AND `use_massimport`";
       $result = $DB->query($query);
 
@@ -170,7 +170,8 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
       //Import from all the OCS servers
       $query = "SELECT `id`, `name`
                 FROM `glpi_plugin_ocsinventoryng_ocsservers`
-                WHERE `is_active`='1'";
+                WHERE `is_active`
+                  AND `use_massimport`";
       $res = $DB->query($query);
 
       while ($ocsservers = $DB->fetch_array($res)) {
