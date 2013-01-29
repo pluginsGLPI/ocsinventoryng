@@ -202,7 +202,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       $tab[17]['table']          = $this->getTable();
       $tab[17]['field']          = 'use_massimport';
-      $tab[17]['name']           = __('Expert sync mode');
+      $tab[17]['name']           = __('Expert sync mode', 'ocsinventoryng');
       $tab[17]['datatype']       = 'bool';
 
       $tab[18]['table']          = $this->getTable();
