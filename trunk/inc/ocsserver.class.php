@@ -1181,6 +1181,7 @@ JAVASCRIPT;
 
    /**
     * Get a random plugin_ocsinventoryng_ocsservers_id
+    * use for standard sync server selection
     *
     * @return an ocs server id
    **/
@@ -1190,6 +1191,7 @@ JAVASCRIPT;
       $sql = "SELECT `id`
               FROM `glpi_plugin_ocsinventoryng_ocsservers`
               WHERE `is_active` = '1'
+                AND NOT `use_massimport`
               ORDER BY RAND()
               LIMIT 1";
       $result = $DB->query($sql);
