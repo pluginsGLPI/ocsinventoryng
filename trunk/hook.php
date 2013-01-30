@@ -178,9 +178,8 @@ function plugin_ocsinventoryng_install() {
       $DB->queryOrDie($query, $DB->error());
 
       $query = "INSERT INTO `glpi_plugin_ocsinventoryng_configs`
-                       (`id`,`thread_log_frequency`,`is_displayempty`,`import_limit`,
-                        `plugin_ocsinventoryng_ocsservers_id`)
-                VALUES (1, 2, 1, 0,-1);";
+                       (`id`,`thread_log_frequency`,`is_displayempty`,`import_limit`)
+                VALUES (1, 2, 1, 0);";
       $DB->queryOrDie($query, $DB->error());
 
 
