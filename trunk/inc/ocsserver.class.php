@@ -812,7 +812,7 @@ JAVASCRIPT;
            "</td>\n";
       echo "<td><input type='text' name='ocs_db_host' value=\"" .$this->fields["ocs_db_host"] ."\">".
            "</td>\n";
-      echo "<td class='center'>" . __('Synchornisation method', 'ocsinventoryng')."</td><td>\n";
+      echo "<td class='center'>" . __('Synchronisation method', 'ocsinventoryng')."</td><td>\n";
       $tabsync = array(0 => __('Standard (allow manual actions)', 'ocsinventoryng'),
                        1 => __('Expert (Fully automatic, for large configuration)', 'ocsinventoryng'));
       Dropdown::showFromArray('use_massimport', $tabsync, array('value' => $this->fields['use_massimport']));
