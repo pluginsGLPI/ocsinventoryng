@@ -4770,6 +4770,10 @@ JAVASCRIPT;
                   // Clean software object
                   $soft->reset();
 
+                  // TODO as initname not saved, this simply don't work
+                  // if altered by OCS dict  (initname != name == modifiedname)
+                  // if altered by GLPI dict (initname == name != modifiedname)
+
                   $id = array_search(strtolower(stripslashes($initname.self::FIELD_SEPARATOR.$version)),
                                      $imported);
 
