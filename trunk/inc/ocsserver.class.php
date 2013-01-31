@@ -4789,7 +4789,7 @@ JAVASCRIPT;
                      $versionID = self::importVersion($isNewSoft, $modified_version);
                      //Install license for this machine
                      $instID = self::installSoftwareVersion($computers_id, $versionID, $dohistory);
-                     toolbox::logDebug("Add($instID) $initname, $version");
+                     //toolbox::logDebug("Add($instID) $initname, $version");
                   } else {
                      //-------------------------------------------------------------------------//
                      //---- The software exists in this version for this computer --------------//
@@ -4840,7 +4840,7 @@ JAVASCRIPT;
          }
 
          foreach ($imported as $id => $unused) {
-            toolbox::logDebug("Del($id) $unused");
+            //toolbox::logDebug("Del($id) $unused");
 
             $computer_softwareversion->delete(array('id' => $id, '_no_history' => !$dohistory),
                                               true);
