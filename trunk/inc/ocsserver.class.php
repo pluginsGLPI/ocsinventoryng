@@ -4662,8 +4662,7 @@ JAVASCRIPT;
 
          //---- Get all the softwares for this machine from OCS -----//
          if ($cfg_ocs["use_soft_dict"]) {
-            $query2 = "SELECT `softwares`.`NAME` AS INITNAME,
-                              `dico_soft`.`FORMATTED` AS NAME,
+            $query2 = "SELECT `dico_soft`.`FORMATTED` AS NAME,
                               `softwares`.`VERSION` AS VERSION,
                               `softwares`.`PUBLISHER` AS PUBLISHER,
                               `softwares`.`COMMENTS` AS COMMENTS
@@ -4671,8 +4670,7 @@ JAVASCRIPT;
                        INNER JOIN `dico_soft` ON (`softwares`.`NAME` = dico_soft.EXTRACTED)
                        WHERE `softwares`.`HARDWARE_ID` = '$ocsid'";
          } else {
-            $query2 = "SELECT `softwares`.`NAME` AS INITNAME,
-                              `softwares`.`NAME` AS NAME,
+            $query2 = "SELECT `softwares`.`NAME` AS NAME,
                               `softwares`.`VERSION` AS VERSION,
                               `softwares`.`PUBLISHER` AS PUBLISHER,
                               `softwares`.`COMMENTS` AS COMMENTS
@@ -4706,13 +4704,12 @@ JAVASCRIPT;
 
                //As we cannot be sure that data coming from OCS are in utf8, let's try to encode them
                //if possible
-               foreach (array('INITNAME', 'NAME', 'PUBLISHER', 'VERSION') as $field) {
+               foreach (array('NAME', 'PUBLISHER', 'VERSION') as $field) {
                   $data2[$field] = self::encodeOcsDataInUtf8($is_utf8, $data2[$field]);
                }
 
                //Replay dictionnary on manufacturer
                $manufacturer = Manufacturer::processName($data2["PUBLISHER"]);
-               $initname     = $data2['INITNAME'];
                $version      = $data2['VERSION'];
                $name         = $data2['NAME'];
 
@@ -4770,14 +4767,22 @@ JAVASCRIPT;
                   // Clean software object
                   $soft->reset();
 
-                  // TODO as initname not saved, this simply don't work
-                  // if altered by OCS dict  (initname != name == modifiedname)
+                  // NOTE About dictionnaries
+                  // OCS dictionnary : if software name change, as we don't store INITNAME
+                  //     GLPI will detect an uninstall (oldname) + install (newname)
+                  // GLPI dictionnary : is rule have change
+                  //     if rule have been replayed, modifiedname will be found => ok
+                  //     if not, GLPI will detect an uninstall (oldname) + install (newname)
 
                   $id = array_search(strtolower(stripslashes($modified_name.self::FIELD_SEPARATOR.$version)),
                                      $imported);
 
-                  //If name+version not in present for this computer in glpi, add it
-                  if (!$id) {
+                  if ($id) {
+                     //-------------------------------------------------------------------------//
+                     //---- The software exists in this version for this computer --------------//
+                     //---------------------------------------------------- --------------------//
+                     unset($imported[$id]);
+                  } else {
                      //------------------------------------------------------------------------//
                      //---- The software doesn't exists in this version for this computer -----//
                      //------------------------------------------------------------------------//
@@ -4789,58 +4794,14 @@ JAVASCRIPT;
                      $versionID = self::importVersion($isNewSoft, $modified_version);
                      //Install license for this machine
                      $instID = self::installSoftwareVersion($computers_id, $versionID, $dohistory);
-                     //toolbox::logDebug("Add($instID) $initname, $version");
-                  } else {
-                     //-------------------------------------------------------------------------//
-                     //---- The software exists in this version for this computer --------------//
-                     //---------------------------------------------------- --------------------//
-
-                     // TODO avoid reading again...
-                     // save usefull data in $imported
-                     // As we don't save original name, this is unusefull
-
-                     //Get the name of the software in GLPI to know if the software's name
-                     //have already been changed by the OCS dictionnary
-//                     $query_soft = "SELECT `glpi_softwares`.`id`,
-//                                           `glpi_softwares`.`name`,
-//                                           `glpi_softwares`.`entities_id`
-//                                    FROM `glpi_softwares`,
-//                                         `glpi_computers_softwareversions`,
-//                                         `glpi_softwareversions`
-//                                    WHERE `glpi_computers_softwareversions`.`id` = '$id'
-//                                          AND `glpi_computers_softwareversions`.`softwareversions_id`
-//                                                = `glpi_softwareversions`.`id`
-//                                          AND `glpi_softwareversions`.`softwares_id`
-//                                                = `glpi_softwares`.`id`";
-//                     $result_soft = $DB->query($query_soft);
-//                     $tmpsoft     = $DB->fetch_array($result_soft);
-//
-//                     $softName             = $tmpsoft["name"];
-//                     $softID               = $tmpsoft["id"];
-//                     $s                    = new Software();
-//                     $input["id"]          = $softID;
-//                     $input["entities_id"] = $tmpsoft['entities_id'];
-//
-//                     //First, get the name of the software into GLPI db IF dictionnary is used
-//                     if ($cfg_ocs["use_soft_dict"]) {
-//                        //First use of the OCS dictionnary OR name changed in the dictionnary
-//                        if ($softName != $name) {
-//                           $input["name"] = $name;
-//                           $s->update($input);
-//                        }
-//                     } else if ($softName != $modified_name) {
-//                        // OCS Dictionnary not use anymore : revert to original name
-//                        $input["name"] = $modified_name;
-//                        $s->update($input);
-//                     }
-                     unset($imported[$id]);
+                     toolbox::logDebug("Add($instID) $modified_name, $version");
                   }
                }
             }
          }
 
          foreach ($imported as $id => $unused) {
-            //toolbox::logDebug("Del($id) $unused");
+            toolbox::logDebug("Del($id) $unused");
 
             $computer_softwareversion->delete(array('id' => $id, '_no_history' => !$dohistory),
                                               true);
