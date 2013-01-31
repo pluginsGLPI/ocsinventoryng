@@ -4679,7 +4679,6 @@ JAVASCRIPT;
          }
          $result2 = $PluginOcsinventoryngDBocs->query($query2);
 
-         $to_add_to_ocs_array = array();
          $soft                = new Software();
 
          // Read imported software in last sync
@@ -4767,7 +4766,7 @@ JAVASCRIPT;
                   // Clean software object
                   $soft->reset();
 
-                  // NOTE About dictionnaries
+                  // EXPLANATION About dictionnaries
                   // OCS dictionnary : if software name change, as we don't store INITNAME
                   //     GLPI will detect an uninstall (oldname) + install (newname)
                   // GLPI dictionnary : is rule have change
@@ -4794,15 +4793,12 @@ JAVASCRIPT;
                      $versionID = self::importVersion($isNewSoft, $modified_version);
                      //Install license for this machine
                      $instID = self::installSoftwareVersion($computers_id, $versionID, $dohistory);
-                     toolbox::logDebug("Add($instID) $modified_name, $version");
                   }
                }
             }
          }
 
          foreach ($imported as $id => $unused) {
-            toolbox::logDebug("Del($id) $unused");
-
             $computer_softwareversion->delete(array('id' => $id, '_no_history' => !$dohistory),
                                               true);
             // delete cause a getFromDB, so fields contains values
