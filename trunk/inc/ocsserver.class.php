@@ -4772,9 +4772,8 @@ JAVASCRIPT;
 
                   // TODO as initname not saved, this simply don't work
                   // if altered by OCS dict  (initname != name == modifiedname)
-                  // if altered by GLPI dict (initname == name != modifiedname)
 
-                  $id = array_search(strtolower(stripslashes($initname.self::FIELD_SEPARATOR.$version)),
+                  $id = array_search(strtolower(stripslashes($modified_name.self::FIELD_SEPARATOR.$version)),
                                      $imported);
 
                   //If name+version not in present for this computer in glpi, add it
@@ -4790,7 +4789,7 @@ JAVASCRIPT;
                      $versionID = self::importVersion($isNewSoft, $modified_version);
                      //Install license for this machine
                      $instID = self::installSoftwareVersion($computers_id, $versionID, $dohistory);
-                     //toolbox::logDebug("Add($instID) $initname, $version");
+                     toolbox::logDebug("Add($instID) $initname, $version");
                   } else {
                      //-------------------------------------------------------------------------//
                      //---- The software exists in this version for this computer --------------//
@@ -4798,41 +4797,42 @@ JAVASCRIPT;
 
                      // TODO avoid reading again...
                      // save usefull data in $imported
+                     // As we don't save original name, this is unusefull
 
                      //Get the name of the software in GLPI to know if the software's name
                      //have already been changed by the OCS dictionnary
-                     $query_soft = "SELECT `glpi_softwares`.`id`,
-                                           `glpi_softwares`.`name`,
-                                           `glpi_softwares`.`entities_id`
-                                    FROM `glpi_softwares`,
-                                         `glpi_computers_softwareversions`,
-                                         `glpi_softwareversions`
-                                    WHERE `glpi_computers_softwareversions`.`id` = '$id'
-                                          AND `glpi_computers_softwareversions`.`softwareversions_id`
-                                                = `glpi_softwareversions`.`id`
-                                          AND `glpi_softwareversions`.`softwares_id`
-                                                = `glpi_softwares`.`id`";
-                     $result_soft = $DB->query($query_soft);
-                     $tmpsoft     = $DB->fetch_array($result_soft);
-
-                     $softName             = $tmpsoft["name"];
-                     $softID               = $tmpsoft["id"];
-                     $s                    = new Software();
-                     $input["id"]          = $softID;
-                     $input["entities_id"] = $tmpsoft['entities_id'];
-
-                     //First, get the name of the software into GLPI db IF dictionnary is used
-                     if ($cfg_ocs["use_soft_dict"]) {
-                        //First use of the OCS dictionnary OR name changed in the dictionnary
-                        if ($softName != $name) {
-                           $input["name"] = $name;
-                           $s->update($input);
-                        }
-                     } else if ($softName != $modified_name) {
-                        // OCS Dictionnary not use anymore : revert to original name
-                        $input["name"] = $modified_name;
-                        $s->update($input);
-                     }
+//                     $query_soft = "SELECT `glpi_softwares`.`id`,
+//                                           `glpi_softwares`.`name`,
+//                                           `glpi_softwares`.`entities_id`
+//                                    FROM `glpi_softwares`,
+//                                         `glpi_computers_softwareversions`,
+//                                         `glpi_softwareversions`
+//                                    WHERE `glpi_computers_softwareversions`.`id` = '$id'
+//                                          AND `glpi_computers_softwareversions`.`softwareversions_id`
+//                                                = `glpi_softwareversions`.`id`
+//                                          AND `glpi_softwareversions`.`softwares_id`
+//                                                = `glpi_softwares`.`id`";
+//                     $result_soft = $DB->query($query_soft);
+//                     $tmpsoft     = $DB->fetch_array($result_soft);
+//
+//                     $softName             = $tmpsoft["name"];
+//                     $softID               = $tmpsoft["id"];
+//                     $s                    = new Software();
+//                     $input["id"]          = $softID;
+//                     $input["entities_id"] = $tmpsoft['entities_id'];
+//
+//                     //First, get the name of the software into GLPI db IF dictionnary is used
+//                     if ($cfg_ocs["use_soft_dict"]) {
+//                        //First use of the OCS dictionnary OR name changed in the dictionnary
+//                        if ($softName != $name) {
+//                           $input["name"] = $name;
+//                           $s->update($input);
+//                        }
+//                     } else if ($softName != $modified_name) {
+//                        // OCS Dictionnary not use anymore : revert to original name
+//                        $input["name"] = $modified_name;
+//                        $s->update($input);
+//                     }
                      unset($imported[$id]);
                   }
                }
@@ -4840,7 +4840,7 @@ JAVASCRIPT;
          }
 
          foreach ($imported as $id => $unused) {
-            //toolbox::logDebug("Del($id) $unused");
+            toolbox::logDebug("Del($id) $unused");
 
             $computer_softwareversion->delete(array('id' => $id, '_no_history' => !$dohistory),
                                               true);
