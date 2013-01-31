@@ -4684,6 +4684,22 @@ JAVASCRIPT;
          $to_add_to_ocs_array = array();
          $soft                = new Software();
 
+         // Read imported software in last sync
+         $query = "SELECT `glpi_computers_softwareversions`.`id` as id,
+                          `glpi_softwares`.`name` as sname,
+                          `glpi_softwareversions`.`name` as vname
+                   FROM `glpi_computers_softwareversions`
+                   INNER JOIN `glpi_softwareversions`
+                           ON `glpi_softwareversions`.`id`= `glpi_computers_softwareversions`.`softwareversions_id`
+                   INNER JOIN `glpi_softwares`
+                           ON `glpi_softwares`.`id`= `glpi_softwareversions`.`softwares_id`
+                   WHERE `glpi_computers_softwareversions`.`computers_id`='$computers_id'
+                         AND `is_dynamic`";
+         $imported = array();
+         foreach ($DB->request($query) as $data) {
+            $imported[$data['id']] = strtolower($data['sname'].self::FIELD_SEPARATOR.$data['vname']);
+         }
+
          if ($PluginOcsinventoryngDBocs->numrows($result2) > 0) {
             while ($data2 = $PluginOcsinventoryngDBocs->fetch_array($result2)) {
                $data2    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data2));
@@ -4754,21 +4770,8 @@ JAVASCRIPT;
                   // Clean software object
                   $soft->reset();
 
-                  $id    = false;
-                  $query = "SELECT `s`.`name` as `name`, `v`.`name` as `version`,`cs`.`id` as `id`,
-                                   `cs`.`is_deleted` as `is_deleted`
-                            FROM `glpi_computers_softwareversions` as `cs`,
-                                 `glpi_softwareversions` as `v`,
-                                 `glpi_softwares` as `s`
-                            WHERE `v`.`id`=`cs`.`softwareversions_id`
-                              AND `s`.`id`=`v`.`softwares_id`
-                              AND `cs`.`computers_id`='$computers_id'
-                              AND `s`.`name`='$initname'
-                              AND `v`.`name`='$version'";
-                  $results = $DB->query($query);
-                  if ($DB->numrows($results)) {
-                     $id = $DB->result($results, 0, 'id');
-                  }
+                  $id = array_search(strtolower(stripslashes($initname.self::FIELD_SEPARATOR.$version)),
+                                     $imported);
 
                   //If name+version not in present for this computer in glpi, add it
                   if (!$id) {
@@ -4783,13 +4786,14 @@ JAVASCRIPT;
                      $versionID = self::importVersion($isNewSoft, $modified_version);
                      //Install license for this machine
                      $instID = self::installSoftwareVersion($computers_id, $versionID, $dohistory);
-                     if ($instID) {
-                        $already_processed[] = $instID;
-                     }
+                     //toolbox::logDebug("Add($instID) $initname, $version");
                   } else {
                      //-------------------------------------------------------------------------//
                      //---- The software exists in this version for this computer --------------//
                      //---------------------------------------------------- --------------------//
+
+                     // TODO avoid reading again...
+                     // save usefull data in $imported
 
                      //Get the name of the software in GLPI to know if the software's name
                      //have already been changed by the OCS dictionnary
@@ -4825,27 +4829,27 @@ JAVASCRIPT;
                         $input["name"] = $modified_name;
                         $s->update($input);
                      }
-                     $already_processed[] = $id;
+                     unset($imported[$id]);
                   }
                }
             }
          }
 
-         $query = "SELECT `id`, `softwareversions_id`
-                   FROM `glpi_computers_softwareversions`
-                   WHERE `computers_id`='$computers_id'
-                      AND `is_dynamic`='1'
-                      AND `is_deleted`='0' AND `id` NOT IN (".implode(',', $already_processed).")";
-         foreach ($DB->request($query) as $data) {
-            $computer_softwareversion->delete(array('id' => $data['id'], '_no_history' => !$dohistory),
+         foreach ($imported as $id => $unused) {
+            //toolbox::logDebug("Del($id) $unused");
+
+            $computer_softwareversion->delete(array('id' => $id, '_no_history' => !$dohistory),
                                               true);
+            // delete cause a getFromDB, so fields contains values
+            $verid = $computer_softwareversion->getField('softwareversions_id');
+
             if (countElementsInTable('glpi_computers_softwareversions',
-                  "softwareversions_id = '".$data['softwareversions_id']."'") ==0
+                  "softwareversions_id = '$verid'") ==0
                   && countElementsInTable('glpi_softwarelicenses',
-                        "softwareversions_id_buy = '".$data['softwareversions_id']."'") == 0) {
+                        "softwareversions_id_buy = '$verid'") == 0) {
 
                $vers = new SoftwareVersion();
-               if ($vers->getFromDB($data['softwareversions_id'])
+               if ($vers->getFromDB($verid)
                      && countElementsInTable('glpi_softwarelicenses',
                            "softwares_id = '".$vers->fields['softwares_id']."'") ==0
                     && countElementsInTable('glpi_softwareversions',
@@ -4854,7 +4858,7 @@ JAVASCRIPT;
                   $soft->putInTrash($vers->fields['softwares_id'],
                      __('Software deleted by OCSNG synchronization'));
                }
-               $vers->delete(array("id" => $data['softwareversions_id']));
+               $vers->delete(array("id" => $verid));
             }
          }
       }
