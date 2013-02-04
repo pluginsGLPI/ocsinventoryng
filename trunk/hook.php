@@ -80,7 +80,7 @@ function plugin_ocsinventoryng_install() {
          $DB->queryOrDie($query, "1.0.0 insert profiles for OCS in plugin");
       }
 
-
+      
       // recuperation des paramètres du core
       If (TableExists("ocs_glpi_crontasks")) {
          $query = "INSERT INTO `glpi_crontasks`
@@ -109,6 +109,7 @@ function plugin_ocsinventoryng_install() {
                    WHERE `itemtype` = 'OcsServer'";
          $DB->queryOrDie($query, "1.0.0 update ocsinventoryng displaypreferences");
       }
+      plugin_ocsinventoryng_migrateComputerLocks($migration);
 
    }
 
@@ -1994,4 +1995,123 @@ function plugin_ocsinventoryng_item_transfer($options=array()) {
 
    }
 }
+
+
+//------------------- Locks migration -------------------
+
+/**
+ * Move locks from ocslink.import_* to is_dynamic in related tables
+ *
+ * @param $migration
+**/
+function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration) {
+   global $DB;
+
+   $import = array('import_printer'    => 'Printer',
+                   'import_monitor'    => 'Monitor',
+                   'import_peripheral' => 'Peripheral');
+
+   foreach ($import as $field => $itemtype) {
+      foreach ($DB->request('ocs_glpi_ocslinks', '', array('computers_id', $field)) as $data) {
+         if (FieldExists('ocs_glpi_ocslinks', $field)) {
+            $import_field = importArrayFromDB($data[$field]);
+
+            //If array is not empty
+            if (!empty($import_field)) {
+               $query_update = "UPDATE `glpi_computers_items`
+                                SET `is_dynamic`='1'
+                                WHERE `id` IN (".implode(',',array_keys($import_field)).")
+                                      AND `itemtype`='$itemtype'";
+               $DB->query($query_update);
+            }
+         }
+      }
+      $migration->dropField('ocs_glpi_ocslinks', $field);
+   }
+   //Migration disks and vms
+   $import = array('import_disk'     => 'glpi_computerdisks',
+                   'import_vm'       => 'glpi_computervirtualmachines',
+                   'import_software' => 'glpi_computers_softwareversions',
+                   'import_ip'       => 'glpi_networkports');
+
+   foreach ($import as $field => $table) {
+      if (FieldExists('ocs_glpi_ocslinks', $field)) {
+         foreach ($DB->request('ocs_glpi_ocslinks', '', array('computers_id', $field)) as $data) {
+            $import_field = importArrayFromDB($data[$field]);
+
+            //If array is not empty
+            if (!empty($import_field)) {
+               $query_update = "UPDATE `$table`
+                                SET `is_dynamic`='1'
+                                WHERE `id` IN (".implode(',',array_keys($import_field)).")";
+               $DB->query($query_update);
+            }
+         }
+         $migration->dropField('ocs_glpi_ocslinks', $field);
+      }
+   }
+
+   if (FieldExists('ocs_glpi_ocslinks', 'import_device')) {
+      foreach ($DB->request('ocs_glpi_ocslinks', '', array('computers_id', 'import_device'))
+               as $data) {
+         $import_device = importArrayFromDB($data['import_device']);
+         if (!in_array('_version_078_', $import_device)) {
+            $import_device = plugin_ocsinventoryng_migrateImportDevice($import_device);
+         }
+
+         $devices = array();
+         $types   = Item_Devices::getDeviceTypes();
+         foreach ($import_device as $key => $val) {
+            if (!$key) { // OcsServer::IMPORT_TAG_078
+               continue;
+            }
+            list($type, $nomdev) = explode('$$$$$', $val);
+            list($type, $iddev)  = explode('$$$$$', $key);
+            if (!isset($types[$type])) { // should never happen
+               continue;
+            }
+            $devices[$types[$type]][] = $iddev;
+         }
+         foreach ($devices as $type => $data) {
+            //If array is not empty
+            $query_update = "UPDATE `".getTableForItemType($type)."`
+                             SET `is_dynamic`='1'
+                             WHERE `id` IN (".implode(',',$data).")";
+           $DB->query($query_update);
+         }
+      }
+      $migration->dropField('ocs_glpi_ocslinks', 'import_device');
+   }
+   $migration->migrationOneTable('ocs_glpi_ocslinks');
+}
+
+
+/**
+ * Migration import_device field if GLPI version is not 0.78
+ *
+ * @param $import_device     array
+ *
+ * @return import_device array migrated in post 0.78 scheme
+**/
+function plugin_ocsinventoryng_migrateImportDevice($import_device=array()) {
+
+   $new_import_device = array('_version_078_');
+   if (count($import_device)) {
+      foreach ($import_device as $key=>$val) {
+         $tmp = explode('$$$$$', $val);
+
+         if (isset($tmp[1])) { // Except for old IMPORT_TAG
+            $tmp2                     = explode('$$$$$', $key);
+            // Index Could be 1330395 (from glpi 0.72)
+            // Index Could be 5$$$$$5$$$$$5$$$$$5$$$$$5$$$$$1330395 (glpi 0.78 bug)
+            // So take the last part of the index
+            $key2                     = $tmp[0].'$$$$$'.array_pop($tmp2);
+            $new_import_device[$key2] = $val;
+         }
+
+      }
+   }
+   return $new_import_device;
+}
+
 ?>
