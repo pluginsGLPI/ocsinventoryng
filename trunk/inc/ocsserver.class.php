@@ -2198,6 +2198,9 @@ JAVASCRIPT;
                                               $dohistory);
                }
 
+               //Update TAG
+               self::updateTag($line, $data_ocs);
+                
                // Update OCS Cheksum
                $newchecksum = "(CHECKSUM - $mixed_checksum)";
                self::setChecksumForComputer($line['ocsid'], $newchecksum, true);
@@ -5144,9 +5147,6 @@ JAVASCRIPT;
 
       //If location is update by a rule
       self::updateLocation($line_links, $data);
-
-      // Update TAG
-      self::updateTag($line_links, $line_ocs);
    }
 
 
