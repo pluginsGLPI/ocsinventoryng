@@ -5221,45 +5221,6 @@ JAVASCRIPT;
       }
    }
 
-
-   static function previewRuleImportProcess($output){
-
-      //If ticket is assign to an object, display this information first
-      if (isset($output["action"])){
-         echo "<tr class='tab_bg_2'>";
-         echo "<td>".__('Action type')."</td>";
-         echo "<td>";
-
-         switch ($output["action"]){
-            case self::LINK_RESULT_LINK:
-               _e('Link possible');
-               break;
-
-            case self::LINK_RESULT_NO_IMPORT:
-               _e('Import refused');
-               break;
-
-            case self::LINK_RESULT_IMPORT:
-               _e('New computer created in GLPI');
-               break;
-         }
-
-         echo "</td>";
-         echo "</tr>";
-         if ($output["action"] != self::LINK_RESULT_NO_IMPORT
-             && isset($output["found_computers"])){
-            echo "<tr class='tab_bg_2'>";
-            $item = new Computer;
-            if ($item->getFromDB($output["found_computers"][0])){
-               echo "<td>".__('Link with computer')."</td>";
-               echo "<td>".$item->getLink(array('comments' => true))."</td>";
-            }
-            echo "</tr>";
-         }
-      }
-      return $output;
-   }
-
    /**
     * For other plugins, add a type to the linkable types
     *

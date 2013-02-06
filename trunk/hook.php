@@ -1496,7 +1496,6 @@ function plugin_ocsinventoryng_searchOptionsValues($params=array()) {
  * @return an array of criteria
  */
 function plugin_ocsinventoryng_getRuleCriteria($params) {
-   global $LANG;
    $criteria = array();
 
    switch ($params['rule_itemtype']) {
@@ -1569,8 +1568,7 @@ function plugin_ocsinventoryng_getRuleCriteria($params) {
  * @return an array of actions
  */
 function plugin_ocsinventoryng_getRuleActions($params) {
-   global $LANG;
-
+// 
    $actions = array();
 
    switch ($params['rule_itemtype']) {
@@ -1703,10 +1701,9 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
  * @return an array of actions
  */
 function plugin_ocsinventoryng_executeActions($params) {
-   global $LANG;
-   $action = $params['action'];
-   $output = array();
 
+   $action = $params['action'];
+   $output = $params['output'];
    switch ($params['params']['rule_itemtype']) {
       case 'RuleImportComputer':
          if ($action->fields['field'] == '_fusion') {
@@ -1731,8 +1728,69 @@ function plugin_ocsinventoryng_executeActions($params) {
          }
          break;
    }
-
    return $output;
+}
+
+/**
+ *
+ * Preview for test a Rule
+ * @since 0.84
+ * @param $params           input data
+ * @return $output array
+ */
+function plugin_ocsinventoryng_preProcessRulePreviewResults($params){
+   $output = $params['output'];
+
+   switch ($params['params']['rule_itemtype']) {
+      case 'RuleImportComputer':
+
+         //If ticket is assign to an object, display this information first
+         if (isset($output["action"])){
+            echo "<tr class='tab_bg_2'>";
+            echo "<td>".__('Action type')."</td>";
+            echo "<td>";
+
+            switch ($output["action"]){
+               case PluginOcsinventoryngOcsServer::LINK_RESULT_LINK:
+                  _e('Link possible');
+                  break;
+
+               case PluginOcsinventoryngOcsServer::LINK_RESULT_NO_IMPORT:
+                  _e('Import refused');
+                  break;
+
+               case PluginOcsinventoryngOcsServer::LINK_RESULT_IMPORT:
+                  _e('New computer created in GLPI');
+                  break;
+            }
+
+            echo "</td>";
+            echo "</tr>";
+            if ($output["action"] != PluginOcsinventoryngOcsServer::LINK_RESULT_NO_IMPORT
+               && isset($output["found_computers"])){
+               echo "<tr class='tab_bg_2'>";
+               $item = new Computer;
+               if ($item->getFromDB($output["found_computers"][0])){
+                  echo "<td>".__('Link with computer')."</td>";
+                  echo "<td>".$item->getLink(array('comments' => true))."</td>";
+               }
+               echo "</tr>";
+            }
+         }
+      break;
+   }
+   return $output;
+}
+
+/**
+ *
+ * Preview for test a RuleCoolection
+ * @since 0.84
+ * @param $params           input data
+ * @return $output array
+ */
+function plugin_ocsinventoryng_preProcessRuleCollectionPreviewResults($params){
+   return plugin_ocsinventoryng_preProcessRulePreviewResults($params);
 }
 
 /**
