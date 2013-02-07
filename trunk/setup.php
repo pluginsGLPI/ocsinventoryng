@@ -39,7 +39,7 @@ function plugin_init_ocsinventoryng() {
    global $PLUGIN_HOOKS, $CFG_GLPI;
 
    $PLUGIN_HOOKS['csrf_compliant']['ocsinventoryng'] = true;
-   $PLUGIN_HOOKS['use_rules']['ocsinventoryng']      = true;
+   $PLUGIN_HOOKS['use_rules']['ocsinventoryng']      = array('RuleImportEntity', 'RuleImportComputer');
 
    $PLUGIN_HOOKS['change_profile']['ocsinventoryng'] = array('PluginOcsinventoryngProfile',
                                                              'changeProfile');
