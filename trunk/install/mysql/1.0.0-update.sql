@@ -40,23 +40,20 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocslinks` (
   `last_update` datetime DEFAULT NULL,
   `last_ocs_update` datetime DEFAULT NULL,
   `computer_update` longtext COLLATE utf8_unicode_ci,
-  `ocsservers_id` int(11) NOT NULL DEFAULT '0',
+  `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
   `ocs_agent_version` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `entities_id` int(11) NOT NULL DEFAULT '0',
   `tag` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unicity` (`ocsservers_id`,`ocsid`),
+  UNIQUE KEY `unicity` (`plugin_ocsinventoryng_ocsservers_id`,`ocsid`),
   KEY `last_update` (`last_update`),
   KEY `ocs_deviceid` (`ocs_deviceid`),
-  KEY `last_ocs_update` (`ocsservers_id`,`last_ocs_update`),
+  KEY `last_ocs_update` (`plugin_ocsinventoryng_ocsservers_id`,`last_ocs_update`),
   KEY `computers_id` (`computers_id`),
   KEY `use_auto_update` (`use_auto_update`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `glpi_plugin_ocsinventoryng_ocslinks` SELECT * FROM `ocs_glpi_ocslinks`;
-
-ALTER TABLE `glpi_plugin_ocsinventoryng_ocslinks` 
-   CHANGE `ocsservers_id` `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0';
+INSERT INTO `glpi_plugin_ocsinventoryng_ocslinks` SELECT `id`, `computers_id`, `ocsid`, `ocs_deviceid`, `use_auto_update`, `last_update`, `last_ocs_update`, `computer_update`, `ocsservers_id`,`ocs_agent_version`, `entities_id`, `tag` FROM `ocs_glpi_ocslinks`;
    
 
 ### Alter table glpi_plugin_ocsinventoryng_ocsservers
