@@ -80,7 +80,7 @@ function plugin_ocsinventoryng_install() {
          $DB->queryOrDie($query, "1.0.0 insert profiles for OCS in plugin");
       }
 
-      
+
       // recuperation des paramètres du core
       If (TableExists("ocs_glpi_crontasks")) {
          $query = "INSERT INTO `glpi_crontasks`
@@ -1073,13 +1073,16 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
    global $CFG_GLPI, $DB, $REDIRECT;
 
    $notimport = new PluginOcsinventoryngNotimportedcomputer();
+   if (!$item = getItemForItemtype($data['itemtype'])) {
+      return;
+   }
    switch ($data["action"]) {
       case "plugin_ocsinventoryng_import" :
          foreach ($data["item"] as $key => $val) {
             if ($val == 1) {
                PluginOcsinventoryngNotimportedcomputer::computerImport(array('id'     => $key,
-                                                                     'force'  => true,
-                                                                     'entity' => $data['entity']));
+                                                                             'force'  => true,
+                                                                             'entity' => $data['entity']));
             }
          }
          break;
@@ -1109,7 +1112,7 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
          $nbko      = 0;
          $fields = PluginOcsinventoryngOcsServer::getLockableFields();
          if ($_POST['field'] == 'all' || isset($fields[$_POST['field']])) {
-            foreach ($_POST["item"] as $key => $val) {
+            foreach ($data["item"] as $key => $val) {
                if ($val == 1) {
                   if ($item->can($key,'w')) {
                      if ($_POST['field'] == 'all') {
@@ -1141,35 +1144,40 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
          $nbok = $stats['ok'];
          $nbko = $stats['ko'];
          break;
+
       case "plugin_ocsinventoryng_unlock_ocsng_printer" :
          $stats = PluginOcsinventoryngOcsLink::unlockItems('Printer', $_POST['item']);
          $nbok = $stats['ok'];
          $nbko = $stats['ko'];
          break;
+
          case "plugin_ocsinventoryng_unlock_ocsng_peripheral" :
             $stats = PluginOcsinventoryngOcsLink::unlockItems('Peripheral', $_POST['item']);
             $nbok = $stats['ok'];
             $nbko = $stats['ko'];
             break;
+
       case "plugin_ocsinventoryng_unlock_ocsng_software" :
             $stats = PluginOcsinventoryngOcsLink::unlockItems('SoftwareLicense', $_POST['item']);
             $nbok = $stats['ok'];
             $nbko = $stats['ko'];
             break;
+
       case "plugin_ocsinventoryng_unlock_ocsng_ip" :
          $stats = PluginOcsinventoryngOcsLink::unlockItems('NetworkPort', $_POST['item']);
          $nbok = $stats['ok'];
          $nbko = $stats['ko'];
          break;
+
       case "plugin_ocsinventoryng_unlock_ocsng_disk" :
          $stats = PluginOcsinventoryngOcsLink::unlockItems('ComputerDisk', $_POST['item']);
          $nbok = $stats['ok'];
          $nbko = $stats['ko'];
          break;
 
-         foreach ($_POST["item"] as $key => $val) {
+         foreach ($data["item"] as $key => $val) {
             if ($val == 1) {
-               if ($tiem->can($key, 'w')) {
+               if ($item->can($key, 'w')) {
                   switch ($_POST["action"]) {
                      case "plugin_ocsinventoryng_unlock_ocsng_monitor" :
                         if (PluginOcsinventoryngOcsServer::unlockItems($key, "import_monitor")) {
@@ -1568,7 +1576,7 @@ function plugin_ocsinventoryng_getRuleCriteria($params) {
  * @return an array of actions
  */
 function plugin_ocsinventoryng_getRuleActions($params) {
-// 
+//
    $actions = array();
 
    switch ($params['rule_itemtype']) {
