@@ -41,23 +41,21 @@ function plugin_ocsinventoryng_install() {
       $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.0-empty.sql");
       CronTask::Register('PluginOcsinventoryngOcsServer', 'ocsng', MINUTE_TIMESTAMP*5);
 
-      $rule = new RuleImportEntity();
-      $values["entities_id"] = 0;
-      $values["sub_type"] = "RuleImportEntity";
-      $values["name"] = "Root";
-      $values["is_active"] = "1";
-      $values["is_recursive"] = "1";
-
-      $newid = $rule->add($values);
-
-      $query = "INSERT INTO `glpi_rulecriterias` VALUES (NULL,'".$newid."','TAG','0','*');";
-      $DB->queryOrDie($query, $DB->error());
-
-      $query = "INSERT INTO `glpi_rulecriterias` VALUES (NULL,'".$newid."','OCS_SERVER','0','1');";
-      $DB->queryOrDie($query, $DB->error());
-
-      $query = "INSERT INTO `glpi_ruleactions` VALUES (NULL,'".$newid."','assign','entities_id','0');";
-      $DB->queryOrDie($query, $DB->error());
+      $migration->createRule(array('sub_type'      => 'RuleImportEntity',
+                                   'entities_id'   => 0,
+                                   'is_recursive'  => 1,
+                                   'is_active'     => 1,
+                                   'match'         => 'AND',
+                                   'name'          => 'RootOcs'),
+                            array(array('criteria'   => 'TAG',
+                                        'condition'  => Rule::PATTERN_IS,
+                                        'pattern'    => '*'),
+                                  array('criteria'   => 'OCS_SERVER',
+                                        'condition'  =>  Rule::PATTERN_IS,
+                                        'pattern'    => 1)),
+                            array(array('field'        => 'entities_id',
+                                        'action_type'  => 'assign',
+                                        'value'        => 0)));
 
    } else if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
               && TableExists("ocs_glpi_ocsservers")) {
@@ -864,6 +862,14 @@ function plugin_ocsinventoryng_uninstall() {
              WHERE `itemtype` IN ('PluginMassocsimportNotimported',
                                   'PluginOcsinventoryngNotimportedcomputer')";
    $DB->queryOrDie($query, $DB->error());
+
+   // clean rules
+   $rule = new RuleImportEntity();
+   foreach ($DB->request("glpi_rules", array('sub_type' => 'RuleImportEntity',
+                                             'name'     => 'RootOcs')) AS $data) {
+      $rule->delete($data);
+   }
+
 
    $notification = new Notification();
    foreach (getAllDatasFromTable($notification->getTable(),
