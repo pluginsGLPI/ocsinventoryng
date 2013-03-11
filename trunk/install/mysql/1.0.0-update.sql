@@ -152,3 +152,8 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_networkports` (
   KEY `networkinterface_name` (`networkinterface_name`),
   KEY `netpoints_id` (`netpoints_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+### glpi_rules
+INSERT INTO `glpi_rules` SELECT * FROM `ocs_glpi_rules` WHERE `sub_type` = 'RuleImportEntity';
+INSERT INTO `glpi_rulecriterias` SELECT * FROM `ocs_glpi_rulecriterias` WHERE `rules_id` IN (SELECT `id` FROM `glpi_rules` WHERE `sub_type` = 'RuleImportEntity');
+INSERT INTO `glpi_ruleactions` SELECT * FROM `ocs_glpi_ruleactions` WHERE `rules_id` IN (SELECT `id` FROM `glpi_rules` WHERE `sub_type` = 'RuleImportEntity');
