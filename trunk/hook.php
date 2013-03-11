@@ -1078,6 +1078,10 @@ function plugin_ocsinventoryng_MassiveActionsDisplay($options=array()) {
 function plugin_ocsinventoryng_MassiveActionsProcess($data) {
    global $CFG_GLPI, $DB, $REDIRECT;
 
+   $nbok      = 0;
+   $nbko      = 0;
+   $noright = 0;
+   
    $notimport = new PluginOcsinventoryngNotimportedcomputer();
    if (!$item = getItemForItemtype($data['itemtype'])) {
       return;
@@ -1296,6 +1300,10 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
          }
          break;
    }
+
+   return array('ok'      => $nbok,
+                'ko'      => $nbko,
+                'noright' => $noright);   
 }
 
 
