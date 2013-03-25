@@ -112,8 +112,6 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   KEY `use_massimport` (`use_massimport`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `glpi_plugin_ocsinventoryng_ocsservers` VALUES ('1','localhost','ocs','ocs','localhost','ocsweb','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','',NULL,'0','1',NULL,'',NULL,NULL,'1','0','1','0','0',NULL);
-
 ### Dump table glpi_registrykeys
 
 DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_registrykeys`;
