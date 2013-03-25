@@ -134,24 +134,46 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_registrykeys` (
 
 INSERT INTO `glpi_plugin_ocsinventoryng_registrykeys` SELECT * FROM `ocs_glpi_registrykeys`;
 
+### Dump table glpi_plugin_ocsinventoryng_networkports
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_networkports`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_networkports` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `networkports_id` int(11) NOT NULL DEFAULT '0',
-  `networkinterface_name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `MIB` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `netpoints_id` int(11) NOT NULL DEFAULT '0',
-  `ip` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `netmask` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `gateway` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `subnet` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `invalid_ip` tinyint(1) NOT NULL DEFAULT '0',
-  `invalid_network_interface` tinyint(1) NOT NULL DEFAULT '0',
+  `TYPE` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `TYPEMIB` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `items_devicenetworkcards_id` int(11) NOT NULL DEFAULT '0',
   `comment` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `networkports_id` (`networkports_id`),
-  KEY `networkinterface_name` (`networkinterface_name`),
-  KEY `netpoints_id` (`netpoints_id`)
+  KEY `TYPE` (`TYPE`),
+  KEY `TYPEMIB` (`TYPEMIB`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+### Dump table glpi_plugin_ocsinventoryng_networkporttypes
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_networkporttypes`;
+CREATE TABLE `glpi_plugin_ocsinventoryng_networkporttypes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `OCS_TYPE` varchar(255) NOT NULL DEFAULT '',
+  `OCS_TYPEMIB` varchar(255) NOT NULL DEFAULT '',
+  `instantiation_type` varchar(255) DEFAULT NULL,
+  `type` varchar(10) COLLATE utf8_unicode_ci DEFAULT '' COMMENT 'T, LX, SX',
+  `speed` int(11) NULL DEFAULT '10' COMMENT 'Mbit/s: 10, 100, 1000, 10000',
+  `version` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'a, a/b, a/b/g, a/b/g/n, a/b/g/n/y',
+  `comment` text COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`id`),
+  KEY `OCS_TYPE` (`OCS_TYPE`),
+  KEY `OCS_TYPEMIB` (`OCS_TYPEMIB`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Unkown port', '*', '*', 'PluginOcsinventoryngNetworkPort', NULL, NULL,NULL, NULL);
+INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Ethernet port', 'Ethernet', '*', 'NetworkPortEthernet', 'T', 10,NULL, NULL);
+INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Wifi port', 'Wifi', '*', 'NetworkPortWifi', NULL, NULL, 'a', NULL);
+INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Loopback port', 'Local', '*', 'NetworkPortLocal', NULL, NULL, NULL, NULL);
 
 ### glpi_rules
 INSERT INTO `glpi_rules` SELECT * FROM `ocs_glpi_rules` WHERE `sub_type` = 'RuleImportEntity';

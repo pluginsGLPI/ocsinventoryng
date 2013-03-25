@@ -839,7 +839,8 @@ function plugin_ocsinventoryng_uninstall() {
                    "glpi_plugin_ocsinventoryng_notimportedcomputers",
                    "glpi_plugin_ocsinventoryng_details",
                    "glpi_plugin_ocsinventoryng_registrykeys",
-                   "glpi_plugin_ocsinventoryng_networkports");
+                   "glpi_plugin_ocsinventoryng_networkports",
+                   "glpi_plugin_ocsinventoryng_networkporttypes");
 
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
@@ -896,6 +897,13 @@ function plugin_ocsinventoryng_uninstall() {
 
    return true;
 }
+
+
+function plugin_ocsinventoryng_getDropdown() {
+   // Table => Name
+   return array('PluginOcsinventoryngNetworkPortType' => PluginOcsinventoryngNetworkPortType::getTypeName(0));
+}
+
 
 
 /**

@@ -3714,13 +3714,10 @@ JAVASCRIPT;
             break;
 
          case "Item_DeviceNetworkCard":
-            $CompDevice = new $devicetype();
             //Carte reseau
             if ($cfg_ocs["import_device_iface"] || $cfg_ocs["import_ip"]){
-               PluginOcsinventoryngNetworkPort::importNetwork($PluginOcsinventoryngDBocs,
-                                                              $cfg_ocs, $ocsid,
-                                                              $CompDevice, $computers_id,
-                                                              $prevalue, $dohistory);
+               PluginOcsinventoryngNetworkPort::importNetwork($PluginOcsinventoryngDBocs, $cfg_ocs,
+                                                              $ocsid, $computers_id, $dohistory);
             }
             break;
 

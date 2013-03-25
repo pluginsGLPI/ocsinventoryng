@@ -26,301 +26,384 @@ You should have received a copy of the GNU General Public License
 along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 --------------------------------------------------------------------------*/
 
-// ----------------------------------------------------------------------
-// Original Author of file: Damien Touraine
-// Purpose of file:
-// ----------------------------------------------------------------------
-
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-/// NetworkPortLocal class : local instantiation of NetworkPort. Among others, loopback
-/// (ie.: 127.0.0.1)
 
+/// OCS NetworkPort class
 class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
-   static function importNetwork($PluginOcsinventoryngDBocs, $cfg_ocs, $ocsid,
-                                   $CompDevice, $computers_id, $prevalue,
-                                   $dohistory) {
+   static function getTypeName($nb=0) {
+      return _n('Unkown type from OCS', 'Unkwon types from OCS', $nb);
+   }
+
+
+   static function canCreate() {
+      return false;
+   }
+
+
+   static function canUpdate() {
+      return false;
+   }
+
+
+   static function canDelete() {
+      return false;
+   }
+
+
+   static private function getInvalidIPString($ip) {
+      return 'invalid: '.$ip;
+   }
+
+
+   static private function updateNetworkPort($mac, $name, $computers_id, $instantiation_type,
+                                             $inst_input, $ips, $virtual, $check_name, $dohistory) {
       global $DB;
 
-      $query2 = "SELECT *
-                 FROM `networks`
-                 WHERE `HARDWARE_ID` = '$ocsid'
-                 ORDER BY `ID`";
+      $network_port = new NetworkPort();
 
-      $result2                 = $PluginOcsinventoryngDBocs->query($query2);
-      $i                       = 0;
-      $manually_link           = false;
-      $already_processed_iface = array();
-      $already_processed_port  = array();
-      $mac_id                 = false;
-      
-      if (isset($devID)) {
-         unset($devID);
+      // Then, find or create the base NetworkPort
+      $query = "SELECT PORT.`id`, PORT.`is_dynamic`
+                FROM `glpi_networkports` AS PORT
+                WHERE PORT.`itemtype` = 'Computer'
+                   AND PORT.`items_id` = '$computers_id'
+                   AND PORT.`mac` = '$mac'";
+
+      // If there is virtual ports, then, filter by port's name
+      if ($check_name) {
+         $query .=  " AND PORT.`name` = '$name'";
       }
 
-      // Add network device
-      if ($PluginOcsinventoryngDBocs->numrows($result2) > 0) {
-         $mac_already_imported = array();
-         while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)) {
-            $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
-            if ($cfg_ocs["import_device_iface"]) {
-               $network['designation']
-                  = PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"],
-                                                                       $line2['DESCRIPTION']);
+      // We order by is_dynamic to be sure to get the static ones first !
+      $query .= " ORDER BY PORT.`is_dynamic`";
 
-               // MAC must be unique, except for wmware (internal/external use same MAC)
-               if (preg_match('/^vm(k|nic)([0-9]+)$/', $line2['DESCRIPTION'])
-                   || !in_array($line2['MACADDR'], $mac_already_imported)) {
-                  $mac_already_imported[] = $line2["MACADDR"];
+      $ports = $DB->request($query);
+      if ($ports->numrows() == 0) {
+         $port_input = array('name'               => $name,
+                             'mac'                => $mac,
+                             'items_id'           => $computers_id,
+                             'itemtype'           => 'Computer',
+                             '_no_history'        => !$dohistory,
+                             'instantiation_type' => $instantiation_type,
+                             'is_dynamic'         => 1,
+                             'is_deleted'         => 0);
 
-                  //Try to find if the network card still exists in GLPI
-                  $query   = "SELECT `inc`.`id`
-                              FROM `glpi_items_devicenetworkcards` as `inc`,
-                                   `glpi_devicenetworkcards` as `nc`
-                              WHERE `inc`.`itemtype`='Computer'
-                                 AND `inc`.`items_id`='$computers_id'
-                                 AND `nc`.`designation`='".$network['designation']."'
-                                 AND `inc`.`mac`='".$line2['MACADDR']."'
-                                 AND `inc`.`devicenetworkcards_id`=`nc`.`id`";
-                  $results = $DB->query($query);
-                  $id  = false;
-                  if ($DB->numrows($results) > 0) {
-                     $id = $DB->result($results, 0, 'id');
-                  }
-                  
-                  if (!$id) {
-                     if (!empty ($line2["SPEED"])) {
-                        $network["bandwidth"] = $line2["SPEED"];
-                     }
-                     //Import the card
-                     $DeviceNetworkCard = new DeviceNetworkCard();
-                     $net_id = $DeviceNetworkCard->import($network);
-                     if ($net_id) {
-                        //link the network card to the computer
-                        $id = $CompDevice->add(array('items_id'              => $computers_id,
-                                                      'itemtype'               => 'Computer',
-                                                      'devicenetworkcards_id'  => $net_id,
-                                                      'mac'                    => $line2["MACADDR"],
-                                                      '_no_history'            => !$dohistory,
-                                                      'is_dynamic'             => 1,
-                                                      'is_deleted'             => 0));
-                     }
-                  } else {
-                     $CompDevice->update(array('id'        => $id,
-                                               'mac'        => $line2["MACADDR"],
-                                               'is_dynamic' => 1));
-                  }
-               }
-               $already_processed_iface[] = $id;
+         $networkports_id               = $network_port->add($port_input);
+         if ($networkports_id === false) {
+            return -1;
+         }
+         $inst_input['networkports_id'] = $networkports_id;
+         $instantiation                 = $network_port->getInstantiation();
+         $instantiation->add($inst_input);
+         unset($instantiation);
+
+      } else {
+         // Keep the first entry !
+         $line = $ports->next();
+         $networkports_id = $line['id'];
+         foreach ($ports as $line) {
+            if (($line['is_dynamic'] == 1) && ($line['id'] != $networkports_id)) {
+               $network_port->delete($line, true);
             }
-            
-            if (!empty ($line2["IPADDRESS"]) && $cfg_ocs["import_ip"]) {
-               $ocs_ips = explode(",", $line2["IPADDRESS"]);
-               $ocs_ips = array_unique($ocs_ips);
-               sort($ocs_ips);
+         }
+         $network_port->getFromDB($networkports_id);
+         if ((!$check_name) && ($network_port->fields['name'] != $name)) {
+            $port_input = array('id'         => $network_port->getID(),
+                                'name'       => $name,
+                                'is_dynamic' => 1);
+            $network_port->update($port_input);
+         }
+         if ($network_port->fields['instantiation_type'] != $instantiation_type) {
+            $network_port->switchInstantiationType($instantiation_type);
+            $inst_input['networkports_id'] = $network_port->getID();
+            $instantiation                 = $network_port->getInstantiation();
+            $instantiation->add($inst_input);
+            unset($instantiation);
+         }
+         $instantiation = $network_port->getInstantiation();
+         $inst_input['id'] = $instantiation->getID();
+         $inst_input['networkports_id'] = $network_port->getID();
+         $instantiation->update($inst_input);
+         unset($instantiation);
+      }
 
-               $netport = array();
-               $netport["name"]
-                  = PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"],
-                                                                       $line2["DESCRIPTION"]);
-               $netport["mac"]                   = $line2["MACADDR"];
-               $netport["items_id"]              = $computers_id;
-               $netport["itemtype"]              = 'Computer';
-               $netport["items_devicenetworkcards_id"] = $id;
-               $netport['networkinterface_name'] = $line2["TYPE"];
-               $netport['MIB']                   = $line2["TYPEMIB"];
-               $netport['netmask']               = $line2['IPMASK'];
-               $netport['gateway']               = $line2['IPGATEWAY'];
-               $netport['subnet']                = $line2['IPSUBNET'];
-               $netport['is_dynamic']            = 1; //it is a dynamic port, created by OCS
-               $netport['is_deleted']            = 0;
-               
-               if (isset($devID)) {
-                  $netport['items_devicenetworkcards_id'] = $id;
-               }
-               $netport['speed'] = NetworkPortEthernet::transformPortSpeed($line2['SPEED'], false);
-               if ($netport['speed'] === false) {
-                  $netport['speed'] = 10;
-               }
-               $netport['invalid_network_interface'] = 0;
-               switch ($line2["TYPE"]) {
-                  case 'Ethernet':
-                     $instantiation_type = 'NetworkPortEthernet';
-                     break;
+      if ($network_port->isNewItem()) {
+         return -1;
+      }
 
-                  case 'Wifi':
-                     $instantiation_type = 'NetworkPortWifi';
-                     break;
-
-                  default:
-                     $netport['invalid_network_interface'] = 1;
-                     $instantiation_type = 'PluginOcsinventoryngNetworkPort';
-                     break;
-               };
-
-               $np = new NetworkPort();
-               for ($j = 0 ; $j < count($ocs_ips) ; $j++) {
-                  // First, we normalize the IP address to test with common values
-                  $ip_object = new IPAddress($ocs_ips[$j]);
-                  if ($ip_object->is_valid()) {
-                     $ip_address = $ip_object->getTextual();
-                  } else { // For instance 192.168.1. or ?? or toto
-                     $ip_address = $ocs_ips[$j];
-                  }
-                  
-                  $is_deleted         = false;
-                  
-                  //First search : look for the same port (same IP and same MAC)
-                  $querySelectIDandIP = "SELECT PORT.`id` as id, ADDR.`name` as ip,
-                                                PORT.`is_deleted`
-                                          FROM `glpi_networkports` AS PORT
-                                             LEFT JOIN `glpi_networknames` AS NAME
-                                                ON (NAME.`itemtype` = 'NetworkPort'
-                                                   AND NAME.`items_id` = PORT.`id`)
-                                             LEFT JOIN `glpi_ipaddresses` AS ADDR
-                                                ON (ADDR.`itemtype` = 'NetworkName'
-                                                   AND ADDR.`items_id` = NAME.`id`)
-                                          WHERE PORT.`itemtype` = 'Computer'
-                                             AND PORT.`items_id` = '$computers_id'
-                                             AND PORT.`mac` = '" . $line2["MACADDR"] . "'
-                                             AND ADDR.`name` = '".$ip_address."'";
-                  $results = $DB->query($querySelectIDandIP);
-                  if ($DB->numrows($results) > 0) {
-                     $mac_id     = $DB->result($results, 0, 'id');
-                     $is_deleted = $DB->result($results, 0, 'is_deleted');
-                  } else {
-                     //Second search : IP may have change, so look only for mac address
-                     $querySelectIDByMac = "SELECT PORT.`id` as id, PORT.`is_deleted`
-                                            FROM `glpi_networkports` AS PORT
-                                            WHERE PORT.`itemtype` = 'Computer'
-                                               AND PORT.`items_id` = '$computers_id'
-                                               AND PORT.`mac` = '" . $line2["MACADDR"] . "'";
-                     $results = $DB->query($querySelectIDByMac);
-                     if ($DB->numrows($results) > 0) {
-                        $mac_id     = $DB->result($results, 0, 'id');
-                        $is_deleted = $DB->result($results, 0, 'is_deleted');
-                     }
-                  }
-                  
-                  //If port is locked, do not try to go further
-                  if ($mac_id && $is_deleted) {
-                     $already_processed_port[] = $mac_id;
-                     continue;
-                  }
-                  
-                  $netport['_no_history'] =! $dohistory;
-
-                  // Process for NetworkName
-                  if ($ip_object->is_valid()) {
-                     $netport['instantiation_type'] = $instantiation_type;
-                     $netport['NetworkName_name']   = 'OCS-INVENTORY-NG-'.str_replace('.', '-',
-                                                                                      $ip_address);
-                     // Warning : index must be negative, otherwise, the address will be
-                     //           considered to be updated, not added !
-                  } else {
-                     // In case of invalid IP we force the NetworkPort to be a
-                     // PluginOcsinventoryngNetworkPort, thus we will keep the IP !
-                     $netport['instantiation_type'] = 'PluginOcsinventoryngNetworkPort';
-
-                    unset($netport['NetworkName_name']);
-                  }
-
-                   //Update already in DB
-                  if ($mac_id > 0) {
-                     $already_processed_port[]  = $mac_id;
-                     $netport["logical_number"] = $j;
-                     $netport["id"]             = $mac_id;
-
-                     if ($ip_object->is_valid()) {
-                        $queryForIP = "SELECT `glpi_networknames`.`id` as names_id,
-                                              `glpi_ipaddresses`.`id` as ip_id,
-                                              `glpi_ipaddresses`.`name`
-                                       FROM `glpi_networknames`
-                                       LEFT JOIN `glpi_ipaddresses` ON (
-                                            `glpi_ipaddresses`.`itemtype` = 'NetworkName'
-                                        AND `glpi_ipaddresses`.`items_id` = `glpi_networknames`.`id`)
-                                       WHERE `glpi_networknames`.`itemtype` = 'NetworkPort'
-                                        AND `glpi_networknames`.`items_id` = '$mac_id'";
-                        $netport['NetworkName__ipaddresses'] = array();
-                        $ip_id   = -1;
-                        $name_id = -1;
-                        foreach ($DB->request($queryForIP) as $ip_entry) {
-                           // Clear all otherIPs
-                           $netport['NetworkName__ipaddresses'][$ip_entry['ip_id']] = '';
-                           if (($ip_entry['name'] == $ip_address) && ($ip_id < 0)) {
-                              // If we find the IP, then we stock its ID
-                              $ip_id   = $ip_entry['ip_id'];
-                              $name_id = $ip_entry['names_id'];
-                           }
-                        }
-                        // If the current IP is not found, then we change the last founded IP
-                        if ($ip_id < 0 && isset($ip_entry['ip_id'])) {
-                           $ip_id = $ip_entry['ip_id'];
-                        }
-                        if ($name_id < 0 && isset($ip_entry['names_id'])) {
-                           $name_id = $ip_entry['names_id'];
-                        }
-                        $netport['NetworkName__ipaddresses'][$ip_id] = $ip_address;
-                        $netport['NetworkName_id'] = $name_id;
-                     }
-
-                     $np->splitInputForElements($netport);
-                     $np->update($netport);
-                     $np->updateDependencies(1);
-                  } else { //If new IP found
-                     unset ($np->fields["netpoints_id"]);
-                     unset ($netport["id"]);
-                     unset ($np->fields["id"]);
-                     $netport["logical_number"] = $j;
-
-                     if ($ip_object->is_valid()) {
-                        $netport['NetworkName__ipaddresses'] = array('-1' => $ip_address);
-                     }
-
-                     $np->splitInputForElements($netport);
-                     $newID = $np->add($netport);
-                     $np->updateDependencies(1);
-                     $already_processed_port[] = $newID;
-                  }
+      $network_name = new NetworkName();
+      $query = "SELECT `id`, `is_dynamic`
+                FROM `glpi_networknames`
+                WHERE `itemtype` = 'NetworkPort'
+                   AND `items_id` = '$networkports_id'
+                ORDER BY `is_dynamic`";
+      if ((!$ips) || (count($ips) == 0)) {
+         foreach ($DB->request($query) as $line) {
+            if ($line['is_dynamic']) {
+               $network_name->delete($line, true);
+            }
+         }
+      } else {
+         $names = $DB->request($query);
+         if ($names->numrows() == 0) {
+            $name_input = array('itemtype'    => 'NetworkPort',
+                                'items_id'    => $networkports_id,
+                                'is_dynamic'  => 1,
+                                'is_deleted'  => 0,
+                                '_no_history' => !$dohistory,
+                                'name'        => 'OCS-INVENTORY-NG');
+            $networknames_id = $network_name->add($name_input);
+         } else {
+            $line = $names->next();
+            $networknames_id = $line['id'];
+            foreach ($names as $line) {
+               if (($line['is_dynamic'] == 1) && ($line['id'] != $networknames_id)){
+                  $network_port->delete($line, true);
                }
             }
          }
-      }
-      
-      //Remove unused network devices
-      if ($cfg_ocs["import_device_iface"]) {
-         $query = "SELECT `id`
-                   FROM `glpi_items_devicenetworkcards`
-                   WHERE `is_dynamic`='1'
-                      AND `is_deleted`='0'
-                      AND `itemtype`='Computer'
-                      AND `items_id`='$computers_id'";
-         if (!empty($already_processed_iface)) {
-            $query.= "AND `id` NOT IN (".implode(',',$already_processed_iface).")";
+
+         $ip_address = new IPAddress();
+         $already_known_addresses = array();
+         $query = "SELECT `id`, `name`, `is_dynamic`
+                   FROM `glpi_ipaddresses`
+                   WHERE `itemtype` = 'NetworkName'
+                      AND `items_id` = '$networknames_id'
+                   ORDER BY `is_dynamic`";
+         foreach ($DB->request($query) as $line) {
+            if (in_array($line['name'], $ips)) {
+               $already_known_addresses[] = $line['id'];
+               $ips = array_diff($ips, array($line['name']));
+            } elseif ($line['is_dynamic'] == 1) {
+               $ip_address->delete($line, true);
+            }
          }
-         foreach ($DB->request($query) as $data) {
-            $CompDevice->delete($data, true);
+      }
+      if ($ips) {
+         foreach ($ips as $ip) {
+            $ip_input = array('name'        => $ip,
+                              'itemtype'    => 'Networkname',
+                              'items_id'    => $networknames_id,
+                              '_no_history' => !$dohistory,
+                              'is_dynamic'  => 1,
+                              'is_deleted'  => 0);
+            $ip_address->add($ip_input);
          }
       }
-      
-      $port  = new NetworkPort();
-      //Remove unused network devices
+
+      return $network_port->getID();
+   }
+
+
+   // importNetwork
+   static function importNetwork($PluginOcsinventoryngDBocs, $cfg_ocs, $ocsid,
+                                 $computers_id, $dohistory) {
+      global $DB;
+
+      $query = "SELECT *
+                FROM `networks`
+                WHERE `HARDWARE_ID` = '$ocsid'
+                ORDER BY `ID`";
+
+      $network_ports  = array();
+      $network_ifaces = array();
+      foreach ($PluginOcsinventoryngDBocs->request($query) as $line) {
+         $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
+         $mac  = $line['MACADDR'];
+         if (!isset($network_ports[$mac])) {
+            $network_ports[$mac] = array('virtual' => array());
+         }
+         $name = PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"],
+                                                                    $line['DESCRIPTION']);
+
+         if (!empty($line['IPADDRESS'])) {
+            $ip = array_unique(explode(',', $line['IPADDRESS']));
+         } else {
+            $ip = false;
+         }
+         $networkport_type = new PluginOcsinventoryngNetworkPortType();
+         $TYPEMIB          = (empty($line['TYPEMIB']) ? '' : $line['TYPEMIB']);
+         $TYPE             = (empty($line['TYPE']) ? '' : $line['TYPE']);
+
+         $networkport_type->getFromDBByQuery("WHERE `OCS_TYPE`='$TYPE'
+                                                AND `OCS_TYPEMIB`='$TYPEMIB'");
+         if ($networkport_type->isNewItem()) {
+            $networkport_type->getFromDBByQuery("WHERE `OCS_TYPE`='$TYPE' AND `OCS_TYPEMIB`='*'");
+         }
+         if ($networkport_type->isNewItem()) {
+            $networkport_type->getFromDBByQuery("WHERE `OCS_TYPE`='*' AND `OCS_TYPEMIB`='*'");
+         }
+         $speed = NetworkPortEthernet::transformPortSpeed($line['SPEED'], false);
+         if (!empty($speed)) {
+            $networkport_type->fields['speed'] = $speed;
+         }
+
+         $values = array('name'   => $name,
+                         'type'   => (array_push($network_ifaces, $networkport_type) - 1),
+                         'ip'     => $ip,
+                         'result' => $line);
+
+         // Virtual dev can be :
+         //    1°) specifically defined from OCS
+         //    2°) if there is already one main device
+         //    3°) if the networkport is issued by VMWare
+         if (((isset($line['VIRTUALDEV'])) && ($line['VIRTUALDEV'] == '1'))
+             || (isset($network_ports[$mac]['main']))
+             || (preg_match('/^vm(k|nic)([0-9]+)$/', $name))) {
+            $network_ports[$mac]['virtual'][$line['ID']] = $values;
+         } else {
+            $network_ports[$mac]['main'] = $values;
+         }
+      }
+
+      $already_known_ports  = array();
+      $already_known_ifaces = array();
+      foreach ($network_ports as $mac => $ports) {
+         if (isset($ports['main'])) {
+            $main = $ports['main'];
+            $type = $network_ifaces[$main['type']];
+
+            // First search for the Network Card
+            $item_device = new Item_DeviceNetworkCard();
+            $item_device->getFromDBByQuery(
+                       "INNER JOIN `glpi_devicenetworkcards`
+                               ON (`glpi_devicenetworkcards`.`designation`='".$main['name']."')
+                        WHERE `glpi_items_devicenetworkcards`.`itemtype`='Computer'
+                           AND `glpi_items_devicenetworkcards`.`items_id`='$computers_id'
+                           AND `glpi_items_devicenetworkcards`.`mac`='$mac'
+                           AND `glpi_items_devicenetworkcards`.`devicenetworkcards_id`=
+                               `glpi_devicenetworkcards`.`id`");
+            // If not found, then, create it
+            if ($item_device->isNewItem()) {
+               $deviceNetworkCard = new DeviceNetworkCard();
+               $device_input      = array('designation' => $main['name'],
+                                          'bandwidth'   => $type->fields['speed']);
+
+               $net_id = $deviceNetworkCard->import($device_input);
+
+               if ($net_id) {
+                  $item_device->add(array('items_id'              => $computers_id,
+                                          'itemtype'              => 'Computer',
+                                          'devicenetworkcards_id' => $net_id,
+                                          'mac'                   => $mac,
+                                          '_no_history'           => !$dohistory,
+                                          'is_dynamic'            => 1,
+                                          'is_deleted'            => 0));
+               }
+            }
+            if (!$item_device->isNewItem()) {
+               $already_known_ifaces[] = $item_device->getID();
+            }
+
+            if ($type->fields['instantiation_type'] == __CLASS__) {
+               $result = $main['result'];
+               $inst_input = array('TYPE'    => $result['TYPE'],
+                                   'TYPEMIB' => $result['TYPEMIB'],
+                                   'speed'   => $result['SPEED']);
+            } else {
+               $inst_input = $type->fields;
+               foreach (array('id', 'name', 'OCS_TYPE', 'OCS_TYPEMIB',
+                              'instantiation_type', 'comment') as $field) {
+                  unset($inst_input[$field]);
+               }
+            }
+            $inst_input['items_devicenetworkcards_id'] = $item_device->getID();
+
+            $networkports_id = self::updateNetworkPort($mac, $main['name'], $computers_id,
+                                                       $type->fields['instantiation_type'],
+                                                       $inst_input, $main['ip'], false,
+                                                       count($ports['virtual']) > 0, $dohistory);
+
+            if ($networkports_id < 0) {
+               continue;
+            }
+
+            $already_known_ports[] = $networkports_id;
+         } else {
+            $networkports_id = 0;
+         }
+
+         foreach ($ports['virtual'] as $port) {
+            $inst_input = array('networkports_id_alias' => $networkports_id);
+            $id = self::updateNetworkPort($mac, $port['name'], $computers_id,
+                                          'NetworkPortAlias', $inst_input, $port['ip'], true,
+                                          true, $dohistory);
+            if ($id > 0) {
+               $already_known_ports[] = $id;
+            }
+         }
+      }
+
       $query = "SELECT `id`
                 FROM `glpi_networkports`
-                WHERE `is_dynamic`='1'
-                   AND `is_deleted`='0'
-                   AND `itemtype`='Computer'
-                   AND `items_id`='$computers_id'";
-      if (!empty($already_processed_port)) {
-         $query.= "AND `id` NOT IN (".implode(',',$already_processed_port).")";
+                WHERE `itemtype` = 'Computer'
+                   AND `items_id` = '$computers_id'
+                   AND `is_dynamic` = '1'";
+      if (count($already_known_ports) > 0) {
+         $query .= " AND `id` NOT IN ('".implode("', '", $already_known_ports)."')";
       }
-      foreach ($DB->request($query) as $data) {
-         $port->delete($data, true);
-       }
+      $network_ports = new NetworkPort();
+      foreach ($DB->request($query) as $line) {
+         $network_ports->delete($line, true);
+      }
+
+      $query = "SELECT `id`
+                FROM `glpi_items_devicenetworkcards`
+                WHERE `itemtype` = 'Computer'
+                   AND `items_id` = '$computers_id'
+                   AND `is_dynamic` = '1'";
+      if (count($already_known_ifaces) > 0) {
+         $query .= " AND `id` NOT IN ('".implode("', '", $already_known_ifaces)."')";
+      }
+      $item_device = new Item_DeviceNetworkCard();
+      foreach ($DB->request($query) as $line) {
+         $item_device->delete($line, true);
+      }
    }
+
+
+   /**
+    * @see NetworkPortInstantiation::getInstantiationHTMLTableHeaders
+   **/
+   function getInstantiationHTMLTableHeaders(HTMLTableGroup $group, HTMLTableSuperHeader $super,
+                                             HTMLTableSuperHeader $internet_super=NULL,
+                                             HTMLTableHeader $father=NULL,
+                                             array $options=array()) {
+
+      DeviceNetworkCard::getHTMLTableHeader('NetworkPortWifi', $group, $super, NULL,
+                                            $options);
+
+      $group->addHeader('TYPE', __('OCS TYPE'), $super);
+      $group->addHeader('TYPEMIB', __('OCS MIB TYPE'), $super);
+      $group->addHeader('Generate', __('Create a mapping'), $super);
+
+      parent::getInstantiationHTMLTableHeaders($group, $super, $internet_super, $father, $options);
+      return NULL;
+   }
+
+
+   /**
+    * @see NetworkPortInstantiation::getInstantiationHTMLTable()
+   **/
+   function getInstantiationHTMLTable(NetworkPort $netport, HTMLTableRow $row,
+                                      HTMLTableCell $father=NULL, array $options=array()) {
+
+      DeviceNetworkCard::getHTMLTableCellsForItem($row, $this, NULL, $options);
+
+      $row->addCell($row->getHeaderByName('Instantiation', 'TYPE'), $this->fields['TYPE']);
+      $row->addCell($row->getHeaderByName('Instantiation', 'TYPEMIB'), $this->fields['TYPEMIB']);
+      $link = PluginOcsinventoryngNetworkPortType::getFormURL(true).'?'.$this->getForeignKeyField().'='.$this->getID();
+      $value = "<a href='$link'>create</a>";
+      $row->addCell($row->getHeaderByName('Instantiation', 'Generate'), $value);
+
+      parent::getInstantiationHTMLTable($netport, $row, $father, $options);
+      return NULL;
+   }
+
+
 }
 
 ?>
