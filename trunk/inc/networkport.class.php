@@ -365,6 +365,31 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
    }
 
 
+   function showInstantiationForm(NetworkPort $netport, $options=array(), $recursiveItems) {
+
+      if (!$options['several']) {
+         echo "<tr class='tab_bg_1'>\n";
+         $this->showNetworkCardField($netport, $options, $recursiveItems);
+         $this->showMacField($netport, $options);
+         echo "</tr>\n";
+
+         echo "<tr class='tab_bg_1'>\n";
+         echo "<td>" . __('OCS TYPE') . "</td>";
+         echo "<td>".$this->fields['TYPE']."</td>\n";
+         echo "<td>" . __('OCS MIB TYPE') . "</td>";
+         echo "<td>".$this->fields['TYPEMIB']."</td>\n";
+         echo "</tr>\n";
+
+         echo "<tr class='tab_bg_1'>\n";
+         echo "<td>" . __('Create an entry for defining this type') . "</td><td>";
+         $link = PluginOcsinventoryngNetworkPortType::getFormURL(true).'?'.$this->getForeignKeyField().'='.$this->getID();
+         echo "<a href='$link'>create</a>";
+         echo "</td>";
+         echo "</tr>\n";
+      }
+   }
+
+
    /**
     * @see NetworkPortInstantiation::getInstantiationHTMLTableHeaders
    **/
