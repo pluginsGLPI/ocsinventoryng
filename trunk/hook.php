@@ -2129,10 +2129,30 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration) {
 
             //If array is not empty
             if (!empty($import_field)) {
+               $in_where = "(".implode(',',array_keys($import_field)).")";
                $query_update = "UPDATE `$table`
                                 SET `is_dynamic`='1'
-                                WHERE `id` IN (".implode(',',array_keys($import_field)).")";
+                                WHERE `id` IN $in_where";
                $DB->query($query_update);
+               if ($table == 'glpi_networkports') {
+                  $query_update = "UPDATE `glpi_networkports` AS PORT,
+                                          `glpi_networknames` AS NAME
+                                   SET NAME.`is_dynamic` = 1
+                                   WHERE PORT.`id` IN $in_where
+                                     AND NAME.`itemtype` = 'NetworkPort'
+                                     AND NAME.`items_id` = PORT.`id`";
+                  $DB->query($query_update);
+                  $query_update = "UPDATE `glpi_networkports` AS PORT,
+                                          `glpi_networknames` AS NAME,
+                                          `glpi_ipaddresses` AS ADDR
+                                   SET ADDR.`is_dynamic` = 1
+                                   WHERE PORT.`id` IN $in_where
+                                     AND NAME.`itemtype` = 'NetworkPort'
+                                     AND NAME.`items_id` = PORT.`id`
+                                     AND ADDR.`itemtype` = 'NetworkName'
+                                     AND ADDR.`items_id` = NAME.`id`";
+                  $DB->query($query_update);
+               }
             }
          }
          $migration->dropField('ocs_glpi_ocslinks', $field);
