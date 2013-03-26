@@ -106,14 +106,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          unset($instantiation);
 
       } else {
-         // Keep the first entry !
          $line = $ports->next();
          $networkports_id = $line['id'];
-         foreach ($ports as $line) {
-            if (($line['is_dynamic'] == 1) && ($line['id'] != $networkports_id)) {
-               $network_port->delete($line, true);
-            }
-         }
          $network_port->getFromDB($networkports_id);
          if ((!$check_name) && ($network_port->fields['name'] != $name)) {
             $port_input = array('id'         => $network_port->getID(),
