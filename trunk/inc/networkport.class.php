@@ -60,25 +60,30 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
 
    static private function updateNetworkPort($mac, $name, $computers_id, $instantiation_type,
-                                             $inst_input, $ips, $virtual, $check_name, $dohistory) {
+                                             $inst_input, $ips, $check_name, $dohistory,
+                                             $already_known_ports) {
       global $DB;
 
       $network_port = new NetworkPort();
 
       // Then, find or create the base NetworkPort
-      $query = "SELECT PORT.`id`, PORT.`is_dynamic`
-                FROM `glpi_networkports` AS PORT
-                WHERE PORT.`itemtype` = 'Computer'
-                   AND PORT.`items_id` = '$computers_id'
-                   AND PORT.`mac` = '$mac'";
+      $query = "SELECT `id`, `is_dynamic`
+                FROM `glpi_networkports`
+                WHERE `itemtype` = 'Computer'
+                   AND `items_id` = '$computers_id'
+                   AND `mac` = '$mac'";
 
       // If there is virtual ports, then, filter by port's name
       if ($check_name) {
-         $query .=  " AND PORT.`name` = '$name'";
+         $query .=  " AND `name` = '$name'";
+      }
+
+      if (count($already_known_ports) > 0) {
+         $query .= " AND `id` NOT IN (".implode(',', $already_known_ports).")";
       }
 
       // We order by is_dynamic to be sure to get the static ones first !
-      $query .= " ORDER BY PORT.`is_dynamic`";
+      $query .= " ORDER BY `is_dynamic`, `id`";
 
       $ports = $DB->request($query);
       if ($ports->numrows() == 0) {
@@ -91,7 +96,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                              'is_dynamic'         => 1,
                              'is_deleted'         => 0);
 
-         $networkports_id               = $network_port->add($port_input);
+         $networkports_id = $network_port->add($port_input);
          if ($networkports_id === false) {
             return -1;
          }
@@ -171,7 +176,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          $query = "SELECT `id`, `name`, `is_dynamic`
                    FROM `glpi_ipaddresses`
                    WHERE `itemtype` = 'NetworkName'
-                      AND `items_id` = '$networknames_id'
+                     AND `items_id` = '$networknames_id'
                    ORDER BY `is_dynamic`";
          foreach ($DB->request($query) as $line) {
             if (in_array($line['name'], $ips)) {
@@ -315,7 +320,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $networkports_id = self::updateNetworkPort($mac, $main['name'], $computers_id,
                                                        $type->fields['instantiation_type'],
                                                        $inst_input, $main['ip'], false,
-                                                       count($ports['virtual']) > 0, $dohistory);
+                                                       $dohistory, $already_known_ports);
 
             if ($networkports_id < 0) {
                continue;
@@ -329,8 +334,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          foreach ($ports['virtual'] as $port) {
             $inst_input = array('networkports_id_alias' => $networkports_id);
             $id = self::updateNetworkPort($mac, $port['name'], $computers_id,
-                                          'NetworkPortAlias', $inst_input, $port['ip'], true,
-                                          true, $dohistory);
+                                          'NetworkPortAlias', $inst_input, $port['ip'],
+                                          true, $dohistory, $already_known_ports);
             if ($id > 0) {
                $already_known_ports[] = $id;
             }
