@@ -48,7 +48,7 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
           && (isset($this->fields['OCS_TYPEMIB'])) && ($this->fields['OCS_TYPEMIB'] == '*')) {
          return false;
       }
-      return $this->canCreateItem();
+      return parent::canUpdateItem();
    }
 
 
@@ -57,7 +57,7 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
           && (isset($this->fields['OCS_TYPEMIB'])) && ($this->fields['OCS_TYPEMIB'] == '*')) {
          return false;
       }
-      return $this->canCreateItem();
+      return parent::canDeleteItem();
    }
 
 

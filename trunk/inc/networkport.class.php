@@ -115,18 +115,21 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                 'is_dynamic' => 1);
             $network_port->update($port_input);
          }
-         if ($network_port->fields['instantiation_type'] != $instantiation_type) {
+         if (($network_port->fields['instantiation_type'] != $instantiation_type)
+             && ($network_port->fields['is_dynamic'] == 1)) {
             $network_port->switchInstantiationType($instantiation_type);
             $inst_input['networkports_id'] = $network_port->getID();
             $instantiation                 = $network_port->getInstantiation();
             $instantiation->add($inst_input);
             unset($instantiation);
          }
-         $instantiation = $network_port->getInstantiation();
-         $inst_input['id'] = $instantiation->getID();
-         $inst_input['networkports_id'] = $network_port->getID();
-         $instantiation->update($inst_input);
-         unset($instantiation);
+         if ($network_port->fields['instantiation_type'] == $instantiation_type) {
+            $instantiation = $network_port->getInstantiation();
+            $inst_input['id'] = $instantiation->getID();
+            $inst_input['networkports_id'] = $network_port->getID();
+            $instantiation->update($inst_input);
+            unset($instantiation);
+         }
       }
 
       if ($network_port->isNewItem()) {
