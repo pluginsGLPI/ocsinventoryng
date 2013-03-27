@@ -43,6 +43,24 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
    }
 
 
+   function canUpdateItem() {
+      if ((isset($this->fields['OCS_TYPE'])) && ($this->fields['OCS_TYPE'] == '*')
+          && (isset($this->fields['OCS_TYPEMIB'])) && ($this->fields['OCS_TYPEMIB'] == '*')) {
+         return false;
+      }
+      return $this->canCreateItem();
+   }
+
+
+   function canDeleteItem() {
+      if ((isset($this->fields['OCS_TYPE'])) && ($this->fields['OCS_TYPE'] == '*')
+          && (isset($this->fields['OCS_TYPEMIB'])) && ($this->fields['OCS_TYPEMIB'] == '*')) {
+         return false;
+      }
+      return $this->canCreateItem();
+   }
+
+
    function displaySpecificTypeField($ID, $field=array()) {
 
       switch ($field['type']) {
