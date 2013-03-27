@@ -3440,17 +3440,17 @@ JAVASCRIPT;
                   // En 0.83 cette suppression était lié à la présence du tag
                   // IMPORT_TAG_078, et donc exécuté 1 seule fois pour redressement
                   // Cela pete, je pense, tous les lock
-                  if (count($import_device)){
-                     $dohistory = false;
-                     foreach ($import_device as $key => $val) {
-                        $tmp = explode(self::FIELD_SEPARATOR,$key);
-                        if (isset($tmp[1]) && $tmp[0] == "Item_DeviceMemory") {
-                           $CompDevice->delete(array('id'          => $tmp[1],
-                                                     '_no_history' => true), 1);
-                           unset($import_device[$key]);
-                        }
-                     }
-                  }
+                  //if (count($import_device)){
+                  //   $dohistory = false;
+                  //   foreach ($import_device as $key => $val) {
+                  //      $tmp = explode(self::FIELD_SEPARATOR,$key);
+                  //      if (isset($tmp[1]) && $tmp[0] == "Item_DeviceMemory") {
+                  //         $CompDevice->delete(array('id'          => $tmp[1],
+                  //                                   '_no_history' => true), 1);
+                  //         unset($import_device[$key]);
+                  //      }
+                  //   }
+                  //}
                   while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)){
                      $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      if (isset($line2["CAPACITY"]) && $line2["CAPACITY"]!="No"){
