@@ -229,9 +229,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/ocsinventoryng.png' ".
              "alt='OCS Inventory NG' title='OCS Inventory NG'>";
       echo "</div>";
-      $numberAciveServers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers',
+      $numberActiveServers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers',
                                                  "`is_active`='1'");
-      if ($numberAciveServers > 1) {
+      if ($numberActiveServers > 0) {
          echo "<form action=\"".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsng.php\"
                 method='post'>";
          echo "<div class='center'><table class='tab_cadre' width='40%'>";
@@ -250,14 +250,15 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          Html::closeForm();
       }
 
-      $sql = "SELECT `name`
+      $sql = "SELECT `name`, `is_active`
               FROM `glpi_plugin_ocsinventoryng_ocsservers`
               WHERE `id` = '".$plugin_ocsinventoryng_ocsservers_id."'";
       $result = $DB->query($sql);
-
+      $isactive = 0;
       if ($DB->numrows($result) > 0) {
          $datas = $DB->fetch_array($result);
          $name  = " : " . $datas["name"];
+         $isactive = $datas["is_active"];
       }
 
       $usemassimport = PluginOcsinventoryngOcsServer::useMassImport();
@@ -266,8 +267,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<tr><th colspan='".($usemassimport?4:2)."'>";
       printf(__('%1$s: %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
       echo "</th></tr>";
-
+      
+      
       if (plugin_ocsinventoryng_haveRight('ocsng','w')) {
+      
          //config server
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                <a href='ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
@@ -277,83 +280,90 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                 <br>".sprintf(__('Configuration of OCSNG server %s', 'ocsinventoryng'),
                                                    $name)."
                </a></td>";
+         
+         if ($isactive) {
+         
+            if ($usemassimport) {
+               //config massimport
+               echo "<td class='center b' colspan='2'>
+                     <a href='config.form.php'>
+                      <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro.png' ".
+                        "alt='".__s("Automatic synchronization's configuration", 'ocsinventoryng')."' ".
+                        "title=\"".__s("Automatic synchronization's configuration", 'ocsinventoryng')."\">
+                        <br>".__("Automatic synchronization's configuration", 'ocsinventoryng')."
+                     </a></td>";
+            }
+            echo "</tr>\n";
 
-         if ($usemassimport) {
-            //config massimport
-            echo "<td class='center b' colspan='2'>
-                  <a href='config.form.php'>
-                   <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro.png' ".
-                     "alt='".__s("Automatic synchronization's configuration", 'ocsinventoryng')."' ".
-                     "title=\"".__s("Automatic synchronization's configuration", 'ocsinventoryng')."\">
-                     <br>".__("Automatic synchronization's configuration", 'ocsinventoryng')."
+            //manual import
+            echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+                  <a href='ocsng.import.php'>
+                   <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' ".
+                     "alt='".__s('Import new computers', 'ocsinventoryng')."' ".
+                     "title=\"".__s('Import new computers', 'ocsinventoryng')."\">
+                     <br>".__('Import new computers', 'ocsinventoryng')."
                   </a></td>";
-         }
-         echo "</tr>\n";
+            if ($usemassimport) {
+               //threads
+               echo "<td class='center b' colspan='2'>
+                     <a href='thread.php'>
+                      <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/thread.png' ".
+                        "alt='".__s('Scripts execution of automatic actions', 'ocsinventoryng'). "' ".
+                        "title=\"" . __s('Scripts execution of automatic actions', 'ocsinventoryng') . "\">
+                        <br>".__('Scripts execution of automatic actions', 'ocsinventoryng')."
+                     </a></td>";
+            }
+            echo "</tr>\n";
 
-         //manual import
-         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-               <a href='ocsng.import.php'>
-                <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' ".
-                  "alt='".__s('Import new computers', 'ocsinventoryng')."' ".
-                  "title=\"".__s('Import new computers', 'ocsinventoryng')."\">
-                  <br>".__('Import new computers', 'ocsinventoryng')."
-               </a></td>";
-         if ($usemassimport) {
-            //threads
-            echo "<td class='center b' colspan='2'>
-                  <a href='thread.php'>
-                   <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/thread.png' ".
-                     "alt='".__s('Scripts execution of automatic actions', 'ocsinventoryng'). "' ".
-                     "title=\"" . __s('Scripts execution of automatic actions', 'ocsinventoryng') . "\">
-                     <br>".__('Scripts execution of automatic actions', 'ocsinventoryng')."
+            //manual synchro
+            echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+                  <a href='ocsng.sync.php'>
+                   <img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/synchro1.png' ".
+                     "alt='" .__s('Synchronize computers already imported', 'ocsinventoryng'). "' ".
+                     "title=\"" .__s('Synchronize computers already imported', 'ocsinventoryng'). "\">
+                     <br>".__('Synchronize computers already imported', 'ocsinventoryng')."
                   </a></td>";
-         }
-         echo "</tr>\n";
+            if ($usemassimport) {
+               //host imported by thread
+               echo "<td class='center b' colspan='2'>
+                     <a href='detail.php'>
+                      <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/detail.png' ".
+                        "alt='" .__s('Computers imported by automatic actions', 'ocsinventoryng'). "' ".
+                        "title=\"" .__s('Computers imported by automatic actions', 'ocsinventoryng'). "\">
+                        <br>".__('Computers imported by automatic actions', 'ocsinventoryng')."
+                     </a></td>";
+            }
+            echo "</tr>\n";
 
-         //manual synchro
-         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-               <a href='ocsng.sync.php'>
-                <img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/synchro1.png' ".
-                  "alt='" .__s('Synchronize computers already imported', 'ocsinventoryng'). "' ".
-                  "title=\"" .__s('Synchronize computers already imported', 'ocsinventoryng'). "\">
-                  <br>".__('Synchronize computers already imported', 'ocsinventoryng')."
-               </a></td>";
-         if ($usemassimport) {
-            //host imported by thread
-            echo "<td class='center b' colspan='2'>
-                  <a href='detail.php'>
-                   <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/detail.png' ".
-                     "alt='" .__s('Computers imported by automatic actions', 'ocsinventoryng'). "' ".
-                     "title=\"" .__s('Computers imported by automatic actions', 'ocsinventoryng'). "\">
-                     <br>".__('Computers imported by automatic actions', 'ocsinventoryng')."
+            //link
+            echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+                  <a href='ocsng.link.php'>
+                   <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' ".
+                     "alt='" .__s('Link new OCSNG computers to existing GLPI computers',
+                                 'ocsinventoryng'). "' ".
+                     "title=\"" .__s('Link new OCSNG computers to existing GLPI computers',
+                                    'ocsinventoryng'). "\">
+                     <br>".__('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng')."
                   </a></td>";
+            if ($usemassimport) {
+               //host not imported by thread
+               echo "<td class='center b' colspan='2'>
+                     <a href='notimportedcomputer.php'>
+                      <img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/notimported.png' ".
+                        "alt='" .__s('Computers not imported by automatic actions', 'ocsinventoryng'). "' ".
+                        "title=\"" . __s('Computers not imported by automatic actions', 'ocsinventoryng'). "\" >
+                        <br>".__('Computers not imported by automatic actions', 'ocsinventoryng')."
+                     </a></td>";
+            }
+            echo "</tr>\n";
+         } else {
+            echo "<tr class='tab_bg_2'><td class='center red' colspan='2'>";
+            _e('The selected server is not active. Import and synchronisation is not available', 'ocsinventoryng');
+            echo "</td></tr>\n";
          }
-         echo "</tr>\n";
-
-         //link
-         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-               <a href='ocsng.link.php'>
-                <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' ".
-                  "alt='" .__s('Link new OCSNG computers to existing GLPI computers',
-                              'ocsinventoryng'). "' ".
-                  "title=\"" .__s('Link new OCSNG computers to existing GLPI computers',
-                                 'ocsinventoryng'). "\">
-                  <br>".__('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng')."
-               </a></td>";
-         if ($usemassimport) {
-            //host not imported by thread
-            echo "<td class='center b' colspan='2'>
-                  <a href='notimportedcomputer.php'>
-                   <img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/notimported.png' ".
-                     "alt='" .__s('Computers not imported by automatic actions', 'ocsinventoryng'). "' ".
-                     "title=\"" . __s('Computers not imported by automatic actions', 'ocsinventoryng'). "\" >
-                     <br>".__('Computers not imported by automatic actions', 'ocsinventoryng')."
-                  </a></td>";
-         }
-         echo "</tr>\n";
       }
 
-      if (plugin_ocsinventoryng_haveRight('clean_ocsng','r')) {
+      if (plugin_ocsinventoryng_haveRight('clean_ocsng','r') && $isactive) {
          echo "<tr class='tab_bg_1'><td class='center b' colspan='".($usemassimport?4:2)."'>
                <a href='ocsng.clean.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/clean.png' ".
@@ -5317,7 +5327,7 @@ JAVASCRIPT;
 
       $query = "SELECT `id`
                 FROM `glpi_plugin_ocsinventoryng_ocsservers`
-                WHERE `is_active`='1' ORDER BY `id` ASC LIMIT 1 ";
+                ORDER BY `id` ASC LIMIT 1 ";
       $results = $DB->query($query);
       if ($DB->numrows($results) > 0){
          return $DB->result($results, 0, 'id');
