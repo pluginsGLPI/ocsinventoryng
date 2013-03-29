@@ -448,39 +448,5 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       return '';
    }
 
-   /**
-    *
-    * Unlock lockes items
-    * @since 1.0
-    * @param $itemtype itemtype of ids to locks
-    * @param $items array of items to unlock
-    */
-   static function unlockItems($itemtype, $table, $items) {
-      $item = new $itemtype();
-      $ok = 0;
-      $ko = 0;
-      $table     = '';
-      $condition = array();
-/*
-      switch ($itemtype) {
-         case 'Peripheral':
-         case 'Monitor':
-         case 'Printer':
-         case 'Phone':
-            $condition['itemtype'] = $itemtype;
-            $condition['items_id'] = $ite
-      }
-      foreach ($items as $id => $value) {
-         if ($value == 1) {
-            foreach ($db->request($table, array('')))
-            if ($item->update(array('id' => $id, 'is_deleted' => 0))) {
-               $ok++;
-            } else {
-               $ko++;
-            }
-         }
-      }*/
-      return array('ok' => $ok, 'ko' => $ko);
-   }
 }
 ?>
