@@ -1056,6 +1056,13 @@ function plugin_ocsinventoryng_MassiveActionsDisplay($options=array()) {
                echo "<input type='submit' name='massiveaction' class='submit' value='".
                       _sx('button', 'Post')."'>\n";
                break;
+            case "plugin_ocsinventoryng_unlock_ocsng_field" :
+               $fields['all'] = __('All');
+               $fields       += PluginOcsinventoryngOcsServer::getLockableFields();
+               Dropdown::showFromArray("field", $fields);
+               echo "<br><br><input type='submit' name='massiveaction' class='submit' value='".
+                              _sx('button', 'Post')."'>";
+               break;
 
          }
    }
@@ -1106,7 +1113,40 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
             }
          }
          break;
-
+      
+      case "plugin_ocsinventoryng_unlock_ocsng_field" :
+         $nbok      = 0;
+         $nbnoright = 0;
+         $nbko      = 0;
+         $fields = PluginOcsinventoryngOcsServer::getLockableFields();
+         if ($_POST['field'] == 'all' || isset($fields[$_POST['field']])) {
+            foreach ($_POST["item"] as $key => $val) {
+               if ($val == 1) {
+                  if ($item->can($key,'w')) {
+                     if ($_POST['field'] == 'all') {
+                        if (PluginOcsinventoryngOcsServer::replaceOcsArray($key, array(),
+                                                                           "computer_update")) {
+                           $nbok++;
+                        } else {
+                           $nbko++;
+                        }
+                     } else {
+                        if (PluginOcsinventoryngOcsServer::deleteInOcsArray($key, $_POST['field'],
+                                                                            "computer_update",
+                                                                            true)) {
+                           $nbok++;
+                        } else {
+                           $nbko++;
+                        }
+                     }
+                  } else {
+                     $nbnoright++;
+                  }
+               }
+            }
+         }
+         break;
+         
       case "plugin_ocsinventoryng_force_ocsng_update" :
          // First time
          if (!isset($_GET['multiple_actions'])) {
