@@ -205,9 +205,12 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                  $computers_id, $dohistory) {
       global $DB;
 
-      $query = "SELECT *
+      $query = "SELECT MIN(`ID`) AS ID, `DESCRIPTION`, `MACADDR`, `TYPE`, `TYPEMIB`,
+                       `SPEED`, `VIRTUALDEV`, GROUP_CONCAT(`IPADDRESS` SEPARATOR ',') AS IPADDRESS
                 FROM `networks`
                 WHERE `HARDWARE_ID` = '$ocsid'
+                GROUP BY CONCAT(`DESCRIPTION`, `MACADDR`, `TYPE`, `TYPEMIB`,
+                                `SPEED`, `VIRTUALDEV`)
                 ORDER BY `ID`";
 
       $network_ports  = array();
