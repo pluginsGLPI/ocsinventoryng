@@ -3467,7 +3467,7 @@ JAVASCRIPT;
                         if (!is_numeric($line2["CAPACITY"])){
                            $line2["CAPACITY"] = 0;
                         }
-                        $ram["specif_default"] = $line2["CAPACITY"];
+                        $ram["size_default"] = $line2["CAPACITY"];
 
                         if (!in_array(stripslashes($prevalue.$ram["designation"]), $import_device)){
 
@@ -3527,7 +3527,7 @@ JAVASCRIPT;
                            $line2["DISKSIZE"] = 0;
                         }
                         if (!in_array(stripslashes($prevalue.$dd["designation"]), $import_device)){
-                           $dd["specif_default"] = $line2["DISKSIZE"];
+                           $dd["capacity_default"] = $line2["DISKSIZE"];
                            $DeviceHardDrive = new DeviceHardDrive();
                            $dd_id = $DeviceHardDrive->import($dd);
                            if ($dd_id){
@@ -3577,7 +3577,6 @@ JAVASCRIPT;
                         }
                         if (!in_array(stripslashes($prevalue.$stor["designation"]),
                                       $import_device)){
-                           $stor["specif_default"] = $line2["DISKSIZE"];
                            $DeviceDrive = new DeviceDrive();
                            $stor_id = $DeviceDrive->import($stor);
                            if ($stor_id){
@@ -3697,7 +3696,8 @@ JAVASCRIPT;
                      if (!is_numeric($line["PROCESSORS"])){
                         $line["PROCESSORS"] = 0;
                      }
-                     $processor["specif_default"] = $line["PROCESSORS"];
+                     $processor["frequency_default"] = $line["PROCESSORS"];
+                     $processor["frequence"] = $line["PROCESSORS"];
                      if (!in_array(stripslashes($prevalue.$processor["designation"]),
                                    $import_device)){
                         $DeviceProcessor = new DeviceProcessor();
@@ -3751,7 +3751,7 @@ JAVASCRIPT;
                         $line2["MEMORY"] = 0;
                      }
                      if (!in_array(stripslashes($prevalue.$video["designation"]), $import_device)){
-                        $video["specif_default"] = $line2["MEMORY"];
+                        $video["memory_default"] = $line2["MEMORY"];
                         $DeviceGraphicCard = new DeviceGraphicCard();
                         $video_id = $DeviceGraphicCard->import($video);
                         if ($video_id){
