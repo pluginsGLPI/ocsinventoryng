@@ -2127,7 +2127,7 @@ JAVASCRIPT;
                }
 
                if ($mixed_checksum & pow(2, self::HARDWARE_FL)) {
-                  self::updateDevices(" Item_DeviceProcessor", $line['computers_id'], $line['ocsid'],
+                  self::updateDevices("Item_DeviceProcessor", $line['computers_id'], $line['ocsid'],
                                       $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs,
                                       $import_device, '', $dohistory);
                }
