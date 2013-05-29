@@ -39,7 +39,7 @@ if (!defined('GLPI_ROOT')) {
 class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
 
    static function getTypeName($nb=0) {
-      return _n('Network port type','Network port types',$nb);
+      return _n('Network port type','Network port types',$nb, 'ocsinventoryng');
    }
 
 
@@ -108,22 +108,22 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
       }
 
       return array(array('name'  => 'OCS_TYPE',
-                         'label' => __('OCS TYPE'),
+                         'label' => __('OCS TYPE', 'ocsinventoryng'),
                          'type'  => 'text'),
                    array('name'  => 'OCS_TYPEMIB',
-                         'label' => __('OCS TYPE MIB'),
+                         'label' => __('OCS TYPE MIB', 'ocsinventoryng'),
                          'type'  => 'text'),
                    array('name'  => 'instantiation_type',
-                         'label' => __('Corresponding Network Port type'),
+                         'label' => __('Corresponding Network Port type', 'ocsinventoryng'),
                          'type'  => 'instantiation_type'),
                    array('name'  => 'type',
-                         'label' => __('Ethernet medium type'),
+                         'label' => __('Ethernet medium type', 'ocsinventoryng'),
                          'type'  => 'type'),
                    array('name'  => 'speed',
-                         'label' => __('Ethernet medium speed'),
+                         'label' => __('Ethernet medium speed', 'ocsinventoryng'),
                          'type'  => 'speed'),
                    array('name'  => 'version',
-                         'label' => __('Wifi card Version'),
+                         'label' => __('Wifi card Version', 'ocsinventoryng'),
                          'type'  => 'version'));
    }
 
