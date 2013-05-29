@@ -35,7 +35,7 @@ if (!defined('GLPI_ROOT')) {
 class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
    static function getTypeName($nb=0) {
-      return _n('Unkown type from OCS', 'Unkwon types from OCS', $nb);
+      return _n('Unknown type from OCS', 'Unknown types from OCS', $nb, 'ocsinventoryng');
    }
 
 
@@ -55,7 +55,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
 
    static private function getInvalidIPString($ip) {
-      return 'invalid: '.$ip;
+      return __('Invalid', 'ocsinventoryng').': '.$ip;
    }
 
 
@@ -379,16 +379,16 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          echo "</tr>\n";
 
          echo "<tr class='tab_bg_1'>\n";
-         echo "<td>" . __('OCS TYPE') . "</td>";
+         echo "<td>" . __('OCS TYPE', 'ocsinventoryng') . "</td>";
          echo "<td>".$this->fields['TYPE']."</td>\n";
-         echo "<td>" . __('OCS MIB TYPE') . "</td>";
+         echo "<td>" . __('OCS MIB TYPE', 'ocsinventoryng') . "</td>";
          echo "<td>".$this->fields['TYPEMIB']."</td>\n";
          echo "</tr>\n";
 
          echo "<tr class='tab_bg_1'>\n";
-         echo "<td>" . __('Create an entry for defining this type') . "</td><td>";
+         echo "<td>" . __('Create an entry for defining this type', 'ocsinventoryng') . "</td><td>";
          $link = PluginOcsinventoryngNetworkPortType::getFormURL(true).'?'.$this->getForeignKeyField().'='.$this->getID();
-         echo "<a href='$link'>create</a>";
+         echo "<a href='$link'>" . __('Create', 'ocsinventoryng') . "</a>";
          echo "</td>";
          echo "</tr>\n";
       }
@@ -406,9 +406,9 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       DeviceNetworkCard::getHTMLTableHeader('NetworkPortWifi', $group, $super, NULL,
                                             $options);
 
-      $group->addHeader('TYPE', __('OCS TYPE'), $super);
-      $group->addHeader('TYPEMIB', __('OCS MIB TYPE'), $super);
-      $group->addHeader('Generate', __('Create a mapping'), $super);
+      $group->addHeader('TYPE', __('OCS TYPE', 'ocsinventoryng'), $super);
+      $group->addHeader('TYPEMIB', __('OCS MIB TYPE', 'ocsinventoryng'), $super);
+      $group->addHeader('Generate', __('Create a mapping', 'ocsinventoryng'), $super);
 
       parent::getInstantiationHTMLTableHeaders($group, $super, $internet_super, $father, $options);
       return NULL;
@@ -426,7 +426,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       $row->addCell($row->getHeaderByName('Instantiation', 'TYPE'), $this->fields['TYPE']);
       $row->addCell($row->getHeaderByName('Instantiation', 'TYPEMIB'), $this->fields['TYPEMIB']);
       $link = PluginOcsinventoryngNetworkPortType::getFormURL(true).'?'.$this->getForeignKeyField().'='.$this->getID();
-      $value = "<a href='$link'>create</a>";
+      $value = "<a href='$link'>".__('Create', 'ocsinventoryng')."</a>";
       $row->addCell($row->getHeaderByName('Instantiation', 'Generate'), $value);
 
       parent::getInstantiationHTMLTable($netport, $row, $father, $options);
