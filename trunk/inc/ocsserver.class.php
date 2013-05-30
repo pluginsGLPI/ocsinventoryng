@@ -472,8 +472,7 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_2'><td class='center'>" . __('IP') . "</td>\n<td>";
       Dropdown::showYesNo("import_ip", $this->fields["import_ip"]);
       echo "</td></tr>\n";
-
-      if (self::checkOCSconnection($ID) && strpos(self::checkVersion(),'2.0') > 0) {
+      if (self::checkOCSconnection($ID) && self::checkVersion() > self::OCS2_VERSION_LIMIT) {
          echo "<tr class='tab_bg_2'><td class='center'>" . __('UUID') . "</td>\n<td>";
          Dropdown::showYesNo("import_general_uuid", $this->fields["import_general_uuid"]);
          echo "</td></tr>\n";
