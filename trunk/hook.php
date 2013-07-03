@@ -1241,8 +1241,8 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
          $sopt[106]['datatype']      = 'number';
          $sopt[106]['massiveaction'] = false;
          $sopt[106]['joinparams']    = array('jointype' => 'child');
-
-         $sopt['registry']           = __('Registry', 'ocsinventoryng');
+         
+         //$sopt['registry']           = __('Registry', 'ocsinventoryng');
 
          $sopt[110]['table']         = 'glpi_plugin_ocsinventoryng_registrykeys';
          $sopt[110]['field']         = 'value';
