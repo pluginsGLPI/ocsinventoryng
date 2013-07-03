@@ -1200,67 +1200,67 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
    if ($itemtype == 'Computer') {
       if (plugin_ocsinventoryng_haveRight("ocsng","r")) {
 
-         $sopt[102]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
-         $sopt[102]['field']         = 'last_update';
-         $sopt[102]['name']          = __('GLPI import date', 'ocsinventoryng');
-         $sopt[102]['datatype']      = 'datetime';
-         $sopt[102]['massiveaction'] = false;
-         $sopt[102]['joinparams']    = array('jointype' => 'child');
+         $sopt[10002]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
+         $sopt[10002]['field']         = 'last_update';
+         $sopt[10002]['name']          = __('GLPI import date', 'ocsinventoryng');
+         $sopt[10002]['datatype']      = 'datetime';
+         $sopt[10002]['massiveaction'] = false;
+         $sopt[10002]['joinparams']    = array('jointype' => 'child');
 
-         $sopt[103]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
-         $sopt[103]['field']         = 'last_ocs_update';
-         $sopt[103]['name']          = __('Last OCSNG inventory date', 'ocsinventoryng');
-         $sopt[103]['datatype']      = 'datetime';
-         $sopt[103]['massiveaction'] = false;
-         $sopt[103]['joinparams']    = array('jointype' => 'child');
+         $sopt[10003]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
+         $sopt[10003]['field']         = 'last_ocs_update';
+         $sopt[10003]['name']          = __('Last OCSNG inventory date', 'ocsinventoryng');
+         $sopt[10003]['datatype']      = 'datetime';
+         $sopt[10003]['massiveaction'] = false;
+         $sopt[10003]['joinparams']    = array('jointype' => 'child');
 
 
-         $sopt[101]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
-         $sopt[101]['field']         = 'use_auto_update';
-         $sopt[101]['linkfield']     = '_auto_update_ocs'; // update through compter update process
-         $sopt[101]['name']          = __('Automatic update OCSNG', 'ocsinventoryng');
-         $sopt[101]['datatype']      = 'bool';
-         $sopt[101]['joinparams']    = array('jointype' => 'child');
+         $sopt[10001]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
+         $sopt[10001]['field']         = 'use_auto_update';
+         $sopt[10001]['linkfield']     = '_auto_update_ocs'; // update through compter update process
+         $sopt[10001]['name']          = __('Automatic update OCSNG', 'ocsinventoryng');
+         $sopt[10001]['datatype']      = 'bool';
+         $sopt[10001]['joinparams']    = array('jointype' => 'child');
 
-         $sopt[104]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
-         $sopt[104]['field']         = 'ocs_agent_version';
-         $sopt[104]['name']          = __('Inventory agent', 'ocsinventoryng');
-         $sopt[104]['massiveaction'] = false;
-         $sopt[104]['joinparams']    = array('jointype' => 'child');
+         $sopt[10004]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
+         $sopt[10004]['field']         = 'ocs_agent_version';
+         $sopt[10004]['name']          = __('Inventory agent', 'ocsinventoryng');
+         $sopt[10004]['massiveaction'] = false;
+         $sopt[10004]['joinparams']    = array('jointype' => 'child');
 
-         $sopt[105]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
-         $sopt[105]['field']         = 'tag';
-         $sopt[105]['name']          = __('OCSNG TAG', 'ocsinventoryng');
-         $sopt[105]['datatype']      = 'string';
-         $sopt[105]['massiveaction'] = false;
-         $sopt[105]['joinparams']    = array('jointype' => 'child');
+         $sopt[10005]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
+         $sopt[10005]['field']         = 'tag';
+         $sopt[10005]['name']          = __('OCSNG TAG', 'ocsinventoryng');
+         $sopt[10005]['datatype']      = 'string';
+         $sopt[10005]['massiveaction'] = false;
+         $sopt[10005]['joinparams']    = array('jointype' => 'child');
 
-         $sopt[106]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
-         $sopt[106]['field']         = 'ocsid';
-         $sopt[106]['name']          = __('OCSNG ID', 'ocsinventoryng');
-         $sopt[106]['datatype']      = 'number';
-         $sopt[106]['massiveaction'] = false;
-         $sopt[106]['joinparams']    = array('jointype' => 'child');
+         $sopt[10006]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
+         $sopt[10006]['field']         = 'ocsid';
+         $sopt[10006]['name']          = __('OCSNG ID', 'ocsinventoryng');
+         $sopt[10006]['datatype']      = 'number';
+         $sopt[10006]['massiveaction'] = false;
+         $sopt[10006]['joinparams']    = array('jointype' => 'child');
          
          //$sopt['registry']           = __('Registry', 'ocsinventoryng');
 
-         $sopt[110]['table']         = 'glpi_plugin_ocsinventoryng_registrykeys';
-         $sopt[110]['field']         = 'value';
-         $sopt[110]['name']          = sprintf(__('%1$s: %2$s'), __('Registry',
+         $sopt[10010]['table']         = 'glpi_plugin_ocsinventoryng_registrykeys';
+         $sopt[10010]['field']         = 'value';
+         $sopt[10010]['name']          = sprintf(__('%1$s: %2$s'), __('Registry',
                                                'ocsinventoryng'), __('Key/Value',
                                                'ocsinventoryng'));
-         $sopt[110]['forcegroupby']  = true;
-         $sopt[110]['massiveaction'] = false;
-         $sopt[110]['joinparams']    = array('jointype' => 'child');
+         $sopt[10010]['forcegroupby']  = true;
+         $sopt[10010]['massiveaction'] = false;
+         $sopt[10010]['joinparams']    = array('jointype' => 'child');
 
-         $sopt[111]['table']         = 'glpi_plugin_ocsinventoryng_registrykeys';
-         $sopt[111]['field']         = 'ocs_name';
-         $sopt[111]['name']          = sprintf(__('%1$s: %2$s'), __('Registry',
+         $sopt[10011]['table']         = 'glpi_plugin_ocsinventoryng_registrykeys';
+         $sopt[10011]['field']         = 'ocs_name';
+         $sopt[10011]['name']          = sprintf(__('%1$s: %2$s'), __('Registry',
                                                'ocsinventoryng'), __('OCSNG name',
                                                'ocsinventoryng'));
-         $sopt[111]['forcegroupby']  = true;
-         $sopt[111]['massiveaction'] = false;
-         $sopt[111]['joinparams']    = array('jointype' => 'child');
+         $sopt[10011]['forcegroupby']  = true;
+         $sopt[10011]['massiveaction'] = false;
+         $sopt[10011]['joinparams']    = array('jointype' => 'child');
       }
    }
    return $sopt;
