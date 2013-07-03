@@ -992,25 +992,6 @@ function plugin_ocsinventoryng_MassiveActions($type) {
       case 'Computer' :
          if (plugin_ocsinventoryng_haveRight("ocsng","w")
              || plugin_ocsinventoryng_haveRight("sync_ocsng","w")) {
-/*
-            return array(// Specific one
-                         "plugin_ocsinventoryng_force_ocsng_update"
-                                                               => __('Force synchronization OCSNG',
-                                                                     'ocsinventoryng'),
-                         "plugin_ocsinventoryng_unlock_ocsng_field"      => __('Unlock fields',
-                                                                               'ocsinventoryng'),
-                         "plugin_ocsinventoryng_unlock_ocsng_monitor"    => __('Unlock monitors',
-                                                                               'ocsinventoryng'),
-                         "plugin_ocsinventoryng_unlock_ocsng_peripheral" => __('Unlock peripherals',
-                                                                               'ocsinventoryng'),
-                         "plugin_ocsinventoryng_unlock_ocsng_printer"    => __('Unlock printers',
-                                                                               'ocsinventoryng'),
-                         "plugin_ocsinventoryng_unlock_ocsng_software"   => __('Unlock software',
-                                                                               'ocsinventoryng'),
-                         "plugin_ocsinventoryng_unlock_ocsng_ip"         => __('Unlock IP',
-                                                                               'ocsinventoryng'),
-                         "plugin_ocsinventoryng_unlock_ocsng_disk"       => __('Unclok volumes',
-                                                                               'ocsinventoryng'));*/
 
                 return array(// Specific one
                       "plugin_ocsinventoryng_force_ocsng_update"
@@ -1265,16 +1246,18 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
 
          $sopt[110]['table']         = 'glpi_plugin_ocsinventoryng_registrykeys';
          $sopt[110]['field']         = 'value';
-         $sopt[110]['name']          = sprintf(__('%1$s: %2$s'), __('Registry'), __('Key/Value'),
-                                               'ocsinventoryng');
+         $sopt[110]['name']          = sprintf(__('%1$s: %2$s'), __('Registry',
+                                               'ocsinventoryng'), __('Key/Value',
+                                               'ocsinventoryng'));
          $sopt[110]['forcegroupby']  = true;
          $sopt[110]['massiveaction'] = false;
          $sopt[110]['joinparams']    = array('jointype' => 'child');
 
          $sopt[111]['table']         = 'glpi_plugin_ocsinventoryng_registrykeys';
          $sopt[111]['field']         = 'ocs_name';
-         $sopt[111]['name']          = sprintf(__('%1$s: %2$s'), __('Registry'), __('OCSNG name'),
-                                               'ocsinventoryng');
+         $sopt[111]['name']          = sprintf(__('%1$s: %2$s'), __('Registry',
+                                               'ocsinventoryng'), __('OCSNG name',
+                                               'ocsinventoryng'));
          $sopt[111]['forcegroupby']  = true;
          $sopt[111]['massiveaction'] = false;
          $sopt[111]['joinparams']    = array('jointype' => 'child');
