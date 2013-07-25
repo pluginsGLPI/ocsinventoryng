@@ -699,8 +699,10 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_2'><td class='center'>".
              __('Number of items to synchronize via the automatic OCSNG action',  'ocsinventoryng').
            "</td>\n<td>";
-      Dropdown::showInteger('cron_sync_number', $this->fields["cron_sync_number"], 1, 100, 1,
-                            array(0 => __('None')));
+      Dropdown::showNumber('cron_sync_number', array(
+                'value' => $this->fields['cron_sync_number'], 
+                'min'   => 1, 
+                'toadd' => array(0 => __('None'))));
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td class='center'>".
