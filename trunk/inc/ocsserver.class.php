@@ -265,7 +265,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       echo "<div class='center'><table class='tab_cadre' width='40%'>";
       echo "<tr><th colspan='".($usemassimport?4:2)."'>";
-      printf(__('%1$s: %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
+      printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
       echo "</th></tr>";
       
       
