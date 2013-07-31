@@ -35,7 +35,7 @@ ini_set('display_errors',1);
 restore_error_handler();
 
 if (!isset($_SERVER['argv'][1])) {
-   die("usage testscyn.php <computerid>\n");
+   die("usage testsync.php <computerid>\n");
 }
 
 $link = new PluginOcsinventoryngOcslink();
