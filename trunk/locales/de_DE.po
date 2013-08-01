@@ -3,11 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-#   <eiseli@gmail.com>, 2012.
-# Erich Iseli <eiseli@gmail.com>, 2012.
-# Mathieu Simon <mathieu.sim@gmail.com>, 2012.
-# Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2012.
-#   <thofl@hotmail.com>, 2012.
+# Erich Iseli <eiseli@gmail.com>, 2012
+# Erich Iseli <eiseli@gmail.com>, 2012
+# Mathieu Simon <mathieu.sim@gmail.com>, 2012
+# Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2012
+# thofl <thofl@hotmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
