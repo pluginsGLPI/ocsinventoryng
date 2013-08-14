@@ -1513,7 +1513,7 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
 
          $tables          = plugin_ocsinventoryng_getTablesForQuery();
          $fields          = plugin_ocsinventoryng_getFieldsForQuery();
-         $rule_parameters = array();
+         $rule_parameters = array('ocsservers_id' => $ocsservers_id);
          $select_sql      = "";
          if (isset($params['values']['params']['ocsid'])) {
             $ocsid = $params['values']['params']['ocsid'];
