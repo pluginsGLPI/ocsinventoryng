@@ -5606,6 +5606,8 @@ JAVASCRIPT;
        if ($cfg_ocs["import_printer"]){
 
           $already_processed = array();
+          
+          $conn              = new Computer_Item();
 
           $query  = "SELECT*
                      FROM `printers`
@@ -5784,6 +5786,7 @@ JAVASCRIPT;
       if ($cfg_ocs["import_periph"]){
          $already_processed = array();
          $p                 = new Peripheral();
+         $conn              = new Computer_Item();
 
          $query = "SELECT DISTINCT `CAPTION`, `MANUFACTURER`, `INTERFACE`, `TYPE`
                    FROM `inputs`
