@@ -194,7 +194,7 @@ function plugin_version_ocsinventoryng() {
 
    return array('name'           => "OCS Inventory NG",
                 'version'        => '1.0.2',
-                'author'         => 'Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Julien Dombre',
+                'author'         => 'Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh',
                 'license'        => 'GPLv2+',
                 'homepage'       => 'https://forge.indepnet.net/repositories/show/ocsinventoryng',
                 'minGlpiVersion' => '0.84');// For compatibility / no install in version < 0.80
