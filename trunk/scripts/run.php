@@ -169,8 +169,8 @@ if (function_exists("pcntl_fork")) {
          fwrite ($log, "$pid Started\n");
          $pids[$pid]=1;
       } else  {
-         $cmd="php -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --thread_nbr=$thread_nbr".
-              "--thread_id=$i --process_id=$processid";
+         $cmd="php -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --thread_nbr=$thread_nbr ".
+              " --thread_id=$i --process_id=$processid";
          $out=array();
          exec($cmd, $out, $ret);
          foreach ($out as $line) {
