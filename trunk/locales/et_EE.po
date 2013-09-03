@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# pexy <pexyyy@gmail.com>, 2013
 # pexy <pexyyy@gmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-30 10:05+0100\n"
-"PO-Revision-Date: 2013-01-30 09:19+0000\n"
-"Last-Translator: The tsmr <tsmr@thetsmr.fr>\n"
+"PO-Revision-Date: 2013-08-24 08:40+0000\n"
+"Last-Translator: pexy <pexyyy@gmail.com>\n"
 "Language-Team: Estonian (Estonia) (http://www.transifex.com/projects/p/GLPI_ocsinventoryng/language/et_EE/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,7 +30,7 @@ msgstr ""
 #: hook.php:968 setup.php:135 inc/ocsserver.class.php:337
 #: inc/ocsserver.class.php:339 inc/ocsserver.class.php:341
 msgid "Link new OCSNG computers to existing GLPI computers"
-msgstr ""
+msgstr "Seo GLPI-s olevaid arvuteid uute OCSNG arvutitega"
 
 #: hook.php:973
 msgid "Delete computer in OCSNG"
@@ -49,7 +50,7 @@ msgstr "Ava"
 
 #: hook.php:1300 inc/ocslink.class.php:107
 msgid "GLPI import date"
-msgstr ""
+msgstr "Viimane GLPI värskendus"
 
 #: hook.php:1307 inc/notimportedcomputer.class.php:78
 #: inc/notimportedcomputer.class.php:267 inc/ocslink.class.php:105
@@ -59,24 +60,24 @@ msgstr "Viimane OCSNG inventeerimine"
 
 #: hook.php:1316 inc/ocslink.class.php:200
 msgid "Automatic update OCSNG"
-msgstr ""
+msgstr "Automaatne uuendamine OCSNG andmebaasist"
 
 #: hook.php:1322 inc/notimportedcomputer.class.php:69
 #: inc/notimportedcomputer.class.php:237 inc/ocslink.class.php:109
 msgid "Inventory agent"
-msgstr ""
+msgstr "Inventeerimise agent"
 
 #: hook.php:1328 hook.php:1506 hook.php:1557
 #: inc/notificationtargetnotimportedcomputer.class.php:79
 #: inc/notimportedcomputer.class.php:66 inc/notimportedcomputer.class.php:252
 #: inc/ocslink.class.php:207 inc/ocsserver.class.php:3124
 msgid "OCSNG TAG"
-msgstr ""
+msgstr "OCSNG TAG"
 
 #: hook.php:1335 inc/notificationtargetnotimportedcomputer.class.php:83
 #: inc/notimportedcomputer.class.php:53 inc/notimportedcomputer.class.php:224
 msgid "OCSNG ID"
-msgstr ""
+msgstr "OCSNG ID"
 
 #: hook.php:1340 inc/ocsserver.class.php:675 inc/registrykey.class.php:42
 #: inc/registrykey.class.php:115
@@ -88,21 +89,21 @@ msgstr "Register"
 #: inc/profile.class.php:185
 msgid "OCSNG server"
 msgid_plural "OCSNG servers"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "OCSNG server"
+msgstr[1] "OCSNG serverid"
 
 #: hook.php:1583 inc/ocslink.class.php:43 inc/ocslink.class.php:374
 #: inc/profile.class.php:69
 msgid "OCSNG link"
 msgid_plural "OCSNG links"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "OCSNG ühendus"
+msgstr[1] "OCSNG ühendused"
 
 #: hook.php:1937
 msgid "Locked field"
 msgid_plural "Locked fields"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Lukustatud väli"
+msgstr[1] "Lukustatud väljad"
 
 #: setup.php:106
 msgid "OCSNG server 's configuration"
@@ -112,7 +113,7 @@ msgstr ""
 #: inc/ocsserver.class.php:286 inc/ocsserver.class.php:287
 #: inc/ocsserver.class.php:288
 msgid "Automatic synchronization's configuration"
-msgstr ""
+msgstr "Automaatse uuendamise seadistus"
 
 #: setup.php:125 inc/ocsserver.class.php:297 inc/ocsserver.class.php:298
 #: inc/ocsserver.class.php:299 inc/ocsserver.class.php:3239
@@ -122,7 +123,7 @@ msgstr "Impordi uusi arvuteid"
 #: setup.php:130 inc/ocsserver.class.php:317 inc/ocsserver.class.php:318
 #: inc/ocsserver.class.php:319
 msgid "Synchronize computers already imported"
-msgstr "Sünkroniseeri olemasolevaid arvuteid"
+msgstr "Uuenda olemasolevaid arvuteid"
 
 #: setup.php:140 inc/ocsserver.class.php:306 inc/ocsserver.class.php:307
 #: inc/ocsserver.class.php:308
@@ -133,7 +134,7 @@ msgstr ""
 #: inc/ocsserver.class.php:327 inc/ocsserver.class.php:328
 #: inc/thread.class.php:97 inc/thread.class.php:288
 msgid "Computers imported by automatic actions"
-msgstr ""
+msgstr "Automaatselt imporditud arvutid"
 
 #: setup.php:150 inc/notificationtargetnotimportedcomputer.class.php:37
 #: inc/notificationtargetnotimportedcomputer.class.php:81
@@ -141,7 +142,7 @@ msgstr ""
 #: inc/ocsserver.class.php:350 inc/thread.class.php:100
 #: inc/thread.class.php:291
 msgid "Computers not imported by automatic actions"
-msgstr ""
+msgstr "Importimata arvutid"
 
 #: setup.php:156 front/ocsng.clean.php:51 inc/ocsserver.class.php:360
 #: inc/ocsserver.class.php:361 inc/ocsserver.class.php:362
@@ -163,7 +164,7 @@ msgstr ""
 
 #: front/config.form.php:65
 msgid "Configuration"
-msgstr ""
+msgstr "Seadistus"
 
 #: front/config.form.php:71
 msgid "Number of processed computers"
@@ -197,8 +198,8 @@ msgstr ""
 #: inc/config.class.php:123
 msgid "second"
 msgid_plural "seconds"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "sekund"
+msgstr[1] "sekundit"
 
 #: inc/config.class.php:140
 msgid "Check OCSNG import script"
@@ -206,21 +207,21 @@ msgstr ""
 
 #: inc/config.class.php:146
 msgid "Lock not activated"
-msgstr ""
+msgstr "Avatud"
 
 #: inc/config.class.php:148
 msgid "Lock activated"
-msgstr ""
+msgstr "Lukus"
 
 #: inc/config.class.php:154
 msgctxt "button"
 msgid "Lock"
-msgstr ""
+msgstr "Lukusta"
 
 #: inc/config.class.php:155
 msgctxt "button"
 msgid "Unlock"
-msgstr ""
+msgstr "Ava"
 
 #: inc/config.class.php:186 inc/thread.class.php:365
 msgid "All servers"
@@ -239,7 +240,7 @@ msgstr ""
 
 #: inc/detail.class.php:61
 msgid "Process"
-msgstr ""
+msgstr "Töötlus"
 
 #: inc/detail.class.php:70 inc/thread.class.php:93
 msgid "Thread"
@@ -251,22 +252,22 @@ msgstr ""
 
 #: inc/detail.class.php:154 inc/ocsserver.class.php:5073
 msgid "Computers imported"
-msgstr ""
+msgstr "Imporditud arvuteid"
 
 #: inc/detail.class.php:157 inc/ocsserver.class.php:5075
 #: inc/thread.class.php:99 inc/thread.class.php:290
 msgid "Computers linked"
-msgstr ""
+msgstr "Seotud arvuteid"
 
 #: inc/detail.class.php:160 inc/ocsserver.class.php:5076
 #: inc/thread.class.php:102 inc/thread.class.php:292
 msgid "Computers not updated"
-msgstr ""
+msgstr "Uuendamata arvuteid"
 
 #: inc/detail.class.php:163 inc/ocsserver.class.php:5074
 #: inc/thread.class.php:98 inc/thread.class.php:289
 msgid "Computers synchronized"
-msgstr ""
+msgstr "Uuendatud arvuteid"
 
 #: inc/detail.class.php:166 inc/thread.class.php:103 inc/thread.class.php:293
 msgid "Computers not unique"
@@ -307,12 +308,12 @@ msgstr ""
 
 #: inc/ocslink.class.php:126
 msgid "OCS NG Interface"
-msgstr ""
+msgstr "OCSNG veebiliides"
 
 #: inc/ocslink.class.php:216
 msgctxt "button"
 msgid "Force synchronization"
-msgstr ""
+msgstr "Uuenda kohe"
 
 #: inc/ocslink.class.php:426
 msgid "Imported from OCSNG"
@@ -346,7 +347,7 @@ msgstr "Üldinfo"
 
 #: inc/ocsserver.class.php:117
 msgid "OCSNG console"
-msgstr ""
+msgstr "OCSNG veebiliides"
 
 #: inc/ocsserver.class.php:205
 msgid "Expert sync mode"
@@ -354,21 +355,21 @@ msgstr ""
 
 #: inc/ocsserver.class.php:210 inc/ocsserver.class.php:841
 msgid "Database in UTF8"
-msgstr ""
+msgstr "Andmebaas on UTF8 kooditabelis"
 
 #: inc/ocsserver.class.php:238 inc/ocsserver.class.php:4051
 #: inc/ocsserver.class.php:4074
 msgid "Choice of an OCSNG server"
-msgstr ""
+msgstr "Vali OCSNG server"
 
 #: inc/ocsserver.class.php:275 inc/ocsserver.class.php:276
 msgid "Configuration of OCSNG server"
-msgstr ""
+msgstr "OCSNG serveri seadistus"
 
 #: inc/ocsserver.class.php:277
 #, php-format
 msgid "Configuration of OCSNG server %s"
-msgstr ""
+msgstr "OCSNG serveri seadistus %s"
 
 #: inc/ocsserver.class.php:413
 msgid "OCSNG administrative information"
@@ -377,7 +378,7 @@ msgstr "OCSNG haldusinfo"
 #: inc/ocsserver.class.php:555 inc/ocsserver.class.php:634
 #: inc/ocsserver.class.php:638 inc/ocsserver.class.php:661
 msgid "No import"
-msgstr ""
+msgstr "Ei impordi"
 
 #: inc/ocsserver.class.php:600
 msgid "Web address of the OCSNG console"
@@ -471,11 +472,11 @@ msgstr ""
 
 #: inc/ocsserver.class.php:811
 msgid "Host for the database"
-msgstr ""
+msgstr "Server"
 
 #: inc/ocsserver.class.php:815
 msgid "Synchronisation method"
-msgstr ""
+msgstr "Uuendamise viis"
 
 #: inc/ocsserver.class.php:816
 msgid "Standard (allow manual actions)"
@@ -487,11 +488,11 @@ msgstr ""
 
 #: inc/ocsserver.class.php:882
 msgid "Connecting to the database"
-msgstr ""
+msgstr "Andmebaasi ühendus"
 
 #: inc/ocsserver.class.php:886
 msgid "Connection to the database failed"
-msgstr ""
+msgstr "Ühendumine andmebaasiga ebaõnnestus"
 
 #: inc/ocsserver.class.php:888
 msgid "Invalid OCSNG Version: RC3 is required"
@@ -513,7 +514,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:898
 msgid "Connection to database successful"
-msgstr ""
+msgstr "Ühendumine andmebaasiga õnnestus"
 
 #: inc/ocsserver.class.php:900
 msgid "Valid OCSNG configuration and version"
@@ -537,7 +538,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:2639 inc/ocsserver.class.php:2827
 msgid "Import date in GLPI"
-msgstr "OCSNG ja GLPI sünkroniseerimine"
+msgstr "OCSNG ja GLPI uuendamine"
 
 #: inc/ocsserver.class.php:2640
 msgid "Existing in GLPI"
@@ -558,7 +559,7 @@ msgstr "OCSNG imporditud arvutid"
 #: inc/ocsserver.class.php:2823 inc/ocsserver.class.php:2845
 msgctxt "button"
 msgid "Synchronize"
-msgstr "Sünkroniseeri"
+msgstr "Uuenda"
 
 #: inc/ocsserver.class.php:2826 inc/ocsserver.class.php:2857
 msgid "Update computers"
@@ -570,13 +571,13 @@ msgstr "Automaatne uuendamine"
 
 #: inc/ocsserver.class.php:2862
 msgid "No new computer to be updated"
-msgstr "Sünkroniseeritavaid arvuteid pole"
+msgstr "Uuendatavaid arvuteid pole"
 
 #: inc/ocsserver.class.php:3064
 msgid ""
 "Caution! The imported data (see your configuration) will overwrite the "
 "existing one"
-msgstr ""
+msgstr "Hoiatus! Imporditud info kirjutab olemasoleva info üle. Kontrolli OCSNG seadistust."
 
 #: inc/ocsserver.class.php:3088
 msgid "Manual import mode"
@@ -617,7 +618,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:5004
 msgid "Check updates from server"
-msgstr ""
+msgstr "Uuenduste kontroll serverist"
 
 #: inc/ocsserver.class.php:5077
 msgid "Computers don't check any rule"
@@ -625,7 +626,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:5079
 msgid "Duplicate computers"
-msgstr ""
+msgstr "Korduvaid arvuteid"
 
 #: inc/ocsserver.class.php:5080
 msgid "Computers whose import is refused by a rule"
@@ -633,19 +634,19 @@ msgstr ""
 
 #: inc/ocsserver.class.php:5130
 msgid "Statistics of the OCSNG link"
-msgstr ""
+msgstr "OCSNG töötluse tulemused"
 
 #: inc/profile.class.php:37
 msgid "Rights management"
-msgstr ""
+msgstr "Õiguste haldamine"
 
 #: inc/profile.class.php:188
 msgid "Manually synchronization"
-msgstr ""
+msgstr "Käsitsi uuendamine"
 
 #: inc/profile.class.php:192
 msgid "See information"
-msgstr ""
+msgstr "Info vaatamine"
 
 #: inc/registrykey.class.php:92
 #, php-format
