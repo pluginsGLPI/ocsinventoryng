@@ -1521,7 +1521,6 @@ JAVASCRIPT;
          //or only last inventory date changed
          return self::updateComputer($datas["id"], $plugin_ocsinventoryng_ocsservers_id, 1, 0);
       }
-
       return self::importComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock,
                                   $defaultentity, $defaultlocation);
    }
@@ -1868,7 +1867,7 @@ JAVASCRIPT;
       self::setChecksumForComputer($ocsid, self::MAX_CHECKSUM);
 
       //No entity or location predefined, check rules
-      if ($defaultentity == -1 || $defaultlocation == 0) {
+      if ($defaultentity == -1 && $defaultlocation == -1) {
          //Try to affect computer to an entity
          $rule = new RuleImportEntityCollection();
          $data = array();
