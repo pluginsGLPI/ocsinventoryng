@@ -1679,7 +1679,7 @@ JAVASCRIPT;
                         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                                   SET `ocsid` = '$equiv'
                                   WHERE `ocsid` = '$del'
-                                        AND `ocsservers_id` = '$ocsservers_id'";
+                                        AND `plugin_ocsinventoryng_ocsservers_id` = '$ocsservers_id'";
                         $DB->query($query);
                         // for history, see below
                         $data = array('ID' => $equiv);
