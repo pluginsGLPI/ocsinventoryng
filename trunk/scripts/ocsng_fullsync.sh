@@ -31,7 +31,7 @@ usage()
 
 exit_if_soft_lock()
 {
-   if [ -f $GLPI_LOCK_DIR/ocsinventory.lock ]
+   if [ -f $GLPI_LOCK_DIR/ocsinventoryng.lock ]
    then
       echo "Software lock : script can't run !"
       exit 1
