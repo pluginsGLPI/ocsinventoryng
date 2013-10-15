@@ -4723,7 +4723,7 @@ JAVASCRIPT;
                $name         = $data2['NAME'];
 
                //Software might be created in another entity, depending on the entity's configuration
-               $target_entity = Entity::getUsedConfig('entities_id_software', $entity, '', true);
+               $target_entity = Entity::getUsedConfig('entities_id_software', $entity);
                //Do not change software's entity except if the dictionnary explicity changes it
                if ($target_entity < 0) {
                   $target_entity = $entity;
@@ -4758,9 +4758,7 @@ JAVASCRIPT;
                   }
 
                   if (isset($res_rule['manufacturer']) && $res_rule['manufacturer']) {
-                     $manufacturer = Dropdown::getDropdownName('glpi_manufacturers',
-                                                               $res_rule['manufacturer']);
-                     $manufacturer = Toolbox::addslashes_deep($manufacturer);
+                      $manufacturer = Toolbox::addslashes_deep($res_rule["manufacturer"]);
                   }
 
                   //If software dictionnary returns an entity, it overrides the one that may have
