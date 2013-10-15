@@ -1795,7 +1795,7 @@ JAVASCRIPT;
             $table     = getTableNameForForeignKeyField($glpi_field);
             $ocs_field = Toolbox::encodeInUtf8($ocs_field);
 
-            //Field a a foreing key
+            //Field is a foreing key
             if ($table != '') {
                $itemtype         = getItemTypeForTable($table);
                $item             = new $itemtype();
@@ -1838,6 +1838,52 @@ JAVASCRIPT;
             }
          }
       }
+
+      if (intval($cfg_ocs["import_general_name"]) == 0){
+         unset($input["name"]);
+      }
+      
+      if (intval($cfg_ocs["import_general_os"]) == 0){
+         unset($input["operatingsystems_id"]);
+         unset($input["operatingsystemversions_id"]);
+         unset($input["operatingsystemservicepacks_id"]);
+      }
+      
+      if (intval($cfg_ocs["import_os_serial"]) == 0){
+         unset($input["os_license_number"]);
+         unset($input["os_licenseid"]);
+      }
+      
+      if (intval($cfg_ocs["import_general_serial"]) == 0){
+         unset($input["serial"]);
+      }
+      
+      if (intval($cfg_ocs["import_general_model"]) == 0){
+         unset($input["model"]);
+         unset($input["computermodels_id"]);
+      }
+      
+      if (intval($cfg_ocs["import_general_manufacturer"]) == 0){
+         unset($input["manufacturer"]);
+         unset($input["manufacturers_id"]);
+      }
+
+      if (intval($cfg_ocs["import_general_type"]) == 0){
+         unset($input["computertypes_id"]);
+      }
+      
+      if (intval($cfg_ocs["import_general_comment"]) == 0){
+         unset($input["comment"]);
+      }
+      
+      if (intval($cfg_ocs["import_general_contact"]) == 0){
+         unset($input["contact"]);
+      }
+      
+      if (intval($cfg_ocs["import_general_domain"]) == 0) {
+         unset($input["domains_id"]);
+      }
+
       return $input;
    }
 
@@ -2262,8 +2308,8 @@ JAVASCRIPT;
          $line       = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
          $compupdate = array();
 
-         if ($options['cfg_ocs']["import_os_serial"]
-             && !in_array("os_license_number", $options['computers_updates'])) {
+         if (intval($options['cfg_ocs']["import_os_serial"]) > 0
+               && !in_array("os_license_number", $options['computers_updates'])) {
 
             if (!empty ($line["WINPRODKEY"])) {
                $compupdate["os_license_number"]
@@ -2309,7 +2355,7 @@ JAVASCRIPT;
             }
          }
 
-         if ($options['cfg_ocs']["import_general_os"]) {
+         if (intval($options['cfg_ocs']["import_general_os"]) > 0) {
             if (!in_array("operatingsystems_id", $options['computers_updates'])) {
                $osname = self::encodeOcsDataInUtf8($is_utf8, $line['OSNAME']);
                $compupdate["operatingsystems_id"] = Dropdown::importExternal('OperatingSystem',
@@ -2333,15 +2379,15 @@ JAVASCRIPT;
             }
          }
 
-         if ($options['cfg_ocs']["import_general_domain"]
-             && !in_array("domains_id", $options['computers_updates'])){
+         if (intval($options['cfg_ocs']["import_general_domain"]) > 0
+               && !in_array("domains_id", $options['computers_updates'])){
             $compupdate["domains_id"] = Dropdown::importExternal('Domain',
                                                                  self::encodeOcsDataInUtf8($is_utf8,
                                                                                            $line["WORKGROUP"]));
          }
 
-         if ($options['cfg_ocs']["import_general_contact"]
-             && !in_array("contact", $options['computers_updates'])){
+         if (intval($options['cfg_ocs']["import_general_contact"]) > 0
+               && !in_array("contact", $options['computers_updates'])){
 
             $compupdate["contact"] = self::encodeOcsDataInUtf8($is_utf8, $line["USERID"]);
             $query = "SELECT `id`
@@ -2354,13 +2400,13 @@ JAVASCRIPT;
             }
          }
 
-         if ($options['cfg_ocs']["import_general_name"]
-             && !in_array("name", $options['computers_updates'])){
+         if (intval($options['cfg_ocs']["import_general_name"]) > 0
+               && !in_array("name", $options['computers_updates'])){
             $compupdate["name"] = self::encodeOcsDataInUtf8($is_utf8, $line["NAME"]);
          }
 
-         if ($options['cfg_ocs']["import_general_comment"]
-             && !in_array("comment", $options['computers_updates'])){
+         if (intval($options['cfg_ocs']["import_general_comment"]) > 0
+               && !in_array("comment", $options['computers_updates'])){
 
             $compupdate["comment"] = "";
             if (!empty ($line["DESCRIPTION"]) && $line["DESCRIPTION"] != NOT_AVAILABLE){
@@ -2372,7 +2418,7 @@ JAVASCRIPT;
          }
 
          if ($options['cfg_ocs']['ocs_version'] >= self::OCS1_3_VERSION_LIMIT
-             && $options['cfg_ocs']["import_general_uuid"]
+             && intval($options['cfg_ocs']["import_general_uuid"]) > 0
              && !in_array("uuid", $options['computers_updates'])){
             $compupdate["uuid"] = $line["UUID"];
          }
@@ -2452,13 +2498,15 @@ JAVASCRIPT;
          $line       = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
          $compudate  = array();
 
-         if ($cfg_ocs["import_general_serial"] && !in_array("serial", $computer_updates)){
+         if ($cfg_ocs["import_general_serial"] 
+               && $cfg_ocs["import_general_serial"] > 0
+                  && !in_array("serial", $computer_updates)){
             $compupdate["serial"] = self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
                                                               $line["SSN"]);
          }
 
-         if ($cfg_ocs["import_general_model"]
-             && !in_array("computermodels_id", $computer_updates)) {
+         if (intval($cfg_ocs["import_general_model"]) > 0
+               && !in_array("computermodels_id", $computer_updates)) {
 
             $compupdate["computermodels_id"]
                = Dropdown::importExternal('ComputerModel',
@@ -2470,8 +2518,8 @@ JAVASCRIPT;
                                                  :array()));
          }
 
-         if ($cfg_ocs["import_general_manufacturer"]
-             && !in_array("manufacturers_id", $computer_updates)) {
+         if (intval($cfg_ocs["import_general_manufacturer"]) > 0
+               && !in_array("manufacturers_id", $computer_updates)) {
 
             $compupdate["manufacturers_id"]
                = Dropdown::importExternal('Manufacturer',
@@ -2479,7 +2527,7 @@ JAVASCRIPT;
                                                                     $line["SMANUFACTURER"]));
          }
 
-         if ($cfg_ocs["import_general_type"]
+         if (intval($cfg_ocs["import_general_type"]) > 0
              && !empty ($line["TYPE"])
              && !in_array("computertypes_id", $computer_updates)) {
 
