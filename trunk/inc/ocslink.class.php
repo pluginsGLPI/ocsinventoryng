@@ -24,7 +24,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
----------------------------------------------------------------------------------------------------------------------------------------------------- */
+-------------------------------------------------------------------------- */
 
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
@@ -99,16 +99,17 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                if (count($data)) {
                   $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
-
+                  $target = Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcslink");
+                  echo "<form method='post' action=\"$target\">";
                   echo "<table class='tab_glpi'>";
-                  echo "<th colspan='2'>".__('OCS Inventory NG')."</th>";
-                  echo '<tr><td>'.__('Last OCSNG inventory date', 'ocsinventoryng');
+                  echo "<tr class='tab_bg_1'><th colspan='2'>".__('OCS Inventory NG')."</th>";
+                  echo "<tr class='tab_bg_1'><td>".__('Last OCSNG inventory date', 'ocsinventoryng');
                   echo "</td><td>".Html::convDateTime($data["last_ocs_update"]).'</td></tr>';
-                  echo '<tr><td>'.__('GLPI import date',  'ocsinventoryng');
+                  echo "<tr class='tab_bg_1'><td>".__('GLPI import date',  'ocsinventoryng');
                   echo "</td><td>".Html::convDateTime($data["last_update"]).'</td></tr>';
-                  echo '<tr><td>'.__('Inventory agent',  'ocsinventoryng');
+                  echo "<tr class='tab_bg_1'><td>".__('Inventory agent',  'ocsinventoryng');
                   echo "</td><td>".$data["ocs_agent_version"].'</td></tr>';
-                  echo '<tr><td>'.__('Server');
+                  echo "<tr class='tab_bg_1'><td>".__('Server');
                   echo "</td><td>";
                   if (plugin_ocsinventoryng_haveRight("ocsng","r")) {
                      echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.form.php?id="
@@ -120,13 +121,40 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                  //If have write right on OCS and ocsreports url is not empty in OCS config
                   if (plugin_ocsinventoryng_haveRight("ocsng","w")
                       && ($ocs_config["ocs_url"] != '')) {
-                     echo "<td colspan='2' class='center'>";
+                     echo "<tr class='tab_bg_1'><td colspan='2' class='center'>";
                      echo PluginOcsinventoryngOcsServer::getComputerLinkToOcsConsole($ocs_config['id'],
                                                                                     $data["ocsid"],
                                                                                     __('OCS NG Interface','ocsinventoryng'));
-                     echo "</td>";
+                     echo "</td></tr>";
+                  }
+                  
+                  echo "<tr class='tab_bg_1'><td>".__('OCSNG TAG', 'ocsinventoryng').
+                       "</td>";
+                  echo "<td>";
+                  echo $data["tag"];
+                  echo "</td></tr>";
+                  
+                  if (plugin_ocsinventoryng_haveRight("view_ocsng", "r")
+                      && plugin_ocsinventoryng_haveRight("sync_ocsng", "w")) {
+                     echo "<tr class='tab_bg_1'><td>".__('Automatic update OCSNG', 'ocsinventoryng').
+                          "</td>";
+                     echo "<td>";
+                     echo Dropdown::getYesNo($data["use_auto_update"]);
+                     echo "</td></tr>";
+                  }
+
+                  
+                  if (plugin_ocsinventoryng_haveRight("sync_ocsng", "w")) {
+                     echo "<tr class='tab_bg_1'><td class='center' colspan='2'>";
+                     Html::showSimpleForm($target, 'force_ocs_resynch',
+                                          _sx('button', 'Force synchronization', 'ocsinventoryng'),
+                                          array('id' => $items_id,
+                                                  'resynch_id' => $data["id"]));
+                     echo "</td></tr>";
+                     
                   }
                   echo '</table>';
+                  Html::closeForm();
                }
             }
          }

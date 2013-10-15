@@ -1,5 +1,4 @@
 <?php
-
 /*
  * @version $Id: HEADER 15930 2012-12-15 11:10:55Z tsmr $
 -------------------------------------------------------------------------
@@ -25,14 +24,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
----------------------------------------------------------------------------------------------------------------------------------------------------- */
+-------------------------------------------------------------------------- */
 
-// ----------------------------------------------------------------------
-// Original Author of file: Julien Dombre
-// Contributor: Goneri Le Bouder <goneri@rulezlan.org>
-// Contributor: Walid Nouh
-// Purpose of file:
-// ----------------------------------------------------------------------
 ini_set("memory_limit", "-1");
 ini_set("max_execution_time", "0");
 

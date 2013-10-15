@@ -24,11 +24,12 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
----------------------------------------------------------------------------------------------------------------------------------------------------- */
+-------------------------------------------------------------------------- */
 
 include ('../../../inc/includes.php');
 
 Session::checkRight("computer", "r");
+
 if (isset($_POST["force_ocs_resynch"])) {
    $computer = new Computer();
    $computer->check($_POST['id'], 'w');

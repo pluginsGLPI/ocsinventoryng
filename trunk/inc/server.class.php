@@ -24,11 +24,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
-----------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-// Original Author of file: Remi Collet (Fedora at FamilleCollet dot com)
-// Purpose of file: compute simple statistics.
-// ----------------------------------------------------------------------
+-------------------------------------------------------------------------- */
 
 class PluginOcsinventoryngServer extends CommonDBTM {
 
