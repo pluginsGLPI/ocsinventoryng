@@ -3237,10 +3237,12 @@ JAVASCRIPT;
                   echo "</td>\n";
                }
                echo "<td>";
-               if (!$tolinked){
+               if (!$tolinked) {
                   echo "<input type='checkbox' name='toimport[" . $tab["id"] . "]' ".
                          ($check == "all" ? "checked" : "") . ">";
-               } else{
+               } else {
+
+                  $tab['entities_id'] = $entity;
                   $rulelink         = new RuleImportComputerCollection();
                   $rulelink_results = array();
                   $params           = array('entities_id' => $entity,
