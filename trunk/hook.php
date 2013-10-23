@@ -1701,15 +1701,15 @@ function plugin_ocsinventoryng_preProcessRulePreviewResults($params){
 
             switch ($output["action"]){
                case PluginOcsinventoryngOcsServer::LINK_RESULT_LINK:
-                  _e('Link possible');
+                  _e('Link possible', 'ocsinventoryng');
                   break;
 
                case PluginOcsinventoryngOcsServer::LINK_RESULT_NO_IMPORT:
-                  _e('Import refused');
+                  _e('Import refused', 'ocsinventoryng');
                   break;
 
                case PluginOcsinventoryngOcsServer::LINK_RESULT_IMPORT:
-                  _e('New computer created in GLPI');
+                  _e('New computer created in GLPI', 'ocsinventoryng');
                   break;
             }
 
@@ -1720,7 +1720,7 @@ function plugin_ocsinventoryng_preProcessRulePreviewResults($params){
                echo "<tr class='tab_bg_2'>";
                $item = new Computer;
                if ($item->getFromDB($output["found_computers"][0])){
-                  echo "<td>".__('Link with computer')."</td>";
+                  echo "<td>".__('Link with computer', 'ocsinventoryng')."</td>";
                   echo "<td>".$item->getLink(array('comments' => true))."</td>";
                }
                echo "</tr>";
@@ -1847,8 +1847,9 @@ function plugin_ocsinventoryng_ruleImportComputer_addGlobalCriteria($global_crit
 function plugin_ocsinventoryng_ruleImportComputer_getSqlRestriction($params = array()) {
    // Search computer, in entity, not already linked
    $params['sql_where'] .= " AND `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` IS NULL
-                             AND `glpi_computers`.`entities_id` IN (".$params['where_entity'].")
                              AND `glpi_computers`.`is_template` = '0' ";
+   
+   $params['sql_where'] .= " AND `glpi_computers`.`entities_id` IN (".$params['where_entity'].")";
 
    $params['sql_from']  = "`glpi_computers`
                            LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks`
