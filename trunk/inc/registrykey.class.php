@@ -45,7 +45,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
 
 
    static function canView() {
-      return plugin_ocsinventoryng_haveRight('ocsng', 'r');
+      return plugin_ocsinventoryng_haveRight('view_ocsng', 'r');
    }
 
 
