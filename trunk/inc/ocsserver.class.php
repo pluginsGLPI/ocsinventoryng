@@ -1155,9 +1155,9 @@ JAVASCRIPT;
                $msg .= "Host: '".$ocsServer['ocs_db_host']."'";
                $msg .= ", Connection: ".(self::checkOCSconnection($ocsServer['id']) ? "Ok" : "KO");
                $msg .= ", Use the OCSNG software dictionary: ".
-                     ($ocsServer['use_soft_dict'] ? 'Yes' : 'No');
+                     ($ocsServer['use_soft_dict'] ? 'Yes' : 'No')."\n";
          }
-         echo wordwrap($msg."\n", $width, "\n\t\t");
+         echo wordwrap($msg."\n", $width, "\n");
          echo "\n</pre></td></tr>";
       }
    }
