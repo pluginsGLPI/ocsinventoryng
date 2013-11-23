@@ -2133,7 +2133,7 @@ JAVASCRIPT;
 
                // Get import devices
                $import_device = array();
-               $types = Item_Devices::getDeviceTypes();
+               $types         = $CFG_GLPI['ocsinventoryng_devices_index'];
                foreach ($types as $old => $type) {
                   $associated_type  = str_replace('Item_', '', $type);
                   $associated_table = getTableForItemType($associated_type);

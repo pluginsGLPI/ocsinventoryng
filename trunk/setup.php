@@ -184,6 +184,19 @@ function plugin_init_ocsinventoryng() {
          $PLUGIN_HOOKS['post_init']['ocsinventoryng'] = 'plugin_ocsinventoryng_postinit';
       }
    }
+
+   $CFG_GLPI['ocsinventoryng_devices_index'] = array(1  => 'Item_DeviceMotherboard',
+                                                     2  => 'Item_DeviceProcessor',
+                                                     3  => 'Item_DeviceMemory',
+                                                     4  => 'Item_DeviceHardDrive',
+                                                     5  => 'Item_DeviceNetworkCard',
+                                                     6  => 'Item_DeviceDrive',
+                                                     7  => 'Item_DeviceControl',
+                                                     8  => 'Item_DeviceGraphicCard',
+                                                     9  => 'Item_DeviceSoundCard',
+                                                     10 => 'Item_DevicePci',
+                                                     11 => 'Item_DeviceCase',
+                                                     12 => 'Item_DevicePowerSupply');
 }
 
 

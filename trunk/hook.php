@@ -112,7 +112,8 @@ function plugin_ocsinventoryng_install() {
    }
    
    //Update 1.0.3
-   If (TableExists("glpi_plugin_ocsinventoryng_networkports")) {
+   If (TableExists("glpi_plugin_ocsinventoryng_networkports")
+       && !FieldExists('glpi_plugin_ocsinventoryng_networkports', 'speed')) {
 
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_networkports` 
    ADD `speed` varchar(255) COLLATE utf8_unicode_ci DEFAULT '10mb/s';";
@@ -2088,7 +2089,7 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration) {
          }
 
          $devices = array();
-         $types   = Item_Devices::getDeviceTypes();
+         $types   = $CFG_GLPI['ocsinventoryng_devices_index'];
          foreach ($import_device as $key => $val) {
             if (!$key) { // OcsServer::IMPORT_TAG_078
                continue;
