@@ -813,7 +813,16 @@ JAVASCRIPT;
 
       $this->showTabs($options);
       $this->showFormHeader($options);
-
+      
+      $conn_type_values = array(
+         0 => __('Database', 'ocsinventoryng'),
+         1 => __('Webservice (SOAP)', 'ocsinventoryng'),
+      );
+      
+      echo "<tr class='tab_bg_1'><td class='center'>" . __('Connection type', 'ocsinventoryng') . "</td>";
+      echo "<td>";
+      Dropdown::showFromArray('conn_type', $conn_type_values, array('value' => $this->fields['conn_type']));
+      echo "</td></tr>";
       echo "<tr class='tab_bg_1'><td class='center'>" . __('Name')."</td>\n";
       echo "<td><input type='text' name='name' value=\"" . $this->fields["name"] ."\"></td>\n";
       echo "<td class='center'>" . _n('Version', 'Versions',1)."</td>\n";
