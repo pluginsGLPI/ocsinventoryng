@@ -14,7 +14,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 			'password' => $pass,
 			'trace' => true,
 			'soap_version' => SOAP_1_1,
-			'exceptions' => ,0
+			'exceptions' => 0,
 		);
 		
 		$this->soapClient = new SoapClient(null, $options);
