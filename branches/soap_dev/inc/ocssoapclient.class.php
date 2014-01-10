@@ -14,6 +14,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 			'password' => $pass,
 			'trace' => true,
 			'soap_version' => SOAP_1_1,
+			'exceptions' => ,0
 		);
 		
 		$this->soapClient = new SoapClient(null, $options);
@@ -65,7 +66,16 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 	 * @see PluginOcsinventoryngOcsClient::getOcsConfig()
 	 */
 	public function getOcsConfig($key) {
-		return $this->callSoap('ocs_config_V2', $key);
+		$xml = $this->callSoap('ocs_config_V2', $key);
+		if ( !is_soap_fault($xml)){
+			$configObj = simplexml_load_string($xml);
+			$config= array(
+				'IVALUE' => (string) $configObj->IVALUE,
+				'TVALUE' => (string) $configObj->TVALUE,
+			);
+			return $config;
+		}
+		return false;
 	}
 	
 	/**
