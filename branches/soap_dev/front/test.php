@@ -6,7 +6,7 @@ plugin_ocsinventoryng_checkRight("ocsng", "w");
 
 Html::header('OCS Inventory NG', "", "plugins", "ocsinventoryng", "import");
 
-//$soapclient = new PluginOcsinventoryngOcsSoapClient('http://localhost', 'admin', 'factorfx');
+$soapclient = new PluginOcsinventoryngOcsSoapClient('http://localhost', 'admin', 'factorfx');
 $dbclient = new PluginOcsinventoryngOcsDbClient(1);
 
 var_dump($dbclient);

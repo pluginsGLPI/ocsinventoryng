@@ -20,24 +20,15 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		
 		$this->soapClient = new SoapClient(null, $options);
 	}
-	
 
-public function getComputers($conditions=array(),$sort=NULL)
-{}
-public function getAccountInfo($id)
-{}
-public function getConfig($select="*", $name)
-{}
-public function getCategorie($table, $condition=1, $sort)
-{}
-public function getUnique($columns, $table, $conditions, $sort)
-{}
-public function setChecksum($checksum, $id)
-{}
-public function delChecksum($deleted, $equivclean)
-{}
-public function getAccountInfoColumns()
-{}
+	public function getComputers($conditions=array(),$sort=NULL) {}
+	public function getAccountInfo($id) {}
+	public function getConfig($select="*", $name) {}
+	public function getCategorie($table, $condition=1, $sort) {}
+	public function getUnique($columns, $table, $conditions, $sort) {}
+	public function setChecksum($checksum, $id) {}
+    public function delEquiv($deleted, $equivclean = null) {}
+	public function getAccountInfoColumns() {}
 
 	// /**
 	//  * @see PluginOcsinventoryngOcsClient::getComputers()

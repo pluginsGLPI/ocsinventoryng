@@ -10,15 +10,10 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 		$this->db = new PluginOcsinventoryngDBocs($server_id);
 	}
 	
-
-
 	public function getDB(){
 		return $this->db;
 	}
-
-
-
-
+	
 	public function getComputers($conditions=array(),$sort=NULL){
 		$query = "SELECT * FROM `hardware` " ;
 		$params = "";
