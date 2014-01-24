@@ -1,5 +1,6 @@
 <?php
 
+require_once(__DIR__.'/../../../inc/includes.php');
 require_once(__DIR__.'/../inc/ocssoapclient.class.php');
 
 /**
