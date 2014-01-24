@@ -802,7 +802,6 @@ JAVASCRIPT;
          return false;
       }
 
-      $rowspan = 4;
       //If no ID provided, or if the server is created using an existing template
       if (empty($ID)) {
          $this->getEmpty();
@@ -819,65 +818,12 @@ JAVASCRIPT;
          1 => __('Webservice (SOAP)', 'ocsinventoryng'),
       );
       
-      echo "<tr class='tab_bg_1'><td class='center'>" . __('Connection type', 'ocsinventoryng') . "</td>";
-      echo "<td>";
-      Dropdown::showFromArray('conn_type', $conn_type_values, array('value' => $this->fields['conn_type']));
-      echo "</td></tr>";
-      echo "<tr class='tab_bg_1'><td class='center'>" . __('Name')."</td>\n";
-      echo "<td><input type='text' name='name' value=\"" . $this->fields["name"] ."\"></td>\n";
-      echo "<td class='center'>" . _n('Version', 'Versions',1)."</td>\n";
-      echo "<td>".$this->fields["ocs_version"]."</td></tr>\n";
-
-      echo "<tr class='tab_bg_1'><td class='center'>".__('Host for the database', 'ocsinventoryng').
-           "</td>\n";
-      echo "<td><input type='text' name='ocs_db_host' value=\"" .$this->fields["ocs_db_host"] ."\">".
-           "</td>\n";
-      echo "<td class='center'>" . __('Synchronisation method', 'ocsinventoryng')."</td><td>\n";
-      $tabsync = array(0 => __('Standard (allow manual actions)', 'ocsinventoryng'),
-                       1 => __('Expert (Fully automatic, for large configuration)', 'ocsinventoryng'));
-      Dropdown::showFromArray('use_massimport', $tabsync, array('value' => $this->fields['use_massimport']));
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td class='center'>".__('Database')."</td>\n";
-      echo "<td><input type='text' name='ocs_db_name' value=\"".$this->fields["ocs_db_name"]."\">";
-      echo "<td class='center' rowspan='$rowspan'>" . __('Comments') . "</td>\n";
-      echo "<td rowspan='$rowspan'>";
-      echo "<textarea cols='45' rows='6' name='comment' >".$this->fields["comment"]."</textarea>";
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td class='center'>"._n('User', 'Users', 1)."</td>\n";
-      echo "<td><input type='text' name='ocs_db_user' value=\"".$this->fields["ocs_db_user"]."\">";
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_1'><td class='center'>".__('Password') . "</td>\n";
-      echo "<td><input type='password' name='ocs_db_passwd' value='' autocomplete='off'>";
-      if ($ID > 0) {
-         echo "<br><input type='checkbox' name='_blank_passwd'>&nbsp;".__('Clear');
-      }
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_1'><td class='center'>".__('Database in UTF8', 'ocsinventoryng')."</td>\n";
-      echo "<td>";
-      Dropdown::showYesNo('ocs_db_utf8',$this->fields["ocs_db_utf8"]);
-      echo "</td>";
-      echo "</tr>\n";
-
-      echo "<tr class='tab_bg_1'><td class='center'>" .__('Active') . "</td>\n";
-      echo "<td>";
-      Dropdown::showYesNo('is_active',$this->fields["is_active"]);
-      echo "</td>";
-
-      if (!empty ($ID)) {
-         echo "<td>".__('Last update')."</td>";
-         echo "<td>";
-         echo ($this->fields["date_mod"] ? Html::convDateTime($this->fields["date_mod"])
-                                         : __('Never'));
-         echo "</td>";
-      }
-
-      echo "</tr>\n";
+      $sync_method_values = array(
+         0 => __("Standard (allow manual actions)", "ocsinventoryng"),
+         1 => __("Expert (Fully automatic, for large configuration)", "ocsinventoryng")
+      );
+      
+      include __DIR__.'/../views/server_form.html.php';
 
       $this->showFormButtons($options);
       $this->addDivForTabs();
@@ -3087,6 +3033,7 @@ JAVASCRIPT;
    static function showComputersToAdd($plugin_ocsinventoryng_ocsservers_id, $advanced, $check,
                                       $start, $entity=0, $tolinked=false){
       global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
+      /* TODO test soap here first */
 
       if (!plugin_ocsinventoryng_haveRight("ocsng", "w")){
          return false;
