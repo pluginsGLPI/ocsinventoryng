@@ -1,8 +1,6 @@
 <?php
 
-
-
-
+require_once(__DIR__.'/../inc/ocssoapclient.class.php');
 
 /**
  * Test class for ocsdbclient.
