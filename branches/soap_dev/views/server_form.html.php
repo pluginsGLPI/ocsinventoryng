@@ -17,7 +17,7 @@
 	<td><? Dropdown::showFromArray("use_massimport", $sync_method_values, array("value" => $this->fields["use_massimport"])) ?></td>
 </tr>
 
-<tr class="tab_bg_1 hide_if_soap" <? if ($this->fields["conn_type"] == 1/* if soap */): ?>style="display:none"<? endif ?>>
+<tr class="tab_bg_1 hide_if_soap" <? if ($this->fields["conn_type"] == PluginOcsinventoryngOcsServer::CONN_TYPE_SOAP): ?>style="display:none"<? endif ?>>
 	<td class="center"><?= __("Database") ?></td>
 	<td><input type="text" name="ocs_db_name" value="<?= $this->fields["ocs_db_name"] ?>"></td>
 	<td class="center"><?= __("Database in UTF8", "ocsinventoryng") ?></td>

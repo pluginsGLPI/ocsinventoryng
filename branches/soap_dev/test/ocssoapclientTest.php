@@ -36,11 +36,7 @@ class ocssoapclientTest extends PHPUnit_Framework_TestCase {
 		$this->user = $config['user'];
 		$this->pass = $config['pass'];
 		
-		// expected values for ocs LOG_DIR config
-		$this->logdiri = $config['logdiri'];
-		$this->logdirt = $config['logdirt'];
-		
-		$this->client = new PluginOcsinventoryngOcsSoapClient($this->url, $this->user, $this->pass);
+		$this->client = new PluginOcsinventoryngOcsSoapClient(0, $this->url, $this->user, $this->pass);
 	}
 
 	/**
@@ -68,13 +64,13 @@ class ocssoapclientTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @depends testConnect
 	 */
-	public function testFalseConfig() {
-		$result = $this->client->getConfig('LOGLEVEL');
+	public function testConfig() {
+		$result = $this->client->getConfig('LOGPATH');
 		$expected = array (
-			"IVALUE" => $this->logdiri,
-			"TVALUE" => $this->logdirt 
+			"IVALUE" => 0,
+			"TVALUE" => '/var/log/ocsinventory-server'
 		);
-		$this->assertNotEquals($expected, $result);
+		$this->assertEquals($expected, $result);
 	}
 
 }

@@ -6,7 +6,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 	 */
 	private $db;
 	
-	public function __construct($dbhost, $dbuser ,$dbpassword, $dbdefault) {
+	public function __construct($id, $dbhost, $dbuser ,$dbpassword, $dbdefault) {
+		parent::__construct($id);
+		
 		$this->db = new PluginOcsinventoryngDBocs($dbhost, $dbuser ,$dbpassword, $dbdefault);
 	}
 	
@@ -69,23 +71,18 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
 
 
-	public function getConfig($select, $name)
+	public function getConfig($key)
 	{
-		$query = "SELECT ";
-		$selected ="";
-		foreach ($select as $row) {
-			if (!empty($selected)){
-				$selected .= " , $row ";
-			}
-			else{
-				$selected .= " $row ";
-			}
-		}
-		$query .= $selected;
-		$query .=  " FROM `config` WHERE NAME = \"$name\"";
+		$query = "SELECT IVALUE, TVALUE FROM `config` WHERE NAME = \"$key\"";
 		$config = $this->db->queryOrDie($query);
 		$res = $this->db->fetch_assoc($config);
 		return $res;
+	}
+
+	public function setConfig($key, $ivalue, $tvalue)
+	{
+		$query = "UPDATE `config` SET IVALUE = \"$ivalue\", TVALUE = \"$tvalue\" WHERE NAME = \"$key\"";
+		$this->db->query($query);
 	}
 
 

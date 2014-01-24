@@ -35,9 +35,13 @@ if (!defined('GLPI_ROOT')) {
 class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
    static $types = array('Computer');
-   public $ocsclient;
+   
    // From CommonDBTM
    public $dohistory = true;
+   
+   // Connection types
+   const CONN_TYPE_DB = 0;
+   const CONN_TYPE_SOAP = 1;
 
    const OCS_VERSION_LIMIT    = 4020;
    const OCS1_3_VERSION_LIMIT = 5004;
@@ -49,6 +53,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    const IMPORT_TAG_072  = '_version_072_';
    const IMPORT_TAG_078  = '_version_078_';
 
+   // TODO use PluginOcsinventoryngOcsClient constants
    // Class constants - OCSNG Flags on Checksum
    const HARDWARE_FL          = 0;
    const BIOS_FL              = 1;
@@ -107,9 +112,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                //If connection to the OCS DB  is ok, and all rights are ok too
                $ong[1] = self::getTypeName();
                if (self::checkOCSconnection($item->getID())
-                   && self::checkConfig(1)
-                   && self::checkConfig(2)
-                   && self::checkConfig(8)) {
+                   && self::checkVersion($item->getID())
+                   && self::checkTraceDeleted($item->getID())) {
                   $ong[2] = __('Import options', 'ocsinventoryng');
                   $ong[3] = __('General information', 'ocsinventoryng');
                }
@@ -472,7 +476,7 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_2'><td class='center'>" . __('IP') . "</td>\n<td>";
       Dropdown::showYesNo("import_ip", $this->fields["import_ip"]);
       echo "</td></tr>\n";
-      if (self::checkOCSconnection($ID) && self::checkVersion() > self::OCS2_VERSION_LIMIT) {
+      if (self::checkOCSconnection($ID) && self::checkVersion($ID)) {
          echo "<tr class='tab_bg_2'><td class='center'>" . __('UUID') . "</td>\n<td>";
          Dropdown::showYesNo("import_general_uuid", $this->fields["import_general_uuid"]);
          echo "</td></tr>\n";
@@ -823,6 +827,7 @@ JAVASCRIPT;
          1 => __("Expert (Fully automatic, for large configuration)", "ocsinventoryng")
       );
       
+      // Display form
       include __DIR__.'/../views/server_form.html.php';
 
       $this->showFormButtons($options);
@@ -850,16 +855,17 @@ JAVASCRIPT;
       if ($ID != -1) {
          if (!self::checkOCSconnection($ID)) {
             $out .= __('Connection to the database failed', 'ocsinventoryng');
-         } else if (!self::checkConfig(1)) {
+         } else if (!self::checkVersion($ID)) {
             $out .= __('Invalid OCSNG Version: RC3 is required', 'ocsinventoryng');
-         } else if (!self::checkConfig(2)) {
+         } else if (!self::checkTraceDeleted($ID)) {
             $out .= __('Invalid OCSNG configuration (TRACE_DELETED must be active)', 'ocsinventoryng');
-         } else if (!self::checkConfig(4)) {
+         // TODO
+         /*} else if (!self::checkConfig(4)) {
             $out .= __('Access denied on database (Need write rights on hardware.CHECKSUM necessary)',
                        'ocsinventoryng');
          } else if (!self::checkConfig(8)) {
             $out .= __('Access denied on database (Delete rights in deleted_equiv table necessary)',
-                       'ocsinventoryng');
+                       'ocsinventoryng');*/
          } else {
             $out .= __('Connection to database successful', 'ocsinventoryng');
             $out .= "</td></tr>\n<tr class='tab_bg_2'>".
@@ -1204,49 +1210,7 @@ JAVASCRIPT;
 
       return $data;
    }
-
-
-
-
-
-
-
-  function getServer($id) {
-      $data = self::getConfig($id);
-      if (empty($this->ocsclient)){
-         if (!$data['conn_type'])
-           $this->$ocsclient = new PluginOcsinventoryngOcsDbClient($id);
-         else
-           $this->$ocsclient = new PluginOcsinventoryngOcsSoapClient($id);
-      }
-      return $this->ocsclient;
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+   
    static function getTagLimit($cfg_ocs) {
 
       $WHERE = "";
@@ -1521,86 +1485,35 @@ JAVASCRIPT;
    }
 
 
-   static function checkVersion() {
-      global $PluginOcsinventoryngDBocs;
-
-      # Check OCS version
-      $result = $PluginOcsinventoryngDBocs->query("SELECT `TVALUE`
-                                                   FROM `config`
-                                                   WHERE `NAME` = 'GUI_VERSION'");
-
-      return $PluginOcsinventoryngDBocs->result($result, 0, 0);
-   }
-
-
-   static function checkConfig($what=1) {
-      global $PluginOcsinventoryngDBocs;
-
-      # Check OCS version
-      if ($what & 1) {
-         $result = $PluginOcsinventoryngDBocs->query("SELECT `TVALUE`
-                                                      FROM `config`
-                                                      WHERE `NAME` = 'GUI_VERSION'");
-
-         // Update OCS version on ocsservers
-         if ($result && $PluginOcsinventoryngDBocs->numrows($result)) {
-            $server = new PluginOcsinventoryngOcsServer();
-            $server->update(array('id'          => $PluginOcsinventoryngDBocs->ocsservers_id,
-                                  'ocs_version' => $PluginOcsinventoryngDBocs->result($result,0,0)));
-         }
-
-         if (!$result || $PluginOcsinventoryngDBocs->numrows($result) != 1
-             || ($PluginOcsinventoryngDBocs->result($result, 0, 0) < self::OCS_VERSION_LIMIT
-                 && strpos($PluginOcsinventoryngDBocs->result($result, 0, 0),'2.0') !== 0)) { // hack for 2.0 RC
-            return false;
-         }
+   public static function checkVersion($ID) {
+      $client = self::getDBocs($ID);
+      $version = $client->getTextConfig('GUI_VERSION');
+      
+      if ($version) {
+         $server = new PluginOcsinventoryngOcsServer();
+         $server->update(array(
+            'id' => $ID,
+            'ocs_version' => $version
+         ));
       }
-
-      // Check TRACE_DELETED in CONFIG
-      if ($what & 2) {
-         $result = $PluginOcsinventoryngDBocs->query("SELECT `IVALUE`
-                                                      FROM `config`
-                                                      WHERE `NAME` = 'TRACE_DELETED'");
-
-         if ($PluginOcsinventoryngDBocs->numrows($result) != 1
-             || $PluginOcsinventoryngDBocs->result($result, 0, 0) != 1) {
-            $query = "UPDATE `config`
-                      SET `IVALUE` = '1'
-                      WHERE `NAME` = 'TRACE_DELETED'";
-
-            if (!$PluginOcsinventoryngDBocs->query($query)) {
-               return false;
-            }
-         }
-      }
-
-      // Check write access on hardware.CHECKSUM
-      if ($what & 4) {
-         if (!$PluginOcsinventoryngDBocs->query("UPDATE `hardware`
-                                                 SET `CHECKSUM` = CHECKSUM
-                                                 LIMIT 1")) {
+      
+      if (!$version || ($version < self::OCS_VERSION_LIMIT && strpos($version, '2.0') !== 0)) { // hack for 2.0 RC
          return false;
-         }
+      } else {
+         return true;
       }
-
-      // Check delete access on deleted_equiv
-      if ($what & 8) {
-         if (!$PluginOcsinventoryngDBocs->query("DELETE
-                                                 FROM `deleted_equiv`
-                                                 LIMIT 0")) {
-            return false;
-         }
-      }
-
-      return true;
+   }
+   
+   public static function checkTraceDeleted($ID) {
+      $client = self::getDBocs($ID);
+      return $client->getIntConfig('TRACE_DELETED');
    }
 
 
    static function manageDeleted($plugin_ocsinventoryng_ocsservers_id) {
       global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
 
-      if (!(self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)
-            && self::checkConfig(1))) {
+      if (!(self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id) && self::checkVersion($plugin_ocsinventoryng_ocsservers_id))) {
          return false;
       }
 
@@ -4055,34 +3968,44 @@ JAVASCRIPT;
 
 
    /**
-    * Check if OCS connection is always valid
+    * Check if OCS connection is still valid
     * If not, then establish a new connection on the good server
-    *
+    * 
     * @param $plugin_ocsinventoryng_ocsservers_id the ocs server id
-    *
-    * @return nothing.
-   **/
-   static function checkOCSconnection($plugin_ocsinventoryng_ocsservers_id){
-      global $PluginOcsinventoryngDBocs;
-
-      //If $PluginOcsinventoryngDBocs is not initialized, or if the connection should be on a different ocs server
-      // --> reinitialize connection to OCS server
-      if (!$PluginOcsinventoryngDBocs || $plugin_ocsinventoryng_ocsservers_id != $PluginOcsinventoryngDBocs->getServerID()){
-         $PluginOcsinventoryngDBocs = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-      }
-      return $PluginOcsinventoryngDBocs->connected;
+    * 
+    * @return boolean
+    */
+   static function checkOCSconnection($serverId) {
+      return self::getDBocs($serverId)->checkConnection();
    }
 
 
    /**
     * Get a connection to the OCS server
-    *
-    * @param $plugin_ocsinventoryng_ocsservers_id the ocs server id
-    *
-    * @return the connexion to the ocs database
-   **/
-   static function getDBocs($plugin_ocsinventoryng_ocsservers_id){
-      return new PluginOcsinventoryngDBocs($plugin_ocsinventoryng_ocsservers_id);
+    * 
+    * @param $serverId the ocs server id
+    * 
+    * @return PluginOcsinventoryngOcsClient the ocs client (database or soap)
+    */
+   static function getDBocs($serverId) {
+      $config = self::getConfig($serverId);
+      
+      if ($config['conn_type'] == self::CONN_TYPE_DB) {
+         return new PluginOcsinventoryngOcsDbClient(
+         		$serverId,
+               	$config['ocs_db_host'],
+         		$config['ocs_db_user'],
+         		$config['ocs_db_passwd'],
+         		$config['ocs_db_name']
+         );
+      } else {
+         return new PluginOcsinventoryngOcsSoapClient(
+         		$serverId,
+               	$config['ocs_db_host'],
+         		$config['ocs_db_user'],
+         		$config['ocs_db_passwd']
+         );
+      }
    }
 
 
