@@ -6,8 +6,8 @@ plugin_ocsinventoryng_checkRight("ocsng", "w");
 
 Html::header('OCS Inventory NG', "", "plugins", "ocsinventoryng", "import");
 
-$soapclient = new PluginOcsinventoryngOcsSoapClient('http://localhost', 'admin', 'factorfx');
-$dbclient = new PluginOcsinventoryngOcsDbClient(1);
+//$soapclient = new PluginOcsinventoryngOcsSoapClient('http://localhost', 'admin', 'factorfx');
+
 
 var_dump($dbclient);
 ?>
@@ -127,18 +127,15 @@ $delete = $dbclient->delEquiv("OCS-IG-client-debian2-2013-08-26-14-10-04");
 print_r($delete);
 ?>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </p>
+
+
+
+
+
+
+
+
+
+
+

@@ -41,15 +41,13 @@ class PluginOcsinventoryngDBocs extends DBmysql {
     *
     * @param $ID ID of the ocs server ID
    **/
-   function __construct($ID) {
+   function __construct($dbhost, $dbuser ,$dbpassword, $dbdefault) {
 
-      $this->ocsservers_id = $ID;
-      $data             = PluginOcsinventoryngOcsServer::getConfig($ID);
-      $this->dbhost     = $data["ocs_db_host"];
-      $this->dbuser     = $data["ocs_db_user"];
-      $this->dbpassword = rawurldecode($data["ocs_db_passwd"]);
-      $this->dbdefault  = $data["ocs_db_name"];
-      $this->dbenc      = $data["ocs_db_utf8"] ? "utf8" : "latin1";
+      $this->dbhost     = $dbhost;
+      $this->dbuser     = $dbuser;
+      $this->dbpassword = $dbpassword;
+      $this->dbdefault  = $dbdefault;
+ 
       parent::__construct();
    }
 

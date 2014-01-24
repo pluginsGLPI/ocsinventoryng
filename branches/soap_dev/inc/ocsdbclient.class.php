@@ -6,8 +6,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 	 */
 	private $db;
 	
-	public function __construct($server_id) {
-		$this->db = new PluginOcsinventoryngDBocs($server_id);
+	public function __construct($dbhost, $dbuser ,$dbpassword, $dbdefault) {
+		$this->db = new PluginOcsinventoryngDBocs($dbhost, $dbuser ,$dbpassword, $dbdefault);
 	}
 	
 	public function getDB(){
@@ -182,33 +182,5 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
 
 }
-
-
-
-/*
-	 * @see OcsClientInterface::getComputers()
-	
-	public function getComputers($options = array(), $tables = array("hardware")) {
-		$request = "SELECT * FROM "
-		$request .= implode(',',$tables);
-		if (count($options)>0){ 
-			$request .= " WHERE ";
-			$index = 0;
-			foreach($options as $key=>$value){
-					if ($index){
-						$request .= "AND"
-					}
-					$request .=" $key = :$key ";
-					$params += array(":$key"=>$value);
-					$index = 1;
-			}
-		}
-		$query = $this->db->prepare($request);
-		$query->execute($params);
-		return $query->fetchAll();
-	}*/
-
-
-
 
 	?>
