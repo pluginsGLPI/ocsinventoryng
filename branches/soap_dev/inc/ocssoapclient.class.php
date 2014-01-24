@@ -7,7 +7,6 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 	private $soapClient;
 	
 	public function __construct($url, $user, $pass) {
-		
 		$options = array(
 			'location' => "$url/ocsinterface",
 			'uri' => "$url/Apache/Ocsinventory/Interface",
@@ -19,6 +18,10 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		);
 		
 		$this->soapClient = new SoapClient(null, $options);
+	}
+	
+	public function checkConnection() {
+		return !is_soap_fault($this->soapClient->ocs_config_V2('LOGLEVEL'));
 	}
 
 	public function getComputers($conditions=array(),$sort=NULL) {}

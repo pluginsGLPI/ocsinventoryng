@@ -45,15 +45,12 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase {
 
 
     public function testConnect() {
-  		$db = $this->client->getDB();
-  		$result = $db->connected;
-  		$this->assertTrue($result);
+  		$this->assertTrue($this->client->checkConnection());
     }
 
     public function testFalseConnect() {
-  		$db = $this->client->getDB();
-  		$result = $db->connected;
-  		$this->assertFalse($result);
+    	// TODO
+  		$this->assertFalse($this->client->checkConnection());
     }
 
 

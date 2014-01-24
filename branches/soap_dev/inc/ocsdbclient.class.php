@@ -14,6 +14,14 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 		return $this->db;
 	}
 	
+	/**
+	 * @see PluginOcsinventoryngOcsClient::checkConnection()
+	 */
+	public function checkConnection() {
+		return $this->db->connected;
+	}
+
+	
 	public function getComputers($conditions=array(),$sort=NULL){
 		$query = "SELECT * FROM `hardware` " ;
 		$params = "";

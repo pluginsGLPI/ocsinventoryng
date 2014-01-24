@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Use an abstract class because GLPI is unable to autoload interfaces
+ */
 abstract class PluginOcsinventoryngOcsClient {
     const CHECKSUM_NONE					= 0x00000;
 	const CHECKSUM_HARDWARE				= 0x00001;
@@ -25,6 +28,13 @@ abstract class PluginOcsinventoryngOcsClient {
     const WANTED_ACCOUNTINFO			= 0x00001;
     const WANTED_DICO_SOFT				= 0x00002;
     const WANTED_ALL					= 0x00003;
+    
+    /**
+     * Return true if connection was successful, false otherwise
+     * 
+     * @return boolean
+     */
+    abstract public function checkConnection();
 	
     /**
      * Returns a list of computers
