@@ -35,7 +35,7 @@ if (!defined('GLPI_ROOT')) {
 class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
    static $types = array('Computer');
-
+   public $ocsclient;
    // From CommonDBTM
    public $dohistory = true;
 
@@ -1198,7 +1198,6 @@ JAVASCRIPT;
     * Get an Ocs Server name, by giving his ID
     *
     * @param $ID the server ID
-
     * @return the ocs server name
    **/
    static function getServerNameByID($ID) {
@@ -1259,6 +1258,47 @@ JAVASCRIPT;
 
       return $data;
    }
+
+
+
+
+
+
+
+  function getServer($id) {
+      $data = self::getConfig($id);
+      if (empty($this->ocsclient)){
+         if (!$data['conn_type'])
+           $this->$ocsclient = new PluginOcsinventoryngOcsDbClient($id);
+         else
+           $this->$ocsclient = new PluginOcsinventoryngOcsSoapClient($id);
+      }
+      return $this->ocsclient;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
    static function getTagLimit($cfg_ocs) {
@@ -2496,7 +2536,7 @@ JAVASCRIPT;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
 
-      $query = "SELECT*
+      $query = "SELECT *
                 FROM `bios`
                 WHERE `HARDWARE_ID` = '$ocsid'";
       $result = $PluginOcsinventoryngDBocs->query($query);
@@ -3731,7 +3771,7 @@ JAVASCRIPT;
                            unset ($import_device[$tmp]);
                         }
                      }
-                  }
+                  }     
                }
             }
             break;

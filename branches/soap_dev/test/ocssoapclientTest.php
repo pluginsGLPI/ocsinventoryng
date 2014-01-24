@@ -26,13 +26,13 @@ class ocssoapclientTest extends PHPUnit_Framework_TestCase {
      * @access protected
      */
     protected function setUp() {
-       $config = parse_ini_file('/home/jenkins/ocsinventoryng/config.ini');
+       $config = parse_ini_file('/home/factorfx/config.ini');
        $this->url = $config['url'];
        $this->user  = $config['user'];
        $this->pass = $config['pass'];
        $this->logdiri = $config['logdiri'];
        $this->logdirt = $config['logdirt'];
-       $this->client = new PluginOcsinventoryngOcsSoapClient($url,$user,$pass);
+       $this->client = new PluginOcsinventoryngOcsSoapClient($this->url,$this->user,$this->pass);
     }
 
     /**
@@ -48,8 +48,8 @@ class ocssoapclientTest extends PHPUnit_Framework_TestCase {
     public function testConnect() {
         $test = new PluginOcsinventoryngOcsSoapClient($this->url,$this->user,$this->pass);
         $result = $this->client->getSoapClient()->getOcsConfig('LOG_DIR');
-        $expected = array("IVALUE" => $this->logleveli,
-                          "TVALUE" => $this->loglevelt);
+        $expected = array("IVALUE" => $this->logdiri,
+                          "TVALUE" => $this->logdirt);
         $this->assertEquals($expected,$result);
 
     }
@@ -60,16 +60,16 @@ class ocssoapclientTest extends PHPUnit_Framework_TestCase {
     public function testFalseConfig() {
         $test = new PluginOcsinventoryngOcsSoapClient($this->url,$this->user,$this->pass);
         $result = $this->client->getSoapClient()->getOcsConfig('LOGLEVEL');
-        $expected = array("IVALUE" => $this->logleveli,
-                          "TVALUE" => $this->loglevelt);
+        $expected = array("IVALUE" => $this->logdiri,
+                          "TVALUE" => $this->logdirt);
         $this->assertNotEquals($expected,$result);
     }
 
     public function testFalseLoginConnect() {
         $test = new PluginOcsinventoryngOcsSoapClient($this->url,'foo','bar');
         $result = $this->client->getSoapClient()->getOcsConfig('LOG_DIR');
-        $expected = array("IVALUE" => $this->logleveli,
-                          "TVALUE" => $this->loglevelt);
+        $expected = array("IVALUE" => $this->logdiri,
+                          "TVALUE" => $this->logdirt);
         $this->assertNotEquals($expected,$result);
 
     }
@@ -77,8 +77,8 @@ class ocssoapclientTest extends PHPUnit_Framework_TestCase {
     public function testFalseAddressConnect() {
         $test = new PluginOcsinventoryngOcsSoapClient('dummy',$this->user,$this->pass);
         $result = $this->client->getSoapClient()->getOcsConfig('LOG_DIR');
-        $expected = array("IVALUE" => $this->logleveli,
-                          "TVALUE" => $this->loglevelt);
+        $expected = array("IVALUE" => $this->logdiri,
+                          "TVALUE" => $this->logdirt);
         $this->assertNotEquals($expected,$result);
     }
 

@@ -46,7 +46,7 @@ abstract class PluginOcsinventoryngOcsClient {
      * 		...
      * 	)
      */
-	abstract public function getComputers($options);
+	/*abstract public function getComputers($options);
 	
 	abstract public function getOcsConfig($key);
 	abstract public function setOcsConfig($key, $ivalue, $tvalue);
@@ -54,6 +54,17 @@ abstract class PluginOcsinventoryngOcsClient {
 	abstract public function getHistory($offset, $count);
 	abstract public function clearHistory($offset, $count);
 	abstract public function resetChecksum($checksum, $ids);
+*/
+
+    abstract public function getComputers($conditions=array(),$sort=NULL);
+    abstract public function getAccountInfo($id);
+    abstract public function getConfig($select="*", $name);
+    abstract public function getCategorie($table, $condition=1, $sort);
+    abstract public function getUnique($columns, $table, $conditions, $sort);
+    abstract public function setChecksum($checksum, $id);
+    abstract public function delEquiv($deleted, $equivclean = null);
+    abstract public function getAccountInfoColumns();
+
 }
 
 ?>
