@@ -103,7 +103,7 @@ class ocssoapclientTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testGetChecksum() {
 		$checksum = $this->client->getChecksum(15);
-		$expected = 40;
+		$expected = 41;
 		$this->assertEquals($expected, $checksum);
 	}
 
@@ -120,7 +120,7 @@ class ocssoapclientTest extends PHPUnit_Framework_TestCase {
 		
 		$this->client->setChecksum($oldchecksum, 15);
 		$newchecksum = $this->client->getChecksum(15);
-		$expected = 40;
+		$expected = 41;
 		
 		$this->assertEquals($expected, $newchecksum);
 	}
