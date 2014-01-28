@@ -98,7 +98,7 @@ abstract class PluginOcsinventoryngOcsClient {
 
 	abstract public function setChecksum($checksum, $id);
 
-	abstract public function delEquiv($deleted, $equivclean = null);
+	abstract public function removeDeletedComputers($deleted, $equivclean = null);
 
 	abstract public function getAccountInfoColumns();
 

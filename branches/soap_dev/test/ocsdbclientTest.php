@@ -104,8 +104,8 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase {
             "ARCH"  => $GLOBALS['arch'],
 
             );
-        $this->assertEquals($expected,$res);
-    }
+$this->assertEquals($expected,$res);
+}
 
 
     /**
@@ -135,10 +135,16 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase {
     * @depends  testConnection
     */
     public function testGetCategorie($table, $condition=1, $sort){
-    #TODO testGetCategorie
-
-
-
+        $res = $this->client->GetCategorie("videos",1,"HARDWARE_ID");
+        $expected = array(
+            "HARDWARE_ID" => $GLOBALS['idexist'],
+            "ID" => $GLOBALS['videoid'],
+            "NAME" => $GLOBALS['name'],
+            "CHIPSET" => $GLOBALS['chipset'],
+            "MEMORY" => $GLOBALS['videomemory'],
+            "RESOLUTION" => $GLOBALS['resolution'],
+            );
+        $this->assertEquals($expected,$res[$GLOBALS['videorank']]);
     }       
 
 
@@ -227,9 +233,9 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase {
             "ARCH"  => $GLOBALS['arch'],
 
             );
-        $this->assertNotEquals($expected,$res);
+$this->assertNotEquals($expected,$res);
 
-    }
+}
 
 
     /**
@@ -286,8 +292,75 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase {
     #TODO testFalseDelEquiv
 
     }
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

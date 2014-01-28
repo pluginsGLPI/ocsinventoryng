@@ -56,4 +56,12 @@ class PluginOcsinventoryngDBocs extends DBmysql {
       return $this->ocsservers_id;
    }
 }
+
+
+
 ?>
+
+
+
+
+

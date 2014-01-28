@@ -19,14 +19,14 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 	/**
 	 * @see PluginOcsinventoryngOcsClient::checkConnection()
 	 */
-	public function checkConnection() {
+	public function checkConnection(){
 		return $this->db->connected;
 	}
 
-	
-	public function getComputers($conditions=array(),$sort=NULL){
-		$query = "SELECT * FROM `hardware` " ;
-		$params = "";
+	public function parseConditions($conditions){
+		if ($conditions === 1 ) {
+			$params .= " WHERE 1 ";
+		} else {
 		foreach ($conditions as $key => $value) {
 			if (count($value) >0) {
 				$comparateur = ($key) ? " != " : " = " ;
@@ -35,11 +35,19 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 						$params .= " AND $id $comparateur $equals ";
 					}
 					else{
-						$params .= " WHERE $id $comparateur $equals ";
+						$params = " WHERE $id $comparateur $equals ";
 					}
 				}
 			}
-		}	
+		}
+
+		}
+		return params;	
+	}
+	
+	public function getComputers($conditions=array(),$sort=NULL){
+		$query = "SELECT * FROM `hardware` " ;
+		$params = $this->parseConditions($conditions);
 		if (!empty($sort))
 			$params .= "ORDER BY $sort";
 		$query .= $params;
@@ -58,8 +66,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
 
 
-	public function getAccountInfo($id)
-	{
+	public function getAccountInfo($id){
 		$query = "SELECT * FROM `accountinfo` WHERE HARDWARE_ID = $id";
 		$accountinfo = $this->db->queryOrDie($query);
 		$res = $this->db->fetch_assoc($accountinfo);
@@ -71,8 +78,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
 
 
-	public function getConfig($key)
-	{
+	public function getConfig($key){
 		$query = "SELECT IVALUE, TVALUE FROM `config` WHERE NAME = \"$key\"";
 		$config = $this->db->queryOrDie($query);
 		$res = $this->db->fetch_assoc($config);
@@ -88,29 +94,11 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
 
 
-	public function getCategorie($table, $condition=1, $sort)
-	{	
+	public function getCategorie($table, $condition=1, $sort){	
 
-		$query = "SELECT * FROM $table WHERE ";
+		$query = "SELECT * FROM $table ";
 		$params = "" ;
-		if ($condition == 1 ) {
-			$query .= " 1 ";
-		} else {
-			foreach ($condition as $key => $value) {
-				if (count($value) > 0) {
-					$comparateur = ($key) ? " != " : " = " ;
-					foreach ($value as $id => $equals) {
-						if (!empty($params)){
-							$params .= " AND $id $comparateur $equals ";
-						}
-						else{
-							$params .= " $id $comparateur $equals ";
-						}
-					}
-				}
-			}
-		}
-
+		$params = $this->parseConditions($condition);
 		if (!empty($sort))
 			$params .= " ORDER BY $sort";
 		$query .= $params;
@@ -127,17 +115,14 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
 
 
-	public function getUnique($columns, $table, $conditions, $sort)
-	{
+	public function getUnique($columns, $table, $conditions, $sort){
 	
 		
+
+
 	}
 
-
-
-
-	public function setChecksum($checksum, $id)
-	{
+	public function setChecksum($checksum, $id){
 		$query = "UPDATE `hardware` SET CHECKSUM = $checksum WHERE ID = $id";
 		$checksum = $this->db->queryOrDie($query);
 		$res = $checksum;
@@ -150,8 +135,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
 
 
-	public function delEquiv($deleted, $equivclean = null)
-	{
+	public function removeDeletedComputers($deleted, $equivclean = null){
 	#DELETE FROM DELETED_EQUIV WHERE DELETED = $deleted AND $equiv_clean
 			$query = "DELETE FROM `deleted_equiv` WHERE DELETED = \"$deleted\" ";
 			if (!empty($equivclean))
@@ -164,8 +148,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
 
 
-	public function getAccountInfoColumns()
-	{
+	public function getAccountInfoColumns(){
 	#SHOW COLUMNS FROM ACCOUNTINFO
 		$query = "SHOW COLUMNS FROM `accountinfo`";
 		$columns = $this->db->queryOrDie($query);
@@ -175,9 +158,19 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 		$res;
 		return $res;
 	}
-
-
-
 }
+?>
 
-	?>
+
+
+
+
+
+
+
+
+
+
+
+
+
