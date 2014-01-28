@@ -7,8 +7,7 @@ plugin_ocsinventoryng_checkRight("ocsng", "w");
 Html::header('OCS Inventory NG', "", "plugins", "ocsinventoryng", "import");
 
 //$soapclient = new PluginOcsinventoryngOcsSoapClient('http://localhost', 'admin', 'factorfx');
-
-
+$dbclient = new PluginOcsinventoryngOcsDbClient(1,'ocstest','ocsuser','ocspass','ocsweb');
 var_dump($dbclient);
 ?>
 <p>
@@ -42,12 +41,14 @@ echo $computer['ID'] ." => ". $computer['NAME'] ."</br>" ;
 
 </br>
 ####################################################</br>
-###############     Account Info   #################</br>
+############      Account Info(7) #################</br>
 ####################################################</br>
 <?php
-$accountinfo = $dbclient->getAccountInfo(37);
+$accountinfo = $dbclient->getAccountInfo(7);
 print_r($accountinfo);
+var_dump($accountinfo);
 ?>
+
 
 
 
@@ -128,9 +129,6 @@ print_r($delete);
 ?>
 
 </p>
-
-
-
 
 
 
