@@ -1511,33 +1511,22 @@ JAVASCRIPT;
 
 
    static function manageDeleted($plugin_ocsinventoryng_ocsservers_id) {
-      global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
+      global $DB, $CFG_GLPI;
 
       if (!(self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id) && self::checkVersion($plugin_ocsinventoryng_ocsservers_id))) {
          return false;
       }
 
-      $query = "SELECT *
-                FROM `deleted_equiv`
-                ORDER BY `DATE`";
-      $result = $PluginOcsinventoryngDBocs->query($query);
-
-      if ($PluginOcsinventoryngDBocs->numrows($result)) {
-         $deleted = array();
-         while ($data = $PluginOcsinventoryngDBocs->fetch_array($result)) {
-            $deleted[$data["DELETED"]] = $data["EQUIVALENT"];
-         }
-
-         if (count($deleted)) {
+      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $deleted = $ocsClient->getDeletedComputers();
+      
+      if (count($deleted)) {
             foreach ($deleted as $del => $equiv) {
-               if (!empty ($equiv) && !is_null($equiv)) { // New name
+               if (!empty($equiv) && !is_null($equiv)) { // New name
 
                   // Get hardware due to bug of duplicates management of OCS
                   if (strstr($equiv,"-")) {
-                     $query_ocs = "SELECT *
-                                   FROM `hardware`
-                                   WHERE `DEVICEID` = '$equiv'";
-                     $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
+                     $res = $ocsClient->searchComputers('DEVICEID', $equiv);
 
                      if ($data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs)) {
                         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
@@ -1637,19 +1626,8 @@ JAVASCRIPT;
                   self::cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_toclean);
                }
 
-               // Delete item in DB
-               $equiv_clean=" `EQUIVALENT` = '$equiv'";
-               if (empty($equiv)) {
-                  $equiv_clean=" (`EQUIVALENT` = '$equiv'
-                                  OR `EQUIVALENT` IS NULL ) ";
-               }
-               $query="DELETE
-                       FROM `deleted_equiv`
-                       WHERE `DELETED` = '$del'
-                             AND $equiv_clean";
-               $PluginOcsinventoryngDBocs->query($query);
+               $ocsClient->delEquiv($del, $equiv);
             }
-         }
       }
    }
 
@@ -2943,8 +2921,7 @@ JAVASCRIPT;
     *
     * @return nothing
    **/
-   static function showComputersToAdd($plugin_ocsinventoryng_ocsservers_id, $advanced, $check,
-                                      $start, $entity=0, $tolinked=false){
+   static function showComputersToAdd($plugin_ocsinventoryng_ocsservers_id, $advanced, $check, $start, $entity=0, $tolinked=false){
       global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
       /* TODO test soap here first */
 

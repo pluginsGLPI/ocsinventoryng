@@ -28,6 +28,27 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 	public function checkConnection() {
 		return !is_soap_fault($this->soapClient->ocs_config_V2('LOGLEVEL'));
 	}
+	
+	public function searchComputers($field, $value) {
+		$xml = $this->callSoap('search_computers_V1', array($field, $value));
+
+		$computerObjs = simplexml_load_string($xml);
+		
+		$computers = array();
+		foreach ($computerObjs as $obj) {
+			$computers[] = array(
+				'ID' => (string) $obj->DATABASEID,
+				'CHECKSUM' => (string) $obj->CHECKSUM,
+				'DEVICEID' => (string) $obj->DEVICEID,
+				'LASTCOME' => (string) $obj->LASTCOME,
+				'LASTDATE' => (string) $obj->LASTDATE,
+				'NAME' => (string) $obj->NAME,
+				'TAG' => (string) $obj->TAG
+			);
+		}
+		
+		return $computers;
+	}
 
 	/**
 	 * @see PluginOcsinventoryngOcsClient::getComputers()
@@ -55,7 +76,6 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		)));
 		
 		$computerObjs = simplexml_load_string($xml);
-		print_r($computerObjs);
 		
 		$computers = array();
 		foreach ($computerObjs as $obj) {
@@ -101,14 +121,36 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 			$tvalue
 		));
 	}
+	
+	public function getDeletedComputers() {
+		$xml = $this->callSoap('get_deleted_computers_V1', new PluginOcsinventoryngOcsSoapRequest(array()));
+		$deletedObjs = simplexml_load_string($xml);
+		$res = array();
+
+		foreach ($deletedObjs as $obj) {
+			$res[(string) $obj['DELETED']] = (string) $obj['EQUIVALENT'];
+		}
+		
+		return $res;
+	}
+
+	public function removeDeletedComputers($deleted, $equiv = null) {
+		if ($equiv) {
+			$this->callSoap('remove_deleted_computer_V1', array($deleted, $equiv));
+		} else {
+			$this->callSoap('remove_deleted_computer_V1', array($deleted));
+		}
+	}
+	
+	public function delEquiv($deleted, $equivclean = null) {
+		// TO REMOVE
+	}
 
 	public function getCategorie($table, $condition = 1, $sort) {}
 
 	public function getUnique($columns, $table, $conditions, $sort) {}
 
 	public function setChecksum($checksum, $id) {}
-
-	public function delEquiv($deleted, $equivclean = null) {}
 
 	public function getAccountInfoColumns() {}
 	
@@ -219,7 +261,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 			$res = implode('', $res);
 		}
 		
-		return $res;
+		return is_string($res) ? trim($res) : $res;
 	}
 }
 

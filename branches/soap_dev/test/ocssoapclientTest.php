@@ -64,11 +64,36 @@ class ocssoapclientTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @depends testConnect
 	 */
-	public function testConfig() {
-		$result = $this->client->getConfig('LOGPATH');
+	public function testGetConfig() {
+		$result = $this->client->getConfig('OCS_FILES_PATH');
 		$expected = array (
 			"IVALUE" => 0,
-			"TVALUE" => '/var/log/ocsinventory-server'
+			"TVALUE" => '/tmp'
+		);
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @depends testGetConfig
+	 */
+	public function testSetConfig() {
+		$oldconf = $this->client->getConfig('OCS_FILES_PATH');
+		$this->client->setConfig('OCS_FILES_PATH', 1, 'test');
+		$result = $this->client->getConfig('OCS_FILES_PATH');
+		$expected = array (
+			"IVALUE" => 1,
+			"TVALUE" => 'test'
+		);
+		
+		$this->assertEquals($expected, $result);
+		
+		// Put old config back
+		$this->client->setConfig('OCS_FILES_PATH', $oldconf['IVALUE'], $oldconf['TVALUE']);
+		
+		$result = $this->client->getConfig('OCS_FILES_PATH');
+		$expected = array (
+			"IVALUE" => 0,
+			"TVALUE" => '/tmp'
 		);
 		$this->assertEquals($expected, $result);
 	}
