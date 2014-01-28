@@ -70,7 +70,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		$xml = $this->callSoap('get_computers_V1', new PluginOcsinventoryngOcsSoapRequest(array(
 			'ENGINE' => 'FIRST',
 			'OFFSET' => 0,
-			'ASKING_FOR' => 'META',
+			'ASKING_FOR' => $options['asking_for'],
 			'CHECKSUM' => $options['checksum'],
 			'WANTED' => $options['wanted']
 		)));
@@ -88,6 +88,29 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 				'NAME' => (string) $obj->NAME,
 				'TAG' => (string) $obj->TAG
 			);
+		}
+		
+		return $computers;
+	}
+	
+	public function getComputerSections($ids, $checksum = self::CHECKSUM_ALL, $wanted = self::WANTED_ALL) {
+		$xml = $this->callSoap('get_computer_sections_V1', array($ids, $checksum, $wanted));
+		
+		$computerObjs = simplexml_load_string($xml);
+		
+		$computers = array();
+		foreach ($computerObjs as $obj) {
+			$id = (int) $obj['ID'];
+			$computer = array();
+			
+			foreach ($obj as $sectionName => $sectionObj) {
+				$computer[$sectionName] = array();
+				foreach ($sectionObj as $key => $val) {
+					$computer[$sectionName][$key] = (string) $val;
+				}
+			}
+			
+			$computers[$id] = $computer;
 		}
 		
 		return $computers;

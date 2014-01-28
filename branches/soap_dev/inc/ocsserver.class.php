@@ -2912,10 +2912,9 @@ JAVASCRIPT;
     *
     * @return nothing
    **/
-   static function showComputersToAdd($plugin_ocsinventoryng_ocsservers_id, $advanced, $check, $start, $entity=0, $tolinked=false){
-      global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
-      /* TODO test soap here first */
-
+   static function showComputersToAdd($serverId, $advanced, $check, $start, $entity=0, $tolinked=false){
+      global $DB, $CFG_GLPI;
+      
       if (!plugin_ocsinventoryng_haveRight("ocsng", "w")){
          return false;
       }
@@ -2925,76 +2924,49 @@ JAVASCRIPT;
          $target = $CFG_GLPI['root_doc'].'/plugins/ocsinventoryng/front/ocsng.link.php';
       }
 
-      $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
-      $WHERE   = self::getTagLimit($cfg_ocs);
+      $cfg_ocs = self::getConfig($serverId);
+      $WHERE   = self::getTagLimit($cfg_ocs); // TODO adapt this to soap
+      
+      $ocsClient = self::getDBocs($serverId);
+      $computers = $ocsClient->getComputers();
 
-      $query_ocs = "SELECT `hardware`.*,
-                           `accountinfo`.`TAG` AS TAG,
-                           `bios`.`SSN` AS SERIAL,
-                           `bios`.`SMODEL`,
-                           `bios`.`SMANUFACTURER`
-                    FROM `hardware`
-                    INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
-                    INNER JOIN `bios` ON (`hardware`.`id` = `bios`.`HARDWARE_ID`)".
-                    (!empty($WHERE)?"WHERE $WHERE":"")."
-                    ORDER BY `hardware`.`NAME`";
-      $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
-
-      // Existing OCS - GLPI link
-      $query_glpi = "SELECT*
-                     FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                     WHERE `plugin_ocsinventoryng_ocsservers_id`
-                              = '$plugin_ocsinventoryng_ocsservers_id'";
-      $result_glpi = $DB->query($query_glpi);
-
-      if ($PluginOcsinventoryngDBocs->numrows($result_ocs) > 0){
-         // Get all hardware from OCS DB
-         $hardware = array();
-
-         while ($data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs)){
-            $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
-            $hardware[$data["ID"]]["date"]         = $data["LASTDATE"];
-            $hardware[$data["ID"]]["name"]         = $data["NAME"];
-            $hardware[$data["ID"]]["TAG"]          = $data["TAG"];
-            $hardware[$data["ID"]]["id"]           = $data["ID"];
-            $hardware[$data["ID"]]["serial"]       = $data["SERIAL"];
-            $hardware[$data["ID"]]["model"]        = $data["SMODEL"];
-            $hardware[$data["ID"]]["manufacturer"] = $data["SMANUFACTURER"];
-
-            $query_network = "SELECT*
-                              FROM `networks`
-                              WHERE `HARDWARE_ID` = '".$data["ID"]."'";
-
-            //Get network informations for this computer
-            //Ignore informations that contains "??"
-            foreach ($PluginOcsinventoryngDBocs->request($query_network) as $network){
-               if (isset($network['IPADDRESS']) && $network['IPADDRESS'] != '??'){
-                  $hardware[$data["ID"]]['IPADDRESS'][] = $network['IPADDRESS'];
-               }
-               if (isset($network['IPSUBNET']) && $network['IPSUBNET'] != '??'){
-                  $hardware[$data["ID"]]['IPSUBNET'][] = $network['IPSUBNET'];
-               }
-               if (isset($network['MACADDRESS']) && $network['MACADDR'] != '??'){
-                  $hardware[$data["ID"]]['MACADDRESS'][] = $network['MACADDR'];
-               }
-            }
-         }
-
+      if (count($computers)) {
          // Get all links between glpi and OCS
+         $query_glpi = "SELECT ocsid
+                        FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                        WHERE `plugin_ocsinventoryng_ocsservers_id` = '$serverId'";
+         $result_glpi = $DB->query($query_glpi);
          $already_linked = array();
          if ($DB->numrows($result_glpi) > 0){
-            while ($data = $PluginOcsinventoryngDBocs->fetch_array($result_glpi)){
-               $already_linked[$data["ocsid"]] = $data["last_update"];
+            while ($data = $DB->fetch_array($result_glpi)){
+               $already_linked []= $data["ocsid"];
             }
          }
-
-         // Clean $hardware from already linked element
-         if (count($already_linked) > 0){
-            foreach ($already_linked as $ID => $date){
-               if (isset ($hardware[$ID]) && isset ($already_linked[$ID])){
-                  unset ($hardware[$ID]);
-               }
+         
+         // Get all hardware from OCS DB
+         $hardware = array();
+         foreach ($computers as $data) {
+            // Clean $hardware from already linked element
+            if (!in_array($data['ID'], $already_linked)) {
+	            $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
+	            $hardware[$data["ID"]]["date"] = $data["LASTDATE"];
+	            $hardware[$data["ID"]]["name"] = $data["NAME"];
+	            $hardware[$data["ID"]]["TAG"]  = $data["TAG"];
+	            $hardware[$data["ID"]]["id"]   = $data["ID"];
             }
+         }
+         
+         $computerIds = array_keys($hardware);
+         $biosData = $ocsClient->getComputerSections(
+         		$computerIds,
+         		PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
+         		PluginOcsinventoryngOcsClient::WANTED_NONE
+         );
+         
+         foreach ($biosData as $id => $data) {
+         	$hardware[$id]["serial"]       = $data['BIOS']["SSN"];
+         	$hardware[$id]["model"]        = $data['BIOS']["SMODEL"];
+         	$hardware[$id]["manufacturer"] = $data['BIOS']["SMANUFACTURER"];
          }
 
          if ($tolinked && count($hardware)){
@@ -3074,7 +3046,7 @@ JAVASCRIPT;
                $data = array();
 
                if ($advanced && !$tolinked){
-                  $data = $rule->processAllRules(array('ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                  $data = $rule->processAllRules(array('ocsservers_id' => $serverId,
                                                        '_source'       => 'ocsinventoryng'),
                                                  array(), array('ocsid' =>$tab["id"]));
                }
@@ -3124,7 +3096,7 @@ JAVASCRIPT;
                   $rulelink_results = array();
                   $params           = array('entities_id' => $entity,
                                             'plugin_ocsinventoryng_ocsservers_id'
-                                                          => $plugin_ocsinventoryng_ocsservers_id);
+                                                          => $serverId);
                   $rulelink_results = $rulelink->processAllRules(Toolbox::stripslashes_deep($tab),
                                                                  array(), $params);
 
@@ -3152,7 +3124,7 @@ JAVASCRIPT;
             echo "<input class='submit' type='submit' name='import_ok' value=\"".
                    _sx('button', 'Import', 'ocsinventoryng')."\">\n";
             echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' ".
-                   "value='$plugin_ocsinventoryng_ocsservers_id'>";
+                   "value='$serverId'>";
             echo "</td></tr>";
             echo "</table>\n";
             Html::closeForm();
@@ -3948,33 +3920,33 @@ JAVASCRIPT;
    }
 
 
-   /**
-    * Get a connection to the OCS server
-    * 
-    * @param $serverId the ocs server id
-    * 
-    * @return PluginOcsinventoryngOcsClient the ocs client (database or soap)
-    */
-   static function getDBocs($serverId) {
-      $config = self::getConfig($serverId);
-      
-      if ($config['conn_type'] == self::CONN_TYPE_DB) {
-         return new PluginOcsinventoryngOcsDbClient(
-         		$serverId,
-               	$config['ocs_db_host'],
-         		$config['ocs_db_user'],
-         		$config['ocs_db_passwd'],
-         		$config['ocs_db_name']
-         );
-      } else {
-         return new PluginOcsinventoryngOcsSoapClient(
-         		$serverId,
-               	$config['ocs_db_host'],
-         		$config['ocs_db_user'],
-         		$config['ocs_db_passwd']
-         );
-      }
-   }
+	/**
+	 * Get a connection to the OCS server
+	 * 
+	 * @param $serverId the ocs server id
+	 * 
+	 * @return PluginOcsinventoryngOcsClient the ocs client (database or soap)
+	 */
+	static function getDBocs($serverId) {
+		$config = self::getConfig($serverId);
+		
+		if ($config['conn_type'] == self::CONN_TYPE_DB) {
+			return new PluginOcsinventoryngOcsDbClient(
+				$serverId,
+				$config['ocs_db_host'],
+				$config['ocs_db_user'],
+				$config['ocs_db_passwd'],
+				$config['ocs_db_name']
+			);
+		} else {
+			return new PluginOcsinventoryngOcsSoapClient(
+				$serverId,
+				$config['ocs_db_host'],
+				$config['ocs_db_user'],
+				$config['ocs_db_passwd']
+			);
+		}
+	}
 
 
    /**
