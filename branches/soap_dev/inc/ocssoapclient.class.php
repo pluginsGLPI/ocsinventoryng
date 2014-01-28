@@ -37,8 +37,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		$computers = array();
 		foreach ($computerObjs as $obj) {
 			$computers[] = array(
-				'ID' => (string) $obj->DATABASEID,
-				'CHECKSUM' => (string) $obj->CHECKSUM,
+				'ID' => (int) $obj->DATABASEID,
+				'CHECKSUM' => (int) $obj->CHECKSUM,
 				'DEVICEID' => (string) $obj->DEVICEID,
 				'LASTCOME' => (string) $obj->LASTCOME,
 				'LASTDATE' => (string) $obj->LASTDATE,
@@ -80,8 +80,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		$computers = array();
 		foreach ($computerObjs as $obj) {
 			$computers[] = array(
-				'ID' => (string) $obj->DATABASEID,
-				'CHECKSUM' => (string) $obj->CHECKSUM,
+				'ID' => (int) $obj->DATABASEID,
+				'CHECKSUM' => (int) $obj->CHECKSUM,
 				'DEVICEID' => (string) $obj->DEVICEID,
 				'LASTCOME' => (string) $obj->LASTCOME,
 				'LASTDATE' => (string) $obj->LASTDATE,
@@ -103,7 +103,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		if (!is_soap_fault($xml)) {
 			$configObj = simplexml_load_string($xml);
 			$config = array(
-				'IVALUE' => (string) $configObj->IVALUE,
+				'IVALUE' => (int) $configObj->IVALUE,
 				'TVALUE' => (string) $configObj->TVALUE
 			);
 			return $config;
@@ -141,16 +141,19 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 			$this->callSoap('remove_deleted_computer_V1', array($deleted));
 		}
 	}
-	
-	public function delEquiv($deleted, $equivclean = null) {
-		// TO REMOVE
-	}
 
 	public function getCategorie($table, $condition = 1, $sort) {}
 
 	public function getUnique($columns, $table, $conditions, $sort) {}
 
-	public function setChecksum($checksum, $id) {}
+	public function setChecksum($checksum, $id) {
+		$this->callSoap('reset_checksum_V1', array($checksum, $id));
+	}
+	
+	public function getChecksum($id) {
+		$xml = $this->callSoap('get_checksum_V1', $id);
+		return (int) simplexml_load_string($xml);
+	}
 
 	public function getAccountInfoColumns() {}
 	

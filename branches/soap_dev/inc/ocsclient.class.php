@@ -47,6 +47,27 @@ abstract class PluginOcsinventoryngOcsClient {
 	abstract public function checkConnection();
 
 	/**
+	 * Returns a list of computers for a given filter
+	 *
+	 * @param string $field The field to filter computers
+	 * @param mixed $value The value to filter computers
+	 * @return array List of computers :
+	 * 		array (
+	 * 			array (
+	 * 				'ID' => ...
+	 * 				'CHECKSUM' => ...
+	 * 				'DEVICEID' => ...
+	 * 				'LASTCOME' => ...
+	 * 				'LASTDATE' => ...
+	 * 				'NAME' => ...
+	 * 				'TAG' => ...
+	 * 			),
+	 * 			...
+	 * 		)
+	 */
+	abstract public function searchComputers($field, $value);
+
+	/**
 	 * Returns a list of computers
 	 *
 	 * @param array $options Possible options :
@@ -97,6 +118,24 @@ abstract class PluginOcsinventoryngOcsClient {
 	abstract public function getUnique($columns, $table, $conditions, $sort);
 
 	abstract public function setChecksum($checksum, $id);
+	
+	/**
+	 * Gets the checksum for the given computer
+	 * 
+	 * @param int $id The computer id
+	 * @return int The checksum
+	 */
+	abstract public function getChecksum($id);
+	
+	/**
+	 * Get the computer that were deleted (or merged) in ocsinventory
+	 * 
+	 * @return array The list of deleted computers : (DELETED contains the id or deviceid of the computer and equivalent and EQUIV contains the new id if the computer was marged)
+	 * 		array (
+	 * 			'DELETED' => 'EQUIV'
+	 * 		)
+	 */
+	abstract public function getDeletedComputers();
 
 	abstract public function removeDeletedComputers($deleted, $equivclean = null);
 

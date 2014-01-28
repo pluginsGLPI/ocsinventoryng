@@ -1528,7 +1528,9 @@ JAVASCRIPT;
                   if (strstr($equiv,"-")) {
                      $res = $ocsClient->searchComputers('DEVICEID', $equiv);
 
-                     if ($data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs)) {
+                     if (count($res)) {
+                        $data = $res[0];
+                     	
                         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                                   SET `ocsid` = '" . $data["ID"] . "',
                                       `ocs_deviceid` = '" . $data["DEVICEID"] . "'
@@ -1537,12 +1539,7 @@ JAVASCRIPT;
                                                 = '$plugin_ocsinventoryng_ocsservers_id'";
                         $DB->query($query);
 
-                        //Update hardware checksum due to a bug in OCS
-                        //(when changing netbios name, software checksum is set instead of hardware checksum...)
-                        $querychecksum = "UPDATE `hardware`
-                                          SET `CHECKSUM` = (CHECKSUM | ".pow(2, self::HARDWARE_FL).")
-                                          WHERE `ID` = '".$data["ID"]."'";
-                        $PluginOcsinventoryngDBocs->query($querychecksum);
+                        $ocsClient->setChecksum($data['CHECKSUM'] | PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE, $data['ID']);
                   // } else {
                         // We're damned ! no way to find new ID
                         // TODO : delete ocslinks ?
@@ -1550,12 +1547,11 @@ JAVASCRIPT;
                      }
 
                   } else {
-                     $query_ocs = "SELECT *
-                                   FROM `hardware`
-                                   WHERE `ID` = '$equiv'";
-                     $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
+                     $res = $ocsClient->searchComputers('ID', $equiv);
 
-                     if ($data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs)) {
+                     if (count($res)) {
+                        $data = $res[0];
+                     	
                         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                                   SET `ocsid` = '" . $data["ID"] . "',
                                       `ocs_deviceid` = '" . $data["DEVICEID"] . "'
@@ -1564,12 +1560,7 @@ JAVASCRIPT;
                                                 = '$plugin_ocsinventoryng_ocsservers_id'";
                         $DB->query($query);
 
-                        //Update hardware checksum due to a bug in OCS
-                        //(when changing netbios name, software checksum is set instead of hardware checksum...)
-                        $querychecksum = "UPDATE `hardware`
-                                          SET `CHECKSUM` = (CHECKSUM | ".pow(2, self::HARDWARE_FL).")
-                                          WHERE `ID` = '".$data["ID"]."'";
-                        $PluginOcsinventoryngDBocs->query($querychecksum);
+                        $ocsClient->setChecksum($data['CHECKSUM'] | PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE, $data['ID']);
                      } else {
                         // Not found, probably because ID change twice since previous sync
                         // No way to found new DEVICEID
@@ -1626,7 +1617,7 @@ JAVASCRIPT;
                   self::cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_toclean);
                }
 
-               $ocsClient->delEquiv($del, $equiv);
+               $ocsClient->removeDeletedComputers($del, $equiv);
             }
       }
    }

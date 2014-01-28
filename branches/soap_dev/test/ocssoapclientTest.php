@@ -98,5 +98,32 @@ class ocssoapclientTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($expected, $result);
 	}
 
+	/**
+	 * @depends testConnect
+	 */
+	public function testGetChecksum() {
+		$checksum = $this->client->getChecksum(15);
+		$expected = 40;
+		$this->assertEquals($expected, $checksum);
+	}
+
+	/**
+	 * @depends testGetChecksum
+	 */
+	public function testSetChecksum() {
+		$oldchecksum = $this->client->getChecksum(15);
+		$this->client->setChecksum(PluginOcsinventoryngOcsClient::CHECKSUM_ALL, 15);
+		$newchecksum = $this->client->getChecksum(15);
+		$expected = PluginOcsinventoryngOcsClient::CHECKSUM_ALL;
+		
+		$this->assertEquals($expected, $newchecksum);
+		
+		$this->client->setChecksum($oldchecksum, 15);
+		$newchecksum = $this->client->getChecksum(15);
+		$expected = 40;
+		
+		$this->assertEquals($expected, $newchecksum);
+	}
 }
+
 ?>

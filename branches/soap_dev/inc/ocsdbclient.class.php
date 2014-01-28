@@ -45,6 +45,13 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 		return params;	
 	}
 	
+	/**
+	 * @see PluginOcsinventoryngOcsClient::searchComputers()
+	 */
+	public function searchComputers($field, $value) {
+		// TODO
+	}
+	
 	public function getComputers($conditions=array(),$sort=NULL){
 		$query = "SELECT * FROM `hardware` " ;
 		$params = $this->parseConditions($conditions);
@@ -128,9 +135,22 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 		$res = $checksum;
 		return $res;
 	}
+	
+	/**
+	 * @see PluginOcsinventoryngOcsClient::getChecksum()
+	 */
+	public function getChecksum($id) {
+		//  TODO
+	}
 
 
 
+	/**
+	 * @see PluginOcsinventoryngOcsClient::getDeletedComputers()
+	 */
+	public function getDeletedComputers() {
+		// TODO
+	}
 
 
 
