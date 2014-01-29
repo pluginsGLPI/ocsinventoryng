@@ -42,7 +42,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 			}
 
 		}
-		var_dump($params);
 		return $params;	
 	}
 
@@ -94,7 +93,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 		$query .= $params;
 
 		$computers = $this->db->queryOrDie($query);
-		var_dump($query);
 		while ($computer = $this->db->fetch_assoc($computers)) {
 			$computer['TAG']= $this->getTag($computer['ID']);
 			$res[]=$computer;
@@ -197,7 +195,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 		while ($del =  $this->db->fetch_assoc($deleted)) {
 			$computers[]=$del;
 		}
-		var_dump($computers);
 		foreach ($computers as $computer) {
 			$res[$computer['DELETED']] = $computer['EQUIVALENT'];
 		}
@@ -209,8 +206,10 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
 	public function removeDeletedComputers($deleted, $equivclean = null){
 		$query = "DELETE FROM `deleted_equiv` WHERE DELETED = \"$deleted\" ";
-		if (!empty($equivclean))
-			$query .= $equivclean;
+		 if (empty($equivclean)) {
+                  $equiv_clean=" (`EQUIVALENT` = '$equiv'
+                                  OR `EQUIVALENT` IS NULL ) ";
+       }
 		$delete = $this->db->queryOrDie($query);
 		$res = $delete;
 		return $res;
