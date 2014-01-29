@@ -167,6 +167,14 @@ $this->assertEquals($expected,$res);
         $this->client->setChecksum($GLOBALS['checksum'],$GLOBALS['idexist']);
     }
 
+    /**
+    * @depends  testConnection
+    */
+    public function testGetChecksum($id){
+        $res =  $this->client->getChecksum($GLOBALS['idexist']);
+        $this->assertEquals($GLOBALS['checksum'],$res);
+    }
+
 
     /**
     * @depends testConnection
@@ -283,6 +291,15 @@ $this->assertNotEquals($expected,$res);
         $res = $this->client->getDB()->affected_rows();
         $this->assertEquals(0,$res);
     }
+
+    /**
+    * @depends testGetChecksum
+    */
+    public function testFalseGetChecksum($checksum, $id){
+        $res = $this->client->getChecksum($GLOBALS['idnotexist']);
+        $this->assertEquals(0,$res);
+    }
+
 
 
     /**

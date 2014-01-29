@@ -89,6 +89,18 @@ abstract class PluginOcsinventoryngOcsClient {
 	 */
 	abstract public function getComputers($conditions = array(), $sort = NULL);
 
+	/**
+	 * Return the account infos for the given id
+	 * 
+	 * @param int $id The id 
+	 * @return array Account Infos :
+	 *		array(
+	 *			HARDWARE_ID' => ...
+ 	 *		   'TAG' => ...
+  	 *		 	... => ... 
+ 	 *	 	)
+	 *	
+	 */
 	abstract public function getAccountInfo($id);
 
 	/**
@@ -117,6 +129,14 @@ abstract class PluginOcsinventoryngOcsClient {
 
 	abstract public function getUnique($columns, $table, $conditions, $sort);
 
+	/**
+	 * Sets the checksum for the given computer
+	 * 
+	 * @param int $checksum The checksum value 
+	 * @param int $id The computer id
+	 * @return void
+	 *
+	 */
 	abstract public function setChecksum($checksum, $id);
 	
 	/**
@@ -138,7 +158,17 @@ abstract class PluginOcsinventoryngOcsClient {
 	abstract public function getDeletedComputers();
 
 	abstract public function removeDeletedComputers($deleted, $equivclean = null);
-
+	
+	/**
+	 * Get the account infox columns
+	 * 
+	 * @return array 
+	 * 		array (
+	 * 			'0' => 'HARDWARE_ID',
+	 *			'1' => 'TAG',	
+	 *			'2' => ...
+	 * 		)
+	 */
 	abstract public function getAccountInfoColumns();
 
 	/*************************/
@@ -175,3 +205,5 @@ abstract class PluginOcsinventoryngOcsClient {
 }
 
 ?>
+
+
