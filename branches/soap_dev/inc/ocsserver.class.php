@@ -2937,10 +2937,8 @@ JAVASCRIPT;
       }
 
       $cfg_ocs = self::getConfig($serverId);
-      $WHERE   = self::getTagLimit($cfg_ocs); // TODO adapt this to soap
       
-      $ocsClient = self::getDBocs($serverId);
-      $ocsResult = $ocsClient->getComputers(array(
+      $computerOptions = array(
       		'OFFSET' => $start,
       		'MAX_RECORDS' => $_SESSION['glpilist_limit'],
          	'FILTER' => array(
@@ -2948,8 +2946,20 @@ JAVASCRIPT;
       		),
       		'DISPLAY' => array(
          		'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
-         	)
-      ));
+         	),
+      		'ORDER' => 'NAME'
+      );
+
+      if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
+         $computerOptions['FILTER']['TAGS'] = $tag_limit;
+      }
+
+      if ($cfg_ocs["tag_limit"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
+         $computerOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
+      }
+      
+      $ocsClient = self::getDBocs($serverId);
+      $ocsResult = $ocsClient->getComputers($computerOptions);
       $computers = $ocsResult['COMPUTERS'];
 
       if (count($computers)) {
