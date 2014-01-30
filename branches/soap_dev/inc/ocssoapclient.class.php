@@ -86,10 +86,15 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 				);
 				
 				foreach ($obj->INVENTORY->children() as $sectionName => $sectionObj) {
-					$computer[$sectionName] = array();
+					$section = array();
 					foreach ($sectionObj as $key => $val) {
-						$computer[$sectionName][$key] = (string) $val;
+						$section[$key] = (string) $val;
 					}
+
+					if (!isset($computer[$sectionName])) {
+						$computer[$sectionName] = array();
+					}
+					$computer[$sectionName] []= $section;
 				}
 				
 				$computers []= $computer;

@@ -2670,20 +2670,48 @@ JAVASCRIPT;
 
 
    static function showComputersToUpdate($plugin_ocsinventoryng_ocsservers_id, $check, $start){
-      global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
+      global $DB, $CFG_GLPI;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       if (!plugin_ocsinventoryng_haveRight("ocsng", "w")){
          return false;
       }
 
-      $cfg_ocs    = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
-      $query_ocs  = "SELECT*
-                     FROM `hardware`
-                     WHERE (`CHECKSUM` & " . $cfg_ocs["checksum"] . ") > '0'
-                     ORDER BY `LASTDATE`";
-      $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
+      $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
+      
+      // Get linked computer ids in GLPI
+      $already_linked_query = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid,
+                               FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                               WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
+                                            = '$plugin_ocsinventoryng_ocsservers_id'";
+      $already_linked_result = $DB->query($already_linked_query);
+      
+      if ($DB->numrows($already_linked_result) == 0) {
+         echo "<div class='center b'>".__('No new computer to be updated', 'ocsinventoryng')."</div>";
+         return;
+      }
+      
+      $already_linked_ids = array();
+      while ($data = $DB->fetch_assoc($already_linked_result)) {
+         $already_linked_ids []= $data['ocsid'];
+      }
+      
+      // Fetch linked computers from ocs
+      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $computers = $ocsClient->getComputers(array(
+      		'OFFSET' => $start,
+      		'MAX_RECORDS' => $_SESSION['glpilist_limit'],
+      		'FILTER' => array(
+      			'IDS' => $already_linked_ids,
+      			'CHECKSUM' => $cfg_ocs["checksum"]
+      		)
+      ));
+      
+      // Get all ids of the returned computers
+      $ocs_computer_ids = array();
+      
 
+      // Fetch all linked computers from GLPI that were returned from OCS
       $query_glpi = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` AS last_update,
                             `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` AS computers_id,
                             `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid,
@@ -2694,6 +2722,7 @@ JAVASCRIPT;
                      LEFT JOIN `glpi_computers` ON (`glpi_computers`.`id`=computers_id)
                      WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
                                  = '$plugin_ocsinventoryng_ocsservers_id'
+                            AND `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` IN (".implode(',', $ocs_computer_ids).")
                      ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` DESC,
                               last_update,
                               name";
@@ -2958,9 +2987,16 @@ JAVASCRIPT;
             $hardware[$id]["name"]         = $data['META']["NAME"];
             $hardware[$id]["TAG"]          = $data['META']["TAG"];
             $hardware[$id]["id"]           = $data['META']["ID"];
-         	$hardware[$id]["serial"]       = $data['BIOS']["SSN"];
-         	$hardware[$id]["model"]        = $data['BIOS']["SMODEL"];
-         	$hardware[$id]["manufacturer"] = $data['BIOS']["SMANUFACTURER"];
+            
+            if (count($data['BIOS'])) {
+	        	$hardware[$id]["serial"]       = $data['BIOS'][0]["SSN"];
+	        	$hardware[$id]["model"]        = $data['BIOS'][0]["SMODEL"];
+	        	$hardware[$id]["manufacturer"] = $data['BIOS'][0]["SMANUFACTURER"];
+            } else {
+            	$hardware[$id]["serial"]       = '';
+            	$hardware[$id]["model"]        = '';
+            	$hardware[$id]["manufacturer"] = '';
+            }
          }
 
          if ($tolinked && count($hardware)){
