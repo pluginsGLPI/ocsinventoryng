@@ -306,7 +306,6 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		if (is_array($res)) {
 			$res = implode('', $res);
 		}
-		var_dump($method, $request, $res);
 		
 		return is_string($res) ? trim($res) : $res;
 	}
