@@ -100,7 +100,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 			$offset += $maxRecords;
 			
 			// We can't load more records than there is in ocs
-			$end = (is_null($orignalEnd) or $originalEnd > $totalCount) ? $totalCount : $originalEnd;
+			$end = (is_null($originalEnd) or $originalEnd > $totalCount) ? $totalCount : $originalEnd;
 			
 			if ($offset + $maxRecords > $end) {
 				$maxRecords = $end - $offset;
@@ -306,6 +306,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		if (is_array($res)) {
 			$res = implode('', $res);
 		}
+		var_dump($method, $request, $res);
 		
 		return is_string($res) ? trim($res) : $res;
 	}
