@@ -53,44 +53,64 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 	/**
 	 * @see PluginOcsinventoryngOcsClient::getComputers()
 	 */
-	public function getComputers($conditions = array(), $sort = NULL) {
-		// TODO don't use simplexml
-		// TODO paginate
-		// Get options
-		$defaultOptions = array(
-			'offset' => 0,
-			'asking_for' => 'META',
-			'checksum' => self::CHECKSUM_ALL,
-			'wanted' => self::WANTED_ALL
-		);
-		
-		// TODO options in params
-		$options = array_merge($defaultOptions, array()/*$options*/);
-		
-		$xml = $this->callSoap('get_computers_V1', new PluginOcsinventoryngOcsSoapRequest(array(
-			'ENGINE' => 'FIRST',
-			'OFFSET' => 0,
-			'ASKING_FOR' => $options['asking_for'],
-			'CHECKSUM' => $options['checksum'],
-			'WANTED' => $options['wanted']
-		)));
-		
-		$computerObjs = simplexml_load_string($xml);
-		
+	public function getComputers($options) {
+		$offset = $originalOffset = isset($options['OFFSET']) ? (int) $options['OFFSET'] : 0;
+		$maxRecords = isset($options['MAX_RECORDS']) ? (int) $options['MAX_RECORDS'] : null;
+		$originalEnd = isset($options['MAX_RECORDS']) ? $originalOffset + $maxRecords : null;
+
 		$computers = array();
-		foreach ($computerObjs as $obj) {
-			$computers[] = array(
-				'ID' => (int) $obj->DATABASEID,
-				'CHECKSUM' => (int) $obj->CHECKSUM,
-				'DEVICEID' => (string) $obj->DEVICEID,
-				'LASTCOME' => (string) $obj->LASTCOME,
-				'LASTDATE' => (string) $obj->LASTDATE,
-				'NAME' => (string) $obj->NAME,
-				'TAG' => (string) $obj->TAG
-			);
-		}
 		
-		return $computers;
+		do {
+			$options['OFFSET'] = $offset;
+			if (!is_null($maxRecords)) {
+				$options['MAX_RECORDS'] = $maxRecords;
+			}
+			
+			$xml = $this->callSoap('get_computers_V2', new PluginOcsinventoryngOcsSoapRequest($options));
+			
+			$computerObjs = simplexml_load_string($xml);
+			
+			foreach ($computerObjs as $obj) {
+				$meta = $obj->META;
+				
+				$computer = array(
+					'META' => array(
+						'ID' => (int) $meta->DATABASEID,
+						'CHECKSUM' => (int) $meta->CHECKSUM,
+						'DEVICEID' => (string) $meta->DEVICEID,
+						'LASTCOME' => (string) $meta->LASTCOME,
+						'LASTDATE' => (string) $meta->LASTDATE,
+						'NAME' => (string) $meta->NAME,
+						'TAG' => (string) $meta->TAG
+					)
+				);
+				
+				foreach ($obj->INVENTORY->children() as $sectionName => $sectionObj) {
+					$computer[$sectionName] = array();
+					foreach ($sectionObj as $key => $val) {
+						$computer[$sectionName][$key] = (string) $val;
+					}
+				}
+				
+				$computers []= $computer;
+			}
+			
+			$totalCount = (int) $computerObjs['TOTAL_COUNT'];
+			$maxRecords = (int) $computerObjs['MAX_RECORDS'];
+			$offset += $maxRecords;
+			
+			// We can't load more records than there is in ocs
+			$end = (is_null($orignalEnd) or $originalEnd > $totalCount) ? $totalCount : $originalEnd;
+			
+			if ($offset + $maxRecords > $end) {
+				$maxRecords = $end - $offset;
+			}
+		} while ($options['OFFSET'] + $computerObjs['MAX_RECORDS'] < $end);
+		
+		return array(
+			'TOTAL_COUNT' => $totalCount,
+			'COMPUTERS' => $computers
+		);
 	}
 	
 	public function getComputerSections($ids, $checksum = self::CHECKSUM_ALL, $wanted = self::WANTED_ALL) {

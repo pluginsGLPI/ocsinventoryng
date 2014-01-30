@@ -71,23 +71,42 @@ abstract class PluginOcsinventoryngOcsClient {
 	 * Returns a list of computers
 	 *
 	 * @param array $options Possible options :
-	 * 	checksum: filter computers for modified sections (see CHECKSUM_* constants)
-	 * 	wanted: filter computers for modified sections (see WANTED_* constants)
+	 * 		array(
+	 * 			'OFFSET' => int,
+	 * 			'MAX_RECORDS' => int,
+	 * 			'FILTER' => array(						// filter the computers to return
+	 * 				'IDS' => array(int),				// list of computer ids to select
+	 * 				'EXCLUDE_IDS' => array(int),		// list of computer ids to exclude
+	 * 				'TAGS' => array(string),			// list of computer tags to select
+	 * 				'EXCLUDE_TAGS' => array(string),	// list of computer tags to exclude
+	 * 				'CHECKSUM' => int					// filter which sections have been modified (see CHECKSUM_* constants)
+	 * 			),
+	 * 			'DISPLAY' => array(		// select which sections of the computers to return
+	 * 				'CHECKSUM' => int,	// inventory sections to return (see CHECKSUM_* constants)
+	 * 				'WANTED' => int		// special sections to return (see WANTED_* constants)
+	 * 			)
+	 * 		)
+	 * 
 	 * @return array List of computers :
 	 * 		array (
 	 * 			array (
-	 * 				'ID' => ...
-	 * 				'CHECKSUM' => ...
-	 * 				'DEVICEID' => ...
-	 * 				'LASTCOME' => ...
-	 * 				'LASTDATE' => ...
-	 * 				'NAME' => ...
-	 * 				'TAG' => ...
+	 * 				'META' => array(
+	 * 					'ID' => ...
+	 * 					'CHECKSUM' => ...
+	 * 					'DEVICEID' => ...
+	 * 					'LASTCOME' => ...
+	 * 					'LASTDATE' => ...
+	 * 					'NAME' => ...
+	 * 					'TAG' => ...
+	 * 				),
+	 * 				'SECTION1' => array(...),
+	 * 				'SECTION2' => array(...),
+	 * 				...
 	 * 			),
 	 * 			...
 	 * 		)
 	 */
-	abstract public function getComputers($conditions = array(), $sort = NULL);
+	abstract public function getComputers($options);
 
 	/**
 	 * Return the account infos for the given id
@@ -135,7 +154,6 @@ abstract class PluginOcsinventoryngOcsClient {
 	 * @param int $checksum The checksum value 
 	 * @param int $id The computer id
 	 * @return void
-	 *
 	 */
 	abstract public function setChecksum($checksum, $id);
 	

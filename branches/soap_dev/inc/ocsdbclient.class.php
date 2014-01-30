@@ -84,7 +84,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 	/**
 	 * @see PluginOcsinventoryngOcsClient::getComputers()
 	 */
-	public function getComputers($conditions=array(),$sort=NULL){
+	public function getComputers($options){
 		$query = "SELECT * FROM `hardware` " ;
 
 		$params = $this->parseConditions($conditions);

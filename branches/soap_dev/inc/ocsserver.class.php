@@ -2924,46 +2924,44 @@ JAVASCRIPT;
          $target = $CFG_GLPI['root_doc'].'/plugins/ocsinventoryng/front/ocsng.link.php';
       }
 
+      // Get all links between glpi and OCS
+      $query_glpi = "SELECT ocsid
+      FROM `glpi_plugin_ocsinventoryng_ocslinks`
+      WHERE `plugin_ocsinventoryng_ocsservers_id` = '$serverId'";
+      $result_glpi = $DB->query($query_glpi);
+      $already_linked = array();
+      if ($DB->numrows($result_glpi) > 0){
+      	 while ($data = $DB->fetch_array($result_glpi)){
+      	    $already_linked []= $data["ocsid"];
+      	 }
+      }
+
       $cfg_ocs = self::getConfig($serverId);
       $WHERE   = self::getTagLimit($cfg_ocs); // TODO adapt this to soap
       
       $ocsClient = self::getDBocs($serverId);
-      $computers = $ocsClient->getComputers();
+      $ocsResult = $ocsClient->getComputers(array(
+      		'OFFSET' => $start,
+      		'MAX_RECORDS' => $_SESSION['glpilist_limit'],
+         	'FILTER' => array(
+      			'EXCLUDE_IDS' => $already_linked
+      		),
+      		'DISPLAY' => array(
+         		'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
+         	)
+      ));
+      $computers = $ocsResult['COMPUTERS'];
 
       if (count($computers)) {
-         // Get all links between glpi and OCS
-         $query_glpi = "SELECT ocsid
-                        FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                        WHERE `plugin_ocsinventoryng_ocsservers_id` = '$serverId'";
-         $result_glpi = $DB->query($query_glpi);
-         $already_linked = array();
-         if ($DB->numrows($result_glpi) > 0){
-            while ($data = $DB->fetch_array($result_glpi)){
-               $already_linked []= $data["ocsid"];
-            }
-         }
-         
          // Get all hardware from OCS DB
          $hardware = array();
          foreach ($computers as $data) {
-            // Clean $hardware from already linked element
-            if (!in_array($data['ID'], $already_linked)) {
-	            $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
-	            $hardware[$data["ID"]]["date"] = $data["LASTDATE"];
-	            $hardware[$data["ID"]]["name"] = $data["NAME"];
-	            $hardware[$data["ID"]]["TAG"]  = $data["TAG"];
-	            $hardware[$data["ID"]]["id"]   = $data["ID"];
-            }
-         }
-         
-         $computerIds = array_keys($hardware);
-         $biosData = $ocsClient->getComputerSections(
-         		$computerIds,
-         		PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
-         		PluginOcsinventoryngOcsClient::WANTED_NONE
-         );
-         
-         foreach ($biosData as $id => $data) {
+            $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
+            $id = $data['META']['ID'];
+            $hardware[$id]["date"]         = $data['META']["LASTDATE"];
+            $hardware[$id]["name"]         = $data['META']["NAME"];
+            $hardware[$id]["TAG"]          = $data['META']["TAG"];
+            $hardware[$id]["id"]           = $data['META']["ID"];
          	$hardware[$id]["serial"]       = $data['BIOS']["SSN"];
          	$hardware[$id]["model"]        = $data['BIOS']["SMODEL"];
          	$hardware[$id]["manufacturer"] = $data['BIOS']["SMANUFACTURER"];
@@ -2976,17 +2974,9 @@ JAVASCRIPT;
          }
          echo "<div class='center'>";
 
-         if (($numrows = count($hardware)) > 0){
+         if (($numrows = $ocsResult['TOTAL_COUNT']) > 0){
             $parameters = "check=$check";
             Html::printPager($start, $numrows, $target, $parameters);
-
-            // delete end
-            array_splice($hardware, $start + $_SESSION['glpilist_limit']);
-
-            // delete begin
-            if ($start > 0){
-               array_splice($hardware, 0, $start);
-            }
 
             //Show preview form only in import even in multi-entity mode because computer import
             //can be refused by a rule

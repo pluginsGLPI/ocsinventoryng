@@ -17,18 +17,33 @@ class PluginOcsinventoryngOcsSoapRequest {
 	 * @return string
 	 */
 	public function toXml() {
+		return $this->_toXml('REQUEST', $this->params);
+	}
+	
+	private function _toXml($tagName, $value) {
+		$xml = '';
 		
-		if (is_array($this->params)) {
-		$xml = '<REQUEST>';
-			foreach ($this->params as $name => $val) {
-				$xml .= "<$name>$val</$name>";
+		if (is_array($value)) {
+			if ($this->isIndexed($value)) {
+				foreach ($value as $val) {
+					$xml .= $this->_toXml($tagName, $val);
+				}
+			} else {
+				$xml .= "<$tagName>";
+				foreach ($value as $key => $val) {
+					$xml .= $this->_toXml($key, $val);
+				}
+				$xml .= "</$tagName>";
 			}
-		$xml .= '</REQUEST>';
 		} else {
-			$xml .= $this->params;
+			$xml .= "<$tagName>$value</$tagName>";
 		}
 		
 		return $xml;
+	}
+	
+	private function isIndexed($array) {
+		return (bool) count(array_filter(array_keys($array), 'is_numeric'));
 	}
 }
 
