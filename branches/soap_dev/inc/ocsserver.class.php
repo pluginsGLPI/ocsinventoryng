@@ -1340,7 +1340,7 @@ JAVASCRIPT;
       if ($ocs_id_change || !$ocs_link_exists) {
          $ocsConfig = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
          // Set OCS checksum to max value
-         self::setChecksumForComputer($ocsid, self::MAX_CHECKSUM);
+         self::getDBocs($plugin_ocsinventoryng_ocsservers_id)->setChecksum(PluginOcsinventoryngOcsClient::CHECKSUM_ALL, $ocsid);
 
          if ($ocs_id_change
              || ($idlink = self::ocsLink($ocsid, $plugin_ocsinventoryng_ocsservers_id,
@@ -1765,20 +1765,6 @@ JAVASCRIPT;
    }
 
 
-   static function setChecksumForComputer($ocsid,$checksum,$escape=false) {
-      global $PluginOcsinventoryngDBocs;
-
-      // Set OCS checksum to max value
-      if (!$escape) {
-         $checksum = "'" . $checksum . "'";
-      }
-      $query = "UPDATE `hardware`
-                SET `CHECKSUM` = $checksum
-                WHERE `ID` = '$ocsid'";
-      $PluginOcsinventoryngDBocs->query($query);
-   }
-
-
    static function importComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock=0,
                                   $defaultentity=-1, $defaultlocation=-1) {
       global $PluginOcsinventoryngDBocs;
@@ -1787,7 +1773,7 @@ JAVASCRIPT;
       $comp = new Computer();
 
       $rules_matched = array();
-      self::setChecksumForComputer($ocsid, self::MAX_CHECKSUM);
+      self::getDBocs($plugin_ocsinventoryng_ocsservers_id)->setChecksum(PluginOcsinventoryngOcsClient::CHECKSUM_ALL, $ocsid);
 
       //No entity or location predefined, check rules
       if ($defaultentity == -1 && $defaultlocation == -1) {
@@ -1964,7 +1950,7 @@ JAVASCRIPT;
 
             if ($force) {
                $ocs_checksum = self::MAX_CHECKSUM;
-               self::setChecksumForComputer($line['ocsid'], $ocs_checksum);
+               self::getDBocs($plugin_ocsinventoryng_ocsservers_id)->setChecksum($ocs_checksum, $line['ocsid']);
             } else {
                $ocs_checksum = $data_ocs["CHECKSUM"];
             }
@@ -2135,8 +2121,8 @@ JAVASCRIPT;
                self::updateTag($line, $data_ocs);
                 
                // Update OCS Cheksum
-               $newchecksum = "(CHECKSUM - $mixed_checksum)";
-               self::setChecksumForComputer($line['ocsid'], $newchecksum, true);
+               $oldchecksum = self::getDBocs($plugin_ocsinventoryng_ocsservers_id)->getChecksum($line['ocsid']);
+               self::getDBocs($plugin_ocsinventoryng_ocsservers_id)->setChecksum($oldchecksum - $mixed_checksum, $line['ocsid']);
 
                //Return code to indicate that computer was synchronized
                return array('status'       => self::COMPUTER_SYNCHRONIZED,
