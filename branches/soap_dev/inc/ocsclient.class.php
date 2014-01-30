@@ -224,6 +224,124 @@ abstract class PluginOcsinventoryngOcsClient {
 		$config = $this->getConfig($key);
 		return $config['TVALUE'];
 	}
+
+
+	public function getOcsMap(){
+
+		$DATA_MAP= array(	
+			'hardware' => array(
+				'checksum'=>1,
+				'multi' => 0,	
+				),
+
+			'bios' =>  array(
+				'checksum'=>2,
+				'multi' => 0,	
+				),
+
+			'memories' => array(
+				'checksum'=>4,
+				'multi' => 1,	
+				),
+
+			'slots' =>array(
+				'checksum'=> 8,
+				'multi' => 1,	
+				),
+
+			'registry' => array(
+				'checksum'=>16,
+				'multi' => 1,	
+				),
+
+			'controllers' => array(
+				'checksum'=>32,
+				'multi' => 1,	
+				),
+
+			'monitors' => array(
+				'checksum'=>64,
+				'multi' => 1,	
+				),
+
+			'ports' => array(
+				'checksum'=>128,
+				'multi' => 1,	
+				),
+
+			'storages' => array(
+				'checksum'=>256,
+				'multi' => 1,	
+				),
+
+			'drives' => array(
+				'checksum'=>512,
+				'multi' => 1,	
+				),
+
+			'inputs' => array(
+				'checksum'=>1024,
+				'multi' => 1,	
+				),
+
+			'modems' => array(
+				'checksum'=>2048,
+				'multi' => 1,	
+				),
+
+			'networks' => array(
+				'checksum'=>4096,
+				'multi' => 1,	
+				),
+
+			'printers' => array(
+				'checksum'=>8192,
+				'multi' => 1,	
+				),
+
+			'sounds' => array(
+				'checksum'=>16384,
+				'multi' => 1,	
+				),
+
+			'videos' => array(
+				'checksum'=>32768,
+				'multi' => 1,	
+				),
+
+			'softwares' => array(
+				'checksum'=>65536,
+				'multi' => 1,	
+				),
+
+			'virtualmachines' => array(
+				'checksum'=>131072,
+				'multi' => 1,	
+				),
+
+			'cpus' => array(
+				'checksum'=>262144,
+				'multi' => 1,	
+				),
+
+			'sim' => array(
+				'checksum'=>524288,
+				'multi' => 1,	
+				),
+
+			'accountinfo' => array(
+				'checksum'=>0,
+				'multi' => 1,	
+				),
+
+			'dico_soft' =>  array(
+				'checksum'=>0,
+				'multi' => 0,	
+				),
+
+					);
+	return $DATA_MAP;
+	}
 }
 
 ?>

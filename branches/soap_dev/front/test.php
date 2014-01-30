@@ -8,16 +8,6 @@ Html::header('OCS Inventory NG', "", "plugins", "ocsinventoryng", "import");
 
 //$soapclient = new PluginOcsinventoryngOcsSoapClient('http://localhost', 'admin', 'factorfx');
 $dbclient = new PluginOcsinventoryngOcsDbClient(1,'ocstest','ocsuser','ocspass','ocsweb');
-var_dump($dbclient);
-
-
-
-$dbclient->getComputerSections();
-
-
-
-
-
 
 
 
@@ -38,11 +28,9 @@ $dbclient->getComputerSections();
 #############       Computers      #################</br>
 ####################################################</br>
 <?php
-$computers = $dbclient->getComputers(array(array(),array("NAME"=>$_GET['name']) ),"NAME");
+$computers = $dbclient->getComputers(array());
 var_dump($computers);
-foreach ($computers as $id => $cptr) {
-		echo $cptr['ID'] ." => ".$cptr['NAME']."</br>" ;
-}
+
 ?>
 
 
@@ -218,5 +206,10 @@ print_r($delete);
 $checksum = $dbclient->getChecksum(37);
 var_dump($checksum);
 ?>
+
+
+
+
+
 
 </p>
