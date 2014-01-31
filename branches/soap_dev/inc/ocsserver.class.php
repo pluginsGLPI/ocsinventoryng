@@ -2332,7 +2332,6 @@ JAVASCRIPT;
    /**
     * Update the computer bios configuration
     *
-    * Update the computer bios configuration
     *
     * @param $computers_id integer : ocs computer id.
     * @param $ocsid integer : glpi computer id
@@ -2349,23 +2348,29 @@ JAVASCRIPT;
       global $PluginOcsinventoryngDBocs;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $options = array(
+              "FILTER"=>array(
+                "IDS"=>$ocsid
+                ),
+              "DISPLAY"=> array(
+                "CHECKSUM"=> PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
+                )
+        );
+      $computer = $ocsClient->getComputers($options);
 
-      $query = "SELECT *
-                FROM `bios`
-                WHERE `HARDWARE_ID` = '$ocsid'";
-      $result = $PluginOcsinventoryngDBocs->query($query);
 
       $compupdate = array();
-      if ($PluginOcsinventoryngDBocs->numrows($result) == 1){
-         $line       = $PluginOcsinventoryngDBocs->fetch_assoc($result);
-         $line       = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
+
+      if ($computer[$ocsid]['BIOS']){
          $compudate  = array();
+          $bios = $computer[$ocsid]['BIOS'] 
 
          if ($cfg_ocs["import_general_serial"] 
                && $cfg_ocs["import_general_serial"] > 0
                   && !in_array("serial", $computer_updates)){
             $compupdate["serial"] = self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
-                                                              $line["SSN"]);
+                                                              $bios["SSN"]);
          }
 
          if (intval($cfg_ocs["import_general_model"]) > 0
@@ -2374,10 +2379,10 @@ JAVASCRIPT;
             $compupdate["computermodels_id"]
                = Dropdown::importExternal('ComputerModel',
                                           self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
-                                          $line["SMODEL"]),
+                                          $bios["SMODEL"]),
                                           -1,
-                                          (isset($line["SMANUFACTURER"])
-                                                 ?array("manufacturer" => $line["SMANUFACTURER"])
+                                          (isset($bios["SMANUFACTURER"])
+                                                 ?array("manufacturer" => $bios["SMANUFACTURER"])
                                                  :array()));
          }
 
@@ -2387,17 +2392,17 @@ JAVASCRIPT;
             $compupdate["manufacturers_id"]
                = Dropdown::importExternal('Manufacturer',
                                           self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
-                                                                    $line["SMANUFACTURER"]));
+                                                                    $bios["SMANUFACTURER"]));
          }
 
          if (intval($cfg_ocs["import_general_type"]) > 0
-             && !empty ($line["TYPE"])
+             && !empty ($bios["TYPE"])
              && !in_array("computertypes_id", $computer_updates)) {
 
             $compupdate["computertypes_id"]
                = Dropdown::importExternal('ComputerType',
                                           self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
-                                                                    $line["TYPE"]));
+                                                                    $bios["TYPE"]));
          }
 
          if (count($compupdate)) {
@@ -2465,12 +2470,7 @@ JAVASCRIPT;
       // Select unexisting OCS hardware
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $computers = $ocsClient->getComputers(array("DISPLAY"=>array("CHECKSUM"=>PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE)));
-
-
       $hardware   = array();
-
-
-
       if ((count($computers)) > 0){
      foreach ($computers as $computer) {
         $hardware[$computer['META']['ID']] = $computer['META']['DEVICEID'];
