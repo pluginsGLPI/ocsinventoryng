@@ -8,7 +8,30 @@ Html::header('OCS Inventory NG', "", "plugins", "ocsinventoryng", "import");
 
 //$soapclient = new PluginOcsinventoryngOcsSoapClient('http://localhost', 'admin', 'factorfx');
 $dbclient = new PluginOcsinventoryngOcsDbClient(1,'ocstest','ocsuser','ocspass','ocsweb');
+
+
+
+
+$temps = microtime();   
+$temps = explode(' ', $temps);   
+$debut = $temps[1] + $temps[0];
+
 ?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -17,8 +40,24 @@ $dbclient = new PluginOcsinventoryngOcsDbClient(1,'ocstest','ocsuser','ocspass',
 #############       Computers      #################</br>
 ####################################################</br>
 <?php
-$computers = $dbclient->getComputers(array());
+$computers = $dbclient->getComputers(array("DISPLAY"=>array("CHECKSUM"=>0x1FFFF,"WANTED"=>0x00003)));
+
 var_dump($computers);
+
+
+
+
+
+
+
+$temps = microtime();
+$temps = explode(' ', $temps);
+$fin = $temps[1] + $temps[0];
+ 
+// On affiche la différence entre des deux valeurs
+echo 'Page exécutée en '.round(($fin - $debut),6).' secondes.';
+
+/*
 
 ?>
 
@@ -149,7 +188,7 @@ print_r($delete);
 ####################################################</br>
 <?php 
 $checksum = $dbclient->getChecksum(37);
-var_dump($checksum);
+var_dump($checksum);*/
 ?>
 
 
@@ -157,4 +196,3 @@ var_dump($checksum);
 
 
 
-</p>
