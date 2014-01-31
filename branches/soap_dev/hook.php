@@ -1562,7 +1562,11 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
             $ocsservers_id   = $params['values']['params']['plugin_ocsinventoryng_ocsservers_id'];
          }
 
-         $rule_parameters = array('ocsservers_id' => $ocsservers_id);
+         $rule_parameters = array(
+         	'ocsservers_id' => $ocsservers_id,
+         	'OCS_SERVER' => $ocsservers_id
+         );
+         
          if (isset($params['values']['params']['ocsid'])) {
             $ocsid = $params['values']['params']['ocsid'];
          } else if ($params['values']['input']['id']) {
@@ -1585,7 +1589,7 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
          
          if ($ocsResult['TOTAL_COUNT'] > 0) {
             $computer = $ocsResult['COMPUTERS'][0];
-	        $networks = $computers['NETWORKS'];
+	        $networks = $computer['NETWORKS'];
 	
 	        $ipblacklist  = Blacklist::getIPs();
 	        $macblacklist = Blacklist::getMACs();
