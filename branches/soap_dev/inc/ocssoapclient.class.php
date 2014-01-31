@@ -57,6 +57,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		$offset = $originalOffset = isset($options['OFFSET']) ? (int) $options['OFFSET'] : 0;
 		$maxRecords = isset($options['MAX_RECORDS']) ? (int) $options['MAX_RECORDS'] : null;
 		$originalEnd = isset($options['MAX_RECORDS']) ? $originalOffset + $maxRecords : null;
+		$ocsMap = $this->getOcsMap();
 
 		$computers = array();
 		
@@ -94,7 +95,13 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 					if (!isset($computer[$sectionName])) {
 						$computer[$sectionName] = array();
 					}
-					$computer[$sectionName] []= $section;
+					
+					$lowerSectionName = strtolower($sectionName);
+					if (isset($ocsMap[$lowerSectionName]) and !$ocsMap[$lowerSectionName]['multi']) {
+						$computer[$sectionName] = $section;
+					} else {
+						$computer[$sectionName] []= $section;
+					}
 				}
 				
 				$computers []= $computer;
