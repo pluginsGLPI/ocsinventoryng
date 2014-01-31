@@ -147,44 +147,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
 
 	/**
-	 * Returns a list of computers
-	 *
-	 * @param array $options Possible options :
-	 * 		array(
-	 * 			'OFFSET' => int,
-	 * 			'MAX_RECORDS' => int,
-	 * 			'FILTER' => array(						// filter the computers to return
-	 * 				'IDS' => array(int),				// list of computer ids to select
-	 * 				'EXCLUDE_IDS' => array(int),		// list of computer ids to exclude
-	 * 				'TAGS' => array(string),			// list of computer tags to select
-	 * 				'EXCLUDE_TAGS' => array(string),	// list of computer tags to exclude
-	 * 				'CHECKSUM' => int					// filter which sections have been modified (see CHECKSUM_* constants)
-	 * 			),
-	 * 			'DISPLAY' => array(		// select which sections of the computers to return
-	 * 				'CHECKSUM' => int,	// inventory sections to return (see CHECKSUM_* constants)
-	 * 				'WANTED' => int		// special sections to return (see WANTED_* constants)
-	 * 			)
-	 * 		)
-	 * 
-	 * @return array List of computers :
-	 * 		array (
-	 * 			array (
-	 * 				'META' => array(
-	 * 					'ID' => ...
-	 * 					'CHECKSUM' => ...
-	 * 					'DEVICEID' => ...
-	 * 					'LASTCOME' => ...
-	 * 					'LASTDATE' => ...
-	 * 					'NAME' => ...
-	 * 					'TAG' => ...
-	 * 				),
-	 * 				'SECTION1' => array(...),
-	 * 				'SECTION2' => array(...),
-	 * 				...
-	 * 			),
-	 * 			...
-	 * 		)
+	 * @see PluginOcsinventoryngOcsClient::getComputers()
 	 */
+	
 	public function getComputers($options){
 		if(isset($options['OFFSET'])){
 			$offset="OFFSET  ".$options['OFFSET'];
@@ -253,6 +218,15 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 			}
 		}
 		$where_condition = $where_ids.$where_exclude_ids.$where_tags.$where_exclude_tags.$where_checksum ;
+
+		$query = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
+		WHERE hardware.DEVICEID NOT LIKE '\\_%'
+		AND hardware.ID = accountinfo.HARDWARE_ID
+		$where_condition";
+		$request = $this->db->queryOrDie($query);
+		$count=$this->db->fetch_row($request);
+		$res["TOTAL_COUNT"] = $count[0];
+
 		$query = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
 		WHERE hardware.DEVICEID NOT LIKE '\\_%'
 		AND hardware.ID = accountinfo.HARDWARE_ID
@@ -260,6 +234,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 		ORDER BY $order
 		$max_records  $offset 
 		";
+
 		$request = $this->db->queryOrDie($query);
 		while ($hardwareid = $this->db->fetch_assoc($request)) {
 			$hardwareids[]=$hardwareid['ID'];
@@ -274,7 +249,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 			$wanted = $options['DISPLAY']['WANTED'];
 		}
 
-		$res = $this->getComputerSections($hardwareids,$checksum,$wanted);
+		$res["COMPUTERS"] = $this->getComputerSections($hardwareids,$checksum,$wanted);
+		
+
 		return $res;
 	}
 
