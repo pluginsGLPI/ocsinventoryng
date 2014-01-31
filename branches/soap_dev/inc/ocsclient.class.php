@@ -22,7 +22,10 @@ abstract class PluginOcsinventoryngOcsClient {
 	const CHECKSUM_SOUND_ADAPTERS       = 0x04000;
 	const CHECKSUM_VIDEO_ADAPTERS       = 0x08000;
 	const CHECKSUM_SOFTWARE             = 0x10000;
-	const CHECKSUM_ALL                  = 0x1FFFF;
+	const CHECKSUM_VIRTUAL_MACHINES     = 0x20000;
+	const CHECKSUM_CPUS                 = 0x40000;
+	const CHECKSUM_SIM                  = 0x80000;
+	const CHECKSUM_ALL                  = 0xFFFFF;
 	
 	const WANTED_NONE           = 0x00000;
 	const WANTED_ACCOUNTINFO    = 0x00001;
@@ -227,120 +230,145 @@ abstract class PluginOcsinventoryngOcsClient {
 
 
 	public function getOcsMap(){
-
-		$DATA_MAP= array(	
+		$DATA_MAP = array(
 			'hardware' => array(
-				'checksum'=>1,
-				'multi' => 0,	
-				),
+				'checksum'=> self::CHECKSUM_HARDWARE,
+				'multi' => 0,
+			),
 
-			'bios' =>  array(
-				'checksum'=>2,
-				'multi' => 0,	
-				),
+			'bios' => array(
+				'checksum'=> self::CHECKSUM_BIOS,
+				'multi' => 0,
+			),
 
 			'memories' => array(
-				'checksum'=>4,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_MEMORY_SLOTS,
+				'multi' => 1,
+			),
 
-			'slots' =>array(
-				'checksum'=> 8,
-				'multi' => 1,	
-				),
+			'slots' => array(
+				'checksum'=> self::CHECKSUM_SYSTEM_SLOTS,
+				'multi' => 1,
+			),
 
 			'registry' => array(
-				'checksum'=>16,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_REGISTRY,
+				'multi' => 1,
+			),
 
 			'controllers' => array(
-				'checksum'=>32,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_SYSTEM_CONTROLLERS,
+				'multi' => 1,
+			),
 
 			'monitors' => array(
-				'checksum'=>64,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_MONITORS,
+				'multi' => 1,
+			),
 
 			'ports' => array(
-				'checksum'=>128,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_SYSTEM_PORTS,
+				'multi' => 1,
+			),
 
 			'storages' => array(
-				'checksum'=>256,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_STORAGE_PERIPHERALS,
+				'multi' => 1,
+			),
 
 			'drives' => array(
-				'checksum'=>512,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_LOGICAL_DRIVES,
+				'multi' => 1,
+			),
 
 			'inputs' => array(
-				'checksum'=>1024,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_INPUT_DEVICES,
+				'multi' => 1,
+			),
 
 			'modems' => array(
-				'checksum'=>2048,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_MODEMS,
+				'multi' => 1,
+			),
 
 			'networks' => array(
-				'checksum'=>4096,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_NETWORK_ADAPTERS,
+				'multi' => 1,
+			),
 
 			'printers' => array(
-				'checksum'=>8192,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_PRINTERS,
+				'multi' => 1,
+			),
 
 			'sounds' => array(
-				'checksum'=>16384,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_SOUND_ADAPTERS,
+				'multi' => 1,
+			),
 
 			'videos' => array(
-				'checksum'=>32768,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_VIDEO_ADAPTERS,
+				'multi' => 1,
+			),
 
 			'softwares' => array(
-				'checksum'=>65536,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_SOFTWARE,
+				'multi' => 1,
+			),
 
 			'virtualmachines' => array(
-				'checksum'=>131072,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_VIRTUAL_MACHINES,
+				'multi' => 1,
+			),
 
 			'cpus' => array(
-				'checksum'=>262144,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_CPUS,
+				'multi' => 1,
+			),
 
 			'sim' => array(
-				'checksum'=>524288,
-				'multi' => 1,	
-				),
+				'checksum'=> self::CHECKSUM_SIM,
+				'multi' => 1,
+			),
 
 			'accountinfo' => array(
-				'checksum'=>0,
-				'multi' => 1,	
-				),
+				'wanted'=> self::WANTED_ACCOUNTINFO,
+				'multi' => 1,
+			),
 
 			'dico_soft' =>  array(
-				'checksum'=>0,
-				'multi' => 0,	
-				),
-
-					);
-	return $DATA_MAP;
+				'wanted' => self::WANTED_DICO_SOFT,
+				'multi' => 0,
+			),
+		);
+		
+		return $DATA_MAP;
+	}
+	
+	public function getChecksumForTables($tables) {
+		$ocsMap = $this->getOcsMap();
+		$checksum = self::CHECKSUM_NONE;
+		
+		foreach ($tables as $tableName) {
+			if (isset($ocsMap[$tableName]['checksum'])) {
+				$checksum |= $ocsMap[$tableName]['checksum'];
+			}
+		}
+		
+		return $checksum;
+	}
+	
+	public function getWantedForTables($tables) {
+		$ocsMap = $this->getOcsMap();
+		$wanted = self::WANTED_NONE;
+		
+		foreach ($tables as $tableName) {
+			if (isset($ocsMap[$tableName]['wanted'])) {
+				$wanted |= $ocsMap[$tableName]['wanted'];
+			}
+		}
+		
+		return $wanted;
 	}
 }
 
