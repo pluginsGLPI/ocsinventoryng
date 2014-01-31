@@ -2700,7 +2700,7 @@ JAVASCRIPT;
       
       // Fetch linked computers from ocs
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-      $computers = $ocsClient->getComputers(array(
+      $ocsResult = $ocsClient->getComputers(array(
       		'OFFSET' => $start,
       		'MAX_RECORDS' => $_SESSION['glpilist_limit'],
       		'FILTER' => array(
@@ -2709,35 +2709,34 @@ JAVASCRIPT;
       		)
       ));
       
-      // Get all ids of the returned computers
-      $ocs_computer_ids = array();
-      
-
-      // Fetch all linked computers from GLPI that were returned from OCS
-      $query_glpi = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` AS last_update,
-                            `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` AS computers_id,
-                            `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid,
-                            `glpi_computers`.`name` AS name,
-                            `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update`,
-                            `glpi_plugin_ocsinventoryng_ocslinks`.`id`
-                     FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                     LEFT JOIN `glpi_computers` ON (`glpi_computers`.`id`=computers_id)
-                     WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
-                                 = '$plugin_ocsinventoryng_ocsservers_id'
-                            AND `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` IN (".implode(',', $ocs_computer_ids).")
-                     ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` DESC,
-                              last_update,
-                              name";
-
-      $result_glpi = $DB->query($query_glpi);
-      if ($PluginOcsinventoryngDBocs->numrows($result_ocs) > 0){
-
-         // Get all hardware from OCS DB
+      if (count($ocsResult['COMPUTERS']) > 0) {
+         // Get all ids of the returned computers
+         $ocs_computer_ids = array();
          $hardware = array();
-         while ($data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs)){
-            $hardware[$data["ID"]]["date"] = $data["LASTDATE"];
-            $hardware[$data["ID"]]["name"] = addslashes($data["NAME"]);
+         foreach ($ocsResult['COMPUTERS'] as $computer) {
+         	$ID = $computer['META']['ID'];
+            $ocs_computer_ids []= $ID;
+            
+            $hardware[$ID]["date"] = $computer['META']["LASTDATE"];
+            $hardware[$ID]["name"] = addslashes($computer['META']["NAME"]);
          }
+
+         // Fetch all linked computers from GLPI that were returned from OCS
+         $query_glpi = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` AS last_update,
+                               `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` AS computers_id,
+                               `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid,
+                               `glpi_computers`.`name` AS name,
+                               `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update`,
+                               `glpi_plugin_ocsinventoryng_ocslinks`.`id`
+                        FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                        LEFT JOIN `glpi_computers` ON (`glpi_computers`.`id`=computers_id)
+                        WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
+                                    = '$plugin_ocsinventoryng_ocsservers_id'
+                               AND `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` IN (".implode(',', $ocs_computer_ids).")
+                        ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` DESC,
+                                 last_update,
+                                 name";
+         $result_glpi = $DB->query($query_glpi);
 
          // Get all links between glpi and OCS
          $already_linked = array();
@@ -2758,16 +2757,9 @@ JAVASCRIPT;
          echo "<h2>" . __('Computers updated in OCSNG', 'ocsinventoryng') . "</h2>";
 
          $target = $CFG_GLPI['root_doc'].'/plugins/ocsinventoryng/front/ocsng.sync.php';
-         if (($numrows = count($already_linked)) > 0){
+         if (($numrows = $ocsResult['TOTAL_COUNT']) > 0){
             $parameters = "check=$check";
             Html::printPager($start, $numrows, $target, $parameters);
-
-            // delete end
-            array_splice($already_linked, $start + $_SESSION['glpilist_limit']);
-            // delete begin
-            if ($start > 0){
-               array_splice($already_linked, 0, $start);
-            }
 
             echo "<form method='post' id='ocsng_form' name='ocsng_form' action='".$target."'>";
             self::checkBox($target);
