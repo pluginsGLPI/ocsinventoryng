@@ -52,7 +52,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 	private function getComputerSections($ids,$checksum,$wanted){
 		if(!isset($checksum)){
 
-			$checksum=self::CHECKSUM_HARDWARE;
+			$checksum=self::CHECKSUM_NONE;
 		}
 		if (!isset($wanted)){
 			$wanted = self::WANTED_ACCOUNTINFO;
@@ -76,15 +76,39 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 				
 			}  
 			elseif($table == "hardware"){
-					$query = "SELECT `hardware`.*,`accountinfo`.`TAG` FROM `hardware`
-					INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
-					WHERE `ID` IN (".implode(',',$ids).")";	
-					$request = $this->db->queryOrDie($query);
-					while ($computer = $this->db->fetch_assoc($request)) {
-						$computers[$computer['ID']]["META"]=$computer;
 
+				$query = "SELECT `hardware`.*,`accountinfo`.`TAG` FROM `hardware`
+				INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
+				WHERE `ID` IN (".implode(',',$ids).")";	
+				$request = $this->db->queryOrDie($query);
+				while ($computer = $this->db->fetch_assoc($request)) {
+					$computers[$computer['ID']]["META"]["ID"]=$computer["ID"];
+					$computers[$computer['ID']]["META"]["CHECKSUM"]=$computer["CHECKSUM"];
+					$computers[$computer['ID']]["META"]["DEVICEID"]=$computer["DEVICEID"];
+					$computers[$computer['ID']]["META"]["LASTCOME"]=$computer["LASTCOME"];
+					$computers[$computer['ID']]["META"]["LASTDATE"]=$computer["LASTDATE"];
+					$computers[$computer['ID']]["META"]["NAME"]=$computer["NAME"];
+					$computers[$computer['ID']]["META"]["TAG"]=$computer["TAG"];
+				}
 
+				if ($check & $checksum){
+					if ($check & $checksum){
+						$query = "SELECT * FROM `".$table."` WHERE `HARDWARE_ID` IN (".implode(',',$ids).")";	
+						$request = $this->db->queryOrDie($query);
+						while ($computer = $this->db->fetch_assoc($request)) {
+							if ($multi) {
+								$computers[$computer['HARDWARE_ID']][strtoupper($table)][]=$computer;
+							}
+							else{
+								$computers[$computer['HARDWARE_ID']][strtoupper($table)]=$computer;
+							}
+
+						}
+						
+						
 					}
+				}
+
 			}
 			else{
 				if ($check & $checksum){
@@ -95,11 +119,11 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 							$computers[$computer['HARDWARE_ID']][strtoupper($table)][]=$computer;
 						}
 						else{
-						$computers[$computer['HARDWARE_ID']][strtoupper($table)]=$computer;
-					}
+							$computers[$computer['HARDWARE_ID']][strtoupper($table)]=$computer;
+						}
 
 					}
-				
+					
 					
 				}
 			}
@@ -108,12 +132,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 		return $computers;
 
 	}
-
-
-
-
-
-
 
 
 
@@ -176,84 +194,84 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 			if (isset($filters['IDS'])) {
 				$ids = $filters['IDS'];
 				$where_ids =" AND hardware.ID IN (";
-				$where_ids .= join(',', $ids);
-				$where_ids .=") ";
-							}
-			else{
-				$where_ids = "";
-			}
-			if ($filters['EXCLUDE_IDS']) {
-				$exclude_ids=$filters['EXCLUDE_IDS'];
-				$where_exclude_ids =" AND hardware.ID NOT IN (";
-				$where_exclude_ids .= join(',', $exclude_ids);
-				$where_exclude_ids .=") ";
-			}
-			else{
-				$where_exclude_ids = "";
-			}
-			if ($filters['TAGS']) {
-				$tags=$filters['TAGS'];
-				$where_tags =" AND accountinfo.TAG IN (";
-				$where_tags .= join(',', $this->db->escape($tags));
-				$where_tags .=") ";
-			}
-			else{
-				$where_tags = "";
-			}
-			if (isset($filters['EXCLUDE_TAGS'])) {
-				$exclude_tags=$filters['EXCLUDE_TAGS'];
-				$where_exclude_tags =" AND accountinfo.TAG NOT IN (";
-				$where_exclude_tags .= join(',', $this->db->escape($exclude_tags));
-				$where_exclude_tags .=") ";
-			}
-			else{
-				$where_exclude_tags= "";
-			}
-			if ($filters['CHECKSUM']) {
-				$checksum=$filters['CHECKSUM'];
-				$where_checksum =" AND ('.$checksum.' & hardware.CHECKSUM)' ";
-			}
-			else{
-				$where_checksum= "";
-			}
-		}
-		$where_condition = $where_ids.$where_exclude_ids.$where_tags.$where_exclude_tags.$where_checksum ;
+					$where_ids .= join(',', $ids);
+					$where_ids .=") ";
+}
+else{
+	$where_ids = "";
+}
+if ($filters['EXCLUDE_IDS']) {
+	$exclude_ids=$filters['EXCLUDE_IDS'];
+	$where_exclude_ids =" AND hardware.ID NOT IN (";
+		$where_exclude_ids .= join(',', $exclude_ids);
+		$where_exclude_ids .=") ";
+}
+else{
+	$where_exclude_ids = "";
+}
+if ($filters['TAGS']) {
+	$tags=$filters['TAGS'];
+	$where_tags =" AND accountinfo.TAG IN (";
+		$where_tags .= join(',', $this->db->escape($tags));
+		$where_tags .=") ";
+}
+else{
+	$where_tags = "";
+}
+if (isset($filters['EXCLUDE_TAGS'])) {
+	$exclude_tags=$filters['EXCLUDE_TAGS'];
+	$where_exclude_tags =" AND accountinfo.TAG NOT IN (";
+		$where_exclude_tags .= join(',', $this->db->escape($exclude_tags));
+		$where_exclude_tags .=") ";
+}
+else{
+	$where_exclude_tags= "";
+}
+if ($filters['CHECKSUM']) {
+	$checksum=$filters['CHECKSUM'];
+	$where_checksum =" AND ('.$checksum.' & hardware.CHECKSUM)' ";
+}
+else{
+	$where_checksum= "";
+}
+}
+$where_condition = $where_ids.$where_exclude_ids.$where_tags.$where_exclude_tags.$where_checksum ;
 
-		$query = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
-		WHERE hardware.DEVICEID NOT LIKE '\\_%'
-		AND hardware.ID = accountinfo.HARDWARE_ID
-		$where_condition";
-		$request = $this->db->queryOrDie($query);
-		$count=$this->db->fetch_row($request);
-		$res["TOTAL_COUNT"] = $count[0];
+$query = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
+WHERE hardware.DEVICEID NOT LIKE '\\_%'
+AND hardware.ID = accountinfo.HARDWARE_ID
+$where_condition";
+$request = $this->db->queryOrDie($query);
+$count=$this->db->fetch_row($request);
+$res["TOTAL_COUNT"] = $count[0];
 
-		$query = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
-		WHERE hardware.DEVICEID NOT LIKE '\\_%'
-		AND hardware.ID = accountinfo.HARDWARE_ID
-		$where_condition
-		ORDER BY $order
-		$max_records  $offset 
-		";
+$query = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
+WHERE hardware.DEVICEID NOT LIKE '\\_%'
+AND hardware.ID = accountinfo.HARDWARE_ID
+$where_condition
+ORDER BY $order
+$max_records  $offset 
+";
 
-		$request = $this->db->queryOrDie($query);
-		while ($hardwareid = $this->db->fetch_assoc($request)) {
-			$hardwareids[]=$hardwareid['ID'];
-		}
+$request = $this->db->queryOrDie($query);
+while ($hardwareid = $this->db->fetch_assoc($request)) {
+	$hardwareids[]=$hardwareid['ID'];
+}
 
 
 
-		if (isset($options['DISPLAY']['CHECKSUM'])) {
-			$checksum = $options['DISPLAY']['CHECKSUM'];
-		}
-		if (isset($options['DISPLAY']['WANTED'])) {
-			$wanted = $options['DISPLAY']['WANTED'];
-		}
+if (isset($options['DISPLAY']['CHECKSUM'])) {
+	$checksum = $options['DISPLAY']['CHECKSUM'];
+}
+if (isset($options['DISPLAY']['WANTED'])) {
+	$wanted = $options['DISPLAY']['WANTED'];
+}
 
-		$res["COMPUTERS"] = $this->getComputerSections($hardwareids,$checksum,$wanted);
-		
+$res["COMPUTERS"] = $this->getComputerSections($hardwareids,$checksum,$wanted);
 
-		return $res;
-	}
+
+return $res;
+}
 
 
 
@@ -376,16 +394,3 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
