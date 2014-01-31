@@ -122,7 +122,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
 
 
-/**
+	/**
 	 * Returns a list of computers
 	 *
 	 * @param array $options Possible options :
@@ -161,8 +161,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 	 * 			...
 	 * 		)
 	 */
-
-public function getComputers($options){
+	public function getComputers($options){
 	if(isset($options['OFFSET'])){
 		$offset="OFFSET  ".$options['OFFSET'];
 	}
@@ -251,7 +250,7 @@ public function getComputers($options){
 
 	$res = $this->getComputerSections($hardwareids,$checksum,$wanted);
 	return $res;
-}
+	}
 
 
 
@@ -392,22 +391,4 @@ public function getComputers($options){
 
 }
 ?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

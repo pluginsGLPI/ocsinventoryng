@@ -15,7 +15,7 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase {
     public static function main(){
     	require_once 'PHPUnit/TextUI/TestRunner.php';
 
-    	$suite  = new PHPUnit_Framework_TestSuite('ocssoapclientTest');
+    	$suite  = new PHPUnit_Framework_TestSuite('ocsdbclientTest');
     	$result = PHPUnit_TextUI_TestRunner::run($suite);
     }
 
@@ -310,75 +310,3 @@ $this->assertNotEquals($expected,$res);
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
