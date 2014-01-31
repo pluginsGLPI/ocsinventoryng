@@ -1552,7 +1552,6 @@ function plugin_ocsinventoryng_getRuleActions($params) {
  * @return an array of criteria value to add for processing
  **/
 function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params) {
-   global $PluginOcsinventoryngDBocs;
    switch ($params['rule_itemtype']) {
       case 'RuleImportEntity':
       case 'RuleImportComputer':
@@ -1563,82 +1562,67 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
             $ocsservers_id   = $params['values']['params']['plugin_ocsinventoryng_ocsservers_id'];
          }
 
-         $tables          = plugin_ocsinventoryng_getTablesForQuery();
-         $fields          = plugin_ocsinventoryng_getFieldsForQuery();
          $rule_parameters = array('ocsservers_id' => $ocsservers_id);
-         $select_sql      = "";
          if (isset($params['values']['params']['ocsid'])) {
             $ocsid = $params['values']['params']['ocsid'];
          } else if ($params['values']['input']['id']) {
             $ocsid = $params['values']['input']['id'];
          }
 
-         //Get information about network ports
-         $query = "SELECT *
-                   FROM `networks`
-                   WHERE `HARDWARE_ID` = '$ocsid'";
+         $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
+         $tables = array_keys(plugin_ocsinventoryng_getTablesForQuery());
+         $fields = plugin_ocsinventoryng_getFieldsForQuery();
 
-         $ipblacklist  = Blacklist::getIPs();
-         $macblacklist = Blacklist::getMACs();
+         $ocsResult = $ocsClient->getComputers(array(
+         		'FILTER' => array(
+         			'IDS' => array($ocsid)
+         		),
+         		'DISPLAY' => array(
+	         		'CHECKSUM' => $ocsClient->getChecksumForTables($tables) | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS,
+	         		'WANTED' => $ocsClient->getWantedForTables($tables),
+         		)
+         ));
+         
+         if ($ocsResult['TOTAL_COUNT'] > 0) {
+            $computer = $ocsResult['COMPUTERS'][0];
+	        $networks = $computers['NETWORKS'];
+	
+	        $ipblacklist  = Blacklist::getIPs();
+	        $macblacklist = Blacklist::getMACs();
+	
+	        foreach ($networks as $data) {
+	           if (isset($data['IPSUBNET'])) {
+	              $rule_parameters['IPSUBNET'][] = $data['IPSUBNET'];
+	           }
+	           if (isset($data['MACADDR']) && !in_array($data['MACADDR'], $macblacklist)) {
+	              $rule_parameters['MACADDRESS'][] = $data['MACADDR'];
+	           }
+	           if (isset($data['IPADDRESS']) && !in_array($data['IPADDRESS'], $ipblacklist)) {
+	              $rule_parameters['IPADDRESS'][] = $data['IPADDRESS'];
+	           }
+	        }
+	        
+            $ocs_data = array();
 
-         foreach ($PluginOcsinventoryngDBocs->request($query) as $data) {
-            if (isset($data['IPSUBNET'])) {
-               $rule_parameters['IPSUBNET'][] = $data['IPSUBNET'];
-            }
-            if (isset($data['MACADDR']) && !in_array($data['MACADDR'], $macblacklist)) {
-               $rule_parameters['MACADDRESS'][] = $data['MACADDR'];
-            }
-            if (isset($data['IPADDRESS']) && !in_array($data['IPADDRESS'], $ipblacklist)) {
-               $rule_parameters['IPADDRESS'][] = $data['IPADDRESS'];
-            }
-         }
-
-         //Build the select request
-         foreach ($fields as $field) {
-            switch (Toolbox::strtoupper($field)) {
-               //OCS server ID is provided by extra_params -> get the configuration associated with the ocs server
-               case "OCS_SERVER" :
-                  $rule_parameters["OCS_SERVER"] = $ocsservers_id;
-                  break;
-
-                  //TAG and DOMAIN should come from the OCS DB
-               default :
-                  $select_sql .= ($select_sql != "" ? " , " : "") . $field;
-            }
-         }
-
-         //Build the FROM part of the request
-         //Remove all the non duplicated table names
-         $from_sql = "FROM `hardware` ";
-         foreach ($tables as $table => $linkfield) {
-            if ($table!='hardware' && !empty($linkfield)) {
-               $from_sql .= " LEFT JOIN `$table` ON (`$table`.`$linkfield` = `hardware`.`ID`)";
-            }
-         }
-
-         if ($select_sql != "") {
-            //Build the all request
-            $sql = "SELECT $select_sql
-                    $from_sql
-                    WHERE `hardware`.`ID` = '$ocsid'";
-
-            PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id);
-            $result    = $PluginOcsinventoryngDBocs->query($sql);
-            $ocs_data  = array();
-            $fields    = plugin_ocsinventoryng_getFieldsForQuery(1);
-
-            //May have more than one line : for example in case of multiple network cards
-            if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
-               while ($datas = $PluginOcsinventoryngDBocs->fetch_assoc($result)) {
-                  foreach ($fields as $field) {
-                     if ($field != "OCS_SERVER" && isset($datas[$field])) {
-                        $ocs_data[$field][] = $datas[$field];
-                     }
-                  }
+            foreach ($fields as $field) {
+               // TODO cleaner way of getting fields
+               $field = explode('.', $field);
+               if (count($field) < 2) {
+                  continue;
+               }
+               
+               $table = strtoupper($field[0]);
+               
+               $fieldSql = explode(' ', $field[1]);
+               $ocsField = $fieldSql[0];
+               $glpiField = $fieldSql[count($fieldSql) -1];
+               
+               foreach ($computer[$table] as $sectionData) {
+	              $ocs_data[$glpiField][] = $sectionData[$ocsField];
                }
             }
-
-            //This cas should never happend but...
+            
+            //This case should never happend but...
             //Sometimes OCS can't find network ports but fill the right ip in hardware table...
             //So let's use the ip to proceed rules (if IP is a criteria of course)
             if (in_array("IPADDRESS",$fields) && !isset($ocs_data['IPADDRESS'])) {
@@ -1647,7 +1631,6 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
             }
             return array_merge($rule_parameters, $ocs_data);
          }
-         return $rule_parameters;
    }
    return array();
 }
