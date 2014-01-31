@@ -151,7 +151,6 @@ abstract class PluginOcsinventoryngOcsClient {
 	 */
 	abstract public function setConfig($key, $ivalue, $tvalue);
 
-	abstract public function getCategorie($table, $condition = 1, $sort);
 
 	abstract public function getUnique($columns, $table, $conditions, $sort);
 
@@ -373,5 +372,11 @@ abstract class PluginOcsinventoryngOcsClient {
 }
 
 ?>
+
+
+
+
+
+
 
 

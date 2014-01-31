@@ -47,7 +47,7 @@ class ocsclientTest extends PHPUnit_Framework_TestCase {
     }
 
 
-    public function testGetComputer($conditions=array(),$sort=NULL){
+    public function testGetComputer($options){
         $options = array(
             'OFFSET' => 0,
             'MAX_RECORDS' => 1,
@@ -66,7 +66,7 @@ class ocsclientTest extends PHPUnit_Framework_TestCase {
 
 
 
-    public function testGetComputers($conditions=array(),$sort=NULL){
+    public function testGetComputers($options){
         $options = array(
             'OFFSET' => 0,
             'MAX_RECORDS' => 25,
@@ -83,6 +83,11 @@ class ocsclientTest extends PHPUnit_Framework_TestCase {
         $db = $this->dbclient->getComputers($options);
         $this->assertEquals($soap,$db);
     }
+
+
+
+    //TODO Test if options[FILTER] is set but only contains empty arrays
+    
 }
 
 

@@ -190,7 +190,6 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		}
 	}
 
-	public function getCategorie($table, $condition = 1, $sort) {}
 
 	public function getUnique($columns, $table, $conditions, $sort) {}
 

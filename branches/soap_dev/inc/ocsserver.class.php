@@ -2463,17 +2463,19 @@ JAVASCRIPT;
       $canedit = plugin_ocsinventoryng_haveRight("clean_ocsng", "w");
 
       // Select unexisting OCS hardware
-      $query_ocs  = "SELECT*
-                     FROM `hardware`";
-      $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
+      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $computers = $ocsClient->getComputers(array("DISPLAY"=>array("CHECKSUM"=>PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE)));
+
 
       $hardware   = array();
-      if ($PluginOcsinventoryngDBocs->numrows($result_ocs) > 0){
-         while ($data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs)){
-            $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
-            $hardware[$data["ID"]] = $data["DEVICEID"];
-         }
-      }
+
+
+
+      if ((count($computers)) > 0){
+     foreach ($computers as $computer) {
+        $hardware[$computer['META']['ID']] = $computer['META']['DEVICEID'];
+     }
+    }
 
       $query = "SELECT `ocsid`
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -2680,7 +2682,7 @@ JAVASCRIPT;
       $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
       
       // Get linked computer ids in GLPI
-      $already_linked_query = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid,
+      $already_linked_query = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid
                                FROM `glpi_plugin_ocsinventoryng_ocslinks`
                                WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
                                             = '$plugin_ocsinventoryng_ocsservers_id'";
@@ -2975,7 +2977,7 @@ JAVASCRIPT;
       
       $ocsClient = self::getDBocs($serverId);
       $ocsResult = $ocsClient->getComputers($computerOptions);
-      $computers = $ocsResult['COMPUTERS'];
+      $computers = $ocsResult;
 
       if (count($computers)) {
          // Get all hardware from OCS DB
@@ -2989,9 +2991,9 @@ JAVASCRIPT;
             $hardware[$id]["id"]           = $data['META']["ID"];
             
             if (count($data['BIOS'])) {
-	        	$hardware[$id]["serial"]       = $data['BIOS'][0]["SSN"];
-	        	$hardware[$id]["model"]        = $data['BIOS'][0]["SMODEL"];
-	        	$hardware[$id]["manufacturer"] = $data['BIOS'][0]["SMANUFACTURER"];
+	        	$hardware[$id]["serial"]       = $data['BIOS']["SSN"];
+	        	$hardware[$id]["model"]        = $data['BIOS']["SMODEL"];
+	        	$hardware[$id]["manufacturer"] = $data['BIOS']["SMANUFACTURER"];
             } else {
             	$hardware[$id]["serial"]       = '';
             	$hardware[$id]["model"]        = '';
@@ -3006,7 +3008,7 @@ JAVASCRIPT;
          }
          echo "<div class='center'>";
 
-         if (($numrows = $ocsResult['TOTAL_COUNT']) > 0){
+         if (($numrows = count($computers)) > 0){
             $parameters = "check=$check";
             Html::printPager($start, $numrows, $target, $parameters);
 
@@ -5835,4 +5837,8 @@ JAVASCRIPT;
       }
    }
 }
-?>
+
+
+
+
+

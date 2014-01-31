@@ -65,8 +65,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 				if (self::WANTED_ACCOUNTINFO & $wanted){
 					$query = "SELECT * FROM `".$table."` WHERE `HARDWARE_ID` IN (".implode(',',$ids).")";	
 					$request = $this->db->queryOrDie($query);
-					$temps = microtime();
-
 					while ($computer = $this->db->fetch_assoc($request)) {
 						$computers[$computer['HARDWARE_ID']][strtoupper($table)]=$computer;
 					}
@@ -78,8 +76,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 				
 			}  
 			elseif($table == "hardware"){
-				if ($check & $checksum){
-
 					$query = "SELECT `hardware`.*,`accountinfo`.`TAG` FROM `hardware`
 					INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
 					WHERE `ID` IN (".implode(',',$ids).")";	
@@ -89,9 +85,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
 
 					}
-				
-				}
-
 			}
 			else{
 				if ($check & $checksum){
@@ -211,59 +204,61 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 		else{
 			$order = " LASTDATE ";
 		}
-		if (isset($options['FILTER'])) {
+		
+		if ($options['FILTER']) {
 			$filters=$options['FILTER'];
 
 			if (isset($filters['IDS'])) {
 				$ids = $filters['IDS'];
-				$where_ids =" AND hardware.ID IN ";
-				$where_ids = join(',', $ids);
-			}
+				$where_ids =" AND hardware.ID IN (";
+				$where_ids .= join(',', $ids);
+				$where_ids .=") ";
+							}
 			else{
-				$ids= array();
+				$where_ids = "";
 			}
-			if (isset($filters['EXCLUDE_IDS'])) {
+			if ($filters['EXCLUDE_IDS']) {
 				$exclude_ids=$filters['EXCLUDE_IDS'];
-				$where_exclude_ids =" AND hardware.ID NOT IN ";
-				$where_exclude_ids = join(',', $exclude_ids);
+				$where_exclude_ids =" AND hardware.ID NOT IN (";
+				$where_exclude_ids .= join(',', $exclude_ids);
+				$where_exclude_ids .=") ";
 			}
 			else{
-				$exclude_ids= array();
+				$where_exclude_ids = "";
 			}
-			if (isset($filters['TAGS'])) {
+			if ($filters['TAGS']) {
 				$tags=$filters['TAGS'];
-				$where_tags =" AND accountinfo.TAG IN ";
-				$where_tags = join(',', $this->db->escape($tags));
+				$where_tags =" AND accountinfo.TAG IN (";
+				$where_tags .= join(',', $this->db->escape($tags));
+				$where_tags .=") ";
 			}
 			else{
-				$tags= array();
+				$where_tags = "";
 			}
 			if (isset($filters['EXCLUDE_TAGS'])) {
 				$exclude_tags=$filters['EXCLUDE_TAGS'];
-				$where_exclude_tags =" AND accountinfo.TAG NOT IN ";
-				$where_exclude_tags = join(',', $this->db->escape($exclude_tags));
+				$where_exclude_tags =" AND accountinfo.TAG NOT IN (";
+				$where_exclude_tags .= join(',', $this->db->escape($exclude_tags));
+				$where_exclude_tags .=") ";
 			}
 			else{
-				$exclude_tags= array();
+				$where_exclude_tags= "";
 			}
-			if (isset($filters['CHECKSUM'])) {
+			if ($filters['CHECKSUM']) {
 				$checksum=$filters['CHECKSUM'];
 				$where_checksum =" AND ('.$checksum.' & hardware.CHECKSUM)' ";
 			}
 			else{
-				$checksum= array();
+				$where_checksum= "";
 			}
 		}
-		else{
-			$where_condition="";
-		}
-
+		$where_condition = $where_ids.$where_exclude_ids.$where_tags.$where_exclude_tags.$where_checksum ;
 		$query = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
 		WHERE hardware.DEVICEID NOT LIKE '\\_%'
 		AND hardware.ID = accountinfo.HARDWARE_ID
 		$where_condition
-		$max_records  $offset 
 		ORDER BY $order
+		$max_records  $offset 
 		";
 		$request = $this->db->queryOrDie($query);
 		while ($hardwareid = $this->db->fetch_assoc($request)) {
@@ -318,25 +313,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
 
 
-	/**
-	 * @see PluginOcsinventoryngOcsClient::getCategorie()
-	 */
-	public function getCategorie($table, $condition=array(), $sort=null){	
-		$query = "SELECT * FROM `".$table."` ";
-		$params = $this->parseArguments($condition,$sort);
-		$query .= $params;
-		$categorie = $this->db->queryOrDie($query);
-		while ($cat = $this->db->fetch_assoc($categorie)) {
-			$res[]=$cat;
-		}
-		if (isset($res)) {
-			if (count($res) == 1) {
-				$res = $res[0];
-			}
-		}
-		
-		return $res;
-	}
+
 
 	public function getUnique($columns, $table, $conditions, $sort){
 
@@ -422,7 +399,16 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 	}
 
 }
-?>
+
+
+
+
+
+
+
+
+
+
 
 
 
