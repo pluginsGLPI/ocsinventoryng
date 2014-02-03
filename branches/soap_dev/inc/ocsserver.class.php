@@ -1922,23 +1922,19 @@ JAVASCRIPT;
          $comp->getFromDB($line["computers_id"]);
          $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
          $options = array(
-              "FILTER"=>array(
-                "IDS"=>$line['ocsid']
-                ),
               "DISPLAY"=> array(
                 "CHECKSUM"=> PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE,
                 )
          );
-         
-         $computer = $ocsClient->getComputers($options);
-         $data_ocs = $computers['COMPUTERS'][0];
-         
+         $computer = $ocsClient->getComputer($line['ocsid'],$options);
+         $data_ocs = $computer;
+
          // Need do history to be 2 not to lock fields
          if ($dohistory) {
             $dohistory = 2;
          }
 
-         if (count($computers) == 1) {
+         if ($computer) {
             // automatic transfer computer
             if ($CFG_GLPI['transfers_id_auto']>0 && Session::isMultiEntitiesMode()) {
                self::transferComputer($line, $data_ocs);
@@ -1952,16 +1948,13 @@ JAVASCRIPT;
                           `ocs_agent_version` = '".$data_ocs["HARDWARE"]["USERAGENT"]." '
                       WHERE `id` = '$ID'";
             $DB->query($query);
-
             if ($force) {
                $ocs_checksum = self::MAX_CHECKSUM;
                self::getDBocs($plugin_ocsinventoryng_ocsservers_id)->setChecksum($ocs_checksum, $line['ocsid']);
             } else {
                $ocs_checksum = $data_ocs["META"]["CHECKSUM"];
             }
-
             $mixed_checksum = intval($ocs_checksum) & intval($cfg_ocs["checksum"]);
-
             //By default log history
             $loghistory["history"] = 1;
 
@@ -5829,13 +5822,6 @@ JAVASCRIPT;
       }
    }
 }
-
-
-
-
-
-
-
 
 
 
