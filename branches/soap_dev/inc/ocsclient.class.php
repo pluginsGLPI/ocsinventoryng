@@ -205,6 +205,21 @@ abstract class PluginOcsinventoryngOcsClient {
 	public function getId() {
 		return $this->id;
 	}
+	
+	public function getComputer($id, $options = array()) {
+		if (!isset($options['FILTER'])) {
+			$options['FILTER'] = array();
+		}
+		
+		$options['FILTER']['IDS'] = array($id);
+		$result = $this->getComputers($options);
+		
+		if ($result['TOTAL_COUNT'] < 1 || empty($result['COMPUTERS'])) {
+			return null;
+		}
+		
+		return current($result['COMPUTERS']);
+	}
 
 	/**
 	 * Returns the integer config for the given key

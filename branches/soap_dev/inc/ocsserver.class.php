@@ -1262,18 +1262,12 @@ JAVASCRIPT;
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       
-      $ocsResult = $ocsClient->getComputers(array(
-      		'FILTER' => array(
-      			'IDS' => array($ocsid)
-      		)
-      ));
+      $ocsComputer = $ocsClient->getComputer($ocsid);
       
-      if ($ocsResult['TOTAL_COUNT'] < 1) {
+      if (is_null($ocsComputer)) {
          return false;
       }
       
-      $ocsComputer = $ocsResult['COMPUTERS'][0];
-
       $query = "INSERT INTO `glpi_plugin_ocsinventoryng_ocslinks`
                        (`computers_id`, `ocsid`, `ocs_deviceid`,
                         `last_update`, `plugin_ocsinventoryng_ocsservers_id`,
@@ -1819,10 +1813,7 @@ JAVASCRIPT;
             $rules_matched['RuleImportEntity'] = $data['_ruleid'];
          }
 
-         $ocsResult = $ocsClient->getComputers(array(
-         	'FILTER' => array(
-         		'IDS' => array($ocsid)
-         	),
+         $ocsComputer = $ocsClient->getComputer($ocsid, array(
          	'DISPLAY' => array(
          		'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE | PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
          		'WANTED' => PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO
@@ -1830,10 +1821,8 @@ JAVASCRIPT;
          ));
             var_dump(1,$ocsid,$ocsResult);
 
-         if ($ocsResult['TOTAL_COUNT'] > 0) {
-         	$computer = $ocsResult['COMPUTERS'][0];
-
-            $computer = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($computer));
+         if (!is_null($ocsComputer)) {
+            $computer = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer));
 
             $locations_id = (isset($data['locations_id'])?$data['locations_id']:0);
             $input   = self::getComputerInformations($computer,
@@ -2372,22 +2361,17 @@ JAVASCRIPT;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-      $options = array(
-              "FILTER"=>array(
-                "IDS"=>$ocsid
-                ),
+      $computer = $ocsClient->getComputer($ocsid, array(
               "DISPLAY"=> array(
                 "CHECKSUM"=> PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
-                )
-        );
-      $computer = $ocsClient->getComputers($options);
-
+              )
+      ));
 
       $compupdate = array();
 
-      if ($computer[$ocsid]['BIOS']){
+      if (!is_null($computer)) {
          $compudate  = array();
-          $bios = $computer[$ocsid]['BIOS'];
+         $bios = $computer['BIOS'];
 
          if ($cfg_ocs["import_general_serial"] 
                && $cfg_ocs["import_general_serial"] > 0
@@ -2492,13 +2476,18 @@ JAVASCRIPT;
 
       // Select unexisting OCS hardware
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-      $computers = $ocsClient->getComputers(array("DISPLAY"=>array("CHECKSUM"=>PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE)));
+      $computers = $ocsClient->getComputers(array(
+      	"DISPLAY" => array(
+      		"CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
+      	)
+      ));
+      
       $hardware   = array();
-      if ((count($computers)) > 0){
-     foreach ($computers as $computer) {
-        $hardware[$computer['META']['ID']] = $computer['META']['DEVICEID'];
-     }
-    }
+      if ((count($computers['COMPUTERS'])) > 0) {
+         foreach ($computers as $computer) {
+            $hardware[$computer['META']['ID']] = $computer['META']['DEVICEID'];
+         }
+      }
 
       $query = "SELECT `ocsid`
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -3354,7 +3343,7 @@ JAVASCRIPT;
    **/
    static function updateDevices($devicetype, $computers_id, $ocsid, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs,
                                  $import_device, $import_ip, $dohistory){
-      global $PluginOcsinventoryngDBocs,$DB;
+      global $DB;
 
       $prevalue = $devicetype.self::FIELD_SEPARATOR;
 

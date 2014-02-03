@@ -36,7 +36,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		
 		$computers = array();
 		foreach ($computerObjs as $obj) {
-			$computers[] = array(
+			$computers []= array(
 				'ID' => (int) $obj->DATABASEID,
 				'CHECKSUM' => (int) $obj->CHECKSUM,
 				'DEVICEID' => (string) $obj->DEVICEID,
@@ -104,7 +104,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 					}
 				}
 				
-				$computers []= $computer;
+				$computers[(int) $meta->DATABASEID] = $computer;
 			}
 			
 			$totalCount = (int) $computerObjs['TOTAL_COUNT'];
