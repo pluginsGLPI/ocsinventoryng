@@ -1828,9 +1828,11 @@ JAVASCRIPT;
          		'WANTED' => PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO
          	)
          ));
+            var_dump(1,$ocsid,$ocsResult);
 
          if ($ocsResult['TOTAL_COUNT'] > 0) {
          	$computer = $ocsResult['COMPUTERS'][0];
+
             $computer = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($computer));
 
             $locations_id = (isset($data['locations_id'])?$data['locations_id']:0);
@@ -1922,11 +1924,11 @@ JAVASCRIPT;
     * @return action done
    **/
    static function updateComputer($ID, $plugin_ocsinventoryng_ocsservers_id, $dohistory, $force=0) {
-      global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
+      global $DB, $CFG_GLPI;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
-
+     
       $query = "SELECT *
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `id` = '$ID'
@@ -1938,21 +1940,23 @@ JAVASCRIPT;
          $line = $DB->fetch_assoc($result);
          $comp = new Computer();
          $comp->getFromDB($line["computers_id"]);
-
-         // Get OCS ID
-         $query_ocs = "SELECT *
-                       FROM `hardware`
-                       WHERE `ID` = '" . $line['ocsid'] . "'";
-         $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
-
+        $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+          $options = array(
+              "FILTER"=>array(
+                "IDS"=>$line['ocsid']
+                ),
+              "DISPLAY"=> array(
+                "CHECKSUM"=> PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE,
+                )
+        );
+      $computer = $ocsClient->getComputers($options);
+      $data_ocs = $computers['COMPUTERS'][0];
          // Need do history to be 2 not to lock fields
          if ($dohistory) {
             $dohistory = 2;
          }
 
-         if ($PluginOcsinventoryngDBocs->numrows($result_ocs) == 1) {
-            $data_ocs = Toolbox::addslashes_deep($PluginOcsinventoryngDBocs->fetch_array($result_ocs));
-
+         if (count($computers) == 1) {
             // automatic transfer computer
             if ($CFG_GLPI['transfers_id_auto']>0 && Session::isMultiEntitiesMode()) {
                self::transferComputer($line, $data_ocs);
@@ -1962,8 +1966,8 @@ JAVASCRIPT;
             // update last_update and and last_ocs_update
             $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                       SET `last_update` = '" . $_SESSION["glpi_currenttime"] . "',
-                          `last_ocs_update` = '" . $data_ocs["LASTDATE"] . "',
-                          `ocs_agent_version` = '".$data_ocs["USERAGENT"]." '
+                          `last_ocs_update` = '" . $data_ocs["META"]["LASTDATE"] . "',
+                          `ocs_agent_version` = '".$data_ocs["HARDWARE"]["USERAGENT"]." '
                       WHERE `id` = '$ID'";
             $DB->query($query);
 
@@ -1971,7 +1975,7 @@ JAVASCRIPT;
                $ocs_checksum = self::MAX_CHECKSUM;
                self::getDBocs($plugin_ocsinventoryng_ocsservers_id)->setChecksum($ocs_checksum, $line['ocsid']);
             } else {
-               $ocs_checksum = $data_ocs["CHECKSUM"];
+               $ocs_checksum = $data_ocs["META"]["CHECKSUM"];
             }
 
             $mixed_checksum = intval($ocs_checksum) & intval($cfg_ocs["checksum"]);
@@ -5848,6 +5852,11 @@ JAVASCRIPT;
       }
    }
 }
+
+
+
+
+
 
 
 
