@@ -1577,19 +1577,15 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
          $tables = array_keys(plugin_ocsinventoryng_getTablesForQuery());
          $fields = plugin_ocsinventoryng_getFieldsForQuery();
 
-         $ocsResult = $ocsClient->getComputers(array(
-         		'FILTER' => array(
-         			'IDS' => array($ocsid)
-         		),
+         $ocsComputer = $ocsClient->getComputer($ocsid, array(
          		'DISPLAY' => array(
 	         		'CHECKSUM' => $ocsClient->getChecksumForTables($tables) | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS,
 	         		'WANTED' => $ocsClient->getWantedForTables($tables),
          		)
          ));
          
-         if ($ocsResult['TOTAL_COUNT'] > 0) {
-            $computer = $ocsResult['COMPUTERS'][0];
-	        $networks = $computer['NETWORKS'];
+         if (!is_null($ocsComputer)) {
+	        $networks = $ocsComputer['NETWORKS'];
 	
 	        $ipblacklist  = Blacklist::getIPs();
 	        $macblacklist = Blacklist::getMACs();
@@ -1621,8 +1617,15 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
                $ocsField = $fieldSql[0];
                $glpiField = $fieldSql[count($fieldSql) -1];
                
-               foreach ($computer[$table] as $sectionData) {
-	              $ocs_data[$glpiField][] = $sectionData[$ocsField];
+               $section = $ocsComputer[$table];
+               
+               if (isset($section[$ocsField])) {
+                  // Not multi
+	              $ocs_data[$glpiField][] = $section[$ocsField];
+               } else {
+                  foreach ($section as $sectionLine) {
+	                 $ocs_data[$glpiField][] = $sectionLine[$ocsField];
+                  }
                }
             }
             
