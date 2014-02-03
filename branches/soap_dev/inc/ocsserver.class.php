@@ -1272,9 +1272,9 @@ JAVASCRIPT;
                        (`computers_id`, `ocsid`, `ocs_deviceid`,
                         `last_update`, `plugin_ocsinventoryng_ocsservers_id`,
                         `entities_id`, `tag`)
-                VALUES ('$glpi_computers_id', '$ocsid', '".$ocsComputer["DEVICEID"]."',
+                VALUES ('$glpi_computers_id', '$ocsid', '".$ocsComputer['META']['DEVICEID']."',
                         '".$_SESSION["glpi_currenttime"]."', '$plugin_ocsinventoryng_ocsservers_id',
-                        '".$comp->fields['entities_id']."', '".$ocsComputer["TAG"]."')";
+                        '".$comp->fields['entities_id']."', '".$ocsComputer['META']['TAG']."')";
       $result = $DB->query($query);
 
       if ($result) {
@@ -1869,8 +1869,7 @@ JAVASCRIPT;
                PluginOcsinventoryngOcslink::history($computers_id, $changes,
                                                     PluginOcsinventoryngOcslink::HISTORY_OCS_IMPORT);
 
-               if ($idlink = self::ocsLink($computer['META']['ID'], $plugin_ocsinventoryng_ocsservers_id,
-                                           $computers_id)) {
+               if ($idlink = self::ocsLink($computer['META']['ID'], $plugin_ocsinventoryng_ocsservers_id, $computers_id)) {
                   self::updateComputer($idlink, $plugin_ocsinventoryng_ocsservers_id, 0);
                }
 
@@ -2459,7 +2458,7 @@ JAVASCRIPT;
     * @return nothing
    **/
    static function showComputersToClean($plugin_ocsinventoryng_ocsservers_id, $check, $start){
-      global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
+      global $DB, $CFG_GLPI;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
 
@@ -2470,17 +2469,12 @@ JAVASCRIPT;
 
       // Select unexisting OCS hardware
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-      $computers = $ocsClient->getComputers(array(
-      	"DISPLAY" => array(
-      		"CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
-      	)
-      ));
+      $computers = $ocsClient->getComputers(array());
       
-      $hardware   = array();
-      if ((count($computers['COMPUTERS'])) > 0) {
-         foreach ($computers as $computer) {
-            $hardware[$computer['META']['ID']] = $computer['META']['DEVICEID'];
-         }
+      if (count($computers['COMPUTERS']) > 0) {
+	      $hardware = $computers['COMPUTERS'];
+      } else {
+	      $hardware = array();
       }
 
       $query = "SELECT `ocsid`
