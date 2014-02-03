@@ -1253,7 +1253,7 @@ JAVASCRIPT;
     * @return integer : link id.
    **/
    static function ocsLink($ocsid, $plugin_ocsinventoryng_ocsservers_id, $glpi_computers_id) {
-      global $DB, $PluginOcsinventoryngDBocs;
+      global $DB;
 
       // Retrieve informations from computer
       $comp = new Computer();
@@ -1285,16 +1285,16 @@ JAVASCRIPT;
    }
 
 
-      /**
+   /**
     * @param $ocsid
     * @param $plugin_ocsinventoryng_ocsservers_id
     * @param $computers_id
    **/
    static function linkComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $computers_id) {
-      global $DB, $PluginOcsinventoryngDBocs, $CFG_GLPI;
-
+      global $DB, $CFG_GLPI;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
       $query = "SELECT *
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -1309,13 +1309,11 @@ JAVASCRIPT;
       if ($numrows > 0) {
          $ocs_link_exists = true;
          $data            = $DB->fetch_assoc($result);
-         $query = "SELECT *
-                   FROM `hardware`
-                   WHERE `ID` = '" . $data["ocsid"] . "'";
-         $result_ocs = $PluginOcsinventoryngDBocs->query($query);
-         // Not found
-         if ($PluginOcsinventoryngDBocs->numrows($result_ocs)==0) {
+         
+         $ocsComputer = $ocsClient->getComputer($data['ocsid']);
 
+         // Not found
+         if (is_null($ocsComputer)) {
             $idlink = $data["id"];
             $query  = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                        SET `ocsid` = '$ocsid'
@@ -1339,33 +1337,30 @@ JAVASCRIPT;
       if ($ocs_id_change || !$ocs_link_exists) {
          $ocsConfig = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
          // Set OCS checksum to max value
-         self::getDBocs($plugin_ocsinventoryng_ocsservers_id)->setChecksum(PluginOcsinventoryngOcsClient::CHECKSUM_ALL, $ocsid);
+         $ocsClient->setChecksum(PluginOcsinventoryngOcsClient::CHECKSUM_ALL, $ocsid);
 
          if ($ocs_id_change
              || ($idlink = self::ocsLink($ocsid, $plugin_ocsinventoryng_ocsservers_id,
                                          $computers_id))) {
 
-             // automatic transfer computer
-             if (($CFG_GLPI['transfers_id_auto'] > 0)
-                 && Session::isMultiEntitiesMode()) {
+            // automatic transfer computer
+            if (($CFG_GLPI['transfers_id_auto'] > 0)
+                && Session::isMultiEntitiesMode()) {
 
-                // Retrieve data from glpi_plugin_ocsinventoryng_ocslinks
-                $ocsLink = new PluginOcsinventoryngOcslink();
-                $ocsLink->getFromDB($idlink);
+               // Retrieve data from glpi_plugin_ocsinventoryng_ocslinks
+               $ocsLink = new PluginOcsinventoryngOcslink();
+               $ocsLink->getFromDB($idlink);
 
-                if (count($ocsLink->fields)) {
-                   // Retrieve datas from OCS database
-                   $query_ocs = "SELECT *
-                                 FROM `hardware`
-                                 WHERE `ID` = '" . $ocsLink->fields['ocsid'] . "'";
-                   $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
+               if (count($ocsLink->fields)) {
+                  // Retrieve datas from OCS database
+                  $ocsComputer = $ocsClient->getComputer($ocsLink->fields['ocsid']);
 
-                   if ($PluginOcsinventoryngDBocs->numrows($result_ocs) == 1) {
-                      $data_ocs = Toolbox::addslashes_deep($PluginOcsinventoryngDBocs->fetch_array($result_ocs));
-                      self::transferComputer($ocsLink->fields, $data_ocs);
-                   }
-                }
-             }
+                  if (!is_null($ocsComputer)) {
+                     $ocsComputer = Toolbox::addslashes_deep($ocsComputer);
+                     self::transferComputer($ocsLink->fields, $ocsComputer);
+                  }
+               }
+            }
 
             $comp = new Computer();
             $comp->getFromDB($computers_id);
@@ -1385,54 +1380,52 @@ JAVASCRIPT;
             if ($comp->fields['is_deleted']) {
                $comp->restore(array('id' => $computers_id));
             }
-            // Reset using GLPI Config
-            $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
             // Reset only if not in ocs id change case
             if (!$ocs_id_change) {
-               if ($cfg_ocs["import_general_os"]) {
+               if ($ocsConfig["import_general_os"]) {
                   self::resetDropdown($computers_id, "operatingsystems_id", "glpi_operatingsystems");
                }
-               if ($cfg_ocs["import_device_processor"]) {
+               if ($ocsConfig["import_device_processor"]) {
                   self::resetDevices($computers_id, 'DeviceProcessor');
                }
-               if ($cfg_ocs["import_device_iface"]) {
+               if ($ocsConfig["import_device_iface"]) {
                   self::resetDevices($computers_id, 'DeviceNetworkCard');
                }
-               if ($cfg_ocs["import_device_memory"]) {
+               if ($ocsConfig["import_device_memory"]) {
                   self::resetDevices($computers_id, 'DeviceMemory');
                }
-               if ($cfg_ocs["import_device_hdd"]) {
+               if ($ocsConfig["import_device_hdd"]) {
                   self::resetDevices($computers_id, 'DeviceHardDrive');
                }
-               if ($cfg_ocs["import_device_sound"]) {
+               if ($ocsConfig["import_device_sound"]) {
                   self::resetDevices($computers_id, 'DeviceSoundCard');
                }
-               if ($cfg_ocs["import_device_gfxcard"]) {
+               if ($ocsConfig["import_device_gfxcard"]) {
                   self::resetDevices($computers_id, 'DeviceGraphicCard');
                }
-               if ($cfg_ocs["import_device_drive"]) {
+               if ($ocsConfig["import_device_drive"]) {
                   self::resetDevices($computers_id, 'DeviceDrive');
                }
-               if ($cfg_ocs["import_device_modem"] || $cfg_ocs["import_device_port"]) {
+               if ($ocsConfig["import_device_modem"] || $ocsConfig["import_device_port"]) {
                   self::resetDevices($computers_id, 'DevicePci');
                }
-               if ($cfg_ocs["import_software"]) {
+               if ($ocsConfig["import_software"]) {
                   self::resetSoftwares($computers_id);
                }
-               if ($cfg_ocs["import_disk"]) {
+               if ($ocsConfig["import_disk"]) {
                   self::resetDisks($computers_id);
                }
-               if ($cfg_ocs["import_periph"]) {
+               if ($ocsConfig["import_periph"]) {
                   self::resetPeripherals($computers_id);
                }
-               if ($cfg_ocs["import_monitor"]==1) { // Only reset monitor as global in unit management
+               if ($ocsConfig["import_monitor"]==1) { // Only reset monitor as global in unit management
                   self::resetMonitors($computers_id);    // try to link monitor with existing
                }
-               if ($cfg_ocs["import_printer"]) {
+               if ($ocsConfig["import_printer"]) {
                   self::resetPrinters($computers_id);
                }
-               if ($cfg_ocs["import_registry"]) {
+               if ($ocsConfig["import_registry"]) {
                   self::resetRegistry($computers_id);
                }
                $changes[0] = '0';
@@ -1819,7 +1812,6 @@ JAVASCRIPT;
          		'WANTED' => PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO
          	)
          ));
-            var_dump(1,$ocsid,$ocsResult);
 
          if (!is_null($ocsComputer)) {
             $computer = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer));
@@ -1929,17 +1921,19 @@ JAVASCRIPT;
          $line = $DB->fetch_assoc($result);
          $comp = new Computer();
          $comp->getFromDB($line["computers_id"]);
-        $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-          $options = array(
+         $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+         $options = array(
               "FILTER"=>array(
                 "IDS"=>$line['ocsid']
                 ),
               "DISPLAY"=> array(
                 "CHECKSUM"=> PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE,
                 )
-        );
-      $computer = $ocsClient->getComputers($options);
-      $data_ocs = $computers['COMPUTERS'][0];
+         );
+         
+         $computer = $ocsClient->getComputers($options);
+         $data_ocs = $computers['COMPUTERS'][0];
+         
          // Need do history to be 2 not to lock fields
          if ($dohistory) {
             $dohistory = 2;
