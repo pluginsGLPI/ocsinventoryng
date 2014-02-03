@@ -1619,7 +1619,7 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
                
                $section = $ocsComputer[$table];
                
-               if (isset($section[$ocsField])) {
+               if (array_key_exists($ocsField, $section)) {
                   // Not multi
 	              $ocs_data[$glpiField][] = $section[$ocsField];
                } else {
