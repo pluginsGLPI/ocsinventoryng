@@ -196,17 +196,21 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
  * @param $ocsservers_id   integer  the OCS server id
 **/
 function FirstPass($ocsservers_id) {
-   global $DB, $PluginOcsinventoryngDBocs;
+   global $DB;
 
    if (PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id)) {
+      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
+      
       // Compute lastest new computer
-      $query = "SELECT MAX(`ID`)
-                FROM `hardware`";
-      $max_id = 0;
-      if ($result = $PluginOcsinventoryngDBocs->query($query)) {
-         if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
-            $max_id = $PluginOcsinventoryngDBocs->result($result, 0, 0);
-         }
+      $ocsResult = $ocsClient->getComputers(array(
+      		'MAX_RECORDS' => 1,
+      		'ORDER' => 'ID DESC',
+      ));
+      
+      if (count($ocsResult['COMPUTERS'])) {
+         $max_id = key($ocsResult['COMPUTERS']);
+      } else {
+         $max_id = 0;
       }
 
       // Compute lastest synchronization date
@@ -275,7 +279,7 @@ function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields
 
    $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
 
-   return plugin_ocsinventoryng_importFromOcsServer($threads_id,$cfg_ocs, $server, $thread_nbr,
+   return plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
                                                     $threadid, $fields, $config);
 }
 
@@ -289,77 +293,116 @@ function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields
  * @param $fields
  * @param $config
 **/
-function plugin_ocsinventoryng_importFromOcsServer($threads_id,$cfg_ocs, $server, $thread_nbr,
+function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
                                                   $threadid, $fields, $config) {
-   global $PluginOcsinventoryngDBocs;
-
    echo "\tThread #" . $threadid . ": import computers from server: '" . $cfg_ocs["name"] . "'\n";
 
-   $where_multi_thread  = '';
-   $limit               = "";
-   if (($thread_nbr != -1)
-       && ($threadid != -1)
-       && ($thread_nbr > 1)) {
-      $where_multi_thread = " AND `ID` % $thread_nbr = " . ($threadid -1);
+   $multiThread = false;
+   if ($threadid != -1 && $thread_nbr > 1) {
+      $multiThread = true;
    }
+   
+   $ocsServerId = $cfg_ocs['id'];
+   $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($ocsServerId);
+   $ocsComputers = array();
+   
+   // Build common options
+   $inventoriedBefore = new DateTime('@'.(time() - 180));
+   $computerOptions = array(
+   		'FILTER' => array(
+   			'INVENTORIED_BEFORE' => $inventoriedBefore->format('Y-m-d H:i:s'),
+   		)
+   );
+   
+   // Limit the number of imported records according to config
    if ($config->fields["import_limit"] > 0) {
-      $limit = " LIMIT " . $config->fields["import_limit"];
+      $computerOptions['MAX_RECORDS'] = $config->fields["import_limit"];
    }
 
-   $query_ocs = "SELECT `ID`
-                 FROM `hardware`
-                 INNER JOIN `accountinfo` ON (`hardware`.`ID` = `accountinfo`.`HARDWARE_ID`)
-                 WHERE ((CHECKSUM&" . intval($cfg_ocs["checksum"]) . ") > 0
-                        OR `LASTDATE` > '" . $server->fields["max_glpidate"] . "')
-                       AND TIMESTAMP(`LASTDATE`) < (NOW()-180)
-                       AND `ID` <= " . intval($server->fields["max_ocsid"]);
+   // Filter tags according to config
+   if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
+      $computerOptions['FILTER']['TAGS'] = $tag_limit;
+   }
+   
+   if ($cfg_ocs["tag_limit"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
+      $computerOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
+   }
+   
+   // Get newly inventoried computers
+   $firstQueryOptions = $computerOptions;
+   if ($server->fields["max_glpidate"] != '0000-00-00 00:00:00') {
+      $firstQueryOptions['FILTER']['INVENTORIED_SINCE'] = $server->fields["max_glpidate"];
+   }
+   
+   $ocsResult = $ocsClient->getComputers($firstQueryOptions);
 
-   if (!empty ($cfg_ocs["tag_limit"])) {
-      $splitter = explode("$", $cfg_ocs["tag_limit"]);
-      if (count($splitter)) {
-         $query_ocs .= " AND `accountinfo`.`TAG` IN ('" . $splitter[0] . "'";
-         for ($i = 1 ; $i < count($splitter) ; $i++) {
-            $query_ocs .= ",'" . $splitter[$i] . "'";
-         }
-         $query_ocs .= ")";
+   // Filter only useful computers
+   // Some conditions can't be sent to OCS, so we have to do this in a loop
+   // Maybe add this to SOAP ?
+   $excludeIds = array();
+   foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
+      if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
+         $ocsComputers[$ID] = $computer;
+      }
+      $excludeIds []= $ID;
+   }
+   
+   // Get computers for which checksum has changed
+   $secondQueryOptions = $computerOptions;
+   $secondQueryOptions['FILTER']['EXLUDE_IDS'] = $excludeIds;
+   $secondQueryOptions['FILTER']['CHECKSUM'] = intval($cfg_ocs["checksum"]);
+   
+   $ocsResult = $ocsClient->getComputers($secondQueryOptions);
+   
+   // Filter only useful computers
+   // Some conditions can't be sent to OCS, so we have to do this in a loop
+   // Maybe add this to SOAP ?
+   foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
+      if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
+         $ocsComputers[$ID] = $computer;
       }
    }
-   $query_ocs .= "$where_multi_thread
-                  $limit";
 
-   $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
-   $nb         = $PluginOcsinventoryngDBocs->numrows($result_ocs);
+   // Limit the number of imported records according to config
+   if ($config->fields["import_limit"] > 0 and count($ocsComputers) > $config->fields["import_limit"]) {
+      $ocsComputers = array_splice($ocsComputers, $config->fields["import_limit"]);
+   }
+   
+   $nb = count($ocsComputers);
    echo "\tThread #$threadid: $nb computer(s)\n";
 
    $fields["total_number_machines"] += $nb;
 
    $thread     = new PluginOcsinventoryngThread();
    $notimport  = new PluginOcsinventoryngNotimportedcomputer();
-   for ($i = 0 ; $data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs) ; $i++) {
+   
+   $i = 0;
+   foreach ($ocsComputers as $ID => $ocsComputer) {
       if ($i == $config->fields["thread_log_frequency"]) {
          $fields["status"] = PLUGIN_OCSINVENTORYNG_STATE_RUNNING;
          $thread->update($fields);
-         $i                = 0;
+         $i = 0;
+      } else {
+         $i++;
       }
 
       echo ".";
       $entities_id = 0;
-      $action      = PluginOcsinventoryngOcsServer::processComputer($data["ID"], $cfg_ocs["id"], 1);
+      $action = PluginOcsinventoryngOcsServer::processComputer($ID, $ocsServerId, 1);
       PluginOcsinventoryngOcsServer::manageImportStatistics($fields, $action['status']);
 
       switch ($action['status']) {
          case PluginOcsinventoryngOcsServer::COMPUTER_NOT_UNIQUE :
-         case PluginOcsinventoryngOcsServer::COMPUTER_FAILED_IMPORT :
+         case PluginOcsinventoryngOcsServer::COMPUTER_FAILED_IMPORT:
          case PluginOcsinventoryngOcsServer::COMPUTER_LINK_REFUSED:
-            $notimport->logNotImported($cfg_ocs["id"], $data["ID"],$action);
+            $notimport->logNotImported($ocsServerId, $ID, $action);
             break;
 
          default:
-            $notimport->cleanNotImported($cfg_ocs["id"], $data["ID"]);
-         //Log detail
+            $notimport->cleanNotImported($ocsServerId, $ID);
+            //Log detail
             $detail = new PluginOcsinventoryngDetail();
-            $detail->logProcessedComputer($data["ID"],$cfg_ocs["id"], $action, $threadid,
-                                          $threads_id);
+            $detail->logProcessedComputer($ID, $ocsServerId, $action, $threadid, $threads_id);
             break;
       }
 
