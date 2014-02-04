@@ -424,3 +424,5 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     }
     
 }
+
+
