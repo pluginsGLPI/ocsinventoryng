@@ -1006,9 +1006,9 @@ JAVASCRIPT;
       $admin->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
 
       $server = new PluginOcsinventoryngServer();
-		$server->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
+        $server->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
 
-		unset($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+        unset($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
 
       // ocsservers_id for RuleImportComputer, OCS_SERVER for RuleImportEntity
       Rule::cleanForItemCriteria($this);
@@ -1522,7 +1522,7 @@ JAVASCRIPT;
 
                      if (count($res)) {
                         $data = $res[0];
-                     	
+                        
                         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                                   SET `ocsid` = '" . $data["ID"] . "',
                                       `ocs_deviceid` = '" . $data["DEVICEID"] . "'
@@ -1543,7 +1543,7 @@ JAVASCRIPT;
 
                      if (count($res)) {
                         $data = $res[0];
-                     	
+                        
                         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                                   SET `ocsid` = '" . $data["ID"] . "',
                                       `ocs_deviceid` = '" . $data["DEVICEID"] . "'
@@ -1667,9 +1667,9 @@ JAVASCRIPT;
          
          $ocs_val = null;
          if (isset($ocs_fields[$ocs_section][$ocs_field])) {
-         	$ocs_val = $ocs_fields[$ocs_section][$ocs_field];
+            $ocs_val = $ocs_fields[$ocs_section][$ocs_field];
          } else if (isset($ocs_fields[$ocs_section][0][$ocs_field])) {
-         	$ocs_val = $ocs_fields[$ocs_section][0][$ocs_field];
+            $ocs_val = $ocs_fields[$ocs_section][0][$ocs_field];
          }
          
          if (!is_null($ocs_val)) {
@@ -1807,10 +1807,10 @@ JAVASCRIPT;
          }
 
          $ocsComputer = $ocsClient->getComputer($ocsid, array(
-         	'DISPLAY' => array(
-         		'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE | PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
-         		'WANTED' => PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO
-         	)
+            'DISPLAY' => array(
+                'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE | PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
+                'WANTED' => PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO
+            )
          ));
 
          if (!is_null($ocsComputer)) {
@@ -2462,9 +2462,9 @@ JAVASCRIPT;
       $computers = $ocsClient->getComputers(array());
       
       if (count($computers['COMPUTERS']) > 0) {
-	      $hardware = $computers['COMPUTERS'];
+          $hardware = $computers['COMPUTERS'];
       } else {
-	      $hardware = array();
+          $hardware = array();
       }
 
       $query = "SELECT `ocsid`
@@ -2691,12 +2691,12 @@ JAVASCRIPT;
       // Fetch linked computers from ocs
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $ocsResult = $ocsClient->getComputers(array(
-      		'OFFSET' => $start,
-      		'MAX_RECORDS' => $_SESSION['glpilist_limit'],
-      		'FILTER' => array(
-      			'IDS' => $already_linked_ids,
-      			'CHECKSUM' => $cfg_ocs["checksum"]
-      		)
+            'OFFSET' => $start,
+            'MAX_RECORDS' => $_SESSION['glpilist_limit'],
+            'FILTER' => array(
+                'IDS' => $already_linked_ids,
+                'CHECKSUM' => $cfg_ocs["checksum"]
+            )
       ));
       
       if (count($ocsResult['COMPUTERS']) > 0) {
@@ -2704,7 +2704,7 @@ JAVASCRIPT;
          $ocs_computer_ids = array();
          $hardware = array();
          foreach ($ocsResult['COMPUTERS'] as $computer) {
-         	$ID = $computer['META']['ID'];
+            $ID = $computer['META']['ID'];
             $ocs_computer_ids []= $ID;
             
             $hardware[$ID]["date"] = $computer['META']["LASTDATE"];
@@ -2930,23 +2930,23 @@ JAVASCRIPT;
       $result_glpi = $DB->query($query_glpi);
       $already_linked = array();
       if ($DB->numrows($result_glpi) > 0){
-      	 while ($data = $DB->fetch_array($result_glpi)){
-      	    $already_linked []= $data["ocsid"];
-      	 }
+         while ($data = $DB->fetch_array($result_glpi)){
+            $already_linked []= $data["ocsid"];
+         }
       }
 
       $cfg_ocs = self::getConfig($serverId);
       
       $computerOptions = array(
-      		'OFFSET' => $start,
-      		'MAX_RECORDS' => $_SESSION['glpilist_limit'],
-         	'FILTER' => array(
-      			'EXCLUDE_IDS' => $already_linked
-      		),
-      		'DISPLAY' => array(
-         		'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
-         	),
-      		'ORDER' => 'NAME'
+            'OFFSET' => $start,
+            'MAX_RECORDS' => $_SESSION['glpilist_limit'],
+            'FILTER' => array(
+                'EXCLUDE_IDS' => $already_linked
+            ),
+            'DISPLAY' => array(
+                'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
+            ),
+            'ORDER' => 'NAME'
       );
 
       if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
@@ -2973,13 +2973,13 @@ JAVASCRIPT;
             $hardware[$id]["id"]           = $data['META']["ID"];
             
             if (count($data['BIOS'])) {
-	        	$hardware[$id]["serial"]       = $data['BIOS']["SSN"];
-	        	$hardware[$id]["model"]        = $data['BIOS']["SMODEL"];
-	        	$hardware[$id]["manufacturer"] = $data['BIOS']["SMANUFACTURER"];
+                $hardware[$id]["serial"]       = $data['BIOS']["SSN"];
+                $hardware[$id]["model"]        = $data['BIOS']["SMODEL"];
+                $hardware[$id]["manufacturer"] = $data['BIOS']["SMANUFACTURER"];
             } else {
-            	$hardware[$id]["serial"]       = '';
-            	$hardware[$id]["model"]        = '';
-            	$hardware[$id]["manufacturer"] = '';
+                $hardware[$id]["serial"]       = '';
+                $hardware[$id]["model"]        = '';
+                $hardware[$id]["manufacturer"] = '';
             }
          }
 
@@ -3942,33 +3942,33 @@ JAVASCRIPT;
    }
 
 
-	/**
-	 * Get a connection to the OCS server
-	 * 
-	 * @param $serverId the ocs server id
-	 * 
-	 * @return PluginOcsinventoryngOcsClient the ocs client (database or soap)
-	 */
-	static function getDBocs($serverId) {
-		$config = self::getConfig($serverId);
-		
-		if ($config['conn_type'] == self::CONN_TYPE_DB) {
-			return new PluginOcsinventoryngOcsDbClient(
-				$serverId,
-				$config['ocs_db_host'],
-				$config['ocs_db_user'],
-				$config['ocs_db_passwd'],
-				$config['ocs_db_name']
-			);
-		} else {
-			return new PluginOcsinventoryngOcsSoapClient(
-				$serverId,
-				$config['ocs_db_host'],
-				$config['ocs_db_user'],
-				$config['ocs_db_passwd']
-			);
-		}
-	}
+    /**
+     * Get a connection to the OCS server
+     * 
+     * @param $serverId the ocs server id
+     * 
+     * @return PluginOcsinventoryngOcsClient the ocs client (database or soap)
+     */
+    static function getDBocs($serverId) {
+        $config = self::getConfig($serverId);
+        
+        if ($config['conn_type'] == self::CONN_TYPE_DB) {
+            return new PluginOcsinventoryngOcsDbClient(
+                $serverId,
+                $config['ocs_db_host'],
+                $config['ocs_db_user'],
+                $config['ocs_db_passwd'],
+                $config['ocs_db_name']
+            );
+        } else {
+            return new PluginOcsinventoryngOcsSoapClient(
+                $serverId,
+                $config['ocs_db_host'],
+                $config['ocs_db_user'],
+                $config['ocs_db_passwd']
+            );
+        }
+    }
 
 
    /**
@@ -4600,26 +4600,30 @@ JAVASCRIPT;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       if ($cfg_ocs["import_software"]) {
+        $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+        $softwares = array();
 
          //---- Get all the softwares for this machine from OCS -----//
          if ($cfg_ocs["use_soft_dict"]) {
-            $query2 = "SELECT `dico_soft`.`FORMATTED` AS NAME,
-                              `softwares`.`VERSION` AS VERSION,
-                              `softwares`.`PUBLISHER` AS PUBLISHER,
-                              `softwares`.`COMMENTS` AS COMMENTS
-                       FROM `softwares`
-                       INNER JOIN `dico_soft` ON (`softwares`.`NAME` = dico_soft.EXTRACTED)
-                       WHERE `softwares`.`HARDWARE_ID` = '$ocsid'";
-         } else {
-            $query2 = "SELECT `softwares`.`NAME` AS NAME,
-                              `softwares`.`VERSION` AS VERSION,
-                              `softwares`.`PUBLISHER` AS PUBLISHER,
-                              `softwares`.`COMMENTS` AS COMMENTS
-                       FROM `softwares`
-                       WHERE `softwares`.`HARDWARE_ID` = '$ocsid'";
-         }
-         $result2 = $PluginOcsinventoryngDBocs->query($query2);
 
+                 $options = array(
+                       "DISPLAY"=> array(
+                       "CHECKSUM"=> PluginOcsinventoryngOcsClient::CHECKSUM_SOFTWARE,
+                       "WANTED"=> PluginOcsinventoryngOcsClient::WANTED_DICO_SOFT,
+                   )
+                 );
+                 $computer= $ocsClient->getComputer($ocsid,$options);
+
+         } else {
+                 $options = array(
+                       "DISPLAY"=> array(
+                       "CHECKSUM"=> PluginOcsinventoryngOcsClient::CHECKSUM_SOFTWARE,
+                   )
+                 );
+                 $computer= $ocsClient->getComputer($ocsid,$options);
+         }
+
+         $softwares=$computer["SOFTWARES"];
          $soft                = new Software();
 
          // Read imported software in last sync
@@ -4634,24 +4638,26 @@ JAVASCRIPT;
                    WHERE `glpi_computers_softwareversions`.`computers_id`='$computers_id'
                          AND `is_dynamic`";
          $imported = array();
+
+
          foreach ($DB->request($query) as $data) {
             $imported[$data['id']] = strtolower($data['sname'].self::FIELD_SEPARATOR.$data['vname']);
          }
 
-         if ($PluginOcsinventoryngDBocs->numrows($result2) > 0) {
-            while ($data2 = $PluginOcsinventoryngDBocs->fetch_array($result2)) {
-               $data2    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data2));
+         if (count($softwares) > 0) {
+              foreach ($softwares as $software) { 
+               $software    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($software));
 
                //As we cannot be sure that data coming from OCS are in utf8, let's try to encode them
                //if possible
                foreach (array('NAME', 'PUBLISHER', 'VERSION') as $field) {
-                  $data2[$field] = self::encodeOcsDataInUtf8($is_utf8, $data2[$field]);
+                  $software[$field] = self::encodeOcsDataInUtf8($is_utf8, $software[$field]);
                }
 
                //Replay dictionnary on manufacturer
-               $manufacturer = Manufacturer::processName($data2["PUBLISHER"]);
-               $version      = $data2['VERSION'];
-               $name         = $data2['NAME'];
+               $manufacturer = Manufacturer::processName($software["PUBLISHER"]);
+               $version      = $software['VERSION'];
+               $name         = $software['NAME'];
 
                //Software might be created in another entity, depending on the entity's configuration
                $target_entity = Entity::getUsedConfig('entities_id_software', $entity);
@@ -4659,11 +4665,9 @@ JAVASCRIPT;
                if ($target_entity < 0) {
                   $target_entity = $entity;
                }
-
                $modified_name       = $name;
                $modified_version    = $version;
                $is_helpdesk_visible = NULL;
-
                if (!$cfg_ocs["use_soft_dict"]) {
                   //Software dictionnary
                   $params = array("name" => $name, "manufacturer" => $manufacturer,
@@ -4782,6 +4786,7 @@ JAVASCRIPT;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       if ($cfg_ocs["import_registry"]){
+        
          //before update, delete all entries about $computers_id
          $query_delete = "DELETE
                           FROM `glpi_plugin_ocsinventoryng_registrykeys`
@@ -4835,8 +4840,7 @@ JAVASCRIPT;
     *
     * @return Nothing (void).
    **/
-   static function updateAdministrativeInfo($computers_id, $ocsid, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs,
-                                            $computer_updates, $entity, $dohistory){
+   static function updateAdministrativeInfo($computers_id, $ocsid, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $entity, $dohistory){
       global $DB, $PluginOcsinventoryngDBocs;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
@@ -5832,7 +5836,7 @@ JAVASCRIPT;
                 }
             }
         }
-        
+
         //Look for all monitors, not locked, not linked to the computer anymore
         $query = "SELECT `id`
                    FROM `glpi_computers_items`
@@ -5850,3 +5854,4 @@ JAVASCRIPT;
         }
     }
 }
+

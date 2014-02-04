@@ -56,6 +56,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         
         $OCS_MAP = self::getOcsMap();
         foreach ($OCS_MAP as $table => $value) {
+             if ($table == "dico_soft") {
+               continue;
+            }
             if (isset($value['checksum'])) {
                 $check = $value['checksum'];
             } else {
@@ -66,13 +69,38 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                 if (self::WANTED_ACCOUNTINFO & $wanted) {
                     $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                     $request = $this->db->query($query);
-                    while ($computer = $this->db->fetch_assoc($request)) {
-                        $computers[$computer['HARDWARE_ID']][strtoupper($table)] = $computer;
+                    while ($accountinfo = $this->db->fetch_assoc($request)) {
+                        $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)] = $accountinfo;
                     }
                 }
-            } elseif ($table == "dico_soft") {
+
+            } elseif ($table == "softwares") {
                 
-                //do nothing
+               if (self::WANTED_DICO_SOFT & $wanted) {
+                    $query   = "SELECT `dico_soft`.`FORMATTED` AS NAME,
+                                `softwares`.`VERSION` AS VERSION,
+                                `softwares`.`PUBLISHER` AS PUBLISHER,
+                                `softwares`.`COMMENTS` AS COMMENTS,
+                                `softwares`.`HARDWARE_ID` AS HARDWARE_ID
+                                FROM `softwares`
+                                INNER JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
+                                WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                }
+                else{
+                    $query   = "SELECT `softwares`.`NAME` AS NAME,
+                                `softwares`.`VERSION` AS VERSION,
+                                `softwares`.`PUBLISHER` AS PUBLISHER,
+                                `softwares`.`COMMENTS` AS COMMENTS,
+                                `softwares`.`HARDWARE_ID` AS HARDWARE_ID
+                                FROM `softwares`
+                                WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                }
+
+                $request = $this->db->query($query);
+                while ($software = $this->db->fetch_assoc($request)) {
+                        $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
+                }
+
                 
             } elseif ($table == "hardware") {
                 
@@ -80,25 +108,25 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 				INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
 				WHERE `ID` IN (" . implode(',', $ids) . ")";
                 $request = $this->db->query($query);
-                while ($computer = $this->db->fetch_assoc($request)) {
-                    $computers[$computer['ID']]["META"]["ID"]       = $computer["ID"];
-                    $computers[$computer['ID']]["META"]["CHECKSUM"] = $computer["CHECKSUM"];
-                    $computers[$computer['ID']]["META"]["DEVICEID"] = $computer["DEVICEID"];
-                    $computers[$computer['ID']]["META"]["LASTCOME"] = $computer["LASTCOME"];
-                    $computers[$computer['ID']]["META"]["LASTDATE"] = $computer["LASTDATE"];
-                    $computers[$computer['ID']]["META"]["NAME"]     = $computer["NAME"];
-                    $computers[$computer['ID']]["META"]["TAG"]      = $computer["TAG"];
+                while ($meta = $this->db->fetch_assoc($request)) {
+                    $computers[$meta['ID']]["META"]["ID"]       = $meta["ID"];
+                    $computers[$meta['ID']]["META"]["CHECKSUM"] = $meta["CHECKSUM"];
+                    $computers[$meta['ID']]["META"]["DEVICEID"] = $meta["DEVICEID"];
+                    $computers[$meta['ID']]["META"]["LASTCOME"] = $meta["LASTCOME"];
+                    $computers[$meta['ID']]["META"]["LASTDATE"] = $meta["LASTDATE"];
+                    $computers[$meta['ID']]["META"]["NAME"]     = $meta["NAME"];
+                    $computers[$meta['ID']]["META"]["TAG"]      = $meta["TAG"];
                 }
                 
                 if ($check & $checksum) {
                     if ($check & $checksum) {
                         $query   = "SELECT * FROM `" . $table . "` WHERE `ID` IN (" . implode(',', $ids) . ")";
                         $request = $this->db->query($query);
-                        while ($computer = $this->db->fetch_assoc($request)) {
+                        while ($hardware = $this->db->fetch_assoc($request)) {
                             if ($multi) {
-                                $computers[$computer['ID']][strtoupper($table)][] = $computer;
+                                $computers[$hardware['ID']][strtoupper($table)][] = $hardware;
                             } else {
-                                $computers[$computer['ID']][strtoupper($table)] = $computer;
+                                $computers[$hardware['ID']][strtoupper($table)] = $hardware;
                             }
                             
                         }
@@ -110,7 +138,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             } else {
                 if ($check & $checksum) {
                     $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-                    $request = $this->db->query($query);
+                    $request = $this->db->query($query);    
                     while ($computer = $this->db->fetch_assoc($request)) {
                         if ($multi) {
                             $computers[$computer['HARDWARE_ID']][strtoupper($table)][] = $computer;
@@ -424,5 +452,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     }
     
 }
+
+
+
 
 
