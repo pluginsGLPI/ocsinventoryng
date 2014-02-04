@@ -201,21 +201,34 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
 
    // importNetwork
-   static function importNetwork($PluginOcsinventoryngDBocs, $cfg_ocs, $ocsid,
-                                 $computers_id, $dohistory) {
+   static function importNetwork($ocsServerId, $cfg_ocs, $ocsid, $computers_id, $dohistory) {
       global $DB;
+      
+      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($ocsServerId);
+      $ocsComputer = $ocsClient->getComputer($ocsid, array(
+      		'DISPLAY' => array(
+      			'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS
+      		)
+      ));
 
-      $query = "SELECT MIN(`ID`) AS ID, `DESCRIPTION`, `MACADDR`, `TYPE`, `TYPEMIB`,
-                       `SPEED`, `VIRTUALDEV`, GROUP_CONCAT(`IPADDRESS` SEPARATOR ',') AS IPADDRESS
-                FROM `networks`
-                WHERE `HARDWARE_ID` = '$ocsid'
-                GROUP BY CONCAT(`DESCRIPTION`, `MACADDR`, `TYPE`, `TYPEMIB`,
-                                `SPEED`, `VIRTUALDEV`)
-                ORDER BY `ID`";
+      // Group by DESCRIPTION, MACADDR, TYPE, TYPEMIB, SPEED, VIRTUALDEV
+      // to get an array in IPADDRESS
+      $ocsNetworks = array();
+      foreach ($ocsComputer['NETWORKS'] as $ocsNetwork) {
+         $key = $ocsNetwork['DESCRIPTION'].$ocsNetwork['MACADDR'].$ocsNetwork['TYPE']
+               .$ocsNetwork['TYPEMIB'].$ocsNetwork['SPEED'].$ocsNetwork['VIRTUALDEV'];
+         
+         if (!isset($ocsNetworks[$key])) {
+            $ocsNetworks[$key] = $ocsNetwork;
+            $ocsNetworks[$key]['IPADDRESS'] = array($ocsNetwork['IPADDRESS']);
+         } else {
+         	$ocsNetworks[$key]['IPADDRESS'] []= $ocsNetwork['IPADDRESS'];
+         }
+      }
 
       $network_ports  = array();
       $network_ifaces = array();
-      foreach ($PluginOcsinventoryngDBocs->request($query) as $line) {
+      foreach ($ocsNetworks as $line) {
          $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
          $mac  = $line['MACADDR'];
          if (!isset($network_ports[$mac])) {
@@ -225,7 +238,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                                                     $line['DESCRIPTION']);
 
          if (!empty($line['IPADDRESS'])) {
-            $ip = array_unique(explode(',', $line['IPADDRESS']));
+            $ip = $line['IPADDRESS'];
          } else {
             $ip = false;
          }
@@ -258,7 +271,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          if (((isset($line['VIRTUALDEV'])) && ($line['VIRTUALDEV'] == '1'))
              || (isset($network_ports[$mac]['main']))
              || (preg_match('/^vm(k|nic)([0-9]+)$/', $name))) {
-            $network_ports[$mac]['virtual'][$line['ID']] = $values;
+            $network_ports[$mac]['virtual'] []= $values;
          } else {
             $network_ports[$mac]['main'] = $values;
          }

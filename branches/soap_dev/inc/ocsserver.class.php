@@ -3643,7 +3643,7 @@ JAVASCRIPT;
          case "Item_DeviceNetworkCard":
             //Carte reseau
             if ($cfg_ocs["import_device_iface"] || $cfg_ocs["import_ip"]){
-               PluginOcsinventoryngNetworkPort::importNetwork($PluginOcsinventoryngDBocs, $cfg_ocs,
+               PluginOcsinventoryngNetworkPort::importNetwork($plugin_ocsinventoryng_ocsservers_id, $cfg_ocs,
                                                               $ocsid, $computers_id, $dohistory);
             }
             break;
@@ -4592,7 +4592,7 @@ JAVASCRIPT;
    **/
    static function updateSoftware($computers_id, $entity, $ocsid,
                                   $plugin_ocsinventoryng_ocsservers_id, array $cfg_ocs, $dohistory){
-      global $DB, $PluginOcsinventoryngDBocs;
+      global $DB;
 
       $alread_processed         = array();
       $is_utf8                  = $cfg_ocs["ocs_db_utf8"];
