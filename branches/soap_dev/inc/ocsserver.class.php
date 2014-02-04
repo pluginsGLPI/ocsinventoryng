@@ -3326,6 +3326,7 @@ JAVASCRIPT;
       $prevalue = $devicetype.self::FIELD_SEPARATOR;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $do_clean   = false;
 
       switch ($devicetype){
@@ -3334,12 +3335,14 @@ JAVASCRIPT;
             //Memoire
             if ($cfg_ocs["import_device_memory"]) {
                $do_clean = true;
-               $query2 = "SELECT*
-                          FROM `memories`
-                          WHERE `HARDWARE_ID` = '$ocsid'
-                          ORDER BY `ID`";
-               $result2 = $PluginOcsinventoryngDBocs->query($query2);
-               if ($PluginOcsinventoryngDBocs->numrows($result2) > 0) {
+               
+               $ocsComputer = $ocsClient->getComputer($ocsid, array(
+               		'DISPLAY' => array(
+	           			'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_MEMORY_SLOTS
+	           		)
+               ));
+               
+               if ($ocsComputer) {
                   // TODO a revoir
                   // pourquoi supprimer tous les importés ?
                   // En 0.83 cette suppression était lié à la présence du tag
@@ -3356,7 +3359,7 @@ JAVASCRIPT;
                   //      }
                   //   }
                   //}
-                  while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)){
+                  foreach ($ocsComputer['MEMORIES'] as $line2) {
                      $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      if (isset($line2["CAPACITY"]) && $line2["CAPACITY"]!="No"){
                         $ram["designation"] = "";
@@ -3410,13 +3413,15 @@ JAVASCRIPT;
             //Disque Dur
             if ($cfg_ocs["import_device_hdd"]){
                $do_clean = true;
-               $query2 = "SELECT*
-                          FROM `storages`
-                          WHERE `HARDWARE_ID` = '$ocsid'
-                          ORDER BY `ID`";
-               $result2 = $PluginOcsinventoryngDBocs->query($query2);
-               if ($PluginOcsinventoryngDBocs->numrows($result2) > 0){
-                  while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)){
+               
+               $ocsComputer = $ocsClient->getComputer($ocsid, array(
+               		'DISPLAY' => array(
+	           			'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_STORAGE_PERIPHERALS
+	           		)
+               ));
+               
+               if ($ocsComputer) {
+                  foreach ($ocsComputer['STORAGES'] as $line2) {
                      $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      if (!empty ($line2["DISKSIZE"]) && preg_match("/disk|spare\sdrive/i", $line2["TYPE"])){
                         if ($line2["NAME"]){
@@ -3462,13 +3467,15 @@ JAVASCRIPT;
             //lecteurs
             if ($cfg_ocs["import_device_drive"]){
                $do_clean = true;
-               $query2 = "SELECT*
-                          FROM `storages`
-                          WHERE `HARDWARE_ID` = '$ocsid'
-                          ORDER BY `ID`";
-               $result2 = $PluginOcsinventoryngDBocs->query($query2);
-               if ($PluginOcsinventoryngDBocs->numrows($result2) > 0){
-                  while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)){
+               
+               $ocsComputer = $ocsClient->getComputer($ocsid, array(
+               		'DISPLAY' => array(
+	           			'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_STORAGE_PERIPHERALS
+	           		)
+               ));
+               
+               if ($ocsComputer) {
+                  foreach ($ocsComputer['STORAGES'] as $line2) {
                      $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      if (empty ($line2["DISKSIZE"]) || !preg_match("/disk/i", $line2["TYPE"])){
                         if ($line2["NAME"]){
@@ -3507,13 +3514,15 @@ JAVASCRIPT;
             //Modems
             if ($cfg_ocs["import_device_modem"]) {
                $do_clean = true;
-               $query2 = "SELECT*
-                          FROM `modems`
-                          WHERE `HARDWARE_ID` = '$ocsid'
-                          ORDER BY `ID`";
-               $result2 = $PluginOcsinventoryngDBocs->query($query2);
-               if ($PluginOcsinventoryngDBocs->numrows($result2) > 0){
-                  while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)){
+               
+               $ocsComputer = $ocsClient->getComputer($ocsid, array(
+               		'DISPLAY' => array(
+	           			'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_MODEMS
+	           		)
+               ));
+               
+               if ($ocsComputer) {
+                  foreach ($ocsComputer['MODEMS'] as $line2) {
                      $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      $mdm["designation"] = $line2["NAME"];
                      if (!in_array(stripslashes($prevalue.$mdm["designation"]), $import_device)){
@@ -3539,13 +3548,14 @@ JAVASCRIPT;
             }
             //Ports
             if ($cfg_ocs["import_device_port"]){
-               $query2 = "SELECT*
-                          FROM `ports`
-                          WHERE `HARDWARE_ID` = '$ocsid'
-                          ORDER BY `ID`";
-               $result2 = $PluginOcsinventoryngDBocs->query($query2);
-               if ($PluginOcsinventoryngDBocs->numrows($result2) > 0){
-                  while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)){
+               $ocsComputer = $ocsClient->getComputer($ocsid, array(
+               		'DISPLAY' => array(
+	           			'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_SYSTEM_PORTS
+	           		)
+               ));
+               
+               if ($ocsComputer) {
+                  foreach ($ocsComputer['PORTS'] as $line2) {
                      $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                      $port["designation"] = "";
                      if ($line2["TYPE"] != "Other") {
@@ -3587,13 +3597,15 @@ JAVASCRIPT;
             //Processeurs:
             if ($cfg_ocs["import_device_processor"]){
                $do_clean = true;
-               $query = "SELECT*
-                         FROM `hardware`
-                         WHERE `ID` = '$ocsid'
-                         ORDER BY `ID`";
-               $result = $PluginOcsinventoryngDBocs->query($query);
-               if ($PluginOcsinventoryngDBocs->numrows($result) == 1){
-                  $line = $PluginOcsinventoryngDBocs->fetch_array($result);
+               
+               $ocsComputer = $ocsClient->getComputer($ocsid, array(
+               		'DISPLAY' => array(
+	           			'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
+	           		)
+               ));
+               
+               if ($ocsComputer) {
+                  $line = $ocsComputer['HARDWARE'];
                   $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
                   for ($i=0 ; $i<$line["PROCESSORN"] ; $i++){
                      $processor = array();
@@ -3641,39 +3653,41 @@ JAVASCRIPT;
             //carte graphique
             if ($cfg_ocs["import_device_gfxcard"]){
                $do_clean = true;
-               $query2 = "SELECT DISTINCT(`NAME`) AS NAME,
-                                 `MEMORY`
-                          FROM `videos`
-                          WHERE `HARDWARE_ID` = '$ocsid'
-                                AND `NAME` != ''
-                          ORDER BY `ID`";
-               $result2 = $PluginOcsinventoryngDBocs->query($query2);
-               if ($PluginOcsinventoryngDBocs->numrows($result2) > 0){
-                  while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)){
+               
+               $ocsComputer = $ocsClient->getComputer($ocsid, array(
+               		'DISPLAY' => array(
+	           			'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_VIDEO_ADAPTERS
+	           		)
+               ));
+               
+               if ($ocsComputer) {
+                  foreach ($ocsComputer['VIDEOS'] as $line2) {
                      $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
-                     $video["designation"] = $line2["NAME"];
-                     if (!is_numeric($line2["MEMORY"])){
-                        $line2["MEMORY"] = 0;
-                     }
-                     if (!in_array(stripslashes($prevalue.$video["designation"]), $import_device)){
-                        $video["memory_default"] = $line2["MEMORY"];
-                        $DeviceGraphicCard = new DeviceGraphicCard();
-                        $video_id = $DeviceGraphicCard->import($video);
-                        if ($video_id){
-                           $devID = $CompDevice->add(array('items_id'               => $computers_id,
-                                                           'itemtype'               => 'Computer',
-                                                           'devicegraphiccards_id'  => $video_id,
-                                                           'memory'                 => $line2["MEMORY"],
-                                                           'is_dynamic'             => 1,
-                                                           '_no_history'            => !$dohistory));
+                     if ($line2['NAME']) {
+                        $video["designation"] = $line2["NAME"];
+                        if (!is_numeric($line2["MEMORY"])){
+                           $line2["MEMORY"] = 0;
                         }
-                     } else{
-                        $tmp = array_search(stripslashes($prevalue.$video["designation"]),
-                                            $import_device);
-                        list($type,$id) = explode(self::FIELD_SEPARATOR,$tmp);
-                        $CompDevice->update(array('id'          => $id,
-                                                  'memory' => $line2["MEMORY"]));
-                        unset ($import_device[$tmp]);
+                        if (!in_array(stripslashes($prevalue.$video["designation"]), $import_device)){
+                           $video["memory_default"] = $line2["MEMORY"];
+                           $DeviceGraphicCard = new DeviceGraphicCard();
+                           $video_id = $DeviceGraphicCard->import($video);
+                           if ($video_id){
+                              $devID = $CompDevice->add(array('items_id'               => $computers_id,
+                                                              'itemtype'               => 'Computer',
+                                                              'devicegraphiccards_id'  => $video_id,
+                                                              'memory'                 => $line2["MEMORY"],
+                                                              'is_dynamic'             => 1,
+                                                              '_no_history'            => !$dohistory));
+                           }
+                        } else{
+                           $tmp = array_search(stripslashes($prevalue.$video["designation"]),
+                                               $import_device);
+                           list($type,$id) = explode(self::FIELD_SEPARATOR,$tmp);
+                           $CompDevice->update(array('id'          => $id,
+                                                     'memory' => $line2["MEMORY"]));
+                           unset ($import_device[$tmp]);
+                        }
                      }
                   }
                }
@@ -3685,37 +3699,39 @@ JAVASCRIPT;
             //carte son
             if ($cfg_ocs["import_device_sound"]){
                $do_clean = true;
-               $query2 = "SELECT DISTINCT(`NAME`) AS NAME,
-                                 `DESCRIPTION`
-                          FROM `sounds`
-                          WHERE `HARDWARE_ID` = '$ocsid'
-                                AND `NAME` != ''
-                          ORDER BY `ID`";
-               $result2 = $PluginOcsinventoryngDBocs->query($query2);
-               if ($PluginOcsinventoryngDBocs->numrows($result2) > 0){
-                  while ($line2 = $PluginOcsinventoryngDBocs->fetch_array($result2)){
+               
+               $ocsComputer = $ocsClient->getComputer($ocsid, array(
+               		'DISPLAY' => array(
+	           			'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_SOUND_ADAPTERS
+	           		)
+               ));
+               
+               if ($ocsComputer) {
+                  foreach ($ocsComputer['SOUNDS'] as $line2) {
                      $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
-                     if (!$cfg_ocs["ocs_db_utf8"] && !Toolbox::seems_utf8($line2["NAME"])){
-                     $line2["NAME"] = Toolbox::encodeInUtf8($line2["NAME"]);
-                     }
-                     $snd["designation"] = $line2["NAME"];
-                     if (!in_array(stripslashes($prevalue.$snd["designation"]), $import_device)){
-                        if (!empty ($line2["DESCRIPTION"])){
-                           $snd["comment"] = $line2["DESCRIPTION"];
+                     if ($line2['NAME']) {
+                        if (!$cfg_ocs["ocs_db_utf8"] && !Toolbox::seems_utf8($line2["NAME"])){
+                           $line2["NAME"] = Toolbox::encodeInUtf8($line2["NAME"]);
                         }
-                        $DeviceSoundCard = new DeviceSoundCard();
-                        $snd_id          = $DeviceSoundCard->import($snd);
-                        if ($snd_id){
-                           $devID = $CompDevice->add(array('items_id'           => $computers_id,
-                                                           'itemtype'            => 'Computer',
-                                                           'devicesoundcards_id' => $snd_id,
-                                                           'is_dynamic'          => 1,
-                                                           '_no_history'         => !$dohistory));
+                        $snd["designation"] = $line2["NAME"];
+                        if (!in_array(stripslashes($prevalue.$snd["designation"]), $import_device)){
+                           if (!empty ($line2["DESCRIPTION"])){
+                              $snd["comment"] = $line2["DESCRIPTION"];
+                           }
+                           $DeviceSoundCard = new DeviceSoundCard();
+                           $snd_id          = $DeviceSoundCard->import($snd);
+                           if ($snd_id){
+                              $devID = $CompDevice->add(array('items_id'           => $computers_id,
+                                                              'itemtype'            => 'Computer',
+                                                              'devicesoundcards_id' => $snd_id,
+                                                              'is_dynamic'          => 1,
+                                                              '_no_history'         => !$dohistory));
+                           }
+                        } else{
+                           $id = array_search(stripslashes($prevalue.$snd["designation"]),
+                                              $import_device);
+                           unset ($import_device[$id]);
                         }
-                     } else{
-                        $id = array_search(stripslashes($prevalue.$snd["designation"]),
-                                           $import_device);
-                        unset ($import_device[$id]);
                      }
                   }
                }
