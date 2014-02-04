@@ -199,7 +199,6 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       return $network_port->getID();
    }
 
-
    // importNetwork
    static function importNetwork($ocsServerId, $cfg_ocs, $ocsid, $computers_id, $dohistory) {
       global $DB;
@@ -486,8 +485,5 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       }
       return false;
    }
-
-
 }
-
 ?>

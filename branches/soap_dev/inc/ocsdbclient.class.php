@@ -75,31 +75,32 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                 }
 
             } elseif ($table == "softwares") {
-                
-               if (self::WANTED_DICO_SOFT & $wanted) {
-                    $query   = "SELECT `dico_soft`.`FORMATTED` AS NAME,
-                                `softwares`.`VERSION` AS VERSION,
-                                `softwares`.`PUBLISHER` AS PUBLISHER,
-                                `softwares`.`COMMENTS` AS COMMENTS,
-                                `softwares`.`HARDWARE_ID` AS HARDWARE_ID
-                                FROM `softwares`
-                                INNER JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
-                                WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-                }
-                else{
-                    $query   = "SELECT `softwares`.`NAME` AS NAME,
-                                `softwares`.`VERSION` AS VERSION,
-                                `softwares`.`PUBLISHER` AS PUBLISHER,
-                                `softwares`.`COMMENTS` AS COMMENTS,
-                                `softwares`.`HARDWARE_ID` AS HARDWARE_ID
-                                FROM `softwares`
-                                WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-                }
-
-                $request = $this->db->query($query);
-                while ($software = $this->db->fetch_assoc($request)) {
-                        $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
-                }
+                if ($check & $checksum) {
+                     if (self::WANTED_DICO_SOFT & $wanted) {
+                          $query   = "SELECT `dico_soft`.`FORMATTED` AS NAME,
+                                      `softwares`.`VERSION` AS VERSION,
+                                      `softwares`.`PUBLISHER` AS PUBLISHER,
+                                      `softwares`.`COMMENTS` AS COMMENTS,
+                                      `softwares`.`HARDWARE_ID` AS HARDWARE_ID
+                                      FROM `softwares`
+                                      INNER JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
+                                      WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                      }
+                      else{
+                          $query   = "SELECT `softwares`.`NAME` AS NAME,
+                                      `softwares`.`VERSION` AS VERSION,
+                                      `softwares`.`PUBLISHER` AS PUBLISHER,
+                                      `softwares`.`COMMENTS` AS COMMENTS,
+                                      `softwares`.`HARDWARE_ID` AS HARDWARE_ID
+                                      FROM `softwares`
+                                      WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                      }
+        
+                      $request = $this->db->query($query);
+                      while ($software = $this->db->fetch_assoc($request)) {
+                              $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
+                      }
+            }
 
                 
             } elseif ($table == "hardware") {

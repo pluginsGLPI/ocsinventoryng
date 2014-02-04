@@ -1666,9 +1666,9 @@ JAVASCRIPT;
          $table = getTableNameForForeignKeyField($glpi_field);
          
          $ocs_val = null;
-         if (isset($ocs_fields[$ocs_section][$ocs_field])) {
+         if (array_key_exists($ocs_field, $ocs_fields[$ocs_section])) {
             $ocs_val = $ocs_fields[$ocs_section][$ocs_field];
-         } else if (isset($ocs_fields[$ocs_section][0][$ocs_field])) {
+         } else if(array_key_exists($ocs_field, $ocs_fields[$ocs_section][0])) {
             $ocs_val = $ocs_fields[$ocs_section][0][$ocs_field];
          }
          
@@ -1721,7 +1721,6 @@ JAVASCRIPT;
             }
          }
       }
-
       if (intval($cfg_ocs["import_general_name"]) == 0){
          unset($input["name"]);
       }
@@ -1766,7 +1765,6 @@ JAVASCRIPT;
       if (intval($cfg_ocs["import_general_domain"]) == 0) {
          unset($input["domains_id"]);
       }
-
       return $input;
    }
 
@@ -1859,7 +1857,6 @@ JAVASCRIPT;
                   }
                }
             }
-
             $computers_id = $comp->add($input, array('unicity_error_message' => false));
             if ($computers_id) {
                $ocsid      = $computer['META']['ID'];
@@ -5857,13 +5854,3 @@ JAVASCRIPT;
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
