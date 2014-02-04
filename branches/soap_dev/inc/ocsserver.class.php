@@ -2104,8 +2104,8 @@ JAVASCRIPT;
 
                if ($mixed_checksum & pow(2, self::REGISTRY_FL)){
                   //import registry entries not needed
-                  self::updateRegistry($line['computers_id'], $line['ocsid'],
-                                       $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs);
+               //   self::updateRegistry($line['computers_id'], $line['ocsid'],
+                  //                  $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs);
                }
 
                if ($mixed_checksum & pow(2, self::VIRTUALMACHINES_FL)){
@@ -4321,41 +4321,44 @@ JAVASCRIPT;
       }
       self::checkOCSconnection($ocsservers_id);
       $already_processed = array();
-
-      //Get vms for this host
-      $query = "SELECT*
-                FROM `virtualmachines`
-                WHERE `HARDWARE_ID` = '$ocsid'";
-      $result = $PluginOcsinventoryngDBocs->query($query);
-
+      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $ocsVirtualmachines = array();
+      $options = array(
+            "DISPLAY"=> array(
+            "CHECKSUM"=> PluginOcsinventoryngOcsClient::CHECKSUM_VIRTUAL_MACHINES,
+        )
+      );
+      $computer= $ocsClient->getComputer($ocsid,$options);
+      $ocsVirtualmachines = $computer["VIRTUALMACHINES"];
       $virtualmachine = new ComputerVirtualMachine();
-      if ($PluginOcsinventoryngDBocs->numrows($result) > 0){
-         while ($line = $PluginOcsinventoryngDBocs->fetch_assoc($result)){
-            $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
+
+      if (count($ocsVirtualmachines) > 0){
+        foreach ($ocsVirtualmachines as $ocsVirtualmachine) {
+            $ocsVirtualmachine = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsVirtualmachine));
             $vm                  = array();
-            $vm['name']          = $line['NAME'];
-            $vm['vcpu']          = $line['VCPU'];
-            $vm['ram']           = $line['MEMORY'];
-            $vm['uuid']          = $line['UUID'];
+            $vm['name']          = $ocsVirtualmachine['NAME'];
+            $vm['vcpu']          = $ocsVirtualmachine['VCPU'];
+            $vm['ram']           = $ocsVirtualmachine['MEMORY'];
+            $vm['uuid']          = $ocsVirtualmachine['UUID'];
             $vm['computers_id']  = $computers_id;
             $vm['is_dynamic']    = 1;
 
             $vm['virtualmachinestates_id']  = Dropdown::importExternal('VirtualMachineState',
-                                                                       $line['STATUS']);
+                                                                       $ocsVirtualmachine['STATUS']);
             $vm['virtualmachinetypes_id']   = Dropdown::importExternal('VirtualMachineType',
-                                                                       $line['VMTYPE']);
+                                                                       $ocsVirtualmachine['VMTYPE']);
             $vm['virtualmachinesystems_id'] = Dropdown::importExternal('VirtualMachineType',
-                                                                       $line['SUBSYSTEM']);
+                                                                       $ocsVirtualmachine['SUBSYSTEM']);
 
             $query = "SELECT `id`
                       FROM `glpi_computervirtualmachines`
                       WHERE `computers_id`='$computers_id'
                          AND `is_dynamic`";
-            if ($line['UUID']) {
-               $query .= " AND `uuid`='".$line['UUID']."'";
+            if ($ocsVirtualmachine['UUID']) {
+               $query .= " AND `uuid`='".$ocsVirtualmachine['UUID']."'";
             } else {
                // Failback on name
-               $query .= " AND `name`='".$line['NAME']."'";
+               $query .= " AND `name`='".$ocsVirtualmachine['NAME']."'";
             }
 
             $results = $DB->query($query);
@@ -4419,67 +4422,72 @@ JAVASCRIPT;
 
       $already_processed = array();
       self::checkOCSconnection($ocsservers_id);
-      $query = "SELECT*
-                FROM `drives`
-                WHERE `HARDWARE_ID` = '$ocsid'";
-      $result = $PluginOcsinventoryngDBocs->query($query);
-
+      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $drives = array();
+      $options = array(
+            "DISPLAY"=> array(
+            "CHECKSUM"=> PluginOcsinventoryngOcsClient::CHECKSUM_LOGICAL_DRIVES,
+        )
+      );
+      $computer= $ocsClient->getComputer($ocsid,$options);
+      $logical_drives = $computer["LOGICAL_DRIVES"];
       $d = new ComputerDisk();
-      if ($PluginOcsinventoryngDBocs->numrows($result) > 0){
-         while ($line = $PluginOcsinventoryngDBocs->fetch_array($result)){
-            $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
+
+      if (count($ogical_drives)> 0){
+        foreach ($logical_drives as $logical_drive) {
+            $logical_drive = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($logical_drive));
 
             // Only not empty disk
-            if ($line['TOTAL']>0){
+            if ($logical_drive['TOTAL']>0){
                $disk                 = array();
                $disk['computers_id'] = $computers_id;
                $disk['is_dynamic']   = 1;
 
                // TYPE : vxfs / ufs  : VOLUMN = mount / FILESYSTEM = device
-               if (in_array($line['TYPE'], array("vxfs", "ufs")) ){
-                  $disk['name']           = $line['VOLUMN'];
-                  $disk['mountpoint']     = $line['VOLUMN'];
-                  $disk['device']         = $line['FILESYSTEM'];
-                  $disk['filesystems_id'] = Dropdown::importExternal('Filesystem', $line["TYPE"]);
+               if (in_array($logical_drive['TYPE'], array("vxfs", "ufs")) ){
+                  $disk['name']           = $logical_drive['VOLUMN'];
+                  $disk['mountpoint']     = $logical_drive['VOLUMN'];
+                  $disk['device']         = $logical_drive['FILESYSTEM'];
+                  $disk['filesystems_id'] = Dropdown::importExternal('Filesystem', $logical_drive["TYPE"]);
 
-               } else if (in_array($line['FILESYSTEM'], array('ext2', 'ext3', 'ext4', 'ffs',
+               } else if (in_array($logical_drive['FILESYSTEM'], array('ext2', 'ext3', 'ext4', 'ffs',
                                                               'fuseblk', 'fusefs', 'hfs', 'jfs',
                                                               'jfs2', 'Journaled HFS+', 'nfs',
                                                               'smbfs', 'reiserfs', 'vmfs', 'VxFS',
                                                               'ufs', 'xfs', 'zfs'))){
                   // Try to detect mount point : OCS database is dirty
-                  $disk['mountpoint'] = $line['VOLUMN'];
-                  $disk['device']     = $line['TYPE'];
+                  $disk['mountpoint'] = $logical_drive['VOLUMN'];
+                  $disk['device']     = $logical_drive['TYPE'];
 
                   // Found /dev in VOLUMN : invert datas
-                  if (strstr($line['VOLUMN'],'/dev/')){
-                     $disk['mountpoint'] = $line['TYPE'];
-                     $disk['device']     = $line['VOLUMN'];
+                  if (strstr($logical_drive['VOLUMN'],'/dev/')){
+                     $disk['mountpoint'] = $logical_drive['TYPE'];
+                     $disk['device']     = $logical_drive['VOLUMN'];
                   }
 
-                  if ($line['FILESYSTEM'] == "vmfs"){
-                     $disk['name'] = basename($line['TYPE']);
+                  if ($logical_drive['FILESYSTEM'] == "vmfs"){
+                     $disk['name'] = basename($logical_drive['TYPE']);
                   } else{
                      $disk['name']  = $disk['mountpoint'];
                   }
                   $disk['filesystems_id'] = Dropdown::importExternal('Filesystem',
-                                                                     $line["FILESYSTEM"]);
+                                                                     $logical_drive["FILESYSTEM"]);
 
-               } else if (in_array($line['FILESYSTEM'], array('FAT', 'FAT32', 'NTFS'))){
-                  if (!empty($line['VOLUMN'])){
-                     $disk['name'] = $line['VOLUMN'];
+               } else if (in_array($logical_drive['FILESYSTEM'], array('FAT', 'FAT32', 'NTFS'))){
+                  if (!empty($logical_drive['VOLUMN'])){
+                     $disk['name'] = $logical_drive['VOLUMN'];
                   } else{
-                     $disk['name'] = $line['LETTER'];
+                     $disk['name'] = $logical_drive['LETTER'];
                   }
-                  $disk['mountpoint']     = $line['LETTER'];
+                  $disk['mountpoint']     = $logical_drive['LETTER'];
                   $disk['filesystems_id'] = Dropdown::importExternal('Filesystem',
-                                                                     $line["FILESYSTEM"]);
+                                                                     $logical_drive["FILESYSTEM"]);
                }
 
                // Ok import disk
                if (isset($disk['name']) && !empty($disk["name"])){
-                  $disk['totalsize'] = $line['TOTAL'];
-                  $disk['freesize']  = $line['FREE'];
+                  $disk['totalsize'] = $logical_drive['TOTAL'];
+                  $disk['freesize']  = $logical_drive['FREE'];
 
                   $query = "SELECT `id`
                             FROM `glpi_computerdisks`
@@ -4612,7 +4620,7 @@ JAVASCRIPT;
                        "WANTED"=> PluginOcsinventoryngOcsClient::WANTED_DICO_SOFT,
                    )
                  );
-                 $computer= $ocsClient->getComputer($ocsid,$options);
+                
 
          } else {
                  $options = array(
@@ -4620,9 +4628,9 @@ JAVASCRIPT;
                        "CHECKSUM"=> PluginOcsinventoryngOcsClient::CHECKSUM_SOFTWARE,
                    )
                  );
-                 $computer= $ocsClient->getComputer($ocsid,$options);
+               
          }
-
+          $computer= $ocsClient->getComputer($ocsid,$options);
          $softwares=$computer["SOFTWARES"];
          $soft                = new Software();
 
@@ -5133,17 +5141,12 @@ JAVASCRIPT;
    **/
    static function updateTag($line_links, $line_ocs){
       global $DB, $PluginOcsinventoryngDBocs;
+    $ocsClient = self::getDBocs($line_links["plugin_ocsinventoryng_ocsservers_id"]);
+    $options = array();
+    $computer = $ocsClient->getComputer($line_links["ocsid"],$options);
 
-      $query_ocs = "SELECT `accountinfo`.`TAG` AS TAG
-                    FROM `hardware`
-                    INNER JOIN `accountinfo`
-                        ON (`hardware`.`ID` = `accountinfo`.`HARDWARE_ID`)
-                    WHERE `hardware`.`ID` = '" . $line_links["ocsid"] . "'";
-
-      $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
-
-      if ($PluginOcsinventoryngDBocs->numrows($result_ocs) == 1){
-         $data_ocs = Toolbox::addslashes_deep($PluginOcsinventoryngDBocs->fetch_array($result_ocs));
+      if ($computer){
+         $data_ocs = Toolbox::addslashes_deep($computer["META"]);
 
          $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                    SET `tag` = '" . $data_ocs["TAG"] . "'
@@ -5854,4 +5857,13 @@ JAVASCRIPT;
         }
     }
 }
+
+
+
+
+
+
+
+
+
 
