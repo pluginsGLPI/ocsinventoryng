@@ -291,29 +291,31 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
     * @param $reason
    **/
    function logNotImported($ocsservers_id,$ocsid,$reason) {
-      global $PluginOcsinventoryngDBocs,$DB;
+      global $DB;
 
       PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id);
+      PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
+               $options = array(
+                       "DISPLAY"=> array(
+                       "CHECKSUM"=> PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE 
+                               |    PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
+                   )
+                 );
+      $computer = $ocsClient->getComputer($ocsid,$options);
 
-      $query = "SELECT *
-                FROM `hardware`, `accountinfo`, `bios`
-                WHERE (`accountinfo`.`HARDWARE_ID` = `hardware`.`ID`
-                         AND `bios`.`HARDWARE_ID` = `hardware`.`ID`
-                            AND `hardware`.`ID` = '$ocsid')";
-      $result = $PluginOcsinventoryngDBocs->query($query);
-      if ($result && $PluginOcsinventoryngDBocs->numrows($result)) {
-         $line             = $PluginOcsinventoryngDBocs->fetch_array($result);
+
+      if ($computer["HARDWARE"] && $computer["BIOS"] && $computer["ACCOUNTINFO"] ) {
          $input["_ocs"]                                  = true;
-         $input["name"]                                  = $line["NAME"];
-         $input["domain"]                                = $line["WORKGROUP"];
-         $input["tag"]                                   = $line["TAG"];
-         $input["ocs_deviceid"]                          = $line["DEVICEID"];
-         $input["ipaddr"]                                = $line["IPADDR"];
+         $input["name"]                                  = $computer["HARDWARE"]["NAME"];
+         $input["domain"]                                = $computer["HARDWARE"]["WORKGROUP"];
+         $input["tag"]                                   = $computer["META"]["TAG"];
+         $input["ocs_deviceid"]                          = $computer["HARDWARE"]["DEVICEID"];
+         $input["ipaddr"]                                = $computer["HARDWARE"]["IPADDR"];
          $input["plugin_ocsinventoryng_ocsservers_id"]   = $ocsservers_id;
          $input["ocsid"]                                 = $ocsid;
-         $input["last_inventory"]                        = $line["LASTCOME"];
-         $input["useragent"]                             = $line["USERAGENT"];
-         $input["serial"]                                = $line["SSN"];
+         $input["last_inventory"]                        = $computer["HARDWARE"]["LASTCOME"];
+         $input["useragent"]                             = $computer["HARDWARE"]["USERAGENT"];
+         $input["serial"]                                = $computer["BIOS"]["SSN"];
          $input["reason"]                                = $reason['status'];
          $input["comment"]                               = "";
          if (isset($reason['entities_id'])) {
@@ -507,17 +509,18 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
     * @param $params array
    **/
    static function getOcsComputerInfos($params=array()) {
-      global $PluginOcsinventoryngDBocs;
-
       PluginOcsinventoryngOcsServer::checkOCSconnection($params['plugin_ocsinventoryng_ocsservers_id']);
-
+      PluginOcsinventoryngOcsServer::getDBocs($params['plugin_ocsinventoryng_ocsservers_id']);
+               $options = array(
+                       "DISPLAY"=> array(
+                       "CHECKSUM"=>PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
+                   )
+                 );
+      $computer = $ocsClient->getComputer($params['ocsid'],$options);
       $changes = array();
-      $query   = "SELECT `SSN` FROM `bios`
-                  WHERE `HARDWARE_ID` = '".$params['ocsid']."'";
-      $result  = $PluginOcsinventoryngDBocs->query($query);
 
-      if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
-         $ocs_serial = $PluginOcsinventoryngDBocs->result($result,0,'SSN');
+      if ($computer) {
+          $ocs_serial = $computer["BIOS"]["SSN"];
          if ($ocs_serial != $params['serial']) {
             $query_serial = "UPDATE `bios`
                              SET `SSN` = '".$params['serial']."'" .

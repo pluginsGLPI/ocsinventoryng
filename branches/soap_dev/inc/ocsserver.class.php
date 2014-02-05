@@ -3806,15 +3806,20 @@ JAVASCRIPT;
     * @return the ip address or ''
    **/
    static function getGeneralIpAddress($plugin_ocsinventoryng_ocsservers_id, $computers_id){
-      global $PluginOcsinventoryngDBocs;
-
-      $res = $PluginOcsinventoryngDBocs->query("SELECT `IPADDR`
-                            FROM `hardware`
-                            WHERE `ID` = '$computers_id'");
-
-      if ($PluginOcsinventoryngDBocs->numrows($res) == 1){
-         return $PluginOcsinventoryngDBocs->result($res, 0, "IPADDR");
+      self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $options=array(
+                  'DISPLAY' => array(
+                  'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
+                )
+               );
+      $computer = $ocsClient->getComputer($computers_id,$options);
+      $ipaddress = $computer["HARDWARE"]["IPADDR"];
+      if ($ipaddress) {
+        return $ipaddress;
       }
+
+
       return '';
    }
 
@@ -4840,9 +4845,10 @@ JAVASCRIPT;
     * @return Nothing (void).
    **/
    static function updateAdministrativeInfo($computers_id, $ocsid, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $entity, $dohistory){
-      global $DB, $PluginOcsinventoryngDBocs;
+      global $DB;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       //check link between ocs and glpi column
       $queryListUpdate = "SELECT*
                           FROM `glpi_plugin_ocsinventoryng_ocsadmininfoslinks`
@@ -4850,13 +4856,16 @@ JAVASCRIPT;
       $result = $DB->query($queryListUpdate);
 
       if ($DB->numrows($result) > 0){
-         $queryOCS = "SELECT*
-                      FROM `accountinfo`
-                      WHERE `HARDWARE_ID` = '$ocsid'";
-         $resultOCS = $PluginOcsinventoryngDBocs->query($queryOCS);
+         $options = array(
+                       "DISPLAY"=> array(
+                       "WANTED"=> PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO,
+                   )
+                 );
+         $computer = $ocsClient->getComputer($ocsid,$options);
 
-         if ($PluginOcsinventoryngDBocs->numrows($resultOCS) > 0){
-            $data_ocs = $PluginOcsinventoryngDBocs->fetch_array($resultOCS);
+         if ($computer){
+
+            $accountinfo = $computer["ACCOUNTINFO"];
             $comp = new Computer();
 
             //update data
@@ -4865,8 +4874,8 @@ JAVASCRIPT;
                $ocs_column  = $links_glpi_ocs['ocs_column'];
                $glpi_column = $links_glpi_ocs['glpi_column'];
 
-               if (isset ($data_ocs[$ocs_column]) && !in_array($glpi_column, $computer_updates)){
-                  $var = addslashes($data_ocs[$ocs_column]);
+               if (isset ($accountinfo[$ocs_column]) && !in_array($glpi_column, $computer_updates)){
+                  $var = addslashes($accountinfo[$ocs_column]);
                   switch ($glpi_column){
                      case "groups_id":
                         $var = self::importGroup($var, $entity);
@@ -5848,6 +5857,7 @@ JAVASCRIPT;
         }
     }
 }
+
 
 
 
