@@ -4315,7 +4315,7 @@ JAVASCRIPT;
       }
       self::checkOCSconnection($ocsservers_id);
       $already_processed = array();
-      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $ocsClient = self::getDBocs($ocsservers_id);
       $ocsVirtualmachines = array();
       $options = array(
             "DISPLAY"=> array(
@@ -4416,7 +4416,7 @@ JAVASCRIPT;
 
       $already_processed = array();
       self::checkOCSconnection($ocsservers_id);
-      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $ocsClient = self::getDBocs($ocsservers_id);
       $drives = array();
       $options = array(
             "DISPLAY"=> array(

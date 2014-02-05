@@ -266,13 +266,17 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             
             if (isset($filters['CHECKSUM']) and $filters['CHECKSUM']) {
                 $checksum       = $filters['CHECKSUM'];
-                $where_checksum = " AND ('.$checksum.' & hardware.CHECKSUM)' ";
+                $where_checksum = " AND ('.$checksum.' & hardware.CHECKSUM) ";
             } else {
                 $where_checksum = "";
             }
+            $where_condition = $where_ids . $where_exclude_ids . $where_tags . $where_exclude_tags . $where_checksum;
+        }
+        else{
+            $where_condition="";
         }
         
-        $where_condition = $where_ids . $where_exclude_ids . $where_tags . $where_exclude_tags . $where_checksum;
+       
         $query           = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
         						WHERE hardware.DEVICEID NOT LIKE '\\_%'
         						AND hardware.ID = accountinfo.HARDWARE_ID
