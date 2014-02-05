@@ -4307,7 +4307,7 @@ JAVASCRIPT;
     */
    static function updateVirtualMachines($computers_id, $ocsid, $ocsservers_id,
                                            $cfg_ocs, $dohistory){
-      global $PluginOcsinventoryngDBocs, $DB;
+      global  $DB;
 
       // No VM before OCS 1.3
       if ($cfg_ocs['ocs_version'] < self::OCS1_3_VERSION_LIMIT){
@@ -4412,7 +4412,7 @@ JAVASCRIPT;
    **/
    static function updateDisk($computers_id, $ocsid, $ocsservers_id,
                                 $cfg_ocs, $dohistory){
-      global $PluginOcsinventoryngDBocs, $DB;
+      global $DB;
 
       $already_processed = array();
       self::checkOCSconnection($ocsservers_id);
@@ -4424,10 +4424,9 @@ JAVASCRIPT;
         )
       );
       $computer= $ocsClient->getComputer($ocsid,$options);
-      $logical_drives = $computer["LOGICAL_DRIVES"];
+      $logical_drives = $computer["DRIVES"];
       $d = new ComputerDisk();
-
-      if (count($ogical_drives)> 0){
+      if (count($logical_drives)> 0){
         foreach ($logical_drives as $logical_drive) {
             $logical_drive = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($logical_drive));
 
@@ -4614,8 +4613,6 @@ JAVASCRIPT;
                        "WANTED"=> PluginOcsinventoryngOcsClient::WANTED_DICO_SOFT,
                    )
                  );
-                
-
          } else {
                  $options = array(
                        "DISPLAY"=> array(
@@ -4624,7 +4621,7 @@ JAVASCRIPT;
                  );
                
          }
-          $computer= $ocsClient->getComputer($ocsid,$options);
+         $computer= $ocsClient->getComputer($ocsid,$options);
          $softwares=$computer["SOFTWARES"];
          $soft                = new Software();
 
@@ -5134,7 +5131,7 @@ JAVASCRIPT;
     * @return string : current tag of computer on update
    **/
    static function updateTag($line_links, $line_ocs){
-      global $DB, $PluginOcsinventoryngDBocs;
+      global $DB;
     $ocsClient = self::getDBocs($line_links["plugin_ocsinventoryng_ocsservers_id"]);
     $options = array();
     $computer = $ocsClient->getComputer($line_links["ocsid"],$options);
@@ -5299,7 +5296,7 @@ JAVASCRIPT;
     */
    static function importMonitor($cfg_ocs, $computers_id, $ocsservers_id, $ocsid, $entity,
                                    $dohistory){
-      global $PluginOcsinventoryngDBocs, $DB;
+      global $DB;
 
       self::checkOCSconnection($ocsservers_id);
 
@@ -5534,7 +5531,7 @@ JAVASCRIPT;
     */
     static function importPrinter($cfg_ocs, $computers_id, $ocsservers_id, $ocsid, $entity,
                                     $dohistory){
-       global $PluginOcsinventoryngDBocs, $DB;
+       global  $DB;
 
 
        self::checkOCSconnection($ocsservers_id);
@@ -5718,7 +5715,7 @@ JAVASCRIPT;
     */
    static function importPeripheral($cfg_ocs, $computers_id, $ocsservers_id, $ocsid, $entity,
                                       $dohistory){
-        global $PluginOcsinventoryngDBocs, $DB;
+        global $DB;
         self::checkOCSconnection($ocsservers_id);
         if ($cfg_ocs["import_periph"]){
             $already_processed = array();
@@ -5851,6 +5848,9 @@ JAVASCRIPT;
         }
     }
 }
+
+
+
 
 
 

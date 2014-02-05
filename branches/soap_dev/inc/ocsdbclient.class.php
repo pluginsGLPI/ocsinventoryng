@@ -95,6 +95,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                                       FROM `softwares`
                                       WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                       }
+                      var_dump($query);
         
                       $request = $this->db->query($query);
                       while ($software = $this->db->fetch_assoc($request)) {
@@ -454,9 +455,3 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     }
     
 }
-
-
-
-
-
-
