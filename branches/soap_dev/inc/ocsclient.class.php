@@ -187,7 +187,7 @@ abstract class PluginOcsinventoryngOcsClient {
 	abstract public function removeDeletedComputers($deleted, $equivclean = null);
 	
 	/**
-	 * Get the account infox columns
+	 * Get the account info columns
 	 * 
 	 * @return array 
 	 * 		array (
@@ -390,6 +390,16 @@ abstract class PluginOcsinventoryngOcsClient {
 }
 
 ?>
+
+
+
+
+
+
+
+
+
+
 
 
 

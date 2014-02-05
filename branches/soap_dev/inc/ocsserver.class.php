@@ -2953,7 +2953,6 @@ JAVASCRIPT;
       if ($cfg_ocs["tag_limit"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
          $computerOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
       }
-      
       $ocsClient = self::getDBocs($serverId);
       $ocsResult = $ocsClient->getComputers($computerOptions);
       $computers = $ocsResult['COMPUTERS'];
@@ -3888,18 +3887,16 @@ JAVASCRIPT;
 
 
    static function getColumnListFromAccountInfoTable($ID, $glpi_column){
-      global $PluginOcsinventoryngDBocs, $DB;
+      global $DB;
 
       $listColumn = "";
       if ($ID != -1){
-         self::checkOCSconnection($ID);
-         if (!$PluginOcsinventoryngDBocs->error){
-            $result = $PluginOcsinventoryngDBocs->query("SHOW COLUMNS
-                                     FROM `accountinfo`");
-
-            if ($PluginOcsinventoryngDBocs->numrows($result) > 0){
-               while ($data = $PluginOcsinventoryngDBocs->fetch_array($result)){
-                  //get the selected value in glpi if specified
+        if (self::checkOCSconnection($ID)){
+          $ocsClient = self::getDBocs($ID);
+          $AccountInfoColumns = $ocsClient->getAccountInfoColumns();
+            if (count($AccountInfoColumns) > 0){
+              foreach ($AccountInfoColumns as $column) {
+                    //get the selected value in glpi if specified
                   $query = "SELECT `ocs_column`
                             FROM `glpi_plugin_ocsinventoryng_ocsadmininfoslinks`
                             WHERE `plugin_ocsinventoryng_ocsservers_id` = '$ID'
@@ -3912,7 +3909,7 @@ JAVASCRIPT;
                      $selected = $data_DB["ocs_column"];
                   }
 
-                  $ocs_column = $data['Field'];
+                  $ocs_column = $column['Field'];
                   if (!strcmp($ocs_column, $selected)){
                      $listColumn .= "<option value='$ocs_column' selected>".$ocs_column."</option>";
                   } else{
@@ -5854,3 +5851,26 @@ JAVASCRIPT;
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

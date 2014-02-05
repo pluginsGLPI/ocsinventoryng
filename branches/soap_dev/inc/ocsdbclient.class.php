@@ -278,26 +278,23 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         						AND hardware.ID = accountinfo.HARDWARE_ID
         						$where_condition";
         $request         = $this->db->query($query);
-        
-        
-        
-        
         if ($this->db->numrows($request)) {
             
             
-            $count              = $this->db->fetch_row($request);
-            $res["TOTAL_COUNT"] = $count[0];
+            $count              = $this->db->numrows($request);
             $query              = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
 									WHERE hardware.DEVICEID NOT LIKE '\\_%'
 									AND hardware.ID = accountinfo.HARDWARE_ID
 									$where_condition
 									ORDER BY $order
 									$max_records  $offset";
-            
             $request = $this->db->query($query);
+
             while ($hardwareid = $this->db->fetch_assoc($request)) {
                 $hardwareids[] = $hardwareid['ID'];
+
             }
+             $res["TOTAL_COUNT"] = $count;
             if (isset($options['DISPLAY']['CHECKSUM'])) {
                 $checksum = $options['DISPLAY']['CHECKSUM'];
             } else {
@@ -453,6 +450,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     }
     
 }
+
 
 
 
