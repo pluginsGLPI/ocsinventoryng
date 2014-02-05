@@ -209,8 +209,31 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		return (int) simplexml_load_string($xml);
 	}
 
+
+
+
+
+	//****************************
+   	//TO IMPLEMENT 
+   	//****************************
+
+	/**
+	 * @see PluginOcsinventoryngOcsClient::getAccountInfoColumns()
+	 */
 	public function getAccountInfoColumns() {}
 	
+
+	/**
+	 * @see PluginOcsinventoryngOcsClient::updateBios()
+	 */
+   	public function updateBios($ssn,$id){}
+
+   	/**
+	 * @see PluginOcsinventoryngOcsClient::updateTag()
+	 */
+   	public function updateTag($tag,$id){}
+
+
 	// /**
 	// * @see PluginOcsinventoryngOcsClient::getComputers()
 	// */

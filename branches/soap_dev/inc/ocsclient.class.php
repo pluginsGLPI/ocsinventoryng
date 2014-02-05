@@ -198,6 +198,24 @@ abstract class PluginOcsinventoryngOcsClient {
 	 */
 	abstract public function getAccountInfoColumns();
 
+	/**
+	 * Sets the ssn for the given computer
+	 * 
+	 * @param int $ssn The new SSN value 
+	 * @param int $id The computer id
+	 * @return void
+	 */
+	abstract public function updateBios($ssn,$id);
+
+	/**
+	 * Sets the tag for the given computer
+	 * 
+	 * @param int $tag The new TAG value 
+	 * @param int $id The computer id
+	 * @return void
+	 */
+	abstract public function updateTag($tag,$id);
+
 	/*************************/
 	/* IMPLEMENTED FUNCTIONS */
 	/*************************/

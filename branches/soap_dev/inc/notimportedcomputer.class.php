@@ -522,26 +522,13 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
       if ($computer) {
           $ocs_serial = $computer["BIOS"]["SSN"];
          if ($ocs_serial != $params['serial']) {
-            $query_serial = "UPDATE `bios`
-                             SET `SSN` = '".$params['serial']."'" .
-                  "          WHERE `HARDWARE_ID` = '".$params['ocsid']."'";
-            $PluginOcsinventoryngDBocs->query($query_serial);
+            $ocsClient->updateBios($params['serial'],$params['ocsid']);
             $changes[] = 'serial';
          }
-      }
-      $query = "SELECT `TAG`
-                FROM `accountinfo`
-                WHERE `HARDWARE_ID` = '".$params['ocsid']."'";
-      $result = $PluginOcsinventoryngDBocs->query($query);
-
-      if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
-         $ocs_tag = $PluginOcsinventoryngDBocs->result($result,0,'TAG');
+         $ocs_tag = $computer["META"]["TAG"];
          if ($ocs_tag != $params['tag']) {
-            $query_serial = "UPDATE `accountinfo`
-                             SET `TAG` = '".$params['tag']."'
-                            WHERE `HARDWARE_ID` = '".$params['ocsid']."'";
-            $PluginOcsinventoryngDBocs->query($query_serial);
-            $changes[] = 'tag';
+           $ocsClient->updateBios($params['tag'],$params['ocsid']);
+           $changes[] = 'tag';
          }
       }
 

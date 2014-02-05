@@ -161,6 +161,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     
     
     
+
     /**********************/
     /* PUBLIC  FUNCTIONS  */
     /**********************/
@@ -201,8 +202,23 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         return $res;
     }
     
+    /**
+     * @see PluginOcsinventoryngOcsClient::updateBios()
+     */
+    public function updateBios($ssn,$id){
+        $query    =  "UPDATE `bios` SET `SSN` = '".$ssn."'"." WHERE `HARDWARE_ID` = '".$id."'";
+        $request = $this->db->query($query);
+    }
     
-    
+
+    /**
+     * @see PluginOcsinventoryngOcsClient::updateTag()
+     */
+    public function updateTag($tag,$id){
+        $query    =  "UPDATE `accountinfo` SET `TAG` = '".$tag."' WHERE `HARDWARE_ID` = '".$id."'";
+        $request = $this->db->query($query);        
+    }
+
     /**
      * @see PluginOcsinventoryngOcsClient::getComputers()
      */
