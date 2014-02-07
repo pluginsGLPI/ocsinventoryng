@@ -76,6 +76,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 
             } elseif ($table == "softwares") {
                 if ($check & $checksum) {
+                    if (self::WANTED_DICO_SOFT & $wanted) {
                           $query   = "SELECT
                                         IFNULL(`dico_soft`.`FORMATTED`, `softwares`.`NAME`) AS NAME,
                                         `softwares`.`VERSION`,
@@ -93,7 +94,27 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                                         FROM `softwares`
                                         LEFT JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
                                         WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                     } else{
+                         $query   = "SELECT
+                                        `softwares`.`NAME`,
+                                        `softwares`.`VERSION`,
+                                        `softwares`.`PUBLISHER`,
+                                        `softwares`.`COMMENTS`,
+                                        `softwares`.`FOLDER`,
+                                        `softwares`.`FILENAME`,
+                                        `softwares`.`FILESIZE`,
+                                        `softwares`.`GUID`,
+                                        `softwares`.`LANGUAGE`,
+                                        `softwares`.`INSTALLDATE`,
+                                        `softwares`.`BITSWIDTH`,
+                                        `softwares`.`SOURCE`,
+                                        `softwares`.`HARDWARE_ID`
+                                        FROM `softwares`
+                                        WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
 
+
+
+                     }
           
                       $request = $this->db->query($query);
                       while ($software = $this->db->fetch_assoc($request)) {
@@ -376,7 +397,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     {
         $query  = "SELECT `IVALUE`, `TVALUE` FROM `config` WHERE `NAME` = '" . $this->db->escape($key) . "'";
         $config = $this->db->query($query);
-        $res    = $this->db->fetch_assoc($config);
+         while ( $conf   = $this->db->fetch_assoc($config)){
+            $res = $conf;
+        }
         return $res;
     }
     
@@ -463,7 +486,23 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         $query   = "SHOW COLUMNS FROM `accountinfo`";
         $columns = $this->db->query($query);
         while ($column = $this->db->fetch_assoc($columns)) {
-            $res[] = $column['Field'];
+            $res[$column['Field']] = $column['Field'];
+        }
+        $query   = "SELECT * FROM  `accountinfo_config` ";
+        $confs = $this->db->query($query);
+        while ($conf = $this->db->fetch_assoc($confs)) {
+            $key="fields_".$conf["ID"];
+            if (array_key_exists ( $key,$res))  {
+                if($conf["TYPE"]){
+                    $res[$key] = array("NOM"=>$conf['COMMENT'],
+                            "PREFIX"=>"ACCOUNT_INFO_".$conf["NAME"]."_",
+                    );
+                }else  {
+                   $res[$key] = $conf['COMMENT'];
+                }
+                
+            }
+            
         }
         return $res;
     }

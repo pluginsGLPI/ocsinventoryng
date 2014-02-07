@@ -11,10 +11,17 @@ $dbclient = new PluginOcsinventoryngOcsDbClient(1,'ocstest','ocsuser','ocspass',
 
 
 
+var_dump($dbclient->getAccountInfoColumns());
 
+
+
+
+
+/*
 $temps = microtime();   
 $temps = explode(' ', $temps);   
 $debut = $temps[1] + $temps[0];
+
 
 ?>
 
@@ -190,6 +197,12 @@ print_r($delete);
 $checksum = $dbclient->getChecksum(37);
 var_dump($checksum);*/
 ?>
+
+
+
+
+
+
 
 
 

@@ -2071,6 +2071,10 @@ JAVASCRIPT;
 						if ($cfg_ocs["import_software"]) {
 							$softwares=true;
 							$ocsCheck[]=  PluginOcsinventoryngOcsClient::CHECKSUM_SOFTWARE;
+							   if ($cfg_ocs["use_soft_dict"]) {
+							   $ocsWanted =	PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO;
+							   }
+
 						}
 					}
 					if ($mixed_checksum & pow(2, self::DRIVES_FL)){
@@ -2091,15 +2095,22 @@ JAVASCRIPT;
 							$ocsCheck[]=  PluginOcsinventoryngOcsClient::CHECKSUM_VIRTUAL_MACHINES;
 						}
 					}
+
 					if ($ocsCheck) {
 						$ocsCheckResult = $ocsCheck[0];
 						foreach ($ocsCheck as $ocsChecksum) {
 							$ocsCheckResult = $ocsCheckResult | $ocsChecksum;
 						}
+					}else{
+						$ocsCheckResult = 0;
+					}
+					if (!$ocsWanted) {
+						$ocsWanted = 0;
 					}
 					$options = array(
 						'DISPLAY'=>array(
-							'CHECKSUM'=>$ocsCheckResult
+							'CHECKSUM'=>$ocsCheckResult,
+							'WANTED'=>$ocsWanted
 					),
 					);
 					$ocsComputer = $ocsClient->getComputer($line['ocsid'],$options);
@@ -3935,7 +3946,7 @@ JAVASCRIPT;
 				$ocsClient = self::getDBocs($ID);
 				$AccountInfoColumns = $ocsClient->getAccountInfoColumns();
 				if (count($AccountInfoColumns) > 0){
-					foreach ($AccountInfoColumns as $column) {
+					foreach ($AccountInfoColumns as $id=>$name) {
 						//get the selected value in glpi if specified
 						$query = "SELECT `ocs_column`
                             FROM `glpi_plugin_ocsinventoryng_ocsadmininfoslinks`
@@ -3948,12 +3959,19 @@ JAVASCRIPT;
 							$data_DB = $DB->fetch_array($result_DB);
 							$selected = $data_DB["ocs_column"];
 						}
+						
+						if(is_array($name)){
+							$ocs_column_name = $name["NOM"];
+							$ocs_column_id = $id;
+						}else{
+							$ocs_column_id = $id;
+							$ocs_column_name = $name;
+						}
 
-						$ocs_column = $column['Field'];
-						if (!strcmp($ocs_column, $selected)){
-							$listColumn .= "<option value='$ocs_column' selected>".$ocs_column."</option>";
+						if (!strcmp($ocs_column_name, $selected)){
+							$listColumn .= "<option value='$ocs_column_id' selected>".$ocs_column_name."</option>";
 						} else{
-							$listColumn .= "<option value='$ocs_column'>" . $ocs_column . "</option>";
+							$listColumn .= "<option value='$ocs_column_id'>" . $ocs_column_name . "</option>";
 						}
 					}
 				}
@@ -4844,6 +4862,7 @@ JAVASCRIPT;
 
 					if (isset ($accountinfo[$ocs_column]) && !in_array($glpi_column, $computer_updates)){
 						$var = addslashes($accountinfo[$ocs_column]);
+						var_dump($var);
 						switch ($glpi_column){
 							case "groups_id":
 								$var = self::importGroup($var, $entity);
