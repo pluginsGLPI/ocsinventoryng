@@ -76,34 +76,55 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 
             } elseif ($table == "softwares") {
                 if ($check & $checksum) {
-                     if (self::WANTED_DICO_SOFT & $wanted) {
-                          $query   = "SELECT `dico_soft`.`FORMATTED` AS NAME,
-                                      `softwares`.`VERSION` AS VERSION,
-                                      `softwares`.`PUBLISHER` AS PUBLISHER,
-                                      `softwares`.`COMMENTS` AS COMMENTS,
-                                      `softwares`.`HARDWARE_ID` AS HARDWARE_ID
-                                      FROM `softwares`
-                                      INNER JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
-                                      WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-                      }
-                      else{
-                          $query   = "SELECT `softwares`.`NAME` AS NAME,
-                                      `softwares`.`VERSION` AS VERSION,
-                                      `softwares`.`PUBLISHER` AS PUBLISHER,
-                                      `softwares`.`COMMENTS` AS COMMENTS,
-                                      `softwares`.`HARDWARE_ID` AS HARDWARE_ID
-                                      FROM `softwares`
-                                      WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-                      }
-                      var_dump($query);
-        
+                          $query   = "SELECT
+                                        IFNULL(`dico_soft`.`FORMATTED`, `softwares`.`NAME`) AS NAME,
+                                        `softwares`.`VERSION`,
+                                        `softwares`.`PUBLISHER`,
+                                        `softwares`.`COMMENTS`,
+                                        `softwares`.`FOLDER`,
+                                        `softwares`.`FILENAME`,
+                                        `softwares`.`FILESIZE`,
+                                        `softwares`.`GUID`,
+                                        `softwares`.`LANGUAGE`,
+                                        `softwares`.`INSTALLDATE`,
+                                        `softwares`.`BITSWIDTH`,
+                                        `softwares`.`SOURCE`,
+                                        `softwares`.`HARDWARE_ID`
+                                        FROM `softwares`
+                                        LEFT JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
+                                        WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+
+          
                       $request = $this->db->query($query);
                       while ($software = $this->db->fetch_assoc($request)) {
                               $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
                       }
-            }
+                }
 
-                
+            }elseif ($table == "registry") {
+               
+                if ($check & $checksum) {
+                   $query = "SELECT `registry`.`NAME` AS name,
+                          `registry`.`REGVALUE` AS regvalue,
+                          `registry`.`HARDWARE_ID` AS computers_id,
+                          `regconfig`.`REGTREE` AS regtree,
+                          `regconfig`.`REGKEY` AS regkey
+                   FROM `registry`
+                   LEFT JOIN `regconfig` ON (`registry`.`NAME` = `regconfig`.`NAME`)
+                   WHERE `HARDWARE_ID` = '$ocsid'";
+                    $request = $this->db->query($query);    
+                    while ($computer = $this->db->fetch_assoc($request)) {
+                        if ($multi) {
+                            $computers[$computer['HARDWARE_ID']][strtoupper($table)][] = $computer;
+                        } else {
+                            $computers[$computer['HARDWARE_ID']][strtoupper($table)] = $computer;
+                        }
+                        
+                    }
+                    
+                    
+                }
+
             } elseif ($table == "hardware") {
                 
                 $query   = "SELECT `hardware`.*,`accountinfo`.`TAG` FROM `hardware`
@@ -346,19 +367,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     
     
     
-    /**
-     * @see PluginOcsinventoryngOcsClient::getAccountInfo()
-     */
-    public function getAccountInfo($id)
-    {
-        $query       = "SELECT * FROM `accountinfo` WHERE `HARDWARE_ID` = '" . $id . "'";
-        $accountinfo = $this->db->query($query);
-        $res         = $this->db->fetch_assoc($accountinfo);
-        return $res;
-    }
-    
-    
-    
+
     
     /**
      * @see PluginOcsinventoryngOcsClient::getConfig()
@@ -380,18 +389,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         $this->db->query($query);
     }
     
-    
-    
-    
-    
-    public function getUnique($columns, $table, $conditions, $sort)
-    {
-        
-        
-        
-        
-    }
-    
+
     /**
      * @see PluginOcsinventoryngOcsClient::setChecksum()
      */

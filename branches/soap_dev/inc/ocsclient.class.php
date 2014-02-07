@@ -118,19 +118,7 @@ abstract class PluginOcsinventoryngOcsClient {
 	 */
 	abstract public function getComputers($options);
 
-	/**
-	 * Return the account infos for the given id
-	 * 
-	 * @param int $id The id 
-	 * @return array Account Infos :
-	 *		array(
-	 *			HARDWARE_ID' => ...
- 	 *		   'TAG' => ...
-  	 *		 	... => ... 
- 	 *	 	)
-	 *	
-	 */
-	abstract public function getAccountInfo($id);
+
 
 	/**
 	 * Returns the config for the given key
@@ -154,8 +142,6 @@ abstract class PluginOcsinventoryngOcsClient {
 	 */
 	abstract public function setConfig($key, $ivalue, $tvalue);
 
-
-	abstract public function getUnique($columns, $table, $conditions, $sort);
 
 	/**
 	 * Sets the checksum for the given computer
@@ -408,21 +394,3 @@ abstract class PluginOcsinventoryngOcsClient {
 }
 
 ?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

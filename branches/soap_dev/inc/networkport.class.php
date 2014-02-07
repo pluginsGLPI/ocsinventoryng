@@ -200,16 +200,9 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
    }
 
    // importNetwork
-   static function importNetwork($ocsServerId, $cfg_ocs, $ocsid, $computers_id, $dohistory) {
+   static function importNetwork($ocsServerId, $cfg_ocs, $ocsComputer, $computers_id, $dohistory) {
       global $DB;
       
-      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($ocsServerId);
-      $ocsComputer = $ocsClient->getComputer($ocsid, array(
-      		'DISPLAY' => array(
-      			'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS
-      		)
-      ));
-
       // Group by DESCRIPTION, MACADDR, TYPE, TYPEMIB, SPEED, VIRTUALDEV
       // to get an array in IPADDRESS
       $ocsNetworks = array();
