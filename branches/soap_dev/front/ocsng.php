@@ -48,7 +48,7 @@ if (isset($_POST["plugin_ocsinventoryng_ocsservers_id"])) {
 }
 
 PluginOcsinventoryngOcsServer::ocsMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
 
 Html::footer();
 

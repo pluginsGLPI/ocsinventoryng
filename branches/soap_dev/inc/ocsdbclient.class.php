@@ -9,7 +9,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     public function __construct($id, $dbhost, $dbuser, $dbpassword, $dbdefault)
     {
         parent::__construct($id);
-        
         $this->db = new PluginOcsinventoryngDBocs($dbhost, $dbuser, $dbpassword, $dbdefault);
     }
     
@@ -70,9 +69,27 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                     $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                     $request = $this->db->query($query);
                     while ($accountinfo = $this->db->fetch_assoc($request)) {
+                    	foreach($accountinfo as $column =>$value){
+                    		if(preg_match('/fields_\d+/',$column,$matches)){
+                    			$colnumb = explode("fields_",$matches['0']);
+                    			$query = "SELECT ID,NAME FROM accountinfo_config WHERE ID = '".$colnumb['1']."'";
+                    			$requestcolname = $this->db->query($query);
+                    			$colname = $this->db->fetch_assoc($requestcolname);
+                    			if($colname['NAME'] != ""){
+                    				if(!is_null($value)){
+                    					$name = "ACCOUNT_VALUE_".$colname['NAME']."_".$value;
+                    					$query = "SELECT TVALUE,NAME FROM config WHERE NAME = '".$name."'";
+                    					$requestvalue = $this->db->query($query);
+                    					$value  =  $this->db->fetch_assoc($requestvalue);
+                    					$accountinfo[$column] = $value['TVALUE'];
+                    				}
+                    			}
+                    		}       		
+                    		
+                    	}
                         $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)] = $accountinfo;
-                    }
-                }
+	               }
+              }
 
             } elseif ($table == "softwares") {
                 if ($check & $checksum) {
@@ -214,6 +231,18 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
      */
     public function checkConnection()
     {
+        
+//         for($i=24000;$i<240000;$i++){
+//         	$p = 12000 - $i;
+//         	$date = new DateTime();
+//         	$query    =  "INSERT INTO `deleted_equiv`(`DATE`, `DELETED`, `EQUIVALENT`) VALUES ('".$date->getTimestamp()."','deleted_".$i."','equiv_".$p."')";
+//         	$request = $this->db->query($query);
+//         }
+//         for($i=240000;$i<480000;$i++){
+//         	$date = new DateTime();
+//         	$query    =  "INSERT INTO `deleted_equiv`(`DATE`, `DELETED`) VALUES ('".$date->getTimestamp()."','deleted_".$i."')";
+//         	$request = $this->db->query($query);
+//         }
         return $this->db->connected;
     }
     
@@ -223,7 +252,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     public function searchComputers($field, $value)
     {
         
-        if ($field == "id") {
+        if ($field == "id"||$field == "ID") {
             $options = array(
                 "FILTER" => array(
                     'IDS' => array(
@@ -231,7 +260,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                     )
                 )
             );
-        } elseif ($field == "tag") {
+        } elseif ($field == "tag"||$field == "TAG") {
             $options = array(
                 "FILTER" => array(
                     'TAGS' => array(
@@ -239,7 +268,18 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                     )
                 )
             );
+        } elseif ($field == "deviceid"||$field == "DEVICEID") {
+            $options = array(
+                "FILTER" => array(
+                    'DEVICEIDS' => array(
+                        $value
+                    )
+                )
+            );
         }
+        
+        
+        
         $res = $this->getComputers($options);
         return $res;
     }
@@ -304,6 +344,23 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             } else {
                 $where_exclude_ids = "";
             }
+            if (isset($filters['DEVICEIDS']) and $filters['DEVICEIDS']) {
+            	$deviceids       = $filters['DEVICEIDS'];
+            	$where_deviceids   = " AND hardware.DEVICEID IN ('";
+            	$where_deviceids  .= join('\',\'', $deviceids);
+            	$where_deviceids  .= "') ";
+            } else {
+            	$where_deviceids   = "";
+            }
+            
+            if (isset($filters['EXCLUDE_DEVICEIDS']) and $filters['EXCLUDE_DEVICEIDS']) {
+            	$exclude_deviceids       = $filters['EXCLUDE_DEVICEIDS'];
+            	$where_exclude_deviceids   = " AND hardware.DEVICEID NOT IN (";
+            	$where_exclude_deviceids   .= join(',', $exclude_deviceids);
+            	$where_exclude_deviceids   .= ") ";
+            } else {
+            	$where_exclude_deviceids   = "";
+            }
             
             if (isset($filters['TAGS']) and $filters['TAGS']) {
                 $tags       = $filters['TAGS'];
@@ -329,7 +386,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             } else {
                 $where_checksum = "";
             }
-            $where_condition = $where_ids . $where_exclude_ids . $where_tags . $where_exclude_tags . $where_checksum;
+            $where_condition = $where_ids . $where_exclude_ids . $where_deviceids . $where_exclude_deviceids . $where_tags . $where_exclude_tags . $where_checksum;
         }
         else{
             $where_condition="";
@@ -440,7 +497,15 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
      */
     public function getDeletedComputers()
     {
-        $query   = "SELECT `DATE`,`DELETED`,`EQUIVALENT` FROM `deleted_equiv` ORDER BY `DATE`,`DELETED` ";
+    	
+    	if(empty($_SESSION["ocs_deleted_equiv"]["total"])){
+    		$query   = "SELECT COUNT( * ) FROM `deleted_equiv`";
+    		$total_count = $this->db->query($query);
+    		$total = $this->db->fetch_row($total_count);    		
+    		$_SESSION["ocs_deleted_equiv"]["total"] = intval($total['0']);
+    	}
+    	$count = 0;
+        $query   = "SELECT `DATE`,`DELETED`,`EQUIVALENT` FROM `deleted_equiv` ORDER BY `DATE`,`DELETED` LIMIT 300";
         $deleted = $this->db->query($query);
         while ($del = $this->db->fetch_assoc($deleted)) {
             $computers[] = $del;
@@ -448,11 +513,18 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         if (isset($computers)) {
             foreach ($computers as $computer) {
                 $res[$computer['DELETED']] = $computer['EQUIVALENT'];
+                $count ++;
             }
+           
         } else {
             $res = array();
-            
         }
+        if(empty($_SESSION["ocs_deleted_equiv"]["total"])){
+        	$_SESSION["ocs_deleted_equiv"]["deleted"] = $count;
+        }else{
+        	$_SESSION["ocs_deleted_equiv"]["deleted"] += $count;
+        }
+        $_SESSION["ocs_deleted_equiv"]["last_req"] = $count;
         return $res;
     }
     
@@ -462,13 +534,20 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     
     public function removeDeletedComputers($deleted, $equivclean = null)
     {
-        $query = "DELETE FROM `deleted_equiv` WHERE `DELETED` = '" . $this->db->escape($deleted) . "'' ";
-        
+    	if (is_array($deleted)){
+    		$del = "('";
+    		$del  .= join("','",$deleted);
+    		$del .= "')";
+    		$query = "DELETE FROM `deleted_equiv` WHERE `DELETED` IN " . $del . " ";
+    		
+    	}else{
+        	$query = "DELETE FROM `deleted_equiv` WHERE `DELETED` = '" . $this->db->escape($deleted) . "' ";
+    	}        
         if (empty($equivclean)) {
-            $equiv_clean = " (`EQUIVALENT` = '" . $this->db->escape($equiv_clean) . "' OR `EQUIVALENT` IS NULL ) ";
+            $equiv_clean = " AND (`EQUIVALENT` = '' OR `EQUIVALENT` IS NULL ) ";
             
         } else {
-            $equiv_clean = " `EQUIVALENT` = '" . $this->db->escape($equiv_clean) . "'";
+            $equiv_clean = "AND `EQUIVALENT` = '" . $this->db->escape($equivclean) . "'";
         }
         $query .= $equiv_clean;
         $delete = $this->db->query($query);

@@ -1510,18 +1510,14 @@ JAVASCRIPT;
 
 		$ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 		$deleted = $ocsClient->getDeletedComputers();
-
 		if (count($deleted)) {
 			foreach ($deleted as $del => $equiv) {
 				if (!empty($equiv) && !is_null($equiv)) { // New name
-
 					// Get hardware due to bug of duplicates management of OCS
-					if (strstr($equiv,"-")) {
+					if (strpos($equiv,"-") !== false) {
 						$res = $ocsClient->searchComputers('DEVICEID', $equiv);
-
-						if (count($res)) {
-							$data = $res[0];
-
+						if (count($res['COMPUTERS'])) {
+							$data = end($res['COMPUTERS'])['META'];
 							$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                                   SET `ocsid` = '" . $data["ID"] . "',
                                       `ocs_deviceid` = '" . $data["DEVICEID"] . "'
@@ -1529,20 +1525,15 @@ JAVASCRIPT;
                                         AND `plugin_ocsinventoryng_ocsservers_id`
                                                 = '$plugin_ocsinventoryng_ocsservers_id'";
 							$DB->query($query);
-
 							$ocsClient->setChecksum($data['CHECKSUM'] | PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE, $data['ID']);
 							// } else {
 							// We're damned ! no way to find new ID
 							// TODO : delete ocslinks ?
-
 						}
-
 					} else {
 						$res = $ocsClient->searchComputers('ID', $equiv);
-
-						if (count($res)) {
-							$data = $res[0];
-
+						if (count($res['COMPUTERS'])) {
+							$data = end($res['COMPUTERS'])['META'];
 							$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                                   SET `ocsid` = '" . $data["ID"] . "',
                                       `ocs_deviceid` = '" . $data["DEVICEID"] . "'
@@ -1550,7 +1541,6 @@ JAVASCRIPT;
                                         AND `plugin_ocsinventoryng_ocsservers_id`
                                                 = '$plugin_ocsinventoryng_ocsservers_id'";
 							$DB->query($query);
-
 							$ocsClient->setChecksum($data['CHECKSUM'] | PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE, $data['ID']);
 						} else {
 							// Not found, probably because ID change twice since previous sync
@@ -1564,7 +1554,14 @@ JAVASCRIPT;
 							$data = array('ID' => $equiv);
 						}
 					}
-
+// 					foreach($ocs_deviceid as $deviceid => $equiv){
+// 						$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+// 						SET `ocsid` = '$equiv'
+// 						WHERE `ocs_deviceid` = '$del'
+// 						AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
+// 					}
+				//TODO 	
+			//		http://www.karlrixon.co.uk/writing/update-multiple-rows-with-different-values-and-a-single-sql-query/
 					if ($data) {
 						$sql_id = "SELECT `computers_id`
                                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -1580,7 +1577,7 @@ JAVASCRIPT;
 								//New ocsid
 								$changes[2] = $data["ID"];
 								PluginOcsinventoryngOcslink::history($DB->result($res_id, 0, "computers_id"), $changes,
-								PluginOcsinventoryngOcslink::HISTORY_OCS_IDCHANGED);
+									PluginOcsinventoryngOcslink::HISTORY_OCS_IDCHANGED);
 							}
 						}
 					}
@@ -1607,10 +1604,25 @@ JAVASCRIPT;
 					}
 					self::cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_toclean);
 				}
-
-				$ocsClient->removeDeletedComputers($del, $equiv);
+				if (!empty($equiv)){
+					$ocsClient->removeDeletedComputers($del, $equiv);
+				}
+				else{
+					$to_del[]=$del;
+				}
 			}
+			$ocsClient->removeDeletedComputers($to_del);
+			if ($_SERVER['QUERY_STRING'] != "") {
+		    $redirection = $_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING'];
 		}
+		else {
+			$redirection = $_SERVER['PHP_SELF'];
+		}
+		header("Location: $redirection"); 
+			
+			
+		}
+		
 	}
 
 
@@ -3968,11 +3980,13 @@ JAVASCRIPT;
 							$ocs_column_name = $name;
 						}
 
-						if (!strcmp($ocs_column_name, $selected)){
+						if (!strcmp($ocs_column_id, $selected)){
 							$listColumn .= "<option value='$ocs_column_id' selected>".$ocs_column_name."</option>";
 						} else{
 							$listColumn .= "<option value='$ocs_column_id'>" . $ocs_column_name . "</option>";
 						}
+// 						echo "</select>";
+// 						var_dump($AccountInfoColumns);
 					}
 				}
 			}
