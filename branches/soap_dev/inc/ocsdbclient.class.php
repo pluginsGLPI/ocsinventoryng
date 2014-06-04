@@ -505,7 +505,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     		$_SESSION["ocs_deleted_equiv"]["total"] = intval($total['0']);
     	}
     	$count = 0;
-        $query   = "SELECT `DATE`,`DELETED`,`EQUIVALENT` FROM `deleted_equiv` ORDER BY `DATE`,`DELETED` LIMIT 300";
+        $query   = "SELECT `DATE`,`DELETED`,`EQUIVALENT` FROM `deleted_equiv` ORDER BY `DATE`,`EQUIVALENT` LIMIT 5";
         $deleted = $this->db->query($query);
         while ($del = $this->db->fetch_assoc($deleted)) {
             $computers[] = $del;

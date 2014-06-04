@@ -1509,127 +1509,133 @@ JAVASCRIPT;
 
 
 	static function manageDeleted($plugin_ocsinventoryng_ocsservers_id) {
-		global $DB, $CFG_GLPI;
-
+		global $DB, $CFG_GLPI, $PLUGIN_HOOKS;
+		
 		if (!(self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id) && self::checkVersion($plugin_ocsinventoryng_ocsservers_id))) {
 			return false;
 		}
-
+		$currentfilelink = explode("/",$_SERVER['SCRIPT_NAME']);
+		$currentfilename = end($currentfilelink);
 		$ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 		$deleted = $ocsClient->getDeletedComputers();
-		if (count($deleted)) {
-			foreach ($deleted as $del => $equiv) {
-				if (!empty($equiv) && !is_null($equiv)) { // New name
-					// Get hardware due to bug of duplicates management of OCS
-					if (strpos($equiv,"-") !== false) {
-						$res = $ocsClient->searchComputers('DEVICEID', $equiv);
-						if (count($res['COMPUTERS'])) {
-							$data = end($res['COMPUTERS'])['META'];
-							$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                                  SET `ocsid` = '" . $data["ID"] . "',
-                                      `ocs_deviceid` = '" . $data["DEVICEID"] . "'
-                                  WHERE `ocs_deviceid` = '$del'
-                                        AND `plugin_ocsinventoryng_ocsservers_id`
-                                                = '$plugin_ocsinventoryng_ocsservers_id'";
-							$DB->query($query);
-							$ocsClient->setChecksum($data['CHECKSUM'] | PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE, $data['ID']);
-							// } else {
-							// We're damned ! no way to find new ID
-							// TODO : delete ocslinks ?
-						}
-					} else {
-						$res = $ocsClient->searchComputers('ID', $equiv);
-						if (count($res['COMPUTERS'])) {
-							$data = end($res['COMPUTERS'])['META'];
-							$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                                  SET `ocsid` = '" . $data["ID"] . "',
-                                      `ocs_deviceid` = '" . $data["DEVICEID"] . "'
-                                  WHERE `ocsid` = '$del'
-                                        AND `plugin_ocsinventoryng_ocsservers_id`
-                                                = '$plugin_ocsinventoryng_ocsservers_id'";
-							$DB->query($query);
-							$ocsClient->setChecksum($data['CHECKSUM'] | PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE, $data['ID']);
+		if ($currentfilename == "deleted_equiv.php"){
+			if (count($deleted)) {
+				foreach ($deleted as $del => $equiv) {
+					if (!empty($equiv) && !is_null($equiv)) { // New name
+						// Get hardware due to bug of duplicates management of OCS
+						if (strpos($equiv,"-") !== false) {
+							$res = $ocsClient->searchComputers('DEVICEID', $equiv);
+							if (count($res['COMPUTERS'])) {
+								$data = end($res['COMPUTERS'])['META'];
+								$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+	                                  SET `ocsid` = '" . $data["ID"] . "',
+	                                      `ocs_deviceid` = '" . $data["DEVICEID"] . "'
+	                                  WHERE `ocs_deviceid` = '$del'
+	                                        AND `plugin_ocsinventoryng_ocsservers_id`
+	                                                = '$plugin_ocsinventoryng_ocsservers_id'";
+								$DB->query($query);
+								$ocsClient->setChecksum($data['CHECKSUM'] | PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE, $data['ID']);
+								// } else {
+								// We're damned ! no way to find new ID
+								// TODO : delete ocslinks ?
+							}
 						} else {
-							// Not found, probably because ID change twice since previous sync
-							// No way to found new DEVICEID
-							$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                                  SET `ocsid` = '$equiv'
-                                  WHERE `ocsid` = '$del'
-                                        AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
-							$DB->query($query);
-							// for history, see below
-							$data = array('ID' => $equiv);
-						}
-					}
-// 					foreach($ocs_deviceid as $deviceid => $equiv){
-// 						$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-// 						SET `ocsid` = '$equiv'
-// 						WHERE `ocs_deviceid` = '$del'
-// 						AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
-// 					}
-				//TODO 	
-			//		http://www.karlrixon.co.uk/writing/update-multiple-rows-with-different-values-and-a-single-sql-query/
-					if ($data) {
-						$sql_id = "SELECT `computers_id`
-                                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                                WHERE `ocsid` = '".$data["ID"]."'
-                                      AND `plugin_ocsinventoryng_ocsservers_id`
-                                             = '$plugin_ocsinventoryng_ocsservers_id'";
-						if ($res_id = $DB->query($sql_id)) {
-							if ($DB->numrows($res_id)>0) {
-								//Add history to indicates that the ocsid changed
-								$changes[0] = '0';
-								//Old ocsid
-								$changes[1] = $del;
-								//New ocsid
-								$changes[2] = $data["ID"];
-								PluginOcsinventoryngOcslink::history($DB->result($res_id, 0, "computers_id"), $changes,
-									PluginOcsinventoryngOcslink::HISTORY_OCS_IDCHANGED);
+							$res = $ocsClient->searchComputers('ID', $equiv);
+							if (count($res['COMPUTERS'])) {
+								$data = end($res['COMPUTERS'])['META'];
+								$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+	                                  SET `ocsid` = '" . $data["ID"] . "',
+	                                      `ocs_deviceid` = '" . $data["DEVICEID"] . "'
+	                                  WHERE `ocsid` = '$del'
+	                                        AND `plugin_ocsinventoryng_ocsservers_id`
+	                                                = '$plugin_ocsinventoryng_ocsservers_id'";
+								$DB->query($query);
+								$ocsClient->setChecksum($data['CHECKSUM'] | PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE, $data['ID']);
+							} else {
+								// Not found, probably because ID change twice since previous sync
+								// No way to found new DEVICEID
+								$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+	                                  SET `ocsid` = '$equiv'
+	                                  WHERE `ocsid` = '$del'
+	                                        AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
+								$DB->query($query);
+								// for history, see below
+								$data = array('ID' => $equiv);
 							}
 						}
-					}
-
-				} else { // Deleted
-
-					$ocslinks_toclean = array();
-					if (strstr($del,"-")) {
-						$link = "ocs_deviceid";
-					} else {
-						$link = "ocsid";
-					}
-					$query = "SELECT *
-                            FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                            WHERE `". $link."` = '$del'
-                                  AND `plugin_ocsinventoryng_ocsservers_id`
-                                             = '$plugin_ocsinventoryng_ocsservers_id'";
-
-					if ($result = $DB->query($query)) {
-						if ($DB->numrows($result)>0) {
-							$data                          = $DB->fetch_array($result);
-							$ocslinks_toclean[$data['id']] = $data['id'];
+	// 					foreach($ocs_deviceid as $deviceid => $equiv){
+	// 						$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+	// 						SET `ocsid` = '$equiv'
+	// 						WHERE `ocs_deviceid` = '$del'
+	// 						AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
+	// 					}
+					//TODO 	
+				//		http://www.karlrixon.co.uk/writing/update-multiple-rows-with-different-values-and-a-single-sql-query/
+						if ($data) {
+							$sql_id = "SELECT `computers_id`
+	                                FROM `glpi_plugin_ocsinventoryng_ocslinks`
+	                                WHERE `ocsid` = '".$data["ID"]."'
+	                                      AND `plugin_ocsinventoryng_ocsservers_id`
+	                                             = '$plugin_ocsinventoryng_ocsservers_id'";
+							if ($res_id = $DB->query($sql_id)) {
+								if ($DB->numrows($res_id)>0) {
+									//Add history to indicates that the ocsid changed
+									$changes[0] = '0';
+									//Old ocsid
+									$changes[1] = $del;
+									//New ocsid
+									$changes[2] = $data["ID"];
+									PluginOcsinventoryngOcslink::history($DB->result($res_id, 0, "computers_id"), $changes,
+										PluginOcsinventoryngOcslink::HISTORY_OCS_IDCHANGED);
+								}
+							}
 						}
+	
+					} else { // Deleted
+	
+						$ocslinks_toclean = array();
+						if (strstr($del,"-")) {
+							$link = "ocs_deviceid";
+						} else {
+							$link = "ocsid";
+						}
+						$query = "SELECT *
+	                            FROM `glpi_plugin_ocsinventoryng_ocslinks`
+	                            WHERE `". $link."` = '$del'
+	                                  AND `plugin_ocsinventoryng_ocsservers_id`
+	                                             = '$plugin_ocsinventoryng_ocsservers_id'";
+	
+						if ($result = $DB->query($query)) {
+							if ($DB->numrows($result)>0) {
+								$data                          = $DB->fetch_array($result);
+								$ocslinks_toclean[$data['id']] = $data['id'];
+							}
+						}
+						self::cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_toclean);
 					}
-					self::cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_toclean);
+					if (!empty($equiv)){
+						$ocsClient->removeDeletedComputers($del, $equiv);
+					}
+					else{
+						$to_del[]=$del;
+					}
 				}
-				if (!empty($equiv)){
-					$ocsClient->removeDeletedComputers($del, $equiv);
-				}
-				else{
-					$to_del[]=$del;
-				}
+				$ocsClient->removeDeletedComputers($to_del);
+				if ($_SERVER['QUERY_STRING'] != "") {
+			    $redirection = $_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING'];
 			}
-			$ocsClient->removeDeletedComputers($to_del);
-			if ($_SERVER['QUERY_STRING'] != "") {
-		    $redirection = $_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING'];
-		}
-		else {
-			$redirection = $_SERVER['PHP_SELF'];
-		}
-		header("Location: $redirection"); 
-			
-			
-		}
-		
+			else {
+				$redirection = $_SERVER['PHP_SELF'];
+			}
+			header("Location: $redirection"); 		
+			}
+			// New way to delete entry from deleted_equiv table
+		}elseif (count($deleted)){
+			$message = sprintf(__('Please consider cleaning the deleted computers in OCSNG <a href="%s">Clean OCSNG datatabase </a>'),$CFG_GLPI['root_doc'].$PLUGIN_HOOKS ['submenu_entry'] ['ocsinventoryng'] ['options'] ['deleted_equiv'] ['page']);
+			echo "<tr><th colspan='2'>";
+			Html::displayTitle($CFG_GLPI['root_doc']."/pics/warning.png", $message, $message);
+			echo "</th></tr>";
+		}		
 	}
 
 

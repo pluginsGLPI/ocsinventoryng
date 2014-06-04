@@ -34,7 +34,7 @@ include ('../../../inc/includes.php');
 	}
    	if ( $_SESSION["ocs_deleted_equiv"]["total"] != $_SESSION["ocs_deleted_equiv"]["deleted"] && $_SESSION["ocs_deleted_equiv"]["last_req"]) {
    		$count = $_SESSION["ocs_deleted_equiv"]["deleted"];
-      $percent = min(100,
+   	  $percent = min(100,
                      round(100*($count)/$_SESSION["ocs_deleted_equiv"]["total"],
                            0));
       PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
