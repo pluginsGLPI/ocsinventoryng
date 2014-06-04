@@ -369,6 +369,13 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
 		if (plugin_ocsinventoryng_haveRight('clean_ocsng','r') && $isactive) {
 			echo "<tr class='tab_bg_1'><td class='center b' colspan='".($usemassimport?4:2)."'>
+				<a href='deleted_equiv.php'>
+                <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/trash.png' ".
+				                "alt='" .__s('Clean OCSNG deleted computers', 'ocsinventoryng'). "' ".
+				                "title=\"" .__s('Clean OCSNG deleted computers', 'ocsinventoryng'). "\" >
+                  <br>".__('Clean OCSNG deleted computers', 'ocsinventoryng')."
+               </a></td>";
+			echo "<tr class='tab_bg_1'><td class='center b' colspan='".($usemassimport?4:2)."'>
                <a href='ocsng.clean.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/clean.png' ".
 			"alt='" .__s('Clean links between GLPI and OCSNG', 'ocsinventoryng'). "' ".

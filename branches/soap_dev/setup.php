@@ -150,8 +150,12 @@ function plugin_init_ocsinventoryng() {
                = __s('Computers not imported by automatic actions', 'ocsinventoryng');
             $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['notimported']['page']
                = '/plugins/ocsinventoryng/front/notimportedcomputer.php';
-
+			
             if (plugin_ocsinventoryng_haveRight('clean_ocsng','r')) {
+				$PLUGIN_HOOKS ['submenu_entry'] ['ocsinventoryng'] ['options'] ['deleted_equiv'] ['title'] 
+			   = __s ( 'Clean OCSNG deleted computers', 'ocsinventoryng' );
+				$PLUGIN_HOOKS ['submenu_entry'] ['ocsinventoryng'] ['options'] ['deleted_equiv'] ['page'] 
+			   = '/plugins/ocsinventoryng/front/deleted_equiv.php';
                $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['clean']['title']
                   = __s('Clean links between GLPI and OCSNG', 'ocsinventoryng');
                $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['clean']['page']

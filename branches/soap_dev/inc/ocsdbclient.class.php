@@ -382,7 +382,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             
             if (isset($filters['CHECKSUM']) and $filters['CHECKSUM']) {
                 $checksum       = $filters['CHECKSUM'];
-                $where_checksum = " AND ('.$checksum.' & hardware.CHECKSUM) ";
+                $where_checksum = " AND ('".$checksum."' & hardware.CHECKSUM) ";
             } else {
                 $where_checksum = "";
             }
