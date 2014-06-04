@@ -4883,7 +4883,6 @@ JAVASCRIPT;
 
 					if (isset ($accountinfo[$ocs_column]) && !in_array($glpi_column, $computer_updates)){
 						$var = addslashes($accountinfo[$ocs_column]);
-						var_dump($var);
 						switch ($glpi_column){
 							case "groups_id":
 								$var = self::importGroup($var, $entity);

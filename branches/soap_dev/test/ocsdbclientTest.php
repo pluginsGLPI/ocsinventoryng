@@ -52,7 +52,6 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase {
 
     public function testFalseConnection(){
         $this->Falseclient = new PluginOcsinventoryngOcsDbClient(1,'ocstest','foo','bar','ocsweb');
-        var_dump($this->Falseclient->checkConnection());
         $this->assertFalse($this->Falseclient->checkConnection());
 
     }
