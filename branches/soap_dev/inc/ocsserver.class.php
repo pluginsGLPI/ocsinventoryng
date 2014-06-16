@@ -1504,7 +1504,7 @@ JAVASCRIPT;
 					'ocs_version' => $version
 			));
 		}
-
+		return true;
 		if (!$version || ($version < self::OCS_VERSION_LIMIT && strpos($version, '2.0') !== 0)) { // hack for 2.0 RC
 			return false;
 		} else {
@@ -3110,7 +3110,6 @@ JAVASCRIPT;
             $ocsClient = self::getDBocs($serverId);
             $ocsResult = $ocsClient->getComputers($computerOptions);
             $computers = $ocsResult['COMPUTERS'];
-
             if (count($computers)) {
             	// Get all hardware from OCS DB
             	$hardware = array();
@@ -4008,8 +4007,6 @@ JAVASCRIPT;
 						} else{
 							$listColumn .= "<option value='$ocs_column_id'>" . $ocs_column_name . "</option>";
 						}
-// 						echo "</select>";
-// 						var_dump($AccountInfoColumns);
 					}
 				}
 			}

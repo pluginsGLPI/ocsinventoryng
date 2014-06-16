@@ -33,7 +33,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		$xml = $this->callSoap('search_computers_V1', array($field, $value));
 
 		$computerObjs = simplexml_load_string($xml);
-		
+
 		$computers = array();
 		foreach ($computerObjs as $obj) {
 			$computers []= array(
@@ -58,9 +58,9 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		$maxRecords = isset($options['MAX_RECORDS']) ? (int) $options['MAX_RECORDS'] : null;
 		$originalEnd = isset($options['MAX_RECORDS']) ? $originalOffset + $maxRecords : null;
 		$ocsMap = $this->getOcsMap();
-
-		$computers = array();
 		
+		$computers = array();
+
 		do {
 			$options['OFFSET'] = $offset;
 			if (!is_null($maxRecords)) {
@@ -117,7 +117,9 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 			if ($offset + $maxRecords > $end) {
 				$maxRecords = $end - $offset;
 			}
+			var_dump($xml);
 		} while ($options['OFFSET'] + $computerObjs['MAX_RECORDS'] < $end);
+
 		
 		return array(
 			'TOTAL_COUNT' => $totalCount,
@@ -220,7 +222,15 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 	/**
 	 * @see PluginOcsinventoryngOcsClient::getAccountInfoColumns()
 	 */
-	public function getAccountInfoColumns() {}
+	public function getAccountInfoColumns() {
+		$xml  = $this->callSoap('_get_account_fields_V1', new PluginOcsinventoryngOcsSoapRequest());
+		$res = array(
+				'HARDWARE_ID' => 'HARDWARE_ID',
+				'TAG' =>  'TAG'
+		);	
+		$res = array_merge($res,(array) $xml);
+		return $res;
+	}
 	
 
 	/**
