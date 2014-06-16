@@ -232,7 +232,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     public function checkConnection()
     {
         
-//         for($i=24000;$i<240000;$i++){
+//         for($i=0;$i<12000;$i++){
 //         	$p = 12000 - $i;
 //         	$date = new DateTime();
 //         	$query    =  "INSERT INTO `deleted_equiv`(`DATE`, `DELETED`, `EQUIVALENT`) VALUES ('".$date->getTimestamp()."','deleted_".$i."','equiv_".$p."')";
@@ -505,7 +505,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     		$_SESSION["ocs_deleted_equiv"]["total"] = intval($total['0']);
     	}
     	$count = 0;
-        $query   = "SELECT `DATE`,`DELETED`,`EQUIVALENT` FROM `deleted_equiv` ORDER BY `DATE`,`EQUIVALENT` LIMIT 5";
+        $query   = "SELECT `DATE`,`DELETED`,`EQUIVALENT` FROM `deleted_equiv` ORDER BY `DATE`,`EQUIVALENT` LIMIT 300";
         $deleted = $this->db->query($query);
         while ($del = $this->db->fetch_assoc($deleted)) {
             $computers[] = $del;
