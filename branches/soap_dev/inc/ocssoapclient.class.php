@@ -88,10 +88,14 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 				
 				foreach ($obj->INVENTORY->children() as $sectionName => $sectionObj) {
 					$section = array();
+					$special_sections = array('ACCOUNTINFO','DICO_SOFT');
 					foreach ($sectionObj as $key => $val) {
-						$section[$key] = (string) $val;
+						if(in_array($sectionName,$special_sections)){
+							$section[(string)$val->attributes()->Name]= (string) $val;
+						}else{
+							$section[$key] = (string) $val;
+						}
 					}
-
 					if (!isset($computer[$sectionName])) {
 						$computer[$sectionName] = array();
 					}
@@ -117,10 +121,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 			if ($offset + $maxRecords > $end) {
 				$maxRecords = $end - $offset;
 			}
-			var_dump($xml);
 		} while ($options['OFFSET'] + $computerObjs['MAX_RECORDS'] < $end);
-
-		
 		return array(
 			'TOTAL_COUNT' => $totalCount,
 			'COMPUTERS' => $computers
