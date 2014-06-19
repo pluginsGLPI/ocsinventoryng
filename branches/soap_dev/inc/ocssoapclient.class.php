@@ -107,10 +107,13 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 						$computer[$sectionName] []= $section;
 					}
 				}
-				
+				if(array_key_exists('ACCOUNTINFO', $computer)){
+					foreach ($computer['ACCOUNTINFO'] as $number =>$accountinfo){
+						$computer['ACCOUNTINFO'][$number]['HARDWARE_ID']= $computer['META']['ID'];
+					}
+				}
 				$computers[(int) $meta->DATABASEID] = $computer;
 			}
-			
 			$totalCount = (int) $computerObjs['TOTAL_COUNT'];
 			$maxRecords = (int) $computerObjs['MAX_RECORDS'];
 			$offset += $maxRecords;
@@ -213,13 +216,6 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 	}
 
 
-
-
-
-	//****************************
-   	//TO IMPLEMENT 
-   	//****************************
-
 	/**
 	 * @see PluginOcsinventoryngOcsClient::getAccountInfoColumns()
 	 */
@@ -228,16 +224,26 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		$res = array(
 				'HARDWARE_ID' => 'HARDWARE_ID',
 				'TAG' =>  'TAG'
-		);	
+		);
 		$res = array_merge($res,(array) $xml);
 		return $res;
 	}
 	
 
+
+	//****************************
+   	//TO IMPLEMENT 
+   	//****************************
+
+	
+
 	/**
 	 * @see PluginOcsinventoryngOcsClient::updateBios()
 	 */
-   	public function updateBios($ssn,$id){}
+   	public function updateBios($ssn,$id){
+   		
+   		
+   	}
 
    	/**
 	 * @see PluginOcsinventoryngOcsClient::updateTag()

@@ -1692,7 +1692,6 @@ JAVASCRIPT;
 
 		$input['ocsid'] = $ocs_fields['META']['ID'];
 		$ocs_fields_matching = self::getOcsFieldsMatching();
-
 		foreach ($ocs_fields_matching as $glpi_field => $ocs_field) {
 			$ocs_section = $ocs_field[0];
 			$ocs_field = $ocs_field[1];
@@ -1824,9 +1823,8 @@ JAVASCRIPT;
 			$data['entities_id']  = $defaultentity;
 			$data['locations_id'] = $defaultlocation;
 		}
-
 		//Try to match all the rules, return the first good one, or null if not rules matched
-		if (isset ($data['entities_id']) && $data['entities_id']>=0) {
+		if (isset ($data['entities_id']) && $data['entities_id']>=0 || true) {
 			if ($lock) {
 				while (!$fp = self::setEntityLock($data['entities_id'])) {
 					sleep(1);
@@ -1842,9 +1840,9 @@ JAVASCRIPT;
 					'DISPLAY' => array(
 						'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE | PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
 						'WANTED' => PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO
-			)
+				)
 			));
-
+			
 			if (!is_null($ocsComputer)) {
 				$computer = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer));
 
@@ -1852,7 +1850,6 @@ JAVASCRIPT;
 				$input   = self::getComputerInformations($computer,
 				self::getConfig($plugin_ocsinventoryng_ocsservers_id),
 				$data['entities_id'], $locations_id);
-
 				//Check if machine could be linked with another one already in DB
 				$rulelink         = new RuleImportComputerCollection();
 				$rulelink_results = array();
@@ -4002,10 +3999,10 @@ JAVASCRIPT;
 							$ocs_column_name = $name;
 						}
 
-						if (!strcmp($ocs_column_id, $selected)){
-							$listColumn .= "<option value='$ocs_column_id' selected>".$ocs_column_name."</option>";
+						if (!strcmp($ocs_column_name, $selected)){
+							$listColumn .= "<option value='$ocs_column_name' selected>".$ocs_column_name."</option>";
 						} else{
-							$listColumn .= "<option value='$ocs_column_id'>" . $ocs_column_name . "</option>";
+							$listColumn .= "<option value='$ocs_column_name'>" . $ocs_column_name . "</option>";
 						}
 					}
 				}
@@ -4878,45 +4875,50 @@ JAVASCRIPT;
 		if ($DB->numrows($result) > 0){
 			$options = array(
                        "DISPLAY"=> array(
+                       	"CHECKSUM"=>PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
                        "WANTED"=> PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO,
 			)
 			);
 			$computer = $ocsClient->getComputer($ocsid,$options);
-
+		
 			if ($computer){
-
-				$accountinfo = $computer["ACCOUNTINFO"];
-				$comp = new Computer();
-
-				//update data
-				while ($links_glpi_ocs = $DB->fetch_array($result)){
-					//get info from ocs
-					$ocs_column  = $links_glpi_ocs['ocs_column'];
-					$glpi_column = $links_glpi_ocs['glpi_column'];
-
-					if (isset ($accountinfo[$ocs_column]) && !in_array($glpi_column, $computer_updates)){
-						$var = addslashes($accountinfo[$ocs_column]);
-						switch ($glpi_column){
-							case "groups_id":
-								$var = self::importGroup($var, $entity);
-								break;
-
-							case "locations_id":
-								$var = Dropdown::importExternal("Location", $var, $entity);
-								break;
-
-							case "networks_id":
-								$var = Dropdown::importExternal("Network", $var);
-								break;
+				$accountinfos = $computer["ACCOUNTINFO"];
+				foreach ($accountinfos as $key=>$accountinfo){
+					$comp = new Computer();
+					//update data
+					while ($links_glpi_ocs = $DB->fetch_array($result)){
+						//get info from ocs
+						$ocs_column  = $links_glpi_ocs['ocs_column'];
+						$glpi_column = $links_glpi_ocs['glpi_column'];
+						if (array_key_exists ($ocs_column,$accountinfo) && !in_array($glpi_column, $computer_updates)){
+							if(isset($accountinfo[$ocs_column])){
+								$var = addslashes($accountinfo[$ocs_column]);
+							}else{
+								$var = "";
+							}
+							switch ($glpi_column){
+								case "groups_id":
+									$var = self::importGroup($var, $entity);
+									break;
+	
+								case "locations_id":
+									$var = Dropdown::importExternal("Location", $var, $entity);
+									break;
+	
+								case "networks_id":
+									$var = Dropdown::importExternal("Network", $var);
+									break;
+							}
+	
+							$input                = array();
+							$input[$glpi_column]  = $var;
+							$input["id"]          = $computers_id;
+							$input["entities_id"] = $entity;
+							$input["_nolock"]     = true;
+							$comp->update($input, $dohistory);
 						}
-
-						$input                = array();
-						$input[$glpi_column]  = $var;
-						$input["id"]          = $computers_id;
-						$input["entities_id"] = $entity;
-						$input["_nolock"]     = true;
-						$comp->update($input, $dohistory);
 					}
+					
 				}
 			}
 		}

@@ -80,14 +80,26 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                     					$name = "ACCOUNT_VALUE_".$colname['NAME']."_".$value;
                     					$query = "SELECT TVALUE,NAME FROM config WHERE NAME = '".$name."'";
                     					$requestvalue = $this->db->query($query);
-                    					$value  =  $this->db->fetch_assoc($requestvalue);
-                    					$accountinfo[$column] = $value['TVALUE'];
+                    					$custom_value  =  $this->db->fetch_assoc($requestvalue);
+                    					if(isset($custom_value['TVALUE'])){
+                    						$accountinfo[$column] = $custom_value['TVALUE'];
+                    					}
                     				}
                     			}
                     		}       		
                     		
                     	}
-                        $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)] = $accountinfo;
+                    	$accountinfomap = $this->getAccountInfoColumns();
+                    	foreach( $accountinfo as $key => $value){
+                    		unset($accountinfo[$key]);
+                    		$accountinfo[$accountinfomap[$key]]=$value;
+                    	}
+                    	if ($multi) {
+                    		 $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)][] = $accountinfo;
+                    	}else{
+                    		 $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)] = $accountinfo;
+                    	}
+                       
 	               }
               }
 
@@ -231,18 +243,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
      */
     public function checkConnection()
     {
-        
-//         for($i=0;$i<12000;$i++){
-//         	$p = 12000 - $i;
-//         	$date = new DateTime();
-//         	$query    =  "INSERT INTO `deleted_equiv`(`DATE`, `DELETED`, `EQUIVALENT`) VALUES ('".$date->getTimestamp()."','deleted_".$i."','equiv_".$p."')";
-//         	$request = $this->db->query($query);
-//         }
-//         for($i=240000;$i<480000;$i++){
-//         	$date = new DateTime();
-//         	$query    =  "INSERT INTO `deleted_equiv`(`DATE`, `DELETED`) VALUES ('".$date->getTimestamp()."','deleted_".$i."')";
-//         	$request = $this->db->query($query);
-//         }
         return $this->db->connected;
     }
     
@@ -409,7 +409,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 									ORDER BY $order
 									$max_records  $offset";
             $request = $this->db->query($query);
-
+			$accountinfomap = $this->getAccountInfoColumns();
             while ($hardwareid = $this->db->fetch_assoc($request)) {
                 $hardwareids[] = $hardwareid['ID'];
 
@@ -433,7 +433,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             
             $res = array();
         }
-        
         return $res;
     }
     
@@ -579,9 +578,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                 }else  {
                    $res[$key] = $conf['COMMENT'];
                 }
-                
             }
-            
         }
         return $res;
     }
