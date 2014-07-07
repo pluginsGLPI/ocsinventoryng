@@ -389,6 +389,10 @@ abstract class PluginOcsinventoryngOcsClient {
 		
 		return $wanted;
 	}
+	
+	public function getConnectionType(){
+		return get_class($this);
+	}
 }
 
 ?>

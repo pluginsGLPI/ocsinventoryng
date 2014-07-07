@@ -187,20 +187,32 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 		$xml = $this->callSoap('get_deleted_computers_V1', new PluginOcsinventoryngOcsSoapRequest(array()));
 		$deletedObjs = simplexml_load_string($xml);
 		$res = array();
-
 		foreach ($deletedObjs as $obj) {
 			$res[(string) $obj['DELETED']] = (string) $obj['EQUIVALENT'];
 		}
-		
+		if($res != array()){
+			$_SESSION["ocs_deleted_equiv"]['computers_to_del']=true;
+		}
 		return $res;
 	}
 
 	public function removeDeletedComputers($deleted, $equiv = null) {
-		if ($equiv) {
-			$this->callSoap('remove_deleted_computer_V1', array($deleted, $equiv));
-		} else {
-			$this->callSoap('remove_deleted_computer_V1', array($deleted));
+		$count=0;
+		if(is_array($deleted)){
+			foreach ( $deleted as $del){
+				$this->callSoap('remove_deleted_computer_V1', array($del));
+				$count++;
+			}
+		}else{
+			if ($equiv) {
+				$this->callSoap('remove_deleted_computer_V1', array($deleted, $equiv));
+				$count++;
+			} else {
+				$this->callSoap('remove_deleted_computer_V1', array($deleted));
+				$count++;
+			}
 		}
+		$_SESSION["ocs_deleted_equiv"]['computers_deleted']+=$count;
 	}
 
 

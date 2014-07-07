@@ -1515,6 +1515,7 @@ JAVASCRIPT;
 		if (!(self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id) && self::checkVersion($plugin_ocsinventoryng_ocsservers_id))) {
 			return false;
 		}
+		
 		$currentfilelink = explode("/",$_SERVER['SCRIPT_NAME']);
 		$currentfilename = end($currentfilelink);
 		$ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
@@ -1614,21 +1615,29 @@ JAVASCRIPT;
 						}
 						self::cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_toclean);
 					}
+					
 					if (!empty($equiv)){
 						$ocsClient->removeDeletedComputers($del, $equiv);
 					}
 					else{
 						$to_del[]=$del;
 					}
+					
 				}
-				$ocsClient->removeDeletedComputers($to_del);
-				if ($_SERVER['QUERY_STRING'] != "") {
-			    $redirection = $_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING'];
+				if(!empty($to_del)){
+					$ocsClient->removeDeletedComputers($to_del);
+				}if ($_SERVER['QUERY_STRING'] != "") {
+				    $redirection = $_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING'];
+				}
+				else {
+					$redirection = $_SERVER['PHP_SELF'];
+				}
+				header("Location: $redirection"); 		
 			}
-			else {
-				$redirection = $_SERVER['PHP_SELF'];
-			}
-			header("Location: $redirection"); 		
+			else{
+				$_SESSION['ocs_deleted_equiv']['computers_to_del']=false;
+				$_SESSION['ocs_deleted_equiv']['computers_deleted']=0;
+				
 			}
 			// New way to delete entry from deleted_equiv table
 		}elseif (count($deleted)){
