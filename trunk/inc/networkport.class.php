@@ -433,6 +433,48 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       return NULL;
    }
 
+
+   function transformAccordingTypes() {
+      global $DB;
+
+      $networkport_type = new PluginOcsinventoryngNetworkPortType();
+      $TYPEMIB          = $this->fields['TYPEMIB'];
+      $TYPE             = $this->fields['TYPE'];
+
+      $networkport_type->getFromDBByQuery("WHERE `OCS_TYPE`='$TYPE'
+                                             AND `OCS_TYPEMIB`='$TYPEMIB'");
+      if ($networkport_type->isNewItem()) {
+         $networkport_type->getFromDBByQuery("WHERE `OCS_TYPE`='$TYPE' AND `OCS_TYPEMIB`='*'");
+      }
+      if ($networkport_type->isNewItem()) {
+         $networkport_type->getFromDBByQuery("WHERE `OCS_TYPE`='*' AND `OCS_TYPEMIB`='*'");
+      }
+
+      if (!$networkport_type->isNewItem()) {
+         if (isset($networkport_type->fields['instantiation_type'])
+             && ($networkport_type->fields['instantiation_type'] != __CLASS__)) {
+            $networkport = $this->getItem();
+            if ($networkport->switchInstantiationType($networkport_type->fields
+                                                      ['instantiation_type']) !== false) {
+               $instantiation             = $networkport->getInstantiation();
+               $input2                    = $networkport_type->fields;
+               $input2['networkports_id'] = $this->fields['networkports_id'];
+               unset($input2['id']);
+               if (isset($this->fields['speed'])) {
+                  $input2['speed'] = NetworkPortEthernet::transformPortSpeed($this->fields
+                                                                             ['speed'], false);
+               }
+               if ($instantiation->add($input2)) {
+                  $this->delete(array(static::getIndexName() => $this->getID()));
+                  return true;
+               }
+            }
+         }
+      }
+      return false;
+   }
+
+
 }
 
 ?>
