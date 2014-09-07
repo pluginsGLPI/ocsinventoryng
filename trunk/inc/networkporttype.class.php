@@ -30,7 +30,7 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-/// Location class
+
 class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
 
    static function getTypeName($nb=0) {
@@ -99,11 +99,6 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
          if ($network_port->getFromDB($_GET['plugin_ocsinventoryng_networkports_id'])) {
             $this->fields['OCS_TYPE']    = $network_port->fields['TYPE'];
             $this->fields['OCS_TYPEMIB'] = $network_port->fields['TYPEMIB'];
-            $speed = NetworkPortEthernet::transformPortSpeed($network_port->fields['speed'],
-                                                             false);
-            if (!empty($speed)) {
-               $this->fields['speed'] = $speed;
-            }
          }
       }
 
