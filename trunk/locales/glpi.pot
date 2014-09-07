@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-07 18:04+0200\n"
+"POT-Creation-Date: 2014-09-07 18:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,51 +18,55 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:974
+#: hook.php:983
 msgid "Restart import"
 msgstr ""
 
-#: hook.php:975
+#: hook.php:984
 msgid "Import in the entity"
 msgstr ""
 
-#: hook.php:982 setup.php:135 inc/ocsserver.class.php:342
+#: hook.php:991 setup.php:135 inc/ocsserver.class.php:342
 #: inc/ocsserver.class.php:344 inc/ocsserver.class.php:346
 msgid "Link new OCSNG computers to existing GLPI computers"
 msgstr ""
 
-#: hook.php:987
+#: hook.php:996
 msgid "Delete computer in OCSNG"
 msgstr ""
 
-#: hook.php:998
+#: hook.php:1007
 msgid "Force synchronization OCSNG"
 msgstr ""
 
-#: hook.php:1000
+#: hook.php:1009
 msgid "Unlock fields"
 msgstr ""
 
-#: hook.php:1205 inc/ocslink.class.php:108
+#: hook.php:1019
+msgid "Update networkport types"
+msgstr ""
+
+#: hook.php:1248 inc/ocslink.class.php:108
 msgid "GLPI import date"
 msgstr ""
 
-#: hook.php:1212 inc/notimportedcomputer.class.php:78
+#: hook.php:1255 inc/notimportedcomputer.class.php:78
 #: inc/notimportedcomputer.class.php:267 inc/ocslink.class.php:106
 #: inc/ocsserver.class.php:2889
 msgid "Last OCSNG inventory date"
 msgstr ""
 
-#: hook.php:1221 inc/ocslink.class.php:139 inc/ocslink.class.php:228
+#: hook.php:1264 inc/ocslink.class.php:139 inc/ocslink.class.php:228
 msgid "Automatic update OCSNG"
 msgstr ""
 
-#: hook.php:1227 inc/notimportedcomputer.class.php:69
+#: hook.php:1270 inc/notimportedcomputer.class.php:69
 #: inc/notimportedcomputer.class.php:237 inc/ocslink.class.php:110
 msgid "Inventory agent"
 msgstr ""
 
-#: hook.php:1233 hook.php:1412 hook.php:1463
+#: hook.php:1276 hook.php:1455 hook.php:1506
 #: inc/notificationtargetnotimportedcomputer.class.php:79
 #: inc/notimportedcomputer.class.php:66 inc/notimportedcomputer.class.php:252
 #: inc/ocslink.class.php:131 inc/ocslink.class.php:235
@@ -70,25 +74,25 @@ msgstr ""
 msgid "OCSNG TAG"
 msgstr ""
 
-#: hook.php:1240 inc/notificationtargetnotimportedcomputer.class.php:83
+#: hook.php:1283 inc/notificationtargetnotimportedcomputer.class.php:83
 #: inc/notimportedcomputer.class.php:53 inc/notimportedcomputer.class.php:224
 msgid "OCSNG ID"
 msgstr ""
 
-#: hook.php:1249 hook.php:1258 inc/ocsserver.class.php:684
+#: hook.php:1292 hook.php:1301 inc/ocsserver.class.php:684
 #: inc/registrykey.class.php:37 inc/registrykey.class.php:110
 msgid "Registry"
 msgstr ""
 
-#: hook.php:1250 inc/registrykey.class.php:94
+#: hook.php:1293 inc/registrykey.class.php:94
 msgid "Key/Value"
 msgstr ""
 
-#: hook.php:1259 inc/notimportedcomputer.class.php:229
+#: hook.php:1302 inc/notimportedcomputer.class.php:229
 msgid "OCSNG name"
 msgstr ""
 
-#: hook.php:1422 hook.php:1458 inc/config.class.php:87
+#: hook.php:1465 hook.php:1501 inc/config.class.php:87
 #: inc/ocsserver.class.php:88 inc/ocsserver.class.php:268
 #: inc/profile.class.php:185
 msgid "OCSNG server"
@@ -96,30 +100,30 @@ msgid_plural "OCSNG servers"
 msgstr[0] ""
 msgstr[1] ""
 
-#: hook.php:1488 inc/ocslink.class.php:43 inc/ocslink.class.php:402
+#: hook.php:1531 inc/ocslink.class.php:43 inc/ocslink.class.php:402
 #: inc/profile.class.php:69
 msgid "OCSNG link"
 msgid_plural "OCSNG links"
 msgstr[0] ""
 msgstr[1] ""
 
-#: hook.php:1662
+#: hook.php:1705
 msgid "Link possible"
 msgstr ""
 
-#: hook.php:1666
+#: hook.php:1709
 msgid "Import refused"
 msgstr ""
 
-#: hook.php:1670
+#: hook.php:1713
 msgid "New computer created in GLPI"
 msgstr ""
 
-#: hook.php:1681
+#: hook.php:1724
 msgid "Link with computer"
 msgstr ""
 
-#: hook.php:1903
+#: hook.php:1946
 msgid "Locked field"
 msgid_plural "Locked fields"
 msgstr[0] ""
@@ -304,7 +308,7 @@ msgid "Invalid"
 msgstr ""
 
 #: inc/networkport.class.php:382 inc/networkport.class.php:409
-#: inc/networkporttype.class.php:106
+#: inc/networkporttype.class.php:111
 msgid "OCS TYPE"
 msgstr ""
 
@@ -330,23 +334,23 @@ msgid_plural "Network port types"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/networkporttype.class.php:109
+#: inc/networkporttype.class.php:114
 msgid "OCS TYPE MIB"
 msgstr ""
 
-#: inc/networkporttype.class.php:112
+#: inc/networkporttype.class.php:117
 msgid "Corresponding Network Port type"
 msgstr ""
 
-#: inc/networkporttype.class.php:115
+#: inc/networkporttype.class.php:120
 msgid "Ethernet medium type"
 msgstr ""
 
-#: inc/networkporttype.class.php:118
+#: inc/networkporttype.class.php:123
 msgid "Ethernet medium speed"
 msgstr ""
 
-#: inc/networkporttype.class.php:121
+#: inc/networkporttype.class.php:126
 msgid "Wifi card Version"
 msgstr ""
 
