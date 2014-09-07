@@ -4,15 +4,15 @@
 # 
 # Translators:
 # Robert Okadar <aranea.network@gmail.com>, 2013
-# rpavicic <rpavicic@brrax.hr>, 2013
-# SlimSim, 2013
+# Robert Pavicic <rpavicic@brrax.hr>, 2013
+# Sime Meic-Sidic, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-10-23 10:58+0200\n"
-"PO-Revision-Date: 2013-10-23 09:20+0000\n"
-"Last-Translator: The tsmr <tsmr@thetsmr.fr>\n"
+"PO-Revision-Date: 2013-12-21 23:26+0000\n"
+"Last-Translator: Robert Okadar <aranea.network@gmail.com>\n"
 "Language-Team: Croatian (Croatia) (http://www.transifex.com/projects/p/GLPI_ocsinventoryng/language/hr_HR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -47,7 +47,7 @@ msgstr "Otključaj polja"
 
 #: hook.php:1018
 msgid "Update networkport types"
-msgstr ""
+msgstr "Ažuriraj tipove mrežnog priključka"
 
 #: hook.php:1247 inc/ocslink.class.php:108
 msgid "GLPI import date"
@@ -88,7 +88,7 @@ msgstr "Registar"
 
 #: hook.php:1292 inc/registrykey.class.php:94
 msgid "Key/Value"
-msgstr "Ključ/vrijednost"
+msgstr "Ključ/Vrijednost"
 
 #: hook.php:1301 inc/notimportedcomputer.class.php:229
 msgid "OCSNG name"
@@ -113,19 +113,19 @@ msgstr[2] "OCSNG poveznice"
 
 #: hook.php:1704
 msgid "Link possible"
-msgstr ""
+msgstr "Veza je moguća"
 
 #: hook.php:1708
 msgid "Import refused"
-msgstr ""
+msgstr "Uvoz odbijen"
 
 #: hook.php:1712
 msgid "New computer created in GLPI"
-msgstr ""
+msgstr "Novo računalo stvoreno u GLPI-u"
 
 #: hook.php:1723
 msgid "Link with computer"
-msgstr ""
+msgstr "Poveži s računalom"
 
 #: hook.php:1945
 msgid "Locked field"
@@ -222,7 +222,7 @@ msgstr "Dopusti nadogradnju OCSNG-a"
 
 #: inc/config.class.php:121
 msgid "Refresh information of a process every"
-msgstr "Osvježi informaciju o procesu svakih"
+msgstr "Osvježi informacije o procesu svakih"
 
 #: inc/config.class.php:123
 msgid "second"
@@ -429,7 +429,7 @@ msgstr "Opcije uvoza"
 
 #: inc/ocsserver.class.php:114 inc/ocsserver.class.php:421
 msgid "General information"
-msgstr "Generane informacije"
+msgstr "Opće informacije"
 
 #: inc/ocsserver.class.php:117
 msgid "OCSNG console"
@@ -482,7 +482,7 @@ msgstr "Ograniči uvoz na sljedeće oznake (za odvajanje $, ništa za sve)"
 
 #: inc/ocsserver.class.php:624
 msgid "Exclude the following tags (separator $, nothing for all)"
-msgstr "Izostavi sljedeće znakove (separator $, ništa za sve)"
+msgstr "Izostavi sljedeće oznake (za odvajanje $, ništa za sve)"
 
 #: inc/ocsserver.class.php:629
 msgid "Default status"
@@ -499,11 +499,11 @@ msgstr "Globalni uvoz"
 #: inc/ocsserver.class.php:645 inc/ocsserver.class.php:649
 #: inc/ocsserver.class.php:671
 msgid "Unit import"
-msgstr "Uvoz jedinice"
+msgstr "Uvoz stavki"
 
 #: inc/ocsserver.class.php:650
 msgid "Unit import on serial number"
-msgstr "Uvoz jedinice po serijskom broju"
+msgstr "Uvoz stavki po serijskom broju"
 
 #: inc/ocsserver.class.php:651
 msgid "Unit import serial number only"
@@ -519,7 +519,7 @@ msgstr "Broj stavaka za sinkronizaciju putem automatske OCSNG akcije"
 
 #: inc/ocsserver.class.php:709
 msgid "Behavior to the deletion of a computer in OCSNG"
-msgstr "Ponašanje na akciju brisanja računala u OCSNG-u"
+msgstr "Ponašanje na brisanje računala iz OSCNG-a"
 
 #: inc/ocsserver.class.php:714
 #, php-format
@@ -554,7 +554,7 @@ msgstr "Kriterij postojanja računala"
 
 #: inc/ocsserver.class.php:778
 msgid "The link automatically connects a GLPI computer with one in OCSNG."
-msgstr "Veza automatski povezuje GLPI računalo sa računalom u OCSNG-u"
+msgstr "Veza automatski povezuje računalo u GLPI-u s računalom u OCSNG-u"
 
 #: inc/ocsserver.class.php:780
 msgid ""
@@ -588,7 +588,7 @@ msgstr "Spajanje na bazu podataka nije uspjelo"
 
 #: inc/ocsserver.class.php:899
 msgid "Invalid OCSNG Version: RC3 is required"
-msgstr "Neispravna OCSNG verzija: RC3 je zahtjevana"
+msgstr "Pogrešna verzija OCSNG-a: RC3 je uvjetovana"
 
 #: inc/ocsserver.class.php:901
 msgid "Invalid OCSNG configuration (TRACE_DELETED must be active)"
@@ -673,7 +673,7 @@ msgstr "Oprez! Uvezeni podaci (vidi postavke) će prepisati postojeće"
 
 #: inc/ocsserver.class.php:3149
 msgid "Manual import mode"
-msgstr "Način ručnog uvoza"
+msgstr "Ručni način uvoza"
 
 #: inc/ocsserver.class.php:3153
 msgid "Disable preview"
@@ -718,7 +718,7 @@ msgstr "Računala ne provjerava niti jedno pravilo"
 
 #: inc/ocsserver.class.php:5102
 msgid "Duplicate computers"
-msgstr "Dupla računala"
+msgstr "Dupliciran računala"
 
 #: inc/ocsserver.class.php:5103
 msgid "Computers whose import is refused by a rule"
@@ -746,7 +746,7 @@ msgid "%d registry key found"
 msgid_plural "%d registry keys found"
 msgstr[0] "%d pronađen ključ u registry-u"
 msgstr[1] "%d pronađeno ključeva u registry-u"
-msgstr[2] "%d pronađeno ključeva u registry-u"
+msgstr[2] "%d ključeva pronađeno u registru"
 
 #: inc/registrykey.class.php:92
 msgid "Hive"
