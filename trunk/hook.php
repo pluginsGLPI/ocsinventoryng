@@ -910,7 +910,8 @@ function plugin_ocsinventoryng_uninstall() {
 
 function plugin_ocsinventoryng_getDropdown() {
    // Table => Name
-   return array('PluginOcsinventoryngNetworkPortType' => PluginOcsinventoryngNetworkPortType::getTypeName(0));
+   return array('PluginOcsinventoryngNetworkPortType' => PluginOcsinventoryngNetworkPortType::getTypeName(0),
+                'PluginOcsinventoryngNetworkPort'     => PluginOcsinventoryngNetworkPort::getTypeName(0));
 }
 
 
