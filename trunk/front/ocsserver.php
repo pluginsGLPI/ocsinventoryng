@@ -29,7 +29,7 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 include ('../../../inc/includes.php');
 
 Plugin::load('ocsinventoryng', true);
-//plugin_ocsinventoryng_checkRight("ocsng", "r");
+plugin_ocsinventoryng_checkRight("ocsng", "r");
 
 Html::header('OCS Inventory NG', '', "plugins", "ocsinventoryng", "ocsserver");
 
