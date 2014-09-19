@@ -4831,7 +4831,7 @@ JAVASCRIPT;
                   //     if rule have been replayed, modifiedname will be found => ok
                   //     if not, GLPI will detect an uninstall (oldname) + install (newname)
 
-                  $id = array_search(strtolower(stripslashes($modified_name.self::FIELD_SEPARATOR.$version)),
+                  $id = array_search(strtolower(stripslashes($modified_name.self::FIELD_SEPARATOR.$modified_version)),
                                      $imported);
 
                   if ($id) {
