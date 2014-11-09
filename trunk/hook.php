@@ -31,14 +31,16 @@ function plugin_ocsinventoryng_install() {
 
    include_once (GLPI_ROOT."/plugins/ocsinventoryng/inc/profile.class.php");
 
-    $migration = new Migration(103);
+    $migration = new Migration(104);
 
 
-   if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
-       && !TableExists("ocs_glpi_ocsservers")) {
-
+   if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers_profiles")) {
       $install = true;
-      $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.3-empty.sql");
+      $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.4-empty.sql");
+
+   } else if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
+              && !TableExists("ocs_glpi_ocsservers")) {
+
       CronTask::Register('PluginOcsinventoryngOcsServer', 'ocsng', MINUTE_TIMESTAMP*5);
 
       $migration->createRule(array('sub_type'      => 'RuleImportEntity',
@@ -116,8 +118,37 @@ function plugin_ocsinventoryng_install() {
        && !FieldExists('glpi_plugin_ocsinventoryng_networkports', 'speed')) {
 
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_networkports`
-   ADD `speed` varchar(255) COLLATE utf8_unicode_ci DEFAULT '10mb/s';";
+                ADD `speed` varchar(255) COLLATE utf8_unicode_ci DEFAULT '10mb/s';";
       $DB->queryOrDie($query, "1.0.3 update table glpi_plugin_ocsinventoryng_networkports");
+   }
+
+   //Update 1.0.4
+   if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers_profiles")) {
+      $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers_profiles` (
+                  `id` int(11) NOT NULL auto_increment,
+                  `ocsservers_id` int(11) NOT NULL default '0',
+                  `profiles_id` int(11) NOT NULL default '0',
+                PRIMARY KEY (`id`),
+                KEY `ocsservers_id` (`ocsservers_id`),
+                KEY `profiles_id` (`profiles_id`)
+                ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+      $DB->queryOrDie($query,
+                      'Creating glpi_plugin_ocsinventoryng_ocsservers_profiles'."<br>".$DB->error());
+
+      if (TableExists("glpi_plugin_ocsinventoryng_ocsservers")
+                      && (countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1") == 1)) {
+
+         foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers") as $server) {
+            foreach ($DB->request("glpi_plugin_ocsinventoryng_profiles",
+                                  "`ocsng` IS NOT NULL") as $rights) {
+
+               $query  = "INSERT INTO `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+                          SET `profiles_id` = '".$rights['profiles_id']."',
+                              `ocsservers_id` = '".$server['id']."'";
+               $DB->queryOrDie($query, "insert into glpi_plugin_ocsinventoryng_ocsservers_profiles");
+            }
+         }
+      }
    }
 
    PluginOcsinventoryngProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);

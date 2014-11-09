@@ -195,15 +195,16 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
       echo "<td>".sprintf(__('%1$s : %2$s'),
                           _n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng'), "&nbsp;");
-      $profile= $this->fields['profiles_id'];
-      $crit =  array('profiles_id' => $prof->fields['id']);
+      $profile = $this->fields['profiles_id'];
+      $crit    =  array('profiles_id' => $prof->fields['id']);
       foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers_profiles", $crit) as $data) {
-         $used[$data['ocsservers_id']] = $data['ocsservers_id'];
+         $used[$data['ocsservers_id']]     = $data['ocsservers_id'];
          $configid[$data['ocsservers_id']] = $data['id'];
       }
       if (Session::haveRight("profile", "w")) {
          Dropdown::show('PluginOcsinventoryngOcsServer', array('used'  => $used,
-                                                               'value' => ''));
+                                                               'value' => '',
+                                                               'condition' => "is_active = 1"));
          echo "&nbsp;&nbsp;<input type='hidden' name='profile' value=$profile>";
          echo "&nbsp;&nbsp;<input type='submit' name='addocsserver' value='Ajouter' class='submit' >";
       }

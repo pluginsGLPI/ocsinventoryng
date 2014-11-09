@@ -248,7 +248,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                    ORDER BY `name` ASC";
          foreach($DB->request($query) as $data) {
             $ocsservers[] = $data['id'];
-            $used['ocsservers_id'] = $data['id'];
          }
 
          Dropdown::show('PluginOcsinventoryngOcsServer',
