@@ -240,12 +240,23 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
          echo "<tr class='tab_bg_2'><td class='center'>" . __('Name'). "</td>";
          echo "<td class='center'>";
+         $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                   FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+                   LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
+                      ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                   WHERE `profiles_id`= ".$_SESSION["glpiactiveprofile"]['id']."
+                   ORDER BY `name` ASC";
+         foreach($DB->request($query) as $data) {
+            $ocsservers[] = $data['id'];
+            $used['ocsservers_id'] = $data['id'];
+         }
+
          Dropdown::show('PluginOcsinventoryngOcsServer',
-                        array("condition" => "`is_active`='1'",
-                              "value"     => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                              "on_change" => "submit()",
-                              "display_emptychoice"
-                                          => false));
+                        array("condition"           => "`id` IN ('".implode("','",$ocsservers)."')",
+                              "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                              "on_change"           => "submit()",
+                              "display_emptychoice" => false));
+
          echo "</td></tr></table></div>";
          Html::closeForm();
       }
@@ -267,10 +278,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<tr><th colspan='".($usemassimport?4:2)."'>";
       printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
       echo "</th></tr>";
-      
-      
+
+
       if (plugin_ocsinventoryng_haveRight('ocsng','w')) {
-      
+
          //config server
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                <a href='ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
@@ -280,9 +291,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                 <br>".sprintf(__('Configuration of OCSNG server %s', 'ocsinventoryng'),
                                                    $name)."
                </a></td>";
-         
+
          if ($isactive) {
-         
+
             if ($usemassimport) {
                //config massimport
                echo "<td class='center b' colspan='2'>
@@ -699,10 +710,10 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_2'><td class='center'>".
              __('Number of items to synchronize via the automatic OCSNG action',  'ocsinventoryng').
            "</td>\n<td>";
-      Dropdown::showNumber('cron_sync_number', array(
-                'value' => $this->fields['cron_sync_number'], 
-                'min'   => 1, 
-                'toadd' => array(0 => __('None'))));
+      Dropdown::showNumber('cron_sync_number',
+                           array('value' => $this->fields['cron_sync_number'],
+                                 'min'   => 1,
+                                 'toadd' => array(0 => __('None'))));
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td class='center'>".
@@ -1842,27 +1853,27 @@ JAVASCRIPT;
       if (intval($cfg_ocs["import_general_name"]) == 0){
          unset($input["name"]);
       }
-      
+
       if (intval($cfg_ocs["import_general_os"]) == 0){
          unset($input["operatingsystems_id"]);
          unset($input["operatingsystemversions_id"]);
          unset($input["operatingsystemservicepacks_id"]);
       }
-      
+
       if (intval($cfg_ocs["import_os_serial"]) == 0){
          unset($input["os_license_number"]);
          unset($input["os_licenseid"]);
       }
-      
+
       if (intval($cfg_ocs["import_general_serial"]) == 0){
          unset($input["serial"]);
       }
-      
+
       if (intval($cfg_ocs["import_general_model"]) == 0){
          unset($input["model"]);
          unset($input["computermodels_id"]);
       }
-      
+
       if (intval($cfg_ocs["import_general_manufacturer"]) == 0){
          unset($input["manufacturer"]);
          unset($input["manufacturers_id"]);
@@ -1871,15 +1882,15 @@ JAVASCRIPT;
       if (intval($cfg_ocs["import_general_type"]) == 0){
          unset($input["computertypes_id"]);
       }
-      
+
       if (intval($cfg_ocs["import_general_comment"]) == 0){
          unset($input["comment"]);
       }
-      
+
       if (intval($cfg_ocs["import_general_contact"]) == 0){
          unset($input["contact"]);
       }
-      
+
       if (intval($cfg_ocs["import_general_domain"]) == 0) {
          unset($input["domains_id"]);
       }
@@ -2256,7 +2267,7 @@ JAVASCRIPT;
 
                //Update TAG
                self::updateTag($line, $data_ocs);
-                
+
                // Update OCS Cheksum
                $newchecksum = "(CHECKSUM - $mixed_checksum)";
                self::setChecksumForComputer($line['ocsid'], $newchecksum, true);
@@ -2498,7 +2509,7 @@ JAVASCRIPT;
          $line       = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
          $compudate  = array();
 
-         if ($cfg_ocs["import_general_serial"] 
+         if ($cfg_ocs["import_general_serial"]
                && $cfg_ocs["import_general_serial"] > 0
                   && !in_array("serial", $computer_updates)){
             $compupdate["serial"] = self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
@@ -5373,9 +5384,11 @@ JAVASCRIPT;
    static function getFirstServer(){
       global $DB;
 
-      $query = "SELECT `id`
-                FROM `glpi_plugin_ocsinventoryng_ocsservers`
-                ORDER BY `id` ASC LIMIT 1 ";
+      $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+                LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
+                ON `glpi_plugin_ocsinventoryng_ocsservers`.`id` = `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`ocsservers_id`
+                ORDER BY `glpi_plugin_ocsinventoryng_ocsservers`.`id` ASC LIMIT 1 ";
       $results = $DB->query($query);
       if ($DB->numrows($results) > 0){
          return $DB->result($results, 0, 'id');
@@ -5653,7 +5666,7 @@ JAVASCRIPT;
        if ($cfg_ocs["import_printer"]){
 
           $already_processed = array();
-          
+
           $conn              = new Computer_Item();
 
           $query  = "SELECT*

@@ -31,10 +31,30 @@ include ('../../../inc/includes.php');
 Session::checkRight("profile","r");
 
 $prof = new PluginOcsinventoryngProfile();
+$profservers = new PluginOcsinventoryngOcsserver_Profile();
+
+if (isset($_POST["addocsserver"]) && ($_POST['plugin_ocsinventoryng_ocsservers_id'] > 0)) {
+   $input['profiles_id'] = $_POST['profile'];
+   $input['ocsservers_id'] = $_POST['plugin_ocsinventoryng_ocsservers_id'];
+
+   $newID = $profservers->add($input);
+   Html::back();
+
+}
+
+if (isset ($_POST['delete'])) {
+   $input = array();
+   foreach ($_POST['item'] as $id => $val) {
+      $input['id'] = $id;
+      $profservers->delete($input);
+   }
+   Html::back();
+}
 
 //Save profile
 if (isset ($_POST['update'])) {
    $prof->update($_POST);
    Html::back();
 }
+
 ?>

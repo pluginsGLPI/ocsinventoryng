@@ -28,7 +28,7 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 class PluginOcsinventoryngServer extends CommonDBTM {
 
-   
+
    function getFromDBbyOcsServer($id) {
       global $DB;
 
@@ -44,7 +44,6 @@ class PluginOcsinventoryngServer extends CommonDBTM {
          if (is_array($this->fields) && count($this->fields)) {
             return true;
          }
-         toolbox::logdebug($this->fields);
       }
       return false;
    }
