@@ -31,22 +31,14 @@ if (!defined('GLPI_ROOT')) {
 }
 
 class PluginOcsinventoryngRegistryKey extends CommonDBTM {
-
+   
+   static $rightname = "plugin_ocsinventoryng";
+   
    static function getTypeName($nb=0) {
       // No plural
       return __('Registry', 'ocsinventoryng');
    }
 
-
-   static function canCreate() {
-      // Only create on ocsng sync
-      return plugin_ocsinventoryng_haveRight('sync_ocsng', 'w');
-   }
-
-
-   static function canView() {
-      return plugin_ocsinventoryng_haveRight('view_ocsng', 'r');
-   }
 
 
    function cleanDBonPurge() {

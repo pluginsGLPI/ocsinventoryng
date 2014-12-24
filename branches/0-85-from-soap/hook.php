@@ -31,7 +31,7 @@ function plugin_ocsinventoryng_install() {
 
    include_once (GLPI_ROOT."/plugins/ocsinventoryng/inc/profile.class.php");
 
-    $migration = new Migration(104);
+    $migration = new Migration(110);
 
 
    if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
@@ -128,9 +128,11 @@ function plugin_ocsinventoryng_install() {
    ADD `conn_type` tinyint(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.0.4 update table glpi_plugin_ocsinventoryng_ocsservers");
    }
-
+   PluginOcsinventoryngProfile::initProfile();
    PluginOcsinventoryngProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
-
+   $migration = new Migration("1.1.0");
+   $migration->dropTable('glpi_plugin_ocsinventoryng_profiles');
+   
    // Si massocsimport import est installe, on verifie qu'il soit bien dans la dernière version
    if (TableExists("glpi_plugin_mass_ocs_import")) { //1.1 ou 1.2
       if (!FieldExists('glpi_plugin_mass_ocs_import_config','warn_if_not_imported')) { //1.1
@@ -912,6 +914,15 @@ function plugin_ocsinventoryng_uninstall() {
       // creation du cron - param = duree de conservation
       CronTask::Unregister('ocsinventoryng');
    }
+   
+   //Delete rights associated with the plugin
+   $profileRight = new ProfileRight();
+   foreach (PluginOcsinventoryngProfile::getAllRights() as $right) {
+      $profileRight->deleteByCriteria(array('name' => $right['field']));
+   }
+   PluginOcsinventoryngMenu::removeRightsFromSession();
+   
+   PluginOcsinventoryngProfile::removeRightsFromSession();
 
    return true;
 }
@@ -945,9 +956,6 @@ function plugin_ocsinventoryngs_getDatabaseRelations() {
                      => array("glpi_plugin_ocsinventoryng_ocslinks"     => "computers_id",
                               "glpi_plugin_ocsinventoryng_registrykeys" => "computers_id"),
 
-                   "glpi_profiles"
-                     => array("glpi_plugin_ocsinventoryng_profiles" => "profiles_id"),
-
                    "glpi_states"
                      => array("glpi_plugin_ocsinventoryng_ocsservers" => "states_id_default"));
    }
@@ -958,22 +966,18 @@ function plugin_ocsinventoryngs_getDatabaseRelations() {
 function plugin_ocsinventoryng_postinit() {
    global $CFG_GLPI, $PLUGIN_HOOKS;
 
-   $PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng']
-                              = array('Profile' =>  array('PluginOcsinventoryngProfile',
-                                                          'purgeProfiles'));
-
    $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng']    = array();
    $PLUGIN_HOOKS['item_update']['ocsinventoryng']     = array();
 
-      $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng']
-         = array('Computer_Item' => array('PluginOcsinventoryngOcslink', 'addComputer_Item'));
+   $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng']
+      = array('Computer_Item' => array('PluginOcsinventoryngOcslink', 'addComputer_Item'));
 
-      $PLUGIN_HOOKS['item_update']['ocsinventoryng']
-         = array('Computer' => array('PluginOcsinventoryngOcslink', 'updateComputer'));
+   $PLUGIN_HOOKS['item_update']['ocsinventoryng']
+      = array('Computer' => array('PluginOcsinventoryngOcslink', 'updateComputer'));
 
-      $PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng']
-         = array('Computer'      => array('PluginOcsinventoryngOcslink', 'purgeComputer'),
-                 'Computer_Item' => array('PluginOcsinventoryngOcslink', 'purgeComputer_Item'));
+   $PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng']
+      = array('Computer'      => array('PluginOcsinventoryngOcslink', 'purgeComputer'),
+              'Computer_Item' => array('PluginOcsinventoryngOcslink', 'purgeComputer_Item'));
 
    foreach (PluginOcsinventoryngOcsServer::getTypes(true) as $type) {
 
@@ -984,6 +988,7 @@ function plugin_ocsinventoryng_postinit() {
 /**
  * @param $type
 **/
+//TODO && use right for rules
 function plugin_ocsinventoryng_MassiveActions($type) {
 
    switch ($type) {
@@ -1008,8 +1013,8 @@ function plugin_ocsinventoryng_MassiveActions($type) {
          return $actions;
 
       case 'Computer' :
-         if (plugin_ocsinventoryng_haveRight("ocsng","w")
-             || plugin_ocsinventoryng_haveRight("sync_ocsng","w")) {
+         if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
+             || Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
 
                 return array(// Specific one
                       "plugin_ocsinventoryng_force_ocsng_update"
@@ -1022,8 +1027,8 @@ function plugin_ocsinventoryng_MassiveActions($type) {
          break;
 
       case 'NetworkPort':
-         if (plugin_ocsinventoryng_haveRight("ocsng","w")
-             && Session::haveRight('networking','w')) {
+         if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
+             && Session::haveRight('networking',UPDATE)) {
             return array('plugin_ocsinventoryng_update_networkport_type'
                          =>  __('Update networkport types',
                                 'ocsinventoryng'));
@@ -1250,7 +1255,7 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
     $sopt = array();
 
    if ($itemtype == 'Computer') {
-      if (plugin_ocsinventoryng_haveRight("ocsng","r")) {
+      if (Session::haveRight("plugin_ocsinventoryng", READ)) {
 
          $sopt[10002]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
          $sopt[10002]['field']         = 'last_update';
@@ -1408,19 +1413,19 @@ function plugin_ocsinventoryng_giveItem($type, $id, $data, $num) {
    switch ("$table.$field") {
       case "glpi_plugin_ocsinventoryng_details.action" :
          $detail = new PluginOcsinventoryngDetail();
-         return $detail->giveActionNameByActionID($data["ITEM_$num"]);
+         return $detail->giveActionNameByActionID($data[$num][0]['name']);
 
       case "glpi_plugin_ocsinventoryng_details.computers_id" :
          $comp = new Computer();
-         $comp->getFromDB($data["ITEM_$num"]);
-         return "<a href='".Toolbox::getItemTypeFormURL('Computer')."?id=".$data["ITEM_$num"]."'>".
+         $comp->getFromDB($data[$num][0]['name']);
+         return "<a href='".Toolbox::getItemTypeFormURL('Computer')."?id=".$data[$num][0]['name']."'>".
                   $comp->getName()."</a>";
 
       case "glpi_plugin_ocsinventoryng_details.plugin_ocsinventoryng_ocsservers_id" :
          $ocs = new PluginOcsinventoryngOcsServer();
-         $ocs->getFromDB($data["ITEM_$num"]);
+         $ocs->getFromDB($data[$num][0]['name']);
          return "<a href='".Toolbox::getItemTypeFormURL('PluginOcsinventoryngOcsServer')."?id=".
-                  $data["ITEM_$num"]."'>".$ocs->getName()."</a>";
+                  $data[$num][0]['name']."'>".$ocs->getName()."</a>";
 
       case "glpi_plugin_ocsinventoryng_details.rules_id" :
          $detail = new PluginOcsinventoryngDetail();
@@ -1428,7 +1433,7 @@ function plugin_ocsinventoryng_giveItem($type, $id, $data, $num) {
          return PluginOcsinventoryngNotimportedcomputer::getRuleMatchedMessage($detail->fields['rules_id']);
 
       case "glpi_plugin_ocsinventoryng_notimportedcomputers.reason" :
-         return PluginOcsinventoryngNotimportedcomputer::getReason($data["ITEM_$num"]);
+         return PluginOcsinventoryngNotimportedcomputer::getReason($data[$num][0]['name']);
    }
    return '';
 }
@@ -1563,8 +1568,8 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
          }
 
          $rule_parameters = array(
-         	'ocsservers_id' => $ocsservers_id,
-         	'OCS_SERVER' => $ocsservers_id
+            'ocsservers_id' => $ocsservers_id,
+            'OCS_SERVER' => $ocsservers_id
          );
          
          if (isset($params['values']['params']['ocsid'])) {
@@ -1578,30 +1583,30 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
          $fields = plugin_ocsinventoryng_getFieldsForQuery();
 
          $ocsComputer = $ocsClient->getComputer($ocsid, array(
-         		'DISPLAY' => array(
-	         		'CHECKSUM' => $ocsClient->getChecksumForTables($tables) | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS,
-	         		'WANTED' => $ocsClient->getWantedForTables($tables),
-         		)
+               'DISPLAY' => array(
+                  'CHECKSUM' => $ocsClient->getChecksumForTables($tables) | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS,
+                  'WANTED' => $ocsClient->getWantedForTables($tables),
+               )
          ));
          
          if (!is_null($ocsComputer)) {
-	        $networks = $ocsComputer['NETWORKS'];
-	
-	        $ipblacklist  = Blacklist::getIPs();
-	        $macblacklist = Blacklist::getMACs();
-	
-	        foreach ($networks as $data) {
-	           if (isset($data['IPSUBNET'])) {
-	              $rule_parameters['IPSUBNET'][] = $data['IPSUBNET'];
-	           }
-	           if (isset($data['MACADDR']) && !in_array($data['MACADDR'], $macblacklist)) {
-	              $rule_parameters['MACADDRESS'][] = $data['MACADDR'];
-	           }
-	           if (isset($data['IPADDRESS']) && !in_array($data['IPADDRESS'], $ipblacklist)) {
-	              $rule_parameters['IPADDRESS'][] = $data['IPADDRESS'];
-	           }
-	        }
-	        
+           $networks = $ocsComputer['NETWORKS'];
+   
+           $ipblacklist  = Blacklist::getIPs();
+           $macblacklist = Blacklist::getMACs();
+   
+           foreach ($networks as $data) {
+              if (isset($data['IPSUBNET'])) {
+                 $rule_parameters['IPSUBNET'][] = $data['IPSUBNET'];
+              }
+              if (isset($data['MACADDR']) && !in_array($data['MACADDR'], $macblacklist)) {
+                 $rule_parameters['MACADDRESS'][] = $data['MACADDR'];
+              }
+              if (isset($data['IPADDRESS']) && !in_array($data['IPADDRESS'], $ipblacklist)) {
+                 $rule_parameters['IPADDRESS'][] = $data['IPADDRESS'];
+              }
+           }
+           
             $ocs_data = array();
 
             foreach ($fields as $field) {
@@ -1621,10 +1626,10 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
                
                if (array_key_exists($ocsField, $section)) {
                   // Not multi
-	              $ocs_data[$glpiField][] = $section[$ocsField];
+                 $ocs_data[$glpiField][] = $section[$ocsField];
                } else {
                   foreach ($section as $sectionLine) {
-	                 $ocs_data[$glpiField][] = $sectionLine[$ocsField];
+                    $ocs_data[$glpiField][] = $sectionLine[$ocsField];
                   }
                }
             }
@@ -1912,7 +1917,7 @@ function plugin_ocsinventoryng_showLocksForItem($params = array()) {
    $header = $params['header'];
    $ID     = $comp->getID();
 
-   if (!Session::haveRight("computer", "w")) {
+   if (!Session::haveRight("computer", UPDATE)) {
       return $params;
    }
    //First of all let's look it the computer is managed by OCS Inventory

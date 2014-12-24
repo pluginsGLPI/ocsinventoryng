@@ -28,14 +28,14 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 include ('../../../inc/includes.php');
 
-Session::checkRight("logs", "r");
+Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
 $thread = new PluginOcsinventoryngThread();
 
 if (Session::haveRecursiveAccessToEntity(0)) {
-   Html::header(__('Processes execution of automatic actions',  'ocsinventoryng'), "", "plugins",
-                "ocsinventoryng", "thread");
 
+   Html::header(__('Processes execution of automatic actions', 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "thread");
+   
    if (isset ($_POST["delete_processes"])) {
       //checkRight("ocsng", "w");
 

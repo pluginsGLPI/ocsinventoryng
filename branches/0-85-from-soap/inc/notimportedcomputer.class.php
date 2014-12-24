@@ -30,7 +30,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
 
    // From CommonDBTM
    public $dohistory          = true;
-
+   static $rightname = "plugin_ocsinventoryng";
    public $first_level_menu   = "plugins";
    public $second_level_menu  = "ocsinventoryng";
 
@@ -108,7 +108,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
    **/
    function displaySpecificTypeField($ID, $field=array()) {
 
-   	switch ($field['type']) {
+      switch ($field['type']) {
          case 'echo' :
             echo $this->fields[$field['name']];
             break;
@@ -198,16 +198,6 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
             Log::showForItem($this);
             break;
       }
-   }
-
-
-   static function canCreate() {
-      return plugin_ocsinventoryng_haveRight("ocsng", "w");
-   }
-
-
-   static function canView() {
-      return Session::haveRight("logs", "r");
    }
 
 
@@ -590,11 +580,10 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
 
    
    static function cronInfo($name) {
-      global $LANG;
    
       switch ($name) {
          case "sendAlerts" :
-            return array('description' => $LANG["massocsimport"]["config"][23]);
+            return array('description' => __('Not imported computers alert', 'ocsinventoryng'));
         }
    }
         

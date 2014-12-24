@@ -28,7 +28,8 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 class PluginOcsinventoryngThread extends CommonDBTM {
 
-
+   static $rightname = "plugin_ocsinventoryng";
+   
    /**
     * @param $processid
    **/
@@ -231,7 +232,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
    function showProcesses($target) {
       global $DB, $CFG_GLPI;
 
-      $canedit = plugin_ocsinventoryng_haveRight("ocsng","w");
+      $canedit = Session::haveRight("plugin_ocsinventoryng", UPDATE);
 
       $config  = new PluginOcsinventoryngConfig();
       $config->getFromDB(1);

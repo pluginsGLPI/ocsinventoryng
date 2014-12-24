@@ -28,10 +28,9 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 include ('../../../inc/includes.php');
 
-Session::checkRight("logs", "r");
+Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-Html::header(__('Processes execution of automatic actions', 'ocsinventoryng'), "", "plugins",
-             "ocsinventoryng", "notimported");
+Html::header(__('Processes execution of automatic actions', 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "notimported");
 
 Search::show('PluginOcsinventoryngNotimportedcomputer');
 

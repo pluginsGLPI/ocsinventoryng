@@ -28,7 +28,7 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 include ('../../../inc/includes.php');
 
-plugin_ocsinventoryng_checkRight("ocsng", "w");
+Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
 $ocs = new PluginOcsinventoryngOcsServer();
 
@@ -36,7 +36,7 @@ if (!isset($_GET["id"]) || $_GET["id"] == -1) {
    $_GET["id"] = "";
 }
 
-Html::header('OCS Inventory NG', '', "plugins", "ocsinventoryng", "ocsserver");
+Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsserver");
 
 //Delete template or server
 if (isset ($_POST["delete"])) {
@@ -60,7 +60,7 @@ if (isset ($_POST["delete"])) {
 
 //Other
 } else {
-   $ocs->showForm($_GET["id"]);
+   $ocs->display($_GET);
 }
 Html::footer();
 ?>

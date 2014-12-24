@@ -28,10 +28,9 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 include ('../../../inc/includes.php');
 
-Session::checkRight("logs", "r");
+Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-Html::header(__('Information about the script', 'ocsinventoryng'), "", "plugins", "ocsinventoryng",
-             "thread");
+Html::header(__('Information about the script', 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "thread");
 
 $thread = new PluginOcsinventoryngThread();
 $thread->title();

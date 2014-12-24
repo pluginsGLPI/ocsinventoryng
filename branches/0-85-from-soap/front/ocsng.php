@@ -28,10 +28,11 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 include ('../../../inc/includes.php');
 
-plugin_ocsinventoryng_checkSeveralRightsOr(array('ocsng'       => 'r',
-                                                 'clean_ocsng' => 'r'));
+Session::checkSeveralRightsOr(array("plugin_ocsinventoryng"  => READ,
+                                    "plugin_ocsinventoryng_clean"  => READ));
+                                                      
+Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsinventoryng");
 
-Html::header('OCS Inventory NG', "", "plugins","ocsinventoryng");
 if (isset ($_SESSION["ocs_import"])) {
    unset ($_SESSION["ocs_import"]);
 }

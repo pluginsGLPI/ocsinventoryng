@@ -38,19 +38,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    const HISTORY_OCS_LINK           = 11;
    const HISTORY_OCS_TAGCHANGED     = 12;
 
-
+   static $rightname = "plugin_ocsinventoryng";
+   
    static function getTypeName($nb=0) {
       return _n('OCSNG link', 'OCSNG links', $nb, 'ocsinventoryng');
-   }
-
-
-   static function canCreate() {
-      return plugin_ocsinventoryng_haveRight('ocsng', 'w');
-   }
-
-
-   static function canView() {
-      return plugin_ocsinventoryng_haveRight('ocsng', 'r');
    }
 
    /**
@@ -87,7 +78,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          if (!empty($items_id)
              && $item->fields["is_dynamic"]
-             && plugin_ocsinventoryng_haveRight("view_ocsng","r")) {
+             && Session::haveRight("plugin_ocsinventoryng_view", READ)) {
             $query = "SELECT *
                       FROM `glpi_plugin_ocsinventoryng_ocslinks`
                       WHERE `computers_id` = '$items_id' ".
@@ -111,7 +102,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "</td><td>".$data["ocs_agent_version"].'</td></tr>';
                   echo "<tr class='tab_bg_1'><td>".__('Server');
                   echo "</td><td>";
-                  if (plugin_ocsinventoryng_haveRight("ocsng","r")) {
+                  if (Session::haveRight("plugin_ocsinventoryng", READ)) {
                      echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.form.php?id="
                            .$ocs_config['id']."'>".$ocs_config['name']."</a>";
                   } else {
@@ -119,7 +110,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   }
                   echo '</td></tr>';
                  //If have write right on OCS and ocsreports url is not empty in OCS config
-                  if (plugin_ocsinventoryng_haveRight("ocsng","w")
+                  if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
                       && ($ocs_config["ocs_url"] != '')) {
                      echo "<tr class='tab_bg_1'><td colspan='2' class='center'>";
                      echo PluginOcsinventoryngOcsServer::getComputerLinkToOcsConsole($ocs_config['id'],
@@ -134,8 +125,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo $data["tag"];
                   echo "</td></tr>";
                   
-                  if (plugin_ocsinventoryng_haveRight("view_ocsng", "r")
-                      && plugin_ocsinventoryng_haveRight("sync_ocsng", "w")) {
+                  if (Session::haveRight("plugin_ocsinventoryng_view", READ)
+                      && Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
                      echo "<tr class='tab_bg_1'><td>".__('Automatic update OCSNG', 'ocsinventoryng').
                           "</td>";
                      echo "<td>";
@@ -144,7 +135,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   }
 
                   
-                  if (plugin_ocsinventoryng_haveRight("sync_ocsng", "w")) {
+                  if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
                      echo "<tr class='tab_bg_1'><td class='center' colspan='2'>";
                      Html::showSimpleForm($target, 'force_ocs_resynch',
                                           _sx('button', 'Force synchronization', 'ocsinventoryng'),
@@ -196,7 +187,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          if (!empty($items_id )
              && $item->fields["is_dynamic"]
-             && plugin_ocsinventoryng_haveRight("view_ocsng", "r")) {
+             && Session::haveRight("plugin_ocsinventoryng_view", READ)) {
 
             $query = "SELECT *
                       FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -221,8 +212,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "<tr class='tab_bg_1'>";
 
                   $colspan = 4;
-                  if (plugin_ocsinventoryng_haveRight("view_ocsng", "r")
-                      && plugin_ocsinventoryng_haveRight("sync_ocsng", "w")) {
+                  if (Session::haveRight("plugin_ocsinventoryng_view", READ)
+                      && Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
 
                      $colspan = 2;
                      echo "<td class='center'>".__('Automatic update OCSNG', 'ocsinventoryng').
@@ -235,7 +226,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   printf(__('%1$s: %2$s'), __('OCSNG TAG', 'ocsinventoryng'), $data['tag']);
                   echo "</td></tr>";
 
-                  if (plugin_ocsinventoryng_haveRight("sync_ocsng", "w")) {
+                  if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
                      echo "<tr class='tab_bg_1'>";
                      $colspan=4;
                      echo "<td class='center' colspan='2'>";
@@ -448,7 +439,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    **/
    static function getHistoryEntry($data) {
 
-      if (plugin_ocsinventoryng_haveRight('ocsng', 'r')) {
+      if (Session::haveRight("plugin_ocsinventoryng", READ)) {
          switch($data['linked_action'] - Log::HISTORY_PLUGIN) {
             case self::HISTORY_OCS_IMPORT :
                return sprintf(__('%1$s: %2$s'), __('Imported from OCSNG', 'ocsinventoryng'),

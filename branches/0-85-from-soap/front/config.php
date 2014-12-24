@@ -29,20 +29,20 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 include ('../../../inc/includes.php');
 
 $plugin = new Plugin();
-	if ($plugin->isActivated("ocsinventoryng")
-         && plugin_ocsinventoryng_haveRight("ocsng", "w")) {
+if ($plugin->isActivated("ocsinventoryng")
+      && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
 
-      Html::header('OCSInventory NG', "", "plugins", "ocsinventoryng");
+   Html::header('OCSInventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsinventoryng");
+   
+   // choose config server or config synchro
+   PluginOcsinventoryngConfig::showMenu();
 
-      // choose config server or config synchro
-      PluginOcsinventoryngConfig::showMenu();
-
-   } else {
-      Html::header(__('Setup'),'',"config","plugins");
-      echo "<div class='center'><br><br>";
-      echo "<img src=\"".$CFG_GLPI["root_doc"]."/pics/warning.png\" alt='".__s('Warning')."'><br><br>";
-      echo "<b>".__('Please activate the plugin', 'ocsinventoryng')."</b></div>";
-   }
+} else {
+   Html::header(__('Setup'), '', "tools", "pluginocsinventoryngmenu", "config");
+   echo "<div class='center'><br><br>";
+   echo "<img src=\"".$CFG_GLPI["root_doc"]."/pics/warning.png\" alt='".__s('Warning')."'><br><br>";
+   echo "<b>".__('Please activate the plugin', 'ocsinventoryng')."</b></div>";
+}
 
 Html::footer();
 ?>

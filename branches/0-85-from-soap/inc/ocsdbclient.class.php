@@ -1,4 +1,31 @@
 <?php
+/*
+ * @version $Id: HEADER 15930 2012-12-15 11:10:55Z tsmr $
+-------------------------------------------------------------------------
+Ocsinventoryng plugin for GLPI
+Copyright (C) 2012-2013 by the ocsinventoryng plugin Development Team.
+
+https://forge.indepnet.net/projects/ocsinventoryng
+-------------------------------------------------------------------------
+
+LICENSE
+
+This file is part of ocsinventoryng.
+
+Ocsinventoryng plugin is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+Ocsinventoryng plugin is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+-------------------------------------------------------------------------- */
+
 class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 {
     /**
@@ -69,38 +96,38 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                     $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                     $request = $this->db->query($query);
                     while ($accountinfo = $this->db->fetch_assoc($request)) {
-                    	foreach($accountinfo as $column =>$value){
-                    		if(preg_match('/fields_\d+/',$column,$matches)){
-                    			$colnumb = explode("fields_",$matches['0']);
-                    			$query = "SELECT ID,NAME FROM accountinfo_config WHERE ID = '".$colnumb['1']."'";
-                    			$requestcolname = $this->db->query($query);
-                    			$colname = $this->db->fetch_assoc($requestcolname);
-                    			if($colname['NAME'] != ""){
-                    				if(!is_null($value)){
-                    					$name = "ACCOUNT_VALUE_".$colname['NAME']."_".$value;
-                    					$query = "SELECT TVALUE,NAME FROM config WHERE NAME = '".$name."'";
-                    					$requestvalue = $this->db->query($query);
-                    					$custom_value  =  $this->db->fetch_assoc($requestvalue);
-                    					if(isset($custom_value['TVALUE'])){
-                    						$accountinfo[$column] = $custom_value['TVALUE'];
-                    					}
-                    				}
-                    			}
-                    		}       		
-                    		
-                    	}
-                    	$accountinfomap = $this->getAccountInfoColumns();
-                    	foreach( $accountinfo as $key => $value){
-                    		unset($accountinfo[$key]);
-                    		$accountinfo[$accountinfomap[$key]]=$value;
-                    	}
-                    	if ($multi) {
-                    		 $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)][] = $accountinfo;
-                    	}else{
-                    		 $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)] = $accountinfo;
-                    	}
+                     foreach($accountinfo as $column =>$value){
+                        if(preg_match('/fields_\d+/',$column,$matches)){
+                           $colnumb = explode("fields_",$matches['0']);
+                           $query = "SELECT ID,NAME FROM accountinfo_config WHERE ID = '".$colnumb['1']."'";
+                           $requestcolname = $this->db->query($query);
+                           $colname = $this->db->fetch_assoc($requestcolname);
+                           if($colname['NAME'] != ""){
+                              if(!is_null($value)){
+                                 $name = "ACCOUNT_VALUE_".$colname['NAME']."_".$value;
+                                 $query = "SELECT TVALUE,NAME FROM config WHERE NAME = '".$name."'";
+                                 $requestvalue = $this->db->query($query);
+                                 $custom_value  =  $this->db->fetch_assoc($requestvalue);
+                                 if(isset($custom_value['TVALUE'])){
+                                    $accountinfo[$column] = $custom_value['TVALUE'];
+                                 }
+                              }
+                           }
+                        }
+                        
+                     }
+                     $accountinfomap = $this->getAccountInfoColumns();
+                     foreach( $accountinfo as $key => $value){
+                        unset($accountinfo[$key]);
+                        $accountinfo[$accountinfomap[$key]]=$value;
+                     }
+                     if ($multi) {
+                         $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)][] = $accountinfo;
+                     }else{
+                         $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)] = $accountinfo;
+                     }
                        
-	               }
+                  }
               }
 
             } elseif ($table == "softwares") {
@@ -178,8 +205,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             } elseif ($table == "hardware") {
                 
                 $query   = "SELECT `hardware`.*,`accountinfo`.`TAG` FROM `hardware`
-				INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
-				WHERE `ID` IN (" . implode(',', $ids) . ")";
+            INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
+            WHERE `ID` IN (" . implode(',', $ids) . ")";
                 $request = $this->db->query($query);
                 while ($meta = $this->db->fetch_assoc($request)) {
                     $computers[$meta['ID']]["META"]["ID"]       = $meta["ID"];
@@ -298,7 +325,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
      */
     public function updateTag($tag,$id){
         $query    =  "UPDATE `accountinfo` SET `TAG` = '".$tag."' WHERE `HARDWARE_ID` = '".$id."'";
-        $request = $this->db->query($query);        
+        $request = $this->db->query($query);
     }
 
     /**
@@ -309,23 +336,23 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     {
         
         
-        if ($options['OFFSET']) {
+        if (isset($options['OFFSET'])) {
             $offset = "OFFSET  " . $options['OFFSET'];
         } else {
             $offset = "";
         }
-        if ($options['MAX_RECORDS']) {
+        if (isset($options['MAX_RECORDS'])) {
             $max_records = "LIMIT  " . $options['MAX_RECORDS'];
         } else {
             $max_records = "";
         }
-        if ($options['ORDER']) {
+        if (isset($options['ORDER'])) {
             $order = $options['ORDER'];
         } else {
             $order = " LASTDATE ";
         }
         
-        if ($options['FILTER']) {
+        if (isset($options['FILTER'])) {
             $filters = $options['FILTER'];
             if (isset($filters['IDS']) and $filters['IDS']) {
                 $ids       = $filters['IDS'];
@@ -345,21 +372,21 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                 $where_exclude_ids = "";
             }
             if (isset($filters['DEVICEIDS']) and $filters['DEVICEIDS']) {
-            	$deviceids       = $filters['DEVICEIDS'];
-            	$where_deviceids   = " AND hardware.DEVICEID IN ('";
-            	$where_deviceids  .= join('\',\'', $deviceids);
-            	$where_deviceids  .= "') ";
+               $deviceids       = $filters['DEVICEIDS'];
+               $where_deviceids   = " AND hardware.DEVICEID IN ('";
+               $where_deviceids  .= join('\',\'', $deviceids);
+               $where_deviceids  .= "') ";
             } else {
-            	$where_deviceids   = "";
+               $where_deviceids   = "";
             }
             
             if (isset($filters['EXCLUDE_DEVICEIDS']) and $filters['EXCLUDE_DEVICEIDS']) {
-            	$exclude_deviceids       = $filters['EXCLUDE_DEVICEIDS'];
-            	$where_exclude_deviceids   = " AND hardware.DEVICEID NOT IN (";
-            	$where_exclude_deviceids   .= join(',', $exclude_deviceids);
-            	$where_exclude_deviceids   .= ") ";
+               $exclude_deviceids       = $filters['EXCLUDE_DEVICEIDS'];
+               $where_exclude_deviceids   = " AND hardware.DEVICEID NOT IN (";
+               $where_exclude_deviceids   .= join(',', $exclude_deviceids);
+               $where_exclude_deviceids   .= ") ";
             } else {
-            	$where_exclude_deviceids   = "";
+               $where_exclude_deviceids   = "";
             }
             
             if (isset($filters['TAGS']) and $filters['TAGS']) {
@@ -394,22 +421,22 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         
        
         $query           = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
-        						WHERE hardware.DEVICEID NOT LIKE '\\_%'
-        						AND hardware.ID = accountinfo.HARDWARE_ID
-        						$where_condition";
+                        WHERE hardware.DEVICEID NOT LIKE '\\_%'
+                        AND hardware.ID = accountinfo.HARDWARE_ID
+                        $where_condition";
         $request         = $this->db->query($query);
         if ($this->db->numrows($request)) {
             
             
             $count              = $this->db->numrows($request);
             $query              = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
-									WHERE hardware.DEVICEID NOT LIKE '\\_%'
-									AND hardware.ID = accountinfo.HARDWARE_ID
-									$where_condition
-									ORDER BY $order
-									$max_records  $offset";
+                           WHERE hardware.DEVICEID NOT LIKE '\\_%'
+                           AND hardware.ID = accountinfo.HARDWARE_ID
+                           $where_condition
+                           ORDER BY $order
+                           $max_records  $offset";
             $request = $this->db->query($query);
-			$accountinfomap = $this->getAccountInfoColumns();
+         $accountinfomap = $this->getAccountInfoColumns();
             while ($hardwareid = $this->db->fetch_assoc($request)) {
                 $hardwareids[] = $hardwareid['ID'];
 
@@ -436,15 +463,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         return $res;
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-
     
     /**
      * @see PluginOcsinventoryngOcsClient::getConfig()
@@ -496,14 +514,14 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
      */
     public function getDeletedComputers()
     {
-    	
-    	if(empty($_SESSION["ocs_deleted_equiv"]["total"])){
-    		$query   = "SELECT COUNT( * ) FROM `deleted_equiv`";
-    		$total_count = $this->db->query($query);
-    		$total = $this->db->fetch_row($total_count);    		
-    		$_SESSION["ocs_deleted_equiv"]["total"] = intval($total['0']);
-    	}
-    	$count = 0;
+      
+      if(empty($_SESSION["ocs_deleted_equiv"]["total"])){
+         $query   = "SELECT COUNT( * ) FROM `deleted_equiv`";
+         $total_count = $this->db->query($query);
+         $total = $this->db->fetch_row($total_count);    		
+         $_SESSION["ocs_deleted_equiv"]["total"] = intval($total['0']);
+      }
+      $count = 0;
         $query   = "SELECT `DATE`,`DELETED`,`EQUIVALENT` FROM `deleted_equiv` ORDER BY `DATE`,`EQUIVALENT` LIMIT 300";
         $deleted = $this->db->query($query);
         while ($del = $this->db->fetch_assoc($deleted)) {
@@ -519,9 +537,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $res = array();
         }
         if(empty($_SESSION["ocs_deleted_equiv"]["total"])){
-        	$_SESSION["ocs_deleted_equiv"]["deleted"] = $count;
+         $_SESSION["ocs_deleted_equiv"]["deleted"] = $count;
         }else{
-        	$_SESSION["ocs_deleted_equiv"]["deleted"] += $count;
+         $_SESSION["ocs_deleted_equiv"]["deleted"] += $count;
         }
         $_SESSION["ocs_deleted_equiv"]["last_req"] = $count;
         return $res;
@@ -533,15 +551,15 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     
     public function removeDeletedComputers($deleted, $equivclean = null)
     {
-    	if (is_array($deleted)){
-    		$del = "('";
-    		$del  .= join("','",$deleted);
-    		$del .= "')";
-    		$query = "DELETE FROM `deleted_equiv` WHERE `DELETED` IN " . $del . " ";
-    		
-    	}else{
-        	$query = "DELETE FROM `deleted_equiv` WHERE `DELETED` = '" . $this->db->escape($deleted) . "' ";
-    	}        
+      if (is_array($deleted)){
+         $del = "('";
+         $del  .= join("','",$deleted);
+         $del .= "')";
+         $query = "DELETE FROM `deleted_equiv` WHERE `DELETED` IN " . $del . " ";
+         
+      }else{
+         $query = "DELETE FROM `deleted_equiv` WHERE `DELETED` = '" . $this->db->escape($deleted) . "' ";
+      }        
         if (empty($equivclean)) {
             $equiv_clean = " AND (`EQUIVALENT` = '' OR `EQUIVALENT` IS NULL ) ";
             
@@ -584,3 +602,4 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     }
     
 }
+?>

@@ -13,10 +13,10 @@ class ocsclientTest extends PHPUnit_Framework_TestCase {
      * @static
      */
     public static function main(){
-    	require_once 'PHPUnit/TextUI/TestRunner.php';
+      require_once 'PHPUnit/TextUI/TestRunner.php';
 
-    	$suite  = new PHPUnit_Framework_TestSuite('ocsclientTest');
-    	$result = PHPUnit_TextUI_TestRunner::run($suite);
+      $suite  = new PHPUnit_Framework_TestSuite('ocsclientTest');
+      $result = PHPUnit_TextUI_TestRunner::run($suite);
     }
 
     /**
@@ -26,7 +26,7 @@ class ocsclientTest extends PHPUnit_Framework_TestCase {
      * @access protected
      */
     protected function setUp(){
-    	global $DB, $CFG_GLPI;
+      global $DB, $CFG_GLPI;
         $_SERVER['REQUEST_URI'] = '/plugins';
         require_once(__DIR__.'/../../../inc/includes.php');
         $soapuser = $GLOBALS['soapuser']; 
@@ -89,15 +89,3 @@ class ocsclientTest extends PHPUnit_Framework_TestCase {
     //TODO Test if options[FILTER] is set but only contains empty arrays
     
 }
-
-
-
-
-
-
-
-
-
-
-
-

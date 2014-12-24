@@ -33,26 +33,12 @@ if (!defined('GLPI_ROOT')) {
 
 /// OCS NetworkPort class
 class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
-
+   
+   static $rightname = "plugin_ocsinventoryng";
+   
    static function getTypeName($nb=0) {
       return _n('Unknown type from OCS', 'Unknown types from OCS', $nb, 'ocsinventoryng');
    }
-
-
-   static function canCreate() {
-      return false;
-   }
-
-
-   static function canUpdate() {
-      return false;
-   }
-
-
-   static function canDelete() {
-      return false;
-   }
-
 
    static private function getInvalidIPString($ip) {
       return __('Invalid', 'ocsinventoryng').': '.$ip;

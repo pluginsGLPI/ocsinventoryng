@@ -25,16 +25,32 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 -------------------------------------------------------------------------- */
+ 
+class PluginOcsinventoryngMenu extends CommonGLPI {
 
-include ('../../../inc/includes.php');
+   static $rightname = 'plugin_ocsinventoryng';
 
-Session::checkRight("profile","r");
+   static function getMenuName() {
+      return 'OCSInventory NG';
+   }
 
-$prof = new PluginOcsinventoryngProfile();
+   static function getMenuContent() {
+      global $CFG_GLPI;
 
-//Save profile
-if (isset ($_POST['update'])) {
-   $prof->update($_POST);
-   Html::back();
+      $menu                                           = array();
+      $menu['title']                                  = self::getMenuName();
+      $menu['page']                                   = "/plugins/ocsinventoryng/front/ocsng.php";
+      $menu['links']['search']                        = "/plugins/ocsinventoryng/front/ocsng.php";
+
+      return $menu;
+   }
+
+   static function removeRightsFromSession() {
+      if (isset($_SESSION['glpimenu']['tools']['types']['PluginOcsinventoryngMenu'])) {
+         unset($_SESSION['glpimenu']['tools']['types']['PluginOcsinventoryngMenu']); 
+      }
+      if (isset($_SESSION['glpimenu']['tools']['content']['pluginocsinventoryngmenu'])) {
+         unset($_SESSION['glpimenu']['tools']['content']['pluginocsinventoryngmenu']); 
+      }
+   }
 }
-?>

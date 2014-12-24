@@ -44,7 +44,6 @@ class PluginOcsinventoryngServer extends CommonDBTM {
          if (is_array($this->fields) && count($this->fields)) {
             return true;
          }
-         toolbox::logdebug($this->fields);
       }
       return false;
    }

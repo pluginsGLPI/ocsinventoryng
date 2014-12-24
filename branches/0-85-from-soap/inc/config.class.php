@@ -28,19 +28,10 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 class PluginOcsinventoryngConfig extends CommonDBTM {
 
-
+   static $rightname = "plugin_ocsinventoryng";
+   
    static function getTypeName($nb=0) {
       return __("Automatic synchronization's configuration", 'ocsinventoryng');
-   }
-
-
-   static function canCreate() {
-      return Session::haveRight('config', 'w');
-   }
-
-
-   static function canView() {
-      return Session::haveRight('config', 'r');
    }
 
 
@@ -73,7 +64,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
    function defineTabs($options=array()) {
 
       $ong = array();
-      $this->addStandardTab(__CLASS__, $ong, $options);
+      $this->addDefaultFormTab($ong);
       return $ong;
    }
 
@@ -96,10 +87,9 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "</table>";
    }
 
-   function showConfigForm($target) {
+   function showForm($target) {
 
       $this->getFromDB(1);
-      $this->showTabs();
       $this->showFormHeader();
 
       echo "<tr class='tab_bg_1'>";
@@ -125,7 +115,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
       $this->showFormButtons(array('canedit' => true,
                                    'candel'  => false));
-      $this->addDivForTabs();
+
       return true;
    }
 
