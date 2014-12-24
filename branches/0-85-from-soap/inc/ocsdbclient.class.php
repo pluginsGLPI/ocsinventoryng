@@ -174,7 +174,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
           
                       $request = $this->db->query($query);
                       while ($software = $this->db->fetch_assoc($request)) {
-                              $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
+                        $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
                       }
                 }
 
@@ -183,18 +183,18 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                 if ($check & $checksum) {
                    $query = "SELECT `registry`.`NAME` AS name,
                           `registry`.`REGVALUE` AS regvalue,
-                          `registry`.`HARDWARE_ID` AS computers_id,
+                          `registry`.`HARDWARE_ID` AS HARDWARE_ID,
                           `regconfig`.`REGTREE` AS regtree,
                           `regconfig`.`REGKEY` AS regkey
                    FROM `registry`
                    LEFT JOIN `regconfig` ON (`registry`.`NAME` = `regconfig`.`NAME`)
-                   WHERE `HARDWARE_ID` = '$ocsid'";
-                    $request = $this->db->query($query);    
-                    while ($computer = $this->db->fetch_assoc($request)) {
+                   WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                    $request = $this->db->query($query);
+                    while ($reg = $this->db->fetch_assoc($request)) {
                         if ($multi) {
-                            $computers[$computer['HARDWARE_ID']][strtoupper($table)][] = $computer;
+                            $computers[$reg['HARDWARE_ID']][strtoupper($table)][] = $reg;
                         } else {
-                            $computers[$computer['HARDWARE_ID']][strtoupper($table)] = $computer;
+                            $computers[$reg['HARDWARE_ID']][strtoupper($table)] = $reg;
                         }
                         
                     }

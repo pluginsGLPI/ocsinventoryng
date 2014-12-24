@@ -103,7 +103,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          switch ($item->getType()) {
             case __CLASS__ :
                //If connection to the OCS DB  is ok, and all rights are ok too
-               $ong[1] = self::getTypeName();
+               $ong[1] = __('Test');
                if (self::checkOCSconnection($item->getID())
                && self::checkVersion($item->getID())
                && self::checkTraceDeleted($item->getID())) {
@@ -122,7 +122,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
 
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
-
+      
       if ($item->getType() == __CLASS__) {
          switch ($tabnum) {
             case 1 :
@@ -130,11 +130,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                break;
 
             case 2 :
-               $item->ocsFormImportOptions($_POST['target'], $item->getID());
+               $item->ocsFormImportOptions($item->getID());
                break;
 
             case 3 :
-               $item->ocsFormConfig($_POST['target'], $item->getID());
+               $item->ocsFormConfig($item->getID());
                break;
 
             case 4 :
@@ -151,6 +151,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       $ong = array();
       $this->addDefaultFormTab($ong);
+      $this->addStandardTab(__CLASS__, $ong, $options);
       $this->addStandardTab('PluginOcsinventoryngConfig', $ong, $options);
       $this->addStandardTab('PluginOcsinventoryngOcslink', $ong, $options);
       $this->addStandardTab('PluginOcsinventoryngRegistryKey', $ong, $options);
@@ -390,35 +391,47 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
     *
     * @return Nothing (display)
     **/
-   function ocsFormConfig($target, $ID) {
+   function ocsFormConfig($ID) {
 
       if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
          return false;
       }
       $this->getFromDB($ID);
       echo "<br><div class='center'>";
-      echo "<form name='formconfig' id='formconfig' action=\"$target\" method='post'>";
+      echo "<form name='formconfig' id='formconfig' action='".Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer")."' method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
       echo "<tr><th colspan ='2'>";
       _e('All');
+      
+      //TODO Debug it
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
-            function form_init_all(form, index) {
+            function form_init_all(form, default) {
                var elem = document.getElementById('formconfig').elements;
-               for(var i = 0; i < elem.length; i++) {
-                  if (elem[i].type == "select-one"
-                     && elem[i].name != "import_otherserial"
-                        && elem[i].name != "import_location"
-                           && elem[i].name != "import_group"
-                              && elem[i].name != "import_contact_num"
-                                 && elem[i].name != "import_network") {
-                     elem[i].selectedIndex = index;
+               var select = $("form[id='formconfig'] select");
+
+               $.each(select, function(index, value){
+                  console.log(value);
+                  if (value.name != "import_otherserial"
+                        && value.name != "import_location"
+                           && value.name != "import_group"
+                              && value.name != "import_contact_num"
+                                 && value.name != "import_network") {
+                     $.each(value.options, function(index2, value2){
+                        if(value2 == default){
+                           value2.selected = 'selected';
+                        }
+                     });
+                     
+                     value.selectedIndex = index;
                   }
-               }
+               });
+ 
             }
          </script>
 JAVASCRIPT;
       Dropdown::showYesNo('init_all', 0, -1, array(
+            'width' => '10%',
             'on_change' => "form_init_all(this.form, this.selectedIndex);"
             ));
             echo "</th><th></th></tr>";
@@ -600,16 +613,15 @@ JAVASCRIPT;
 
 
    /**
-    * @param $target
     * @param $ID
     * @param $withtemplate    (default '')
     * @param $templateid      (default '')
     **/
-   function ocsFormImportOptions($target, $ID, $withtemplate='', $templateid='') {
+   function ocsFormImportOptions($ID, $withtemplate='', $templateid='') {
 
       $this->getFromDB($ID);
       echo "<br><div class='center'>";
-      echo "<form name='formconfig' action=\"$target\" method='post'>";
+      echo "<form name='formconfig' action='".Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer")."' method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
       echo "<tr class='tab_bg_2'><td class='center'>" .__('Web address of the OCSNG console',
          'ocsinventoryng');
@@ -1516,7 +1528,7 @@ JAVASCRIPT;
                   if (strpos($equiv,"-") !== false) {
                      $res = $ocsClient->searchComputers('DEVICEID', $equiv);
                      if (count($res['COMPUTERS'])) {
-                        $data = end($res['COMPUTERS'])['META'];
+                        $data = end($res['COMPUTERS']['META']);
                         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                                      SET `ocsid` = '" . $data["ID"] . "',
                                          `ocs_deviceid` = '" . $data["DEVICEID"] . "'
@@ -1532,7 +1544,7 @@ JAVASCRIPT;
                   } else {
                      $res = $ocsClient->searchComputers('ID', $equiv);
                      if (count($res['COMPUTERS'])) {
-                        $data = end($res['COMPUTERS'])['META'];
+                        $data = end($res['COMPUTERS']['META']);
                         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                                      SET `ocsid` = '" . $data["ID"] . "',
                                          `ocs_deviceid` = '" . $data["DEVICEID"] . "'
@@ -1620,7 +1632,7 @@ JAVASCRIPT;
             else {
                $redirection = $_SERVER['PHP_SELF'];
             }
-            header("Location: $redirection"); 		
+            header("Location: $redirection");
          }
          else{
             $_SESSION['ocs_deleted_equiv']['computers_to_del']=false;
@@ -1633,7 +1645,7 @@ JAVASCRIPT;
          echo "<tr><th colspan='2'>";
          Html::displayTitle($CFG_GLPI['root_doc']."/pics/warning.png", $message, $message);
          echo "</th></tr>";
-      }		
+      }
    }
 
 
@@ -2124,7 +2136,7 @@ JAVASCRIPT;
                }else{
                   $ocsCheckResult = 0;
                }
-               if (!$ocsWanted) {
+               if (!isset($ocsWanted)) {
                   $ocsWanted = 0;
                }
                $options = array(
@@ -3115,7 +3127,7 @@ JAVASCRIPT;
                      $hardware[$id]["TAG"]          = $data['META']["TAG"];
                      $hardware[$id]["id"]           = $data['META']["ID"];
 
-                     if (count($data['BIOS'])) {
+                     if (isset($data['BIOS']) && count($data['BIOS'])) {
                         $hardware[$id]["serial"]       = $data['BIOS']["SSN"];
                         $hardware[$id]["model"]        = $data['BIOS']["SMODEL"];
                         $hardware[$id]["manufacturer"] = $data['BIOS']["SMANUFACTURER"];
@@ -3186,7 +3198,7 @@ JAVASCRIPT;
                   echo "<th>" . __('Destination entity') . "</th>\n";
                   echo "<th>" . __('Target location', 'ocsinventoryng') . "</th>\n";
                      }
-                     echo "<th>&nbsp;</th></tr>\n";
+                     echo "<th width='20%'>&nbsp;</th></tr>\n";
 
                      $rule = new RuleImportEntityCollection();
                      foreach ($hardware as $ID => $tab){
@@ -3260,7 +3272,7 @@ JAVASCRIPT;
                                                    $options['value']  = $rulelink_results['found_computers'][0];
                                                    $options['entity'] = $entity;
                                                 }
-
+                                                $options['width'] = "100%";
                                                 Computer::dropdown($options);
                                                } else{
                                                 echo "<img src='".$CFG_GLPI['root_doc']. "/pics/redbutton.png'>";
@@ -3499,48 +3511,50 @@ JAVASCRIPT;
                //      }
                //   }
                //}
-               foreach ($ocsComputer['MEMORIES'] as $line2) {
-                  $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
-                  if (isset($line2["CAPACITY"]) && $line2["CAPACITY"]!="No"){
-                     $ram["designation"] = "";
-                     if ($line2["TYPE"]!="Empty Slot" && $line2["TYPE"]!="Unknown"){
-                        $ram["designation"] = $line2["TYPE"];
-                     }
-                     if ($line2["DESCRIPTION"]){
-                        if (!empty($ram["designation"])){
-                           $ram["designation"] .= " - ";
+               if (isset($ocsComputer['MEMORIES'])) {
+                  foreach ($ocsComputer['MEMORIES'] as $line2) {
+                     $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+                     if (isset($line2["CAPACITY"]) && $line2["CAPACITY"]!="No"){
+                        $ram["designation"] = "";
+                        if ($line2["TYPE"]!="Empty Slot" && $line2["TYPE"]!="Unknown"){
+                           $ram["designation"] = $line2["TYPE"];
                         }
-                        $ram["designation"] .= $line2["DESCRIPTION"];
-                     }
-                     if (!is_numeric($line2["CAPACITY"])){
-                        $line2["CAPACITY"] = 0;
-                     }
-                     $ram["size_default"] = $line2["CAPACITY"];
-
-                     if (!in_array(stripslashes($prevalue.$ram["designation"]), $import_device)){
-
-                        $ram["frequence"]            = $line2["SPEED"];
-                        $ram["devicememorytypes_id"] = Dropdown::importExternal('DeviceMemoryType',
-                        $line2["TYPE"]);
-
-                        $DeviceMemory = new DeviceMemory();
-                        $ram_id = $DeviceMemory->import($ram);
-                        if ($ram_id){
-                           $devID = $CompDevice->add(array('items_id'           => $computers_id,
-                                                              'itemtype'            => 'Computer',
-                                                              'devicememories_id'   => $ram_id,
-                                                              'size'                => $line2["CAPACITY"],
-                                                              'is_dynamic'          => 1,
-                                                              '_no_history'         => !$dohistory));
+                        if ($line2["DESCRIPTION"]){
+                           if (!empty($ram["designation"])){
+                              $ram["designation"] .= " - ";
+                           }
+                           $ram["designation"] .= $line2["DESCRIPTION"];
                         }
-                     } else {
-                        $tmp = array_search(stripslashes($prevalue . $ram["designation"]),
-                        $import_device);
-                        list($type,$id) = explode(self::FIELD_SEPARATOR, $tmp);
+                        if (!is_numeric($line2["CAPACITY"])){
+                           $line2["CAPACITY"] = 0;
+                        }
+                        $ram["size_default"] = $line2["CAPACITY"];
 
-                        $CompDevice->update(array('id'  => $id,
-                                                     'size' => $line2["CAPACITY"]));
-                        unset ($import_device[$tmp]);
+                        if (!in_array(stripslashes($prevalue.$ram["designation"]), $import_device)){
+
+                           $ram["frequence"]            = $line2["SPEED"];
+                           $ram["devicememorytypes_id"] = Dropdown::importExternal('DeviceMemoryType',
+                           $line2["TYPE"]);
+
+                           $DeviceMemory = new DeviceMemory();
+                           $ram_id = $DeviceMemory->import($ram);
+                           if ($ram_id){
+                              $devID = $CompDevice->add(array('items_id'           => $computers_id,
+                                                                 'itemtype'            => 'Computer',
+                                                                 'devicememories_id'   => $ram_id,
+                                                                 'size'                => $line2["CAPACITY"],
+                                                                 'is_dynamic'          => 1,
+                                                                 '_no_history'         => !$dohistory));
+                           }
+                        } else {
+                           $tmp = array_search(stripslashes($prevalue . $ram["designation"]),
+                           $import_device);
+                           list($type,$id) = explode(self::FIELD_SEPARATOR, $tmp);
+
+                           $CompDevice->update(array('id'  => $id,
+                                                        'size' => $line2["CAPACITY"]));
+                           unset ($import_device[$tmp]);
+                        }
                      }
                   }
                }
@@ -3554,40 +3568,42 @@ JAVASCRIPT;
             $do_clean = true;
 
             if ($ocsComputer) {
-               foreach ($ocsComputer['STORAGES'] as $line2) {
-                  $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
-                  if (!empty ($line2["DISKSIZE"]) && preg_match("/disk|spare\sdrive/i", $line2["TYPE"])){
-                     if ($line2["NAME"]){
-                        $dd["designation"] = $line2["NAME"];
-                     } else{
-                        if ($line2["MODEL"]){
-                           $dd["designation"] = $line2["MODEL"];
+               if (isset($ocsComputer['STORAGES'])) {
+                  foreach ($ocsComputer['STORAGES'] as $line2) {
+                     $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+                     if (!empty ($line2["DISKSIZE"]) && preg_match("/disk|spare\sdrive/i", $line2["TYPE"])){
+                        if ($line2["NAME"]){
+                           $dd["designation"] = $line2["NAME"];
                         } else{
-                           $dd["designation"] = "Unknown";
+                           if ($line2["MODEL"]){
+                              $dd["designation"] = $line2["MODEL"];
+                           } else{
+                              $dd["designation"] = "Unknown";
+                           }
                         }
-                     }
-                     if (!is_numeric($line2["DISKSIZE"])){
-                        $line2["DISKSIZE"] = 0;
-                     }
-                     if (!in_array(stripslashes($prevalue.$dd["designation"]), $import_device)){
-                        $dd["capacity_default"] = $line2["DISKSIZE"];
-                        $DeviceHardDrive = new DeviceHardDrive();
-                        $dd_id = $DeviceHardDrive->import($dd);
-                        if ($dd_id){
-                           $devID = $CompDevice->add(array('items_id'           => $computers_id,
-                                                              'itemtype'            => 'Computer',
-                                                              'deviceharddrives_id' => $dd_id,
-                                                              'capacity'            => $line2["DISKSIZE"],
-                                                              'is_dynamic'          => 1,
-                                                              '_no_history'         => !$dohistory));
+                        if (!is_numeric($line2["DISKSIZE"])){
+                           $line2["DISKSIZE"] = 0;
                         }
-                     } else{
-                        $tmp = array_search(stripslashes($prevalue . $dd["designation"]),
-                        $import_device);
-                        list($type,$id) = explode(self::FIELD_SEPARATOR, $tmp);
-                        $CompDevice->update(array('id'          => $id,
-                                                     'capacity' => $line2["DISKSIZE"]));
-                        unset ($import_device[$tmp]);
+                        if (!in_array(stripslashes($prevalue.$dd["designation"]), $import_device)){
+                           $dd["capacity_default"] = $line2["DISKSIZE"];
+                           $DeviceHardDrive = new DeviceHardDrive();
+                           $dd_id = $DeviceHardDrive->import($dd);
+                           if ($dd_id){
+                              $devID = $CompDevice->add(array('items_id'           => $computers_id,
+                                                                 'itemtype'            => 'Computer',
+                                                                 'deviceharddrives_id' => $dd_id,
+                                                                 'capacity'            => $line2["DISKSIZE"],
+                                                                 'is_dynamic'          => 1,
+                                                                 '_no_history'         => !$dohistory));
+                           }
+                        } else{
+                           $tmp = array_search(stripslashes($prevalue . $dd["designation"]),
+                           $import_device);
+                           list($type,$id) = explode(self::FIELD_SEPARATOR, $tmp);
+                           $CompDevice->update(array('id'          => $id,
+                                                        'capacity' => $line2["DISKSIZE"]));
+                           unset ($import_device[$tmp]);
+                        }
                      }
                   }
                }
@@ -3599,33 +3615,35 @@ JAVASCRIPT;
             //lecteurs
             $do_clean = true;
             if ($ocsComputer) {
-               foreach ($ocsComputer['STORAGES'] as $line2) {
-                  $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
-                  if (empty ($line2["DISKSIZE"]) || !preg_match("/disk/i", $line2["TYPE"])){
-                     if ($line2["NAME"]){
-                        $stor["designation"] = $line2["NAME"];
-                     } else{
-                        if ($line2["MODEL"]){
-                           $stor["designation"] = $line2["MODEL"];
+               if (isset($ocsComputer['STORAGES'])) {
+                  foreach ($ocsComputer['STORAGES'] as $line2) {
+                     $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+                     if (empty ($line2["DISKSIZE"]) || !preg_match("/disk/i", $line2["TYPE"])){
+                        if ($line2["NAME"]){
+                           $stor["designation"] = $line2["NAME"];
                         } else{
-                           $stor["designation"] = "Unknown";
+                           if ($line2["MODEL"]){
+                              $stor["designation"] = $line2["MODEL"];
+                           } else{
+                              $stor["designation"] = "Unknown";
+                           }
                         }
-                     }
-                     if (!in_array(stripslashes($prevalue.$stor["designation"]),
-                     $import_device)){
-                        $DeviceDrive = new DeviceDrive();
-                        $stor_id = $DeviceDrive->import($stor);
-                        if ($stor_id){
-                           $devID = $CompDevice->add(array('items_id'        => $computers_id,
-                                                              'itemtype'         => 'Computer',
-                                                              'devicedrives_id'  => $stor_id,
-                                                              'is_dynamic'       => 1,
-                                                              '_no_history'      => !$dohistory));
+                        if (!in_array(stripslashes($prevalue.$stor["designation"]),
+                        $import_device)){
+                           $DeviceDrive = new DeviceDrive();
+                           $stor_id = $DeviceDrive->import($stor);
+                           if ($stor_id){
+                              $devID = $CompDevice->add(array('items_id'        => $computers_id,
+                                                                 'itemtype'         => 'Computer',
+                                                                 'devicedrives_id'  => $stor_id,
+                                                                 'is_dynamic'       => 1,
+                                                                 '_no_history'      => !$dohistory));
+                           }
+                        } else{
+                           $tmp = array_search(stripslashes($prevalue.$stor["designation"]),
+                           $import_device);
+                           unset ($import_device[$tmp]);
                         }
-                     } else{
-                        $tmp = array_search(stripslashes($prevalue.$stor["designation"]),
-                        $import_device);
-                        unset ($import_device[$tmp]);
                      }
                   }
                }
@@ -3638,61 +3656,65 @@ JAVASCRIPT;
             //Modems
             $do_clean = true;
             if ($ocsComputer) {
-               foreach ($ocsComputer['MODEMS'] as $line2) {
-                  $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
-                  $mdm["designation"] = $line2["NAME"];
-                  if (!in_array(stripslashes($prevalue.$mdm["designation"]), $import_device)){
-                     if (!empty ($line2["DESCRIPTION"])){
-                        $mdm["comment"] = $line2["TYPE"] . "\r\n" . $line2["DESCRIPTION"];
+               if (isset($ocsComputer['MODEMS'])) {
+                  foreach ($ocsComputer['MODEMS'] as $line2) {
+                     $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+                     $mdm["designation"] = $line2["NAME"];
+                     if (!in_array(stripslashes($prevalue.$mdm["designation"]), $import_device)){
+                        if (!empty ($line2["DESCRIPTION"])){
+                           $mdm["comment"] = $line2["TYPE"] . "\r\n" . $line2["DESCRIPTION"];
+                        }
+                        $DevicePci = new DevicePci();
+                        $mdm_id = $DevicePci->import($mdm);
+                        if ($mdm_id){
+                           $devID = $CompDevice->add(array('items_id'        => $computers_id,
+                                                               'itemtype'        => 'Computer',
+                                                               'devicepcis_id'   => $mdm_id,
+                                                               'is_dynamic'      => 1,
+                                                               '_no_history'     => !$dohistory));
+                        }
+                     } else{
+                        $tmp = array_search(stripslashes($prevalue.$mdm["designation"]),
+                        $import_device);
+                        unset ($import_device[$tmp]);
                      }
-                     $DevicePci = new DevicePci();
-                     $mdm_id = $DevicePci->import($mdm);
-                     if ($mdm_id){
-                        $devID = $CompDevice->add(array('items_id'        => $computers_id,
-                                                            'itemtype'        => 'Computer',
-                                                            'devicepcis_id'   => $mdm_id,
-                                                            'is_dynamic'      => 1,
-                                                            '_no_history'     => !$dohistory));
-                     }
-                  } else{
-                     $tmp = array_search(stripslashes($prevalue.$mdm["designation"]),
-                     $import_device);
-                     unset ($import_device[$tmp]);
                   }
                }
             }
             //Ports
             if ($ocsComputer) {
-               foreach ($ocsComputer['PORTS'] as $line2) {
-                  $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
-                  $port["designation"] = "";
-                  if ($line2["TYPE"] != "Other") {
-                     $port["designation"] .= $line2["TYPE"];
-                  }
-                  if ($line2["NAME"] != "Not Specified") {
-                     $port["designation"] .= " " . $line2["NAME"];
-                  } else if ($line2["CAPTION"] != "None") {
-                     $port["designation"] .= " " . $line2["CAPTION"];
-                  }
-                  if (!empty ($port["designation"])) {
-                     if (!in_array(stripslashes($prevalue.$port["designation"]),
-                     $import_device)){
-                        if (!empty ($line2["DESCRIPTION"]) && $line2["DESCRIPTION"] != "None") {
-                           $port["comment"] = $line2["DESCRIPTION"];
+               if (isset($ocsComputer['PORTS'])) {
+                  foreach ($ocsComputer['PORTS'] as $line2) {
+                     $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+                     $port["designation"] = "";
+                     if ($line2["TYPE"] != "Other") {
+                        $port["designation"] .= $line2["TYPE"];
+                     }
+                     if ($line2["NAME"] != "Not Specified") {
+                        $port["designation"] .= " " . $line2["NAME"];
+                     } else if ($line2["CAPTION"] != "None") {
+                        $port["designation"] .= " " . $line2["CAPTION"];
+                     }
+                     if (!empty ($port["designation"])) {
+                        if (!in_array(stripslashes($prevalue.$port["designation"]),
+                        $import_device)){
+                           if (!empty ($line2["DESCRIPTION"]) && $line2["DESCRIPTION"] != "None") {
+                              $port["comment"] = $line2["DESCRIPTION"];
+                           }
+                           $DevicePci = new DevicePci();
+                           $port_id   = $DevicePci->import($port);
+                           if ($port_id) {
+                              $devID = $CompDevice->add(array('items_id'      => $computers_id,
+                                                              'itemtype'      => 'Computer',
+                                                              'devicepcis_id' => $port_id,
+                                                              'is_dynamic'    => 1,
+                                                              '_no_history'   => !$dohistory));
+                           }
+                        } else {
+                           $tmp = array_search(stripslashes($prevalue.$port["designation"]),
+                           $import_device);
+                           unset ($import_device[$tmp]);
                         }
-                        $DevicePci = new DevicePci();
-                        $port_id   = $DevicePci->import($port);
-                        if ($port_id) {
-                           $devID = $CompDevice->add(array('items_id'      => $computers_id,
-                                                           'itemtype'      => 'Computer',
-                                                           'devicepcis_id' => $port_id,
-                                                           'is_dynamic'    => 1,
-                                                           '_no_history'   => !$dohistory));
-                        }
-                     } else {
-                        $tmp = array_search(stripslashes($prevalue.$port["designation"]),
-                        $import_device);
-                        unset ($import_device[$tmp]);
                      }
                   }
                }
@@ -3703,35 +3725,37 @@ JAVASCRIPT;
             //Processeurs:
             $do_clean = true;
             if ($ocsComputer) {
-               $line = $ocsComputer['HARDWARE'];
-               $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
-               for ($i=0 ; $i<$line["PROCESSORN"] ; $i++){
-                  $processor = array();
-                  $processor["designation"] = $line["PROCESSORT"];
-                  if (!is_numeric($line["PROCESSORS"])){
-                     $line["PROCESSORS"] = 0;
-                  }
-                  $processor["frequency_default"] = $line["PROCESSORS"];
-                  $processor["frequence"] = $line["PROCESSORS"];
-                  if (!in_array(stripslashes($prevalue.$processor["designation"]),
-                  $import_device)){
-                     $DeviceProcessor = new DeviceProcessor();
-                     $proc_id         = $DeviceProcessor->import($processor);
-                     if ($proc_id){
-                        $devID = $CompDevice->add(array('items_id'            => $computers_id,
-                                                            'itemtype'            => 'Computer',
-                                                            'deviceprocessors_id' => $proc_id,
-                                                            'frequency'           => $line["PROCESSORS"],
-                                                            'is_dynamic'          => 1,
-                                                            '_no_history'         => !$dohistory));
+               if (isset($ocsComputer['HARDWARE'])) {
+                  $line = $ocsComputer['HARDWARE'];
+                  $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
+                  for ($i=0 ; $i<$line["PROCESSORN"] ; $i++){
+                     $processor = array();
+                     $processor["designation"] = $line["PROCESSORT"];
+                     if (!is_numeric($line["PROCESSORS"])){
+                        $line["PROCESSORS"] = 0;
                      }
-                  } else {
-                     $tmp = array_search(stripslashes($prevalue.$processor["designation"]),
-                     $import_device);
-                     list($type,$id) = explode(self::FIELD_SEPARATOR,$tmp);
-                     $CompDevice->update(array('id'          => $id,
-                                                  'frequency' => $line["PROCESSORS"]));
-                     unset ($import_device[$tmp]);
+                     $processor["frequency_default"] = $line["PROCESSORS"];
+                     $processor["frequence"] = $line["PROCESSORS"];
+                     if (!in_array(stripslashes($prevalue.$processor["designation"]),
+                     $import_device)){
+                        $DeviceProcessor = new DeviceProcessor();
+                        $proc_id         = $DeviceProcessor->import($processor);
+                        if ($proc_id){
+                           $devID = $CompDevice->add(array('items_id'            => $computers_id,
+                                                               'itemtype'            => 'Computer',
+                                                               'deviceprocessors_id' => $proc_id,
+                                                               'frequency'           => $line["PROCESSORS"],
+                                                               'is_dynamic'          => 1,
+                                                               '_no_history'         => !$dohistory));
+                        }
+                     } else {
+                        $tmp = array_search(stripslashes($prevalue.$processor["designation"]),
+                        $import_device);
+                        list($type,$id) = explode(self::FIELD_SEPARATOR,$tmp);
+                        $CompDevice->update(array('id'          => $id,
+                                                     'frequency' => $line["PROCESSORS"]));
+                        unset ($import_device[$tmp]);
+                     }
                   }
                }
             }
@@ -3748,32 +3772,34 @@ JAVASCRIPT;
             //carte graphique
             $do_clean = true;
             if ($ocsComputer) {
-               foreach ($ocsComputer['VIDEOS'] as $line2) {
-                  $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
-                  if ($line2['NAME']) {
-                     $video["designation"] = $line2["NAME"];
-                     if (!is_numeric($line2["MEMORY"])){
-                        $line2["MEMORY"] = 0;
-                     }
-                     if (!in_array(stripslashes($prevalue.$video["designation"]), $import_device)){
-                        $video["memory_default"] = $line2["MEMORY"];
-                        $DeviceGraphicCard = new DeviceGraphicCard();
-                        $video_id = $DeviceGraphicCard->import($video);
-                        if ($video_id){
-                           $devID = $CompDevice->add(array('items_id'               => $computers_id,
-                                                              'itemtype'               => 'Computer',
-                                                              'devicegraphiccards_id'  => $video_id,
-                                                              'memory'                 => $line2["MEMORY"],
-                                                              'is_dynamic'             => 1,
-                                                              '_no_history'            => !$dohistory));
+               if (isset($ocsComputer['VIDEOS'])) {
+                  foreach ($ocsComputer['VIDEOS'] as $line2) {
+                     $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+                     if ($line2['NAME']) {
+                        $video["designation"] = $line2["NAME"];
+                        if (!is_numeric($line2["MEMORY"])){
+                           $line2["MEMORY"] = 0;
                         }
-                     } else{
-                        $tmp = array_search(stripslashes($prevalue.$video["designation"]),
-                        $import_device);
-                        list($type,$id) = explode(self::FIELD_SEPARATOR,$tmp);
-                        $CompDevice->update(array('id'          => $id,
-                                                     'memory' => $line2["MEMORY"]));
-                        unset ($import_device[$tmp]);
+                        if (!in_array(stripslashes($prevalue.$video["designation"]), $import_device)){
+                           $video["memory_default"] = $line2["MEMORY"];
+                           $DeviceGraphicCard = new DeviceGraphicCard();
+                           $video_id = $DeviceGraphicCard->import($video);
+                           if ($video_id){
+                              $devID = $CompDevice->add(array('items_id'               => $computers_id,
+                                                                 'itemtype'               => 'Computer',
+                                                                 'devicegraphiccards_id'  => $video_id,
+                                                                 'memory'                 => $line2["MEMORY"],
+                                                                 'is_dynamic'             => 1,
+                                                                 '_no_history'            => !$dohistory));
+                           }
+                        } else{
+                           $tmp = array_search(stripslashes($prevalue.$video["designation"]),
+                           $import_device);
+                           list($type,$id) = explode(self::FIELD_SEPARATOR,$tmp);
+                           $CompDevice->update(array('id'          => $id,
+                                                        'memory' => $line2["MEMORY"]));
+                           unset ($import_device[$tmp]);
+                        }
                      }
                   }
                }
@@ -3787,30 +3813,32 @@ JAVASCRIPT;
             //carte son
             $do_clean = true;
             if ($ocsComputer) {
-               foreach ($ocsComputer['SOUNDS'] as $line2) {
-                  $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
-                  if ($line2['NAME']) {
-                     if (!$cfg_ocs["ocs_db_utf8"] && !Toolbox::seems_utf8($line2["NAME"])){
-                        $line2["NAME"] = Toolbox::encodeInUtf8($line2["NAME"]);
-                     }
-                     $snd["designation"] = $line2["NAME"];
-                     if (!in_array(stripslashes($prevalue.$snd["designation"]), $import_device)){
-                        if (!empty ($line2["DESCRIPTION"])){
-                           $snd["comment"] = $line2["DESCRIPTION"];
+               if (isset($ocsComputer['SOUNDS'])) {
+                  foreach ($ocsComputer['SOUNDS'] as $line2) {
+                     $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+                     if ($line2['NAME']) {
+                        if (!$cfg_ocs["ocs_db_utf8"] && !Toolbox::seems_utf8($line2["NAME"])){
+                           $line2["NAME"] = Toolbox::encodeInUtf8($line2["NAME"]);
                         }
-                        $DeviceSoundCard = new DeviceSoundCard();
-                        $snd_id          = $DeviceSoundCard->import($snd);
-                        if ($snd_id){
-                           $devID = $CompDevice->add(array('items_id'           => $computers_id,
-                                                              'itemtype'            => 'Computer',
-                                                              'devicesoundcards_id' => $snd_id,
-                                                              'is_dynamic'          => 1,
-                                                              '_no_history'         => !$dohistory));
+                        $snd["designation"] = $line2["NAME"];
+                        if (!in_array(stripslashes($prevalue.$snd["designation"]), $import_device)){
+                           if (!empty ($line2["DESCRIPTION"])){
+                              $snd["comment"] = $line2["DESCRIPTION"];
+                           }
+                           $DeviceSoundCard = new DeviceSoundCard();
+                           $snd_id          = $DeviceSoundCard->import($snd);
+                           if ($snd_id){
+                              $devID = $CompDevice->add(array('items_id'           => $computers_id,
+                                                                 'itemtype'            => 'Computer',
+                                                                 'devicesoundcards_id' => $snd_id,
+                                                                 'is_dynamic'          => 1,
+                                                                 '_no_history'         => !$dohistory));
+                           }
+                        } else{
+                           $id = array_search(stripslashes($prevalue.$snd["designation"]),
+                           $import_device);
+                           unset ($import_device[$id]);
                         }
-                     } else{
-                        $id = array_search(stripslashes($prevalue.$snd["designation"]),
-                        $import_device);
-                        unset ($import_device[$id]);
                      }
                   }
                }
@@ -4404,63 +4432,64 @@ JAVASCRIPT;
    $cfg_ocs, $dohistory){
       global  $DB;
       $already_processed = array();
-      $ocsVirtualmachines = $ocsComuter["VIRTUALMACHINES"];
+      
       $virtualmachine = new ComputerVirtualMachine();
+      if (isset($ocsComuter["VIRTUALMACHINES"])) {
+         $ocsVirtualmachines = $ocsComuter["VIRTUALMACHINES"];
+         if (count($ocsVirtualmachines) > 0){
+            foreach ($ocsVirtualmachines as $ocsVirtualmachine) {
+               $ocsVirtualmachine = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsVirtualmachine));
+               $vm                  = array();
+               $vm['name']          = $ocsVirtualmachine['NAME'];
+               $vm['vcpu']          = $ocsVirtualmachine['VCPU'];
+               $vm['ram']           = $ocsVirtualmachine['MEMORY'];
+               $vm['uuid']          = $ocsVirtualmachine['UUID'];
+               $vm['computers_id']  = $computers_id;
+               $vm['is_dynamic']    = 1;
 
-      if (count($ocsVirtualmachines) > 0){
-         foreach ($ocsVirtualmachines as $ocsVirtualmachine) {
-            $ocsVirtualmachine = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsVirtualmachine));
-            $vm                  = array();
-            $vm['name']          = $ocsVirtualmachine['NAME'];
-            $vm['vcpu']          = $ocsVirtualmachine['VCPU'];
-            $vm['ram']           = $ocsVirtualmachine['MEMORY'];
-            $vm['uuid']          = $ocsVirtualmachine['UUID'];
-            $vm['computers_id']  = $computers_id;
-            $vm['is_dynamic']    = 1;
+               $vm['virtualmachinestates_id']  = Dropdown::importExternal('VirtualMachineState',
+               $ocsVirtualmachine['STATUS']);
+               $vm['virtualmachinetypes_id']   = Dropdown::importExternal('VirtualMachineType',
+               $ocsVirtualmachine['VMTYPE']);
+               $vm['virtualmachinesystems_id'] = Dropdown::importExternal('VirtualMachineType',
+               $ocsVirtualmachine['SUBSYSTEM']);
 
-            $vm['virtualmachinestates_id']  = Dropdown::importExternal('VirtualMachineState',
-            $ocsVirtualmachine['STATUS']);
-            $vm['virtualmachinetypes_id']   = Dropdown::importExternal('VirtualMachineType',
-            $ocsVirtualmachine['VMTYPE']);
-            $vm['virtualmachinesystems_id'] = Dropdown::importExternal('VirtualMachineType',
-            $ocsVirtualmachine['SUBSYSTEM']);
-
-            $query = "SELECT `id`
-                      FROM `glpi_computervirtualmachines`
-                      WHERE `computers_id`='$computers_id'
-                         AND `is_dynamic`";
-            if ($ocsVirtualmachine['UUID']) {
-               $query .= " AND `uuid`='".$ocsVirtualmachine['UUID']."'";
-            } else {
-               // Failback on name
-               $query .= " AND `name`='".$ocsVirtualmachine['NAME']."'";
-            }
-
-            $results = $DB->query($query);
-            if ($DB->numrows($results) > 0){
-               $id = $DB->result($results, 0, 'id');
-            } else {
-               $id = 0;
-            }
-            if (!$id){
-               $virtualmachine->reset();
-               if (!$dohistory){
-                  $vm['_no_history'] = true;
+               $query = "SELECT `id`
+                         FROM `glpi_computervirtualmachines`
+                         WHERE `computers_id`='$computers_id'
+                            AND `is_dynamic`";
+               if ($ocsVirtualmachine['UUID']) {
+                  $query .= " AND `uuid`='".$ocsVirtualmachine['UUID']."'";
+               } else {
+                  // Failback on name
+                  $query .= " AND `name`='".$ocsVirtualmachine['NAME']."'";
                }
-               $id_vm = $virtualmachine->add($vm);
-               if ($id_vm){
-                  $already_processed[] = $id_vm;
+
+               $results = $DB->query($query);
+               if ($DB->numrows($results) > 0){
+                  $id = $DB->result($results, 0, 'id');
+               } else {
+                  $id = 0;
                }
-            } else{
-               if ($virtualmachine->getFromDB($id)){
-                  $vm['id'] = $id;
-                  $virtualmachine->update($vm);
+               if (!$id){
+                  $virtualmachine->reset();
+                  if (!$dohistory){
+                     $vm['_no_history'] = true;
+                  }
+                  $id_vm = $virtualmachine->add($vm);
+                  if ($id_vm){
+                     $already_processed[] = $id_vm;
+                  }
+               } else{
+                  if ($virtualmachine->getFromDB($id)){
+                     $vm['id'] = $id;
+                     $virtualmachine->update($vm);
+                  }
+                  $already_processed[] = $id;
                }
-               $already_processed[] = $id;
             }
          }
       }
-
       // Delete Unexisting Items not found in OCS
       //Look for all ununsed virtual machines
       $query = "SELECT `id`
@@ -4834,19 +4863,21 @@ JAVASCRIPT;
                           FROM `glpi_plugin_ocsinventoryng_registrykeys`
                           WHERE `computers_id` = '$computers_id'";
       $DB->query($query_delete);
-      if (count($ocsComputer["REGISTRY"]) > 0){
-         $reg = new PluginOcsinventoryngRegistryKey();
-         //update data
-         foreach ($ocsComputer["REGISTRY"] as $registry) {
-            $data                  = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
-            $input                 = array();
-            $input["computers_id"] = $computers_id;
-            $input["hive"]         = $registry["REGTREE"];
-            $input["value"]        = $registry["REGVALUE"];
-            $input["path"]         = $registry["REGKEY"];
-            $input["ocs_name"]     = $registry["NAME"];
-            $isNewReg              = $reg->add($input, array('disable_unicity_check' => true));
-            unset($reg->fields);
+      
+      if (isset($ocsComputer['REGISTRY'])) {
+         if (count($ocsComputer["REGISTRY"]) > 0){
+            $reg = new PluginOcsinventoryngRegistryKey();
+            //update data
+            foreach ($ocsComputer["REGISTRY"] as $registry) {
+               $input                 = array();
+               $input["computers_id"] = $computers_id;
+               $input["hive"]         = $registry["regtree"];
+               $input["value"]        = $registry["regvalue"];
+               $input["path"]         = $registry["regkey"];
+               $input["ocs_name"]     = $registry["name"];
+               $isNewReg              = $reg->add($input, array('disable_unicity_check' => true));
+               unset($reg->fields);
+            }
          }
       }
       return;
@@ -5840,23 +5871,20 @@ JAVASCRIPT;
             }
          }
       }
-  //Look for all monitors, not locked, not linked to the computer anymore
-   $query = "SELECT `id`
-                   FROM `glpi_computers_items`
-                   WHERE `itemtype`='Peripheral'
-                      AND `computers_id`='$computers_id'
-                      AND `is_dynamic`='1'
-                      AND `is_deleted`='0'";
-   if (!empty($already_processed)){
-      $query .= "AND `items_id` NOT IN (".implode(',', $already_processed).")";
-   }
-   foreach ($DB->request($query) as $data){
-      //Delete all connexions
-      $conn->delete(array('id'             => $data['id'],
-                                 '_ocsservers_id' => $ocsservers_id), true);
+     //Look for all monitors, not locked, not linked to the computer anymore
+      $query = "SELECT `id`
+                      FROM `glpi_computers_items`
+                      WHERE `itemtype`='Peripheral'
+                         AND `computers_id`='$computers_id'
+                         AND `is_dynamic`='1'
+                         AND `is_deleted`='0'";
+      if (!empty($already_processed)){
+         $query .= "AND `items_id` NOT IN (".implode(',', $already_processed).")";
+      }
+      foreach ($DB->request($query) as $data){
+         //Delete all connexions
+         $conn->delete(array('id'             => $data['id'],
+                                    '_ocsservers_id' => $ocsservers_id), true);
+      }
    }
 }
-}
-
-
-

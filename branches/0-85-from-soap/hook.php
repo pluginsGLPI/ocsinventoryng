@@ -1622,8 +1622,10 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
                $ocsField = $fieldSql[0];
                $glpiField = $fieldSql[count($fieldSql) -1];
                
-               $section = $ocsComputer[$table];
-               
+               $section = array();
+               if (isset($ocsComputer[$table])) {
+                  $section = $ocsComputer[$table];
+               }
                if (array_key_exists($ocsField, $section)) {
                   // Not multi
                  $ocs_data[$glpiField][] = $section[$ocsField];
