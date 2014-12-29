@@ -204,12 +204,10 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
                                                         $profile->fields["name"])."</th>";
       echo "</tr>";
  
-      echo "<tr><th colspan='4'>"._n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng')."</th></tr>";
-
       $used = array();
       echo "<tr class='tab_bg_1'>";
       echo "<td>".sprintf(__('%1$s : %2$s'),
-                          _n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng'), "&nbsp;");
+                          _n('Allowed OCSNG server', 'Allowed OCSNG servers', 2, 'ocsinventoryng'), "&nbsp;");
       //$profile = $this->fields['id'];
       $crit    =  array('profiles_id' => $profiles_id);
       foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers_profiles", $crit) as $data) {
@@ -217,12 +215,18 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
          $configid[$data['ocsservers_id']] = $data['id'];
       }
       if (Session::haveRight("profile", UPDATE)) {
-         Dropdown::show('PluginOcsinventoryngOcsServer', array('used'  => $used,
+         Dropdown::show('PluginOcsinventoryngOcsServer', array('width' => '50%',
+                                                               'used'  => $used,
                                                                'value' => '',
                                                                'condition' => "is_active = 1"));
          echo "&nbsp;&nbsp;<input type='hidden' name='profile' value='$profiles_id'>";
          echo "&nbsp;&nbsp;<input type='submit' name='addocsserver' value=\""._sx('button','Add')."\" class='submit' >";
       }
+      
+      echo "</td><td>";
+      
+      echo "<table width='100%'><tr class='tab_bg_1'><td>";
+      
       $nbservers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers_profiles',
                                         "`profiles_id` = ".$profiles_id);
 
@@ -254,32 +258,28 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
       if (!$nbservers) {
          _e('None');
       }
-      echo "</td>";
-      echo "<td>".__('Rights assignment')."</td><td>";
-      //Html::showCheckbox(array('name'    => '_plugin_ocsinventoryng',
-      //                         'checked' => $effective_rights['plugin_ocsinventoryng'],
-      //                         'rights' => array(READ    => __('Read'),UPDATE  => __('Update'))));
-      
-      $rights = array(READ    => __('Read'),UPDATE  => __('Update'));
-      Profile::getLinearRightChoice($rights,
-                                 array('field' => 'plugin_ocsinventoryng',
-                                       'value' => $effective_rights['plugin_ocsinventoryng']));
       echo "</td></tr>";
-
       if ($nbservers && Session::haveRight("profile", UPDATE)) {
-         echo "<tr><td class='tab_bg_2' colspan='4'>";
+         echo "<tr class='tab_bg_1 center'><td>";
          echo "<input type='submit' name='delete' value='Supprimer' class='submit' >";
          echo "</td></tr>";
       }
+      echo "</table>";
+      echo "</td></tr>";
       echo "</table>";
       Html::closeForm();
       echo "</div>";
    }
    
-   static function getAllRights($all = false) {
+   static function getAllRights() {
       
       
-      $rights = array(array('itemtype' => 'PluginOcsinventoryngOcsServer',
+      $rights = array(
+                  array('itemtype' => 'PluginOcsinventoryngOcsServer',
+                           'label'    =>  _n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng'),
+                           'field'    => 'plugin_ocsinventoryng',
+                           'rights' => array(READ    => __('Read'),UPDATE  => __('Update'))),
+                  array('itemtype' => 'PluginOcsinventoryngOcsServer',
                            'label'    =>  __('Manually synchronization', 'ocsinventoryng'),
                            'field'    => 'plugin_ocsinventoryng_sync',
                    'rights' => array(READ    => __('Read'),UPDATE  => __('Update'))),
@@ -296,12 +296,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
                            'field'    => 'plugin_ocsinventoryng_rule',
                    'rights' => array(READ    => __('Read'),UPDATE  => __('Update')))
                    );
-      if ($all) {
-         $rights[] = array('itemtype' => 'PluginOcsinventoryngOcsServer',
-                           'label'    =>  _n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng'),
-                           'field'    => 'plugin_ocsinventoryng',
-                           'rights' => array(READ    => __('Read'),UPDATE  => __('Update')));
-      }
+
       return $rights;
    }
    
