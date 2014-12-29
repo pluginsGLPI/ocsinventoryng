@@ -238,12 +238,20 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
          echo "<tr class='tab_bg_2'><td class='center'>" . __('Name'). "</td>";
          echo "<td class='center'>";
+         $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                   FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+                   LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
+                      ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                   WHERE `profiles_id`= ".$_SESSION["glpiactiveprofile"]['id']."
+                   ORDER BY `name` ASC";
+         foreach($DB->request($query) as $data) {
+            $ocsservers[] = $data['id'];
+         }
          Dropdown::show('PluginOcsinventoryngOcsServer',
-         array("condition" => "`is_active`='1'",
-               "value"     => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-               "on_change" => 'this.form.submit()',
-               "display_emptychoice"
-               => false));
+                        array("condition"           => "`id` IN ('".implode("','",$ocsservers)."')",
+                              "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                              "on_change"           => "this.form.submit()",
+                              "display_emptychoice" => false));
                echo "</td></tr></table></div>";
                Html::closeForm();
       }
@@ -716,10 +724,10 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_2'><td class='center'>".
       __('Number of items to synchronize via the automatic OCSNG action',  'ocsinventoryng').
       "</td>\n<td>";
-      Dropdown::showNumber('cron_sync_number', array(
-            'value' => $this->fields['cron_sync_number'], 
-            'min'   => 1, 
-            'toadd' => array(0 => __('None'))));
+      Dropdown::showNumber('cron_sync_number',
+                           array('value' => $this->fields['cron_sync_number'],
+                                 'min'   => 1,
+                                 'toadd' => array(0 => __('None'))));
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td class='center'>".
@@ -4792,7 +4800,7 @@ JAVASCRIPT;
                //     if rule have been replayed, modifiedname will be found => ok
                //     if not, GLPI will detect an uninstall (oldname) + install (newname)
 
-               $id = array_search(strtolower(stripslashes($modified_name.self::FIELD_SEPARATOR.$version)),
+               $id = array_search(strtolower(stripslashes($modified_name.self::FIELD_SEPARATOR.$modified_version)),
                $imported);
 
                if ($id) {
@@ -5320,9 +5328,11 @@ JAVASCRIPT;
    static function getFirstServer(){
       global $DB;
 
-      $query = "SELECT `id`
-                FROM `glpi_plugin_ocsinventoryng_ocsservers`
-                ORDER BY `id` ASC LIMIT 1 ";
+      $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+                LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
+                ON `glpi_plugin_ocsinventoryng_ocsservers`.`id` = `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`ocsservers_id`
+                ORDER BY `glpi_plugin_ocsinventoryng_ocsservers`.`id` ASC LIMIT 1 ";
       $results = $DB->query($query);
       if ($DB->numrows($results) > 0){
          return $DB->result($results, 0, 'id');

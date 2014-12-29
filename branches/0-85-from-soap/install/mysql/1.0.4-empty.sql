@@ -2,15 +2,15 @@
 
 DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_profiles`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_profiles` (
-	`id` int(11) NOT NULL auto_increment,
-	`profiles_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_profiles (id)',
-	`ocsng` char(1) collate utf8_unicode_ci default NULL,
-	`sync_ocsng` char(1) collate utf8_unicode_ci default NULL,
-	`view_ocsng` char(1) collate utf8_unicode_ci default NULL,
-	`clean_ocsng` char(1) collate utf8_unicode_ci default NULL,
-	`rule_ocs` char(1) collate utf8_unicode_ci default NULL,
-	PRIMARY KEY  (`id`),
-	KEY `profiles_id` (`profiles_id`)
+   `id` int(11) NOT NULL auto_increment,
+   `profiles_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_profiles (id)',
+   `ocsng` char(1) collate utf8_unicode_ci default NULL,
+   `sync_ocsng` char(1) collate utf8_unicode_ci default NULL,
+   `view_ocsng` char(1) collate utf8_unicode_ci default NULL,
+   `clean_ocsng` char(1) collate utf8_unicode_ci default NULL,
+   `rule_ocs` char(1) collate utf8_unicode_ci default NULL,
+   PRIMARY KEY  (`id`),
+   KEY `profiles_id` (`profiles_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ### Dump table glpi_plugin_ocsinventoryng_ocsadmininfoslinks
@@ -106,7 +106,6 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `import_vms` tinyint(1) NOT NULL DEFAULT '0',
   `import_general_uuid` tinyint(1) NOT NULL DEFAULT '0',
   `ocs_version` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `conn_type` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `date_mod` (`date_mod`),
   KEY `is_active` (`is_active`),
@@ -174,3 +173,16 @@ INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginOcsinventoryngOcsServe
 INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginOcsinventoryngOcsServer','6','3','0');
 
 INSERT INTO `glpi_crontasks` VALUES (NULL,'PluginOcsinventoryngOcsServer','ocsng','300',NULL,'0','1','3','0','24','30',NULL,NULL,NULL);
+
+### Dump table glpi_plugin_ocsinventoryng_ocsservers_profiles
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_ocsservers_profiles`;
+
+CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers_profiles` (
+  `id` int(11) NOT NULL auto_increment,
+  `ocsservers_id` int(11) NOT NULL default '0',
+  `profiles_id` int(11) NOT NULL default '0',
+  PRIMARY KEY (`id`),
+  KEY `ocsservers_id` (`ocsservers_id`),
+  KEY `profiles_id` (`profiles_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci

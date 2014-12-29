@@ -221,17 +221,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $ip = false;
          }
          $networkport_type = new PluginOcsinventoryngNetworkPortType();
-         $TYPEMIB          = (empty($line['TYPEMIB']) ? '' : $line['TYPEMIB']);
-         $TYPE             = (empty($line['TYPE']) ? '' : $line['TYPE']);
-
-         $networkport_type->getFromDBByQuery("WHERE `OCS_TYPE`='$TYPE'
-                                                AND `OCS_TYPEMIB`='$TYPEMIB'");
-         if ($networkport_type->isNewItem()) {
-            $networkport_type->getFromDBByQuery("WHERE `OCS_TYPE`='$TYPE' AND `OCS_TYPEMIB`='*'");
-         }
-         if ($networkport_type->isNewItem()) {
-            $networkport_type->getFromDBByQuery("WHERE `OCS_TYPE`='*' AND `OCS_TYPEMIB`='*'");
-         }
+         $networkport_type->getFromTypeAndTypeMIB($line);
          $speed = NetworkPortEthernet::transformPortSpeed($line['SPEED'], false);
          if (!empty($speed)) {
             $networkport_type->fields['speed'] = $speed;
@@ -378,8 +368,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
          echo "<tr class='tab_bg_1'>\n";
          echo "<td>" . __('Create an entry for defining this type', 'ocsinventoryng') . "</td><td>";
-         $link = PluginOcsinventoryngNetworkPortType::getFormURL(true).'?'.$this->getForeignKeyField().'='.$this->getID();
-         echo "<a href='$link'>" . __('Create', 'ocsinventoryng') . "</a>";
+         echo PluginOcsinventoryngNetworkPortType::getLinkToCreateFromTypeAndTypeMIB($this->fields);
          echo "</td>";
          echo "</tr>\n";
       }
@@ -417,7 +406,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       $row->addCell($row->getHeaderByName('Instantiation', 'TYPE'), $this->fields['TYPE']);
       $row->addCell($row->getHeaderByName('Instantiation', 'TYPEMIB'), $this->fields['TYPEMIB']);
       $link = PluginOcsinventoryngNetworkPortType::getFormURL(true).'?'.$this->getForeignKeyField().'='.$this->getID();
-      $value = "<a href='$link'>".__('Create', 'ocsinventoryng')."</a>";
+      $value = PluginOcsinventoryngNetworkPortType::getLinkToCreateFromTypeAndTypeMIB($this->fields);
       $row->addCell($row->getHeaderByName('Instantiation', 'Generate'), $value);
 
       parent::getInstantiationHTMLTable($netport, $row, $father, $options);
@@ -429,28 +418,20 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       global $DB;
 
       $networkport_type = new PluginOcsinventoryngNetworkPortType();
-      $TYPEMIB          = $this->fields['TYPEMIB'];
-      $TYPE             = $this->fields['TYPE'];
-
-      $networkport_type->getFromDBByQuery("WHERE `OCS_TYPE`='$TYPE'
-                                             AND `OCS_TYPEMIB`='$TYPEMIB'");
-      if ($networkport_type->isNewItem()) {
-         $networkport_type->getFromDBByQuery("WHERE `OCS_TYPE`='$TYPE' AND `OCS_TYPEMIB`='*'");
-      }
-      if ($networkport_type->isNewItem()) {
-         $networkport_type->getFromDBByQuery("WHERE `OCS_TYPE`='*' AND `OCS_TYPEMIB`='*'");
-      }
-
-      if (!$networkport_type->isNewItem()) {
+      if ($networkport_type->getFromTypeAndTypeMIB($this->fields)) {
          if (isset($networkport_type->fields['instantiation_type'])
              && ($networkport_type->fields['instantiation_type'] != __CLASS__)) {
             $networkport = $this->getItem();
             if ($networkport->switchInstantiationType($networkport_type->fields
                                                       ['instantiation_type']) !== false) {
-               $instantiation             = $networkport->getInstantiation();
-               $input2                    = $networkport_type->fields;
-               $input2['networkports_id'] = $this->fields['networkports_id'];
+               $instantiation = $networkport->getInstantiation();
+               $input2        = $networkport_type->fields;
                unset($input2['id']);
+               foreach (array('networkports_id', 'items_devicenetworkcards_id') as $field) {
+                  if (isset($this->fields[$field])) {
+                     $input2[$field] = $this->fields[$field];
+                  }
+               }
                if (isset($this->fields['speed'])) {
                   $input2['speed'] = NetworkPortEthernet::transformPortSpeed($this->fields
                                                                              ['speed'], false);
@@ -463,6 +444,72 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          }
       }
       return false;
+   }
+   
+   static private function getTextualType($type) {
+      if (empty($type)) {
+         return '<i>'.__('empty', 'ocsinventoryng').'</i>';
+      }
+      return $type;
+   }
+
+   static function displayInvalidList() {
+      global $DB;
+
+      $query = "SELECT DISTINCT `TYPE`
+                  FROM `glpi_plugin_ocsinventoryng_networkports`";
+      $type_results = $DB->request($query);
+      echo "<br>\n<div class ='center'><table class='tab_cadrehov'>";
+      if ($type_results->numrows() > 0) {
+         echo "<tr class='tab_bg_2'><th colspan='4'>".__('Unkown network port type from OCS',
+                                                         'ocsinventoryng')."</th></tr>";
+         foreach ($type_results as $type) {
+            $query = "SELECT `TYPEMIB`, `TYPE`,
+                             GROUP_CONCAT(DISTINCT `speed` SEPARATOR '#') AS speed
+                        FROM `glpi_plugin_ocsinventoryng_networkports`
+                       WHERE `TYPE` = '".$type['TYPE']."'
+                       GROUP BY `TYPEMIB`";
+            $typemib_results = $DB->request($query);
+            echo "<tr class='tab_bg_1'>";
+            echo "<td rowspan='".$typemib_results->numrows()."'>".
+                 self::getTextualType($type['TYPE'])."</td>";
+            $first = True;
+            foreach ($typemib_results as $typemib) {
+               if (!$first) {
+                  echo "<tr class='tab_bg_1'>";
+               } else {
+                  $first = False;
+               }
+
+               echo "<td>".self::getTextualType($typemib['TYPEMIB'])."</td>";
+
+               // Normalize speeds ...
+               $speeds = array();
+               foreach (explode('#', $typemib['speed']) as $speed) {
+                  $speed = NetworkPortEthernet::transformPortSpeed($speed, false);
+                  if (($speed !== false) and (!in_array($speed, $speeds))) {
+                     $speeds[] = $speed;
+                  }
+               }
+               asort($speeds);
+               $printable_speeds = array();
+               foreach ($speeds as $speed) {
+                  $printable_speeds[] = NetworkPortEthernet::transformPortSpeed($speed, true);
+               }
+               $typemib['speed'] = implode(', ', $printable_speeds);
+               echo "<td>".$typemib['speed']."</td>";
+
+               echo "<td>" . PluginOcsinventoryngNetworkPortType::
+                             getLinkToCreateFromTypeAndTypeMIB($typemib)."</td>";
+
+               echo "</tr>";
+            }
+         }
+      } else {
+         echo "<tr class='tab_bg_2'><th>".__('No unkown network port type from OCS !',
+                                             'ocsinventoryng')."</th></tr>";
+      }
+      echo "</table></div>";
    }
 }
 ?>
