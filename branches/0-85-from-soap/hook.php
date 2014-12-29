@@ -35,7 +35,7 @@ function plugin_ocsinventoryng_install() {
 
 
    if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers_profiles")
-         && !TableExists("glpi_plugin_ocsinventoryng_ocsservers") {
+         && !TableExists("glpi_plugin_ocsinventoryng_ocsservers")) {
 
       $install = true;
       $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.4-empty.sql");
