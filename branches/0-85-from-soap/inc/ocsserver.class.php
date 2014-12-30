@@ -222,7 +222,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       global $CFG_GLPI, $DB;
 
       $name = "";
-
+      $ocsservers = array();
       echo "<div class='center'>";
       echo "<img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/ocsinventoryng.png' ".
       "alt='OCS Inventory NG' title='OCS Inventory NG'>";
@@ -5389,17 +5389,19 @@ JAVASCRIPT;
 
       // First pass - check if all serial present
       if ($ocsComputer) {
-         foreach ($ocsComputer["MONITORS"] as $monitor) {
-            // Config says import monitor with serial number only
-            // Restrict SQL query ony for monitors with serial present
-            if ($cfg_ocs["import_monitor"] == 4) {
-               if (!empty($monitor["SERIAL"])){
-                  $monitors[] = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($monitor));
+         if (isset($ocsComputer["MONITORS"])) {
+            foreach ($ocsComputer["MONITORS"] as $monitor) {
+               // Config says import monitor with serial number only
+               // Restrict SQL query ony for monitors with serial present
+               if ($cfg_ocs["import_monitor"] == 4) {
+                  if (!empty($monitor["SERIAL"])){
+                     $monitors[] = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($monitor));
+                  }
                }
-            }
-            else{
-               $monitors[] = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($monitor));
-               $checkserial = false;
+               else{
+                  $monitors[] = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($monitor));
+                  $checkserial = false;
+               }
             }
          }
       }
@@ -5609,133 +5611,135 @@ JAVASCRIPT;
       $p      = new Printer();
 
       if (count($ocsComputer["PRINTERS"])>0){
-         foreach ($ocsComputer["PRINTERS"] as $printer){
-            $printer  = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($printer));
-            $print = array();
-            // TO TEST : PARSE NAME to have real name.
-            $print['name'] = self::encodeOcsDataInutf8($cfg_ocs["ocs_db_utf8"], $printer['NAME']);
+         if (isset($ocsComputer["PRINTERS"])) {
+            foreach ($ocsComputer["PRINTERS"] as $printer){
+               $printer  = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($printer));
+               $print = array();
+               // TO TEST : PARSE NAME to have real name.
+               $print['name'] = self::encodeOcsDataInutf8($cfg_ocs["ocs_db_utf8"], $printer['NAME']);
 
-            if (empty ($print["name"])){
-               $print["name"] = $printer["DRIVER"];
-            }
+               if (empty ($print["name"])){
+                  $print["name"] = $printer["DRIVER"];
+               }
 
-            $management_process = $cfg_ocs["import_printer"];
+               $management_process = $cfg_ocs["import_printer"];
 
-            //Params for the dictionnary
-            $params['name']         = $print['name'];
-            $params['manufacturer'] = "";
-            $params['DRIVER']       = $printer['DRIVER'];
-            $params['PORT']         = $printer['PORT'];
+               //Params for the dictionnary
+               $params['name']         = $print['name'];
+               $params['manufacturer'] = "";
+               $params['DRIVER']       = $printer['DRIVER'];
+               $params['PORT']         = $printer['PORT'];
 
-            if (!empty ($print["name"])){
-               $rulecollection = new RuleDictionnaryPrinterCollection();
-               $res_rule
-               = Toolbox::addslashes_deep($rulecollection->processAllRules(Toolbox::stripslashes_deep($params),
-               array(), array()));
+               if (!empty ($print["name"])){
+                  $rulecollection = new RuleDictionnaryPrinterCollection();
+                  $res_rule
+                  = Toolbox::addslashes_deep($rulecollection->processAllRules(Toolbox::stripslashes_deep($params),
+                  array(), array()));
 
-               if (!isset($res_rule["_ignore_import"])
-               || !$res_rule["_ignore_import"]){
+                  if (!isset($res_rule["_ignore_import"])
+                  || !$res_rule["_ignore_import"]){
 
-                  foreach ($res_rule as $key => $value){
-                     if ($value != '' && $value[0] != '_'){
-                        $print[$key] = $value;
+                     foreach ($res_rule as $key => $value){
+                        if ($value != '' && $value[0] != '_'){
+                           $print[$key] = $value;
+                        }
                      }
-                  }
 
-                  if (isset($res_rule['is_global'])){
-                     if (!$res_rule['is_global']){
-                        $management_process = 2;
-                     } else{
-                        $management_process = 1;
-                     }
-                  }
-
-                  //Look for a printer with the same name (and serial if possible) already connected
-                  //to this computer
-                  $query = "SELECT `p`.`id`, `gci`.`is_deleted`
-                               FROM `glpi_printers` as `p`, `glpi_computers_items` as `gci`
-                               WHERE `p`.`id` = `gci`.`items_id`
-                                  AND `gci`.`is_dynamic`='1'
-                                  AND `computers_id`='$computers_id'
-                                  AND `itemtype`='Printer'
-                                  AND `p`.`name`='".$print["name"]."'";
-                  $results = $DB->query($query);
-                  $id      = false;
-                  $lock    = false;
-                  if ($DB->numrows($results) > 0){
-                     $id   = $DB->result($results, 0, 'id');
-                     $lock = $DB->result($results, 0, 'is_deleted');
-                  }
-
-                  if (!$id){
-                     // Clean printer object
-                     $p->reset();
-                     $print["comment"] = $printer["PORT"] . "\r\n" . $printer["DRIVER"];
-                     self::analizePrinterPorts($print, $printer["PORT"]);
-                     $id_printer = 0;
-
-                     if ($management_process == 1){
-                        //Config says : manage printers as global
-                        //check if printers already exists in GLPI
-                        $print["is_global"] = MANAGEMENT_GLOBAL;
-                        $query = "SELECT `id`
-                                      FROM `glpi_printers`
-                                      WHERE `name` = '" . $print["name"] . "'
-                                         AND `is_global` = '1'
-                                         AND `entities_id` = '$entity'";
-                        $result_search = $DB->query($query);
-
-                        if ($DB->numrows($result_search) > 0){
-                           //Periph is already in GLPI
-                           //Do not import anything just get periph ID for link
-                           $id_printer        = $DB->result($result_search, 0, "id");
-                           $already_processed[] = $id_printer;
+                     if (isset($res_rule['is_global'])){
+                        if (!$res_rule['is_global']){
+                           $management_process = 2;
                         } else{
-                           $input = $print;
+                           $management_process = 1;
+                        }
+                     }
+
+                     //Look for a printer with the same name (and serial if possible) already connected
+                     //to this computer
+                     $query = "SELECT `p`.`id`, `gci`.`is_deleted`
+                                  FROM `glpi_printers` as `p`, `glpi_computers_items` as `gci`
+                                  WHERE `p`.`id` = `gci`.`items_id`
+                                     AND `gci`.`is_dynamic`='1'
+                                     AND `computers_id`='$computers_id'
+                                     AND `itemtype`='Printer'
+                                     AND `p`.`name`='".$print["name"]."'";
+                     $results = $DB->query($query);
+                     $id      = false;
+                     $lock    = false;
+                     if ($DB->numrows($results) > 0){
+                        $id   = $DB->result($results, 0, 'id');
+                        $lock = $DB->result($results, 0, 'is_deleted');
+                     }
+
+                     if (!$id){
+                        // Clean printer object
+                        $p->reset();
+                        $print["comment"] = $printer["PORT"] . "\r\n" . $printer["DRIVER"];
+                        self::analizePrinterPorts($print, $printer["PORT"]);
+                        $id_printer = 0;
+
+                        if ($management_process == 1){
+                           //Config says : manage printers as global
+                           //check if printers already exists in GLPI
+                           $print["is_global"] = MANAGEMENT_GLOBAL;
+                           $query = "SELECT `id`
+                                         FROM `glpi_printers`
+                                         WHERE `name` = '" . $print["name"] . "'
+                                            AND `is_global` = '1'
+                                            AND `entities_id` = '$entity'";
+                           $result_search = $DB->query($query);
+
+                           if ($DB->numrows($result_search) > 0){
+                              //Periph is already in GLPI
+                              //Do not import anything just get periph ID for link
+                              $id_printer        = $DB->result($result_search, 0, "id");
+                              $already_processed[] = $id_printer;
+                           } else{
+                              $input = $print;
+
+                              if ($cfg_ocs["states_id_default"]>0){
+                                 $input["states_id"] = $cfg_ocs["states_id_default"];
+                              }
+                              $input["entities_id"] = $entity;
+                              $id_printer           = $p->add($input);
+                           }
+
+                        } else if ($management_process == 2){
+                           //Config says : manage printers as single units
+                           //Import all printers as non global.
+                           $input              = $print;
+                           $input["is_global"] = MANAGEMENT_UNITARY;
 
                            if ($cfg_ocs["states_id_default"]>0){
                               $input["states_id"] = $cfg_ocs["states_id_default"];
                            }
                            $input["entities_id"] = $entity;
+                           $input['is_dynamic']  = 1;
                            $id_printer           = $p->add($input);
                         }
 
-                     } else if ($management_process == 2){
-                        //Config says : manage printers as single units
-                        //Import all printers as non global.
-                        $input              = $print;
-                        $input["is_global"] = MANAGEMENT_UNITARY;
+                        if ($id_printer){
+                           $already_processed[] = $id_printer;
+                           $conn   = new Computer_Item();
+                           $connID = $conn->add(array('computers_id' => $computers_id,
+                                                          'itemtype'     => 'Printer',
+                                                          'items_id'     => $id_printer,
+                                                          '_no_history'  => !$dohistory,
+                                                          'is_dynamic' => 1));
+                           //Update column "is_deleted" set value to 0 and set status to default
+                           $input                = array();
+                           $input["id"]          = $id_printer;
+                           $input["is_deleted"]  = 0;
+                           $input["entities_id"] = $entity;
 
-                        if ($cfg_ocs["states_id_default"]>0){
-                           $input["states_id"] = $cfg_ocs["states_id_default"];
+                           if ($cfg_ocs["states_id_default"]>0){
+                              $input["states_id"] = $cfg_ocs["states_id_default"];
+                           }
+                           $p->update($input);
                         }
-                        $input["entities_id"] = $entity;
-                        $input['is_dynamic']  = 1;
-                        $id_printer           = $p->add($input);
+
+                     } else{
+                        $already_processed[] = $id;
                      }
-
-                     if ($id_printer){
-                        $already_processed[] = $id_printer;
-                        $conn   = new Computer_Item();
-                        $connID = $conn->add(array('computers_id' => $computers_id,
-                                                       'itemtype'     => 'Printer',
-                                                       'items_id'     => $id_printer,
-                                                       '_no_history'  => !$dohistory,
-                                                       'is_dynamic' => 1));
-                        //Update column "is_deleted" set value to 0 and set status to default
-                        $input                = array();
-                        $input["id"]          = $id_printer;
-                        $input["is_deleted"]  = 0;
-                        $input["entities_id"] = $entity;
-
-                        if ($cfg_ocs["states_id_default"]>0){
-                           $input["states_id"] = $cfg_ocs["states_id_default"];
-                        }
-                        $p->update($input);
-                     }
-
-                  } else{
-                     $already_processed[] = $id;
                   }
                }
             }
@@ -5777,106 +5781,108 @@ JAVASCRIPT;
       $already_processed = array();
       $p                 = new Peripheral();
       $conn              = new Computer_Item();
-
-      if (count($ocsComputer["INPUTS"]) > 0){
-         foreach ($ocsComputer["INPUTS"] as $peripheral) {
-            if($peripheral["CAPTION"]!==''){
-               $peripherals[]=$peripheral;
-            }
-         }
-         if (count($peripherals) > 0){
-            foreach ($peripherals as $peripheral) {
-               $peripheral   = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($peripheral));
-               $periph = array();
-               $periph["name"] = self::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"], $peripheral["CAPTION"]);
-               //Look for a monitor with the same name (and serial if possible) already connected
-               //to this computer
-               $query = "SELECT `p`.`id`, `gci`.`is_deleted`
-                                    FROM `glpi_printers` as `p`, `glpi_computers_items` as `gci`
-                                    WHERE `p`.`id` = `gci`.`items_id`
-                                    AND `gci`.`is_dynamic`='1'
-                                    AND `computers_id`='$computers_id'
-                                    AND `itemtype`='Peripheral'
-                                    AND `p`.`name`='".$periph["name"]."'";
-               $results = $DB->query($query);
-               $id      = false;
-               $lock    = false;
-               if ($DB->numrows($results) > 0){
-                  $id   = $DB->result($results, 0, 'id');
-                  $lock = $DB->result($results, 0, 'is_deleted');
+      
+      if (isset($ocsComputer["INPUTS"])) {
+         if (count($ocsComputer["INPUTS"]) > 0){
+            foreach ($ocsComputer["INPUTS"] as $peripheral) {
+               if($peripheral["CAPTION"]!==''){
+                  $peripherals[]=$peripheral;
                }
-               if (!$id){
-                  // Clean peripheral object
-                  $p->reset();
-                  if ($peripheral["MANUFACTURER"] != "NULL"){
-                     $periph["brand"] = self::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"],
-                     $peripheral["MANUFACTURER"]);
+            }
+            if (count($peripherals) > 0){
+               foreach ($peripherals as $peripheral) {
+                  $peripheral   = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($peripheral));
+                  $periph = array();
+                  $periph["name"] = self::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"], $peripheral["CAPTION"]);
+                  //Look for a monitor with the same name (and serial if possible) already connected
+                  //to this computer
+                  $query = "SELECT `p`.`id`, `gci`.`is_deleted`
+                                       FROM `glpi_printers` as `p`, `glpi_computers_items` as `gci`
+                                       WHERE `p`.`id` = `gci`.`items_id`
+                                       AND `gci`.`is_dynamic`='1'
+                                       AND `computers_id`='$computers_id'
+                                       AND `itemtype`='Peripheral'
+                                       AND `p`.`name`='".$periph["name"]."'";
+                  $results = $DB->query($query);
+                  $id      = false;
+                  $lock    = false;
+                  if ($DB->numrows($results) > 0){
+                     $id   = $DB->result($results, 0, 'id');
+                     $lock = $DB->result($results, 0, 'is_deleted');
                   }
-                  if ($peripheral["INTERFACE"] != "NULL"){
-                     $periph["comment"] = self::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"],
-                     $peripheral["INTERFACE"]);
-                  }
-                  $periph["peripheraltypes_id"] = Dropdown::importExternal('PeripheralType',
-                  $peripheral["TYPE"]);
-                  $id_periph = 0;
-                  if ($cfg_ocs["import_periph"] == 1){
-                     //Config says : manage peripherals as global
-                     //check if peripherals already exists in GLPI
-                     $periph["is_global"] = 1;
-                     $query = "SELECT `id`
-                                        FROM `glpi_peripherals`
-                                        WHERE `name` = '" . $periph["name"] . "'
-                                        AND `is_global` = '1'
-                                        AND `entities_id` = '$entity'";
-                     $result_search = $DB->query($query);
-                     if ($DB->numrows($result_search) > 0){
-                        //Periph is already in GLPI
-                        //Do not import anything just get periph ID for link
-                        $id_periph = $DB->result($result_search, 0, "id");
+                  if (!$id){
+                     // Clean peripheral object
+                     $p->reset();
+                     if ($peripheral["MANUFACTURER"] != "NULL"){
+                        $periph["brand"] = self::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"],
+                        $peripheral["MANUFACTURER"]);
                      }
-                     else{
+                     if ($peripheral["INTERFACE"] != "NULL"){
+                        $periph["comment"] = self::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"],
+                        $peripheral["INTERFACE"]);
+                     }
+                     $periph["peripheraltypes_id"] = Dropdown::importExternal('PeripheralType',
+                     $peripheral["TYPE"]);
+                     $id_periph = 0;
+                     if ($cfg_ocs["import_periph"] == 1){
+                        //Config says : manage peripherals as global
+                        //check if peripherals already exists in GLPI
+                        $periph["is_global"] = 1;
+                        $query = "SELECT `id`
+                                           FROM `glpi_peripherals`
+                                           WHERE `name` = '" . $periph["name"] . "'
+                                           AND `is_global` = '1'
+                                           AND `entities_id` = '$entity'";
+                        $result_search = $DB->query($query);
+                        if ($DB->numrows($result_search) > 0){
+                           //Periph is already in GLPI
+                           //Do not import anything just get periph ID for link
+                           $id_periph = $DB->result($result_search, 0, "id");
+                        }
+                        else{
+                           $input = $periph;
+                           if ($cfg_ocs["states_id_default"]>0){
+                              $input["states_id"] = $cfg_ocs["states_id_default"];
+                           }
+                           $input["entities_id"] = $entity;
+                           $id_periph = $p->add($input);
+                        }
+                     }
+                     else if ($cfg_ocs["import_periph"] == 2){
+                        //Config says : manage peripherals as single units
+                        //Import all peripherals as non global.
                         $input = $periph;
+                        $input["is_global"] = 0;
                         if ($cfg_ocs["states_id_default"]>0){
                            $input["states_id"] = $cfg_ocs["states_id_default"];
                         }
                         $input["entities_id"] = $entity;
                         $id_periph = $p->add($input);
                      }
-                  }
-                  else if ($cfg_ocs["import_periph"] == 2){
-                     //Config says : manage peripherals as single units
-                     //Import all peripherals as non global.
-                     $input = $periph;
-                     $input["is_global"] = 0;
-                     if ($cfg_ocs["states_id_default"]>0){
-                        $input["states_id"] = $cfg_ocs["states_id_default"];
-                     }
-                     $input["entities_id"] = $entity;
-                     $id_periph = $p->add($input);
-                  }
 
-                  if ($id_periph){
-                     $already_processed[] = $id_periph;
-                     $conn                = new Computer_Item();
-                     if ($connID = $conn->add(array('computers_id' => $computers_id,
-                                                                  'itemtype'     => 'Peripheral',
-                                                                  'items_id'     => $id_periph,
-                                                                  '_no_history'  => !$dohistory,
-                                                                  'is_dynamic' => 1))){
-                     //Update column "is_deleted" set value to 0 and set status to default
-                     $input                = array();
-                     $input["id"]          = $id_periph;
-                     $input["is_deleted"]  = 0;
-                     $input["entities_id"] = $entity;
-                     if ($cfg_ocs["states_id_default"]>0){
-                        $input["states_id"] = $cfg_ocs["states_id_default"];
+                     if ($id_periph){
+                        $already_processed[] = $id_periph;
+                        $conn                = new Computer_Item();
+                        if ($connID = $conn->add(array('computers_id' => $computers_id,
+                                                                     'itemtype'     => 'Peripheral',
+                                                                     'items_id'     => $id_periph,
+                                                                     '_no_history'  => !$dohistory,
+                                                                     'is_dynamic' => 1))){
+                        //Update column "is_deleted" set value to 0 and set status to default
+                        $input                = array();
+                        $input["id"]          = $id_periph;
+                        $input["is_deleted"]  = 0;
+                        $input["entities_id"] = $entity;
+                        if ($cfg_ocs["states_id_default"]>0){
+                           $input["states_id"] = $cfg_ocs["states_id_default"];
+                        }
+                        $p->update($input);
+                                                                     }
                      }
-                     $p->update($input);
-                                                                  }
                   }
-               }
-               else{
-                  $already_processed[] = $id;
+                  else{
+                     $already_processed[] = $id;
+                  }
                }
             }
          }

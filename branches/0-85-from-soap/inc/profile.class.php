@@ -165,33 +165,10 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
    function showForm($profiles_id=0, $openform=TRUE, $closeform=TRUE) {
       global $DB, $CFG_GLPI;
       
-      echo "<div class='firstbloc'>";
-      if (($canedit = Session::haveRightsOr(self::$rightname, array(CREATE, UPDATE, PURGE)))
-          && $openform) {
-         $profile = new Profile();
-         echo "<form method='post' action='".$profile->getFormURL()."'>";
-      }
-
       $profile = new Profile();
       $profile->getFromDB($profiles_id);
-
-      $rights = $this->getAllRights();
-
-      $profile->displayRightsChoiceMatrix($rights, array('canedit'       => $canedit,
-                                                         'default_class' => 'tab_bg_2',
-                                                         'title'         => __('General')));
-
       
-      if ($canedit
-          && $closeform) {
-         echo "<div class='center'>";
-         echo Html::hidden('id', array('value' => $profiles_id));
-         echo Html::submit(_sx('button', 'Save'), 
-                           array('name' => 'update'));
-         echo "</div>\n";
-         Html::closeForm();
-      }
-      
+      echo "<div class='firstbloc'>";
       
       if (($canedit = Session::haveRightsOr(self::$rightname, array(CREATE, UPDATE, PURGE)))
           && $openform) {
@@ -268,6 +245,30 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
       echo "</td></tr>";
       echo "</table>";
       Html::closeForm();
+      
+      if (($canedit = Session::haveRightsOr(self::$rightname, array(CREATE, UPDATE, PURGE)))
+          && $openform) {
+         
+         echo "<form method='post' action='".$profile->getFormURL()."'>";
+      }
+
+      $rights = $this->getAllRights();
+
+      $profile->displayRightsChoiceMatrix($rights, array('canedit'       => $canedit,
+                                                         'default_class' => 'tab_bg_2',
+                                                         'title'         => __('General')));
+
+      
+      if ($canedit
+          && $closeform) {
+         echo "<div class='center'>";
+         echo Html::hidden('id', array('value' => $profiles_id));
+         echo Html::submit(_sx('button', 'Save'), 
+                           array('name' => 'update'));
+         echo "</div>\n";
+         Html::closeForm();
+      }
+      
       echo "</div>";
    }
    

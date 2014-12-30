@@ -45,7 +45,7 @@ if (!isset($_POST["clean_ok"])) {
                                                        $_GET['check'], $_GET['start']);
 
 } else {
-   plugin_ocsinventoryng_checkRight("clean_ocsng", "w");
+   Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);
    if (count($_POST['toclean']) > 0) {
       PluginOcsinventoryngOcsServer::cleanLinksFromList($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                         $_POST['toclean']);

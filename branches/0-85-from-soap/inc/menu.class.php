@@ -31,7 +31,7 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
    static $rightname = 'plugin_ocsinventoryng';
 
    static function getMenuName() {
-      return 'OCSInventory NG';
+      return 'OCS Inventory NG';
    }
 
    static function getMenuContent() {
