@@ -3186,7 +3186,7 @@ JAVASCRIPT;
 
                      echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
                      if (!$tolinked){
-                  self::checkBox($target);
+                        self::checkBox($target);
                      }
                      echo "<table class='tab_cadre_fixe'>";
 
@@ -3202,9 +3202,9 @@ JAVASCRIPT;
                      echo "<th>" . __('Date')."</th>\n";
                      echo "<th>".__('OCSNG TAG', 'ocsinventoryng')."</th>\n";
                      if ($advanced && !$tolinked){
-                  echo "<th>" . __('Match the rule ?', 'ocsinventoryng') . "</th>\n";
-                  echo "<th>" . __('Destination entity') . "</th>\n";
-                  echo "<th>" . __('Target location', 'ocsinventoryng') . "</th>\n";
+                        echo "<th>" . __('Match the rule ?', 'ocsinventoryng') . "</th>\n";
+                        echo "<th>" . __('Destination entity') . "</th>\n";
+                        echo "<th>" . __('Target location', 'ocsinventoryng') . "</th>\n";
                      }
                      echo "<th width='20%'>&nbsp;</th></tr>\n";
 
@@ -3231,25 +3231,25 @@ JAVASCRIPT;
                      } else{
                         echo "<td class='center'>";
                         $tmprule = new RuleImportEntity();
-                        if ($tmprule->can($data['_ruleid'],'r')){
+                        if ($tmprule->can($data['_ruleid'],READ)){
                            echo "<a href='". $tmprule->getLinkURL()."'>".$tmprule->getName()."</a>";
                         }  else{
                            echo $tmprule->getName();
                         }
                         echo "</td>\n";
                      }
-                     echo "<td>";
-                     Entity::dropdown(array('name'     => "toimport_entities[".$tab["id"]."]=".
-                     $data['entities_id'],
+                     echo "<td width='30%'>";
+                     $ent = "toimport_entities[".$tab["id"]."]";
+                     Entity::dropdown(array('name'     => $ent,
                                              'value'    => $data['entities_id'],
                                             'comments' => 0));
                      echo "</td>\n";
-                     echo "<td>";
+                     echo "<td width='30%'>";
                      if (!isset($data['locations_id'])){
                         $data['locations_id'] = 0;
                      }
-                     Location::dropdown(array('name'     => "toimport_locations[".$tab["id"]."]=".
-                     $data['locations_id'],
+                     $loc = "toimport_locations[".$tab["id"]."]";
+                     Location::dropdown(array('name'     => $loc,
                                               'value'    => $data['locations_id'],
                                               'comments' => 0));
                      echo "</td>\n";

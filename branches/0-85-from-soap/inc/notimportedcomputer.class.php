@@ -148,7 +148,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
             if ($rule = getItemForItemtype($key)) {
             
                $rule = new $key();
-               if ($rule->can($value,'r')) {
+               if ($rule->can($value,READ)) {
                   $url = $rule->getLinkURL();
                   $message[] = "<a href='$url'>".$rule->getName()."</a>";
                }

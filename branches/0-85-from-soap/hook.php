@@ -1177,7 +1177,7 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
          if ($_POST['field'] == 'all' || isset($fields[$_POST['field']])) {
             foreach ($_POST["item"] as $key => $val) {
                if ($val == 1) {
-                  if ($item->can($key,'w')) {
+                  if ($item->can($key,UPDATE)) {
                      if ($_POST['field'] == 'all') {
                         if (PluginOcsinventoryngOcsServer::replaceOcsArray($key, array(),
                                                                            "computer_update")) {
@@ -1223,7 +1223,7 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
          } else {
             if (count($_SESSION['glpi_massiveaction']['items']) > 0) {
                $key = array_pop($_SESSION['glpi_massiveaction']['items']);
-               if ($item->can($key,'w')) {
+               if ($item->can($key,UPDATE)) {
                   //Try to get the OCS server whose machine belongs
                   $query = "SELECT `plugin_ocsinventoryng_ocsservers_id`, `id`
                             FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -2008,7 +2008,7 @@ function plugin_ocsinventoryng_showLocksForItem($params = array()) {
  */
 function plugin_ocsinventoryng_unlockFields($params = array()) {
    $computer = new Computer();
-   $computer->check($_POST['id'], 'w');
+   $computer->check($_POST['id'], UPDATE);
    if (isset($_POST["lockfield"]) && count($_POST["lockfield"])) {
       foreach ($_POST["lockfield"] as $key => $val) {
          PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST["id"], $key, "computer_update");
