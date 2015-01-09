@@ -212,7 +212,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                      = PluginOcsinventoryngOcsServer::getConfig(PluginOcsinventoryngOcsServer::getByMachineID($items_id));
 
                   echo "<div class='center'>";
-                  echo "<form method='post' action=\"$target\">";
+                  //echo "<form method='post' action=\"$target\">";
                   echo "<input type='hidden' name='id' value='$items_id'>";
                   echo "<table class='tab_cadre_fixe'>";
                   echo "<tr><th colspan = '4'>OCS Inventory NG</th>";
@@ -252,7 +252,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   }
 
                   echo "</table>\n";
-                  Html::closeForm();
+                  //Html::closeForm();
                   echo "</div>";
                }
             }
