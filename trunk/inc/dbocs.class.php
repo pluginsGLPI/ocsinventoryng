@@ -29,27 +29,20 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
-
 /// DB class to connect to a OCS server
 class PluginOcsinventoryngDBocs extends DBmysql {
-
-   ///Store the id of the ocs server
-   var $ocsservers_id = -1;
-
    /**
     * Constructor
     *
     * @param $ID ID of the ocs server ID
    **/
-   function __construct($ID) {
+   function __construct($dbhost, $dbuser ,$dbpassword, $dbdefault) {
 
-      $this->ocsservers_id = $ID;
-      $data             = PluginOcsinventoryngOcsServer::getConfig($ID);
-      $this->dbhost     = $data["ocs_db_host"];
-      $this->dbuser     = $data["ocs_db_user"];
-      $this->dbpassword = rawurldecode($data["ocs_db_passwd"]);
-      $this->dbdefault  = $data["ocs_db_name"];
-      $this->dbenc      = $data["ocs_db_utf8"] ? "utf8" : "latin1";
+      $this->dbhost     = $dbhost;
+      $this->dbuser     = $dbuser;
+      $this->dbpassword = $dbpassword;
+      $this->dbdefault  = $dbdefault;
+ 
       parent::__construct();
    }
 
@@ -62,6 +55,6 @@ class PluginOcsinventoryngDBocs extends DBmysql {
    function getServerID() {
       return $this->ocsservers_id;
    }
-
 }
+
 ?>

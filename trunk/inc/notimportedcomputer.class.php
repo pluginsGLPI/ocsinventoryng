@@ -30,7 +30,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
 
    // From CommonDBTM
    public $dohistory          = true;
-
+   static $rightname = "plugin_ocsinventoryng";
    public $first_level_menu   = "plugins";
    public $second_level_menu  = "ocsinventoryng";
 
@@ -108,7 +108,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
    **/
    function displaySpecificTypeField($ID, $field=array()) {
 
-   	switch ($field['type']) {
+      switch ($field['type']) {
          case 'echo' :
             echo $this->fields[$field['name']];
             break;
@@ -148,7 +148,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
             if ($rule = getItemForItemtype($key)) {
             
                $rule = new $key();
-               if ($rule->can($value,'r')) {
+               if ($rule->can($value,READ)) {
                   $url = $rule->getLinkURL();
                   $message[] = "<a href='$url'>".$rule->getName()."</a>";
                }
@@ -198,16 +198,6 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
             Log::showForItem($this);
             break;
       }
-   }
-
-
-   static function canCreate() {
-      return plugin_ocsinventoryng_haveRight("ocsng", "w");
-   }
-
-
-   static function canView() {
-      return Session::haveRight("logs", "r");
    }
 
 
@@ -291,29 +281,31 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
     * @param $reason
    **/
    function logNotImported($ocsservers_id,$ocsid,$reason) {
-      global $PluginOcsinventoryngDBocs,$DB;
+      global $DB;
 
       PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id);
+      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
+               $options = array(
+                       "DISPLAY"=> array(
+                       "CHECKSUM"=> PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE 
+                               |    PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
+                   )
+                 );
+      $computer = $ocsClient->getComputer($ocsid,$options);
 
-      $query = "SELECT *
-                FROM `hardware`, `accountinfo`, `bios`
-                WHERE (`accountinfo`.`HARDWARE_ID` = `hardware`.`ID`
-                         AND `bios`.`HARDWARE_ID` = `hardware`.`ID`
-                            AND `hardware`.`ID` = '$ocsid')";
-      $result = $PluginOcsinventoryngDBocs->query($query);
-      if ($result && $PluginOcsinventoryngDBocs->numrows($result)) {
-         $line             = $PluginOcsinventoryngDBocs->fetch_array($result);
+
+      if ($computer["HARDWARE"] && $computer["BIOS"] && $computer["ACCOUNTINFO"] ) {
          $input["_ocs"]                                  = true;
-         $input["name"]                                  = $line["NAME"];
-         $input["domain"]                                = $line["WORKGROUP"];
-         $input["tag"]                                   = $line["TAG"];
-         $input["ocs_deviceid"]                          = $line["DEVICEID"];
-         $input["ipaddr"]                                = $line["IPADDR"];
+         $input["name"]                                  = $computer["HARDWARE"]["NAME"];
+         $input["domain"]                                = $computer["HARDWARE"]["WORKGROUP"];
+         $input["tag"]                                   = $computer["META"]["TAG"];
+         $input["ocs_deviceid"]                          = $computer["HARDWARE"]["DEVICEID"];
+         $input["ipaddr"]                                = $computer["HARDWARE"]["IPADDR"];
          $input["plugin_ocsinventoryng_ocsservers_id"]   = $ocsservers_id;
          $input["ocsid"]                                 = $ocsid;
-         $input["last_inventory"]                        = $line["LASTCOME"];
-         $input["useragent"]                             = $line["USERAGENT"];
-         $input["serial"]                                = $line["SSN"];
+         $input["last_inventory"]                        = $computer["HARDWARE"]["LASTCOME"];
+         $input["useragent"]                             = $computer["HARDWARE"]["USERAGENT"];
+         $input["serial"]                                = $computer["BIOS"]["SSN"];
          $input["reason"]                                = $reason['status'];
          $input["comment"]                               = "";
          if (isset($reason['entities_id'])) {
@@ -446,7 +438,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
                                                                      0, $params['entity'], 0);
          } else {
             $result = PluginOcsinventoryngOcsServer::processComputer($notimported->fields['ocsid'],
-                                                                     $notimported->fields['plugin_ocsinventoryng_ocsservers_id']);
+                                                                     $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],0,-1,-1);
          }
 
          if (in_array($result['status'],
@@ -460,9 +452,13 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
                PluginOcsinventoryngOcsServer::mergeOcsArray($result['computers_id'],
                                                             array('serial'), "computer_update");
             }
-
-            addMessageAfterRedirect(__('Model'));
+            
+            
             return true;
+         } else {
+            Session::addMessageAfterRedirect(self::getReason($result['status']),
+         false, ERROR);
+            return false;
          }
 
          $tmp           = $notimported->fields;
@@ -507,38 +503,26 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
     * @param $params array
    **/
    static function getOcsComputerInfos($params=array()) {
-      global $PluginOcsinventoryngDBocs;
-
       PluginOcsinventoryngOcsServer::checkOCSconnection($params['plugin_ocsinventoryng_ocsservers_id']);
-
+      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($params['plugin_ocsinventoryng_ocsservers_id']);
+               $options = array(
+                       "DISPLAY"=> array(
+                       "CHECKSUM"=>PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
+                   )
+                 );
+      $computer = $ocsClient->getComputer($params['ocsid'],$options);
       $changes = array();
-      $query   = "SELECT `SSN` FROM `bios`
-                  WHERE `HARDWARE_ID` = '".$params['ocsid']."'";
-      $result  = $PluginOcsinventoryngDBocs->query($query);
 
-      if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
-         $ocs_serial = $PluginOcsinventoryngDBocs->result($result,0,'SSN');
+      if ($computer) {
+          $ocs_serial = $computer["BIOS"]["SSN"];
          if ($ocs_serial != $params['serial']) {
-            $query_serial = "UPDATE `bios`
-                             SET `SSN` = '".$params['serial']."'" .
-                  "          WHERE `HARDWARE_ID` = '".$params['ocsid']."'";
-            $PluginOcsinventoryngDBocs->query($query_serial);
+            $ocsClient->updateBios($params['serial'],$params['ocsid']);
             $changes[] = 'serial';
          }
-      }
-      $query = "SELECT `TAG`
-                FROM `accountinfo`
-                WHERE `HARDWARE_ID` = '".$params['ocsid']."'";
-      $result = $PluginOcsinventoryngDBocs->query($query);
-
-      if ($PluginOcsinventoryngDBocs->numrows($result) > 0) {
-         $ocs_tag = $PluginOcsinventoryngDBocs->result($result,0,'TAG');
+         $ocs_tag = $computer["META"]["TAG"];
          if ($ocs_tag != $params['tag']) {
-            $query_serial = "UPDATE `accountinfo`
-                             SET `TAG` = '".$params['tag']."'
-                            WHERE `HARDWARE_ID` = '".$params['ocsid']."'";
-            $PluginOcsinventoryngDBocs->query($query_serial);
-            $changes[] = 'tag';
+           $ocsClient->updateBios($params['tag'],$params['ocsid']);
+           $changes[] = 'tag';
          }
       }
 
@@ -600,17 +584,115 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
 
    
    static function cronInfo($name) {
-      global $LANG;
    
       switch ($name) {
          case "sendAlerts" :
-            return array('description' => $LANG["massocsimport"]["config"][23]);
+            return array('description' => __('Not imported computers alert', 'ocsinventoryng'));
         }
    }
         
    static function cronSendAlerts($task) {
       self::sendAlert();
       $task->setVolume(1);
+   }
+   
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::getSpecificMassiveActions()
+   **/
+   function getSpecificMassiveActions($checkitem=NULL) {
+
+      $actions = parent::getSpecificMassiveActions($checkitem);
+
+      return $actions;
+   }
+   
+   function getForbiddenStandardMassiveAction() {
+
+      $forbidden   = parent::getForbiddenStandardMassiveAction();
+      $forbidden[] = 'update';
+      return $forbidden;
+   }
+
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::showMassiveActionsSubForm()
+   **/
+   static function showMassiveActionsSubForm(MassiveAction $ma) {
+
+      switch ($ma->getAction()) {
+         case 'plugin_ocsinventoryng_import':
+            Entity::dropdown(array('name' => 'entity'));
+            echo "&nbsp;".
+                 Html::submit(_x('button','Post'), array('name' => 'massiveaction'));
+            return true;
+         /*case 'plugin_ocsinventoryng_link':
+            Computer::dropdown(array('name' => 'computers_id'));
+            echo "&nbsp;".
+                 Html::submit(_x('button','Post'), array('name' => 'massiveaction'));
+            return true;*/
+         case 'plugin_ocsinventoryng_replayrules':
+         case 'plugin_ocsinventoryng_delete':
+            echo "&nbsp;".
+                 Html::submit(_x('button','Post'), array('name' => 'massiveaction'));
+            return true;
+    }
+      return parent::showMassiveActionsSubForm($ma);
+   }
+
+
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::processMassiveActionsForOneItemtype()
+   **/
+   static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
+                                                       array $ids) {
+      global $DB;
+      
+      $notimport = new PluginOcsinventoryngNotimportedcomputer();
+      
+      switch ($ma->getAction()) {
+         case "plugin_ocsinventoryng_import":
+            $input = $ma->getInput();
+            
+            foreach ($ids as $id) {
+               if (PluginOcsinventoryngNotimportedcomputer::computerImport(array('id'     => $id,
+                                                                                'force'  => true,
+                                                                                'entity' => $input['entity']))) {
+                  $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+               } else {
+                  $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+               }
+            }
+
+            return;
+         
+         case "plugin_ocsinventoryng_replayrules" :
+            $input = $ma->getInput();
+            foreach ($ids as $id) {
+               if (PluginOcsinventoryngNotimportedcomputer::computerImport(array('id' => $id))) {
+                  $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+               } else {
+                  $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+               }
+            }
+            return;
+
+         case "plugin_ocsinventoryng_delete" :
+            $input = $ma->getInput();
+            foreach ($ids as $id) {
+               if ($notimport->deleteNotImportedComputer($id)) {
+                  $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+               } else {
+                  $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+               }
+            }
+            return;
+      }
+      parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
    }
 }
 ?>

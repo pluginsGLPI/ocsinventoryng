@@ -28,7 +28,7 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 include ('../../../inc/includes.php');
 
-plugin_ocsinventoryng_checkRight("ocsng", "w");
+Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
 function configHeader() {
 
@@ -54,9 +54,8 @@ if (isset($_POST["soft_unlock"])) {
 }
 
 $plugin = new Plugin();
-if ($plugin->isInstalled("ocsinventoryng") && $plugin->isActivated("ocsinventoryng")) {
-   Html::header(__('History of automatic actions', 'ocsinventoryng'), "", "plugins",
-                "ocsinventoryng", "config");
+if ($plugin->isActivated("ocsinventoryng")) {
+   Html::header(__('History of automatic actions', 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "config");
 
    if (!countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers")) {
       configHeader();
@@ -65,14 +64,13 @@ if ($plugin->isInstalled("ocsinventoryng") && $plugin->isActivated("ocsinventory
              __('Configuration', 'ocsinventoryng')."</a></th></tr>";
       echo "</table></div>";
    } else {
-      $config->showConfigForm($_SERVER['PHP_SELF']);
+      $config->showForm($_SERVER['PHP_SELF']);
    }
 } else {
-   Html::header(__('Number of processed computers', 'ocsinventoryng'), "", "plugins",
-                "ocsinventoryng", "config");
+   Html::header(__('Setup'), '', "tools", "pluginocsinventoryngmenu", "config");
    echo "<div class='center'><br><br>";
    echo "<img src=\"" . $CFG_GLPI["root_doc"] . "/pics/warning.png\" alt='".__s('Warning')."'><br><br>";
-   echo "<b>__('Please activate the plugin', 'ocsinventoryng')</b></div>";
+   echo "<b>".__('Please activate the plugin', 'ocsinventoryng')."</b></div>";
 }
 
 Html::footer();

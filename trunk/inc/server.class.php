@@ -28,7 +28,7 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 class PluginOcsinventoryngServer extends CommonDBTM {
 
-
+   
    function getFromDBbyOcsServer($id) {
       global $DB;
 

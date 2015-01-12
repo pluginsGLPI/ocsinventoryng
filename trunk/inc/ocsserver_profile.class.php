@@ -33,14 +33,8 @@ if (!defined('GLPI_ROOT')) {
 class PluginOcsinventoryngOcsserver_Profile extends CommonDBTM {
 
 
-   static function canCreate() {
-      return Session::haveRight('profile', 'w');
-   }
-
-
-   static function canView() {
-      return Session::haveRight('profile', 'r');
-   }
+   static $rightname = "profile";
 
 }
+
 ?>

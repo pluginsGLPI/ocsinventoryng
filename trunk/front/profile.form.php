@@ -28,9 +28,8 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 include ('../../../inc/includes.php');
 
-Session::checkRight("profile","r");
+Session::checkRight("profile",READ);
 
-$prof = new PluginOcsinventoryngProfile();
 $profservers = new PluginOcsinventoryngOcsserver_Profile();
 
 if (isset($_POST["addocsserver"]) && ($_POST['plugin_ocsinventoryng_ocsservers_id'] > 0)) {
@@ -48,12 +47,6 @@ if (isset ($_POST['delete'])) {
       $input['id'] = $id;
       $profservers->delete($input);
    }
-   Html::back();
-}
-
-//Save profile
-if (isset ($_POST['update'])) {
-   $prof->update($_POST);
    Html::back();
 }
 

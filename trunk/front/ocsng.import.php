@@ -28,9 +28,9 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 include ('../../../inc/includes.php');
 
-plugin_ocsinventoryng_checkRight("ocsng", "w");
+Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-Html::header('OCS Inventory NG', "", "plugins", "ocsinventoryng", "import");
+Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "import");
 
 $display_list = true;
 //First time this screen is displayed : set the import mode to 'basic'

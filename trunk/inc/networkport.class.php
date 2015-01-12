@@ -33,26 +33,12 @@ if (!defined('GLPI_ROOT')) {
 
 /// OCS NetworkPort class
 class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
-
+   
+   static $rightname = "plugin_ocsinventoryng";
+   
    static function getTypeName($nb=0) {
       return _n('Unknown type from OCS', 'Unknown types from OCS', $nb, 'ocsinventoryng');
    }
-
-
-   static function canCreate() {
-      return false;
-   }
-
-
-   static function canUpdate() {
-      return false;
-   }
-
-
-   static function canDelete() {
-      return false;
-   }
-
 
    static private function getInvalidIPString($ip) {
       return __('Invalid', 'ocsinventoryng').': '.$ip;
@@ -199,23 +185,28 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       return $network_port->getID();
    }
 
-
    // importNetwork
-   static function importNetwork($PluginOcsinventoryngDBocs, $cfg_ocs, $ocsid,
-                                 $computers_id, $dohistory) {
+   static function importNetwork($ocsServerId, $cfg_ocs, $ocsComputer, $computers_id, $dohistory) {
       global $DB;
-
-      $query = "SELECT MIN(`ID`) AS ID, `DESCRIPTION`, `MACADDR`, `TYPE`, `TYPEMIB`,
-                       `SPEED`, `VIRTUALDEV`, GROUP_CONCAT(`IPADDRESS` SEPARATOR ',') AS IPADDRESS
-                FROM `networks`
-                WHERE `HARDWARE_ID` = '$ocsid'
-                GROUP BY CONCAT(`DESCRIPTION`, `MACADDR`, `TYPE`, `TYPEMIB`,
-                                `SPEED`, `VIRTUALDEV`)
-                ORDER BY `ID`";
+      
+      // Group by DESCRIPTION, MACADDR, TYPE, TYPEMIB, SPEED, VIRTUALDEV
+      // to get an array in IPADDRESS
+      $ocsNetworks = array();
+      foreach ($ocsComputer['NETWORKS'] as $ocsNetwork) {
+         $key = $ocsNetwork['DESCRIPTION'].$ocsNetwork['MACADDR'].$ocsNetwork['TYPE']
+               .$ocsNetwork['TYPEMIB'].$ocsNetwork['SPEED'].$ocsNetwork['VIRTUALDEV'];
+         
+         if (!isset($ocsNetworks[$key])) {
+            $ocsNetworks[$key] = $ocsNetwork;
+            $ocsNetworks[$key]['IPADDRESS'] = array($ocsNetwork['IPADDRESS']);
+         } else {
+         	$ocsNetworks[$key]['IPADDRESS'] []= $ocsNetwork['IPADDRESS'];
+         }
+      }
 
       $network_ports  = array();
       $network_ifaces = array();
-      foreach ($PluginOcsinventoryngDBocs->request($query) as $line) {
+      foreach ($ocsNetworks as $line) {
          $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
          $mac  = $line['MACADDR'];
          if (!isset($network_ports[$mac])) {
@@ -225,14 +216,12 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                                                     $line['DESCRIPTION']);
 
          if (!empty($line['IPADDRESS'])) {
-            $ip = array_unique(explode(',', $line['IPADDRESS']));
+            $ip = $line['IPADDRESS'];
          } else {
             $ip = false;
          }
-
          $networkport_type = new PluginOcsinventoryngNetworkPortType();
          $networkport_type->getFromTypeAndTypeMIB($line);
-
          $speed = NetworkPortEthernet::transformPortSpeed($line['SPEED'], false);
          if (!empty($speed)) {
             $networkport_type->fields['speed'] = $speed;
@@ -250,7 +239,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          if (((isset($line['VIRTUALDEV'])) && ($line['VIRTUALDEV'] == '1'))
              || (isset($network_ports[$mac]['main']))
              || (preg_match('/^vm(k|nic)([0-9]+)$/', $name))) {
-            $network_ports[$mac]['virtual'][$line['ID']] = $values;
+            $network_ports[$mac]['virtual'] []= $values;
          } else {
             $network_ports[$mac]['main'] = $values;
          }
@@ -416,8 +405,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
       $row->addCell($row->getHeaderByName('Instantiation', 'TYPE'), $this->fields['TYPE']);
       $row->addCell($row->getHeaderByName('Instantiation', 'TYPEMIB'), $this->fields['TYPEMIB']);
-      $value = PluginOcsinventoryngNetworkPortType::getLinkToCreateFromTypeAndTypeMIB(
-                                                    $this->fields);
+      $link = PluginOcsinventoryngNetworkPortType::getFormURL(true).'?'.$this->getForeignKeyField().'='.$this->getID();
+      $value = PluginOcsinventoryngNetworkPortType::getLinkToCreateFromTypeAndTypeMIB($this->fields);
       $row->addCell($row->getHeaderByName('Instantiation', 'Generate'), $value);
 
       parent::getInstantiationHTMLTable($netport, $row, $father, $options);
@@ -456,8 +445,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       }
       return false;
    }
-
-
+   
    static private function getTextualType($type) {
       if (empty($type)) {
          return '<i>'.__('empty', 'ocsinventoryng').'</i>';
@@ -523,7 +511,72 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       }
       echo "</table></div>";
    }
+   
+   
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::getSpecificMassiveActions()
+   **/
+   function getSpecificMassiveActions($checkitem=NULL) {
 
+      $actions = parent::getSpecificMassiveActions($checkitem);
+
+      return $actions;
+   }
+   
+   function getForbiddenStandardMassiveAction() {
+
+      $forbidden   = parent::getForbiddenStandardMassiveAction();
+      $forbidden[] = 'update';
+      return $forbidden;
+   }
+
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::showMassiveActionsSubForm()
+   **/
+   static function showMassiveActionsSubForm(MassiveAction $ma) {
+
+      switch ($ma->getAction()) {
+         case 'plugin_ocsinventoryng_update_networkport_type':
+            echo "&nbsp;".
+                 Html::submit(_x('button','Post'), array('name' => 'massiveaction'));
+            return true;
+    }
+      return parent::showMassiveActionsSubForm($ma);
+   }
+
+
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::processMassiveActionsForOneItemtype()
+   **/
+   static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
+                                                       array $ids) {
+      global $DB;
+      
+      switch ($ma->getAction()) {
+         case "plugin_ocsinventoryng_update_networkport_type":
+            $networkport = new PluginOcsinventoryngNetworkPort();
+            $input = $ma->getInput();
+            foreach ($ids as $id) {
+               if ($networkport->getFromDBByQuery("WHERE `networkports_id` = '$id'")) {
+                  if ($networkport->transformAccordingTypes()) {
+                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                  } else {
+                     $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+                  }
+               } else {
+                  $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+               }
+            }
+
+            return;
+      }
+      parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
+   }
 }
-
 ?>

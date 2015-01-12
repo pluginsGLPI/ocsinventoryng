@@ -30,11 +30,11 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-
+/// Location class
 class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
-
+   
    public $refresh_page = true;
-
+   
    static function getTypeName($nb=0) {
       return _n('Network port type','Network port types',$nb, 'ocsinventoryng');
    }
@@ -57,7 +57,7 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
       return parent::canDeleteItem();
    }
 
-
+   
    // If we add it, then, we may have to update all cards with the same MIB, shouldn't we ?
    function post_addItem() {
       global $DB;
@@ -80,6 +80,7 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
    }
 
 
+
    function displaySpecificTypeField($ID, $field=array()) {
 
       switch ($field['type']) {
@@ -93,7 +94,6 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
             Dropdown::showFromArray('type', NetworkPortEthernet::getPortTypeName(),
                                     array('value' => $this->fields[$field['name']]));
             break;
-
          case 'readonly_text' :
             $value = $this->fields[$field['name']];
             echo "<input type='hidden' name='".$field['name']."' value='$value'>$value";
@@ -106,7 +106,6 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
                             '*'    => __('Any kind', 'ocsinventoryng'));
             Dropdown::showFromArray($name, $values, array('value' => $value));
             break;
-
          case 'speed' :
             $standard_speeds = NetworkPortEthernet::getPortSpeed();
             if (!isset($standard_speeds[$this->fields['speed']])
@@ -169,12 +168,10 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
                $result['TYPEMIB']['type'] = 'MIB or wildcard';
             }
          }
-
       }
-
+      
       return $result;
    }
-
 
    static function getLinkToCreateFromTypeAndTypeMIB(array $fields = array()) {
       $link = static::getFormURL().'?TYPE='.$fields['TYPE'].'&amp;TYPEMIB='.$fields['TYPEMIB'];

@@ -28,10 +28,11 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 include ('../../../inc/includes.php');
 
-Html::header('OCS Inventory NG', "", "plugins","ocsinventoryng", "clean");
+Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "clean");
 
 if (!isset($_POST["clean_ok"])) {
-   plugin_ocsinventoryng_checkRight("clean_ocsng", "r");
+   
+   Session::checkRight("plugin_ocsinventoryng_clean", READ);
 
    if (!isset($_GET['check'])) {
       $_GET['check'] = 'all';
@@ -44,7 +45,7 @@ if (!isset($_POST["clean_ok"])) {
                                                        $_GET['check'], $_GET['start']);
 
 } else {
-   plugin_ocsinventoryng_checkRight("clean_ocsng", "w");
+   Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);
    if (count($_POST['toclean']) > 0) {
       PluginOcsinventoryngOcsServer::cleanLinksFromList($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                         $_POST['toclean']);

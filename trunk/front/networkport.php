@@ -28,9 +28,9 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 include ('../../../inc/includes.php');
 
-Session::checkRight('networking', "r");
+Session::checkRight('networking', READ);
 
-Html::header(__('Unknown imported network ports'), "", "plugins","ocsinventoryng", 'networkport');
+Html::header(__('Unknown imported network ports'), '', "tools", "pluginocsinventoryngmenu", 'networkport');
 
 PluginOcsinventoryngNetworkPort::displayInvalidList();
 
