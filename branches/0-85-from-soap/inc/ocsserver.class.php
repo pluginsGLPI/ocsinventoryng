@@ -414,27 +414,18 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       //TODO Debug it
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
-            function form_init_all(form, default) {
-               var elem = document.getElementById('formconfig').elements;
-               var select = $("form[id='formconfig'] select");
+            function form_init_all(form, value) {
+               var selects = $("form[id='formconfig'] select");
 
-               $.each(select, function(index, value){
-                  console.log(value);
-                  if (value.name != "import_otherserial"
-                        && value.name != "import_location"
-                           && value.name != "import_group"
-                              && value.name != "import_contact_num"
-                                 && value.name != "import_network") {
-                     $.each(value.options, function(index2, value2){
-                        if(value2 == default){
-                           value2.selected = 'selected';
-                        }
-                     });
-                     
-                     value.selectedIndex = index;
+               $.each(selects, function(index, select){
+                  if (select.name != "import_otherserial"
+                        && select.name != "import_location"
+                           && select.name != "import_group"
+                              && select.name != "import_contact_num"
+                                 && select.name != "import_network") {
+                    $(select).select2('val', value);
                   }
                });
- 
             }
          </script>
 JAVASCRIPT;
@@ -822,7 +813,7 @@ JAVASCRIPT;
     * @return Nothing (display)
     **/
    function showForm($ID, $options=array()) {
-
+echo "testsetse";
       //If no ID provided, or if the server is created using an existing template
       $rowspan = 0;
       if (empty($ID)) {
