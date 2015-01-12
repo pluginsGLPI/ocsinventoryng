@@ -306,45 +306,6 @@ function plugin_ocsinventoryng_install() {
 
       $DB->queryOrDie($query, $DB->error());
 
-      $query = "SELECT `id`
-                FROM `glpi_notificationtemplates`
-                WHERE `itemtype` = 'PluginOcsinventoryngNotimportedcomputer'";
-      $result = $DB->query($query);
-
-      if (!$DB->numrows($result)) {
-         //Add template
-         $query = "INSERT INTO `glpi_notificationtemplates`
-                   VALUES (NULL, 'Computers not imported', 'PluginOcsinventoryngNotimportedcomputer',
-                           NOW(), '', NULL);";
-         $DB->queryOrDie($query, $DB->error());
-         $templates_id = $DB->insert_id();
-         $query = "INSERT INTO `glpi_notificationtemplatetranslations`
-                   VALUES (NULL, $templates_id, '',
-                           '##lang.notimported.action## : ##notimported.entity##',
-                   '\r\n\n##lang.notimported.action## :&#160;##notimported.entity##\n\n" .
-                  "##FOREACHnotimported##&#160;\n##lang.notimported.reason## : ##notimported.reason##\n" .
-                  "##lang.notimported.name## : ##notimported.name##\n" .
-                  "##lang.notimported.deviceid## : ##notimported.deviceid##\n" .
-                  "##lang.notimported.tag## : ##notimported.tag##\n##lang.notimported.serial## : ##notimported.serial## \r\n\n" .
-                  " ##notimported.url## \n##ENDFOREACHnotimported## \r\n', '&lt;p&gt;##lang.notimported.action## :&#160;##notimported.entity##&lt;br /&gt;&lt;br /&gt;" .
-                  "##FOREACHnotimported##&#160;&lt;br /&gt;##lang.notimported.reason## : ##notimported.reason##&lt;br /&gt;" .
-                  "##lang.notimported.name## : ##notimported.name##&lt;br /&gt;" .
-                  "##lang.notimported.deviceid## : ##notimported.deviceid##&lt;br /&gt;" .
-                  "##lang.notimported.tag## : ##notimported.tag##&lt;br /&gt;" .
-                  "##lang.notimported.serial## : ##notimported.serial##&lt;/p&gt;\r\n&lt;p&gt;&lt;a href=\"##notimported.url##\"&gt;" .
-                  "##notimported.url##&lt;/a&gt;&lt;br /&gt;##ENDFOREACHnotimported##&lt;/p&gt;');";
-         $DB->queryOrDie($query, $DB->error());
-
-         $query = "INSERT INTO `glpi_notifications`
-                   VALUES (NULL, 'Computers not imported', 0, 'PluginOcsinventoryngNotimportedcomputer',
-                           'not_imported', 'mail',".$templates_id.", '', 1, 1, NOW());";
-         $DB->queryOrDie($query, $DB->error());
-
-      }
-
-      CronTask::Register('PluginOcsinventoryngThread', 'CleanOldThreads', HOUR_TIMESTAMP,
-                         array('param' => 24));
-
    } else if (!TableExists('glpi_plugin_ocsinventoryng_threads')
               && TableExists('glpi_plugin_massocsimport_threads')) {
 
@@ -605,8 +566,48 @@ function plugin_ocsinventoryng_install() {
    }
 
    $migration->executeMigration();
+   
+   $query = "SELECT `id`
+                FROM `glpi_notificationtemplates`
+                WHERE `itemtype` = 'PluginOcsinventoryngNotimportedcomputer'";
+   $result = $DB->query($query);
+
+   if (!$DB->numrows($result)) {
+      //Add template
+      $query = "INSERT INTO `glpi_notificationtemplates`
+                VALUES (NULL, 'Computers not imported', 'PluginOcsinventoryngNotimportedcomputer',
+                        NOW(), '', NULL);";
+      $DB->queryOrDie($query, $DB->error());
+      $templates_id = $DB->insert_id();
+      $query = "INSERT INTO `glpi_notificationtemplatetranslations`
+                VALUES (NULL, $templates_id, '',
+                        '##lang.notimported.action## : ##notimported.entity##',
+                '\r\n\n##lang.notimported.action## :&#160;##notimported.entity##\n\n" .
+               "##FOREACHnotimported##&#160;\n##lang.notimported.reason## : ##notimported.reason##\n" .
+               "##lang.notimported.name## : ##notimported.name##\n" .
+               "##lang.notimported.deviceid## : ##notimported.deviceid##\n" .
+               "##lang.notimported.tag## : ##notimported.tag##\n##lang.notimported.serial## : ##notimported.serial## \r\n\n" .
+               " ##notimported.url## \n##ENDFOREACHnotimported## \r\n', '&lt;p&gt;##lang.notimported.action## :&#160;##notimported.entity##&lt;br /&gt;&lt;br /&gt;" .
+               "##FOREACHnotimported##&#160;&lt;br /&gt;##lang.notimported.reason## : ##notimported.reason##&lt;br /&gt;" .
+               "##lang.notimported.name## : ##notimported.name##&lt;br /&gt;" .
+               "##lang.notimported.deviceid## : ##notimported.deviceid##&lt;br /&gt;" .
+               "##lang.notimported.tag## : ##notimported.tag##&lt;br /&gt;" .
+               "##lang.notimported.serial## : ##notimported.serial##&lt;/p&gt;\r\n&lt;p&gt;&lt;a href=\"##notimported.url##\"&gt;" .
+               "##notimported.url##&lt;/a&gt;&lt;br /&gt;##ENDFOREACHnotimported##&lt;/p&gt;');";
+      $DB->queryOrDie($query, $DB->error());
+
+      $query = "INSERT INTO `glpi_notifications`
+                VALUES (NULL, 'Computers not imported', 0, 'PluginOcsinventoryngNotimportedcomputer',
+                        'not_imported', 'mail',".$templates_id.", '', 1, 1, NOW());";
+      $DB->queryOrDie($query, $DB->error());
+
+   }
 
    $cron = new CronTask();
+   if (!$cron->getFromDBbyName('PluginOcsinventoryngThread','CleanOldThreads')) {
+      CronTask::Register('PluginOcsinventoryngThread', 'CleanOldThreads', HOUR_TIMESTAMP,
+                      array('param' => 24));
+   }
    if (!$cron->getFromDBbyName('PluginOcsinventoryngNotimportedcomputer','SendAlerts')) {
       // creation du cron - param = duree de conservation
       CronTask::Register('PluginOcsinventoryngNotimportedcomputer', 'SendAlerts', 10 * MINUTE_TIMESTAMP,
@@ -881,7 +882,10 @@ function plugin_ocsinventoryng_upgrademassocsimport14to15() {
 
 function plugin_ocsinventoryng_uninstall() {
    global $DB;
-
+   
+   include_once (GLPI_ROOT."/plugins/ocsinventoryng/inc/profile.class.php");
+   include_once (GLPI_ROOT."/plugins/ocsinventoryng/inc/menu.class.php");
+   
    $tables = array("glpi_plugin_ocsinventoryng_ocsservers",
                    "glpi_plugin_ocsinventoryng_ocslinks",
                    "glpi_plugin_ocsinventoryng_ocsadmininfoslinks",
@@ -893,7 +897,8 @@ function plugin_ocsinventoryng_uninstall() {
                    "glpi_plugin_ocsinventoryng_details",
                    "glpi_plugin_ocsinventoryng_registrykeys",
                    "glpi_plugin_ocsinventoryng_networkports",
-                   "glpi_plugin_ocsinventoryng_networkporttypes");
+                   "glpi_plugin_ocsinventoryng_networkporttypes",
+                   "glpi_plugin_ocsinventoryng_ocsservers_profiles");
 
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
@@ -911,6 +916,22 @@ function plugin_ocsinventoryng_uninstall() {
                                        'PluginOcsinventoryngNotimportedcomputer',
                                        'PluginOcsinventoryngDetail')");
    }
+   
+   $tables_ocs = array("ocs_glpi_crontasks", "ocs_glpi_displaypreferences",
+                        "ocs_glpi_ocsadmininfoslinks", "ocs_glpi_ocslinks",
+                         "ocs_glpi_ocsservers", "ocs_glpi_registrykeys", "ocs_glpi_profiles");
+
+   foreach ($tables_ocs as $table_ocs) {
+      $DB->query("DROP TABLE IF EXISTS `$table_ocs`;");
+   }
+   $tables_mass = array("backup_glpi_plugin_massocsimport_configs", "backup_glpi_plugin_massocsimport_details",
+                        "backup_glpi_plugin_massocsimport_notimported", "backup_glpi_plugin_massocsimport_servers",
+                         "backup_glpi_plugin_massocsimport_threads");
+
+   foreach ($tables_mass as $table_mass) {
+      $DB->query("DROP TABLE IF EXISTS `$table_mass`;");
+   }
+   
    $query = "DELETE
              FROM `glpi_alerts`
              WHERE `itemtype` IN ('PluginMassocsimportNotimported',

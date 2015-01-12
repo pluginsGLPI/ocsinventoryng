@@ -177,7 +177,6 @@ INSERT INTO `glpi_crontasks` VALUES (NULL,'PluginOcsinventoryngOcsServer','ocsng
 ### Dump table glpi_plugin_ocsinventoryng_ocsservers_profiles
 
 DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_ocsservers_profiles`;
-
 CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers_profiles` (
   `id` int(11) NOT NULL auto_increment,
   `ocsservers_id` int(11) NOT NULL default '0',
