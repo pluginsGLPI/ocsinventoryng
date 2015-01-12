@@ -40,22 +40,23 @@ Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsse
 
 //Delete template or server
 if (isset ($_POST["delete"])) {
+   $ocs->check($_POST['id'],PURGE);
    $ocs->delete($_POST);
    $ocs->redirectToList();
 
 //Update server
 } else if (isset ($_POST["update"])) {
-   $ocs->update($_POST);
-   Html::back();
-
-//Update server
-} else if (isset ($_POST["update_server"])) {
+   $ocs->check($_POST['id'],UPDATE);
    $ocs->update($_POST);
    Html::back();
 
 //Add new server
 } else if (isset ($_POST["add"])) {
-   $newid = $ocs->add($_POST);
+   $ocs->check(-1, CREATE, $_POST);
+   $newID= $ocs->add($_POST);
+   if ($_SESSION['glpibackcreated']) {
+      Html::redirect($ocs->getFormURL()."?id=".$newID);
+   }
    Html::back();
 
 //Other

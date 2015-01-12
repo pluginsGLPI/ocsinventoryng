@@ -162,6 +162,42 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_networkporttypes` (
   KEY `OCS_TYPEMIB` (`OCS_TYPEMIB`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+### Dump table glpi_plugin_ocsinventoryng_ocsservers_profiles
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_ocsservers_profiles`;
+CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers_profiles` (
+  `id` int(11) NOT NULL auto_increment,
+  `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL default '0',
+  `profiles_id` int(11) NOT NULL default '0',
+  PRIMARY KEY (`id`),
+  KEY `plugin_ocsinventoryng_ocsservers_id` (`plugin_ocsinventoryng_ocsservers_id`),
+  KEY `profiles_id` (`profiles_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_threads`;
+CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_threads` (
+   `id` int(11) NOT NULL auto_increment,
+   `threadid` int(11) NOT NULL default '0',
+   `start_time` datetime default NULL,
+   `end_time` datetime default NULL,
+   `status` int(11) NOT NULL default '0',
+   `error_msg` text NOT NULL,
+   `imported_machines_number` int(11) NOT NULL default '0',
+   `synchronized_machines_number` int(11) NOT NULL default '0',
+   `failed_rules_machines_number` int(11) NOT NULL default '0',
+   `linked_machines_number` int(11) NOT NULL default '0',
+   `notupdated_machines_number` int(11) NOT NULL default '0',
+   `not_unique_machines_number` int(11) NOT NULL default '0',
+   `link_refused_machines_number` int(11) NOT NULL default '0',
+   `total_number_machines` int(11) NOT NULL default '0',
+   `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL default '1',
+   `processid` int(11) NOT NULL default '0',
+   `entities_id` int(11) NOT NULL DEFAULT 0,
+   `rules_id` int(11) NOT NULL DEFAULT 0,
+   PRIMARY KEY  (`id`),
+   KEY `end_time` (`end_time`),
+   KEY `process_thread` (`processid`,`threadid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Unkown port', '*', '*', 'PluginOcsinventoryngNetworkPort', NULL, NULL,NULL, NULL);
 INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Ethernet port', 'Ethernet', '*', 'NetworkPortEthernet', 'T', 10,NULL, NULL);

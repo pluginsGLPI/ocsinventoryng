@@ -241,7 +241,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
                    FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
                    LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
-                      ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                      ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
                    WHERE `profiles_id`= ".$_SESSION["glpiactiveprofile"]['id']."
                    ORDER BY `name` ASC";
          foreach($DB->request($query) as $data) {
@@ -612,7 +612,7 @@ JAVASCRIPT;
             echo "</table>\n";
 
             echo "<p class='submit'>";
-            echo "<input type='submit' name='update_server' class='submit' value=\"".
+            echo "<input type='submit' name='update' class='submit' value=\"".
             _sx('button', 'Save')."\">";
             echo "</p>";
             Html::closeForm();
@@ -749,7 +749,7 @@ JAVASCRIPT;
          'ocsinventoryng');
       echo "<br>".__("Unit import: everything is imported as it is", 'ocsinventoryng');
 
-      echo "<p class='submit'><input type='submit' name='update_server' class='submit' value='" .
+      echo "<p class='submit'><input type='submit' name='update' class='submit' value='" .
       _sx('button', 'Save') . "'></p>";
       Html::closeForm();
       echo "</div>";
@@ -805,7 +805,7 @@ JAVASCRIPT;
       "<br>". __('This option is taken into account during manual link and by synchronization scripts."',
          'ocsinventoryng');
 
-      echo "<p class='submit'><input type='submit' name='update_server' class='submit' value='" .
+      echo "<p class='submit'><input type='submit' name='update' class='submit' value='" .
       _sx('button', 'Post') . "'></p>";
       Html::closeForm();
       echo "</div>";
@@ -824,6 +824,7 @@ JAVASCRIPT;
    function showForm($ID, $options=array()) {
 
       //If no ID provided, or if the server is created using an existing template
+      $rowspan = 0;
       if (empty($ID)) {
          $this->getEmpty();
          $rowspan++;
@@ -1012,7 +1013,14 @@ JAVASCRIPT;
       return $input;
    }
 
-
+   function post_addItem() {
+      global $DB;
+      
+      $query = "INSERT INTO  `glpi_plugin_ocsinventoryng_ocsservers_profiles` (`id` ,`plugin_ocsinventoryng_ocsservers_id` , `profiles_id`)
+                                    VALUES (NULL ,  '".$this->fields['id']."',  '".$_SESSION["glpiactiveprofile"]['id']."');";
+      $result = $DB->query($query);
+   }
+   
    function cleanDBonPurge() {
 
       $link = new PluginOcsinventoryngOcslink();
@@ -1573,14 +1581,14 @@ JAVASCRIPT;
                         $data = array('ID' => $equiv);
                      }
                   }
-   // 					foreach($ocs_deviceid as $deviceid => $equiv){
-   // 						$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-   // 						SET `ocsid` = '$equiv'
-   // 						WHERE `ocs_deviceid` = '$del'
-   // 						AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
-   // 					}
-               //TODO 	
-            //		http://www.karlrixon.co.uk/writing/update-multiple-rows-with-different-values-and-a-single-sql-query/
+   //foreach($ocs_deviceid as $deviceid => $equiv){
+   //$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+   //SET `ocsid` = '$equiv'
+   //WHERE `ocs_deviceid` = '$del'
+   //AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
+   //}
+               //TODO
+            //http://www.karlrixon.co.uk/writing/update-multiple-rows-with-different-values-and-a-single-sql-query/
                   if ($data) {
                      $sql_id = "SELECT `computers_id`
                                    FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -1986,10 +1994,10 @@ JAVASCRIPT;
 
             // update last_update and and last_ocs_update
             $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-     SET `last_update` = '" . $_SESSION["glpi_currenttime"] . "',
-     `last_ocs_update` = '" . $data_ocs["META"]["LASTDATE"] . "',
-     `ocs_agent_version` = '".$data_ocs["HARDWARE"]["USERAGENT"]." '
-     WHERE `id` = '$ID'";
+                             SET `last_update` = '" . $_SESSION["glpi_currenttime"] . "',
+                             `last_ocs_update` = '" . $data_ocs["META"]["LASTDATE"] . "',
+                             `ocs_agent_version` = '".$data_ocs["HARDWARE"]["USERAGENT"]." '
+                             WHERE `id` = '$ID'";
             $DB->query($query);
             if ($force) {
                $ocs_checksum = self::MAX_CHECKSUM;
@@ -5336,7 +5344,7 @@ JAVASCRIPT;
       $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
                 FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
                 LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
-                ON `glpi_plugin_ocsinventoryng_ocsservers`.`id` = `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`ocsservers_id`
+                ON `glpi_plugin_ocsinventoryng_ocsservers`.`id` = `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id`
                 ORDER BY `glpi_plugin_ocsinventoryng_ocsservers`.`id` ASC LIMIT 1 ";
       $results = $DB->query($query);
       if ($DB->numrows($results) > 0){

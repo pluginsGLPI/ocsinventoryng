@@ -38,7 +38,7 @@ function plugin_ocsinventoryng_install() {
          && !TableExists("glpi_plugin_ocsinventoryng_ocsservers")) {
 
       $install = true;
-      $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.4-empty.sql");
+      $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.1.0-empty.sql");
    
    } else if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
               && !TableExists("ocs_glpi_ocsservers")) {
@@ -133,14 +133,14 @@ function plugin_ocsinventoryng_install() {
       $DB->queryOrDie($query, "1.0.4 update table glpi_plugin_ocsinventoryng_ocsservers");
    }
    
-   //Update 1.0.4
+   //Update 1.1.0
    if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers_profiles")) {
       $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers_profiles` (
                   `id` int(11) NOT NULL auto_increment,
-                  `ocsservers_id` int(11) NOT NULL default '0',
+                  `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL default '0',
                   `profiles_id` int(11) NOT NULL default '0',
                 PRIMARY KEY (`id`),
-                KEY `ocsservers_id` (`ocsservers_id`),
+                KEY `plugin_ocsinventoryng_ocsservers_id` (`plugin_ocsinventoryng_ocsservers_id`),
                 KEY `profiles_id` (`profiles_id`)
                 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
       $DB->queryOrDie($query,
@@ -155,7 +155,7 @@ function plugin_ocsinventoryng_install() {
 
                $query  = "INSERT INTO `glpi_plugin_ocsinventoryng_ocsservers_profiles`
                           SET `profiles_id` = '".$rights['profiles_id']."',
-                              `ocsservers_id` = '".$server['id']."'";
+                              `plugin_ocsinventoryng_ocsservers_id` = '".$server['id']."'";
                $DB->queryOrDie($query, "insert into glpi_plugin_ocsinventoryng_ocsservers_profiles");
             }
          }
@@ -940,8 +940,11 @@ function plugin_ocsinventoryng_uninstall() {
 
    // clean rules
    $rule = new RuleImportEntity();
-   foreach ($DB->request("glpi_rules", array('sub_type' => 'RuleImportEntity',
-                                             'name'     => 'RootOcs')) AS $data) {
+   foreach ($DB->request("glpi_rules", array('sub_type' => 'RuleImportEntity')) AS $data) {
+      $rule->delete($data);
+   }
+   $rule = new RuleImportComputer();
+   foreach ($DB->request("glpi_rules", array('sub_type' => 'RuleImportComputer')) AS $data) {
       $rule->delete($data);
    }
 
@@ -1549,7 +1552,7 @@ function plugin_ocsinventoryng_getRuleCriteria($params) {
          $criteria['IPADDRESS']['field']          = 'IPADDRESS';
          $criteria['IPADDRESS']['name']           = __('IP address');
          $criteria['IPADDRESS']['linkfield']      = 'HARDWARE_ID';
-
+         
          $criteria['MACHINE_NAME']['table']       = 'hardware';
          $criteria['MACHINE_NAME']['field']       = 'NAME';
          $criteria['MACHINE_NAME']['name']        = __("Computer's name");
@@ -1647,60 +1650,62 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
          ));
          
          if (!is_null($ocsComputer)) {
-           $networks = $ocsComputer['NETWORKS'];
-   
-           $ipblacklist  = Blacklist::getIPs();
-           $macblacklist = Blacklist::getMACs();
-   
-           foreach ($networks as $data) {
-              if (isset($data['IPSUBNET'])) {
-                 $rule_parameters['IPSUBNET'][] = $data['IPSUBNET'];
+            if (isset($ocsComputer['NETWORKS'])) {
+              $networks = $ocsComputer['NETWORKS'];
+      
+              $ipblacklist  = Blacklist::getIPs();
+              $macblacklist = Blacklist::getMACs();
+      
+              foreach ($networks as $data) {
+                 if (isset($data['IPSUBNET'])) {
+                    $rule_parameters['IPSUBNET'][] = $data['IPSUBNET'];
+                 }
+                 if (isset($data['MACADDR']) && !in_array($data['MACADDR'], $macblacklist)) {
+                    $rule_parameters['MACADDRESS'][] = $data['MACADDR'];
+                 }
+                 if (isset($data['IPADDRESS']) && !in_array($data['IPADDRESS'], $ipblacklist)) {
+                    $rule_parameters['IPADDRESS'][] = $data['IPADDRESS'];
+                 }
               }
-              if (isset($data['MACADDR']) && !in_array($data['MACADDR'], $macblacklist)) {
-                 $rule_parameters['MACADDRESS'][] = $data['MACADDR'];
-              }
-              if (isset($data['IPADDRESS']) && !in_array($data['IPADDRESS'], $ipblacklist)) {
-                 $rule_parameters['IPADDRESS'][] = $data['IPADDRESS'];
-              }
-           }
-           
-            $ocs_data = array();
+              
+               $ocs_data = array();
 
-            foreach ($fields as $field) {
-               // TODO cleaner way of getting fields
-               $field = explode('.', $field);
-               if (count($field) < 2) {
-                  continue;
-               }
-               
-               $table = strtoupper($field[0]);
-               
-               $fieldSql = explode(' ', $field[1]);
-               $ocsField = $fieldSql[0];
-               $glpiField = $fieldSql[count($fieldSql) -1];
-               
-               $section = array();
-               if (isset($ocsComputer[$table])) {
-                  $section = $ocsComputer[$table];
-               }
-               if (array_key_exists($ocsField, $section)) {
-                  // Not multi
-                 $ocs_data[$glpiField][] = $section[$ocsField];
-               } else {
-                  foreach ($section as $sectionLine) {
-                    $ocs_data[$glpiField][] = $sectionLine[$ocsField];
+               foreach ($fields as $field) {
+                  // TODO cleaner way of getting fields
+                  $field = explode('.', $field);
+                  if (count($field) < 2) {
+                     continue;
+                  }
+                  
+                  $table = strtoupper($field[0]);
+                  
+                  $fieldSql = explode(' ', $field[1]);
+                  $ocsField = $fieldSql[0];
+                  $glpiField = $fieldSql[count($fieldSql) -1];
+                  
+                  $section = array();
+                  if (isset($ocsComputer[$table])) {
+                     $section = $ocsComputer[$table];
+                  }
+                  if (array_key_exists($ocsField, $section)) {
+                     // Not multi
+                    $ocs_data[$glpiField][] = $section[$ocsField];
+                  } else {
+                     foreach ($section as $sectionLine) {
+                       $ocs_data[$glpiField][] = $sectionLine[$ocsField];
+                     }
                   }
                }
+               
+               //This case should never happend but...
+               //Sometimes OCS can't find network ports but fill the right ip in hardware table...
+               //So let's use the ip to proceed rules (if IP is a criteria of course)
+               if (in_array("IPADDRESS",$fields) && !isset($ocs_data['IPADDRESS'])) {
+                  $ocs_data['IPADDRESS']
+                     = PluginOcsinventoryngOcsServer::getGeneralIpAddress($ocsservers_id, $ocsid);
+               }
+               return array_merge($rule_parameters, $ocs_data);
             }
-            
-            //This case should never happend but...
-            //Sometimes OCS can't find network ports but fill the right ip in hardware table...
-            //So let's use the ip to proceed rules (if IP is a criteria of course)
-            if (in_array("IPADDRESS",$fields) && !isset($ocs_data['IPADDRESS'])) {
-               $ocs_data['IPADDRESS']
-                  = PluginOcsinventoryngOcsServer::getGeneralIpAddress($ocsservers_id, $ocsid);
-            }
-            return array_merge($rule_parameters, $ocs_data);
          }
    }
    return array();
