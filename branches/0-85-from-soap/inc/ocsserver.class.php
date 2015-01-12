@@ -1826,7 +1826,7 @@ JAVASCRIPT;
                '_source'       => 'ocsinventoryng'),
          array(), array('ocsid' => $ocsid));
 
-         if ($data['_ignore_import'] == 1) {
+         if (isset($data['_ignore_import']) && $data['_ignore_import'] == 1) {
             //ELSE Return code to indicates that the machine was not imported because it doesn't matched rules
             return array('status'       => self::COMPUTER_LINK_REFUSED,
                'rule_matched' => $data['_ruleid']);
@@ -5613,8 +5613,8 @@ JAVASCRIPT;
       $conn              = new Computer_Item();
       $p      = new Printer();
 
-      if (count($ocsComputer["PRINTERS"])>0){
-         if (isset($ocsComputer["PRINTERS"])) {
+      if (isset($ocsComputer["PRINTERS"])) {
+         if (count($ocsComputer["PRINTERS"])>0){
             foreach ($ocsComputer["PRINTERS"] as $printer){
                $printer  = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($printer));
                $print = array();

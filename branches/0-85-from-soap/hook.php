@@ -39,7 +39,23 @@ function plugin_ocsinventoryng_install() {
 
       $install = true;
       $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.1.0-empty.sql");
-   
+      
+      $migration->createRule(array('sub_type'      => 'RuleImportEntity',
+                                   'entities_id'   => 0,
+                                   'is_recursive'  => 1,
+                                   'is_active'     => 1,
+                                   'match'         => 'AND',
+                                   'name'          => 'RootOcs'),
+                            array(array('criteria'   => 'TAG',
+                                        'condition'  => Rule::PATTERN_IS,
+                                        'pattern'    => '*'),
+                                  array('criteria'   => 'OCS_SERVER',
+                                        'condition'  =>  Rule::PATTERN_IS,
+                                        'pattern'    => 1)),
+                            array(array('field'        => 'entities_id',
+                                        'action_type'  => 'assign',
+                                        'value'        => 0)));
+
    } else if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
               && !TableExists("ocs_glpi_ocsservers")) {
 
