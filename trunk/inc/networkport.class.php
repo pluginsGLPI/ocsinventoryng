@@ -461,7 +461,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       $type_results = $DB->request($query);
       echo "<br>\n<div class ='center'><table class='tab_cadrehov'>";
       if ($type_results->numrows() > 0) {
-         echo "<tr class='tab_bg_2'><th colspan='4'>".__('Unkown network port type from OCS',
+         echo "<tr class='tab_bg_2'><th colspan='4'>".__('Unknown network port type from OCS',
                                                          'ocsinventoryng')."</th></tr>";
          foreach ($type_results as $type) {
             $query = "SELECT `TYPEMIB`, `TYPE`,
@@ -506,7 +506,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             }
          }
       } else {
-         echo "<tr class='tab_bg_2'><th>".__('No unkown network port type from OCS !',
+         echo "<tr class='tab_bg_2'><th>".__('No unknown network port type from OCS !',
                                              'ocsinventoryng')."</th></tr>";
       }
       echo "</table></div>";
