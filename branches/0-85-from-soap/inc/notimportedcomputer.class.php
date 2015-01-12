@@ -284,7 +284,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
       global $DB;
 
       PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id);
-      PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
+      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
                $options = array(
                        "DISPLAY"=> array(
                        "CHECKSUM"=> PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE 
@@ -438,7 +438,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
                                                                      0, $params['entity'], 0);
          } else {
             $result = PluginOcsinventoryngOcsServer::processComputer($notimported->fields['ocsid'],
-                                                                     $notimported->fields['plugin_ocsinventoryng_ocsservers_id']);
+                                                                     $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],0,-1,-1);
          }
 
          if (in_array($result['status'],
@@ -452,9 +452,13 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
                PluginOcsinventoryngOcsServer::mergeOcsArray($result['computers_id'],
                                                             array('serial'), "computer_update");
             }
-
-            addMessageAfterRedirect(__('Model'));
+            
+            
             return true;
+         } else {
+            Session::addMessageAfterRedirect(self::getReason($result['status']),
+         false, ERROR);
+            return false;
          }
 
          $tmp           = $notimported->fields;
@@ -500,7 +504,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
    **/
    static function getOcsComputerInfos($params=array()) {
       PluginOcsinventoryngOcsServer::checkOCSconnection($params['plugin_ocsinventoryng_ocsservers_id']);
-      PluginOcsinventoryngOcsServer::getDBocs($params['plugin_ocsinventoryng_ocsservers_id']);
+      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($params['plugin_ocsinventoryng_ocsservers_id']);
                $options = array(
                        "DISPLAY"=> array(
                        "CHECKSUM"=>PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
@@ -653,6 +657,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
       switch ($ma->getAction()) {
          case "plugin_ocsinventoryng_import":
             $input = $ma->getInput();
+            
             foreach ($ids as $id) {
                if (PluginOcsinventoryngNotimportedcomputer::computerImport(array('id'     => $id,
                                                                                 'force'  => true,

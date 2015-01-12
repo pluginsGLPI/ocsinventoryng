@@ -100,8 +100,8 @@ function plugin_init_ocsinventoryng() {
          $PLUGIN_HOOKS['redirect_page']['ocsinventoryng']      = "front/notimportedcomputer.form.php";
          
          //TODO Change for menu
-         /*$PLUGIN_HOOKS['config_page']['ocsinventoryng']              = 'front/config.php';
-         $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['config']  = 'front/config.php';
+         $PLUGIN_HOOKS['config_page']['ocsinventoryng']              = 'front/config.php';
+         /*$PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['config']  = 'front/config.php';
          $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['ocsserver']['title']
             = __s("OCSNG server 's configuration", 'ocsinventoryng');
          $PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['options']['ocsserver']['page']

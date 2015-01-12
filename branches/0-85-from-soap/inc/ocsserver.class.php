@@ -267,7 +267,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          $isactive = $datas["is_active"];
       }
 
-      $usemassimport = PluginOcsinventoryngOcsServer::useMassImport();
+      $usemassimport = self::useMassImport();
 
       echo "<div class='center'><table class='tab_cadre' width='40%'>";
       echo "<tr><th colspan='".($usemassimport?4:2)."'>";
@@ -1817,22 +1817,29 @@ JAVASCRIPT;
       $rules_matched = array();
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient->setChecksum(PluginOcsinventoryngOcsClient::CHECKSUM_ALL, $ocsid);
-
+      
+      
       //No entity or location predefined, check rules
-      if ($defaultentity == -1 && $defaultlocation == -1) {
+      if ($defaultentity == -1 && ($defaultlocation == -1 || $defaultlocation == 0)) {
          //Try to affect computer to an entity
          $rule = new RuleImportEntityCollection();
          $data = array();
          $data = $rule->processAllRules(array('ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                '_source'       => 'ocsinventoryng'),
          array(), array('ocsid' => $ocsid));
+
+         if ($data['_ignore_import'] == 1) {
+            //ELSE Return code to indicates that the machine was not imported because it doesn't matched rules
+            return array('status'       => self::COMPUTER_LINK_REFUSED,
+               'rule_matched' => $data['_ruleid']);
+         }
       } else {
          //An entity or a location has already been defined via the web interface
          $data['entities_id']  = $defaultentity;
          $data['locations_id'] = $defaultlocation;
       }
       //Try to match all the rules, return the first good one, or null if not rules matched
-      if (isset ($data['entities_id']) && $data['entities_id']>=0 || true) {
+      if (isset ($data['entities_id']) && $data['entities_id']>=0) {
          if ($lock) {
             while (!$fp = self::setEntityLock($data['entities_id'])) {
                sleep(1);
@@ -1994,6 +2001,22 @@ JAVASCRIPT;
             //By default log history
             $loghistory["history"] = 1;
             // Is an update to do ?
+            $bios   = false;
+            $memories   = false;
+            $storages   = array();
+            $hardware   = false;
+            $videos   = false;
+            $sounds   = false;
+            $networks   = false;
+            $modems   = false;
+            $monitors   = false;
+            $printers   = false;
+            $inputs   = false;
+            $softwares    = false;
+            $drives   = false;
+            $registry   = false;
+            $virtualmachines = false;
+               
             if ($mixed_checksum) {
 
                // Get updates on computers :
@@ -2002,25 +2025,6 @@ JAVASCRIPT;
                   $computer_updates = self::migrateComputerUpdates($line["computers_id"],
                   $computer_updates);
                }
-
-
-               //
-
-               $bios   = false;
-               $memories   = false;
-               $storages   = array();
-               $hardware   = false;
-               $videos   = false;
-               $sounds   = false;
-               $networks   = false;
-               $modems   = false;
-               $monitors   = false;
-               $printers   = false;
-               $inputs   = false;
-               $softwares    = false;
-               $drives   = false;
-               $registry   = false;
-               $virtualmachines	= false;
 
                $ocsCheck = array();
                if ($mixed_checksum & pow(2, self::HARDWARE_FL)) {
@@ -5112,7 +5116,8 @@ JAVASCRIPT;
       echo "<table class='tab_cadre_fixe'>";
       echo "<th colspan='2'>".__('Statistics of the OCSNG link', 'ocsinventoryng');
       if ($finished){
-         _e('Process completed');
+         echo "&nbsp;-&nbsp;";
+         _e('Task completed.');
       }
       echo "</th>";
 
@@ -5299,7 +5304,7 @@ JAVASCRIPT;
 
    static function showOcsReportsConsole($id){
 
-      $ocsconfig = PluginOcsinventoryngOcsServer::getConfig($id);
+      $ocsconfig = self::getConfig($id);
 
       echo "<div class='center'>";
       if ($ocsconfig["ocs_url"] != ''){
@@ -5916,13 +5921,6 @@ JAVASCRIPT;
       return $actions;
    }
    
-   function getForbiddenStandardMassiveAction() {
-
-      $forbidden   = parent::getForbiddenStandardMassiveAction();
-      $forbidden[] = 'update';
-      return $forbidden;
-   }
-
    /**
     * @since version 0.85
     *
@@ -5954,72 +5952,31 @@ JAVASCRIPT;
    **/
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
                                                        array $ids) {
-      global $DB;
+      global $DB, $REDIRECT;
       
       switch ($ma->getAction()) {
-         case "plugin_ocsinventoryng_import":
+         case "plugin_ocsinventoryng_force_ocsng_update":
             $input = $ma->getInput();
-            
-            // First time
-            //TOTEST
-            if (!isset($_GET['multiple_actions'])) {
-               $_SESSION['glpi_massiveaction']['POST']      = $_POST;
-               $_SESSION['glpi_massiveaction']['REDIRECT']  = $REDIRECT;
-               $_SESSION['glpi_massiveaction']['items']     = array();
-               foreach ($ids as $id) {
-                  $_SESSION['glpi_massiveaction']['items'][$id] = $id;
-               }
-               $_SESSION['glpi_massiveaction']['item_count']
-                     = count($_SESSION['glpi_massiveaction']['items']);
-               $_SESSION['glpi_massiveaction']['items_ok']        = 0;
-               $_SESSION['glpi_massiveaction']['items_ko']        = 0;
-               $_SESSION['glpi_massiveaction']['items_nbnoright'] = 0;
-               Html::redirect($_SERVER['PHP_SELF'].'?multiple_actions=1');
 
-            } else {
-               if (count($_SESSION['glpi_massiveaction']['items']) > 0) {
-                  $key = array_pop($_SESSION['glpi_massiveaction']['items']);
-                  if ($item->can($key,UPDATE)) {
-                     //Try to get the OCS server whose machine belongs
-                     $query = "SELECT `plugin_ocsinventoryng_ocsservers_id`, `id`
+            foreach ($ids as $id) {
+               
+               $query = "SELECT `plugin_ocsinventoryng_ocsservers_id`, `id`
                                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                               WHERE `computers_id` = '".$key."'";
-                     $result = $DB->query($query);
-                     if ($DB->numrows($result) == 1) {
-                        $data = $DB->fetch_assoc($result);
-                        if ($data['plugin_ocsinventoryng_ocsservers_id'] != -1) {
-                           //Force update of the machine
-                           PluginOcsinventoryngOcsServer::updateComputer($data['id'],
-                                                                         $data['plugin_ocsinventoryng_ocsservers_id'],
-                                                                         1, 1);
-                           $_SESSION['glpi_massiveaction']['items_ok']++;
-                        } else {
-                           $_SESSION['glpi_massiveaction']['items_ko']++;
-                        }
-                     } else {
-                        $_SESSION['glpi_massiveaction']['items_ko']++;
-                     }
+                               WHERE `computers_id` = '".$id."'";
+               $result = $DB->query($query);
+               if ($DB->numrows($result) == 1) {
+                  $data = $DB->fetch_assoc($result);
+                        
+                  if (self::updateComputer($data['id'],$data['plugin_ocsinventoryng_ocsservers_id'],
+                                                                            1, 1)) {
+                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                   } else {
-                     $_SESSION['glpi_massiveaction']['items_nbnoright']++;
+                     $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
                   }
-                  Html::redirect($_SERVER['PHP_SELF'].'?multiple_actions=1');
-               } else {
-                  $REDIRECT  = $_SESSION['glpi_massiveaction']['REDIRECT'];
-                  $nbok      = $_SESSION['glpi_massiveaction']['items_ok'];
-                  $nbko      = $_SESSION['glpi_massiveaction']['items_ko'];
-                  $nbnoright = $_SESSION['glpi_massiveaction']['items_nbnoright'];
-                  unset($_SESSION['glpi_massiveaction']);
-               }
-            }
-            /*foreach ($ids as $id) {
-               if (PluginOcsinventoryngNotimportedcomputer::computerImport(array('id'     => $id,
-                                                                                'force'  => true,
-                                                                                'entity' => $input['entity']))) {
-                  $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                } else {
                   $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
                }
-            }*/
+            }
 
             return;
          
@@ -6030,14 +5987,14 @@ JAVASCRIPT;
                foreach ($ids as $id) {
                   
                   if ($_POST['field'] == 'all') {
-                     if (PluginOcsinventoryngOcsServer::replaceOcsArray($id, array(),
+                     if (self::replaceOcsArray($id, array(),
                                                                               "computer_update")) {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                      } else {
                         $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
                      }
                   } else {
-                     if (PluginOcsinventoryngOcsServer::deleteInOcsArray($id, $_POST['field'],
+                     if (self::deleteInOcsArray($id, $_POST['field'],
                                                                                "computer_update",
                                                                                true)) {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
