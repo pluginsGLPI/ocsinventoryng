@@ -591,5 +591,103 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
       self::sendAlert();
       $task->setVolume(1);
    }
+   
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::getSpecificMassiveActions()
+   **/
+   function getSpecificMassiveActions($checkitem=NULL) {
+
+      $actions = parent::getSpecificMassiveActions($checkitem);
+
+      return $actions;
+   }
+   
+   function getForbiddenStandardMassiveAction() {
+
+      $forbidden   = parent::getForbiddenStandardMassiveAction();
+      $forbidden[] = 'update';
+      return $forbidden;
+   }
+
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::showMassiveActionsSubForm()
+   **/
+   static function showMassiveActionsSubForm(MassiveAction $ma) {
+
+      switch ($ma->getAction()) {
+         case 'plugin_ocsinventoryng_import':
+            Entity::dropdown(array('name' => 'entity'));
+            echo "&nbsp;".
+                 Html::submit(_x('button','Post'), array('name' => 'massiveaction'));
+            return true;
+         /*case 'plugin_ocsinventoryng_link':
+            Computer::dropdown(array('name' => 'computers_id'));
+            echo "&nbsp;".
+                 Html::submit(_x('button','Post'), array('name' => 'massiveaction'));
+            return true;*/
+         case 'plugin_ocsinventoryng_replayrules':
+         case 'plugin_ocsinventoryng_delete':
+            echo "&nbsp;".
+                 Html::submit(_x('button','Post'), array('name' => 'massiveaction'));
+            return true;
+    }
+      return parent::showMassiveActionsSubForm($ma);
+   }
+
+
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::processMassiveActionsForOneItemtype()
+   **/
+   static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
+                                                       array $ids) {
+      global $DB;
+      
+      $notimport = new PluginOcsinventoryngNotimportedcomputer();
+      
+      switch ($ma->getAction()) {
+         case "plugin_ocsinventoryng_import":
+            $input = $ma->getInput();
+            foreach ($ids as $id) {
+               if (PluginOcsinventoryngNotimportedcomputer::computerImport(array('id'     => $id,
+                                                                                'force'  => true,
+                                                                                'entity' => $input['entity']))) {
+                  $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+               } else {
+                  $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+               }
+            }
+
+            return;
+         
+         case "plugin_ocsinventoryng_replayrules" :
+            $input = $ma->getInput();
+            foreach ($ids as $id) {
+               if (PluginOcsinventoryngNotimportedcomputer::computerImport(array('id' => $id))) {
+                  $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+               } else {
+                  $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+               }
+            }
+            return;
+
+         case "plugin_ocsinventoryng_delete" :
+            $input = $ma->getInput();
+            foreach ($ids as $id) {
+               if ($notimport->deleteNotImportedComputer($id)) {
+                  $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+               } else {
+                  $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+               }
+            }
+            return;
+      }
+      parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
+   }
 }
 ?>

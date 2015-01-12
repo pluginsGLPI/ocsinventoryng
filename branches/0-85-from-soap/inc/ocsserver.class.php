@@ -867,14 +867,14 @@ JAVASCRIPT;
       $out="<br><div class='center'>\n";
       $out.="<table class='tab_cadre_fixe'>";
       $out.="<tr><th>" .__('Connecting to the database', 'ocsinventoryng'). "</th></tr>\n";
-      $out.="<tr class='tab_bg_2'><td class='center'>";
+      $out.="<tr class='tab_bg_2'>";
       if ($ID != -1) {
          if (!self::checkOCSconnection($ID)) {
-            $out .= __('Connection to the database failed', 'ocsinventoryng');
+            $out .= "<td class='center red'>".__('Connection to the database failed', 'ocsinventoryng');
          } else if (!self::checkVersion($ID)) {
-            $out .= __('Invalid OCSNG Version: RC3 is required', 'ocsinventoryng');
+            $out .= "<td class='center red'>".__('Invalid OCSNG Version: RC3 is required', 'ocsinventoryng');
          } else if (!self::checkTraceDeleted($ID)) {
-            $out .= __('Invalid OCSNG configuration (TRACE_DELETED must be active)', 'ocsinventoryng');
+            $out .= "<td class='center red'>".__('Invalid OCSNG configuration (TRACE_DELETED must be active)', 'ocsinventoryng');
             // TODO
             /*} else if (!self::checkConfig(4)) {
             $out .= __('Access denied on database (Need write rights on hardware.CHECKSUM necessary)',
@@ -883,7 +883,7 @@ JAVASCRIPT;
             $out .= __('Access denied on database (Delete rights in deleted_equiv table necessary)',
             'ocsinventoryng');*/
          } else {
-            $out .= __('Connection to database successful', 'ocsinventoryng');
+            $out .= "<td class='center'>".__('Connection to database successful', 'ocsinventoryng');
             $out .= "</td></tr>\n<tr class='tab_bg_2'>".
             "<td class='center'>".__('Valid OCSNG configuration and version', 'ocsinventoryng');
          }
@@ -5902,5 +5902,154 @@ JAVASCRIPT;
          $conn->delete(array('id'             => $data['id'],
                                     '_ocsservers_id' => $ocsservers_id), true);
       }
+   }
+   
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::getSpecificMassiveActions()
+   **/
+   function getSpecificMassiveActions($checkitem=NULL) {
+
+      $actions = parent::getSpecificMassiveActions($checkitem);
+
+      return $actions;
+   }
+   
+   function getForbiddenStandardMassiveAction() {
+
+      $forbidden   = parent::getForbiddenStandardMassiveAction();
+      $forbidden[] = 'update';
+      return $forbidden;
+   }
+
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::showMassiveActionsSubForm()
+   **/
+   static function showMassiveActionsSubForm(MassiveAction $ma) {
+
+      switch ($ma->getAction()) {
+         case 'plugin_ocsinventoryng_force_ocsng_update':
+            echo "&nbsp;".
+                 Html::submit(_x('button','Post'), array('name' => 'massiveaction'));
+            return true;
+         case 'plugin_ocsinventoryng_unlock_ocsng_field':
+            $fields['all'] = __('All');
+            $fields       += self::getLockableFields();
+            Dropdown::showFromArray("field", $fields);
+            echo "&nbsp;".
+                 Html::submit(_x('button','Post'), array('name' => 'massiveaction'));
+            return true;
+    }
+      return parent::showMassiveActionsSubForm($ma);
+   }
+
+
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::processMassiveActionsForOneItemtype()
+   **/
+   static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
+                                                       array $ids) {
+      global $DB;
+      
+      switch ($ma->getAction()) {
+         case "plugin_ocsinventoryng_import":
+            $input = $ma->getInput();
+            
+            // First time
+            //TOTEST
+            if (!isset($_GET['multiple_actions'])) {
+               $_SESSION['glpi_massiveaction']['POST']      = $_POST;
+               $_SESSION['glpi_massiveaction']['REDIRECT']  = $REDIRECT;
+               $_SESSION['glpi_massiveaction']['items']     = array();
+               foreach ($ids as $id) {
+                  $_SESSION['glpi_massiveaction']['items'][$id] = $id;
+               }
+               $_SESSION['glpi_massiveaction']['item_count']
+                     = count($_SESSION['glpi_massiveaction']['items']);
+               $_SESSION['glpi_massiveaction']['items_ok']        = 0;
+               $_SESSION['glpi_massiveaction']['items_ko']        = 0;
+               $_SESSION['glpi_massiveaction']['items_nbnoright'] = 0;
+               Html::redirect($_SERVER['PHP_SELF'].'?multiple_actions=1');
+
+            } else {
+               if (count($_SESSION['glpi_massiveaction']['items']) > 0) {
+                  $key = array_pop($_SESSION['glpi_massiveaction']['items']);
+                  if ($item->can($key,UPDATE)) {
+                     //Try to get the OCS server whose machine belongs
+                     $query = "SELECT `plugin_ocsinventoryng_ocsservers_id`, `id`
+                               FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                               WHERE `computers_id` = '".$key."'";
+                     $result = $DB->query($query);
+                     if ($DB->numrows($result) == 1) {
+                        $data = $DB->fetch_assoc($result);
+                        if ($data['plugin_ocsinventoryng_ocsservers_id'] != -1) {
+                           //Force update of the machine
+                           PluginOcsinventoryngOcsServer::updateComputer($data['id'],
+                                                                         $data['plugin_ocsinventoryng_ocsservers_id'],
+                                                                         1, 1);
+                           $_SESSION['glpi_massiveaction']['items_ok']++;
+                        } else {
+                           $_SESSION['glpi_massiveaction']['items_ko']++;
+                        }
+                     } else {
+                        $_SESSION['glpi_massiveaction']['items_ko']++;
+                     }
+                  } else {
+                     $_SESSION['glpi_massiveaction']['items_nbnoright']++;
+                  }
+                  Html::redirect($_SERVER['PHP_SELF'].'?multiple_actions=1');
+               } else {
+                  $REDIRECT  = $_SESSION['glpi_massiveaction']['REDIRECT'];
+                  $nbok      = $_SESSION['glpi_massiveaction']['items_ok'];
+                  $nbko      = $_SESSION['glpi_massiveaction']['items_ko'];
+                  $nbnoright = $_SESSION['glpi_massiveaction']['items_nbnoright'];
+                  unset($_SESSION['glpi_massiveaction']);
+               }
+            }
+            /*foreach ($ids as $id) {
+               if (PluginOcsinventoryngNotimportedcomputer::computerImport(array('id'     => $id,
+                                                                                'force'  => true,
+                                                                                'entity' => $input['entity']))) {
+                  $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+               } else {
+                  $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+               }
+            }*/
+
+            return;
+         
+         case "plugin_ocsinventoryng_unlock_ocsng_field" :
+            $input = $ma->getInput();
+            $fields = self::getLockableFields();
+            if ($_POST['field'] == 'all' || isset($fields[$_POST['field']])) {
+               foreach ($ids as $id) {
+                  
+                  if ($_POST['field'] == 'all') {
+                     if (PluginOcsinventoryngOcsServer::replaceOcsArray($id, array(),
+                                                                              "computer_update")) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                     } else {
+                        $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+                     }
+                  } else {
+                     if (PluginOcsinventoryngOcsServer::deleteInOcsArray($id, $_POST['field'],
+                                                                               "computer_update",
+                                                                               true)) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                     } else {
+                        $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+                     }
+                  }
+               }
+            }
+
+            return;
+      }
+      parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
    }
 }

@@ -1028,20 +1028,20 @@ function plugin_ocsinventoryng_MassiveActions($type) {
    switch ($type) {
       case 'PluginOcsinventoryngNotimportedcomputer' :
          $actions = array ();
-         $actions["plugin_ocsinventoryng_replayrules"] = __("Restart import", 'ocsinventoryng');
-         $actions["plugin_ocsinventoryng_import"]      = __("Import in the entity",
+         $actions['PluginOcsinventoryngNotimportedcomputer'.MassiveAction::CLASS_ACTION_SEPARATOR."plugin_ocsinventoryng_replayrules"] = __("Restart import", 'ocsinventoryng');
+         $actions['PluginOcsinventoryngNotimportedcomputer'.MassiveAction::CLASS_ACTION_SEPARATOR."plugin_ocsinventoryng_import"]      = __("Import in the entity",
                                                             'ocsinventoryng');
 
-         if (isset ($_POST['target'])
+         /*if (isset ($_POST['target'])
              && $_POST['target'] == Toolbox::getItemTypeFormURL('PluginOcsinventoryngNotimportedcomputer')) {
 
-            $actions["plugin_ocsinventoryng_link"]
+            $actions['PluginOcsinventoryngNotimportedcomputer'.MassiveAction::CLASS_ACTION_SEPARATOR."plugin_ocsinventoryng_link"]
                                           = __('Link new OCSNG computers to existing GLPI computers',
                                                'ocsinventoryng');
-         }
+         }*/
          $plugin = new Plugin;
          if ($plugin->isActivated("uninstall")) {
-            $actions["plugin_ocsinventoryng_delete"]   = __('Delete computer in OCSNG',
+            $actions['PluginOcsinventoryngNotimportedcomputer'.MassiveAction::CLASS_ACTION_SEPARATOR."plugin_ocsinventoryng_delete"]   = __('Delete computer in OCSNG',
                                                             'ocsinventoryng');
          }
          return $actions;
@@ -1051,10 +1051,10 @@ function plugin_ocsinventoryng_MassiveActions($type) {
              || Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
 
                 return array(// Specific one
-                      "plugin_ocsinventoryng_force_ocsng_update"
+                      'PluginOcsinventoryngOcsServer'.MassiveAction::CLASS_ACTION_SEPARATOR."plugin_ocsinventoryng_force_ocsng_update"
                       => __('Force synchronization OCSNG',
                             'ocsinventoryng'),
-                      "plugin_ocsinventoryng_unlock_ocsng_field"      => __('Unlock fields',
+                      'PluginOcsinventoryngOcsServer'.MassiveAction::CLASS_ACTION_SEPARATOR."plugin_ocsinventoryng_unlock_ocsng_field"      => __('Unlock fields',
                             'ocsinventoryng'));
 
          }
@@ -1063,7 +1063,7 @@ function plugin_ocsinventoryng_MassiveActions($type) {
       case 'NetworkPort':
          if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
              && Session::haveRight('networking',UPDATE)) {
-            return array('plugin_ocsinventoryng_update_networkport_type'
+            return array('PluginOcsinventoryngNetworkPort'.MassiveAction::CLASS_ACTION_SEPARATOR.'plugin_ocsinventoryng_update_networkport_type'
                          =>  __('Update networkport types',
                                 'ocsinventoryng'));
          }
@@ -1076,6 +1076,7 @@ function plugin_ocsinventoryng_MassiveActions($type) {
 /**
  * @param $options   array
 */
+/*
 function plugin_ocsinventoryng_MassiveActionsDisplay($options=array()) {
 
    switch ($options['itemtype']) {
@@ -1128,6 +1129,7 @@ function plugin_ocsinventoryng_MassiveActionsDisplay($options=array()) {
 /**
  * @param $data   array
 **/
+/*
 function plugin_ocsinventoryng_MassiveActionsProcess($data) {
    global $CFG_GLPI, $DB, $REDIRECT;
 
@@ -1279,7 +1281,7 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
                 'ko'      => $nbko,
                 'noright' => $noright);   
 }
-
+*/
 
 /**
  * @param $itemtype

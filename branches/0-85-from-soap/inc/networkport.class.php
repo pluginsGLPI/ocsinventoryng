@@ -511,5 +511,72 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       }
       echo "</table></div>";
    }
+   
+   
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::getSpecificMassiveActions()
+   **/
+   function getSpecificMassiveActions($checkitem=NULL) {
+
+      $actions = parent::getSpecificMassiveActions($checkitem);
+
+      return $actions;
+   }
+   
+   function getForbiddenStandardMassiveAction() {
+
+      $forbidden   = parent::getForbiddenStandardMassiveAction();
+      $forbidden[] = 'update';
+      return $forbidden;
+   }
+
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::showMassiveActionsSubForm()
+   **/
+   static function showMassiveActionsSubForm(MassiveAction $ma) {
+
+      switch ($ma->getAction()) {
+         case 'plugin_ocsinventoryng_update_networkport_type':
+            echo "&nbsp;".
+                 Html::submit(_x('button','Post'), array('name' => 'massiveaction'));
+            return true;
+    }
+      return parent::showMassiveActionsSubForm($ma);
+   }
+
+
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::processMassiveActionsForOneItemtype()
+   **/
+   static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
+                                                       array $ids) {
+      global $DB;
+      
+      switch ($ma->getAction()) {
+         case "plugin_ocsinventoryng_update_networkport_type":
+            $networkport = new PluginOcsinventoryngNetworkPort();
+            $input = $ma->getInput();
+            foreach ($ids as $id) {
+               if ($networkport->getFromDBByQuery("WHERE `networkports_id` = '$id'")) {
+                  if ($networkport->transformAccordingTypes()) {
+                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                  } else {
+                     $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+                  }
+               } else {
+                  $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+               }
+            }
+
+            return;
+      }
+      parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
+   }
 }
 ?>
