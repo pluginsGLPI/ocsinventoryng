@@ -45,9 +45,9 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
 
       if (Session::haveRight(static::$rightname, UPDATE) || Session::haveRight("config", UPDATE)) {
          //Entry icon in breadcrumb
-         $menu['links']['config'] = PluginOcsinventoryngConfig::getFormURL(false);
+         $menu['links']['config'] = PluginOcsinventoryngConfig::getSearchURL(false);
          //Link to config page in admin plugins list
-         $menu['config_page']     = PluginOcsinventoryngConfig::getFormURL(false);
+         $menu['config_page']     = PluginOcsinventoryngConfig::getSearchURL(false);
       }
 
       // Ocsserver
