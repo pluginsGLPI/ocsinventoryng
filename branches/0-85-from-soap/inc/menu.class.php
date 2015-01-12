@@ -51,10 +51,10 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
       }
 
       // Ocsserver
-      $menu['options']['ocsserver']['title']           = __s("OCSNG server 's configuration", 'ocsinventoryng');
+      $menu['options']['ocsserver']['title']           = __s("Configuration of OCSNG server", 'ocsinventoryng');
       $menu['options']['ocsserver']['page']            = '/plugins/ocsinventoryng/front/ocsserver.php';
-      $menu['options']['ocsserver']['links']['add']    = '/plugins/ocsinventoryng/front/ocsserver.php';
-      $menu['options']['ocsserver']['links']['search'] = '/plugins/ocsinventoryng/front/ocsserver.form.php';
+      $menu['options']['ocsserver']['links']['add']    = '/plugins/ocsinventoryng/front/ocsserver.form.php';
+      $menu['options']['ocsserver']['links']['search'] = '/plugins/ocsinventoryng/front/ocsserver.php';
 
 
       // Import

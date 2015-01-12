@@ -443,7 +443,7 @@ JAVASCRIPT;
             echo "<td class='top'>\n";
 
             echo "<table width='100%'>";
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Name') . "</td>\n<td>";
+            echo "<tr class='tab_bg_2'><td class='center'>" . __('Name') . "</td>\n<td width='25%'>";
             Dropdown::showYesNo("import_general_name", $this->fields["import_general_name"]);
             echo "</td></tr>\n";
 
@@ -499,7 +499,6 @@ JAVASCRIPT;
                echo "</td></tr>\n";
             }
 
-            echo "<tr><td>&nbsp;</td></tr>";
             echo "</table>";
 
             echo "</td>\n";
@@ -813,7 +812,7 @@ JAVASCRIPT;
     * @return Nothing (display)
     **/
    function showForm($ID, $options=array()) {
-echo "testsetse";
+
       //If no ID provided, or if the server is created using an existing template
       $rowspan = 0;
       if (empty($ID)) {

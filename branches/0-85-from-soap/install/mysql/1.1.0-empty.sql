@@ -199,6 +199,68 @@ CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_threads` (
    KEY `process_thread` (`processid`,`threadid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_configs`;
+CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_configs` (
+   `id` int(11) NOT NULL auto_increment,
+   `thread_log_frequency` int(11) NOT NULL default '10',
+   `is_displayempty` int(1) NOT NULL default '1',
+   `import_limit` int(11) NOT NULL default '0',
+   `delay_refresh` int(11) NOT NULL default '0',
+   `allow_ocs_update` tinyint(1) NOT NULL default '0',
+   `comment` text,
+   PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_details`;
+CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_details` (
+   `id` int(11) NOT NULL auto_increment,
+   `entities_id` int(11) NOT NULL default '0',
+   `plugin_ocsinventoryng_threads_id` int(11) NOT NULL default '0',
+   `rules_id` TEXT,
+   `threadid` int(11) NOT NULL default '0',
+   `ocsid` int(11) NOT NULL default '0',
+   `computers_id` int(11) NOT NULL default '0',
+   `action` int(11) NOT NULL default '0',
+   `process_time` datetime DEFAULT NULL,
+   `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL default '1',
+   PRIMARY KEY (`id`),
+   KEY `end_time` (`process_time`),
+   KEY `process_thread` (`plugin_ocsinventoryng_threads_id`,`threadid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_notimportedcomputers`;
+CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_notimportedcomputers` (
+   `id` INT( 11 ) NOT NULL  auto_increment,
+   `entities_id` int(11) NOT NULL default '0',
+   `rules_id` TEXT,
+   `comment` text NULL,
+   `ocsid` INT( 11 ) NOT NULL DEFAULT '0',
+   `plugin_ocsinventoryng_ocsservers_id` INT( 11 ) NOT NULL ,
+   `ocs_deviceid` VARCHAR( 255 ) NOT NULL ,
+   `useragent` VARCHAR( 255 ) NOT NULL ,
+   `tag` VARCHAR( 255 ) NOT NULL ,
+   `serial` VARCHAR( 255 ) NOT NULL ,
+   `name` VARCHAR( 255 ) NOT NULL ,
+   `ipaddr` VARCHAR( 255 ) NOT NULL ,
+   `domain` VARCHAR( 255 ) NOT NULL ,
+   `last_inventory` DATETIME ,
+   `reason` INT( 11 ) NOT NULL ,
+   PRIMARY KEY ( `id` ),
+   UNIQUE KEY `ocs_id` (`plugin_ocsinventoryng_ocsservers_id`,`ocsid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_servers`;
+CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_servers` (
+   `id` int(11) NOT NULL AUTO_INCREMENT,
+   `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
+   `max_ocsid` int(11) DEFAULT NULL,
+   `max_glpidate` datetime DEFAULT NULL,
+   PRIMARY KEY (`id`),
+   UNIQUE KEY `plugin_ocsinventoryng_ocsservers_id` (`plugin_ocsinventoryng_ocsservers_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+INSERT INTO `glpi_plugin_ocsinventoryng_configs`(`id`,`thread_log_frequency`,`is_displayempty`,`import_limit`) VALUES (1, 2, 1, 0);
+
 INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Unkown port', '*', '*', 'PluginOcsinventoryngNetworkPort', NULL, NULL,NULL, NULL);
 INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Ethernet port', 'Ethernet', '*', 'NetworkPortEthernet', 'T', 10,NULL, NULL);
 INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Wifi port', 'Wifi', '*', 'NetworkPortWifi', NULL, NULL, 'a', NULL);
@@ -207,5 +269,21 @@ INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Loopbac
 INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginOcsinventoryngOcsServer','3','1','0');
 INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginOcsinventoryngOcsServer','19','2','0');
 INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginOcsinventoryngOcsServer','6','3','0');
+INSERT INTO `glpi_displaypreferences` (`itemtype`, `num`, `rank`, `users_id`)
+                VALUES ('PluginOcsinventoryngNotimportedcomputer', 2, 1, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 3, 2, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 4, 3, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 5, 4, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 6, 5, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 7, 6, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 8, 7, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 9, 8, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 10, 9, 0),
+                       ('PluginOcsinventoryngDetail', 5, 1, 0),
+                       ('PluginOcsinventoryngDetail', 2, 2, 0),
+                       ('PluginOcsinventoryngDetail', 3, 3, 0),
+                       ('PluginOcsinventoryngDetail', 4, 4, 0),
+                       ('PluginOcsinventoryngDetail', 6, 5, 0),
+                       ('PluginOcsinventoryngDetail', 80, 6, 0);
 
 INSERT INTO `glpi_crontasks` VALUES (NULL,'PluginOcsinventoryngOcsServer','ocsng','300',NULL,'0','1','3','0','24','30',NULL,NULL,NULL);
