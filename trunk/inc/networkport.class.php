@@ -192,18 +192,19 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       // Group by DESCRIPTION, MACADDR, TYPE, TYPEMIB, SPEED, VIRTUALDEV
       // to get an array in IPADDRESS
       $ocsNetworks = array();
-      foreach ($ocsComputer['NETWORKS'] as $ocsNetwork) {
-         $key = $ocsNetwork['DESCRIPTION'].$ocsNetwork['MACADDR'].$ocsNetwork['TYPE']
-               .$ocsNetwork['TYPEMIB'].$ocsNetwork['SPEED'].$ocsNetwork['VIRTUALDEV'];
-         
-         if (!isset($ocsNetworks[$key])) {
-            $ocsNetworks[$key] = $ocsNetwork;
-            $ocsNetworks[$key]['IPADDRESS'] = array($ocsNetwork['IPADDRESS']);
-         } else {
-         	$ocsNetworks[$key]['IPADDRESS'] []= $ocsNetwork['IPADDRESS'];
+      if(isset($ocsComputer['NETWORKS'])) {
+         foreach ($ocsComputer['NETWORKS'] as $ocsNetwork) {
+            $key = $ocsNetwork['DESCRIPTION'].$ocsNetwork['MACADDR'].$ocsNetwork['TYPE']
+                  .$ocsNetwork['TYPEMIB'].$ocsNetwork['SPEED'].$ocsNetwork['VIRTUALDEV'];
+            
+            if (!isset($ocsNetworks[$key])) {
+               $ocsNetworks[$key] = $ocsNetwork;
+               $ocsNetworks[$key]['IPADDRESS'] = array($ocsNetwork['IPADDRESS']);
+            } else {
+               $ocsNetworks[$key]['IPADDRESS'] []= $ocsNetwork['IPADDRESS'];
+            }
          }
       }
-
       $network_ports  = array();
       $network_ifaces = array();
       foreach ($ocsNetworks as $line) {

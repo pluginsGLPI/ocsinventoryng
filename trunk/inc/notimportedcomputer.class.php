@@ -294,7 +294,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
       $computer = $ocsClient->getComputer($ocsid,$options);
 
 
-      if ($computer["HARDWARE"] && $computer["BIOS"] && $computer["ACCOUNTINFO"] ) {
+      if ($computer["HARDWARE"] && $computer["BIOS"]) {
          $input["_ocs"]                                  = true;
          $input["name"]                                  = $computer["HARDWARE"]["NAME"];
          $input["domain"]                                = $computer["HARDWARE"]["WORKGROUP"];
