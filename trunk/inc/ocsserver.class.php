@@ -5218,19 +5218,23 @@ JAVASCRIPT;
 
       if ($computer){
          $data_ocs = Toolbox::addslashes_deep($computer["META"]);
+         
+         if (isset($data_ocs["TAG"]) 
+               && isset($line_links["tag"]) 
+                  && $data_ocs["TAG"]!=$line_links["tag"]) {
+            $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                      SET `tag` = '" . $data_ocs["TAG"] . "'
+                      WHERE `id` = '" . $line_links["id"] . "'";
 
-         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                   SET `tag` = '" . $data_ocs["TAG"] . "'
-                   WHERE `id` = '" . $line_links["id"] . "'";
+            if ($DB->query($query)){
+               $changes[0] = '0';
+               $changes[1] = $line_links["tag"];
+               $changes[2] = $data_ocs["TAG"];
 
-         if ($DB->query($query)){
-            $changes[0] = '0';
-            $changes[1] = $line_links["tag"];
-            $changes[2] = $data_ocs["TAG"];
-
-            PluginOcsinventoryngOcslink::history($line_links["computers_id"], $changes,
-            PluginOcsinventoryngOcslink::HISTORY_OCS_TAGCHANGED);
-            return $data_ocs["TAG"];
+               PluginOcsinventoryngOcslink::history($line_links["computers_id"], $changes,
+               PluginOcsinventoryngOcslink::HISTORY_OCS_TAGCHANGED);
+               return $data_ocs["TAG"];
+            }
          }
       }
    }
