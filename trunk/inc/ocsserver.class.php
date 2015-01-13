@@ -507,7 +507,7 @@ JAVASCRIPT;
             echo "<td class='tab_bg_2 top'>\n";
 
             echo "<table width='100%'>";
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Processor') . "</td>\n<td>";
+            echo "<tr class='tab_bg_2'><td class='center'>" . __('Processor') . "</td>\n<td width='55%'>";
             Dropdown::showYesNo("import_device_processor", $this->fields["import_device_processor"]);
             echo "</td></tr>\n";
 
