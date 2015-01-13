@@ -435,7 +435,8 @@ JAVASCRIPT;
             ));
             echo "</th><th></th></tr>";
             echo "<tr>
-            <th><input type='hidden' name='id' value='$ID'>".__('General information', 'ocsinventoryng')."</th>\n";
+            <th><input type='hidden' name='id' value='$ID'>".__('General information', 'ocsinventoryng').
+            "<br><span style='color:red;'>".__('Warning : the import entity rules depends on selected fields', 'ocsinventoryng')."</span></th>\n";
             echo "<th>"._n('Component', 'Components', 2) ."</th>\n";
             echo "<th>" . __('OCSNG administrative information', 'ocsinventoryng') . "</th></tr>\n";
 

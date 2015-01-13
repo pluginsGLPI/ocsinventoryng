@@ -34,7 +34,7 @@ $profservers = new PluginOcsinventoryngOcsserver_Profile();
 
 if (isset($_POST["addocsserver"]) && ($_POST['plugin_ocsinventoryng_ocsservers_id'] > 0)) {
    $input['profiles_id'] = $_POST['profile'];
-   $input['ocsservers_id'] = $_POST['plugin_ocsinventoryng_ocsservers_id'];
+   $input['plugin_ocsinventoryng_ocsservers_id'] = $_POST['plugin_ocsinventoryng_ocsservers_id'];
 
    $newID = $profservers->add($input);
    Html::back();
