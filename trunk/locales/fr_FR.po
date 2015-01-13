@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-01-13 10:47+0100\n"
-"PO-Revision-Date: 2015-01-13 10:18+0000\n"
+"PO-Revision-Date: 2015-01-13 10:45+0000\n"
 "Last-Translator: Xavier CAILLAUD <tsmr@thetsmr.fr>\n"
 "Language-Team: French (France) (http://www.transifex.com/projects/p/GLPI_ocsinventoryng/language/fr_FR/)\n"
 "MIME-Version: 1.0\n"
@@ -501,7 +501,7 @@ msgstr "Le serveur sélectionné n'est pas actif. L'import et la synchronisation
 
 #: inc/ocsserver.class.php:439
 msgid "Warning : the import entity rules depends on selected fields"
-msgstr "Attention : les règles d'affectation d'un élément à une entité dépendent des champs selectionnnés"
+msgstr "Attention : les règles d'affectation d'un élément à une entité dépendent des champs sélectionnés"
 
 #: inc/ocsserver.class.php:441
 msgid "OCSNG administrative information"
