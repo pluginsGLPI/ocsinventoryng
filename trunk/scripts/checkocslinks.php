@@ -103,6 +103,7 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
    }
 
    if (isset($_GET['ocs'])) {
+      $DBocs = new $PluginOcsinventoryngDBocs();
       echo "+ Search OCS Computers\n";
       $query_ocs = "SELECT `ID`, `DEVICEID`
                     FROM `hardware`";
