@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-12 17:21+0100\n"
-"PO-Revision-Date: 2015-01-12 16:50+0000\n"
+"POT-Creation-Date: 2015-01-13 10:47+0100\n"
+"PO-Revision-Date: 2015-01-13 10:17+0000\n"
 "Last-Translator: Xavier CAILLAUD <tsmr@thetsmr.fr>\n"
 "Language-Team: Turkish (Turkey) (http://www.transifex.com/projects/p/GLPI_ocsinventoryng/language/tr_TR/)\n"
 "MIME-Version: 1.0\n"
@@ -48,7 +48,7 @@ msgstr "GLPI alma tarihi"
 
 #: hook.php:1345 inc/notimportedcomputer.class.php:78
 #: inc/notimportedcomputer.class.php:257 inc/ocslink.class.php:95
-#: inc/ocsserver.class.php:2925
+#: inc/ocsserver.class.php:2926
 msgid "Last OCSNG inventory date"
 msgstr "Son OCSNG envanter tarihi"
 
@@ -65,7 +65,7 @@ msgstr "Envanter ajanı"
 #: inc/notificationtargetnotimportedcomputer.class.php:79
 #: inc/notimportedcomputer.class.php:66 inc/notimportedcomputer.class.php:242
 #: inc/ocslink.class.php:120 inc/ocslink.class.php:223
-#: inc/ocsserver.class.php:3205
+#: inc/ocsserver.class.php:3206
 msgid "OCSNG TAG"
 msgstr "OCSNG ETİKETİ"
 
@@ -74,7 +74,7 @@ msgstr "OCSNG ETİKETİ"
 msgid "OCSNG ID"
 msgstr "OCSNG KODU"
 
-#: hook.php:1382 hook.php:1391 inc/ocsserver.class.php:699
+#: hook.php:1382 hook.php:1391 inc/ocsserver.class.php:700
 #: inc/registrykey.class.php:39 inc/registrykey.class.php:102
 msgid "Registry"
 msgstr "Kayıt Defteri"
@@ -150,7 +150,7 @@ msgid "No new computers to delete"
 msgstr "Silinecek yeni bir bilgisayar yok"
 
 #: front/deleted_equiv.php:48 front/deleted_equiv.php:81
-#: inc/ocsserver.class.php:5115
+#: inc/ocsserver.class.php:5116
 msgid "Statistics of the OCSNG link"
 msgstr "OCSNG bağlantı istatistikleri"
 
@@ -167,7 +167,7 @@ msgstr "Kendiliğinden işlemleri yürütür"
 
 #: front/ocsng.clean.php:52 inc/menu.class.php:90 inc/ocsserver.class.php:385
 #: inc/ocsserver.class.php:386 inc/ocsserver.class.php:387
-#: inc/ocsserver.class.php:2693 inc/profile.class.php:291
+#: inc/ocsserver.class.php:2694 inc/profile.class.php:291
 msgid "Clean links between GLPI and OCSNG"
 msgstr "GLPI ve OCSNG arasındaki bağlantıları temizleyin"
 
@@ -245,21 +245,21 @@ msgstr "İş parçacığı"
 msgid "Rules checked"
 msgstr "Denetlenen kural"
 
-#: inc/detail.class.php:154 inc/ocsserver.class.php:5058
+#: inc/detail.class.php:154 inc/ocsserver.class.php:5059
 msgid "Computers imported"
 msgstr "Alınan bilgisayar"
 
-#: inc/detail.class.php:157 inc/ocsserver.class.php:5060
+#: inc/detail.class.php:157 inc/ocsserver.class.php:5061
 #: inc/thread.class.php:100 inc/thread.class.php:291
 msgid "Computers linked"
 msgstr "Bağlanan bilgisayar"
 
-#: inc/detail.class.php:160 inc/ocsserver.class.php:5061
+#: inc/detail.class.php:160 inc/ocsserver.class.php:5062
 #: inc/thread.class.php:103 inc/thread.class.php:293
 msgid "Computers not updated"
 msgstr "Güncellenmeyen bilgisayar"
 
-#: inc/detail.class.php:163 inc/ocsserver.class.php:5059
+#: inc/detail.class.php:163 inc/ocsserver.class.php:5060
 #: inc/thread.class.php:99 inc/thread.class.php:290
 msgid "Computers synchronized"
 msgstr "Eşleştirilen bilgisayar"
@@ -275,7 +275,7 @@ msgstr "OCSNG sunucusunun ayarları"
 
 #: inc/menu.class.php:61 inc/ocsserver.class.php:308
 #: inc/ocsserver.class.php:309 inc/ocsserver.class.php:310
-#: inc/ocsserver.class.php:3322 inc/ocsserver.class.php:3331
+#: inc/ocsserver.class.php:3323 inc/ocsserver.class.php:3332
 msgid "Import new computers"
 msgstr "Yeni bilgisayarlar alınsın"
 
@@ -317,32 +317,32 @@ msgstr[0] "Bilinmeyen OCS tipleri"
 msgid "Invalid"
 msgstr "Geçersiz"
 
-#: inc/networkport.class.php:363 inc/networkport.class.php:389
+#: inc/networkport.class.php:364 inc/networkport.class.php:390
 #: inc/networkporttype.class.php:134
 msgid "OCS TYPE"
 msgstr "OCS TİPİ"
 
-#: inc/networkport.class.php:365 inc/networkport.class.php:390
+#: inc/networkport.class.php:366 inc/networkport.class.php:391
 msgid "OCS MIB TYPE"
 msgstr "OCS MIB TİPİ"
 
-#: inc/networkport.class.php:370
+#: inc/networkport.class.php:371
 msgid "Create an entry for defining this type"
 msgstr "Bu tipi tanımlayan bir kayıt oluşturun"
 
-#: inc/networkport.class.php:391
+#: inc/networkport.class.php:392
 msgid "Create a mapping"
 msgstr "Bir harita ekleyin"
 
-#: inc/networkport.class.php:451
+#: inc/networkport.class.php:452
 msgid "empty"
 msgstr ""
 
-#: inc/networkport.class.php:464
+#: inc/networkport.class.php:465
 msgid "Unknown network port type from OCS"
 msgstr ""
 
-#: inc/networkport.class.php:509
+#: inc/networkport.class.php:510
 msgid "No unknown network port type from OCS !"
 msgstr ""
 
@@ -467,8 +467,8 @@ msgstr "Uzman eşleştirme kipi"
 msgid "Database in UTF8"
 msgstr "Veritabanı UTF8"
 
-#: inc/ocsserver.class.php:236 inc/ocsserver.class.php:4119
-#: inc/ocsserver.class.php:4142
+#: inc/ocsserver.class.php:236 inc/ocsserver.class.php:4120
+#: inc/ocsserver.class.php:4143
 msgid "Choice of an OCSNG server"
 msgstr "OCSNG sunucusu seçimi"
 
@@ -483,256 +483,260 @@ msgid ""
 "available"
 msgstr "Seçilmiş sunucu etkin olmadığından, alma ve eşleştirme yapılamaz"
 
-#: inc/ocsserver.class.php:440
+#: inc/ocsserver.class.php:439
+msgid "Warning : the import entity rules depends on selected fields"
+msgstr ""
+
+#: inc/ocsserver.class.php:441
 msgid "OCSNG administrative information"
 msgstr "OCSNG yönetim bilgileri"
 
-#: inc/ocsserver.class.php:580 inc/ocsserver.class.php:658
-#: inc/ocsserver.class.php:662 inc/ocsserver.class.php:685
+#: inc/ocsserver.class.php:581 inc/ocsserver.class.php:659
+#: inc/ocsserver.class.php:663 inc/ocsserver.class.php:686
 msgid "No import"
 msgstr "Bilgi alınmadı"
 
-#: inc/ocsserver.class.php:624
+#: inc/ocsserver.class.php:625
 msgid "Web address of the OCSNG console"
 msgstr "OCSNG konsolunun web adresi"
 
-#: inc/ocsserver.class.php:633
+#: inc/ocsserver.class.php:634
 msgid "Limit the import to the following tags (separator $, nothing for all)"
 msgstr "Yalnız şu etiketler alınsın (ayıraç $, tümü için boş bırakın)"
 
-#: inc/ocsserver.class.php:639
+#: inc/ocsserver.class.php:640
 msgid "Exclude the following tags (separator $, nothing for all)"
 msgstr "Şu etiketler alınmasın (ayıraç $, tümü için boş bırakın)"
 
-#: inc/ocsserver.class.php:644
+#: inc/ocsserver.class.php:645
 msgid "Default status"
 msgstr "Varsayılan durum"
 
-#: inc/ocsserver.class.php:650
+#: inc/ocsserver.class.php:651
 msgid "Behavior when disconnecting"
 msgstr "Bağlantı kesilme davranışı"
 
-#: inc/ocsserver.class.php:659 inc/ocsserver.class.php:663
+#: inc/ocsserver.class.php:660 inc/ocsserver.class.php:664
 msgid "Global import"
 msgstr "Toplu alma"
 
-#: inc/ocsserver.class.php:660 inc/ocsserver.class.php:664
-#: inc/ocsserver.class.php:686
+#: inc/ocsserver.class.php:661 inc/ocsserver.class.php:665
+#: inc/ocsserver.class.php:687
 msgid "Unit import"
 msgstr "Birim alma"
 
-#: inc/ocsserver.class.php:665
+#: inc/ocsserver.class.php:666
 msgid "Unit import on serial number"
 msgstr "Seri numarasına göre birim alma"
 
-#: inc/ocsserver.class.php:666
+#: inc/ocsserver.class.php:667
 msgid "Unit import serial number only"
 msgstr "Yalnız seri numarasına göre birim alma"
 
-#: inc/ocsserver.class.php:694
+#: inc/ocsserver.class.php:695
 msgid "Use the OCSNG software dictionary"
 msgstr "OCSNG yazılım sözlüğü kullanılsın"
 
-#: inc/ocsserver.class.php:715
+#: inc/ocsserver.class.php:716
 msgid "Number of items to synchronize via the automatic OCSNG action"
 msgstr "Kendiliğinden OCSNG işlemiyle eşleştirilecek öge sayısı"
 
-#: inc/ocsserver.class.php:724
+#: inc/ocsserver.class.php:725
 msgid "Behavior to the deletion of a computer in OCSNG"
 msgstr "OCSNG tarafında bir bilgisayarı silme davranışı"
 
-#: inc/ocsserver.class.php:729
+#: inc/ocsserver.class.php:730
 #, php-format
 msgid "Change to state %s"
 msgstr "Durumu %s olarak değiştirilsin"
 
-#: inc/ocsserver.class.php:737
+#: inc/ocsserver.class.php:738
 msgid "No import: the plugin will not import these elements"
 msgstr "Alınmasın: Uyumlu ek bu bileşenleri almayacak"
 
-#: inc/ocsserver.class.php:738
+#: inc/ocsserver.class.php:739
 msgid ""
 "Global import: everything is imported but the material is globally managed "
 "(without duplicate)"
 msgstr "Genel alma: Her şey alınır ancak malzeme tek noktadan yönetilir (kopyalanmaz)"
 
-#: inc/ocsserver.class.php:740
+#: inc/ocsserver.class.php:741
 msgid "Unit import: everything is imported as it is"
 msgstr "Birim alma: Herşey olduğu gibi alınır"
 
-#: inc/ocsserver.class.php:759
+#: inc/ocsserver.class.php:760
 msgid "Automatic connection of computers"
 msgstr "Bilgisayarların kendiliğinden bağlanması"
 
-#: inc/ocsserver.class.php:762
+#: inc/ocsserver.class.php:763
 msgid "Enable the automatic link"
 msgstr "Kendiliğinden bağlantı kullanılsın"
 
-#: inc/ocsserver.class.php:767
+#: inc/ocsserver.class.php:768
 msgid "Existence criteria of a computer"
 msgstr "Bir bilgisayarın varolma ölçütü"
 
-#: inc/ocsserver.class.php:793
+#: inc/ocsserver.class.php:794
 msgid "The link automatically connects a GLPI computer with one in OCSNG."
 msgstr "Bağlantı, bir GLPI bilgisayarı ile OCSNG bilgisayarını kendiliğinden bağlar."
 
-#: inc/ocsserver.class.php:795
+#: inc/ocsserver.class.php:796
 msgid ""
 "This option is taken into account during manual link and by synchronization "
 "scripts.\""
 msgstr "Bu seçenek el ile bağlama ve eşleştirme betikleri tarafından dikkate alınır."
 
-#: inc/ocsserver.class.php:829
+#: inc/ocsserver.class.php:830
 msgid "Database"
 msgstr "Veritabanı"
 
-#: inc/ocsserver.class.php:830
+#: inc/ocsserver.class.php:831
 msgid "Webservice (SOAP)"
 msgstr "Web hizmeti (SOAP)"
 
-#: inc/ocsserver.class.php:834
+#: inc/ocsserver.class.php:835
 msgid "Standard (allow manual actions)"
 msgstr "Standard (el ile işlem yapılabilir)"
 
-#: inc/ocsserver.class.php:835
+#: inc/ocsserver.class.php:836
 msgid "Expert (Fully automatic, for large configuration)"
 msgstr "Uzman (Tam otomatik, geniş ayarlar için)"
 
-#: inc/ocsserver.class.php:860
+#: inc/ocsserver.class.php:861
 msgid "Connecting to the database"
 msgstr "Veritabanına bağlanılıyor"
 
-#: inc/ocsserver.class.php:864
+#: inc/ocsserver.class.php:865
 msgid "Connection to the database failed"
 msgstr "Veritabanına bağlanılamadı"
 
-#: inc/ocsserver.class.php:866
+#: inc/ocsserver.class.php:867
 msgid "Invalid OCSNG Version: RC3 is required"
 msgstr "OCSNG Sürümü Geçersiz: RC3 gerekli"
 
-#: inc/ocsserver.class.php:868
+#: inc/ocsserver.class.php:869
 msgid "Invalid OCSNG configuration (TRACE_DELETED must be active)"
 msgstr "OCSNG ayarları geçersiz (TRACE_DELETED etkinleştirilmiş olmalı)"
 
-#: inc/ocsserver.class.php:877
+#: inc/ocsserver.class.php:878
 msgid "Connection to database successful"
 msgstr "Veritabanına bağlanıldı"
 
-#: inc/ocsserver.class.php:879
+#: inc/ocsserver.class.php:880
 msgid "Valid OCSNG configuration and version"
 msgstr "Geçerli OCSNG ayarları ve sürümü"
 
-#: inc/ocsserver.class.php:992
+#: inc/ocsserver.class.php:993
 msgid "Unable to add. The OCSNG server already exists."
 msgstr "Eklenemiyor. OCSNG sunucusu zaten var."
 
 #. TRANS: %s is the OCS id
-#: inc/ocsserver.class.php:1457
+#: inc/ocsserver.class.php:1458
 #, php-format
 msgid ""
 "Unable to import, GLPI computer is already related to an element of OCSNG "
 "(%d)"
 msgstr "Alınamıyor, GLPI bilgisayarı zaten bir OCSNG bileşeni ile ilişkilendirilmiş (%d)"
 
-#: inc/ocsserver.class.php:1752 inc/ocsserver.class.php:2441
+#: inc/ocsserver.class.php:1753 inc/ocsserver.class.php:2442
 msgid "Swap"
 msgstr "Değiştirin"
 
-#: inc/ocsserver.class.php:2713 inc/ocsserver.class.php:2924
+#: inc/ocsserver.class.php:2714 inc/ocsserver.class.php:2925
 msgid "Import date in GLPI"
 msgstr "GLPI üzerine tarih alınsın"
 
-#: inc/ocsserver.class.php:2714
+#: inc/ocsserver.class.php:2715
 msgid "Existing in GLPI"
 msgstr "GLPI içinde var"
 
-#: inc/ocsserver.class.php:2715
+#: inc/ocsserver.class.php:2716
 msgid "Existing in OCSNG"
 msgstr "OCSNG içinde var"
 
-#: inc/ocsserver.class.php:2758
+#: inc/ocsserver.class.php:2759
 msgid "No item to clean"
 msgstr "Temizlenecek bir öge yok"
 
-#: inc/ocsserver.class.php:2840 inc/ocsserver.class.php:2959
-#: inc/ocsserver.class.php:2962
+#: inc/ocsserver.class.php:2841 inc/ocsserver.class.php:2960
+#: inc/ocsserver.class.php:2963
 msgid "No new computer to be updated"
 msgstr "Güncellenecek yeni bir bilgisayar bulunamadı"
 
-#: inc/ocsserver.class.php:2907
+#: inc/ocsserver.class.php:2908
 msgid "Computers updated in OCSNG"
 msgstr "OCSNG üzerinde güncellenmiş bilgisayarlar"
 
-#: inc/ocsserver.class.php:2920 inc/ocsserver.class.php:2942
+#: inc/ocsserver.class.php:2921 inc/ocsserver.class.php:2943
 msgctxt "button"
 msgid "Synchronize"
 msgstr "Eşleştirin"
 
-#: inc/ocsserver.class.php:2923 inc/ocsserver.class.php:2954
+#: inc/ocsserver.class.php:2924 inc/ocsserver.class.php:2955
 msgid "Update computers"
 msgstr "Bilgisayarları güncelleyin"
 
-#: inc/ocsserver.class.php:2926
+#: inc/ocsserver.class.php:2927
 msgid "Auto update"
 msgstr "Kendiliğinden güncelleme"
 
-#: inc/ocsserver.class.php:3153
+#: inc/ocsserver.class.php:3154
 msgid ""
 "Caution! The imported data (see your configuration) will overwrite the "
 "existing one"
 msgstr "Dikkat! Alınmış veri (ayarlarınıza bakın) varolan verinin üzerine yazılacak"
 
-#: inc/ocsserver.class.php:3169
+#: inc/ocsserver.class.php:3170
 msgid "Manual import mode"
 msgstr "El ile aktarım kipi"
 
-#: inc/ocsserver.class.php:3173
+#: inc/ocsserver.class.php:3174
 msgid "Disable preview"
 msgstr "Önizlemeyi devre dışı bırakın"
 
-#: inc/ocsserver.class.php:3177
+#: inc/ocsserver.class.php:3178
 msgid "Enable preview"
 msgstr "Önizlemeyi etkinleştirin"
 
-#: inc/ocsserver.class.php:3182
+#: inc/ocsserver.class.php:3183
 msgid "Check first that duplicates have been correctly managed in OCSNG"
 msgstr "Önce, OCSNG de çift kayıt olup olmadığını denetleyin"
 
-#: inc/ocsserver.class.php:3197 inc/ocsserver.class.php:3296
+#: inc/ocsserver.class.php:3198 inc/ocsserver.class.php:3297
 msgctxt "button"
 msgid "Import"
 msgstr "Alın"
 
-#: inc/ocsserver.class.php:3207
+#: inc/ocsserver.class.php:3208
 msgid "Match the rule ?"
 msgstr "Kurala uyulsun mu?"
 
-#: inc/ocsserver.class.php:3209
+#: inc/ocsserver.class.php:3210
 msgid "Target location"
 msgstr "Hedef konum"
 
-#: inc/ocsserver.class.php:3313 inc/ocsserver.class.php:3324
-#: inc/ocsserver.class.php:3333
+#: inc/ocsserver.class.php:3314 inc/ocsserver.class.php:3325
+#: inc/ocsserver.class.php:3334
 msgid "No new computer to be imported"
 msgstr "Alınacak yeni bir bilgisayar bulunamadı"
 
-#: inc/ocsserver.class.php:4145
+#: inc/ocsserver.class.php:4146
 msgid "No OCSNG server defined"
 msgstr "OCSNG sunucusu tanımlanmamış"
 
-#: inc/ocsserver.class.php:4989
+#: inc/ocsserver.class.php:4990
 msgid "Check updates from server"
 msgstr "Sunucudan güncellemeler denetlensin"
 
-#: inc/ocsserver.class.php:5062
+#: inc/ocsserver.class.php:5063
 msgid "Computers don't check any rule"
 msgstr "Bilgisayarların herhangi bir kurala uygunluğu aranmıyor"
 
-#: inc/ocsserver.class.php:5064
+#: inc/ocsserver.class.php:5065
 msgid "Duplicate computers"
 msgstr "Çift kaydedilmiş bilgisayarlar"
 
-#: inc/ocsserver.class.php:5065
+#: inc/ocsserver.class.php:5066
 msgid "Computers whose import is refused by a rule"
 msgstr "Bir kurala uymadığı için alınmayan bilgisayarlar"
 
