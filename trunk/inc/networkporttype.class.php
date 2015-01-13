@@ -174,18 +174,18 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
    }
 
    static function getLinkToCreateFromTypeAndTypeMIB(array $fields = array()) {
-      $link = static::getFormURL().'?TYPE='.$fields['TYPE'].'&amp;TYPEMIB='.$fields['TYPEMIB'];
+      $link = static::getFormURL().'?TYPE='.$fields['TYPE'].'&TYPEMIB='.$fields['TYPEMIB'];
       if (!empty($fields['speed'])) {
          $speed = NetworkPortEthernet::transformPortSpeed($fields['speed'], false);
          if (!empty($speed)) {
-            $link .= '&amp;SPEED='.$speed;
+            $link .= '&SPEED='.$speed;
          }
       }
-      $link .= '&amp;popup=1'; // Use a popup for it
-      $link .= '&amp;rand=1'; // To reload main window
-      return "<a href='#' onClick=\"var w=window.open('$link','glpipopup', 'height=400, ".
-             "width=1000, top=100, left=100, scrollbars=yes' );w.focus();\">" .
-             __('Create', 'ocsinventoryng') . "</a>";
+      $link .= '&rand=1'; // To reload main window
+      
+      Ajax::createIframeModalWindow('create_network', $link, array('title' => __('Create', 'ocsinventoryng')));
+      
+      return "<a href='#' onClick=\"$('#create_network').dialog('open');\">" . __('Create', 'ocsinventoryng') . "</a>";
    }
 
 
