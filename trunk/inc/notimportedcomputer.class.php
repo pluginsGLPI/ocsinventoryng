@@ -586,8 +586,8 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
    static function cronInfo($name) {
    
       switch ($name) {
-         case "sendAlerts" :
-            return array('description' => __('Not imported computers alert', 'ocsinventoryng'));
+         case "SendAlerts" :
+            return array('description' => __('OCSNG', 'ocsinventoryng')." - ".__('Not imported computers alert', 'ocsinventoryng'));
         }
    }
         

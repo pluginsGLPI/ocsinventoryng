@@ -4974,7 +4974,7 @@ JAVASCRIPT;
 
    static function cronInfo($name){
       // no translation for the name of the project
-      return array('description' => 'OCS Inventory NG');
+      return array('description' => __('OCSNG', 'ocsinventoryng')." - ".__('Check OCSNG import script', 'ocsinventoryng'));
    }
 
 

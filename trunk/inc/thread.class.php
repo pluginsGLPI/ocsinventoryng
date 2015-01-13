@@ -561,7 +561,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
 
       switch ($name) {
          case "CleanOldThreads" :
-            return array('description' => __('Clean processes', 'ocsinventoryng'),
+            return array('description' => __('OCSNG', 'ocsinventoryng')." - ".__('Clean processes', 'ocsinventoryng'),
                          'parameter'   => __('Delete processes after', 'ocsinventoryng'));
       }
       return array();
