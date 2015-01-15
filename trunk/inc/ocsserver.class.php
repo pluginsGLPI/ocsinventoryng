@@ -411,7 +411,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<tr><th colspan ='2'>";
       _e('All');
       
-      //TODO Debug it
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
             function form_init_all(form, value) {
@@ -433,181 +432,181 @@ JAVASCRIPT;
             'width' => '10%',
             'on_change' => "form_init_all(this.form, this.selectedIndex);"
             ));
-            echo "</th><th></th></tr>";
-            echo "<tr>
-            <th><input type='hidden' name='id' value='$ID'>".__('General information', 'ocsinventoryng').
-            "<br><span style='color:red;'>".__('Warning : the import entity rules depends on selected fields', 'ocsinventoryng')."</span></th>\n";
-            echo "<th>"._n('Component', 'Components', 2) ."</th>\n";
-            echo "<th>" . __('OCSNG administrative information', 'ocsinventoryng') . "</th></tr>\n";
+      echo "</th><th></th></tr>";
+      echo "<tr>
+      <th><input type='hidden' name='id' value='$ID'>".__('General information', 'ocsinventoryng').
+      "<br><span style='color:red;'>".__('Warning : the import entity rules depends on selected fields', 'ocsinventoryng')."</span></th>\n";
+      echo "<th>"._n('Component', 'Components', 2) ."</th>\n";
+      echo "<th>" . __('OCSNG administrative information', 'ocsinventoryng') . "</th></tr>\n";
 
-            echo "<tr class='tab_bg_2'>\n";
-            echo "<td class='top'>\n";
+      echo "<tr class='tab_bg_2'>\n";
+      echo "<td class='top'>\n";
 
-            echo "<table width='100%'>";
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Name') . "</td>\n<td width='25%'>";
-            Dropdown::showYesNo("import_general_name", $this->fields["import_general_name"]);
-            echo "</td></tr>\n";
+      echo "<table width='100%'>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Name') . "</td>\n<td width='25%'>";
+      Dropdown::showYesNo("import_general_name", $this->fields["import_general_name"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Operating system') . "</td>\n<td>";
-            Dropdown::showYesNo("import_general_os", $this->fields["import_general_os"]);
-            echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Operating system') . "</td>\n<td>";
+      Dropdown::showYesNo("import_general_os", $this->fields["import_general_os"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'>";
-            echo "<td class='center'>".__('Serial of the operating system')."</td>\n<td>";
-            Dropdown::showYesNo("import_os_serial", $this->fields["import_os_serial"]);
-            echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'>";
+      echo "<td class='center'>".__('Serial of the operating system')."</td>\n<td>";
+      Dropdown::showYesNo("import_os_serial", $this->fields["import_os_serial"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Serial number') . "</td>\n<td>";
-            Dropdown::showYesNo("import_general_serial", $this->fields["import_general_serial"]);
-            echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Serial number') . "</td>\n<td>";
+      Dropdown::showYesNo("import_general_serial", $this->fields["import_general_serial"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Model') . "</td>\n<td>";
-            Dropdown::showYesNo("import_general_model", $this->fields["import_general_model"]);
-            echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Model') . "</td>\n<td>";
+      Dropdown::showYesNo("import_general_model", $this->fields["import_general_model"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'>";
-            echo "<td class='center'>" . _n('Manufacturer', 'Manufacturers', 1) . "</td>\n<td>";
-            Dropdown::showYesNo("import_general_manufacturer",
-            $this->fields["import_general_manufacturer"]);
-            echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'>";
+      echo "<td class='center'>" . _n('Manufacturer', 'Manufacturers', 1) . "</td>\n<td>";
+      Dropdown::showYesNo("import_general_manufacturer",
+      $this->fields["import_general_manufacturer"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Type') . "</td>\n<td>";
-            Dropdown::showYesNo("import_general_type", $this->fields["import_general_type"]);
-            echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Type') . "</td>\n<td>";
+      Dropdown::showYesNo("import_general_type", $this->fields["import_general_type"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Domain') . "</td>\n<td>";
-            Dropdown::showYesNo("import_general_domain", $this->fields["import_general_domain"]);
-            echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Domain') . "</td>\n<td>";
+      Dropdown::showYesNo("import_general_domain", $this->fields["import_general_domain"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Alternate username') . "</td>\n<td>";
-            Dropdown::showYesNo("import_general_contact", $this->fields["import_general_contact"]);
-            echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Alternate username') . "</td>\n<td>";
+      Dropdown::showYesNo("import_general_contact", $this->fields["import_general_contact"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Comments') . "</td>\n<td>";
-            Dropdown::showYesNo("import_general_comment", $this->fields["import_general_comment"]);
-            echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Comments') . "</td>\n<td>";
+      Dropdown::showYesNo("import_general_comment", $this->fields["import_general_comment"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('IP') . "</td>\n<td>";
-            Dropdown::showYesNo("import_ip", $this->fields["import_ip"]);
-            echo "</td></tr>\n";
-            if (self::checkOCSconnection($ID) && self::checkVersion($ID)) {
-               echo "<tr class='tab_bg_2'><td class='center'>" . __('UUID') . "</td>\n<td>";
-               Dropdown::showYesNo("import_general_uuid", $this->fields["import_general_uuid"]);
-               echo "</td></tr>\n";
-            } else {
-               echo "<tr class='tab_bg_2'><td class='center'>";
-               echo "<input type='hidden' name='import_general_uuid' value='0'>";
-               echo "</td></tr>\n";
-            }
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('IP') . "</td>\n<td>";
+      Dropdown::showYesNo("import_ip", $this->fields["import_ip"]);
+      echo "</td></tr>\n";
+      if (self::checkOCSconnection($ID) && self::checkVersion($ID)) {
+         echo "<tr class='tab_bg_2'><td class='center'>" . __('UUID') . "</td>\n<td>";
+         Dropdown::showYesNo("import_general_uuid", $this->fields["import_general_uuid"]);
+         echo "</td></tr>\n";
+      } else {
+         echo "<tr class='tab_bg_2'><td class='center'>";
+         echo "<input type='hidden' name='import_general_uuid' value='0'>";
+         echo "</td></tr>\n";
+      }
 
-            echo "</table>";
+      echo "</table>";
 
-            echo "</td>\n";
+      echo "</td>\n";
 
-            echo "<td class='tab_bg_2 top'>\n";
+      echo "<td class='tab_bg_2 top'>\n";
 
-            echo "<table width='100%'>";
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Processor') . "</td>\n<td width='55%'>";
-            Dropdown::showYesNo("import_device_processor", $this->fields["import_device_processor"]);
-            echo "</td></tr>\n";
+      echo "<table width='100%'>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Processor') . "</td>\n<td width='55%'>";
+      Dropdown::showYesNo("import_device_processor", $this->fields["import_device_processor"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Memory') . "</td>\n<td>";
-            Dropdown::showYesNo("import_device_memory", $this->fields["import_device_memory"]);
-            echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Memory') . "</td>\n<td>";
+      Dropdown::showYesNo("import_device_memory", $this->fields["import_device_memory"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Hard drive') . "</td>\n<td>";
-            Dropdown::showYesNo("import_device_hdd", $this->fields["import_device_hdd"]);
-            echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Hard drive') . "</td>\n<td>";
+      Dropdown::showYesNo("import_device_hdd", $this->fields["import_device_hdd"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Network card') . "</td>\n<td>";
-            Dropdown::showYesNo("import_device_iface", $this->fields["import_device_iface"]);
-            echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Network card') . "</td>\n<td>";
+      Dropdown::showYesNo("import_device_iface", $this->fields["import_device_iface"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Graphics card') . "</td>\n<td>";
-            Dropdown::showYesNo("import_device_gfxcard", $this->fields["import_device_gfxcard"]);
-            echo "&nbsp;&nbsp;</td></tr>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Graphics card') . "</td>\n<td>";
+      Dropdown::showYesNo("import_device_gfxcard", $this->fields["import_device_gfxcard"]);
+      echo "&nbsp;&nbsp;</td></tr>";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Soundcard') . "</td>\n<td>";
-            Dropdown::showYesNo("import_device_sound", $this->fields["import_device_sound"]);
-            echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Soundcard') . "</td>\n<td>";
+      Dropdown::showYesNo("import_device_sound", $this->fields["import_device_sound"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . _n('Drive', 'Drives', 2) . "</td>\n<td>";
-            Dropdown::showYesNo("import_device_drive", $this->fields["import_device_drive"]);
-            echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . _n('Drive', 'Drives', 2) . "</td>\n<td>";
+      Dropdown::showYesNo("import_device_drive", $this->fields["import_device_drive"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>".__('Modems') ."</td>\n<td>";
-            Dropdown::showYesNo("import_device_modem", $this->fields["import_device_modem"]);
-            echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Modems') ."</td>\n<td>";
+      Dropdown::showYesNo("import_device_modem", $this->fields["import_device_modem"]);
+      echo "</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>"._n('Port', 'Ports', 2)."</td>\n<td>";
-            Dropdown::showYesNo("import_device_port", $this->fields["import_device_port"]);
-            echo "</td></tr>\n";
-            echo "</table>";
+      echo "<tr class='tab_bg_2'><td class='center'>"._n('Port', 'Ports', 2)."</td>\n<td>";
+      Dropdown::showYesNo("import_device_port", $this->fields["import_device_port"]);
+      echo "</td></tr>\n";
+      echo "</table>";
 
-            echo "</td>\n";
-            echo "<td class='tab_bg_2 top'>\n";
+      echo "</td>\n";
+      echo "<td class='tab_bg_2 top'>\n";
 
-            echo "<table width='100%'>";
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Inventory number'). " </td>\n";
-            echo "<td><select name='import_otherserial'>\n";
-            echo "<option value=''>" .__('No import'). "</option>\n";
-            $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "otherserial");
-            echo $listColumnOCS;
-            echo "</select>&nbsp;&nbsp;</td></tr>\n";
+      echo "<table width='100%'>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Inventory number'). " </td>\n";
+      echo "<td><select name='import_otherserial'>\n";
+      echo "<option value=''>" .__('No import'). "</option>\n";
+      $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "otherserial");
+      echo $listColumnOCS;
+      echo "</select>&nbsp;&nbsp;</td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Location') . " </td>\n";
-            echo "<td><select name='import_location'>\n";
-            echo "<option value=''>" .__('No import') . "</option>\n";
-            $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "locations_id");
-            echo $listColumnOCS;
-            echo "</select></td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Location') . " </td>\n";
+      echo "<td><select name='import_location'>\n";
+      echo "<option value=''>" .__('No import') . "</option>\n";
+      $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "locations_id");
+      echo $listColumnOCS;
+      echo "</select></td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Group') . " </td>\n";
-            echo "<td><select name='import_group'>\n";
-            echo "<option value=''>" . __('No import') . "</option>\n";
-            $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "groups_id");
-            echo $listColumnOCS;
-            echo "</select></td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Group') . " </td>\n";
+      echo "<td><select name='import_group'>\n";
+      echo "<option value=''>" . __('No import') . "</option>\n";
+      $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "groups_id");
+      echo $listColumnOCS;
+      echo "</select></td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" .__('Alternate username number'). " </td>\n";
-            echo "<td><select name='import_contact_num'>\n";
-            echo "<option value=''>" . __('No import') . "</option>\n";
-            $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "contact_num");
-            echo $listColumnOCS;
-            echo "</select></td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" .__('Alternate username number'). " </td>\n";
+      echo "<td><select name='import_contact_num'>\n";
+      echo "<option value=''>" . __('No import') . "</option>\n";
+      $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "contact_num");
+      echo $listColumnOCS;
+      echo "</select></td></tr>\n";
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Network') . " </td>\n";
-            echo "<td><select name='import_network'>\n";
-            echo "<option value=''>" .__('No import', 'ocsinventoryng') . "</option>\n";
-            $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "networks_id");
-            echo $listColumnOCS;
-            echo "</select></td></tr>\n";
-            echo "</table>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Network') . " </td>\n";
+      echo "<td><select name='import_network'>\n";
+      echo "<option value=''>" .__('No import', 'ocsinventoryng') . "</option>\n";
+      $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "networks_id");
+      echo $listColumnOCS;
+      echo "</select></td></tr>\n";
+      echo "</table>";
 
-            echo "</td></tr>\n";
+      echo "</td></tr>\n";
 
-            echo "<tr><th>". _n('Monitor', 'Monitors', 2)."</th>\n";
-            echo "<th colspan='2'>&nbsp;</th></tr>\n";
+      echo "<tr><th>". _n('Monitor', 'Monitors', 2)."</th>\n";
+      echo "<th colspan='2'>&nbsp;</th></tr>\n";
 
-            echo "<tr class='tab_bg_2'>\n";
-            echo "<td class='tab_bg_2 top'>\n";
+      echo "<tr class='tab_bg_2'>\n";
+      echo "<td class='tab_bg_2 top'>\n";
 
-            echo "<table width='100%'>";
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Comments') . " </td>\n<td>";
-            Dropdown::showYesNo("import_monitor_comment", $this->fields["import_monitor_comment"]);
-            echo "</td></tr>\n";
-            echo "</table>";
+      echo "<table width='100%'>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Comments') . " </td>\n<td>";
+      Dropdown::showYesNo("import_monitor_comment", $this->fields["import_monitor_comment"]);
+      echo "</td></tr>\n";
+      echo "</table>";
 
-            echo "</td>\n";
-            echo "<td class='tab_bg_2' colspan='2'>&nbsp;</td>";
-            echo "</table>\n";
+      echo "</td>\n";
+      echo "<td class='tab_bg_2' colspan='2'>&nbsp;</td>";
+      echo "</table>\n";
 
-            echo "<p class='submit'>";
-            echo "<input type='submit' name='update' class='submit' value=\"".
-            _sx('button', 'Save')."\">";
-            echo "</p>";
-            Html::closeForm();
-            echo "</div>\n";
+      echo "<p class='submit'>";
+      echo "<input type='submit' name='update' class='submit' value=\"".
+      _sx('button', 'Save')."\">";
+      echo "</p>";
+      Html::closeForm();
+      echo "</div>\n";
    }
 
 
@@ -814,15 +813,6 @@ JAVASCRIPT;
     **/
    function showForm($ID, $options=array()) {
 
-      //If no ID provided, or if the server is created using an existing template
-      $rowspan = 0;
-      if (empty($ID)) {
-         $this->getEmpty();
-         $rowspan++;
-      } else {
-         $this->getFromDB($ID);
-      }
-
       $this->initForm($ID, $options);
       $this->showFormHeader($options);
 
@@ -836,8 +826,84 @@ JAVASCRIPT;
       1 => __("Expert (Fully automatic, for large configuration)", "ocsinventoryng")
       );
 
-      // Display form
-      include __DIR__.'/../views/server_form.html.php';
+      echo "<tr class='tab_bg_1'>";
+      echo "<td class='center'>".__('Connection type', 'ocsinventoryng')."</td>";
+      
+      echo "<script type='text/javascript'>
+            function form_init_all(form, value) {
+               var hideIfSoapElems = document.getElementsByClassName('hide_if_soap');
+               for (var i = 0; i < hideIfSoapElems.length; i++) {
+                  if (value == '0') {
+                     // if DB
+                     hideIfSoapElems[i].style.display = '';
+                  } else {
+                     // if SOAP
+                     hideIfSoapElems[i].style.display = 'none';
+                  }
+               }
+            }
+   
+         </script>";
+
+            
+      echo "<td id='conn_type_container'>";
+      Dropdown::showFromArray('conn_type', $conn_type_values, array('value' => $this->fields['conn_type'],
+                                                                     'on_change' => "form_init_all(this.form, this.selectedIndex);"));
+      echo "</td>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1'>";
+      echo "<td class='center'>". __("Name")."</td>";
+      echo "<td><input type='text' name='name' value='".$this->fields["name"]."'></td>";
+      echo "<td class='center'>"._n("Version", "Versions", 1)."</td>";
+      echo "<td>".$this->fields["ocs_version"]."</td>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1'>";
+      echo "<td class='center'>".__("Host", "ocsinventoryng")."</td>";
+      echo "<td><input type='text' name='ocs_db_host' value='".$this->fields["ocs_db_host"]."'></td>";
+      echo "<td class='center'>".__("Synchronisation method", "ocsinventoryng")."</td>";
+      echo "<td>";
+      Dropdown::showFromArray('use_massimport', $sync_method_values, array('value' => $this->fields['use_massimport']));
+      echo "</td>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1 hide_if_soap' ";
+      if ($this->fields["conn_type"] == PluginOcsinventoryngOcsServer::CONN_TYPE_SOAP) {
+         echo "style='display:none'";
+      }
+      echo "><td class='center'>".__("Database")."</td>";
+      echo "<td><input type='text' name='ocs_db_name' value='".$this->fields["ocs_db_name"]."'></td>";
+      echo "<td class='center'>".__("Database in UTF8", "ocsinventoryng")."</td>";
+      echo "<td>";
+      Dropdown::showYesNo("ocs_db_utf8", $this->fields["ocs_db_utf8"]);
+      echo "</td>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1'>";
+      echo "<td class='center'>"._n("User", "Users", 1)."</td>";
+      echo "<td><input type='text' name='ocs_db_user' value='".$this->fields["ocs_db_user"]."'></td>";
+      echo "<td class='center' rowspan='2'>".__("Comments")."</td>";
+      echo "<td rowspan='2'><textarea cols='45' rows='6' name='comment'>".$this->fields["comment"]."</textarea></td>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1'>";
+      echo "<td class='center'>".__("Password")."</td>";
+      echo "<td><input type='password' name='ocs_db_passwd' value='' autocomplete='off'>";
+      if ($ID) {
+         echo "<input type='checkbox' name='_blank_passwd'>&nbsp;".__("Clear");
+      }
+      echo "</td>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1'><td class='center'>".__("Active")."</td>";
+      echo "<td>";
+      Dropdown::showYesNo("is_active",$this->fields["is_active"]);
+      echo "</td>";
+
+      echo "<td>". __("Last update")."</td>";
+      echo "<td>".Html::convDateTime($this->fields["date_mod"])."</td>";
+      echo "</tr>";
 
       $this->showFormButtons($options);
    }
