@@ -1714,7 +1714,7 @@ JAVASCRIPT;
          }
          // New way to delete entry from deleted_equiv table
       }elseif (count($deleted)){
-         $message = sprintf(__('Please consider cleaning the deleted computers in OCSNG <a href="%s">Clean OCSNG datatabase </a>'),$CFG_GLPI['root_doc'].$PLUGIN_HOOKS ['submenu_entry'] ['ocsinventoryng'] ['options'] ['deleted_equiv'] ['page']);
+         $message = sprintf(__('Please consider cleaning the deleted computers in OCSNG <a href="%s">Clean OCSNG datatabase </a>', 'ocsinventoryng'),$CFG_GLPI['root_doc'].$PLUGIN_HOOKS ['submenu_entry'] ['ocsinventoryng'] ['options'] ['deleted_equiv'] ['page']);
          echo "<tr><th colspan='2'>";
          Html::displayTitle($CFG_GLPI['root_doc']."/pics/warning.png", $message, $message);
          echo "</th></tr>";
