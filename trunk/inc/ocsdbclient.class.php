@@ -392,16 +392,17 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             if (isset($filters['TAGS']) and $filters['TAGS']) {
                 $tags       = $filters['TAGS'];
                 $where_tags = " AND accountinfo.TAG IN (";
-                $where_tags .= join(',', $this->db->escape($tags));
+                $where_tags .= "'".join('\',\'', $tags)."'";
                 $where_tags .= ") ";
             } else {
                 $where_tags = "";
             }
             
             if (isset($filters['EXCLUDE_TAGS']) and $filters['EXCLUDE_TAGS']) {
+            
                 $exclude_tags       = $filters['EXCLUDE_TAGS'];
                 $where_exclude_tags = " AND accountinfo.TAG NOT IN (";
-                $where_exclude_tags .= join(',', $this->db->escape($exclude_tags));
+                $where_exclude_tags .= "'".join('\',\'', $exclude_tags)."'";
                 $where_exclude_tags .= ") ";
             } else {
                 $where_exclude_tags = "";
