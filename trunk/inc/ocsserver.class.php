@@ -252,13 +252,19 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                               "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                               "on_change"           => "this.form.submit()",
                               "display_emptychoice" => false));
-               echo "</td></tr></table></div>";
+               echo "</td></tr>";
+               echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
+               _e('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
+               echo "</td></tr>";
+               echo "</table></div>";
                Html::closeForm();
       }
 
       $sql = "SELECT `name`, `is_active`
               FROM `glpi_plugin_ocsinventoryng_ocsservers`
-              WHERE `id` = '".$plugin_ocsinventoryng_ocsservers_id."'";
+              LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+                  ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+              WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`id` = '".$plugin_ocsinventoryng_ocsservers_id."' AND `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`profiles_id`= ".$_SESSION["glpiactiveprofile"]['id']."";
       $result = $DB->query($sql);
       $isactive = 0;
       if ($DB->numrows($result) > 0) {
@@ -268,7 +274,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       }
 
       $usemassimport = self::useMassImport();
-
+      
       echo "<div class='center'><table class='tab_cadre' width='40%'>";
       echo "<tr><th colspan='".($usemassimport?4:2)."'>";
       printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
@@ -278,16 +284,16 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
 
          //config server
-         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-               <a href='ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
-                <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsserver.png' ".
-         "alt='".__s("Configuration of OCSNG server", 'ocsinventoryng')."' ".
-         "title=\"".__s("Configuration of OCSNG server", 'ocsinventoryng')."\">
-                <br>".sprintf(__('Configuration of OCSNG server %s', 'ocsinventoryng'),
-         $name)."
-               </a></td>";
-
+         
          if ($isactive) {
+            echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+                  <a href='ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
+                   <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsserver.png' ".
+            "alt='".__s("Configuration of OCSNG server", 'ocsinventoryng')."' ".
+            "title=\"".__s("Configuration of OCSNG server", 'ocsinventoryng')."\">
+                   <br>".sprintf(__('Configuration of OCSNG server %s', 'ocsinventoryng'),
+            $name)."
+                  </a></td>";
 
             if ($usemassimport) {
                //config massimport
