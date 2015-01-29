@@ -3179,62 +3179,62 @@ JAVASCRIPT;
             'ORDER' => 'LASTDATE',
             'FILTER' => array(
                 'EXCLUDE_IDS' => $already_linked
-      ),
+            ),
             'DISPLAY' => array(
                 'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
-      ),
+            ),
             'ORDER' => 'NAME'
             );
 
-            if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
-               $computerOptions['FILTER']['TAGS'] = $tag_limit;
+      if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
+         $computerOptions['FILTER']['TAGS'] = $tag_limit;
+      }
+
+      if ($cfg_ocs["tag_exclude"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
+         $computerOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
+      }
+      $ocsClient = self::getDBocs($serverId);
+      $ocsResult = $ocsClient->getComputers($computerOptions);
+      
+      
+      if (isset($ocsResult['COMPUTERS'])) {
+         $computers = $ocsResult['COMPUTERS'];
+         if (count($computers)) {
+            // Get all hardware from OCS DB
+            $hardware = array();
+            foreach ($computers as $data) {
+               $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
+               $id = $data['META']['ID'];
+               $hardware[$id]["date"]         = $data['META']["LASTDATE"];
+               $hardware[$id]["name"]         = $data['META']["NAME"];
+               $hardware[$id]["TAG"]          = $data['META']["TAG"];
+               $hardware[$id]["id"]           = $data['META']["ID"];
+
+               if (isset($data['BIOS']) && count($data['BIOS'])) {
+                  $hardware[$id]["serial"]       = $data['BIOS']["SSN"];
+                  $hardware[$id]["model"]        = $data['BIOS']["SMODEL"];
+                  $hardware[$id]["manufacturer"] = $data['BIOS']["SMANUFACTURER"];
+               } else {
+                  $hardware[$id]["serial"]       = '';
+                  $hardware[$id]["model"]        = '';
+                  $hardware[$id]["manufacturer"] = '';
+               }
             }
 
-            if ($cfg_ocs["tag_exclude"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
-               $computerOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
+            if ($tolinked && count($hardware)){
+               echo "<div class='center b'>".
+               __('Caution! The imported data (see your configuration) will overwrite the existing one',
+                  'ocsinventoryng')."</div>";
             }
-            $ocsClient = self::getDBocs($serverId);
-            $ocsResult = $ocsClient->getComputers($computerOptions);
-            
-            
-            if (isset($ocsResult['COMPUTERS'])) {
-               $computers = $ocsResult['COMPUTERS'];
-               if (count($computers)) {
-                  // Get all hardware from OCS DB
-                  $hardware = array();
-                  foreach ($computers as $data) {
-                     $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
-                     $id = $data['META']['ID'];
-                     $hardware[$id]["date"]         = $data['META']["LASTDATE"];
-                     $hardware[$id]["name"]         = $data['META']["NAME"];
-                     $hardware[$id]["TAG"]          = $data['META']["TAG"];
-                     $hardware[$id]["id"]           = $data['META']["ID"];
+            echo "<div class='center'>";
 
-                     if (isset($data['BIOS']) && count($data['BIOS'])) {
-                        $hardware[$id]["serial"]       = $data['BIOS']["SSN"];
-                        $hardware[$id]["model"]        = $data['BIOS']["SMODEL"];
-                        $hardware[$id]["manufacturer"] = $data['BIOS']["SMANUFACTURER"];
-                     } else {
-                        $hardware[$id]["serial"]       = '';
-                        $hardware[$id]["model"]        = '';
-                        $hardware[$id]["manufacturer"] = '';
-                     }
-                  }
+            if ($numrows = $ocsResult['TOTAL_COUNT']) {
+               $parameters = "check=$check";
+               Html::printPager($start, $numrows, $target, $parameters);
 
-                  if ($tolinked && count($hardware)){
-                     echo "<div class='center b'>".
-                     __('Caution! The imported data (see your configuration) will overwrite the existing one',
-                        'ocsinventoryng')."</div>";
-                  }
-                  echo "<div class='center'>";
-
-                  if ($numrows = $ocsResult['TOTAL_COUNT']) {
-                     $parameters = "check=$check";
-                     Html::printPager($start, $numrows, $target, $parameters);
-
-                     //Show preview form only in import even in multi-entity mode because computer import
-                     //can be refused by a rule
-                     if (!$tolinked){
+               //Show preview form only in import even in multi-entity mode because computer import
+               //can be refused by a rule
+               if (!$tolinked){
                   echo "<div class='firstbloc'>";
                   echo "<form method='post' name='ocsng_import_mode' id='ocsng_import_mode'
                          action='$target'>\n";
@@ -3257,37 +3257,37 @@ JAVASCRIPT;
                   echo "</tr></table>";
                   Html::closeForm();
                   echo "</div>";
-                     }
+               }
 
-                     echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
-                     if (!$tolinked){
-                        self::checkBox($target);
-                     }
-                     echo "<table class='tab_cadre_fixe'>";
+               echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
+               if (!$tolinked){
+                  self::checkBox($target);
+               }
+               echo "<table class='tab_cadre_fixe'>";
 
-                     echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
-                     echo "<input class='submit' type='submit' name='import_ok' value=\"".
-                     _sx('button', 'Import', 'ocsinventoryng')."\">";
-                     echo "</td></tr>\n";
+               echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
+               echo "<input class='submit' type='submit' name='import_ok' value=\"".
+               _sx('button', 'Import', 'ocsinventoryng')."\">";
+               echo "</td></tr>\n";
 
-                     echo "<tr><th>".__('Name'). "</th>\n";
-                     echo "<th>".__('Manufacturer')."</th>\n";
-                     echo "<th>" .__('Model')."</th>\n";
-                     echo "<th>".__('Serial number')."</th>\n";
-                     echo "<th>" . __('Date')."</th>\n";
-                     echo "<th>".__('OCSNG TAG', 'ocsinventoryng')."</th>\n";
-                     if ($advanced && !$tolinked){
-                        echo "<th>" . __('Match the rule ?', 'ocsinventoryng') . "</th>\n";
-                        echo "<th>" . __('Destination entity') . "</th>\n";
-                        echo "<th>" . __('Target location', 'ocsinventoryng') . "</th>\n";
-                     }
-                     echo "<th width='20%'>&nbsp;</th></tr>\n";
+               echo "<tr><th>".__('Name'). "</th>\n";
+               echo "<th>".__('Manufacturer')."</th>\n";
+               echo "<th>" .__('Model')."</th>\n";
+               echo "<th>".__('Serial number')."</th>\n";
+               echo "<th>" . __('Date')."</th>\n";
+               echo "<th>".__('OCSNG TAG', 'ocsinventoryng')."</th>\n";
+               if ($advanced && !$tolinked){
+                  echo "<th>" . __('Match the rule ?', 'ocsinventoryng') . "</th>\n";
+                  echo "<th>" . __('Destination entity') . "</th>\n";
+                  echo "<th>" . __('Target location', 'ocsinventoryng') . "</th>\n";
+               }
+               echo "<th width='20%'>&nbsp;</th></tr>\n";
 
-                     $rule = new RuleImportEntityCollection();
-                     foreach ($hardware as $ID => $tab){
-                  $comp = new Computer();
-                  $comp->fields["id"] = $tab["id"];
-                  $data = array();
+               $rule = new RuleImportEntityCollection();
+               foreach ($hardware as $ID => $tab){
+                     $comp = new Computer();
+                     $comp->fields["id"] = $tab["id"];
+                     $data = array();
 
                   if ($advanced && !$tolinked){
                      $data = $rule->processAllRules(array('ocsservers_id' => $serverId,
@@ -3362,51 +3362,51 @@ JAVASCRIPT;
                                                }
                   }
                   echo "</td></tr>\n";
-                     }
-
-                     echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
-                     echo "<input class='submit' type='submit' name='import_ok' value=\"".
-                     _sx('button', 'Import', 'ocsinventoryng')."\">\n";
-                     echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' ".
-                      "value='$serverId'>";
-                     echo "</td></tr>";
-                     echo "</table>\n";
-                     Html::closeForm();
-
-                     if (!$tolinked){
-                  self::checkBox($target);
-                     }
-
-                     Html::printPager($start, $numrows, $target, $parameters);
-
-                  } else{
-                     echo "<table class='tab_cadre_fixe'>";
-                     echo "<tr><th>" . __('Import new computers') . "</th></tr>\n";
-                     echo "<tr class='tab_bg_1'>";
-                     echo "<td class='center b'>".__('No new computer to be imported', 'ocsinventoryng').
-                    "</td></tr>\n";
-                     echo "</table>";
-                  }
-                  echo "</div>";
-
-               } else{
-                  echo "<div class='center'>";
-                  echo "<table class='tab_cadre_fixe'>";
-                  echo "<tr><th>" .__('Import new computers', 'ocsinventoryng') . "</th></tr>\n";
-                  echo "<tr class='tab_bg_1'>";
-                  echo "<td class='center b'>" .__('No new computer to be imported', 'ocsinventoryng').
-                 "</td></tr>\n";
-                  echo "</table></div>";
                }
+
+               echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
+               echo "<input class='submit' type='submit' name='import_ok' value=\"".
+               _sx('button', 'Import', 'ocsinventoryng')."\">\n";
+               echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' ".
+                "value='$serverId'>";
+               echo "</td></tr>";
+               echo "</table>\n";
+               Html::closeForm();
+
+               if (!$tolinked){
+                  self::checkBox($target);
+               }
+
+               Html::printPager($start, $numrows, $target, $parameters);
+
             } else{
-               echo "<div class='center'>";
                echo "<table class='tab_cadre_fixe'>";
-               echo "<tr><th>" .__('Import new computers', 'ocsinventoryng') . "</th></tr>\n";
+               echo "<tr><th>" . __('Import new computers') . "</th></tr>\n";
                echo "<tr class='tab_bg_1'>";
-               echo "<td class='center b'>" .__('No new computer to be imported', 'ocsinventoryng').
+               echo "<td class='center b'>".__('No new computer to be imported', 'ocsinventoryng').
               "</td></tr>\n";
-               echo "</table></div>";
+               echo "</table>";
             }
+            echo "</div>";
+
+         } else{
+            echo "<div class='center'>";
+            echo "<table class='tab_cadre_fixe'>";
+            echo "<tr><th>" .__('Import new computers', 'ocsinventoryng') . "</th></tr>\n";
+            echo "<tr class='tab_bg_1'>";
+            echo "<td class='center b'>" .__('No new computer to be imported', 'ocsinventoryng').
+           "</td></tr>\n";
+            echo "</table></div>";
+         }
+      } else{
+         echo "<div class='center'>";
+         echo "<table class='tab_cadre_fixe'>";
+         echo "<tr><th>" .__('Import new computers', 'ocsinventoryng') . "</th></tr>\n";
+         echo "<tr class='tab_bg_1'>";
+         echo "<td class='center b'>" .__('No new computer to be imported', 'ocsinventoryng').
+        "</td></tr>\n";
+         echo "</table></div>";
+      }
    }
 
 
