@@ -3190,7 +3190,7 @@ JAVASCRIPT;
                $computerOptions['FILTER']['TAGS'] = $tag_limit;
             }
 
-            if ($cfg_ocs["tag_limit"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
+            if ($cfg_ocs["tag_exclude"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
                $computerOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
             }
             $ocsClient = self::getDBocs($serverId);
