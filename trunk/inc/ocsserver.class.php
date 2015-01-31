@@ -3124,14 +3124,18 @@ JAVASCRIPT;
 
             // Stripslashes because importArray get clean array
             foreach ($toadd as $key => $val){
-               $tab[$key] = stripslashes($val);
+               $tab[] = stripslashes($val);
             }
+
             $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                       SET `$field` = '" . addslashes(exportArrayToDB($tab)) . "'
                       WHERE `computers_id` = '$computers_id'";
             $DB->query($query);
+            
+            return true;
          }
       }
+      return false;
    }
 
 
@@ -6008,6 +6012,13 @@ JAVASCRIPT;
             echo "&nbsp;".
                  Html::submit(_x('button','Post'), array('name' => 'massiveaction'));
             return true;
+         case 'plugin_ocsinventoryng_lock_ocsng_field':
+            $fields['all'] = __('All');
+            $fields       += self::getLockableFields();
+            Dropdown::showFromArray("field", $fields);
+            echo "&nbsp;".
+                 Html::submit(_x('button','Post'), array('name' => 'massiveaction'));
+            return true;
          case 'plugin_ocsinventoryng_unlock_ocsng_field':
             $fields['all'] = __('All');
             $fields       += self::getLockableFields();
@@ -6055,6 +6066,31 @@ JAVASCRIPT;
 
             return;
          
+         case "plugin_ocsinventoryng_lock_ocsng_field" :
+            $input = $ma->getInput();
+            $fields = self::getLockableFields();
+
+            if ($_POST['field'] == 'all' || isset($fields[$_POST['field']])) {
+               foreach ($ids as $id) {
+                  
+                  if ($_POST['field'] == 'all') {
+                     if (self::addToOcsArray($id, array_flip($fields), "computer_update")) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                     } else {
+                        $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+                     }
+                  } else {
+                     if (self::addToOcsArray($id, array($_POST['field']), "computer_update")) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                     } else {
+                        $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+                     }
+                  }
+               }
+            }
+
+            return;
+
          case "plugin_ocsinventoryng_unlock_ocsng_field" :
             $input = $ma->getInput();
             $fields = self::getLockableFields();
@@ -6062,16 +6098,13 @@ JAVASCRIPT;
                foreach ($ids as $id) {
                   
                   if ($_POST['field'] == 'all') {
-                     if (self::replaceOcsArray($id, array(),
-                                                                              "computer_update")) {
+                     if (self::replaceOcsArray($id, array(), "computer_update")) {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                      } else {
                         $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
                      }
                   } else {
-                     if (self::deleteInOcsArray($id, $_POST['field'],
-                                                                               "computer_update",
-                                                                               true)) {
+                     if (self::deleteInOcsArray($id, $_POST['field'], "computer_update", true)) {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                      } else {
                         $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);

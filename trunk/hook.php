@@ -1094,6 +1094,8 @@ function plugin_ocsinventoryng_MassiveActions($type) {
                       'PluginOcsinventoryngOcsServer'.MassiveAction::CLASS_ACTION_SEPARATOR."plugin_ocsinventoryng_force_ocsng_update"
                       => __('Force synchronization OCSNG',
                             'ocsinventoryng'),
+                      'PluginOcsinventoryngOcsServer'.MassiveAction::CLASS_ACTION_SEPARATOR."plugin_ocsinventoryng_lock_ocsng_field"      => __('Lock fields',
+                            'ocsinventoryng'),
                       'PluginOcsinventoryngOcsServer'.MassiveAction::CLASS_ACTION_SEPARATOR."plugin_ocsinventoryng_unlock_ocsng_field"      => __('Unlock fields',
                             'ocsinventoryng'));
 
