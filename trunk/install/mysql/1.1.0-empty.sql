@@ -22,6 +22,8 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocslinks` (
   `use_auto_update` tinyint(1) NOT NULL DEFAULT '1',
   `last_update` datetime DEFAULT NULL,
   `last_ocs_update` datetime DEFAULT NULL,
+  `last_ocs_conn` datetime default NULL,
+  `ip_src` varchar(255) collate utf8_unicode_ci default NULL,
   `computer_update` longtext COLLATE utf8_unicode_ci,
   `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
   `ocs_agent_version` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,

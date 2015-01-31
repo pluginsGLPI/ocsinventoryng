@@ -177,6 +177,23 @@ function plugin_ocsinventoryng_install() {
          }
       }
    }
+   
+   if (TableExists("glpi_plugin_ocsinventoryng_ocslinks")
+       && !FieldExists('glpi_plugin_ocsinventoryng_ocslinks', 'last_ocs_conn')) {
+
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocslinks` 
+               ADD `last_ocs_conn` datetime default NULL;";
+      $DB->queryOrDie($query, "1.1.0 update table glpi_plugin_ocsinventoryng_ocslinks");
+   }
+   
+   if (TableExists("glpi_plugin_ocsinventoryng_ocslinks")
+       && !FieldExists('glpi_plugin_ocsinventoryng_ocslinks', 'ip_src')) {
+
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocslinks` 
+               ADD `ip_src` varchar(255) collate utf8_unicode_ci default NULL;";
+      $DB->queryOrDie($query, "1.1.0 update table glpi_plugin_ocsinventoryng_ocslinks");
+   }
+   
    PluginOcsinventoryngProfile::initProfile();
    PluginOcsinventoryngProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
    $migration = new Migration("1.1.0");

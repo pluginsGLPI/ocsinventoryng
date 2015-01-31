@@ -2059,7 +2059,9 @@ JAVASCRIPT;
             $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                              SET `last_update` = '" . $_SESSION["glpi_currenttime"] . "',
                              `last_ocs_update` = '" . $data_ocs["META"]["LASTDATE"] . "',
-                             `ocs_agent_version` = '".$data_ocs["HARDWARE"]["USERAGENT"]." '
+                             `ocs_agent_version` = '".$data_ocs["HARDWARE"]["USERAGENT"]." ',
+                             `last_ocs_conn` = '".$data_ocs["HARDWARE"]["LASTCOME"]." ',
+                             `ip_src` = '".$data_ocs["HARDWARE"]["IPSRC"]." '
                              WHERE `id` = '$ID'";
             $DB->query($query);
             if ($force) {
