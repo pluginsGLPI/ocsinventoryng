@@ -102,7 +102,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "</td><td>".Html::convDateTime($data["last_update"]).'</td></tr>';
                   echo "<tr class='tab_bg_1'><td>".__('Inventory agent',  'ocsinventoryng');
                   echo "</td><td>".$data["ocs_agent_version"].'</td></tr>';
-                  if (isset($data["last_ocs_conn"])) {
+                  if (isset($data["ip_src"])) {
                      echo "<tr class='tab_bg_1'><td>".__('IP Source',  'ocsinventoryng');
                      echo "</td><td>".$data["ip_src"].'</td></tr>';
                   }

@@ -186,7 +186,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
    }
 
    // importNetwork
-   static function importNetwork($ocsServerId, $cfg_ocs, $ocsComputer, $computers_id, $dohistory) {
+   static function importNetwork($ocsServerId, $cfg_ocs, $ocsComputer, $computers_id, $dohistory, $entities_id) {
       global $DB;
       
       // Group by DESCRIPTION, MACADDR, TYPE, TYPEMIB, SPEED, VIRTUALDEV
@@ -252,7 +252,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          if (isset($ports['main'])) {
             $main = $ports['main'];
             $type = $network_ifaces[$main['type']];
-
+            
             // First search for the Network Card
             $item_device = new Item_DeviceNetworkCard();
             $item_device->getFromDBByQuery(
@@ -267,13 +267,15 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             if ($item_device->isNewItem()) {
                $deviceNetworkCard = new DeviceNetworkCard();
                $device_input      = array('designation' => $main['name'],
-                                          'bandwidth'   => $type->fields['speed']);
+                                          'bandwidth'   => $type->fields['speed'],
+                                          'entities_id'           => $entities_id);
 
                $net_id = $deviceNetworkCard->import($device_input);
 
                if ($net_id) {
                   $item_device->add(array('items_id'              => $computers_id,
                                           'itemtype'              => 'Computer',
+                                          'entities_id'           => $entities_id,
                                           'devicenetworkcards_id' => $net_id,
                                           'mac'                   => $mac,
                                           '_no_history'           => !$dohistory,

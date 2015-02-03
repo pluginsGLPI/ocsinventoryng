@@ -81,6 +81,11 @@ function plugin_init_ocsinventoryng() {
    Plugin::registerClass('PluginOcsinventoryngNetworkPort',
                          array('networkport_instantiations' => true));
 
+   Plugin::registerClass('PluginOcsinventoryngDeviceBiosdata',
+                         array('device_types' => true));
+                         
+   Plugin::registerClass('PluginOcsinventoryngItem_DeviceBiosdata',
+                         array('item_device_types' => true));
 
    // transfer
    $PLUGIN_HOOKS['item_transfer']['ocsinventoryng']="plugin_ocsinventoryng_item_transfer";
@@ -116,7 +121,8 @@ function plugin_init_ocsinventoryng() {
                                                      9  => 'Item_DeviceSoundCard',
                                                      10 => 'Item_DevicePci',
                                                      11 => 'Item_DeviceCase',
-                                                     12 => 'Item_DevicePowerSupply');
+                                                     12 => 'Item_DevicePowerSupply',
+                                                     13 => 'PluginOcsinventoryngItem_DeviceBiosdata');
 }
 
 

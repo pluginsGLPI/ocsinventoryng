@@ -57,7 +57,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
    static function showForComputer($ID) {
       global $DB;
 
-      if (!Session::haveRight("computer","r")) {
+      if (!Session::haveRight("computer",READ)) {
          return false;
       }
 
@@ -115,13 +115,21 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
 
          switch ($item->getType()) {
             case 'Computer' :
+               if ($_SESSION['glpishow_count_on_tabs']) {
+                  return self::createTabEntry(self::getTypeName(2), self::countForItem($item));
+               }
                return self::getTypeName(2);
          }
       }
       return '';
    }
 
+   static function countForItem(CommonDBTM $item) {
 
+      return countElementsInTable('glpi_plugin_ocsinventoryng_registrykeys',
+                                  "`computers_id` = '".$item->getID()."'");
+   }
+   
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
 
       if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))) {

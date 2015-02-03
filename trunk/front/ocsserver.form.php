@@ -39,7 +39,7 @@ if (!isset($_GET["id"]) || $_GET["id"] == -1) {
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsserver");
 
 //Delete template or server
-if (isset ($_POST["delete"])) {
+if (isset ($_POST["purge"])) {
    $ocs->check($_POST['id'],PURGE);
    $ocs->delete($_POST);
    $ocs->redirectToList();

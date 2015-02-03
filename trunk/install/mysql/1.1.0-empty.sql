@@ -73,6 +73,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `import_device_drive` tinyint(1) NOT NULL DEFAULT '0',
   `import_device_port` tinyint(1) NOT NULL DEFAULT '0',
   `import_device_modem` tinyint(1) NOT NULL DEFAULT '0',
+  `import_device_bios` tinyint(1) NOT NULL DEFAULT '1',
   `import_registry` tinyint(1) NOT NULL DEFAULT '0',
   `import_os_serial` tinyint(1) NOT NULL DEFAULT '0',
   `import_ip` tinyint(1) NOT NULL DEFAULT '0',
@@ -93,6 +94,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `import_vms` tinyint(1) NOT NULL DEFAULT '0',
   `import_general_uuid` tinyint(1) NOT NULL DEFAULT '0',
   `ocs_version` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `conn_type` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `date_mod` (`date_mod`),
   KEY `is_active` (`is_active`),
@@ -245,6 +247,48 @@ CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_servers` (
    PRIMARY KEY (`id`),
    UNIQUE KEY `plugin_ocsinventoryng_ocsservers_id` (`plugin_ocsinventoryng_ocsservers_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+### Dump table glpi_plugin_ocsinventoryng_devicebiosdatas
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_devicebiosdatas`;
+CREATE TABLE `glpi_plugin_ocsinventoryng_devicebiosdatas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `designation` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `comment` text COLLATE utf8_unicode_ci,
+  `date`  date default NULL,
+  `assettag` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `manufacturers_id` int(11) NOT NULL DEFAULT '0',
+  `entities_id` int(11) NOT NULL DEFAULT '0',
+  `is_recursive` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `manufacturers_id` (`manufacturers_id`),
+  KEY `entities_id` (`entities_id`),
+  KEY `is_recursive` (`is_recursive`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+### Dump table glpi_plugin_ocsinventoryng_items_devicebios
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_items_devicebiosdatas`;
+CREATE TABLE `glpi_plugin_ocsinventoryng_items_devicebiosdatas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `items_id` int(11) NOT NULL DEFAULT '0',
+  `itemtype` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `plugin_ocsinventoryng_devicebiosdatas_id` int(11) NOT NULL DEFAULT '0',
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `is_dynamic` tinyint(1) NOT NULL DEFAULT '0',
+  `entities_id` int(11) NOT NULL DEFAULT '0',
+  `is_recursive` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `computers_id` (`items_id`),
+  KEY `plugin_ocsinventoryng_devicebiosdatas_id` (`plugin_ocsinventoryng_devicebiosdatas_id`),
+  KEY `is_deleted` (`is_deleted`),
+  KEY `is_dynamic` (`is_dynamic`),
+  KEY `entities_id` (`entities_id`),
+  KEY `is_recursive` (`is_recursive`),
+  KEY `item` (`itemtype`,`items_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 INSERT INTO `glpi_plugin_ocsinventoryng_configs`(`id`,`thread_log_frequency`,`is_displayempty`,`import_limit`) VALUES (1, 2, 1, 0);
 
