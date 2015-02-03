@@ -3712,7 +3712,6 @@ JAVASCRIPT;
                            $DeviceHardDrive = new DeviceHardDrive();
                            $dd_id = $DeviceHardDrive->import($dd);
                            if ($dd_id){
-                              toolbox::logdebug($line2["SERIALNUMBER"]);
                               $devID = $CompDevice->add(array('items_id'               => $computers_id,
                                                                  'itemtype'            => 'Computer',
                                                                  'entities_id'         => $entities_id,
@@ -4554,7 +4553,37 @@ JAVASCRIPT;
       $DB->query($query);
    }
 
+   
+   /**
+    * Update config of a new version
+    *
+    * This function create a new software in GLPI with some general datas.
+    *
+    * @param $software : id of a software.
+    * @param $version : version of the software
+    *
+    * @return integer : inserted version id.
+    **/
+   static function updateVersion($software, $version, $comments){
+      global $DB;
 
+      $query = "SELECT `id`
+                FROM `glpi_softwareversions`
+                WHERE `softwares_id` = '$software'
+                      AND `name` = '$version'";
+      $result = $DB->query($query);
+
+      if ($DB->numrows($result) > 0){
+         $data = $DB->fetch_array($result);
+         $input["id"]         = $data["id"];
+         $input["comment"]   = $comments;
+         $vers = new SoftwareVersion();
+         $vers->update($input);
+      }
+
+      return;
+   }
+   
    /**
     * Import config of a new version
     *
@@ -4565,7 +4594,7 @@ JAVASCRIPT;
     *
     * @return integer : inserted version id.
     **/
-   static function importVersion($software, $version){
+   static function importVersion($software, $version, $comments){
       global $DB;
 
       $isNewVers = 0;
@@ -4586,6 +4615,7 @@ JAVASCRIPT;
          // Use $cfg_ocs["states_id_default"] or create a specific one?
          $input["softwares_id"] = $software;
          $input["name"]         = $version;
+         $input["comment"]      = $comments;
          $isNewVers             = $vers->add($input);
       }
 
@@ -4919,6 +4949,7 @@ JAVASCRIPT;
             }
             $modified_name       = $name;
             $modified_version    = $version;
+            $version_comments    = $software['COMMENTS'];
             $is_helpdesk_visible = NULL;
             if (!$cfg_ocs["use_soft_dict"]) {
                //Software dictionnary
@@ -4973,8 +5004,14 @@ JAVASCRIPT;
 
                if ($id) {
                   //-------------------------------------------------------------------------//
-                  //---- The software exists in this version for this computer --------------//
+                  //---- The software exists in this version for this computer - Update comments --------------//
                   //---------------------------------------------------- --------------------//
+                  $isNewSoft = $soft->addOrRestoreFromTrash($modified_name, $manufacturer,
+                  $target_entity, '',
+                  ($entity != $target_entity),
+                  $is_helpdesk_visible);
+                  self::updateVersion($isNewSoft, $modified_version, $version_comments);
+                  unset($isNewSoft);
                   unset($imported[$id]);
                } else {
                   //------------------------------------------------------------------------//
@@ -4985,7 +5022,7 @@ JAVASCRIPT;
                   ($entity != $target_entity),
                   $is_helpdesk_visible);
                   //Import version for this software
-                  $versionID = self::importVersion($isNewSoft, $modified_version);
+                  $versionID = self::importVersion($isNewSoft, $modified_version, $version_comments);
                   //Install license for this machine
                   $instID = self::installSoftwareVersion($computers_id, $versionID, $dohistory);
                }
