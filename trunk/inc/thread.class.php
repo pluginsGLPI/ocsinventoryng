@@ -30,6 +30,10 @@ class PluginOcsinventoryngThread extends CommonDBTM {
 
    static $rightname = "plugin_ocsinventoryng";
    
+   static function getTypeName($nb=0) {
+      return _n('OCSNG server', 'OCSNG servers', $nb,'ocsinventoryng');
+   }
+   
    /**
     * @param $processid
    **/
