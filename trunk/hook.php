@@ -194,7 +194,7 @@ function plugin_ocsinventoryng_install() {
                     `id` int(11) NOT NULL AUTO_INCREMENT,
                     `designation` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
                     `comment` text COLLATE utf8_unicode_ci,
-                    `date`  date default NULL,
+                    `date` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
                     `assettag` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
                     `manufacturers_id` int(11) NOT NULL DEFAULT '0',
                     `entities_id` int(11) NOT NULL DEFAULT '0',

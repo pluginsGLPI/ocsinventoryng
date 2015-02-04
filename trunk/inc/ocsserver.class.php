@@ -881,7 +881,10 @@ JAVASCRIPT;
 
       echo "<tr class='tab_bg_1'>";
       echo "<td class='center'>".__("Host", "ocsinventoryng")."</td>";
-      echo "<td><input type='text' name='ocs_db_host' value='".$this->fields["ocs_db_host"]."'></td>";
+      echo "<td><input type='text' name='ocs_db_host' value='".$this->fields["ocs_db_host"]."'>";
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Like http://127.0.0.1 for SOAP method', 'ocsinventoryng')));
+      echo "</td>";
       echo "<td class='center'>".__("Synchronisation method", "ocsinventoryng")."</td>";
       echo "<td>";
       Dropdown::showFromArray('use_massimport', $sync_method_values, array('value' => $this->fields['use_massimport']));
@@ -3993,9 +3996,9 @@ JAVASCRIPT;
                   $bios["designation"] = $ocsComputer['BIOS']["BVERSION"];
                   $bios["assettag"] = $ocsComputer['BIOS']["ASSETTAG"];
                   $bios["entities_id"] = $entities_id;
-                  $date = str_replace("/", "-", $ocsComputer['BIOS']["BDATE"]);
-                  $date = date("Y-m-d", strtotime($date));
-                  $bios["date"] = $date;
+                  //$date = str_replace("/", "-", $ocsComputer['BIOS']["BDATE"]);
+                  //$date = date("Y-m-d", strtotime($date));
+                  $bios["date"] = $ocsComputer['BIOS']["BDATE"];
                   $bios["manufacturers_id"]= Dropdown::importExternal('Manufacturer',
                                                                            self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
                                                                            $ocsComputer['BIOS']["SMANUFACTURER"]));

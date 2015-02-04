@@ -53,7 +53,7 @@ class PluginOcsinventoryngDeviceBiosdata extends CommonDevice {
                                      'type'  => 'text'),
                                array('name'  => 'date',
                                      'label' => __('Date'),
-                                     'type'  => 'date')));
+                                     'type'  => 'text')));
    }
    
    /**
@@ -106,7 +106,7 @@ class PluginOcsinventoryngDeviceBiosdata extends CommonDevice {
 
             if ($this->fields["date"]) {
                $row->addCell($row->getHeaderByName('devicebiosdata_date'),
-                             Html::convDate($this->fields["date"]), $father);
+                             $this->fields["date"], $father);
             }
       }
    }

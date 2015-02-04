@@ -92,8 +92,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
          if (!is_null($maxRecords)) {
             $options['MAX_RECORDS'] = $maxRecords;
          }
-         
-         $xml = $this->callSoap('get_computers_V2', new PluginOcsinventoryngOcsSoapRequest($options));
+         //get_computers_V2 doesn't exist
+         $xml = $this->callSoap('get_computers_V1', new PluginOcsinventoryngOcsSoapRequest($options));
          
          $computerObjs = simplexml_load_string($xml);
          
