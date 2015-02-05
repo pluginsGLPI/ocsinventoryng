@@ -836,7 +836,7 @@ JAVASCRIPT;
 
       $conn_type_values = array(
       0 => __('Database', 'ocsinventoryng'),
-      1 => __('Webservice (SOAP)', 'ocsinventoryng'),
+      //1 => __('Webservice (SOAP)', 'ocsinventoryng'),
       );
 
       $sync_method_values = array(
@@ -3419,7 +3419,7 @@ JAVASCRIPT;
 
             } else{
                echo "<table class='tab_cadre_fixe'>";
-               echo "<tr><th>" . __('Import new computers') . "</th></tr>\n";
+               echo "<tr><th>" . __('Import new computers', 'ocsinventoryng') . "</th></tr>\n";
                echo "<tr class='tab_bg_1'>";
                echo "<td class='center b'>".__('No new computer to be imported', 'ocsinventoryng').
               "</td></tr>\n";

@@ -61,18 +61,19 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
       $computerObjs = simplexml_load_string($xml);
 
       $computers = array();
-      foreach ($computerObjs as $obj) {
-         $computers []= array(
-            'ID' => (int) $obj->DATABASEID,
-            'CHECKSUM' => (int) $obj->CHECKSUM,
-            'DEVICEID' => (string) $obj->DEVICEID,
-            'LASTCOME' => (string) $obj->LASTCOME,
-            'LASTDATE' => (string) $obj->LASTDATE,
-            'NAME' => (string) $obj->NAME,
-            'TAG' => (string) $obj->TAG
-         );
+      if (count($computerObjs) > 0) {
+         foreach ($computerObjs as $obj) {
+            $computers []= array(
+               'ID' => (int) $obj->DATABASEID,
+               'CHECKSUM' => (int) $obj->CHECKSUM,
+               'DEVICEID' => (string) $obj->DEVICEID,
+               'LASTCOME' => (string) $obj->LASTCOME,
+               'LASTDATE' => (string) $obj->LASTDATE,
+               'NAME' => (string) $obj->NAME,
+               'TAG' => (string) $obj->TAG
+            );
+         }
       }
-      
       return $computers;
    }
 
@@ -82,63 +83,79 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
    public function getComputers($options) {
       $offset = $originalOffset = isset($options['OFFSET']) ? (int) $options['OFFSET'] : 0;
       $maxRecords = isset($options['MAX_RECORDS']) ? (int) $options['MAX_RECORDS'] : null;
+      $checksum = isset($options['CHECKSUM']) ? (int) $options['CHECKSUM'] : 131071;
+      $wanted = isset($options['WANTED']) ? (int) $options['WANTED'] : 131071;
+      $asking_for = isset($options['"ASKING_FOR"']) ? $options['ASKING_FOR'] : "INVENTORY";
+      $engine = isset($options['"ENGINE"']) ? $options['ENGINE'] : "FIRST";
+      
       $originalEnd = isset($options['MAX_RECORDS']) ? $originalOffset + $maxRecords : null;
       $ocsMap = $this->getOcsMap();
       
       $computers = array();
 
       do {
+         $options['ENGINE'] = $engine;
+         $options['ASKING_FOR'] = $asking_for;
+         $options['CHECKSUM'] = $checksum;
          $options['OFFSET'] = $offset;
          if (!is_null($maxRecords)) {
             $options['MAX_RECORDS'] = $maxRecords;
          }
-         //get_computers_V2 doesn't exist
+         
          $xml = $this->callSoap('get_computers_V1', new PluginOcsinventoryngOcsSoapRequest($options));
-         
+
+         $computerObjs = array();
          $computerObjs = simplexml_load_string($xml);
-         
-         foreach ($computerObjs as $obj) {
-            $meta = $obj->META;
+
+         if (count($computerObjs) > 0){
+            foreach ($computerObjs as $obj) {
             
-            $computer = array(
-               'META' => array(
-                  'ID' => (int) $meta->DATABASEID,
-                  'CHECKSUM' => (int) $meta->CHECKSUM,
-                  'DEVICEID' => (string) $meta->DEVICEID,
-                  'LASTCOME' => (string) $meta->LASTCOME,
-                  'LASTDATE' => (string) $meta->LASTDATE,
-                  'NAME' => (string) $meta->NAME,
-                  'TAG' => (string) $meta->TAG
-               )
-            );
-            
-            foreach ($obj->INVENTORY->children() as $sectionName => $sectionObj) {
-               $section = array();
-               $special_sections = array('ACCOUNTINFO','DICO_SOFT');
-               foreach ($sectionObj as $key => $val) {
-                  if(in_array($sectionName,$special_sections)){
-                     $section[(string)$val->attributes()->Name]= (string) $val;
-                  }else{
-                     $section[$key] = (string) $val;
+               //toolbox::logdebug($obj);
+               //die();
+               
+               $meta = $obj->META;
+               
+               $computer = array(
+                  'META' => array(
+                     'ID' => (int) $meta->DATABASEID,
+                     'CHECKSUM' => (int) $meta->CHECKSUM,
+                     'DEVICEID' => (string) $meta->DEVICEID,
+                     'LASTCOME' => (string) $meta->LASTCOME,
+                     'LASTDATE' => (string) $meta->LASTDATE,
+                     'NAME' => (string) $meta->NAME,
+                     'TAG' => (string) $meta->TAG
+                  )
+               );
+               
+               
+               foreach ($obj->children() as $sectionName => $sectionObj) {
+                  $section = array();
+                  $special_sections = array('ACCOUNTINFO','DICO_SOFT');
+                  foreach ($sectionObj as $key => $val) {
+                     if(in_array($sectionName,$special_sections)){
+                        $section[(string)$val->attributes()->Name]= (string) $val;
+                     }else{
+                        $section[$key] = (string) $val;
+                     }
+                  }
+                  if (!isset($computer[$sectionName])) {
+                     $computer[$sectionName] = array();
+                  }
+                  
+                  $lowerSectionName = strtolower($sectionName);
+                  if (isset($ocsMap[$lowerSectionName]) and !$ocsMap[$lowerSectionName]['multi']) {
+                     $computer[$sectionName] = $section;
+                  } else {
+                     $computer[$sectionName] []= $section;
                   }
                }
-               if (!isset($computer[$sectionName])) {
-                  $computer[$sectionName] = array();
+               if(array_key_exists('ACCOUNTINFO', $computer)){
+                  foreach ($computer['ACCOUNTINFO'] as $number =>$accountinfo){
+                     $computer['ACCOUNTINFO'][$number]['HARDWARE_ID']= $computer['META']['ID'];
+                  }
                }
-               
-               $lowerSectionName = strtolower($sectionName);
-               if (isset($ocsMap[$lowerSectionName]) and !$ocsMap[$lowerSectionName]['multi']) {
-                  $computer[$sectionName] = $section;
-               } else {
-                  $computer[$sectionName] []= $section;
-               }
+               $computers[(int) $meta->DATABASEID] = $computer;
             }
-            if(array_key_exists('ACCOUNTINFO', $computer)){
-               foreach ($computer['ACCOUNTINFO'] as $number =>$accountinfo){
-                  $computer['ACCOUNTINFO'][$number]['HARDWARE_ID']= $computer['META']['ID'];
-               }
-            }
-            $computers[(int) $meta->DATABASEID] = $computer;
          }
          $totalCount = (int) $computerObjs['TOTAL_COUNT'];
          $maxRecords = (int) $computerObjs['MAX_RECORDS'];
@@ -151,6 +168,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
             $maxRecords = $end - $offset;
          }
       } while ($options['OFFSET'] + $computerObjs['MAX_RECORDS'] < $end);
+      
+      toolbox::logdebug($computers);
       return array(
          'TOTAL_COUNT' => $totalCount,
          'COMPUTERS' => $computers
@@ -159,7 +178,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
    
    public function getComputerSections($ids, $checksum = self::CHECKSUM_ALL, $wanted = self::WANTED_ALL) {
       $xml = $this->callSoap('get_computer_sections_V1', array($ids, $checksum, $wanted));
-      
+
       $computerObjs = simplexml_load_string($xml);
       
       $computers = array();
@@ -210,16 +229,20 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
    }
    
    public function getDeletedComputers() {
-      $xml = $this->callSoap('get_deleted_computers_V1', new PluginOcsinventoryngOcsSoapRequest(array()));
-      $deletedObjs = simplexml_load_string($xml);
+      $deletedObjs = array();
+      //$xml = $this->callSoap('get_deleted_computers_V1', new PluginOcsinventoryngOcsSoapRequest(array()));
+      //$deletedObjs = simplexml_load_string($xml);
       $res = array();
-      foreach ($deletedObjs as $obj) {
-         $res[(string) $obj['DELETED']] = (string) $obj['EQUIVALENT'];
+
+     /* if (is_array($deletedObjs) && count($deletedObjs) > 0) {
+         foreach ($deletedObjs as $obj) {
+            $res[(string) $obj['DELETED']] = (string) $obj['EQUIVALENT'];
+         }
       }
       if($res != array()){
          $_SESSION["ocs_deleted_equiv"]['computers_to_del']=true;
       }
-      return $res;
+      return $res;*/
    }
 
    public function removeDeletedComputers($deleted, $equiv = null) {

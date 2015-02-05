@@ -437,7 +437,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                            ORDER BY $order
                            $max_records  $offset";
             $request = $this->db->query($query);
-         $accountinfomap = $this->getAccountInfoColumns();
+            $accountinfomap = $this->getAccountInfoColumns();
             while ($hardwareid = $this->db->fetch_assoc($request)) {
                 $hardwareids[] = $hardwareid['ID'];
 
@@ -461,6 +461,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             
             $res = array();
         }
+      
         return $res;
     }
     
