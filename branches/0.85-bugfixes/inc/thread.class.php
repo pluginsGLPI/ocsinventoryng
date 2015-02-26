@@ -242,15 +242,15 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       $config->getFromDB(1);
 
       $minfreq = 9999;
-      $task    = new CronTask();
-      if ($task->getFromDBbyName('PluginOcsinventoryngThread', 'CleanOldThreads')) {
+      //$task    = new CronTask();
+      //if ($task->getFromDBbyName('PluginOcsinventoryngThread', 'CleanOldThreads')) {
          //First of all, deleted old processes
-         $this->deleteOldProcesses($task->fields['param']);
+      //   $this->deleteOldProcesses($task->fields['param']);
 
-         if ($task->fields['param'] > 0) {
-            $minfreq=$task->fields['param'];
-         }
-      }
+      //   if ($task->fields['param'] > 0) {
+      //      $minfreq=$task->fields['param'];
+      //   }
+      //}
 
       $imported_number     = new PluginOcsinventoryngMiniStat;
       $synchronized_number = new PluginOcsinventoryngMiniStat;
@@ -275,7 +275,8 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                      `end_time` >= DATE_ADD(NOW(), INTERVAL - " . $minfreq . " HOUR) AS DoStat
               FROM `" . $this->getTable() . "`
               GROUP BY `processid`
-              ORDER BY `id` DESC";
+              ORDER BY `id` DESC
+              LIMIT 50";
       $result = $DB->query($sql);
 
       echo "<div class='center'>";
