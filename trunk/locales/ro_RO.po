@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Doru  DEACONU <dumitrudeaconu@yahoo.com>, 2013-2014
+# Doru  DEACONU <dumitrudeaconu@yahoo.com>, 2013-2015
 # Doru  DEACONU <dumitrudeaconu@yahoo.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-02 10:28+0100\n"
-"PO-Revision-Date: 2015-02-02 09:59+0000\n"
+"POT-Creation-Date: 2015-02-26 10:02+0100\n"
+"PO-Revision-Date: 2015-02-26 09:05+0000\n"
 "Last-Translator: Xavier CAILLAUD <tsmr@thetsmr.fr>\n"
 "Language-Team: Romanian (Romania) (http://www.transifex.com/projects/p/GLPI_ocsinventoryng/language/ro_RO/)\n"
 "MIME-Version: 1.0\n"
@@ -19,181 +19,175 @@ msgstr ""
 "Language: ro_RO\n"
 "Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
 
-#: hook.php:1092
+#: hook.php:1142
 msgid "Restart import"
 msgstr "Relansare import"
 
-#: hook.php:1093
+#: hook.php:1143
 msgid "Import in the entity"
 msgstr "Importă in entitate"
 
-#: hook.php:1105
+#: hook.php:1148
 msgid "Delete computer in OCSNG"
 msgstr "Ştergere calculator în OCSNG"
 
-#: hook.php:1116
+#: hook.php:1159
 msgid "Force synchronization OCSNG"
 msgstr "Forţează sincroniarea OCSNG"
 
-#: hook.php:1118
+#: hook.php:1161
 msgid "Lock fields"
-msgstr ""
+msgstr "Blocheaza campuri"
 
-#: hook.php:1120
+#: hook.php:1163
 msgid "Unlock fields"
 msgstr "Deblochează câmpurile"
 
-#: hook.php:1130
+#: hook.php:1173
 msgid "Update networkport types"
 msgstr "Modificare tipuri porturi de reţea"
 
-#: hook.php:1361 inc/ocslink.class.php:101
+#: hook.php:1194 inc/ocslink.class.php:101
 msgid "GLPI import date"
 msgstr "GLPI import date"
 
-#: hook.php:1368 inc/notimportedcomputer.class.php:78
+#: hook.php:1201 inc/notimportedcomputer.class.php:78
 #: inc/notimportedcomputer.class.php:257 inc/ocslink.class.php:99
-#: inc/ocsserver.class.php:3027
+#: inc/ocsserver.class.php:3032
 msgid "Last OCSNG inventory date"
 msgstr "Data ultimului inventar OCSNG"
 
-#: hook.php:1377 inc/ocslink.class.php:136 inc/ocslink.class.php:224
+#: hook.php:1210 inc/ocslink.class.php:136 inc/ocslink.class.php:224
 msgid "Automatic update OCSNG"
 msgstr "Actualizează OCSNG automat"
 
-#: hook.php:1383 inc/notimportedcomputer.class.php:69
+#: hook.php:1216 inc/notimportedcomputer.class.php:69
 #: inc/notimportedcomputer.class.php:227 inc/ocslink.class.php:103
 msgid "Inventory agent"
 msgstr "Agent inventar"
 
-#: hook.php:1389 hook.php:1568 hook.php:1619
+#: hook.php:1222 hook.php:1415 hook.php:1466
 #: inc/notificationtargetnotimportedcomputer.class.php:79
 #: inc/notimportedcomputer.class.php:66 inc/notimportedcomputer.class.php:242
 #: inc/ocslink.class.php:128 inc/ocslink.class.php:231
-#: inc/ocsserver.class.php:3311
+#: inc/ocsserver.class.php:3316
 msgid "OCSNG TAG"
 msgstr "Tag OCSNG"
 
-#: hook.php:1396 inc/notificationtargetnotimportedcomputer.class.php:83
+#: hook.php:1229 inc/notificationtargetnotimportedcomputer.class.php:83
 #: inc/notimportedcomputer.class.php:53 inc/notimportedcomputer.class.php:214
 msgid "OCSNG ID"
 msgstr "ID OCSNG"
 
-#: hook.php:1405 hook.php:1414 inc/ocsserver.class.php:717
+#: hook.php:1236 inc/ocslink.class.php:96
+msgid "Last OCSNG connection date"
+msgstr "Data ultimei conexiuni OCSNG"
+
+#: hook.php:1243 inc/ocslink.class.php:106
+msgid "IP Source"
+msgstr "IP Sursă"
+
+#: hook.php:1252 hook.php:1261 inc/ocsserver.class.php:717
 #: inc/registrykey.class.php:39 inc/registrykey.class.php:102
 msgid "Registry"
 msgstr "Registru"
 
-#: hook.php:1406 inc/registrykey.class.php:86
+#: hook.php:1253 inc/registrykey.class.php:86
 msgid "Key/Value"
 msgstr "Cheie / valoare"
 
-#: hook.php:1415 inc/notimportedcomputer.class.php:219
+#: hook.php:1262 inc/notimportedcomputer.class.php:219
 msgid "OCSNG name"
 msgstr "Nume OCSNG"
 
-#: hook.php:1578 hook.php:1614 inc/config.class.php:78
+#: hook.php:1425 hook.php:1461 inc/config.class.php:78
 #: inc/ocsserver.class.php:95 inc/ocsserver.class.php:280
-#: inc/profile.class.php:280
+#: inc/profile.class.php:280 inc/thread.class.php:34
 msgid "OCSNG server"
 msgid_plural "OCSNG servers"
 msgstr[0] "Server OCSNG"
 msgstr[1] "Servere OCSNG"
 msgstr[2] "Servere OCSNG"
 
-#: hook.php:1644 inc/ocslink.class.php:44 inc/ocslink.class.php:398
+#: hook.php:1491 inc/ocslink.class.php:44 inc/ocslink.class.php:398
 msgid "OCSNG link"
 msgid_plural "OCSNG links"
 msgstr[0] "Link OCSNG"
 msgstr[1] "Linkuri OCSNG"
 msgstr[2] "Linkuri OCSNG"
 
-#: hook.php:1812
+#: hook.php:1659
 msgid "Link possible"
 msgstr "Link posibil"
 
-#: hook.php:1816
+#: hook.php:1663
 msgid "Import refused"
 msgstr "Import refuzat"
 
-#: hook.php:1820
+#: hook.php:1667
 msgid "New computer created in GLPI"
 msgstr "Calculator nou creat în GLPI"
 
-#: hook.php:1831
+#: hook.php:1678
 msgid "Link with computer"
 msgstr "Legătură la calculator"
 
-#: hook.php:2053
+#: hook.php:1900
 msgid "Locked field"
 msgid_plural "Locked fields"
 msgstr[0] "Câmp blocat"
 msgstr[1] "Câmpuri blocate"
 msgstr[2] "Câmpuri blocate"
 
-#: front/config.form.php:40
-msgid "Use mode"
-msgstr "Mod utilizare"
+#: front/config.form.php:48 inc/config.class.php:34 inc/config.class.php:84
+#: inc/ocsserver.class.php:303 inc/ocsserver.class.php:304
+#: inc/ocsserver.class.php:305
+msgid "Automatic synchronization's configuration"
+msgstr "Configurare sincronizare automată"
 
-#: front/config.form.php:58
-msgid "History of automatic actions"
-msgstr "Istoric sincronizări automate"
-
-#: front/config.form.php:62
-msgid "No server configured"
-msgstr " Nici un server de configurat"
-
-#: front/config.form.php:64
-msgid "Configuration"
-msgstr "Configurare"
-
-#: front/config.form.php:73 front/config.php:44
+#: front/config.form.php:55 front/config.php:44
 msgid "Please activate the plugin"
 msgstr "Activaţi vă rog plugin -ul"
 
 #: front/deleted_equiv.php:40 front/deleted_equiv.php:50
-#: front/deleted_equiv.php:83
+#: front/deleted_equiv.php:82
 msgid "Pc deleted"
 msgstr "Pc  şters"
 
-#: front/deleted_equiv.php:44 front/deleted_equiv.php:73
+#: front/deleted_equiv.php:44 front/deleted_equiv.php:72
 msgid "No new computers to delete"
 msgstr "Niciun nou calculator de şters"
 
-#: front/deleted_equiv.php:48 front/deleted_equiv.php:81
-#: inc/ocsserver.class.php:5276
-msgid "Statistics of the OCSNG link"
-msgstr "Statistici  link OCSNG"
+#: front/deleted_equiv.php:48 front/deleted_equiv.php:80 inc/menu.class.php:86
+#: inc/ocsserver.class.php:384 inc/ocsserver.class.php:385
+#: inc/ocsserver.class.php:386
+msgid "Clean OCSNG deleted computers"
+msgstr "Curăţă  calculatoarele şterse OCSNG "
 
 #: front/detail.php:33 inc/menu.class.php:77 inc/ocsserver.class.php:343
 #: inc/ocsserver.class.php:344 inc/ocsserver.class.php:345
-#: inc/thread.class.php:98 inc/thread.class.php:289
+#: inc/thread.class.php:102 inc/thread.class.php:293
 msgid "Computers imported by automatic actions"
 msgstr "Calculatoare importate prin sincronizarea automată"
 
 #: front/networkport.php:33
 msgid "Unknown imported network ports"
-msgstr ""
+msgstr "Port reţea importat necunoscut"
 
 #: front/notimportedcomputer.php:33 front/thread.php:37
-#: inc/thread.class.php:280
+#: inc/thread.class.php:284
 msgid "Processes execution of automatic actions"
 msgstr "Execuţii sincronizări automate"
 
 #: front/ocsng.clean.php:52 inc/menu.class.php:90 inc/ocsserver.class.php:391
 #: inc/ocsserver.class.php:392 inc/ocsserver.class.php:393
-#: inc/ocsserver.class.php:2795 inc/profile.class.php:291
+#: inc/ocsserver.class.php:2800 inc/profile.class.php:291
 msgid "Clean links between GLPI and OCSNG"
 msgstr "Şterge legăturile dintre GLPI şi OCSNG"
 
 #: front/thread.form.php:33
 msgid "Information about the script"
 msgstr "Informaţii despre script"
-
-#: inc/config.class.php:34 inc/config.class.php:84 inc/ocsserver.class.php:303
-#: inc/ocsserver.class.php:304 inc/ocsserver.class.php:305
-msgid "Automatic synchronization's configuration"
-msgstr "Configurare sincronizare automată"
 
 #: inc/config.class.php:96
 msgid "Show processes where nothing was changed"
@@ -214,7 +208,7 @@ msgstr[0] "secundă"
 msgstr[1] "secunde"
 msgstr[2] "secunde"
 
-#: inc/config.class.php:130 inc/ocsserver.class.php:5137
+#: inc/config.class.php:130 inc/ocsserver.class.php:5182
 msgid "Check OCSNG import script"
 msgstr "Control script import OCSNG"
 
@@ -236,7 +230,7 @@ msgctxt "button"
 msgid "Unlock"
 msgstr "Deblocaj"
 
-#: inc/config.class.php:176 inc/thread.class.php:366
+#: inc/config.class.php:176 inc/thread.class.php:370
 msgid "All servers"
 msgstr "Toate serverele"
 
@@ -256,7 +250,7 @@ msgstr "Timp procesare"
 msgid "Process"
 msgstr "Proces"
 
-#: inc/detail.class.php:70 inc/thread.class.php:94
+#: inc/detail.class.php:70 inc/thread.class.php:98
 msgid "Thread"
 msgstr "Thread"
 
@@ -264,30 +258,30 @@ msgstr "Thread"
 msgid "Rules checked"
 msgstr "Reguli controlate"
 
-#: inc/detail.class.php:154 inc/ocsserver.class.php:5219
+#: inc/detail.class.php:154 inc/ocsserver.class.php:5264
 msgid "Computers imported"
 msgstr "Calculatoare importate"
 
-#: inc/detail.class.php:157 inc/ocsserver.class.php:5221
-#: inc/thread.class.php:100 inc/thread.class.php:291
+#: inc/detail.class.php:157 inc/ocsserver.class.php:5266
+#: inc/thread.class.php:104 inc/thread.class.php:295
 msgid "Computers linked"
 msgstr "Calculatoare legate"
 
-#: inc/detail.class.php:160 inc/ocsserver.class.php:5222
-#: inc/thread.class.php:103 inc/thread.class.php:293
+#: inc/detail.class.php:160 inc/ocsserver.class.php:5267
+#: inc/thread.class.php:107 inc/thread.class.php:297
 msgid "Computers not updated"
 msgstr "Calculatoare neactualizate"
 
-#: inc/detail.class.php:163 inc/ocsserver.class.php:5220
-#: inc/thread.class.php:99 inc/thread.class.php:290
+#: inc/detail.class.php:163 inc/ocsserver.class.php:5265
+#: inc/thread.class.php:103 inc/thread.class.php:294
 msgid "Computers synchronized"
 msgstr "Calculatoare sincronizate"
 
-#: inc/detail.class.php:166 inc/thread.class.php:104 inc/thread.class.php:294
+#: inc/detail.class.php:166 inc/thread.class.php:108 inc/thread.class.php:298
 msgid "Computers not unique"
 msgstr "Calculatoare neunice"
 
-#: inc/devicebiosdata.class.php:52 inc/devicebiosdata.class.php:77
+#: inc/devicebiosdata.class.php:47 inc/devicebiosdata.class.php:72
 msgid "Asset Tag"
 msgstr ""
 
@@ -298,7 +292,8 @@ msgstr "Configurare server OCSNG"
 
 #: inc/menu.class.php:61 inc/ocsserver.class.php:314
 #: inc/ocsserver.class.php:315 inc/ocsserver.class.php:316
-#: inc/ocsserver.class.php:3428 inc/ocsserver.class.php:3437
+#: inc/ocsserver.class.php:3422 inc/ocsserver.class.php:3433
+#: inc/ocsserver.class.php:3442
 msgid "Import new computers"
 msgstr "Importa noi computere"
 
@@ -321,15 +316,10 @@ msgstr "Executare scripturi sincronizare automată"
 #: inc/notificationtargetnotimportedcomputer.class.php:37
 #: inc/notificationtargetnotimportedcomputer.class.php:81
 #: inc/ocsserver.class.php:367 inc/ocsserver.class.php:368
-#: inc/ocsserver.class.php:369 inc/thread.class.php:101
-#: inc/thread.class.php:292
+#: inc/ocsserver.class.php:369 inc/thread.class.php:105
+#: inc/thread.class.php:296
 msgid "Computers not imported by automatic actions"
 msgstr "Calculatoare neimportate prin sincronizarea automată"
-
-#: inc/menu.class.php:86 inc/ocsserver.class.php:384
-#: inc/ocsserver.class.php:385 inc/ocsserver.class.php:386
-msgid "Clean OCSNG deleted computers"
-msgstr "Curăţă  calculatoarele şterse OCSNG "
 
 #: inc/networkport.class.php:40
 msgid "Unknown type from OCS"
@@ -361,7 +351,7 @@ msgstr "Crează o mapare"
 
 #: inc/networkport.class.php:454
 msgid "empty"
-msgstr ""
+msgstr "gol"
 
 #: inc/networkport.class.php:467
 msgid "Unknown network port type from OCS"
@@ -380,7 +370,7 @@ msgstr[2] "Tipuri porturi reţea"
 
 #: inc/networkporttype.class.php:106
 msgid "Any kind"
-msgstr ""
+msgstr "Niciun tip"
 
 #: inc/networkporttype.class.php:137
 msgid "OCS TYPE MIB"
@@ -439,22 +429,14 @@ msgstr "Acţiuni de realizat pe calculator"
 msgid "Send OCSNG not imported computers alert failed"
 msgstr "Eşec la trimiterea alertelor privind calculatoarel neimportate din OCSNG"
 
-#: inc/notimportedcomputer.class.php:590 inc/ocsserver.class.php:5137
-#: inc/profile.class.php:45 inc/thread.class.php:564
+#: inc/notimportedcomputer.class.php:590 inc/ocsserver.class.php:5182
+#: inc/profile.class.php:45 inc/thread.class.php:568
 msgid "OCSNG"
-msgstr ""
+msgstr "OCSNG"
 
 #: inc/notimportedcomputer.class.php:590
 msgid "Not imported computers alert"
 msgstr "Alertă calculatoare neinportate"
-
-#: inc/ocslink.class.php:96
-msgid "Last OCSNG connection date"
-msgstr ""
-
-#: inc/ocslink.class.php:106
-msgid "IP Source"
-msgstr ""
 
 #: inc/ocslink.class.php:124
 msgid "OCS NG Interface"
@@ -503,12 +485,12 @@ msgstr "Consola OCSNG"
 msgid "Expert sync mode"
 msgstr "Expert sync mod"
 
-#: inc/ocsserver.class.php:208 inc/ocsserver.class.php:895
+#: inc/ocsserver.class.php:208 inc/ocsserver.class.php:900
 msgid "Database in UTF8"
 msgstr "Baza de date în UTF8"
 
-#: inc/ocsserver.class.php:236 inc/ocsserver.class.php:4280
-#: inc/ocsserver.class.php:4303
+#: inc/ocsserver.class.php:236 inc/ocsserver.class.php:4287
+#: inc/ocsserver.class.php:4310
 msgid "Choice of an OCSNG server"
 msgstr "Alegere unu server OCSNG"
 
@@ -540,7 +522,7 @@ msgstr "Informaţii adminitrative OCSNG"
 #: inc/ocsserver.class.php:468 inc/ocsserver.class.php:474
 #: inc/ocsserver.class.php:482 inc/ocsserver.class.php:488
 msgid "Depends on Bios import"
-msgstr ""
+msgstr "Depinde de import BIOS"
 
 #: inc/ocsserver.class.php:598 inc/ocsserver.class.php:676
 #: inc/ocsserver.class.php:680 inc/ocsserver.class.php:703
@@ -641,10 +623,6 @@ msgstr "Această opţiune este luată în calcul la legarea manuală şi prin sc
 msgid "Database"
 msgstr "Baza de date"
 
-#: inc/ocsserver.class.php:839
-msgid "Webservice (SOAP)"
-msgstr "Webservice (SOAP)"
-
 #: inc/ocsserver.class.php:843
 msgid "Standard (allow manual actions)"
 msgstr "Standard (permite actiuni manuale)"
@@ -657,165 +635,173 @@ msgstr "Expert (complet automat, pentru configurări mari )"
 msgid "Connection type"
 msgstr "Tip conexiune "
 
-#: inc/ocsserver.class.php:881
+#: inc/ocsserver.class.php:883
 msgid "Host"
 msgstr "Gazda"
 
-#: inc/ocsserver.class.php:883
+#: inc/ocsserver.class.php:886
+msgid "Like http://127.0.0.1 for SOAP method"
+msgstr ""
+
+#: inc/ocsserver.class.php:888
 msgid "Synchronisation method"
 msgstr "Metodă sincronizare"
 
-#: inc/ocsserver.class.php:945
+#: inc/ocsserver.class.php:950
 msgid "Connecting to the database"
 msgstr "Conectarea la baza de date"
 
-#: inc/ocsserver.class.php:949
+#: inc/ocsserver.class.php:954
 msgid "Connection to the database failed"
 msgstr "Eşec la conectarea la baza de date"
 
-#: inc/ocsserver.class.php:951
+#: inc/ocsserver.class.php:956
 msgid "Invalid OCSNG Version: RC3 is required"
 msgstr "Versiune OCSNG nevalidă : necesită RC3"
 
-#: inc/ocsserver.class.php:953
+#: inc/ocsserver.class.php:958
 msgid "Invalid OCSNG configuration (TRACE_DELETED must be active)"
 msgstr "Configurare OCSNG invalidă (TRACE_DELETED trebuie sa fie activă)"
 
-#: inc/ocsserver.class.php:962
+#: inc/ocsserver.class.php:967
 msgid "Connection to database successful"
 msgstr "Conectarea la baza de date reuşită"
 
-#: inc/ocsserver.class.php:964
+#: inc/ocsserver.class.php:969
 msgid "Valid OCSNG configuration and version"
 msgstr "Configurare şi versiune OCSNG validă"
 
-#: inc/ocsserver.class.php:1080
+#: inc/ocsserver.class.php:1085
 msgid "Unable to add. The OCSNG server already exists."
 msgstr "Adăugare imposibilă. Severul OCSNG deja există."
 
 #. TRANS: %s is the OCS id
-#: inc/ocsserver.class.php:1548
+#: inc/ocsserver.class.php:1553
 #, php-format
 msgid ""
 "Unable to import, GLPI computer is already related to an element of OCSNG "
 "(%d)"
 msgstr "Import imposibil, calculatorul GLPI este deja legat la un element din OCSNG (%d)"
 
-#: inc/ocsserver.class.php:1741
+#: inc/ocsserver.class.php:1746
 #, php-format
 msgid ""
 "Please consider cleaning the deleted computers in OCSNG <a href=\"%s\">Clean"
 " OCSNG datatabase </a>"
 msgstr ""
 
-#: inc/ocsserver.class.php:1843 inc/ocsserver.class.php:2539
+#: inc/ocsserver.class.php:1848 inc/ocsserver.class.php:2544
 msgid "Swap"
 msgstr "Swap"
 
-#: inc/ocsserver.class.php:2815 inc/ocsserver.class.php:3026
+#: inc/ocsserver.class.php:2820 inc/ocsserver.class.php:3031
 msgid "Import date in GLPI"
 msgstr "Importa data in GLPI"
 
-#: inc/ocsserver.class.php:2816
+#: inc/ocsserver.class.php:2821
 msgid "Existing in GLPI"
 msgstr "Prezent în GLPI"
 
-#: inc/ocsserver.class.php:2817
+#: inc/ocsserver.class.php:2822
 msgid "Existing in OCSNG"
 msgstr "Prezent în OCSNG"
 
-#: inc/ocsserver.class.php:2860
+#: inc/ocsserver.class.php:2865
 msgid "No item to clean"
 msgstr "Niciun obiect de şters."
 
-#: inc/ocsserver.class.php:2942 inc/ocsserver.class.php:3061
-#: inc/ocsserver.class.php:3064
+#: inc/ocsserver.class.php:2947 inc/ocsserver.class.php:3066
+#: inc/ocsserver.class.php:3069
 msgid "No new computer to be updated"
 msgstr "Niciun nou calculator de actualizat"
 
-#: inc/ocsserver.class.php:3009
+#: inc/ocsserver.class.php:3014
 msgid "Computers updated in OCSNG"
 msgstr "Calculatoare actualizat în OCSNG"
 
-#: inc/ocsserver.class.php:3022 inc/ocsserver.class.php:3044
+#: inc/ocsserver.class.php:3027 inc/ocsserver.class.php:3049
 msgctxt "button"
 msgid "Synchronize"
 msgstr "Sincronizaţi"
 
-#: inc/ocsserver.class.php:3025 inc/ocsserver.class.php:3056
+#: inc/ocsserver.class.php:3030 inc/ocsserver.class.php:3061
 msgid "Update computers"
 msgstr "actualizeaza computerele"
 
-#: inc/ocsserver.class.php:3028
+#: inc/ocsserver.class.php:3033
 msgid "Auto update"
 msgstr "Actualizare automata"
 
-#: inc/ocsserver.class.php:3259
+#: inc/ocsserver.class.php:3264
 msgid ""
 "Caution! The imported data (see your configuration) will overwrite the "
 "existing one"
 msgstr "Atenţie! Datele importate ( vezi configurarea ta) vor suprascrie datele existente"
 
-#: inc/ocsserver.class.php:3275
+#: inc/ocsserver.class.php:3280
 msgid "Manual import mode"
 msgstr "Modul de import manual"
 
-#: inc/ocsserver.class.php:3279
+#: inc/ocsserver.class.php:3284
 msgid "Disable preview"
 msgstr "Dezactivare previzualizarea"
 
-#: inc/ocsserver.class.php:3283
+#: inc/ocsserver.class.php:3288
 msgid "Enable preview"
 msgstr "Activeaza previzualizarea"
 
-#: inc/ocsserver.class.php:3288
+#: inc/ocsserver.class.php:3293
 msgid "Check first that duplicates have been correctly managed in OCSNG"
 msgstr "Asiguraţi-vă în prealabil să aveţi corect gestionate dublurile în OCSNG"
 
-#: inc/ocsserver.class.php:3303 inc/ocsserver.class.php:3402
+#: inc/ocsserver.class.php:3308 inc/ocsserver.class.php:3407
 msgctxt "button"
 msgid "Import"
 msgstr "Import"
 
-#: inc/ocsserver.class.php:3313
+#: inc/ocsserver.class.php:3318
 msgid "Match the rule ?"
 msgstr "Se potrivește regula?"
 
-#: inc/ocsserver.class.php:3315
+#: inc/ocsserver.class.php:3320
 msgid "Target location"
 msgstr "Locaţia ţintă"
 
-#: inc/ocsserver.class.php:3419 inc/ocsserver.class.php:3430
-#: inc/ocsserver.class.php:3439
+#: inc/ocsserver.class.php:3424 inc/ocsserver.class.php:3435
+#: inc/ocsserver.class.php:3444
 msgid "No new computer to be imported"
 msgstr "Niciun nou calculator de importat"
 
-#: inc/ocsserver.class.php:4306
+#: inc/ocsserver.class.php:4313
 msgid "No OCSNG server defined"
 msgstr "Niciun server OCSNG definit"
 
-#: inc/ocsserver.class.php:5150
+#: inc/ocsserver.class.php:5195
 msgid "Check updates from server"
 msgstr "Verificare actualizări server"
 
-#: inc/ocsserver.class.php:5223
+#: inc/ocsserver.class.php:5268
 msgid "Computers don't check any rule"
 msgstr "Calculatoare ce nu verifică nicio regulă"
 
-#: inc/ocsserver.class.php:5225
+#: inc/ocsserver.class.php:5270
 msgid "Duplicate computers"
 msgstr "Calculatoare dublicate"
 
-#: inc/ocsserver.class.php:5226
+#: inc/ocsserver.class.php:5271
 msgid "Computers whose import is refused by a rule"
 msgstr "Calculatorul importat este refuzat de o regulă"
+
+#: inc/ocsserver.class.php:5321
+msgid "Statistics of the OCSNG link"
+msgstr "Statistici  link OCSNG"
 
 #: inc/profile.class.php:187
 msgid "Allowed OCSNG server"
 msgid_plural "Allowed OCSNG servers"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Server OCSNG permis"
+msgstr[1] "Servere OCSNG permise"
+msgstr[2] "Servere OCSNG permise"
 
 #: inc/profile.class.php:283
 msgid "Manually synchronization"
@@ -845,55 +831,55 @@ msgstr "Calea"
 msgid "No key found in registry"
 msgstr "Nu a fost gasita nici o cheie in registru"
 
-#: inc/thread.class.php:55
+#: inc/thread.class.php:59
 msgid "Back to processes list"
 msgstr "Înapoi la lista proceselor"
 
-#: inc/thread.class.php:96 inc/thread.class.php:287
+#: inc/thread.class.php:100 inc/thread.class.php:291
 msgid "Beginning date of execution"
 msgstr "Data debut a execuţiei"
 
-#: inc/thread.class.php:97 inc/thread.class.php:288
+#: inc/thread.class.php:101 inc/thread.class.php:292
 msgid "Ending date of execution"
 msgstr "Data final a execuţiei"
 
-#: inc/thread.class.php:105 inc/thread.class.php:295
+#: inc/thread.class.php:109 inc/thread.class.php:299
 msgid "Computers refused"
 msgstr "Calculatoare refuzate"
 
-#: inc/thread.class.php:106 inc/thread.class.php:296
+#: inc/thread.class.php:110 inc/thread.class.php:300
 msgid "Process time execution"
 msgstr "Durata de executare a procesului"
 
-#: inc/thread.class.php:107
+#: inc/thread.class.php:111
 msgid "Total of computers to be treated"
 msgstr "Total calculatoare de tratat"
 
-#: inc/thread.class.php:108
+#: inc/thread.class.php:112
 msgid "performed percentage"
 msgstr "Procentaj efectat"
 
-#: inc/thread.class.php:164
+#: inc/thread.class.php:168
 msgid "Total of treated computers"
 msgstr "Total calculatoare tratate"
 
-#: inc/thread.class.php:286
+#: inc/thread.class.php:290
 msgid "Number of threads"
 msgstr "Număr de thread-uri"
 
-#: inc/thread.class.php:416
+#: inc/thread.class.php:420
 msgid "Maximum"
 msgstr "Maximum"
 
 #. TRANS: means computers by second
-#: inc/thread.class.php:459
+#: inc/thread.class.php:463
 msgid "pc/s"
 msgstr "pc/s"
 
-#: inc/thread.class.php:564
+#: inc/thread.class.php:568
 msgid "Clean processes"
 msgstr "Curăţă procesele"
 
-#: inc/thread.class.php:565
+#: inc/thread.class.php:569
 msgid "Delete processes after"
 msgstr "Sterge procesele după"
