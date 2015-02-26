@@ -1209,29 +1209,6 @@ JAVASCRIPT;
    }
 
    /**
-    * @param $width
-    **/
-   function showSystemInformations($width) {
-
-      $ocsServers = getAllDatasFromTable('glpi_plugin_ocsinventoryng_ocsservers');
-      if (!empty($ocsServers)) {
-         echo "\n<tr class='tab_bg_2'><th>OCS Inventory NG</th></tr>\n";
-         echo "<tr class='tab_bg_1'><td><pre>\n&nbsp;\n";
-
-         $msg = '';
-         foreach ($ocsServers as $ocsServer) {
-            $msg .= "Host: '".$ocsServer['ocs_db_host']."'";
-            $msg .= ", Connection: ".(self::checkOCSconnection($ocsServer['id']) ? "Ok" : "KO");
-            $msg .= ", Use the OCSNG software dictionary: ".
-            ($ocsServer['use_soft_dict'] ? 'Yes' : 'No')."\n";
-         }
-         echo wordwrap($msg."\n", $width, "\n");
-         echo "\n</pre></td></tr>";
-      }
-   }
-
-
-   /**
     * Get the ocs server id of a machine, by giving the machine id
     *
     * @param $ID the machine ID
@@ -2211,9 +2188,9 @@ JAVASCRIPT;
                   if ($cfg_ocs["import_software"]) {
                      $softwares=true;
                      $ocsCheck[]=  PluginOcsinventoryngOcsClient::CHECKSUM_SOFTWARE;
-                        if ($cfg_ocs["use_soft_dict"]) {
-                        $ocsWanted =	PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO;
-                        }
+                     if ($cfg_ocs["use_soft_dict"]) {
+                        $ocsWanted =  PluginOcsinventoryngOcsClient::WANTED_DICO_SOFT;
+                     }
 
                   }
                }
@@ -4910,7 +4887,7 @@ JAVASCRIPT;
       //---- Get all the softwares for this machine from OCS -----//
       $softwares=$ocsComputer["SOFTWARES"];
       $soft                = new Software();
-
+      
       // Read imported software in last sync
       $query = "SELECT `glpi_computers_softwareversions`.`id` as id,
                           `glpi_softwares`.`name` as sname,
@@ -5044,18 +5021,18 @@ JAVASCRIPT;
          && countElementsInTable('glpi_softwarelicenses',
                         "softwareversions_id_buy = '$verid'") == 0) {
 
-         $vers = new SoftwareVersion();
-         if ($vers->getFromDB($verid)
-         && countElementsInTable('glpi_softwarelicenses',
-                           "softwares_id = '".$vers->fields['softwares_id']."'") ==0
-         && countElementsInTable('glpi_softwareversions',
-                           "softwares_id = '".$vers->fields['softwares_id']."'") == 1) {
-         // 1 is the current to be removed
-         $soft->putInTrash($vers->fields['softwares_id'],
-         __('Software deleted by OCSNG synchronization'));
-                           }
-                           $vers->delete(array("id" => $verid));
-                        }
+            $vers = new SoftwareVersion();
+            if ($vers->getFromDB($verid)
+            && countElementsInTable('glpi_softwarelicenses',
+                              "softwares_id = '".$vers->fields['softwares_id']."'") ==0
+            && countElementsInTable('glpi_softwareversions',
+                              "softwares_id = '".$vers->fields['softwares_id']."'") == 1) {
+               // 1 is the current to be removed
+               $soft->putInTrash($vers->fields['softwares_id'],
+               __('Software deleted by OCSNG synchronization'));
+                              }
+            $vers->delete(array("id" => $verid));
+         }
       }
    }
 

@@ -203,8 +203,8 @@ function FirstPass($ocsservers_id) {
       
       // Compute lastest new computer
       $ocsResult = $ocsClient->getComputers(array(
-      		'MAX_RECORDS' => 1,
-      		'ORDER' => 'ID DESC',
+            'MAX_RECORDS' => 1,
+            'ORDER' => 'ID DESC',
       ));
       
       if (count($ocsResult['COMPUTERS'])) {
@@ -309,9 +309,9 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
    // Build common options
    $inventoriedBefore = new DateTime('@'.(time() - 180));
    $computerOptions = array(
-   		'FILTER' => array(
-   			'INVENTORIED_BEFORE' => $inventoriedBefore->format('Y-m-d H:i:s'),
-   		)
+         'FILTER' => array(
+         'INVENTORIED_BEFORE' => $inventoriedBefore->format('Y-m-d H:i:s'),
+         )
    );
    
    // Limit the number of imported records according to config
