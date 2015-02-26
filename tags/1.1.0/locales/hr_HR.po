@@ -1,0 +1,886 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Ocsinventoryng Development Team
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Robert Okadar <aranea.network@gmail.com>, 2013
+# Robert Pavicic <rpavicic@brrax.hr>, 2013
+# Sime Meic-Sidic, 2013
+msgid ""
+msgstr ""
+"Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-26 10:02+0100\n"
+"PO-Revision-Date: 2015-02-26 09:05+0000\n"
+"Last-Translator: Xavier CAILLAUD <tsmr@thetsmr.fr>\n"
+"Language-Team: Croatian (Croatia) (http://www.transifex.com/projects/p/GLPI_ocsinventoryng/language/hr_HR/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: hr_HR\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+
+#: hook.php:1142
+msgid "Restart import"
+msgstr "Ponovi uvoz"
+
+#: hook.php:1143
+msgid "Import in the entity"
+msgstr "Uvezi u jedinicu"
+
+#: hook.php:1148
+msgid "Delete computer in OCSNG"
+msgstr "Obriši računalo u OCSNG-u"
+
+#: hook.php:1159
+msgid "Force synchronization OCSNG"
+msgstr "Prisilno usklađivanje s OCSNG-om"
+
+#: hook.php:1161
+msgid "Lock fields"
+msgstr ""
+
+#: hook.php:1163
+msgid "Unlock fields"
+msgstr "Otključaj polja"
+
+#: hook.php:1173
+msgid "Update networkport types"
+msgstr "Ažuriraj tipove mrežnog priključka"
+
+#: hook.php:1194 inc/ocslink.class.php:101
+msgid "GLPI import date"
+msgstr "Datum GLPI uvoza"
+
+#: hook.php:1201 inc/notimportedcomputer.class.php:78
+#: inc/notimportedcomputer.class.php:257 inc/ocslink.class.php:99
+#: inc/ocsserver.class.php:3032
+msgid "Last OCSNG inventory date"
+msgstr "Posljednji datum imovine OCSNG-a"
+
+#: hook.php:1210 inc/ocslink.class.php:136 inc/ocslink.class.php:224
+msgid "Automatic update OCSNG"
+msgstr "Automatska nadogradnja OCSNG-a"
+
+#: hook.php:1216 inc/notimportedcomputer.class.php:69
+#: inc/notimportedcomputer.class.php:227 inc/ocslink.class.php:103
+msgid "Inventory agent"
+msgstr "Agent za imovinu"
+
+#: hook.php:1222 hook.php:1415 hook.php:1466
+#: inc/notificationtargetnotimportedcomputer.class.php:79
+#: inc/notimportedcomputer.class.php:66 inc/notimportedcomputer.class.php:242
+#: inc/ocslink.class.php:128 inc/ocslink.class.php:231
+#: inc/ocsserver.class.php:3316
+msgid "OCSNG TAG"
+msgstr "OCSNG oznaka"
+
+#: hook.php:1229 inc/notificationtargetnotimportedcomputer.class.php:83
+#: inc/notimportedcomputer.class.php:53 inc/notimportedcomputer.class.php:214
+msgid "OCSNG ID"
+msgstr "OCSNG ID"
+
+#: hook.php:1236 inc/ocslink.class.php:96
+msgid "Last OCSNG connection date"
+msgstr ""
+
+#: hook.php:1243 inc/ocslink.class.php:106
+msgid "IP Source"
+msgstr ""
+
+#: hook.php:1252 hook.php:1261 inc/ocsserver.class.php:717
+#: inc/registrykey.class.php:39 inc/registrykey.class.php:102
+msgid "Registry"
+msgstr "Registar"
+
+#: hook.php:1253 inc/registrykey.class.php:86
+msgid "Key/Value"
+msgstr "Ključ/Vrijednost"
+
+#: hook.php:1262 inc/notimportedcomputer.class.php:219
+msgid "OCSNG name"
+msgstr "OCSNG ime"
+
+#: hook.php:1425 hook.php:1461 inc/config.class.php:78
+#: inc/ocsserver.class.php:95 inc/ocsserver.class.php:280
+#: inc/profile.class.php:280 inc/thread.class.php:34
+msgid "OCSNG server"
+msgid_plural "OCSNG servers"
+msgstr[0] "OCSNG poslužitelj"
+msgstr[1] "OCSNG poslužitelji"
+msgstr[2] "OCSNG poslužitelji"
+
+#: hook.php:1491 inc/ocslink.class.php:44 inc/ocslink.class.php:398
+msgid "OCSNG link"
+msgid_plural "OCSNG links"
+msgstr[0] "OCSNG poveznica"
+msgstr[1] "OCSNG poveznice"
+msgstr[2] "OCSNG poveznice"
+
+#: hook.php:1659
+msgid "Link possible"
+msgstr "Veza je moguća"
+
+#: hook.php:1663
+msgid "Import refused"
+msgstr "Uvoz odbijen"
+
+#: hook.php:1667
+msgid "New computer created in GLPI"
+msgstr "Novo računalo stvoreno u GLPI-u"
+
+#: hook.php:1678
+msgid "Link with computer"
+msgstr "Poveži s računalom"
+
+#: hook.php:1900
+msgid "Locked field"
+msgid_plural "Locked fields"
+msgstr[0] "Zaključano polje"
+msgstr[1] "Zaključana polja"
+msgstr[2] "Zaključana polja"
+
+#: front/config.form.php:48 inc/config.class.php:34 inc/config.class.php:84
+#: inc/ocsserver.class.php:303 inc/ocsserver.class.php:304
+#: inc/ocsserver.class.php:305
+msgid "Automatic synchronization's configuration"
+msgstr "Postavke za automatsko usklađivanje"
+
+#: front/config.form.php:55 front/config.php:44
+msgid "Please activate the plugin"
+msgstr "Molim, aktivirajte dodatak"
+
+#: front/deleted_equiv.php:40 front/deleted_equiv.php:50
+#: front/deleted_equiv.php:82
+msgid "Pc deleted"
+msgstr ""
+
+#: front/deleted_equiv.php:44 front/deleted_equiv.php:72
+msgid "No new computers to delete"
+msgstr ""
+
+#: front/deleted_equiv.php:48 front/deleted_equiv.php:80 inc/menu.class.php:86
+#: inc/ocsserver.class.php:384 inc/ocsserver.class.php:385
+#: inc/ocsserver.class.php:386
+msgid "Clean OCSNG deleted computers"
+msgstr ""
+
+#: front/detail.php:33 inc/menu.class.php:77 inc/ocsserver.class.php:343
+#: inc/ocsserver.class.php:344 inc/ocsserver.class.php:345
+#: inc/thread.class.php:102 inc/thread.class.php:293
+msgid "Computers imported by automatic actions"
+msgstr "Računala uvezena automatizacijom"
+
+#: front/networkport.php:33
+msgid "Unknown imported network ports"
+msgstr ""
+
+#: front/notimportedcomputer.php:33 front/thread.php:37
+#: inc/thread.class.php:284
+msgid "Processes execution of automatic actions"
+msgstr "Procesira izvršenje automatizacije"
+
+#: front/ocsng.clean.php:52 inc/menu.class.php:90 inc/ocsserver.class.php:391
+#: inc/ocsserver.class.php:392 inc/ocsserver.class.php:393
+#: inc/ocsserver.class.php:2800 inc/profile.class.php:291
+msgid "Clean links between GLPI and OCSNG"
+msgstr "Očisti veze između GLPI-a i OCSNG-a"
+
+#: front/thread.form.php:33
+msgid "Information about the script"
+msgstr "Podaci o skripti"
+
+#: inc/config.class.php:96
+msgid "Show processes where nothing was changed"
+msgstr "Pokaži procese bez promjena"
+
+#: inc/config.class.php:105
+msgid "Authorize the OCSNG update"
+msgstr "Dopusti nadogradnju OCSNG-a"
+
+#: inc/config.class.php:111
+msgid "Refresh information of a process every"
+msgstr "Osvježi informacije o procesu svakih"
+
+#: inc/config.class.php:113
+msgid "second"
+msgid_plural "seconds"
+msgstr[0] "sekunda"
+msgstr[1] "sekunde"
+msgstr[2] "sekundi"
+
+#: inc/config.class.php:130 inc/ocsserver.class.php:5182
+msgid "Check OCSNG import script"
+msgstr "Provjeri skriptu OCSNG-a za uvoz"
+
+#: inc/config.class.php:136
+msgid "Lock not activated"
+msgstr "Zaključavanje nije aktivirano"
+
+#: inc/config.class.php:138
+msgid "Lock activated"
+msgstr "Zaključavanje aktivirano"
+
+#: inc/config.class.php:144
+msgctxt "button"
+msgid "Lock"
+msgstr "Zaključaj"
+
+#: inc/config.class.php:145
+msgctxt "button"
+msgid "Unlock"
+msgstr "Otključaj"
+
+#: inc/config.class.php:176 inc/thread.class.php:370
+msgid "All servers"
+msgstr "Svi poslužitelji"
+
+#: inc/detail.class.php:36 inc/detail.class.php:150
+#: inc/notimportedcomputer.class.php:39 inc/notimportedcomputer.class.php:208
+msgid "Computer not imported"
+msgid_plural "Computers not imported"
+msgstr[0] "Računalo koja nije uvezeno"
+msgstr[1] "Računala koja nisu uvezena"
+msgstr[2] "Računala koja nisu uvezena"
+
+#: inc/detail.class.php:51
+msgid "Process time"
+msgstr "Vrijeme postupka"
+
+#: inc/detail.class.php:61
+msgid "Process"
+msgstr "Postupak"
+
+#: inc/detail.class.php:70 inc/thread.class.php:98
+msgid "Thread"
+msgstr "Nit"
+
+#: inc/detail.class.php:75
+msgid "Rules checked"
+msgstr "Pravila provjerena"
+
+#: inc/detail.class.php:154 inc/ocsserver.class.php:5264
+msgid "Computers imported"
+msgstr "Uvežena računala"
+
+#: inc/detail.class.php:157 inc/ocsserver.class.php:5266
+#: inc/thread.class.php:104 inc/thread.class.php:295
+msgid "Computers linked"
+msgstr "Spojena računala"
+
+#: inc/detail.class.php:160 inc/ocsserver.class.php:5267
+#: inc/thread.class.php:107 inc/thread.class.php:297
+msgid "Computers not updated"
+msgstr "Nenadograđena računala"
+
+#: inc/detail.class.php:163 inc/ocsserver.class.php:5265
+#: inc/thread.class.php:103 inc/thread.class.php:294
+msgid "Computers synchronized"
+msgstr "Usklađena računala"
+
+#: inc/detail.class.php:166 inc/thread.class.php:108 inc/thread.class.php:298
+msgid "Computers not unique"
+msgstr "Duplicirana računala"
+
+#: inc/devicebiosdata.class.php:47 inc/devicebiosdata.class.php:72
+msgid "Asset Tag"
+msgstr ""
+
+#: inc/menu.class.php:54 inc/ocsserver.class.php:292
+#: inc/ocsserver.class.php:293
+msgid "Configuration of OCSNG server"
+msgstr "Konfiguracija poslužitelja OCSNG"
+
+#: inc/menu.class.php:61 inc/ocsserver.class.php:314
+#: inc/ocsserver.class.php:315 inc/ocsserver.class.php:316
+#: inc/ocsserver.class.php:3422 inc/ocsserver.class.php:3433
+#: inc/ocsserver.class.php:3442
+msgid "Import new computers"
+msgstr "Uvezi nova računala"
+
+#: inc/menu.class.php:65 inc/ocsserver.class.php:334
+#: inc/ocsserver.class.php:335 inc/ocsserver.class.php:336
+msgid "Synchronize computers already imported"
+msgstr "Uskladi s već uvezenim računalima"
+
+#: inc/menu.class.php:69 inc/ocsserver.class.php:354
+#: inc/ocsserver.class.php:356 inc/ocsserver.class.php:358
+msgid "Link new OCSNG computers to existing GLPI computers"
+msgstr "Poveži nova (OCSNG) u postojeća računala (GLPI)"
+
+#: inc/menu.class.php:73 inc/ocsserver.class.php:323
+#: inc/ocsserver.class.php:324 inc/ocsserver.class.php:325
+msgid "Scripts execution of automatic actions"
+msgstr "Automatski izvršene skripte"
+
+#: inc/menu.class.php:81
+#: inc/notificationtargetnotimportedcomputer.class.php:37
+#: inc/notificationtargetnotimportedcomputer.class.php:81
+#: inc/ocsserver.class.php:367 inc/ocsserver.class.php:368
+#: inc/ocsserver.class.php:369 inc/thread.class.php:105
+#: inc/thread.class.php:296
+msgid "Computers not imported by automatic actions"
+msgstr "Računala koja nisu uvezena automatizacijom"
+
+#: inc/networkport.class.php:40
+msgid "Unknown type from OCS"
+msgid_plural "Unknown types from OCS"
+msgstr[0] "Nepoznati tip iz OCS-a"
+msgstr[1] "Nepoznati tipovi iz OCS-a"
+msgstr[2] "Nepoznati tipovi iz OCS-a"
+
+#: inc/networkport.class.php:44
+msgid "Invalid"
+msgstr "Nije valjan"
+
+#: inc/networkport.class.php:366 inc/networkport.class.php:392
+#: inc/networkporttype.class.php:134
+msgid "OCS TYPE"
+msgstr "OCS TYPE"
+
+#: inc/networkport.class.php:368 inc/networkport.class.php:393
+msgid "OCS MIB TYPE"
+msgstr "OCS MIB TYPE"
+
+#: inc/networkport.class.php:373
+msgid "Create an entry for defining this type"
+msgstr "Stvaranje unosa za definiranje ovog tipa"
+
+#: inc/networkport.class.php:394
+msgid "Create a mapping"
+msgstr "Stvorite mapiranje"
+
+#: inc/networkport.class.php:454
+msgid "empty"
+msgstr ""
+
+#: inc/networkport.class.php:467
+msgid "Unknown network port type from OCS"
+msgstr ""
+
+#: inc/networkport.class.php:512
+msgid "No unknown network port type from OCS !"
+msgstr ""
+
+#: inc/networkporttype.class.php:39
+msgid "Network port type"
+msgid_plural "Network port types"
+msgstr[0] "Tip mrežnog priključka"
+msgstr[1] "Tipovi mrežnog priključka"
+msgstr[2] "Tipovi mrežnog priključka"
+
+#: inc/networkporttype.class.php:106
+msgid "Any kind"
+msgstr ""
+
+#: inc/networkporttype.class.php:137
+msgid "OCS TYPE MIB"
+msgstr "OCS TYPE MIB"
+
+#: inc/networkporttype.class.php:140
+msgid "Corresponding Network Port type"
+msgstr "Odgovarajući tip mrežnog priključka"
+
+#: inc/networkporttype.class.php:143
+msgid "Ethernet medium type"
+msgstr "Tip ethernet medija"
+
+#: inc/networkporttype.class.php:146
+msgid "Ethernet medium speed"
+msgstr "Brzina ethernet medija"
+
+#: inc/networkporttype.class.php:149
+msgid "Wifi card Version"
+msgstr "Inačica WiFi kartice"
+
+#: inc/networkporttype.class.php:155
+msgid "Transform unknown ports that match"
+msgstr ""
+
+#: inc/networkporttype.class.php:186 inc/networkporttype.class.php:188
+msgid "Create"
+msgstr "Stvorite"
+
+#: inc/notificationtargetnotimportedcomputer.class.php:84
+#: inc/notimportedcomputer.class.php:60 inc/notimportedcomputer.class.php:232
+msgid "Device ID"
+msgstr "ID uređaja"
+
+#: inc/notimportedcomputer.class.php:50
+msgid "Verified rules"
+msgstr "Provjerena pravila"
+
+#: inc/notimportedcomputer.class.php:388
+msgid "Can't affect an entity"
+msgstr "Utjecaj na jedinicu nije moguć"
+
+#: inc/notimportedcomputer.class.php:391
+msgid "Unicity criteria not verified"
+msgstr "Kriterij jedinstvenosti nije provjeren"
+
+#: inc/notimportedcomputer.class.php:394
+msgid "Import refused by rule"
+msgstr "Uvoz odbijen pravilom"
+
+#: inc/notimportedcomputer.class.php:411
+msgid "Actions to be made on the computer"
+msgstr "Akcije za izvršiti na računalu"
+
+#: inc/notimportedcomputer.class.php:569
+msgid "Send OCSNG not imported computers alert failed"
+msgstr "Slanje upozorenja OCSNG-a \"Neuvežena računala\" nije uspjelo"
+
+#: inc/notimportedcomputer.class.php:590 inc/ocsserver.class.php:5182
+#: inc/profile.class.php:45 inc/thread.class.php:568
+msgid "OCSNG"
+msgstr ""
+
+#: inc/notimportedcomputer.class.php:590
+msgid "Not imported computers alert"
+msgstr ""
+
+#: inc/ocslink.class.php:124
+msgid "OCS NG Interface"
+msgstr "OCS NG Sučelje"
+
+#: inc/ocslink.class.php:147 inc/ocslink.class.php:240
+msgctxt "button"
+msgid "Force synchronization"
+msgstr "Prisili usklađivanje"
+
+#: inc/ocslink.class.php:450
+msgid "Imported from OCSNG"
+msgstr "Uveženo iz OCSNG-a"
+
+#: inc/ocslink.class.php:454
+msgid "Deleted in OCSNG"
+msgstr "Izbrisano u OCSNG-u"
+
+#: inc/ocslink.class.php:458
+msgid "Linked with an OCSNG computer"
+msgstr "Povezan s računalom iz OCSNG-a"
+
+#: inc/ocslink.class.php:462
+#, php-format
+msgid "The OCSNG ID of the computer changed from %1$s to %2$s"
+msgstr "OCSNG ID računala je promijenjen s %1$s na %2$s"
+
+#: inc/ocslink.class.php:467
+#, php-format
+msgid "The OCSNG TAG of the computer changed from %1$s to %2$s"
+msgstr "OCSNG oznaka računala je promijenjena iz %1$s na %2$s"
+
+#: inc/ocsserver.class.php:110
+msgid "Import options"
+msgstr "Opcije uvoza"
+
+#: inc/ocsserver.class.php:111 inc/ocsserver.class.php:443
+msgid "General information"
+msgstr "Opće informacije"
+
+#: inc/ocsserver.class.php:114
+msgid "OCSNG console"
+msgstr "OCSNG konzola"
+
+#: inc/ocsserver.class.php:203
+msgid "Expert sync mode"
+msgstr "Mod expert sinkronizacije"
+
+#: inc/ocsserver.class.php:208 inc/ocsserver.class.php:900
+msgid "Database in UTF8"
+msgstr "Baza podataka u UTF8 notaciji"
+
+#: inc/ocsserver.class.php:236 inc/ocsserver.class.php:4287
+#: inc/ocsserver.class.php:4310
+msgid "Choice of an OCSNG server"
+msgstr "Izbor OCSNG poslužitelja"
+
+#: inc/ocsserver.class.php:257
+msgid ""
+"If you not find your OCSNG server in this dropdown, please check if your "
+"profile can access it !"
+msgstr ""
+
+#: inc/ocsserver.class.php:294
+#, php-format
+msgid "Configuration of OCSNG server %s"
+msgstr "Konfiguracija poslužitelja OCSNG %s"
+
+#: inc/ocsserver.class.php:375
+msgid ""
+"The selected server is not active. Import and synchronisation is not "
+"available"
+msgstr "Odabrani poslužitelj nije aktivan. Uvoz i sinkronizacija nisu dostupni"
+
+#: inc/ocsserver.class.php:444
+msgid "Warning : the import entity rules depends on selected fields"
+msgstr ""
+
+#: inc/ocsserver.class.php:446
+msgid "OCSNG administrative information"
+msgstr "OCSNG administrativni podaci"
+
+#: inc/ocsserver.class.php:468 inc/ocsserver.class.php:474
+#: inc/ocsserver.class.php:482 inc/ocsserver.class.php:488
+msgid "Depends on Bios import"
+msgstr ""
+
+#: inc/ocsserver.class.php:598 inc/ocsserver.class.php:676
+#: inc/ocsserver.class.php:680 inc/ocsserver.class.php:703
+msgid "No import"
+msgstr "Bez uvoza"
+
+#: inc/ocsserver.class.php:642
+msgid "Web address of the OCSNG console"
+msgstr "Web adresa OCSNG konzole"
+
+#: inc/ocsserver.class.php:651
+msgid "Limit the import to the following tags (separator $, nothing for all)"
+msgstr "Ograniči uvoz na sljedeće oznake (za odvajanje $, ništa za sve)"
+
+#: inc/ocsserver.class.php:657
+msgid "Exclude the following tags (separator $, nothing for all)"
+msgstr "Izostavi sljedeće oznake (za odvajanje $, ništa za sve)"
+
+#: inc/ocsserver.class.php:662
+msgid "Default status"
+msgstr "Početno stanje"
+
+#: inc/ocsserver.class.php:668
+msgid "Behavior when disconnecting"
+msgstr "Ponašanje prilikom isključenja"
+
+#: inc/ocsserver.class.php:677 inc/ocsserver.class.php:681
+msgid "Global import"
+msgstr "Globalni uvoz"
+
+#: inc/ocsserver.class.php:678 inc/ocsserver.class.php:682
+#: inc/ocsserver.class.php:704
+msgid "Unit import"
+msgstr "Uvoz stavki"
+
+#: inc/ocsserver.class.php:683
+msgid "Unit import on serial number"
+msgstr "Uvoz stavki po serijskom broju"
+
+#: inc/ocsserver.class.php:684
+msgid "Unit import serial number only"
+msgstr "Uvoz samo serijskog broja jedinice"
+
+#: inc/ocsserver.class.php:712
+msgid "Use the OCSNG software dictionary"
+msgstr "Koristi OSCNG-ov rječnik softvera"
+
+#: inc/ocsserver.class.php:733
+msgid "Number of items to synchronize via the automatic OCSNG action"
+msgstr "Broj stavaka za sinkronizaciju putem automatske OCSNG akcije"
+
+#: inc/ocsserver.class.php:742
+msgid "Behavior to the deletion of a computer in OCSNG"
+msgstr "Ponašanje na brisanje računala iz OSCNG-a"
+
+#: inc/ocsserver.class.php:747
+#, php-format
+msgid "Change to state %s"
+msgstr "Promjeni u stanje %s"
+
+#: inc/ocsserver.class.php:755
+msgid "No import: the plugin will not import these elements"
+msgstr "Nema uvoza: plugin neće uvesti ove elemente"
+
+#: inc/ocsserver.class.php:756
+msgid ""
+"Global import: everything is imported but the material is globally managed "
+"(without duplicate)"
+msgstr "Globalni uvoz: sve je uveženo, ali materijalom se globalno upravlja (bez duplikata)"
+
+#: inc/ocsserver.class.php:758
+msgid "Unit import: everything is imported as it is"
+msgstr "Uvoz stavki: sve uveženo jednako je izvoru"
+
+#: inc/ocsserver.class.php:777
+msgid "Automatic connection of computers"
+msgstr "Automatsko povezivanje računala"
+
+#: inc/ocsserver.class.php:780
+msgid "Enable the automatic link"
+msgstr "Omogući automatsku vezu"
+
+#: inc/ocsserver.class.php:785
+msgid "Existence criteria of a computer"
+msgstr "Kriterij postojanja računala"
+
+#: inc/ocsserver.class.php:811
+msgid "The link automatically connects a GLPI computer with one in OCSNG."
+msgstr "Veza automatski povezuje računalo u GLPI-u s računalom u OCSNG-u"
+
+#: inc/ocsserver.class.php:813
+msgid ""
+"This option is taken into account during manual link and by synchronization "
+"scripts.\""
+msgstr "Ova opcija se razmatra tijekom ručnog povezivanja i kod sinkronizacijskih skripti.\""
+
+#: inc/ocsserver.class.php:838
+msgid "Database"
+msgstr ""
+
+#: inc/ocsserver.class.php:843
+msgid "Standard (allow manual actions)"
+msgstr "Standardno (omogućuje ručne akcije)"
+
+#: inc/ocsserver.class.php:844
+msgid "Expert (Fully automatic, for large configuration)"
+msgstr "Expert (potpuno automatski, za velike konfiguracije)"
+
+#: inc/ocsserver.class.php:848
+msgid "Connection type"
+msgstr ""
+
+#: inc/ocsserver.class.php:883
+msgid "Host"
+msgstr ""
+
+#: inc/ocsserver.class.php:886
+msgid "Like http://127.0.0.1 for SOAP method"
+msgstr ""
+
+#: inc/ocsserver.class.php:888
+msgid "Synchronisation method"
+msgstr "Metoda sinkronizacije"
+
+#: inc/ocsserver.class.php:950
+msgid "Connecting to the database"
+msgstr "Spajanje na bazu podataka"
+
+#: inc/ocsserver.class.php:954
+msgid "Connection to the database failed"
+msgstr "Spajanje na bazu podataka nije uspjelo"
+
+#: inc/ocsserver.class.php:956
+msgid "Invalid OCSNG Version: RC3 is required"
+msgstr "Pogrešna verzija OCSNG-a: RC3 je uvjetovana"
+
+#: inc/ocsserver.class.php:958
+msgid "Invalid OCSNG configuration (TRACE_DELETED must be active)"
+msgstr "Neispravna OCSNG postavka (TRACE_DELETED mora biti aktivna)"
+
+#: inc/ocsserver.class.php:967
+msgid "Connection to database successful"
+msgstr "Spajanje na bazu podataka je uspjelo"
+
+#: inc/ocsserver.class.php:969
+msgid "Valid OCSNG configuration and version"
+msgstr "Valjane OCSNG postavke i verzija"
+
+#: inc/ocsserver.class.php:1085
+msgid "Unable to add. The OCSNG server already exists."
+msgstr "Nije moguće dodavanje. OCSNG poslužitelj već postoji."
+
+#. TRANS: %s is the OCS id
+#: inc/ocsserver.class.php:1553
+#, php-format
+msgid ""
+"Unable to import, GLPI computer is already related to an element of OCSNG "
+"(%d)"
+msgstr "Nije moguć uvoz, GLPI računalo je već povezano sa elementom u OCSNG-u (%d)"
+
+#: inc/ocsserver.class.php:1746
+#, php-format
+msgid ""
+"Please consider cleaning the deleted computers in OCSNG <a href=\"%s\">Clean"
+" OCSNG datatabase </a>"
+msgstr ""
+
+#: inc/ocsserver.class.php:1848 inc/ocsserver.class.php:2544
+msgid "Swap"
+msgstr "Zamijena"
+
+#: inc/ocsserver.class.php:2820 inc/ocsserver.class.php:3031
+msgid "Import date in GLPI"
+msgstr "Uvezi datum u GLPI"
+
+#: inc/ocsserver.class.php:2821
+msgid "Existing in GLPI"
+msgstr "Postojeće u GLPI-u"
+
+#: inc/ocsserver.class.php:2822
+msgid "Existing in OCSNG"
+msgstr "Postojeće u GLPI-u"
+
+#: inc/ocsserver.class.php:2865
+msgid "No item to clean"
+msgstr "Nema stavke za čišćenje"
+
+#: inc/ocsserver.class.php:2947 inc/ocsserver.class.php:3066
+#: inc/ocsserver.class.php:3069
+msgid "No new computer to be updated"
+msgstr "Nema novih računala koja treba ažurirati"
+
+#: inc/ocsserver.class.php:3014
+msgid "Computers updated in OCSNG"
+msgstr "Računala ažurirana u OCSNG-u"
+
+#: inc/ocsserver.class.php:3027 inc/ocsserver.class.php:3049
+msgctxt "button"
+msgid "Synchronize"
+msgstr "Uskladi"
+
+#: inc/ocsserver.class.php:3030 inc/ocsserver.class.php:3061
+msgid "Update computers"
+msgstr "Ažuriraj računala"
+
+#: inc/ocsserver.class.php:3033
+msgid "Auto update"
+msgstr "Automatska nadogradnja"
+
+#: inc/ocsserver.class.php:3264
+msgid ""
+"Caution! The imported data (see your configuration) will overwrite the "
+"existing one"
+msgstr "Oprez! Uvezeni podaci (vidi postavke) će prepisati postojeće"
+
+#: inc/ocsserver.class.php:3280
+msgid "Manual import mode"
+msgstr "Ručni način uvoza"
+
+#: inc/ocsserver.class.php:3284
+msgid "Disable preview"
+msgstr "Deaktiviraj pregled"
+
+#: inc/ocsserver.class.php:3288
+msgid "Enable preview"
+msgstr "Aktiviraj pregled"
+
+#: inc/ocsserver.class.php:3293
+msgid "Check first that duplicates have been correctly managed in OCSNG"
+msgstr "Najprije provjerite da se upravljanje sa duplikatima ispravno obavlja u OCSNG-u"
+
+#: inc/ocsserver.class.php:3308 inc/ocsserver.class.php:3407
+msgctxt "button"
+msgid "Import"
+msgstr "Uvezi"
+
+#: inc/ocsserver.class.php:3318
+msgid "Match the rule ?"
+msgstr "Primjeni pravilo ?"
+
+#: inc/ocsserver.class.php:3320
+msgid "Target location"
+msgstr "Ciljana lokacija"
+
+#: inc/ocsserver.class.php:3424 inc/ocsserver.class.php:3435
+#: inc/ocsserver.class.php:3444
+msgid "No new computer to be imported"
+msgstr "Nema novih računala koja treba uvesti"
+
+#: inc/ocsserver.class.php:4313
+msgid "No OCSNG server defined"
+msgstr "Nema definiranog OCSNG poslužitelja"
+
+#: inc/ocsserver.class.php:5195
+msgid "Check updates from server"
+msgstr "Provjeri ažuriranja sa poslužitelja"
+
+#: inc/ocsserver.class.php:5268
+msgid "Computers don't check any rule"
+msgstr "Računala ne provjerava niti jedno pravilo"
+
+#: inc/ocsserver.class.php:5270
+msgid "Duplicate computers"
+msgstr "Dupliciran računala"
+
+#: inc/ocsserver.class.php:5271
+msgid "Computers whose import is refused by a rule"
+msgstr "Računala čiji je uvoz odbijen pravilom"
+
+#: inc/ocsserver.class.php:5321
+msgid "Statistics of the OCSNG link"
+msgstr "Statistika OCSNG veze"
+
+#: inc/profile.class.php:187
+msgid "Allowed OCSNG server"
+msgid_plural "Allowed OCSNG servers"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: inc/profile.class.php:283
+msgid "Manually synchronization"
+msgstr "Ručna sinkronizacija"
+
+#: inc/profile.class.php:287
+msgid "See information"
+msgstr "Pogledaj informacije"
+
+#: inc/registrykey.class.php:79
+#, php-format
+msgid "%d registry key found"
+msgid_plural "%d registry keys found"
+msgstr[0] "%d pronađen ključ u registry-u"
+msgstr[1] "%d pronađeno ključeva u registry-u"
+msgstr[2] "%d ključeva pronađeno u registru"
+
+#: inc/registrykey.class.php:84
+msgid "Hive"
+msgstr "Hive"
+
+#: inc/registrykey.class.php:85
+msgid "Path"
+msgstr "Putanja"
+
+#: inc/registrykey.class.php:104
+msgid "No key found in registry"
+msgstr "Ključ nije nađen u registry-u"
+
+#: inc/thread.class.php:59
+msgid "Back to processes list"
+msgstr "Vrati se na popis obrada"
+
+#: inc/thread.class.php:100 inc/thread.class.php:291
+msgid "Beginning date of execution"
+msgstr "Početni datum izvršenja"
+
+#: inc/thread.class.php:101 inc/thread.class.php:292
+msgid "Ending date of execution"
+msgstr "Krajni datum izvršenja"
+
+#: inc/thread.class.php:109 inc/thread.class.php:299
+msgid "Computers refused"
+msgstr "Odbijena računala"
+
+#: inc/thread.class.php:110 inc/thread.class.php:300
+msgid "Process time execution"
+msgstr "Vrijeme izvršavanja obrade"
+
+#: inc/thread.class.php:111
+msgid "Total of computers to be treated"
+msgstr "Ukupno računala koje će se obraditi"
+
+#: inc/thread.class.php:112
+msgid "performed percentage"
+msgstr "postotak obrađenog"
+
+#: inc/thread.class.php:168
+msgid "Total of treated computers"
+msgstr "Ukupno obrađenih računala"
+
+#: inc/thread.class.php:290
+msgid "Number of threads"
+msgstr "Broj niti"
+
+#: inc/thread.class.php:420
+msgid "Maximum"
+msgstr "Maksimum"
+
+#. TRANS: means computers by second
+#: inc/thread.class.php:463
+msgid "pc/s"
+msgstr "računala/s"
+
+#: inc/thread.class.php:568
+msgid "Clean processes"
+msgstr "Ukloni obrade"
+
+#: inc/thread.class.php:569
+msgid "Delete processes after"
+msgstr "Obriši procese nakon"

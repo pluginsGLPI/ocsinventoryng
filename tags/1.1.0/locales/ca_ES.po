@@ -1,0 +1,875 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Ocsinventoryng Development Team
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# ramon lopez <info@proferamon.com>, 2014-2015
+msgid ""
+msgstr ""
+"Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-26 10:02+0100\n"
+"PO-Revision-Date: 2015-02-26 09:05+0000\n"
+"Last-Translator: Xavier CAILLAUD <tsmr@thetsmr.fr>\n"
+"Language-Team: Catalan (Spain) (http://www.transifex.com/projects/p/GLPI_ocsinventoryng/language/ca_ES/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ca_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: hook.php:1142
+msgid "Restart import"
+msgstr "Reinicia la importació"
+
+#: hook.php:1143
+msgid "Import in the entity"
+msgstr "Importa en l'entitat"
+
+#: hook.php:1148
+msgid "Delete computer in OCSNG"
+msgstr "Esborra ordinador a OCSNG"
+
+#: hook.php:1159
+msgid "Force synchronization OCSNG"
+msgstr "Força la sincronització OCSNG"
+
+#: hook.php:1161
+msgid "Lock fields"
+msgstr ""
+
+#: hook.php:1163
+msgid "Unlock fields"
+msgstr "Desbloqueja camps"
+
+#: hook.php:1173
+msgid "Update networkport types"
+msgstr "Actualitza els tipus de port de xarxa"
+
+#: hook.php:1194 inc/ocslink.class.php:101
+msgid "GLPI import date"
+msgstr "Data d'importació de GLPI"
+
+#: hook.php:1201 inc/notimportedcomputer.class.php:78
+#: inc/notimportedcomputer.class.php:257 inc/ocslink.class.php:99
+#: inc/ocsserver.class.php:3032
+msgid "Last OCSNG inventory date"
+msgstr "Data de l'últim inventari OCSNG"
+
+#: hook.php:1210 inc/ocslink.class.php:136 inc/ocslink.class.php:224
+msgid "Automatic update OCSNG"
+msgstr "Actualització automàtica d'OCSNG"
+
+#: hook.php:1216 inc/notimportedcomputer.class.php:69
+#: inc/notimportedcomputer.class.php:227 inc/ocslink.class.php:103
+msgid "Inventory agent"
+msgstr "Agent d'inventari"
+
+#: hook.php:1222 hook.php:1415 hook.php:1466
+#: inc/notificationtargetnotimportedcomputer.class.php:79
+#: inc/notimportedcomputer.class.php:66 inc/notimportedcomputer.class.php:242
+#: inc/ocslink.class.php:128 inc/ocslink.class.php:231
+#: inc/ocsserver.class.php:3316
+msgid "OCSNG TAG"
+msgstr "Etiqueta OCSNG"
+
+#: hook.php:1229 inc/notificationtargetnotimportedcomputer.class.php:83
+#: inc/notimportedcomputer.class.php:53 inc/notimportedcomputer.class.php:214
+msgid "OCSNG ID"
+msgstr "Identificador OCSNG"
+
+#: hook.php:1236 inc/ocslink.class.php:96
+msgid "Last OCSNG connection date"
+msgstr ""
+
+#: hook.php:1243 inc/ocslink.class.php:106
+msgid "IP Source"
+msgstr ""
+
+#: hook.php:1252 hook.php:1261 inc/ocsserver.class.php:717
+#: inc/registrykey.class.php:39 inc/registrykey.class.php:102
+msgid "Registry"
+msgstr "Registre"
+
+#: hook.php:1253 inc/registrykey.class.php:86
+msgid "Key/Value"
+msgstr "Clau/valor"
+
+#: hook.php:1262 inc/notimportedcomputer.class.php:219
+msgid "OCSNG name"
+msgstr "Nom OCSNG"
+
+#: hook.php:1425 hook.php:1461 inc/config.class.php:78
+#: inc/ocsserver.class.php:95 inc/ocsserver.class.php:280
+#: inc/profile.class.php:280 inc/thread.class.php:34
+msgid "OCSNG server"
+msgid_plural "OCSNG servers"
+msgstr[0] "Servidor OCSNG"
+msgstr[1] "Servidors OCSNG"
+
+#: hook.php:1491 inc/ocslink.class.php:44 inc/ocslink.class.php:398
+msgid "OCSNG link"
+msgid_plural "OCSNG links"
+msgstr[0] "Enllaç OCSNG"
+msgstr[1] "Enllaços OCSNG"
+
+#: hook.php:1659
+msgid "Link possible"
+msgstr "Enllaç possible"
+
+#: hook.php:1663
+msgid "Import refused"
+msgstr "Importació refusada"
+
+#: hook.php:1667
+msgid "New computer created in GLPI"
+msgstr "Nou ordinador creat en GLPI"
+
+#: hook.php:1678
+msgid "Link with computer"
+msgstr "Enllaç amb ordinador"
+
+#: hook.php:1900
+msgid "Locked field"
+msgid_plural "Locked fields"
+msgstr[0] "Camp bloquejat"
+msgstr[1] "Camps bloquejats"
+
+#: front/config.form.php:48 inc/config.class.php:34 inc/config.class.php:84
+#: inc/ocsserver.class.php:303 inc/ocsserver.class.php:304
+#: inc/ocsserver.class.php:305
+msgid "Automatic synchronization's configuration"
+msgstr "Configuració de la sincronització automàtica"
+
+#: front/config.form.php:55 front/config.php:44
+msgid "Please activate the plugin"
+msgstr "Si et plau activa el connector"
+
+#: front/deleted_equiv.php:40 front/deleted_equiv.php:50
+#: front/deleted_equiv.php:82
+msgid "Pc deleted"
+msgstr "PC borrado"
+
+#: front/deleted_equiv.php:44 front/deleted_equiv.php:72
+msgid "No new computers to delete"
+msgstr "No hi ha nous ordinadors per esborrar"
+
+#: front/deleted_equiv.php:48 front/deleted_equiv.php:80 inc/menu.class.php:86
+#: inc/ocsserver.class.php:384 inc/ocsserver.class.php:385
+#: inc/ocsserver.class.php:386
+msgid "Clean OCSNG deleted computers"
+msgstr "Neteja ordinadors eliminats d'OCSNG"
+
+#: front/detail.php:33 inc/menu.class.php:77 inc/ocsserver.class.php:343
+#: inc/ocsserver.class.php:344 inc/ocsserver.class.php:345
+#: inc/thread.class.php:102 inc/thread.class.php:293
+msgid "Computers imported by automatic actions"
+msgstr "Ordinadors importats per accions automàtiques"
+
+#: front/networkport.php:33
+msgid "Unknown imported network ports"
+msgstr ""
+
+#: front/notimportedcomputer.php:33 front/thread.php:37
+#: inc/thread.class.php:284
+msgid "Processes execution of automatic actions"
+msgstr "Processa l'execució d'accions automàtiques"
+
+#: front/ocsng.clean.php:52 inc/menu.class.php:90 inc/ocsserver.class.php:391
+#: inc/ocsserver.class.php:392 inc/ocsserver.class.php:393
+#: inc/ocsserver.class.php:2800 inc/profile.class.php:291
+msgid "Clean links between GLPI and OCSNG"
+msgstr "Neteja enllaços entre GLPI i OCSNG"
+
+#: front/thread.form.php:33
+msgid "Information about the script"
+msgstr "Informació al voltant del script "
+
+#: inc/config.class.php:96
+msgid "Show processes where nothing was changed"
+msgstr "Mostra processos a on res ha canviat"
+
+#: inc/config.class.php:105
+msgid "Authorize the OCSNG update"
+msgstr "Autoritza l'actualització d'OCSNG"
+
+#: inc/config.class.php:111
+msgid "Refresh information of a process every"
+msgstr "Actualitza la informació d'un procés cada"
+
+#: inc/config.class.php:113
+msgid "second"
+msgid_plural "seconds"
+msgstr[0] "segon"
+msgstr[1] "segons"
+
+#: inc/config.class.php:130 inc/ocsserver.class.php:5182
+msgid "Check OCSNG import script"
+msgstr "Comprova el script d'importació d'OCSNG"
+
+#: inc/config.class.php:136
+msgid "Lock not activated"
+msgstr "Bloqueig no activat"
+
+#: inc/config.class.php:138
+msgid "Lock activated"
+msgstr "Bloqueig activat"
+
+#: inc/config.class.php:144
+msgctxt "button"
+msgid "Lock"
+msgstr "Bloqueig"
+
+#: inc/config.class.php:145
+msgctxt "button"
+msgid "Unlock"
+msgstr "Desbloqueig"
+
+#: inc/config.class.php:176 inc/thread.class.php:370
+msgid "All servers"
+msgstr "Tots els servidors"
+
+#: inc/detail.class.php:36 inc/detail.class.php:150
+#: inc/notimportedcomputer.class.php:39 inc/notimportedcomputer.class.php:208
+msgid "Computer not imported"
+msgid_plural "Computers not imported"
+msgstr[0] "Ordinador no importat"
+msgstr[1] "Ordinadors no importats"
+
+#: inc/detail.class.php:51
+msgid "Process time"
+msgstr "Temps de procés"
+
+#: inc/detail.class.php:61
+msgid "Process"
+msgstr "Procés"
+
+#: inc/detail.class.php:70 inc/thread.class.php:98
+msgid "Thread"
+msgstr "Fil"
+
+#: inc/detail.class.php:75
+msgid "Rules checked"
+msgstr "Regles comprovades"
+
+#: inc/detail.class.php:154 inc/ocsserver.class.php:5264
+msgid "Computers imported"
+msgstr "Ordinadors importats"
+
+#: inc/detail.class.php:157 inc/ocsserver.class.php:5266
+#: inc/thread.class.php:104 inc/thread.class.php:295
+msgid "Computers linked"
+msgstr "Ordinadors enllaçats"
+
+#: inc/detail.class.php:160 inc/ocsserver.class.php:5267
+#: inc/thread.class.php:107 inc/thread.class.php:297
+msgid "Computers not updated"
+msgstr "Ordinadors no actualitzats"
+
+#: inc/detail.class.php:163 inc/ocsserver.class.php:5265
+#: inc/thread.class.php:103 inc/thread.class.php:294
+msgid "Computers synchronized"
+msgstr "Ordinadors sincronitzats"
+
+#: inc/detail.class.php:166 inc/thread.class.php:108 inc/thread.class.php:298
+msgid "Computers not unique"
+msgstr "Ordinadors no únics"
+
+#: inc/devicebiosdata.class.php:47 inc/devicebiosdata.class.php:72
+msgid "Asset Tag"
+msgstr ""
+
+#: inc/menu.class.php:54 inc/ocsserver.class.php:292
+#: inc/ocsserver.class.php:293
+msgid "Configuration of OCSNG server"
+msgstr "Configuració del servidor OCSNG"
+
+#: inc/menu.class.php:61 inc/ocsserver.class.php:314
+#: inc/ocsserver.class.php:315 inc/ocsserver.class.php:316
+#: inc/ocsserver.class.php:3422 inc/ocsserver.class.php:3433
+#: inc/ocsserver.class.php:3442
+msgid "Import new computers"
+msgstr "Importa nous ordinadors"
+
+#: inc/menu.class.php:65 inc/ocsserver.class.php:334
+#: inc/ocsserver.class.php:335 inc/ocsserver.class.php:336
+msgid "Synchronize computers already imported"
+msgstr "Sincronització d'ordinadors ja importats"
+
+#: inc/menu.class.php:69 inc/ocsserver.class.php:354
+#: inc/ocsserver.class.php:356 inc/ocsserver.class.php:358
+msgid "Link new OCSNG computers to existing GLPI computers"
+msgstr "Enllaça els nous ordinadors OCSNG als ordinadors existents GLPI"
+
+#: inc/menu.class.php:73 inc/ocsserver.class.php:323
+#: inc/ocsserver.class.php:324 inc/ocsserver.class.php:325
+msgid "Scripts execution of automatic actions"
+msgstr "Execució de scripts d'accions automàtiques"
+
+#: inc/menu.class.php:81
+#: inc/notificationtargetnotimportedcomputer.class.php:37
+#: inc/notificationtargetnotimportedcomputer.class.php:81
+#: inc/ocsserver.class.php:367 inc/ocsserver.class.php:368
+#: inc/ocsserver.class.php:369 inc/thread.class.php:105
+#: inc/thread.class.php:296
+msgid "Computers not imported by automatic actions"
+msgstr "Ordinadors no importats per accions automàtiques"
+
+#: inc/networkport.class.php:40
+msgid "Unknown type from OCS"
+msgid_plural "Unknown types from OCS"
+msgstr[0] "Tipus desconegut per OCS"
+msgstr[1] "Tipus desconeguts per OCS"
+
+#: inc/networkport.class.php:44
+msgid "Invalid"
+msgstr "Invàlid"
+
+#: inc/networkport.class.php:366 inc/networkport.class.php:392
+#: inc/networkporttype.class.php:134
+msgid "OCS TYPE"
+msgstr "Tipus OCS"
+
+#: inc/networkport.class.php:368 inc/networkport.class.php:393
+msgid "OCS MIB TYPE"
+msgstr "OCS MIB TYPE"
+
+#: inc/networkport.class.php:373
+msgid "Create an entry for defining this type"
+msgstr "Crea una entrada per a la definició d'aquest tipus"
+
+#: inc/networkport.class.php:394
+msgid "Create a mapping"
+msgstr "Crea una cartografia"
+
+#: inc/networkport.class.php:454
+msgid "empty"
+msgstr "buit"
+
+#: inc/networkport.class.php:467
+msgid "Unknown network port type from OCS"
+msgstr "Tipus de port de xarxa d'OCS desconegut"
+
+#: inc/networkport.class.php:512
+msgid "No unknown network port type from OCS !"
+msgstr "Tipus de port de xarxa d'OCS no desconegut!"
+
+#: inc/networkporttype.class.php:39
+msgid "Network port type"
+msgid_plural "Network port types"
+msgstr[0] "Tipus de port de xarxa"
+msgstr[1] "Tipus de ports de xarxa"
+
+#: inc/networkporttype.class.php:106
+msgid "Any kind"
+msgstr "Qualsevol tipus"
+
+#: inc/networkporttype.class.php:137
+msgid "OCS TYPE MIB"
+msgstr "OCS TYPE MIB"
+
+#: inc/networkporttype.class.php:140
+msgid "Corresponding Network Port type"
+msgstr "Tipus de port de xarxa corresponent "
+
+#: inc/networkporttype.class.php:143
+msgid "Ethernet medium type"
+msgstr "Tipus mitjà d'Ethernet"
+
+#: inc/networkporttype.class.php:146
+msgid "Ethernet medium speed"
+msgstr "Velocitat mitjana Ethernet"
+
+#: inc/networkporttype.class.php:149
+msgid "Wifi card Version"
+msgstr "Versió de targeta Wifi"
+
+#: inc/networkporttype.class.php:155
+msgid "Transform unknown ports that match"
+msgstr "Transforma ports desconeguts que coincideixen"
+
+#: inc/networkporttype.class.php:186 inc/networkporttype.class.php:188
+msgid "Create"
+msgstr "Crea"
+
+#: inc/notificationtargetnotimportedcomputer.class.php:84
+#: inc/notimportedcomputer.class.php:60 inc/notimportedcomputer.class.php:232
+msgid "Device ID"
+msgstr "ID de dispositiu"
+
+#: inc/notimportedcomputer.class.php:50
+msgid "Verified rules"
+msgstr "Regles verificades"
+
+#: inc/notimportedcomputer.class.php:388
+msgid "Can't affect an entity"
+msgstr "No pot afectar a una entitat"
+
+#: inc/notimportedcomputer.class.php:391
+msgid "Unicity criteria not verified"
+msgstr "El criteri d'unicitat no verificat"
+
+#: inc/notimportedcomputer.class.php:394
+msgid "Import refused by rule"
+msgstr "Importació refusada per una regla"
+
+#: inc/notimportedcomputer.class.php:411
+msgid "Actions to be made on the computer"
+msgstr "Accions que es faran a l'ordinador"
+
+#: inc/notimportedcomputer.class.php:569
+msgid "Send OCSNG not imported computers alert failed"
+msgstr "Envia alerta de fallida dels ordinadors OCSNG no importats"
+
+#: inc/notimportedcomputer.class.php:590 inc/ocsserver.class.php:5182
+#: inc/profile.class.php:45 inc/thread.class.php:568
+msgid "OCSNG"
+msgstr "OCSNG"
+
+#: inc/notimportedcomputer.class.php:590
+msgid "Not imported computers alert"
+msgstr "Alerta d'ordinadors no importats"
+
+#: inc/ocslink.class.php:124
+msgid "OCS NG Interface"
+msgstr "Interfície OCS NG"
+
+#: inc/ocslink.class.php:147 inc/ocslink.class.php:240
+msgctxt "button"
+msgid "Force synchronization"
+msgstr "Força la sincronització"
+
+#: inc/ocslink.class.php:450
+msgid "Imported from OCSNG"
+msgstr "Importat d'OSCNG"
+
+#: inc/ocslink.class.php:454
+msgid "Deleted in OCSNG"
+msgstr "Eliminat a l'OCSNG"
+
+#: inc/ocslink.class.php:458
+msgid "Linked with an OCSNG computer"
+msgstr "Enllaçat amb un ordinador d'OCSNG"
+
+#: inc/ocslink.class.php:462
+#, php-format
+msgid "The OCSNG ID of the computer changed from %1$s to %2$s"
+msgstr "L'identificador d'OSCNG de l'ordinador ha canviat de %1$s a %2$s"
+
+#: inc/ocslink.class.php:467
+#, php-format
+msgid "The OCSNG TAG of the computer changed from %1$s to %2$s"
+msgstr "L'etiqueta d'OCSNG de l'ordinador ha canviat de %1$s a %2$s"
+
+#: inc/ocsserver.class.php:110
+msgid "Import options"
+msgstr "Opcions d'importació"
+
+#: inc/ocsserver.class.php:111 inc/ocsserver.class.php:443
+msgid "General information"
+msgstr "Informació general"
+
+#: inc/ocsserver.class.php:114
+msgid "OCSNG console"
+msgstr "Consola OCSNG"
+
+#: inc/ocsserver.class.php:203
+msgid "Expert sync mode"
+msgstr "Mode expert de sincronització"
+
+#: inc/ocsserver.class.php:208 inc/ocsserver.class.php:900
+msgid "Database in UTF8"
+msgstr "Base de dades en UTF8"
+
+#: inc/ocsserver.class.php:236 inc/ocsserver.class.php:4287
+#: inc/ocsserver.class.php:4310
+msgid "Choice of an OCSNG server"
+msgstr "Tria un servidor OCSNG"
+
+#: inc/ocsserver.class.php:257
+msgid ""
+"If you not find your OCSNG server in this dropdown, please check if your "
+"profile can access it !"
+msgstr ""
+
+#: inc/ocsserver.class.php:294
+#, php-format
+msgid "Configuration of OCSNG server %s"
+msgstr "Configuració del servidor OCSNG %s"
+
+#: inc/ocsserver.class.php:375
+msgid ""
+"The selected server is not active. Import and synchronisation is not "
+"available"
+msgstr "El servidor seleccionat no està actiu. La importació i sincronització no està disponible"
+
+#: inc/ocsserver.class.php:444
+msgid "Warning : the import entity rules depends on selected fields"
+msgstr ""
+
+#: inc/ocsserver.class.php:446
+msgid "OCSNG administrative information"
+msgstr "Informació administrativa d'OCSNG"
+
+#: inc/ocsserver.class.php:468 inc/ocsserver.class.php:474
+#: inc/ocsserver.class.php:482 inc/ocsserver.class.php:488
+msgid "Depends on Bios import"
+msgstr ""
+
+#: inc/ocsserver.class.php:598 inc/ocsserver.class.php:676
+#: inc/ocsserver.class.php:680 inc/ocsserver.class.php:703
+msgid "No import"
+msgstr "No importar"
+
+#: inc/ocsserver.class.php:642
+msgid "Web address of the OCSNG console"
+msgstr "URL de la consola d'OCSNG"
+
+#: inc/ocsserver.class.php:651
+msgid "Limit the import to the following tags (separator $, nothing for all)"
+msgstr "Limita la importació a les etiquetes següents (separador $, res per a totes)"
+
+#: inc/ocsserver.class.php:657
+msgid "Exclude the following tags (separator $, nothing for all)"
+msgstr "Exclou les següents etiquetes (separador $, res per a totes)"
+
+#: inc/ocsserver.class.php:662
+msgid "Default status"
+msgstr "Estat predeterminat"
+
+#: inc/ocsserver.class.php:668
+msgid "Behavior when disconnecting"
+msgstr "Comportament en desconnectar"
+
+#: inc/ocsserver.class.php:677 inc/ocsserver.class.php:681
+msgid "Global import"
+msgstr "Importació global"
+
+#: inc/ocsserver.class.php:678 inc/ocsserver.class.php:682
+#: inc/ocsserver.class.php:704
+msgid "Unit import"
+msgstr "Importació única"
+
+#: inc/ocsserver.class.php:683
+msgid "Unit import on serial number"
+msgstr "Importació única basada en el número de sèrie"
+
+#: inc/ocsserver.class.php:684
+msgid "Unit import serial number only"
+msgstr "Importació única només número de sèrie"
+
+#: inc/ocsserver.class.php:712
+msgid "Use the OCSNG software dictionary"
+msgstr "Utilitza el diccionari de programari d'OCS"
+
+#: inc/ocsserver.class.php:733
+msgid "Number of items to synchronize via the automatic OCSNG action"
+msgstr "Quantitat d'elements a sincronitzar mitjançant cron"
+
+#: inc/ocsserver.class.php:742
+msgid "Behavior to the deletion of a computer in OCSNG"
+msgstr "Comportament de la supressió d'un ordinador a OCSNG"
+
+#: inc/ocsserver.class.php:747
+#, php-format
+msgid "Change to state %s"
+msgstr "Canvia a l'estat %s"
+
+#: inc/ocsserver.class.php:755
+msgid "No import: the plugin will not import these elements"
+msgstr "No importar: GLPI no importarà aquests elements"
+
+#: inc/ocsserver.class.php:756
+msgid ""
+"Global import: everything is imported but the material is globally managed "
+"(without duplicate)"
+msgstr "Importació global: tot és importat, però el material es gestiona a nivell global (sense duplicats)"
+
+#: inc/ocsserver.class.php:758
+msgid "Unit import: everything is imported as it is"
+msgstr "Importació d'unitat: tot és importat tal com és"
+
+#: inc/ocsserver.class.php:777
+msgid "Automatic connection of computers"
+msgstr "Enllaç automàtic d'ordinadors"
+
+#: inc/ocsserver.class.php:780
+msgid "Enable the automatic link"
+msgstr "Activa els enllaços automàtics"
+
+#: inc/ocsserver.class.php:785
+msgid "Existence criteria of a computer"
+msgstr "Criteris d'existència d'un ordinador"
+
+#: inc/ocsserver.class.php:811
+msgid "The link automatically connects a GLPI computer with one in OCSNG."
+msgstr "L'enllaç automàticament connecta un ordinador GLPI amb un en OCSNG."
+
+#: inc/ocsserver.class.php:813
+msgid ""
+"This option is taken into account during manual link and by synchronization "
+"scripts.\""
+msgstr "Aquesta opció es té en compte durant l'enllaç manual i pels scripts de sincronització."
+
+#: inc/ocsserver.class.php:838
+msgid "Database"
+msgstr "Base de dades"
+
+#: inc/ocsserver.class.php:843
+msgid "Standard (allow manual actions)"
+msgstr "Estàndard (permetre accions manuals)"
+
+#: inc/ocsserver.class.php:844
+msgid "Expert (Fully automatic, for large configuration)"
+msgstr "Expert (completament automàtic, per configuració gran)"
+
+#: inc/ocsserver.class.php:848
+msgid "Connection type"
+msgstr "Tipus de connexió"
+
+#: inc/ocsserver.class.php:883
+msgid "Host"
+msgstr "Amfitrió"
+
+#: inc/ocsserver.class.php:886
+msgid "Like http://127.0.0.1 for SOAP method"
+msgstr ""
+
+#: inc/ocsserver.class.php:888
+msgid "Synchronisation method"
+msgstr "Mètode de sincronització"
+
+#: inc/ocsserver.class.php:950
+msgid "Connecting to the database"
+msgstr "Connectant a la base de dades"
+
+#: inc/ocsserver.class.php:954
+msgid "Connection to the database failed"
+msgstr "La connexió a la base de dades ha fallat"
+
+#: inc/ocsserver.class.php:956
+msgid "Invalid OCSNG Version: RC3 is required"
+msgstr "Versió d'OCSNG no vàlida: es necessita RC3"
+
+#: inc/ocsserver.class.php:958
+msgid "Invalid OCSNG configuration (TRACE_DELETED must be active)"
+msgstr "La configuració d'OCSNG no és correcta. (TRACE_DELETED ha de ser activat)"
+
+#: inc/ocsserver.class.php:967
+msgid "Connection to database successful"
+msgstr "Connexió exitosa a la base de dades"
+
+#: inc/ocsserver.class.php:969
+msgid "Valid OCSNG configuration and version"
+msgstr "Versió i configuració OCSNG vàlides"
+
+#: inc/ocsserver.class.php:1085
+msgid "Unable to add. The OCSNG server already exists."
+msgstr "No es possible afegir. Ja hi ha servidor OCSNG."
+
+#. TRANS: %s is the OCS id
+#: inc/ocsserver.class.php:1553
+#, php-format
+msgid ""
+"Unable to import, GLPI computer is already related to an element of OCSNG "
+"(%d)"
+msgstr "No es pot importar, l'ordinador GLPI ja està relacionat amb un element d'OCSNG (%d)"
+
+#: inc/ocsserver.class.php:1746
+#, php-format
+msgid ""
+"Please consider cleaning the deleted computers in OCSNG <a href=\"%s\">Clean"
+" OCSNG datatabase </a>"
+msgstr ""
+
+#: inc/ocsserver.class.php:1848 inc/ocsserver.class.php:2544
+msgid "Swap"
+msgstr "Intercanvi"
+
+#: inc/ocsserver.class.php:2820 inc/ocsserver.class.php:3031
+msgid "Import date in GLPI"
+msgstr "Data d'importació a GLPI"
+
+#: inc/ocsserver.class.php:2821
+msgid "Existing in GLPI"
+msgstr "Existeix a GLPI"
+
+#: inc/ocsserver.class.php:2822
+msgid "Existing in OCSNG"
+msgstr "Existeix a OCSNG"
+
+#: inc/ocsserver.class.php:2865
+msgid "No item to clean"
+msgstr "No hi ha objectes per a netejar"
+
+#: inc/ocsserver.class.php:2947 inc/ocsserver.class.php:3066
+#: inc/ocsserver.class.php:3069
+msgid "No new computer to be updated"
+msgstr "No hi ha nous ordinadors per a ser actualitzats"
+
+#: inc/ocsserver.class.php:3014
+msgid "Computers updated in OCSNG"
+msgstr "Ordinadors actualitzats a OCSNG"
+
+#: inc/ocsserver.class.php:3027 inc/ocsserver.class.php:3049
+msgctxt "button"
+msgid "Synchronize"
+msgstr "Sincronitza"
+
+#: inc/ocsserver.class.php:3030 inc/ocsserver.class.php:3061
+msgid "Update computers"
+msgstr "Actualitza ordinadors"
+
+#: inc/ocsserver.class.php:3033
+msgid "Auto update"
+msgstr "Actualització automàtica"
+
+#: inc/ocsserver.class.php:3264
+msgid ""
+"Caution! The imported data (see your configuration) will overwrite the "
+"existing one"
+msgstr "¡Precaució! Les dades importades (observa la teva configuració) sobrescriuran a les existents"
+
+#: inc/ocsserver.class.php:3280
+msgid "Manual import mode"
+msgstr "Mode d'importació manual"
+
+#: inc/ocsserver.class.php:3284
+msgid "Disable preview"
+msgstr "Desactiva la vista prèvia"
+
+#: inc/ocsserver.class.php:3288
+msgid "Enable preview"
+msgstr "Activa la vista preliminar"
+
+#: inc/ocsserver.class.php:3293
+msgid "Check first that duplicates have been correctly managed in OCSNG"
+msgstr "Comprova que els duplicats s'han gestionat correctament a OCSNG"
+
+#: inc/ocsserver.class.php:3308 inc/ocsserver.class.php:3407
+msgctxt "button"
+msgid "Import"
+msgstr "Importa"
+
+#: inc/ocsserver.class.php:3318
+msgid "Match the rule ?"
+msgstr "Compleix la regla?"
+
+#: inc/ocsserver.class.php:3320
+msgid "Target location"
+msgstr "Lloc"
+
+#: inc/ocsserver.class.php:3424 inc/ocsserver.class.php:3435
+#: inc/ocsserver.class.php:3444
+msgid "No new computer to be imported"
+msgstr "No hi ha nous ordinadors per a ser importats"
+
+#: inc/ocsserver.class.php:4313
+msgid "No OCSNG server defined"
+msgstr "No s'ha definit cap servidor OCSNG"
+
+#: inc/ocsserver.class.php:5195
+msgid "Check updates from server"
+msgstr "Cerca actualitzacions al servidor"
+
+#: inc/ocsserver.class.php:5268
+msgid "Computers don't check any rule"
+msgstr "Els ordinadors no comproven cap regla"
+
+#: inc/ocsserver.class.php:5270
+msgid "Duplicate computers"
+msgstr "Ordinadors duplicats"
+
+#: inc/ocsserver.class.php:5271
+msgid "Computers whose import is refused by a rule"
+msgstr "Ordinadors no importats perquè són rebutjats per una regla"
+
+#: inc/ocsserver.class.php:5321
+msgid "Statistics of the OCSNG link"
+msgstr "Estadístiques de l'enllaç OCSNG"
+
+#: inc/profile.class.php:187
+msgid "Allowed OCSNG server"
+msgid_plural "Allowed OCSNG servers"
+msgstr[0] "Servidor OCSNG permés"
+msgstr[1] "Servidors OCSNG permesos"
+
+#: inc/profile.class.php:283
+msgid "Manually synchronization"
+msgstr "Sincronització manual"
+
+#: inc/profile.class.php:287
+msgid "See information"
+msgstr "Mira la informació"
+
+#: inc/registrykey.class.php:79
+#, php-format
+msgid "%d registry key found"
+msgid_plural "%d registry keys found"
+msgstr[0] "%d clau de registre trobada"
+msgstr[1] "%d claus de registre trobades"
+
+#: inc/registrykey.class.php:84
+msgid "Hive"
+msgstr "Rusc"
+
+#: inc/registrykey.class.php:85
+msgid "Path"
+msgstr "Camí"
+
+#: inc/registrykey.class.php:104
+msgid "No key found in registry"
+msgstr "No s'ha trobat cap clau en el Registre de Windows"
+
+#: inc/thread.class.php:59
+msgid "Back to processes list"
+msgstr "Torna a la llista de processos"
+
+#: inc/thread.class.php:100 inc/thread.class.php:291
+msgid "Beginning date of execution"
+msgstr "Data inicial d'execució"
+
+#: inc/thread.class.php:101 inc/thread.class.php:292
+msgid "Ending date of execution"
+msgstr "Data final de l'execució"
+
+#: inc/thread.class.php:109 inc/thread.class.php:299
+msgid "Computers refused"
+msgstr "Ordinadors refusats"
+
+#: inc/thread.class.php:110 inc/thread.class.php:300
+msgid "Process time execution"
+msgstr "Temps d'execució de processos"
+
+#: inc/thread.class.php:111
+msgid "Total of computers to be treated"
+msgstr "Total d'ordinador a ser tractats"
+
+#: inc/thread.class.php:112
+msgid "performed percentage"
+msgstr "percentatge realitzat"
+
+#: inc/thread.class.php:168
+msgid "Total of treated computers"
+msgstr "Total d'ordinadors tractats"
+
+#: inc/thread.class.php:290
+msgid "Number of threads"
+msgstr "Nombre de fils"
+
+#: inc/thread.class.php:420
+msgid "Maximum"
+msgstr "Màxim"
+
+#. TRANS: means computers by second
+#: inc/thread.class.php:463
+msgid "pc/s"
+msgstr "pc/s"
+
+#: inc/thread.class.php:568
+msgid "Clean processes"
+msgstr "Neteja processos"
+
+#: inc/thread.class.php:569
+msgid "Delete processes after"
+msgstr "Elimina processos després"
