@@ -148,7 +148,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                                         `softwares`.`SOURCE`,
                                         `softwares`.`HARDWARE_ID`
                                         FROM `softwares`
-                                        LEFT JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
+                                        INNER JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
                                         WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                      } else{
                          $query   = "SELECT

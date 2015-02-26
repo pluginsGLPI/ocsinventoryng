@@ -4885,153 +4885,156 @@ JAVASCRIPT;
       $computer_softwareversion = new Computer_SoftwareVersion();
       $softwares = array();
       //---- Get all the softwares for this machine from OCS -----//
-      $softwares=$ocsComputer["SOFTWARES"];
-      $soft                = new Software();
       
-      // Read imported software in last sync
-      $query = "SELECT `glpi_computers_softwareversions`.`id` as id,
-                          `glpi_softwares`.`name` as sname,
-                          `glpi_softwareversions`.`name` as vname
-                   FROM `glpi_computers_softwareversions`
-                   INNER JOIN `glpi_softwareversions`
-                           ON `glpi_softwareversions`.`id`= `glpi_computers_softwareversions`.`softwareversions_id`
-                   INNER JOIN `glpi_softwares`
-                           ON `glpi_softwares`.`id`= `glpi_softwareversions`.`softwares_id`
-                   WHERE `glpi_computers_softwareversions`.`computers_id`='$computers_id'
-                         AND `is_dynamic`";
-      $imported = array();
+      if (isset($ocsComputer['SOFTWARES'])) {
+         $softwares=$ocsComputer["SOFTWARES"];
+         $soft                = new Software();
+         
+         // Read imported software in last sync
+         $query = "SELECT `glpi_computers_softwareversions`.`id` as id,
+                             `glpi_softwares`.`name` as sname,
+                             `glpi_softwareversions`.`name` as vname
+                      FROM `glpi_computers_softwareversions`
+                      INNER JOIN `glpi_softwareversions`
+                              ON `glpi_softwareversions`.`id`= `glpi_computers_softwareversions`.`softwareversions_id`
+                      INNER JOIN `glpi_softwares`
+                              ON `glpi_softwares`.`id`= `glpi_softwareversions`.`softwares_id`
+                      WHERE `glpi_computers_softwareversions`.`computers_id`='$computers_id'
+                            AND `is_dynamic`";
+         $imported = array();
 
 
-      foreach ($DB->request($query) as $data) {
-         $imported[$data['id']] = strtolower($data['sname'].self::FIELD_SEPARATOR.$data['vname']);
-      }
+         foreach ($DB->request($query) as $data) {
+            $imported[$data['id']] = strtolower($data['sname'].self::FIELD_SEPARATOR.$data['vname']);
+         }
 
-      if (count($softwares) > 0) {
-         foreach ($softwares as $software) {
-            $software    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($software));
+         if (count($softwares) > 0) {
+            foreach ($softwares as $software) {
+               $software    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($software));
 
-            //As we cannot be sure that data coming from OCS are in utf8, let's try to encode them
-            //if possible
-            foreach (array('NAME', 'PUBLISHER', 'VERSION') as $field) {
-               $software[$field] = self::encodeOcsDataInUtf8($is_utf8, $software[$field]);
-            }
-
-            //Replay dictionnary on manufacturer
-            $manufacturer = Manufacturer::processName($software["PUBLISHER"]);
-            $version      = $software['VERSION'];
-            $name         = $software['NAME'];
-
-            //Software might be created in another entity, depending on the entity's configuration
-            $target_entity = Entity::getUsedConfig('entities_id_software', $entity);
-            //Do not change software's entity except if the dictionnary explicity changes it
-            if ($target_entity < 0) {
-               $target_entity = $entity;
-            }
-            $modified_name       = $name;
-            $modified_version    = $version;
-            $version_comments    = $software['COMMENTS'];
-            $is_helpdesk_visible = NULL;
-            if (!$cfg_ocs["use_soft_dict"]) {
-               //Software dictionnary
-               $params = array("name" => $name, "manufacturer" => $manufacturer,
-                                  "old_version"  => $version, "entities_id"  => $entity);
-               $rulecollection = new RuleDictionnarySoftwareCollection();
-               $res_rule
-               = $rulecollection->processAllRules(Toolbox::stripslashes_deep($params),
-               array(),
-               Toolbox::stripslashes_deep(array('version' => $version)));
-
-               if (isset($res_rule["name"]) && $res_rule["name"]) {
-                  $modified_name = $res_rule["name"];
+               //As we cannot be sure that data coming from OCS are in utf8, let's try to encode them
+               //if possible
+               foreach (array('NAME', 'PUBLISHER', 'VERSION') as $field) {
+                  $software[$field] = self::encodeOcsDataInUtf8($is_utf8, $software[$field]);
                }
 
-               if (isset($res_rule["version"]) && $res_rule["version"]) {
-                  $modified_version = $res_rule["version"];
+               //Replay dictionnary on manufacturer
+               $manufacturer = Manufacturer::processName($software["PUBLISHER"]);
+               $version      = $software['VERSION'];
+               $name         = $software['NAME'];
+
+               //Software might be created in another entity, depending on the entity's configuration
+               $target_entity = Entity::getUsedConfig('entities_id_software', $entity);
+               //Do not change software's entity except if the dictionnary explicity changes it
+               if ($target_entity < 0) {
+                  $target_entity = $entity;
+               }
+               $modified_name       = $name;
+               $modified_version    = $version;
+               $version_comments    = $software['COMMENTS'];
+               $is_helpdesk_visible = NULL;
+               if (!$cfg_ocs["use_soft_dict"]) {
+                  //Software dictionnary
+                  $params = array("name" => $name, "manufacturer" => $manufacturer,
+                                     "old_version"  => $version, "entities_id"  => $entity);
+                  $rulecollection = new RuleDictionnarySoftwareCollection();
+                  $res_rule
+                  = $rulecollection->processAllRules(Toolbox::stripslashes_deep($params),
+                  array(),
+                  Toolbox::stripslashes_deep(array('version' => $version)));
+
+                  if (isset($res_rule["name"]) && $res_rule["name"]) {
+                     $modified_name = $res_rule["name"];
+                  }
+
+                  if (isset($res_rule["version"]) && $res_rule["version"]) {
+                     $modified_version = $res_rule["version"];
+                  }
+
+                  if (isset($res_rule["is_helpdesk_visible"])
+                  && strlen($res_rule["is_helpdesk_visible"])) {
+
+                     $is_helpdesk_visible = $res_rule["is_helpdesk_visible"];
+                  }
+
+                  if (isset($res_rule['manufacturer']) && $res_rule['manufacturer']) {
+                     $manufacturer = Toolbox::addslashes_deep($res_rule["manufacturer"]);
+                  }
+
+                  //If software dictionnary returns an entity, it overrides the one that may have
+                  //been defined in the entity's configuration
+                  if (isset($res_rule["new_entities_id"])
+                  && strlen($res_rule["new_entities_id"])) {
+                     $target_entity = $res_rule["new_entities_id"];
+                  }
                }
 
-               if (isset($res_rule["is_helpdesk_visible"])
-               && strlen($res_rule["is_helpdesk_visible"])) {
+               //If software must be imported
+               if (!isset($res_rule["_ignore_import"]) || !$res_rule["_ignore_import"]) {
+                  // Clean software object
+                  $soft->reset();
 
-                  $is_helpdesk_visible = $res_rule["is_helpdesk_visible"];
-               }
+                  // EXPLANATION About dictionnaries
+                  // OCS dictionnary : if software name change, as we don't store INITNAME
+                  //     GLPI will detect an uninstall (oldname) + install (newname)
+                  // GLPI dictionnary : is rule have change
+                  //     if rule have been replayed, modifiedname will be found => ok
+                  //     if not, GLPI will detect an uninstall (oldname) + install (newname)
 
-               if (isset($res_rule['manufacturer']) && $res_rule['manufacturer']) {
-                  $manufacturer = Toolbox::addslashes_deep($res_rule["manufacturer"]);
-               }
+                  $id = array_search(strtolower(stripslashes($modified_name.self::FIELD_SEPARATOR.$modified_version)),
+                  $imported);
 
-               //If software dictionnary returns an entity, it overrides the one that may have
-               //been defined in the entity's configuration
-               if (isset($res_rule["new_entities_id"])
-               && strlen($res_rule["new_entities_id"])) {
-                  $target_entity = $res_rule["new_entities_id"];
-               }
-            }
-
-            //If software must be imported
-            if (!isset($res_rule["_ignore_import"]) || !$res_rule["_ignore_import"]) {
-               // Clean software object
-               $soft->reset();
-
-               // EXPLANATION About dictionnaries
-               // OCS dictionnary : if software name change, as we don't store INITNAME
-               //     GLPI will detect an uninstall (oldname) + install (newname)
-               // GLPI dictionnary : is rule have change
-               //     if rule have been replayed, modifiedname will be found => ok
-               //     if not, GLPI will detect an uninstall (oldname) + install (newname)
-
-               $id = array_search(strtolower(stripslashes($modified_name.self::FIELD_SEPARATOR.$modified_version)),
-               $imported);
-
-               if ($id) {
-                  //-------------------------------------------------------------------------//
-                  //---- The software exists in this version for this computer - Update comments --------------//
-                  //---------------------------------------------------- --------------------//
-                  $isNewSoft = $soft->addOrRestoreFromTrash($modified_name, $manufacturer,
-                  $target_entity, '',
-                  ($entity != $target_entity),
-                  $is_helpdesk_visible);
-                  self::updateVersion($isNewSoft, $modified_version, $version_comments);
-                  unset($isNewSoft);
-                  unset($imported[$id]);
-               } else {
-                  //------------------------------------------------------------------------//
-                  //---- The software doesn't exists in this version for this computer -----//
-                  //------------------------------------------------------------------------//
-                  $isNewSoft = $soft->addOrRestoreFromTrash($modified_name, $manufacturer,
-                  $target_entity, '',
-                  ($entity != $target_entity),
-                  $is_helpdesk_visible);
-                  //Import version for this software
-                  $versionID = self::importVersion($isNewSoft, $modified_version, $version_comments);
-                  //Install license for this machine
-                  $instID = self::installSoftwareVersion($computers_id, $versionID, $dohistory);
+                  if ($id) {
+                     //-------------------------------------------------------------------------//
+                     //---- The software exists in this version for this computer - Update comments --------------//
+                     //---------------------------------------------------- --------------------//
+                     $isNewSoft = $soft->addOrRestoreFromTrash($modified_name, $manufacturer,
+                     $target_entity, '',
+                     ($entity != $target_entity),
+                     $is_helpdesk_visible);
+                     self::updateVersion($isNewSoft, $modified_version, $version_comments);
+                     unset($isNewSoft);
+                     unset($imported[$id]);
+                  } else {
+                     //------------------------------------------------------------------------//
+                     //---- The software doesn't exists in this version for this computer -----//
+                     //------------------------------------------------------------------------//
+                     $isNewSoft = $soft->addOrRestoreFromTrash($modified_name, $manufacturer,
+                     $target_entity, '',
+                     ($entity != $target_entity),
+                     $is_helpdesk_visible);
+                     //Import version for this software
+                     $versionID = self::importVersion($isNewSoft, $modified_version, $version_comments);
+                     //Install license for this machine
+                     $instID = self::installSoftwareVersion($computers_id, $versionID, $dohistory);
+                  }
                }
             }
          }
-      }
 
-      foreach ($imported as $id => $unused) {
-         $computer_softwareversion->delete(array('id' => $id, '_no_history' => !$dohistory),
-         true);
-         // delete cause a getFromDB, so fields contains values
-         $verid = $computer_softwareversion->getField('softwareversions_id');
+         foreach ($imported as $id => $unused) {
+            $computer_softwareversion->delete(array('id' => $id, '_no_history' => !$dohistory),
+            true);
+            // delete cause a getFromDB, so fields contains values
+            $verid = $computer_softwareversion->getField('softwareversions_id');
 
-         if (countElementsInTable('glpi_computers_softwareversions',
-                  "softwareversions_id = '$verid'") ==0
-         && countElementsInTable('glpi_softwarelicenses',
-                        "softwareversions_id_buy = '$verid'") == 0) {
-
-            $vers = new SoftwareVersion();
-            if ($vers->getFromDB($verid)
+            if (countElementsInTable('glpi_computers_softwareversions',
+                     "softwareversions_id = '$verid'") ==0
             && countElementsInTable('glpi_softwarelicenses',
-                              "softwares_id = '".$vers->fields['softwares_id']."'") ==0
-            && countElementsInTable('glpi_softwareversions',
-                              "softwares_id = '".$vers->fields['softwares_id']."'") == 1) {
-               // 1 is the current to be removed
-               $soft->putInTrash($vers->fields['softwares_id'],
-               __('Software deleted by OCSNG synchronization'));
-                              }
-            $vers->delete(array("id" => $verid));
+                           "softwareversions_id_buy = '$verid'") == 0) {
+
+               $vers = new SoftwareVersion();
+               if ($vers->getFromDB($verid)
+               && countElementsInTable('glpi_softwarelicenses',
+                                 "softwares_id = '".$vers->fields['softwares_id']."'") ==0
+               && countElementsInTable('glpi_softwareversions',
+                                 "softwares_id = '".$vers->fields['softwares_id']."'") == 1) {
+                  // 1 is the current to be removed
+                  $soft->putInTrash($vers->fields['softwares_id'],
+                  __('Software deleted by OCSNG synchronization'));
+                                 }
+               $vers->delete(array("id" => $verid));
+            }
          }
       }
    }
