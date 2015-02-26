@@ -96,8 +96,6 @@ function plugin_init_ocsinventoryng() {
       // Display a menu entry ?
       if (Session::haveRight("plugin_ocsinventoryng", READ)) {
          $PLUGIN_HOOKS['menu_toadd']['ocsinventoryng'] = array('tools'   => 'PluginOcsinventoryngMenu');
-         //$PLUGIN_HOOKS['menu_entry']['ocsinventoryng']               = 'front/ocsng.php';
-         //$PLUGIN_HOOKS['submenu_entry']['ocsinventoryng']['search']  = 'front/ocsng.php';
       }
 
       if (Session::haveRight("plugin_ocsinventoryng", UPDATE) || Session::haveRight("config", UPDATE)) {
@@ -136,7 +134,7 @@ function plugin_version_ocsinventoryng() {
                 'author'         => 'Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
                 'license'        => 'GPLv2+',
                 'homepage'       => 'https://forge.indepnet.net/repositories/show/ocsinventoryng',
-                'minGlpiVersion' => '0.85');// For compatibility / no install in version < 0.80
+                'minGlpiVersion' => '0.85');
 
 }
 

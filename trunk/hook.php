@@ -1049,11 +1049,9 @@ function plugin_ocsinventoryng_uninstall() {
 
    $cron = new CronTask;
    if ($cron->getFromDBbyName('PluginMassocsimportThread', 'CleanOldThreads')) {
-      // creation du cron - param = duree de conservation
       CronTask::Unregister('massocsimport');
    }
    if ($cron->getFromDBbyName('PluginOcsinventoryngThread', 'CleanOldThreads')) {
-      // creation du cron - param = duree de conservation
       CronTask::Unregister('ocsinventoryng');
    }
    
@@ -1081,7 +1079,7 @@ function plugin_ocsinventoryng_getDropdown() {
 /**
  * Define dropdown relations
 **/
-function plugin_ocsinventoryngs_getDatabaseRelations() {
+function plugin_ocsinventoryng_getDatabaseRelations() {
 
    $plugin = new Plugin();
 
@@ -1145,13 +1143,6 @@ function plugin_ocsinventoryng_MassiveActions($type) {
          $actions['PluginOcsinventoryngNotimportedcomputer'.MassiveAction::CLASS_ACTION_SEPARATOR."plugin_ocsinventoryng_import"]      = __("Import in the entity",
                                                             'ocsinventoryng');
 
-         /*if (isset ($_POST['target'])
-             && $_POST['target'] == Toolbox::getItemTypeFormURL('PluginOcsinventoryngNotimportedcomputer')) {
-
-            $actions['PluginOcsinventoryngNotimportedcomputer'.MassiveAction::CLASS_ACTION_SEPARATOR."plugin_ocsinventoryng_link"]
-                                          = __('Link new OCSNG computers to existing GLPI computers',
-                                               'ocsinventoryng');
-         }*/
          $plugin = new Plugin;
          if ($plugin->isActivated("uninstall")) {
             $actions['PluginOcsinventoryngNotimportedcomputer'.MassiveAction::CLASS_ACTION_SEPARATOR."plugin_ocsinventoryng_delete"]   = __('Delete computer in OCSNG',
@@ -1187,216 +1178,6 @@ function plugin_ocsinventoryng_MassiveActions($type) {
    return array ();
 }
 
-
-/**
- * @param $options   array
-*/
-/*
-function plugin_ocsinventoryng_MassiveActionsDisplay($options=array()) {
-
-   switch ($options['itemtype']) {
-      case 'PluginOcsinventoryngNotimportedcomputer' :
-         switch ($options['action']) {
-            case "plugin_ocsinventoryng_import" :
-               Entity::dropdown(array('name' => 'entity'));
-               break;
-
-            case "plugin_ocsinventoryng_link" :
-               Computer::dropdown(array('name' => 'computers_id'));
-               break;
-
-            case "plugin_ocsinventoryng_replayrules" :
-            case "plugin_ocsinventoryng_delete" :
-               break;
-         }
-         echo "&nbsp;<input type='submit' name='massiveaction' class='submit' " .
-              "value='"._sx('button', 'Post')."'>";
-         break;
-
-      case 'Computer' :
-         switch ($options['action']) {
-            case "plugin_ocsinventoryng_force_ocsng_update" :
-               echo "<input type='submit' name='massiveaction' class='submit' value='".
-                      _sx('button', 'Post')."'>\n";
-               break;
-            case "plugin_ocsinventoryng_unlock_ocsng_field" :
-               $fields['all'] = __('All');
-               $fields       += PluginOcsinventoryngOcsServer::getLockableFields();
-               Dropdown::showFromArray("field", $fields);
-               echo "<br><br><input type='submit' name='massiveaction' class='submit' value='".
-                              _sx('button', 'Post')."'>";
-               break;
-
-         }
-      case 'NetworkPort':
-         switch ($options['action']) {
-            case "plugin_ocsinventoryng_update_networkport_type" :
-               echo "<input type='submit' name='massiveaction' class='submit' value='".
-                      _sx('button', 'Post')."'>\n";
-               break;
-         }
-         
-   }
-   return "";
-}
-
-
-/**
- * @param $data   array
-**/
-/*
-function plugin_ocsinventoryng_MassiveActionsProcess($data) {
-   global $CFG_GLPI, $DB, $REDIRECT;
-
-   $nbok     = 0;
-   $nbko     = 0;
-   $noright  = 0;
-   
-   $notimport = new PluginOcsinventoryngNotimportedcomputer();
-   if (!$item = getItemForItemtype($data['itemtype'])) {
-      return;
-   }
-   switch ($data["action"]) {
-      case "plugin_ocsinventoryng_import" :
-         foreach ($data["item"] as $key => $val) {
-            if ($val == 1) {
-               PluginOcsinventoryngNotimportedcomputer::computerImport(array('id'     => $key,
-                                                                             'force'  => true,
-                                                                             'entity' => $data['entity']));
-            }
-         }
-         break;
-
-      case "plugin_ocsinventoryng_replayrules" :
-         foreach ($data["item"] as $key => $val) {
-            if ($val == 1) {
-               PluginOcsinventoryngNotimportedcomputer::computerImport(array('id' => $key));
-            }
-         }
-         break;
-
-      case "plugin_ocsinventoryng_delete" :
-         $plugin = new Plugin();
-         if ($plugin->isActivated("uninstall")) {
-            foreach ($data["item"] as $key => $val) {
-               if ($val == 1) {
-                  $notimport->deleteNotImportedComputer($key);
-               }
-            }
-         }
-         break;
-      
-      case "plugin_ocsinventoryng_unlock_ocsng_field" :
-         $nbok      = 0;
-         $nbnoright = 0;
-         $nbko      = 0;
-         $fields = PluginOcsinventoryngOcsServer::getLockableFields();
-         if ($_POST['field'] == 'all' || isset($fields[$_POST['field']])) {
-            foreach ($_POST["item"] as $key => $val) {
-               if ($val == 1) {
-                  if ($item->can($key,UPDATE)) {
-                     if ($_POST['field'] == 'all') {
-                        if (PluginOcsinventoryngOcsServer::replaceOcsArray($key, array(),
-                                                                           "computer_update")) {
-                           $nbok++;
-                        } else {
-                           $nbko++;
-                        }
-                     } else {
-                        if (PluginOcsinventoryngOcsServer::deleteInOcsArray($key, $_POST['field'],
-                                                                            "computer_update",
-                                                                            true)) {
-                           $nbok++;
-                        } else {
-                           $nbko++;
-                        }
-                     }
-                  } else {
-                     $nbnoright++;
-                  }
-               }
-            }
-         }
-         break;
-         
-      case "plugin_ocsinventoryng_force_ocsng_update" :
-         // First time
-         if (!isset($_GET['multiple_actions'])) {
-            $_SESSION['glpi_massiveaction']['POST']      = $_POST;
-            $_SESSION['glpi_massiveaction']['REDIRECT']  = $REDIRECT;
-            $_SESSION['glpi_massiveaction']['items']     = array();
-            foreach ($_POST["item"] as $key => $val) {
-               if ($val == 1) {
-                  $_SESSION['glpi_massiveaction']['items'][$key] = $key;
-               }
-            }
-            $_SESSION['glpi_massiveaction']['item_count']
-                  = count($_SESSION['glpi_massiveaction']['items']);
-            $_SESSION['glpi_massiveaction']['items_ok']        = 0;
-            $_SESSION['glpi_massiveaction']['items_ko']        = 0;
-            $_SESSION['glpi_massiveaction']['items_nbnoright'] = 0;
-            Html::redirect($_SERVER['PHP_SELF'].'?multiple_actions=1');
-
-         } else {
-            if (count($_SESSION['glpi_massiveaction']['items']) > 0) {
-               $key = array_pop($_SESSION['glpi_massiveaction']['items']);
-               if ($item->can($key,UPDATE)) {
-                  //Try to get the OCS server whose machine belongs
-                  $query = "SELECT `plugin_ocsinventoryng_ocsservers_id`, `id`
-                            FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                            WHERE `computers_id` = '".$key."'";
-                  $result = $DB->query($query);
-                  if ($DB->numrows($result) == 1) {
-                     $data = $DB->fetch_assoc($result);
-                     if ($data['plugin_ocsinventoryng_ocsservers_id'] != -1) {
-                        //Force update of the machine
-                        PluginOcsinventoryngOcsServer::updateComputer($data['id'],
-                                                                      $data['plugin_ocsinventoryng_ocsservers_id'],
-                                                                      1, 1);
-                        $_SESSION['glpi_massiveaction']['items_ok']++;
-                     } else {
-                        $_SESSION['glpi_massiveaction']['items_ko']++;
-                     }
-                  } else {
-                     $_SESSION['glpi_massiveaction']['items_ko']++;
-                  }
-               } else {
-                  $_SESSION['glpi_massiveaction']['items_nbnoright']++;
-               }
-               Html::redirect($_SERVER['PHP_SELF'].'?multiple_actions=1');
-            } else {
-               $REDIRECT  = $_SESSION['glpi_massiveaction']['REDIRECT'];
-               $nbok      = $_SESSION['glpi_massiveaction']['items_ok'];
-               $nbko      = $_SESSION['glpi_massiveaction']['items_ko'];
-               $nbnoright = $_SESSION['glpi_massiveaction']['items_nbnoright'];
-               unset($_SESSION['glpi_massiveaction']);
-            }
-         }
-         break;
-
-      case 'plugin_ocsinventoryng_update_networkport_type':
-         $networkport = new PluginOcsinventoryngNetworkPort();
-         foreach ($data["item"] as $key => $val) {
-            if ($val == 1) {
-               if ($networkport->getFromDBByQuery("WHERE `networkports_id` = '$key'")) {
-                  if ($networkport->transformAccordingTypes()) {
-                     $nbok ++;
-                  } else {
-                     $nbko ++;
-                  }
-               } else {
-                  $nbko ++;
-               }
-            }
-         }
-         break;
-   }
-
-   return array('ok'      => $nbok,
-                'ko'      => $nbko,
-                'noright' => $noright);   
-}
-*/
 
 /**
  * @param $itemtype

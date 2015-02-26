@@ -30,16 +30,6 @@ include ('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-function configHeader() {
-
-   echo "<div class='center'>";
-   echo "<table class='tab_cadre_fixe'>";
-   echo "<tr><th colspan='2'>" . __('?????') . "</th></tr>";
-   echo "<tr class='tab_bg_1'><td class='center'>";
-   echo "<a href='https://forge.indepnet.net/projects/ocsinventoryng/wiki' target='_blank'>" .
-          __('Use mode', 'ocsinventoryng') . "</a></td></tr>";
-}
-
 $config = new PluginOcsinventoryngConfig();
 
 if (isset($_POST["update"])) {
@@ -55,17 +45,9 @@ if (isset($_POST["soft_unlock"])) {
 
 $plugin = new Plugin();
 if ($plugin->isActivated("ocsinventoryng")) {
-   Html::header(__('History of automatic actions', 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "config");
+   Html::header(__("Automatic synchronization's configuration", 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "config");
 
-   if (!countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers")) {
-      configHeader();
-      echo "<tr class='tab_bg_2'><td class='center'>". __('No server configured',  'ocsinventoryng');
-      echo "<a href='".getItemTypeSearchURL("PluginOcsinventoryngOcsServer")."'>".
-             __('Configuration', 'ocsinventoryng')."</a></th></tr>";
-      echo "</table></div>";
-   } else {
-      $config->showForm($_SERVER['PHP_SELF']);
-   }
+   $config->showForm($_SERVER['PHP_SELF']);
 } else {
    Html::header(__('Setup'), '', "tools", "pluginocsinventoryngmenu", "config");
    echo "<div class='center'><br><br>";
