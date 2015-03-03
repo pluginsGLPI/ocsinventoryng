@@ -194,6 +194,14 @@ abstract class PluginOcsinventoryngOcsClient {
     * @return array $data the computers to update
     */
    abstract public function getComputersToUpdate($cfg_ocs, $max_date);
+   
+   /**
+    * Gets the array of computers for script checkocslinks.php
+    * 
+    * @return array $data the list of computers
+    */
+   abstract public function getOCSComputers();
+   
    /**
     * Get the computer that were deleted (or merged) in ocsinventory
     * 

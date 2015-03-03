@@ -544,6 +544,24 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     }
     
     /**
+     * @see PluginOcsinventoryngOcsClient::getOCSComputers()
+     */
+    public function getOCSComputers()
+    {
+         $query    = "SELECT `ID`, `DEVICEID`
+                    FROM `hardware`";
+         $res = $this->db->query($query);
+         $data = array();
+         
+         if ($res->num_rows > 0) {
+            while ( $num = $this->db->fetch_assoc($res)){
+               $data = $num;
+            }
+         }
+         return $data;
+    }
+    
+    /**
      * @see PluginOcsinventoryngOcsClient::getDeletedComputers()
      */
     public function getDeletedComputers()
