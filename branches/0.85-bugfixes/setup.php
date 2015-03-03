@@ -133,7 +133,7 @@ function plugin_version_ocsinventoryng() {
                 'version'        => '1.1.1',
                 'author'         => 'Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
                 'license'        => 'GPLv2+',
-                'homepage'       => 'https://forge.indepnet.net/repositories/show/ocsinventoryng',
+                'homepage'       => 'https://forge.indepnet.net/projects/ocsinventoryng',
                 'minGlpiVersion' => '0.85');
 
 }
