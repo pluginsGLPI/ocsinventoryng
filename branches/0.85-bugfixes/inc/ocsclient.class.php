@@ -191,7 +191,7 @@ abstract class PluginOcsinventoryngOcsClient {
     * 
     * @param array $cfg_ocs Server confifguration
     * @param date $max_date MAX(`last_ocs_update`)
-    * @return array $res the computers to update
+    * @return array $data the computers to update
     */
    abstract public function getComputersToUpdate($cfg_ocs, $max_date);
    /**

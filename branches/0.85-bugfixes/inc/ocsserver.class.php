@@ -2064,8 +2064,8 @@ JAVASCRIPT;
                              `ip_src` = '".$data_ocs["HARDWARE"]["IPSRC"]." '
                              WHERE `id` = '$ID'";
             $DB->query($query);
-            //Add  || $data_ocs["CHECKSUM"] > self::MAX_CHECKSUM for bug of checksum 18446744073689088230
-            if ($force  || $data_ocs["CHECKSUM"] > self::MAX_CHECKSUM) {
+            //Add  || $data_ocs["META"]["CHECKSUM"] > self::MAX_CHECKSUM for bug of checksum 18446744073689088230
+            if ($force  || $data_ocs["META"]["CHECKSUM"] > self::MAX_CHECKSUM) {
                $ocs_checksum = self::MAX_CHECKSUM;
                self::getDBocs($plugin_ocsinventoryng_ocsservers_id)->setChecksum($ocs_checksum, $line['ocsid']);
             } else {
@@ -5191,16 +5191,19 @@ JAVASCRIPT;
             }
          }
 
-         $res = $PluginOcsinventoryngDBocs->getComputersToUpdate($cfg_ocs, $max_date);
+         $res[] = $PluginOcsinventoryngDBocs->getComputersToUpdate($cfg_ocs, $max_date);
 
          $task->setVolume(0);
          if (count($res) > 0){
+            
+            foreach ($res as $k => $data) {
+               if (count($data) > 0){
+                  $task->addVolume(1);
+                  $task->log(sprintf(__('%1$s: %2$s'), _n('Computer', 'Computer', 1),
+                  sprintf(__('%1$s (%2$s)'), $data["DEVICEID"], $data["ID"])));
 
-            foreach ($res as $data) {
-               $task->addVolume(1);
-               $task->log(sprintf(__('%1$s: %2$s'), _n('Computer', 'Computer', 1),
-               sprintf(__('%1$s (%2$s)'), $data["DEVICEID"], $data["ID"])));
-               self::processComputer($data["ID"], $plugin_ocsinventoryng_ocsservers_id, 0);
+                  self::processComputer($data["ID"], $plugin_ocsinventoryng_ocsservers_id, 0);
+               }
             }
          } else{
             return 0;

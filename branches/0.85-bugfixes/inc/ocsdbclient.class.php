@@ -532,10 +532,15 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
          $query .= " ORDER BY `hardware`.`LASTDATE` ASC
                         LIMIT ".intval($cfg_ocs["cron_sync_number"]);
                         
-         $checksum = $this->db->query($query);
-         $res      = $this->db->fetch_assoc($checksum);
+         $res = $this->db->query($query);
+         $data = array();
          
-         return $res;
+         if ($res->num_rows > 0) {
+            while ( $num = $this->db->fetch_assoc($res)){
+               $data = $num;
+            }
+         }
+         return $data;
     }
     
     /**
