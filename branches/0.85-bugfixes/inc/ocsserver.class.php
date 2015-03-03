@@ -2064,7 +2064,8 @@ JAVASCRIPT;
                              `ip_src` = '".$data_ocs["HARDWARE"]["IPSRC"]." '
                              WHERE `id` = '$ID'";
             $DB->query($query);
-            if ($force) {
+            //Add  || $data_ocs["CHECKSUM"] > self::MAX_CHECKSUM for bug of checksum 18446744073689088230
+            if ($force  || $data_ocs["CHECKSUM"] > self::MAX_CHECKSUM) {
                $ocs_checksum = self::MAX_CHECKSUM;
                self::getDBocs($plugin_ocsinventoryng_ocsservers_id)->setChecksum($ocs_checksum, $line['ocsid']);
             } else {
@@ -5170,7 +5171,8 @@ JAVASCRIPT;
       $plugin_ocsinventoryng_ocsservers_id = self::getRandomServerID();
       if ($plugin_ocsinventoryng_ocsservers_id > 0){
          //Initialize the server connection
-         $PluginOcsinventoryngDBocs   = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+         $PluginOcsinventoryngDBocs = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+         
          $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
          $task->log(__('Check updates from server', 'ocsinventoryng')." " . $cfg_ocs['name'] . "\n");
 
@@ -5189,29 +5191,12 @@ JAVASCRIPT;
             }
          }
 
-         $query_ocs = "SELECT *
-                       FROM `hardware`
-                       INNER JOIN `accountinfo` ON (`hardware`.`ID` = `accountinfo`.`HARDWARE_ID`)
-                       WHERE ((`hardware`.`CHECKSUM` & " . $cfg_ocs["checksum"] . ") > '0'
-                              OR `hardware`.`LASTDATE` > '$max_date') ";
+         $res = $PluginOcsinventoryngDBocs->getComputersToUpdate($cfg_ocs, $max_date);
 
-         // workaround to avoid duplicate when synchro occurs during an inventory
-         // "after" insert in ocsweb.hardware  and "before" insert in ocsweb.deleted_equiv
-         $query_ocs .= " AND TIMESTAMP(`LASTDATE`) < (NOW()-180) ";
-
-         $tag_limit = self::getTagLimit($cfg_ocs);
-         if (!empty($tag_limit)){
-            $query_ocs .= "AND ".$tag_limit;
-         }
-
-         $query_ocs .= " ORDER BY `hardware`.`LASTDATE` ASC
-                        LIMIT ".intval($cfg_ocs["cron_sync_number"]);
-
-         $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
-         $nbcomp = $PluginOcsinventoryngDBocs->numrows($result_ocs);
          $task->setVolume(0);
-         if ($nbcomp > 0){
-            while ($data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs)){
+         if (count($res) > 0){
+
+            foreach ($res as $data) {
                $task->addVolume(1);
                $task->log(sprintf(__('%1$s: %2$s'), _n('Computer', 'Computer', 1),
                sprintf(__('%1$s (%2$s)'), $data["DEVICEID"], $data["ID"])));

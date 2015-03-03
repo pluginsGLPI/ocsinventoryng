@@ -169,7 +169,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
          }
       } while ($options['OFFSET'] + $computerObjs['MAX_RECORDS'] < $end);
       
-      toolbox::logdebug($computers);
+      //toolbox::logdebug($computers);
       return array(
          'TOTAL_COUNT' => $totalCount,
          'COMPUTERS' => $computers

@@ -234,7 +234,8 @@ function plugin_ocsinventoryng_install() {
    PluginOcsinventoryngProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
    
    if (TableExists("glpi_plugin_ocsinventoryng_ocsservers")
-                      && (countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1") == 1)) {
+         && TableExists("glpi_plugin_ocsinventoryng_profiles")
+            && (countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1") == 1)) {
 
       foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers") as $server) {
          foreach ($DB->request("glpi_plugin_ocsinventoryng_profiles",
