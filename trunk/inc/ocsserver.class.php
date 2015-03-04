@@ -667,7 +667,7 @@ JAVASCRIPT;
       echo "<td><input type='text' size='30' name='ocs_url' value=\"".$this->fields["ocs_url"]."\">";
       echo "</td></tr>\n";
 
-      echo "<tr><th colspan='2'>" . __('Import options'). "</th></tr>\n";
+      echo "<tr><th colspan='2'>" . __('Import options', 'ocsinventoryng'). "</th></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>".
       __('Limit the import to the following tags (separator $, nothing for all)',
@@ -771,72 +771,21 @@ JAVASCRIPT;
       }
       Dropdown::showFromArray('deleted_behavior', $actions,
       array('value' => $this->fields['deleted_behavior']));
-
-      echo "</table>\n";
-
-      echo "<br>".__('No import: the plugin will not import these elements', 'ocsinventoryng');
+      echo "</td></tr>";
+      
+      echo "<tr class='tab_bg_2'><td class='center b red' colspan='2'>";
+      echo __('No import: the plugin will not import these elements', 'ocsinventoryng');
       echo "<br>".__('Global import: everything is imported but the material is globally managed (without duplicate)',
          'ocsinventoryng');
       echo "<br>".__("Unit import: everything is imported as it is", 'ocsinventoryng');
-
-      echo "<p class='submit'><input type='submit' name='update' class='submit' value='" .
-      _sx('button', 'Save') . "'></p>";
-      Html::closeForm();
-      echo "</div>";
-   }
-
-
-   // fonction jamais appeléee
-   function ocsFormAutomaticLinkConfig($target, $ID, $withtemplate='', $templateid='') {
-
-      if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
-         return false;
-      }
-      $this->getFromDB($ID);
-      echo "<br><div class='center'>";
-      echo "<form name='formconfig' action=\"$target\" method='post'>\n";
-      echo "<table class='tab_cadre_fixe'>\n";
-      echo "<tr><th colspan='4'>". __('Automatic connection of computers', 'ocsinventoryng');
-      echo "<input type='hidden' name='id' value='$ID'></th></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td>" .__('Enable the automatic link',  'ocsinventoryng'). " </td>\n";
-      echo "<td colspan='3'>";
-      Dropdown::showYesNo("is_glpi_link_enabled", $this->fields["is_glpi_link_enabled"]);
-      echo "</td></tr>\n";
-
-      echo "<tr><th colspan='4'>". __('Existence criteria of a computer', 'ocsinventoryng').
-      "</th></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td>" .__('IP') . " </td>\n<td>";
-      Dropdown::showYesNo("use_ip_to_link", $this->fields["use_ip_to_link"]);
-      echo "</td>\n";
-      echo "<td>" . __('Mac address') . " </td>\n<td>";
-      Dropdown::showYesNo("use_mac_to_link", $this->fields["use_mac_to_link"]);
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td>" . __("Computer's name") . " </td>\n<td>";
-      $link_array = array("0" => __('No'),
-         "1" => sprintf(__('%1$s: %2$s'), __('Yes'), __('equal')),
-         "2" => sprintf(__('%1$s: %2$s'), __('Yes'), __('empty')));
-      Dropdown::showFromArray("use_name_to_link", $link_array,
-      array('value' => $this->fields["use_name_to_link"]));
-      echo "</td>\n";
-      echo "<td>" . __('Serial number') . " </td>\n<td>";
-      Dropdown::showYesNo("use_serial_to_link", $this->fields["use_serial_to_link"]);
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td>". __('Find computers in GLPI having the status')."</td>\n";
-      echo "<td colspan='3'>";
-      State::dropdown(array('value' => $this->fields["states_id_linkif"],
-            'name'  => "states_id_linkif"));
-      echo "</td></tr>\n";
-      echo "</table><br>".__('The link automatically connects a GLPI computer with one in OCSNG.',
-         'ocsinventoryng').
-      "<br>". __('This option is taken into account during manual link and by synchronization scripts."',
-         'ocsinventoryng');
-
-      echo "<p class='submit'><input type='submit' name='update' class='submit' value='" .
-      _sx('button', 'Post') . "'></p>";
+      echo "</td></tr>";
+      
+      echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
+      echo "<input type='submit' name='update' class='submit' value='" .
+      _sx('button', 'Save') . "'>";
+      echo "</td></tr>";
+      
+      echo "</table>\n";
       Html::closeForm();
       echo "</div>";
    }
@@ -1613,7 +1562,8 @@ JAVASCRIPT;
    static function manageDeleted($plugin_ocsinventoryng_ocsservers_id) {
       global $DB, $CFG_GLPI, $PLUGIN_HOOKS;
       
-      if (!(self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id) && self::checkVersion($plugin_ocsinventoryng_ocsservers_id))) {
+      if (!(self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id) 
+            && self::checkVersion($plugin_ocsinventoryng_ocsservers_id))) {
          return false;
       }
       
@@ -1621,10 +1571,12 @@ JAVASCRIPT;
       $currentfilename = end($currentfilelink);
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $deleted = $ocsClient->getDeletedComputers();
+      
       if ($currentfilename == "deleted_equiv.php"){
          if (count($deleted)) {
             foreach ($deleted as $del => $equiv) {
                if (!empty($equiv) && !is_null($equiv)) { // New name
+
                   // Get hardware due to bug of duplicates management of OCS
                   if (strpos($equiv,"-") !== false) {
                      $res = $ocsClient->searchComputers('DEVICEID', $equiv);
@@ -1666,14 +1618,14 @@ JAVASCRIPT;
                         $data = array('ID' => $equiv);
                      }
                   }
-   //foreach($ocs_deviceid as $deviceid => $equiv){
-   //$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-   //SET `ocsid` = '$equiv'
-   //WHERE `ocs_deviceid` = '$del'
-   //AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
-   //}
-               //TODO
-            //http://www.karlrixon.co.uk/writing/update-multiple-rows-with-different-values-and-a-single-sql-query/
+               //foreach($ocs_deviceid as $deviceid => $equiv){
+               //$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+               //SET `ocsid` = '$equiv'
+               //WHERE `ocs_deviceid` = '$del'
+               //AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
+               //}
+                           //TODO
+                        //http://www.karlrixon.co.uk/writing/update-multiple-rows-with-different-values-and-a-single-sql-query/
                   if ($data) {
                      $sql_id = "SELECT `computers_id`
                                    FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -1741,8 +1693,8 @@ JAVASCRIPT;
             
          }
          // New way to delete entry from deleted_equiv table
-      }elseif (count($deleted)){
-         $message = sprintf(__('Please consider cleaning the deleted computers in OCSNG <a href="%s">Clean OCSNG datatabase </a>', 'ocsinventoryng'),$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/deleted_equiv.php");
+      } else if (count($deleted)) {
+         $message = sprintf(__('Please consider cleaning the deleted computers in OCSNG <a href="%s">Clean OCSNG datatabase </a>', 'ocsinventoryng'), $CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/deleted_equiv.php");
          echo "<tr><th colspan='2'>";
          Html::displayTitle($CFG_GLPI['root_doc']."/pics/warning.png", $message, $message);
          echo "</th></tr>";
@@ -3191,7 +3143,12 @@ JAVASCRIPT;
       if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)){
          return false;
       }
-
+      
+      $title = __('Import new computers', 'ocsinventoryng');
+      if ($tolinked) {
+         $title = __('Link new OCSNG computers to existing GLPI computers',
+               'ocsinventoryng');
+      }
       $target = $CFG_GLPI['root_doc'].'/plugins/ocsinventoryng/front/ocsng.import.php';
       if ($tolinked){
          $target = $CFG_GLPI['root_doc'].'/plugins/ocsinventoryng/front/ocsng.link.php';
@@ -3419,7 +3376,7 @@ JAVASCRIPT;
 
             } else{
                echo "<table class='tab_cadre_fixe'>";
-               echo "<tr><th>" . __('Import new computers', 'ocsinventoryng') . "</th></tr>\n";
+               echo "<tr><th>" . $title . "</th></tr>\n";
                echo "<tr class='tab_bg_1'>";
                echo "<td class='center b'>".__('No new computer to be imported', 'ocsinventoryng').
               "</td></tr>\n";
@@ -3430,7 +3387,7 @@ JAVASCRIPT;
          } else{
             echo "<div class='center'>";
             echo "<table class='tab_cadre_fixe'>";
-            echo "<tr><th>" .__('Import new computers', 'ocsinventoryng') . "</th></tr>\n";
+            echo "<tr><th>" .$title . "</th></tr>\n";
             echo "<tr class='tab_bg_1'>";
             echo "<td class='center b'>" .__('No new computer to be imported', 'ocsinventoryng').
            "</td></tr>\n";
@@ -3439,7 +3396,7 @@ JAVASCRIPT;
       } else{
          echo "<div class='center'>";
          echo "<table class='tab_cadre_fixe'>";
-         echo "<tr><th>" .__('Import new computers', 'ocsinventoryng') . "</th></tr>\n";
+         echo "<tr><th>" .$title . "</th></tr>\n";
          echo "<tr class='tab_bg_1'>";
          echo "<td class='center b'>" .__('No new computer to be imported', 'ocsinventoryng').
         "</td></tr>\n";

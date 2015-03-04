@@ -1822,7 +1822,7 @@ function plugin_ocsinventoryng_ruleImportComputer_getSqlRestriction($params = ar
                $needport   = true;
                $needip     = true;
                $params['sql_where'] .= " AND `glpi_ipaddresses`.`name` IN ('";
-               $params['sql_where'] .= implode("','", $params['input']["IPADDRESS"]);
+               $params['sql_where'] .= implode("','", array($params['input']["IPADDRESS"]));
                $params['sql_where'] .= "')";
             } else {
                $params['sql_where'] =  " AND 0 ";
@@ -1833,7 +1833,8 @@ function plugin_ocsinventoryng_ruleImportComputer_getSqlRestriction($params = ar
             if (count($params['input']["MACADDRESS"])) {
                $needport   = true;
                $params['sql_where'] .= " AND `glpi_networkports`.`mac` IN ('";
-               $params['sql_where'] .= implode("','",$params['input']['MACADDRESS']);
+               $params['sql_where'] .= implode("','",array($params['input']['MACADDRESS']));
+               
                $params['sql_where'] .= "')";
             } else {
                $params['sql_where'] =  " AND 0 ";
