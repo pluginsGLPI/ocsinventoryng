@@ -411,7 +411,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          return false;
       }
       $this->getFromDB($ID);
-      echo "<br><div class='center'>";
+      echo "<div class='center'>";
       echo "<form name='formconfig' id='formconfig' action='".Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer")."' method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
       echo "<tr><th colspan ='2'>";
@@ -564,41 +564,64 @@ JAVASCRIPT;
       echo "</td>\n";
       echo "<td class='tab_bg_2 top'>\n";
 
+      $opt = self::getColumnListFromAccountInfoTable($ID);
+      
       echo "<table width='100%'>";
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Inventory number'). " </td>\n";
-      echo "<td><select name='import_otherserial'>\n";
-      echo "<option value=''>" .__('No import'). "</option>\n";
-      $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "otherserial");
-      echo $listColumnOCS;
-      echo "</select>&nbsp;&nbsp;</td></tr>\n";
+      echo "<td>";
+      $link = new PluginOcsinventoryngOcsAdminInfosLink();
+      $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "otherserial");
+      
+      $value = (isset($link->fields["ocs_column"])?$link->fields["ocs_column"]:"");
+      Dropdown::showFromArray("import_otherserial", $opt, array('value' => $value,
+                                                                  'width' => '100%'));
+      echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Location') . " </td>\n";
-      echo "<td><select name='import_location'>\n";
-      echo "<option value=''>" .__('No import') . "</option>\n";
-      $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "locations_id");
-      echo $listColumnOCS;
-      echo "</select></td></tr>\n";
-
+      echo "<td>";
+      $link = new PluginOcsinventoryngOcsAdminInfosLink();
+      $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "locations_id");
+      
+      $value = (isset($link->fields["ocs_column"])?$link->fields["ocs_column"]:"");
+      Dropdown::showFromArray("import_location", $opt, array('value' => $value,
+                                                               'width' => '100%'));
+      
+      echo "</td></tr>\n";
+      
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Group') . " </td>\n";
-      echo "<td><select name='import_group'>\n";
-      echo "<option value=''>" . __('No import') . "</option>\n";
-      $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "groups_id");
-      echo $listColumnOCS;
-      echo "</select></td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" .__('Alternate username number'). " </td>\n";
-      echo "<td><select name='import_contact_num'>\n";
-      echo "<option value=''>" . __('No import') . "</option>\n";
-      $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "contact_num");
-      echo $listColumnOCS;
-      echo "</select></td></tr>\n";
+      echo "<td>";
+      $link = new PluginOcsinventoryngOcsAdminInfosLink();
+      $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "groups_id");
+      
+      $value = (isset($link->fields["ocs_column"])?$link->fields["ocs_column"]:"");
+      Dropdown::showFromArray("import_group", $opt, array('value' => $value,
+                                                            'width' => '100%'));
+      
+      echo "</td></tr>\n";
+      
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Alternate username number') . " </td>\n";
+      echo "<td>";
+      $link = new PluginOcsinventoryngOcsAdminInfosLink();
+      $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "contact_num");
+      
+      $value = (isset($link->fields["ocs_column"])?$link->fields["ocs_column"]:"");
+      Dropdown::showFromArray("import_contact_num", $opt, array('value' => $value,
+                                                            'width' => '100%'));
+      
+      echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Network') . " </td>\n";
-      echo "<td><select name='import_network'>\n";
-      echo "<option value=''>" .__('No import', 'ocsinventoryng') . "</option>\n";
-      $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "networks_id");
-      echo $listColumnOCS;
-      echo "</select></td></tr>\n";
+      echo "<td>";
+      $link = new PluginOcsinventoryngOcsAdminInfosLink();
+      $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "networks_id");
+      
+      $value = (isset($link->fields["ocs_column"])?$link->fields["ocs_column"]:"");
+      Dropdown::showFromArray("import_network", $opt, array('value' => $value,
+                                                            'width' => '100%'));
+      
+      echo "</td></tr>\n";
+
       echo "</table>";
 
       echo "</td></tr>\n";
@@ -607,7 +630,7 @@ JAVASCRIPT;
       echo "<th colspan='2'>&nbsp;</th></tr>\n";
 
       echo "<tr class='tab_bg_2'>\n";
-      echo "<td class='tab_bg_2 top'>\n";
+      echo "<td class='top'>\n";
 
       echo "<table width='100%'>";
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Comments') . " </td>\n<td>";
@@ -616,13 +639,12 @@ JAVASCRIPT;
       echo "</table>";
 
       echo "</td>\n";
-      echo "<td class='tab_bg_2' colspan='2'>&nbsp;</td>";
-      echo "</table>\n";
-
-      echo "<p class='submit'>";
+      echo "<td colspan='2'>&nbsp;</td></tr>\n";
+      echo "<tr class='tab_bg_2 center'><td colspan='3'>";
       echo "<input type='submit' name='update' class='submit' value=\"".
       _sx('button', 'Save')."\">";
-      echo "</p>";
+      echo "</td></tr>\n";
+      echo "</table>\n";
       Html::closeForm();
       echo "</div>\n";
    }
@@ -636,7 +658,7 @@ JAVASCRIPT;
    function ocsFormImportOptions($ID, $withtemplate='', $templateid='') {
 
       $this->getFromDB($ID);
-      echo "<br><div class='center'>";
+      echo "<div class='center'>";
       echo "<form name='formconfig' action='".Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer")."' method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
       echo "<tr class='tab_bg_2'><td class='center'>" .__('Web address of the OCSNG console',
@@ -673,11 +695,11 @@ JAVASCRIPT;
       array('value' => $this->fields["deconnection_behavior"]));
       echo "</td></tr>\n";
 
-      $import_array  = array("0" => __('No import', 'ocsinventoryng'),
+      $import_array  = array("0" => __('No import'),
          "1" => __('Global import', 'ocsinventoryng'),
          "2" => __('Unit import', 'ocsinventoryng'));
 
-      $import_array2 = array("0" => __('No import', 'ocsinventoryng'),
+      $import_array2 = array("0" => __('No import'),
          "1" => __('Global import', 'ocsinventoryng'),
          "2" => __('Unit import', 'ocsinventoryng'),
          "3" => __('Unit import on serial number', 'ocsinventoryng'),
@@ -700,8 +722,8 @@ JAVASCRIPT;
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>". _n('Software', 'Software', 2)."</td>\n<td>";
-      $import_array = array("0" => __('No import', 'ocsinventoryng'),
-         "1" => __('Unit import', 'ocsinventoryng'));
+      $import_array = array("0" => __('No import'),
+                             "1" => __('Unit import', 'ocsinventoryng'));
       Dropdown::showFromArray("import_software", $import_array, array('value' => $software));
       echo "</td></tr>\n";
 
@@ -1737,20 +1759,20 @@ JAVASCRIPT;
 
       // Manufacturer and Model both as text (for rules) and as id (for import)
       return array('manufacturer'                     => array('BIOS', 'SMANUFACTURER'),
-         'manufacturers_id'                 => array('BIOS', 'SMANUFACTURER'),
-         'os_license_number'                => array('HARDWARE', 'WINPRODKEY'),
-         'os_licenseid'                     => array('HARDWARE', 'WINPRODID'),
-         'operatingsystems_id'              => array('HARDWARE', 'OSNAME'),
-         'operatingsystemversions_id'       => array('HARDWARE', 'OSVERSION'),
-         'operatingsystemservicepacks_id'   => array('HARDWARE', 'OSCOMMENTS'),
-         'domains_id'                       => array('HARDWARE', 'WORKGROUP'),
-         'contact'                          => array('HARDWARE', 'USERID'),
-         'name'                             => array('META', 'NAME'),
-         'comment'                          => array('HARDWARE', 'DESCRIPTION'),
-         'serial'                           => array('BIOS', 'SSN'),
-         'model'                            => array('BIOS', 'SMODEL'),
-         'computermodels_id'                => array('BIOS', 'SMODEL'),
-         'TAG'                              => array('ACCOUNTINFO', 'TAG')
+                     'manufacturers_id'                 => array('BIOS', 'SMANUFACTURER'),
+                     'os_license_number'                => array('HARDWARE', 'WINPRODKEY'),
+                     'os_licenseid'                     => array('HARDWARE', 'WINPRODID'),
+                     'operatingsystems_id'              => array('HARDWARE', 'OSNAME'),
+                     'operatingsystemversions_id'       => array('HARDWARE', 'OSVERSION'),
+                     'operatingsystemservicepacks_id'   => array('HARDWARE', 'OSCOMMENTS'),
+                     'domains_id'                       => array('HARDWARE', 'WORKGROUP'),
+                     'contact'                          => array('HARDWARE', 'USERID'),
+                     'name'                             => array('META', 'NAME'),
+                     'comment'                          => array('HARDWARE', 'DESCRIPTION'),
+                     'serial'                           => array('BIOS', 'SSN'),
+                     'model'                            => array('BIOS', 'SMODEL'),
+                     'computermodels_id'                => array('BIOS', 'SMODEL'),
+                     'TAG'                              => array('ACCOUNTINFO', 'TAG')
       );
    }
 
@@ -2596,16 +2618,16 @@ JAVASCRIPT;
          $bios = $computer['BIOS'];
 
          if ($cfg_ocs["import_general_serial"]
-         && $cfg_ocs["import_general_serial"] > 0
-         && intval($cfg_ocs["import_device_bios"]) > 0
-         && !in_array("serial", $computer_updates)){
+               && $cfg_ocs["import_general_serial"] > 0
+                  && intval($cfg_ocs["import_device_bios"]) > 0
+                     && !in_array("serial", $computer_updates)){
             $compupdate["serial"] = self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
             $bios["SSN"]);
          }
 
          if (intval($cfg_ocs["import_general_model"]) > 0
-         && intval($cfg_ocs["import_device_bios"]) > 0
-         && !in_array("computermodels_id", $computer_updates)) {
+               && intval($cfg_ocs["import_device_bios"]) > 0
+                  && !in_array("computermodels_id", $computer_updates)) {
 
             $compupdate["computermodels_id"]
             = Dropdown::importExternal('ComputerModel',
@@ -2618,8 +2640,8 @@ JAVASCRIPT;
          }
 
          if (intval($cfg_ocs["import_general_manufacturer"]) > 0
-         && intval($cfg_ocs["import_device_bios"]) > 0
-         && !in_array("manufacturers_id", $computer_updates)) {
+               && intval($cfg_ocs["import_device_bios"]) > 0
+                  && !in_array("manufacturers_id", $computer_updates)) {
 
             $compupdate["manufacturers_id"]
             = Dropdown::importExternal('Manufacturer',
@@ -2628,9 +2650,9 @@ JAVASCRIPT;
          }
 
          if (intval($cfg_ocs["import_general_type"]) > 0
-         && intval($cfg_ocs["import_device_bios"]) > 0
-         && !empty ($bios["TYPE"])
-         && !in_array("computertypes_id", $computer_updates)) {
+               && intval($cfg_ocs["import_device_bios"]) > 0
+                  && !empty ($bios["TYPE"])
+                     && !in_array("computertypes_id", $computer_updates)) {
 
             $compupdate["computertypes_id"]
             = Dropdown::importExternal('ComputerType',
@@ -4158,42 +4180,18 @@ JAVASCRIPT;
    }
 
 
-   static function getColumnListFromAccountInfoTable($ID, $glpi_column){
+   static function getColumnListFromAccountInfoTable($ID){
       global $DB;
 
-      $listColumn = "";
+      $listColumn = array("0" => __('No import'));
       if ($ID != -1){
          if (self::checkOCSconnection($ID)){
             $ocsClient = self::getDBocs($ID);
             $AccountInfoColumns = $ocsClient->getAccountInfoColumns();
             if (count($AccountInfoColumns) > 0){
                foreach ($AccountInfoColumns as $id=>$name) {
-                  //get the selected value in glpi if specified
-                  $query = "SELECT `ocs_column`
-                            FROM `glpi_plugin_ocsinventoryng_ocsadmininfoslinks`
-                            WHERE `plugin_ocsinventoryng_ocsservers_id` = '$ID'
-                                  AND `glpi_column` = '$glpi_column'";
-                  $result_DB = $DB->query($query);
-                  $selected = "";
-
-                  if ($DB->numrows($result_DB) > 0){
-                     $data_DB = $DB->fetch_array($result_DB);
-                     $selected = $data_DB["ocs_column"];
-                  }
+                  $listColumn[$id] = $name;
                   
-                  if(is_array($name)){
-                     $ocs_column_name = $name["NOM"];
-                     $ocs_column_id = $id;
-                  }else{
-                     $ocs_column_id = $id;
-                     $ocs_column_name = $name;
-                  }
-
-                  if (!strcmp($ocs_column_name, $selected)){
-                     $listColumn .= "<option value='$ocs_column_name' selected>".$ocs_column_name."</option>";
-                  } else{
-                     $listColumn .= "<option value='$ocs_column_name'>" . $ocs_column_name . "</option>";
-                  }
                }
             }
          }
