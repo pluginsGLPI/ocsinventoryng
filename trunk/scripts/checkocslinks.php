@@ -60,7 +60,7 @@ $nbtodo = 0;
 
 $crit = array('is_active' => 1);
 foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) {
-   $ocsservers_id=$serv ['id'];
+   $ocsservers_id = $serv ['id'];
    echo "\nServeur: ".$serv['name']."\n";
 
    if (!PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id)) {
@@ -103,19 +103,22 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
    }
 
    if (isset($_GET['ocs'])) {
-      $DBocs = new $PluginOcsinventoryngDBocs();
-      echo "+ Search OCS Computers\n";
-      $query_ocs = "SELECT `ID`, `DEVICEID`
-                    FROM `hardware`";
-      $result_ocs = $DBocs->query($query_ocs);
+      
+      $DBocs = PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
+      $res[] = $DBocs->getOCSComputers();
 
       $hardware = array ();
-      $nb = $DBocs->numrows($result_ocs);
-      if ($nb > 0) {
-         for ($i=1 ; $data = $DBocs->fetch_array($result_ocs) ; $i++) {
-            $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
-            $hardware[$data["ID"]] = $data["DEVICEID"];
-            echo "$i/$nb\r";
+      $nb = 0;
+      $i = 0;
+      if (count($res) > 0){
+         foreach ($res as $k => $data) {
+            if (count($data) > 0){
+               $i ++;
+               $nb = count($data);
+               $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
+               $hardware[$data["ID"]] = $data["DEVICEID"];
+               echo "$i/$nb\r";
+            }
          }
          echo "  $nb computers in OCS\n";
       }

@@ -234,7 +234,8 @@ function plugin_ocsinventoryng_install() {
    PluginOcsinventoryngProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
    
    if (TableExists("glpi_plugin_ocsinventoryng_ocsservers")
-                      && (countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1") == 1)) {
+         && TableExists("glpi_plugin_ocsinventoryng_profiles")
+            && (countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1") == 1)) {
 
       foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers") as $server) {
          foreach ($DB->request("glpi_plugin_ocsinventoryng_profiles",
@@ -1801,8 +1802,10 @@ function plugin_ocsinventoryng_ruleImportComputer_addGlobalCriteria($global_crit
  */
 function plugin_ocsinventoryng_ruleImportComputer_getSqlRestriction($params = array()) {
    // Search computer, in entity, not already linked
-   $params['sql_where'] .= " AND `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` IS NULL
-                             AND `glpi_computers`.`is_template` = '0' ";
+   
+   
+   //resolve The rule result no preview : Drop this restriction `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` IS NULL
+   $params['sql_where'] .= " AND `glpi_computers`.`is_template` = '0' ";
    
    $params['sql_where'] .= " AND `glpi_computers`.`entities_id` IN (".$params['where_entity'].")";
 

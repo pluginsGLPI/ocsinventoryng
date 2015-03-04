@@ -411,7 +411,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          return false;
       }
       $this->getFromDB($ID);
-      echo "<br><div class='center'>";
+      echo "<div class='center'>";
       echo "<form name='formconfig' id='formconfig' action='".Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer")."' method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
       echo "<tr><th colspan ='2'>";
@@ -564,41 +564,64 @@ JAVASCRIPT;
       echo "</td>\n";
       echo "<td class='tab_bg_2 top'>\n";
 
+      $opt = self::getColumnListFromAccountInfoTable($ID);
+      
       echo "<table width='100%'>";
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Inventory number'). " </td>\n";
-      echo "<td><select name='import_otherserial'>\n";
-      echo "<option value=''>" .__('No import'). "</option>\n";
-      $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "otherserial");
-      echo $listColumnOCS;
-      echo "</select>&nbsp;&nbsp;</td></tr>\n";
+      echo "<td>";
+      $link = new PluginOcsinventoryngOcsAdminInfosLink();
+      $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "otherserial");
+      
+      $value = (isset($link->fields["ocs_column"])?$link->fields["ocs_column"]:"");
+      Dropdown::showFromArray("import_otherserial", $opt, array('value' => $value,
+                                                                  'width' => '100%'));
+      echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Location') . " </td>\n";
-      echo "<td><select name='import_location'>\n";
-      echo "<option value=''>" .__('No import') . "</option>\n";
-      $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "locations_id");
-      echo $listColumnOCS;
-      echo "</select></td></tr>\n";
-
+      echo "<td>";
+      $link = new PluginOcsinventoryngOcsAdminInfosLink();
+      $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "locations_id");
+      
+      $value = (isset($link->fields["ocs_column"])?$link->fields["ocs_column"]:"");
+      Dropdown::showFromArray("import_location", $opt, array('value' => $value,
+                                                               'width' => '100%'));
+      
+      echo "</td></tr>\n";
+      
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Group') . " </td>\n";
-      echo "<td><select name='import_group'>\n";
-      echo "<option value=''>" . __('No import') . "</option>\n";
-      $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "groups_id");
-      echo $listColumnOCS;
-      echo "</select></td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" .__('Alternate username number'). " </td>\n";
-      echo "<td><select name='import_contact_num'>\n";
-      echo "<option value=''>" . __('No import') . "</option>\n";
-      $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "contact_num");
-      echo $listColumnOCS;
-      echo "</select></td></tr>\n";
+      echo "<td>";
+      $link = new PluginOcsinventoryngOcsAdminInfosLink();
+      $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "groups_id");
+      
+      $value = (isset($link->fields["ocs_column"])?$link->fields["ocs_column"]:"");
+      Dropdown::showFromArray("import_group", $opt, array('value' => $value,
+                                                            'width' => '100%'));
+      
+      echo "</td></tr>\n";
+      
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Alternate username number') . " </td>\n";
+      echo "<td>";
+      $link = new PluginOcsinventoryngOcsAdminInfosLink();
+      $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "contact_num");
+      
+      $value = (isset($link->fields["ocs_column"])?$link->fields["ocs_column"]:"");
+      Dropdown::showFromArray("import_contact_num", $opt, array('value' => $value,
+                                                            'width' => '100%'));
+      
+      echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Network') . " </td>\n";
-      echo "<td><select name='import_network'>\n";
-      echo "<option value=''>" .__('No import', 'ocsinventoryng') . "</option>\n";
-      $listColumnOCS = self::getColumnListFromAccountInfoTable($ID, "networks_id");
-      echo $listColumnOCS;
-      echo "</select></td></tr>\n";
+      echo "<td>";
+      $link = new PluginOcsinventoryngOcsAdminInfosLink();
+      $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "networks_id");
+      
+      $value = (isset($link->fields["ocs_column"])?$link->fields["ocs_column"]:"");
+      Dropdown::showFromArray("import_network", $opt, array('value' => $value,
+                                                            'width' => '100%'));
+      
+      echo "</td></tr>\n";
+
       echo "</table>";
 
       echo "</td></tr>\n";
@@ -607,7 +630,7 @@ JAVASCRIPT;
       echo "<th colspan='2'>&nbsp;</th></tr>\n";
 
       echo "<tr class='tab_bg_2'>\n";
-      echo "<td class='tab_bg_2 top'>\n";
+      echo "<td class='top'>\n";
 
       echo "<table width='100%'>";
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Comments') . " </td>\n<td>";
@@ -616,13 +639,12 @@ JAVASCRIPT;
       echo "</table>";
 
       echo "</td>\n";
-      echo "<td class='tab_bg_2' colspan='2'>&nbsp;</td>";
-      echo "</table>\n";
-
-      echo "<p class='submit'>";
+      echo "<td colspan='2'>&nbsp;</td></tr>\n";
+      echo "<tr class='tab_bg_2 center'><td colspan='3'>";
       echo "<input type='submit' name='update' class='submit' value=\"".
       _sx('button', 'Save')."\">";
-      echo "</p>";
+      echo "</td></tr>\n";
+      echo "</table>\n";
       Html::closeForm();
       echo "</div>\n";
    }
@@ -636,7 +658,7 @@ JAVASCRIPT;
    function ocsFormImportOptions($ID, $withtemplate='', $templateid='') {
 
       $this->getFromDB($ID);
-      echo "<br><div class='center'>";
+      echo "<div class='center'>";
       echo "<form name='formconfig' action='".Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer")."' method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
       echo "<tr class='tab_bg_2'><td class='center'>" .__('Web address of the OCSNG console',
@@ -673,11 +695,11 @@ JAVASCRIPT;
       array('value' => $this->fields["deconnection_behavior"]));
       echo "</td></tr>\n";
 
-      $import_array  = array("0" => __('No import', 'ocsinventoryng'),
+      $import_array  = array("0" => __('No import'),
          "1" => __('Global import', 'ocsinventoryng'),
          "2" => __('Unit import', 'ocsinventoryng'));
 
-      $import_array2 = array("0" => __('No import', 'ocsinventoryng'),
+      $import_array2 = array("0" => __('No import'),
          "1" => __('Global import', 'ocsinventoryng'),
          "2" => __('Unit import', 'ocsinventoryng'),
          "3" => __('Unit import on serial number', 'ocsinventoryng'),
@@ -700,8 +722,8 @@ JAVASCRIPT;
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>". _n('Software', 'Software', 2)."</td>\n<td>";
-      $import_array = array("0" => __('No import', 'ocsinventoryng'),
-         "1" => __('Unit import', 'ocsinventoryng'));
+      $import_array = array("0" => __('No import'),
+                             "1" => __('Unit import', 'ocsinventoryng'));
       Dropdown::showFromArray("import_software", $import_array, array('value' => $software));
       echo "</td></tr>\n";
 
@@ -1207,29 +1229,6 @@ JAVASCRIPT;
          return $value;
       }
    }
-
-   /**
-    * @param $width
-    **/
-   function showSystemInformations($width) {
-
-      $ocsServers = getAllDatasFromTable('glpi_plugin_ocsinventoryng_ocsservers');
-      if (!empty($ocsServers)) {
-         echo "\n<tr class='tab_bg_2'><th>OCS Inventory NG</th></tr>\n";
-         echo "<tr class='tab_bg_1'><td><pre>\n&nbsp;\n";
-
-         $msg = '';
-         foreach ($ocsServers as $ocsServer) {
-            $msg .= "Host: '".$ocsServer['ocs_db_host']."'";
-            $msg .= ", Connection: ".(self::checkOCSconnection($ocsServer['id']) ? "Ok" : "KO");
-            $msg .= ", Use the OCSNG software dictionary: ".
-            ($ocsServer['use_soft_dict'] ? 'Yes' : 'No')."\n";
-         }
-         echo wordwrap($msg."\n", $width, "\n");
-         echo "\n</pre></td></tr>";
-      }
-   }
-
 
    /**
     * Get the ocs server id of a machine, by giving the machine id
@@ -1743,7 +1742,7 @@ JAVASCRIPT;
          }
          // New way to delete entry from deleted_equiv table
       }elseif (count($deleted)){
-         $message = sprintf(__('Please consider cleaning the deleted computers in OCSNG <a href="%s">Clean OCSNG datatabase </a>', 'ocsinventoryng'),$CFG_GLPI['root_doc'].$PLUGIN_HOOKS ['submenu_entry'] ['ocsinventoryng'] ['options'] ['deleted_equiv'] ['page']);
+         $message = sprintf(__('Please consider cleaning the deleted computers in OCSNG <a href="%s">Clean OCSNG datatabase </a>', 'ocsinventoryng'),$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/deleted_equiv.php");
          echo "<tr><th colspan='2'>";
          Html::displayTitle($CFG_GLPI['root_doc']."/pics/warning.png", $message, $message);
          echo "</th></tr>";
@@ -1760,20 +1759,20 @@ JAVASCRIPT;
 
       // Manufacturer and Model both as text (for rules) and as id (for import)
       return array('manufacturer'                     => array('BIOS', 'SMANUFACTURER'),
-         'manufacturers_id'                 => array('BIOS', 'SMANUFACTURER'),
-         'os_license_number'                => array('HARDWARE', 'WINPRODKEY'),
-         'os_licenseid'                     => array('HARDWARE', 'WINPRODID'),
-         'operatingsystems_id'              => array('HARDWARE', 'OSNAME'),
-         'operatingsystemversions_id'       => array('HARDWARE', 'OSVERSION'),
-         'operatingsystemservicepacks_id'   => array('HARDWARE', 'OSCOMMENTS'),
-         'domains_id'                       => array('HARDWARE', 'WORKGROUP'),
-         'contact'                          => array('HARDWARE', 'USERID'),
-         'name'                             => array('META', 'NAME'),
-         'comment'                          => array('HARDWARE', 'DESCRIPTION'),
-         'serial'                           => array('BIOS', 'SSN'),
-         'model'                            => array('BIOS', 'SMODEL'),
-         'computermodels_id'                => array('BIOS', 'SMODEL'),
-         'TAG'                              => array('ACCOUNTINFO', 'TAG')
+                     'manufacturers_id'                 => array('BIOS', 'SMANUFACTURER'),
+                     'os_license_number'                => array('HARDWARE', 'WINPRODKEY'),
+                     'os_licenseid'                     => array('HARDWARE', 'WINPRODID'),
+                     'operatingsystems_id'              => array('HARDWARE', 'OSNAME'),
+                     'operatingsystemversions_id'       => array('HARDWARE', 'OSVERSION'),
+                     'operatingsystemservicepacks_id'   => array('HARDWARE', 'OSCOMMENTS'),
+                     'domains_id'                       => array('HARDWARE', 'WORKGROUP'),
+                     'contact'                          => array('HARDWARE', 'USERID'),
+                     'name'                             => array('META', 'NAME'),
+                     'comment'                          => array('HARDWARE', 'DESCRIPTION'),
+                     'serial'                           => array('BIOS', 'SSN'),
+                     'model'                            => array('BIOS', 'SMODEL'),
+                     'computermodels_id'                => array('BIOS', 'SMODEL'),
+                     'TAG'                              => array('ACCOUNTINFO', 'TAG')
       );
    }
 
@@ -2087,7 +2086,8 @@ JAVASCRIPT;
                              `ip_src` = '".$data_ocs["HARDWARE"]["IPSRC"]." '
                              WHERE `id` = '$ID'";
             $DB->query($query);
-            if ($force) {
+            //Add  || $data_ocs["META"]["CHECKSUM"] > self::MAX_CHECKSUM for bug of checksum 18446744073689088230
+            if ($force  || $data_ocs["META"]["CHECKSUM"] > self::MAX_CHECKSUM) {
                $ocs_checksum = self::MAX_CHECKSUM;
                self::getDBocs($plugin_ocsinventoryng_ocsservers_id)->setChecksum($ocs_checksum, $line['ocsid']);
             } else {
@@ -2211,9 +2211,9 @@ JAVASCRIPT;
                   if ($cfg_ocs["import_software"]) {
                      $softwares=true;
                      $ocsCheck[]=  PluginOcsinventoryngOcsClient::CHECKSUM_SOFTWARE;
-                        if ($cfg_ocs["use_soft_dict"]) {
-                        $ocsWanted =	PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO;
-                        }
+                     if ($cfg_ocs["use_soft_dict"]) {
+                        $ocsWanted =  PluginOcsinventoryngOcsClient::WANTED_DICO_SOFT;
+                     }
 
                   }
                }
@@ -2618,16 +2618,16 @@ JAVASCRIPT;
          $bios = $computer['BIOS'];
 
          if ($cfg_ocs["import_general_serial"]
-         && $cfg_ocs["import_general_serial"] > 0
-         && intval($cfg_ocs["import_device_bios"]) > 0
-         && !in_array("serial", $computer_updates)){
+               && $cfg_ocs["import_general_serial"] > 0
+                  && intval($cfg_ocs["import_device_bios"]) > 0
+                     && !in_array("serial", $computer_updates)){
             $compupdate["serial"] = self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
             $bios["SSN"]);
          }
 
          if (intval($cfg_ocs["import_general_model"]) > 0
-         && intval($cfg_ocs["import_device_bios"]) > 0
-         && !in_array("computermodels_id", $computer_updates)) {
+               && intval($cfg_ocs["import_device_bios"]) > 0
+                  && !in_array("computermodels_id", $computer_updates)) {
 
             $compupdate["computermodels_id"]
             = Dropdown::importExternal('ComputerModel',
@@ -2640,8 +2640,8 @@ JAVASCRIPT;
          }
 
          if (intval($cfg_ocs["import_general_manufacturer"]) > 0
-         && intval($cfg_ocs["import_device_bios"]) > 0
-         && !in_array("manufacturers_id", $computer_updates)) {
+               && intval($cfg_ocs["import_device_bios"]) > 0
+                  && !in_array("manufacturers_id", $computer_updates)) {
 
             $compupdate["manufacturers_id"]
             = Dropdown::importExternal('Manufacturer',
@@ -2650,9 +2650,9 @@ JAVASCRIPT;
          }
 
          if (intval($cfg_ocs["import_general_type"]) > 0
-         && intval($cfg_ocs["import_device_bios"]) > 0
-         && !empty ($bios["TYPE"])
-         && !in_array("computertypes_id", $computer_updates)) {
+               && intval($cfg_ocs["import_device_bios"]) > 0
+                  && !empty ($bios["TYPE"])
+                     && !in_array("computertypes_id", $computer_updates)) {
 
             $compupdate["computertypes_id"]
             = Dropdown::importExternal('ComputerType',
@@ -4180,42 +4180,18 @@ JAVASCRIPT;
    }
 
 
-   static function getColumnListFromAccountInfoTable($ID, $glpi_column){
+   static function getColumnListFromAccountInfoTable($ID){
       global $DB;
 
-      $listColumn = "";
+      $listColumn = array("0" => __('No import'));
       if ($ID != -1){
          if (self::checkOCSconnection($ID)){
             $ocsClient = self::getDBocs($ID);
             $AccountInfoColumns = $ocsClient->getAccountInfoColumns();
             if (count($AccountInfoColumns) > 0){
                foreach ($AccountInfoColumns as $id=>$name) {
-                  //get the selected value in glpi if specified
-                  $query = "SELECT `ocs_column`
-                            FROM `glpi_plugin_ocsinventoryng_ocsadmininfoslinks`
-                            WHERE `plugin_ocsinventoryng_ocsservers_id` = '$ID'
-                                  AND `glpi_column` = '$glpi_column'";
-                  $result_DB = $DB->query($query);
-                  $selected = "";
-
-                  if ($DB->numrows($result_DB) > 0){
-                     $data_DB = $DB->fetch_array($result_DB);
-                     $selected = $data_DB["ocs_column"];
-                  }
+                  $listColumn[$id] = $name;
                   
-                  if(is_array($name)){
-                     $ocs_column_name = $name["NOM"];
-                     $ocs_column_id = $id;
-                  }else{
-                     $ocs_column_id = $id;
-                     $ocs_column_name = $name;
-                  }
-
-                  if (!strcmp($ocs_column_name, $selected)){
-                     $listColumn .= "<option value='$ocs_column_name' selected>".$ocs_column_name."</option>";
-                  } else{
-                     $listColumn .= "<option value='$ocs_column_name'>" . $ocs_column_name . "</option>";
-                  }
                }
             }
          }
@@ -4908,154 +4884,157 @@ JAVASCRIPT;
       $computer_softwareversion = new Computer_SoftwareVersion();
       $softwares = array();
       //---- Get all the softwares for this machine from OCS -----//
-      $softwares=$ocsComputer["SOFTWARES"];
-      $soft                = new Software();
+      
+      if (isset($ocsComputer['SOFTWARES'])) {
+         $softwares=$ocsComputer["SOFTWARES"];
+         $soft                = new Software();
+         
+         // Read imported software in last sync
+         $query = "SELECT `glpi_computers_softwareversions`.`id` as id,
+                             `glpi_softwares`.`name` as sname,
+                             `glpi_softwareversions`.`name` as vname
+                      FROM `glpi_computers_softwareversions`
+                      INNER JOIN `glpi_softwareversions`
+                              ON `glpi_softwareversions`.`id`= `glpi_computers_softwareversions`.`softwareversions_id`
+                      INNER JOIN `glpi_softwares`
+                              ON `glpi_softwares`.`id`= `glpi_softwareversions`.`softwares_id`
+                      WHERE `glpi_computers_softwareversions`.`computers_id`='$computers_id'
+                            AND `is_dynamic`";
+         $imported = array();
 
-      // Read imported software in last sync
-      $query = "SELECT `glpi_computers_softwareversions`.`id` as id,
-                          `glpi_softwares`.`name` as sname,
-                          `glpi_softwareversions`.`name` as vname
-                   FROM `glpi_computers_softwareversions`
-                   INNER JOIN `glpi_softwareversions`
-                           ON `glpi_softwareversions`.`id`= `glpi_computers_softwareversions`.`softwareversions_id`
-                   INNER JOIN `glpi_softwares`
-                           ON `glpi_softwares`.`id`= `glpi_softwareversions`.`softwares_id`
-                   WHERE `glpi_computers_softwareversions`.`computers_id`='$computers_id'
-                         AND `is_dynamic`";
-      $imported = array();
 
+         foreach ($DB->request($query) as $data) {
+            $imported[$data['id']] = strtolower($data['sname'].self::FIELD_SEPARATOR.$data['vname']);
+         }
 
-      foreach ($DB->request($query) as $data) {
-         $imported[$data['id']] = strtolower($data['sname'].self::FIELD_SEPARATOR.$data['vname']);
-      }
+         if (count($softwares) > 0) {
+            foreach ($softwares as $software) {
+               $software    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($software));
 
-      if (count($softwares) > 0) {
-         foreach ($softwares as $software) {
-            $software    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($software));
-
-            //As we cannot be sure that data coming from OCS are in utf8, let's try to encode them
-            //if possible
-            foreach (array('NAME', 'PUBLISHER', 'VERSION') as $field) {
-               $software[$field] = self::encodeOcsDataInUtf8($is_utf8, $software[$field]);
-            }
-
-            //Replay dictionnary on manufacturer
-            $manufacturer = Manufacturer::processName($software["PUBLISHER"]);
-            $version      = $software['VERSION'];
-            $name         = $software['NAME'];
-
-            //Software might be created in another entity, depending on the entity's configuration
-            $target_entity = Entity::getUsedConfig('entities_id_software', $entity);
-            //Do not change software's entity except if the dictionnary explicity changes it
-            if ($target_entity < 0) {
-               $target_entity = $entity;
-            }
-            $modified_name       = $name;
-            $modified_version    = $version;
-            $version_comments    = $software['COMMENTS'];
-            $is_helpdesk_visible = NULL;
-            if (!$cfg_ocs["use_soft_dict"]) {
-               //Software dictionnary
-               $params = array("name" => $name, "manufacturer" => $manufacturer,
-                                  "old_version"  => $version, "entities_id"  => $entity);
-               $rulecollection = new RuleDictionnarySoftwareCollection();
-               $res_rule
-               = $rulecollection->processAllRules(Toolbox::stripslashes_deep($params),
-               array(),
-               Toolbox::stripslashes_deep(array('version' => $version)));
-
-               if (isset($res_rule["name"]) && $res_rule["name"]) {
-                  $modified_name = $res_rule["name"];
+               //As we cannot be sure that data coming from OCS are in utf8, let's try to encode them
+               //if possible
+               foreach (array('NAME', 'PUBLISHER', 'VERSION') as $field) {
+                  $software[$field] = self::encodeOcsDataInUtf8($is_utf8, $software[$field]);
                }
 
-               if (isset($res_rule["version"]) && $res_rule["version"]) {
-                  $modified_version = $res_rule["version"];
+               //Replay dictionnary on manufacturer
+               $manufacturer = Manufacturer::processName($software["PUBLISHER"]);
+               $version      = $software['VERSION'];
+               $name         = $software['NAME'];
+
+               //Software might be created in another entity, depending on the entity's configuration
+               $target_entity = Entity::getUsedConfig('entities_id_software', $entity);
+               //Do not change software's entity except if the dictionnary explicity changes it
+               if ($target_entity < 0) {
+                  $target_entity = $entity;
+               }
+               $modified_name       = $name;
+               $modified_version    = $version;
+               $version_comments    = $software['COMMENTS'];
+               $is_helpdesk_visible = NULL;
+               if (!$cfg_ocs["use_soft_dict"]) {
+                  //Software dictionnary
+                  $params = array("name" => $name, "manufacturer" => $manufacturer,
+                                     "old_version"  => $version, "entities_id"  => $entity);
+                  $rulecollection = new RuleDictionnarySoftwareCollection();
+                  $res_rule
+                  = $rulecollection->processAllRules(Toolbox::stripslashes_deep($params),
+                  array(),
+                  Toolbox::stripslashes_deep(array('version' => $version)));
+
+                  if (isset($res_rule["name"]) && $res_rule["name"]) {
+                     $modified_name = $res_rule["name"];
+                  }
+
+                  if (isset($res_rule["version"]) && $res_rule["version"]) {
+                     $modified_version = $res_rule["version"];
+                  }
+
+                  if (isset($res_rule["is_helpdesk_visible"])
+                  && strlen($res_rule["is_helpdesk_visible"])) {
+
+                     $is_helpdesk_visible = $res_rule["is_helpdesk_visible"];
+                  }
+
+                  if (isset($res_rule['manufacturer']) && $res_rule['manufacturer']) {
+                     $manufacturer = Toolbox::addslashes_deep($res_rule["manufacturer"]);
+                  }
+
+                  //If software dictionnary returns an entity, it overrides the one that may have
+                  //been defined in the entity's configuration
+                  if (isset($res_rule["new_entities_id"])
+                  && strlen($res_rule["new_entities_id"])) {
+                     $target_entity = $res_rule["new_entities_id"];
+                  }
                }
 
-               if (isset($res_rule["is_helpdesk_visible"])
-               && strlen($res_rule["is_helpdesk_visible"])) {
+               //If software must be imported
+               if (!isset($res_rule["_ignore_import"]) || !$res_rule["_ignore_import"]) {
+                  // Clean software object
+                  $soft->reset();
 
-                  $is_helpdesk_visible = $res_rule["is_helpdesk_visible"];
-               }
+                  // EXPLANATION About dictionnaries
+                  // OCS dictionnary : if software name change, as we don't store INITNAME
+                  //     GLPI will detect an uninstall (oldname) + install (newname)
+                  // GLPI dictionnary : is rule have change
+                  //     if rule have been replayed, modifiedname will be found => ok
+                  //     if not, GLPI will detect an uninstall (oldname) + install (newname)
 
-               if (isset($res_rule['manufacturer']) && $res_rule['manufacturer']) {
-                  $manufacturer = Toolbox::addslashes_deep($res_rule["manufacturer"]);
-               }
+                  $id = array_search(strtolower(stripslashes($modified_name.self::FIELD_SEPARATOR.$modified_version)),
+                  $imported);
 
-               //If software dictionnary returns an entity, it overrides the one that may have
-               //been defined in the entity's configuration
-               if (isset($res_rule["new_entities_id"])
-               && strlen($res_rule["new_entities_id"])) {
-                  $target_entity = $res_rule["new_entities_id"];
-               }
-            }
-
-            //If software must be imported
-            if (!isset($res_rule["_ignore_import"]) || !$res_rule["_ignore_import"]) {
-               // Clean software object
-               $soft->reset();
-
-               // EXPLANATION About dictionnaries
-               // OCS dictionnary : if software name change, as we don't store INITNAME
-               //     GLPI will detect an uninstall (oldname) + install (newname)
-               // GLPI dictionnary : is rule have change
-               //     if rule have been replayed, modifiedname will be found => ok
-               //     if not, GLPI will detect an uninstall (oldname) + install (newname)
-
-               $id = array_search(strtolower(stripslashes($modified_name.self::FIELD_SEPARATOR.$modified_version)),
-               $imported);
-
-               if ($id) {
-                  //-------------------------------------------------------------------------//
-                  //---- The software exists in this version for this computer - Update comments --------------//
-                  //---------------------------------------------------- --------------------//
-                  $isNewSoft = $soft->addOrRestoreFromTrash($modified_name, $manufacturer,
-                  $target_entity, '',
-                  ($entity != $target_entity),
-                  $is_helpdesk_visible);
-                  self::updateVersion($isNewSoft, $modified_version, $version_comments);
-                  unset($isNewSoft);
-                  unset($imported[$id]);
-               } else {
-                  //------------------------------------------------------------------------//
-                  //---- The software doesn't exists in this version for this computer -----//
-                  //------------------------------------------------------------------------//
-                  $isNewSoft = $soft->addOrRestoreFromTrash($modified_name, $manufacturer,
-                  $target_entity, '',
-                  ($entity != $target_entity),
-                  $is_helpdesk_visible);
-                  //Import version for this software
-                  $versionID = self::importVersion($isNewSoft, $modified_version, $version_comments);
-                  //Install license for this machine
-                  $instID = self::installSoftwareVersion($computers_id, $versionID, $dohistory);
+                  if ($id) {
+                     //-------------------------------------------------------------------------//
+                     //---- The software exists in this version for this computer - Update comments --------------//
+                     //---------------------------------------------------- --------------------//
+                     $isNewSoft = $soft->addOrRestoreFromTrash($modified_name, $manufacturer,
+                     $target_entity, '',
+                     ($entity != $target_entity),
+                     $is_helpdesk_visible);
+                     self::updateVersion($isNewSoft, $modified_version, $version_comments);
+                     unset($isNewSoft);
+                     unset($imported[$id]);
+                  } else {
+                     //------------------------------------------------------------------------//
+                     //---- The software doesn't exists in this version for this computer -----//
+                     //------------------------------------------------------------------------//
+                     $isNewSoft = $soft->addOrRestoreFromTrash($modified_name, $manufacturer,
+                     $target_entity, '',
+                     ($entity != $target_entity),
+                     $is_helpdesk_visible);
+                     //Import version for this software
+                     $versionID = self::importVersion($isNewSoft, $modified_version, $version_comments);
+                     //Install license for this machine
+                     $instID = self::installSoftwareVersion($computers_id, $versionID, $dohistory);
+                  }
                }
             }
          }
-      }
 
-      foreach ($imported as $id => $unused) {
-         $computer_softwareversion->delete(array('id' => $id, '_no_history' => !$dohistory),
-         true);
-         // delete cause a getFromDB, so fields contains values
-         $verid = $computer_softwareversion->getField('softwareversions_id');
+         foreach ($imported as $id => $unused) {
+            $computer_softwareversion->delete(array('id' => $id, '_no_history' => !$dohistory),
+            true);
+            // delete cause a getFromDB, so fields contains values
+            $verid = $computer_softwareversion->getField('softwareversions_id');
 
-         if (countElementsInTable('glpi_computers_softwareversions',
-                  "softwareversions_id = '$verid'") ==0
-         && countElementsInTable('glpi_softwarelicenses',
-                        "softwareversions_id_buy = '$verid'") == 0) {
+            if (countElementsInTable('glpi_computers_softwareversions',
+                     "softwareversions_id = '$verid'") ==0
+            && countElementsInTable('glpi_softwarelicenses',
+                           "softwareversions_id_buy = '$verid'") == 0) {
 
-         $vers = new SoftwareVersion();
-         if ($vers->getFromDB($verid)
-         && countElementsInTable('glpi_softwarelicenses',
-                           "softwares_id = '".$vers->fields['softwares_id']."'") ==0
-         && countElementsInTable('glpi_softwareversions',
-                           "softwares_id = '".$vers->fields['softwares_id']."'") == 1) {
-         // 1 is the current to be removed
-         $soft->putInTrash($vers->fields['softwares_id'],
-         __('Software deleted by OCSNG synchronization'));
-                           }
-                           $vers->delete(array("id" => $verid));
-                        }
+               $vers = new SoftwareVersion();
+               if ($vers->getFromDB($verid)
+               && countElementsInTable('glpi_softwarelicenses',
+                                 "softwares_id = '".$vers->fields['softwares_id']."'") ==0
+               && countElementsInTable('glpi_softwareversions',
+                                 "softwares_id = '".$vers->fields['softwares_id']."'") == 1) {
+                  // 1 is the current to be removed
+                  $soft->putInTrash($vers->fields['softwares_id'],
+                  __('Software deleted by OCSNG synchronization'));
+                                 }
+               $vers->delete(array("id" => $verid));
+            }
+         }
       }
    }
 
@@ -5190,7 +5169,8 @@ JAVASCRIPT;
       $plugin_ocsinventoryng_ocsservers_id = self::getRandomServerID();
       if ($plugin_ocsinventoryng_ocsservers_id > 0){
          //Initialize the server connection
-         $PluginOcsinventoryngDBocs   = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+         $PluginOcsinventoryngDBocs = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+         
          $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
          $task->log(__('Check updates from server', 'ocsinventoryng')." " . $cfg_ocs['name'] . "\n");
 
@@ -5209,33 +5189,19 @@ JAVASCRIPT;
             }
          }
 
-         $query_ocs = "SELECT *
-                       FROM `hardware`
-                       INNER JOIN `accountinfo` ON (`hardware`.`ID` = `accountinfo`.`HARDWARE_ID`)
-                       WHERE ((`hardware`.`CHECKSUM` & " . $cfg_ocs["checksum"] . ") > '0'
-                              OR `hardware`.`LASTDATE` > '$max_date') ";
+         $res[] = $PluginOcsinventoryngDBocs->getComputersToUpdate($cfg_ocs, $max_date);
 
-         // workaround to avoid duplicate when synchro occurs during an inventory
-         // "after" insert in ocsweb.hardware  and "before" insert in ocsweb.deleted_equiv
-         $query_ocs .= " AND TIMESTAMP(`LASTDATE`) < (NOW()-180) ";
-
-         $tag_limit = self::getTagLimit($cfg_ocs);
-         if (!empty($tag_limit)){
-            $query_ocs .= "AND ".$tag_limit;
-         }
-
-         $query_ocs .= " ORDER BY `hardware`.`LASTDATE` ASC
-                        LIMIT ".intval($cfg_ocs["cron_sync_number"]);
-
-         $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
-         $nbcomp = $PluginOcsinventoryngDBocs->numrows($result_ocs);
          $task->setVolume(0);
-         if ($nbcomp > 0){
-            while ($data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs)){
-               $task->addVolume(1);
-               $task->log(sprintf(__('%1$s: %2$s'), _n('Computer', 'Computer', 1),
-               sprintf(__('%1$s (%2$s)'), $data["DEVICEID"], $data["ID"])));
-               self::processComputer($data["ID"], $plugin_ocsinventoryng_ocsservers_id, 0);
+         if (count($res) > 0){
+            
+            foreach ($res as $k => $data) {
+               if (count($data) > 0){
+                  $task->addVolume(1);
+                  $task->log(sprintf(__('%1$s: %2$s'), _n('Computer', 'Computer', 1),
+                  sprintf(__('%1$s (%2$s)'), $data["DEVICEID"], $data["ID"])));
+
+                  self::processComputer($data["ID"], $plugin_ocsinventoryng_ocsservers_id, 0);
+               }
             }
          } else{
             return 0;

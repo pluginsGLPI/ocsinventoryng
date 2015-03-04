@@ -148,7 +148,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                                         `softwares`.`SOURCE`,
                                         `softwares`.`HARDWARE_ID`
                                         FROM `softwares`
-                                        LEFT JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
+                                        INNER JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
                                         WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                      } else{
                          $query   = "SELECT
@@ -178,7 +178,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                       }
                 }
 
-            }elseif ($table == "registry") {
+            } elseif ($table == "registry") {
                
                 if ($check & $checksum) {
                    $query = "SELECT `registry`.`NAME` AS name,
@@ -509,7 +509,57 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         return $res["CHECKSUM"];
     }
     
+    /**
+     * @see PluginOcsinventoryngOcsClient::getComputersToUpdate()
+     */
+    public function getComputersToUpdate($cfg_ocs, $max_date)
+    {
+        $query = "SELECT *
+                       FROM `hardware`
+                       INNER JOIN `accountinfo` ON (`hardware`.`ID` = `accountinfo`.`HARDWARE_ID`)
+                       WHERE ((`hardware`.`CHECKSUM` & " . $cfg_ocs["checksum"] . ") > '0'
+                              OR `hardware`.`LASTDATE` > '$max_date') ";
+
+         // workaround to avoid duplicate when synchro occurs during an inventory
+         // "after" insert in ocsweb.hardware  and "before" insert in ocsweb.deleted_equiv
+         $query .= " AND TIMESTAMP(`LASTDATE`) < (NOW()-180) ";
+
+         $tag_limit = PluginOcsinventoryngOcsServer::getTagLimit($cfg_ocs);
+         if (!empty($tag_limit)){
+            $query .= "AND ".$tag_limit;
+         }
+
+         $query .= " ORDER BY `hardware`.`LASTDATE` ASC
+                        LIMIT ".intval($cfg_ocs["cron_sync_number"]);
+                        
+         $res = $this->db->query($query);
+         $data = array();
+         
+         if ($res->num_rows > 0) {
+            while ( $num = $this->db->fetch_assoc($res)){
+               $data = $num;
+            }
+         }
+         return $data;
+    }
     
+    /**
+     * @see PluginOcsinventoryngOcsClient::getOCSComputers()
+     */
+    public function getOCSComputers()
+    {
+         $query    = "SELECT `ID`, `DEVICEID`
+                    FROM `hardware`";
+         $res = $this->db->query($query);
+         $data = array();
+         
+         if ($res->num_rows > 0) {
+            while ( $num = $this->db->fetch_assoc($res)){
+               $data = $num;
+            }
+         }
+         return $data;
+    }
     
     /**
      * @see PluginOcsinventoryngOcsClient::getDeletedComputers()

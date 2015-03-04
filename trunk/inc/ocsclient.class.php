@@ -187,6 +187,22 @@ abstract class PluginOcsinventoryngOcsClient {
    abstract public function getChecksum($id);
    
    /**
+    * Gets the array of computers to update with cron
+    * 
+    * @param array $cfg_ocs Server confifguration
+    * @param date $max_date MAX(`last_ocs_update`)
+    * @return array $data the computers to update
+    */
+   abstract public function getComputersToUpdate($cfg_ocs, $max_date);
+   
+   /**
+    * Gets the array of computers for script checkocslinks.php
+    * 
+    * @return array $data the list of computers
+    */
+   abstract public function getOCSComputers();
+   
+   /**
     * Get the computer that were deleted (or merged) in ocsinventory
     * 
     * @return array The list of deleted computers : (DELETED contains the id or deviceid of the computer and equivalent and EQUIV contains the new id if the computer was marged)

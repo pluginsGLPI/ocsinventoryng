@@ -41,5 +41,11 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
       $temp->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $ID));
 
    }
+   
+   function getFromDBbyOcsServerIDAndGlpiColumn($plugin_ocsinventoryng_ocsservers_id, $glpi_column) {
+      
+      return $this->getFromDBByQuery("WHERE `".$this->getTable()."`.`plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id' AND `".$this->getTable()."`.`glpi_column` = '$glpi_column'");
+
+   }
 }
 ?>
