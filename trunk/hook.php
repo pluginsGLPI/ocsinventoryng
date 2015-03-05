@@ -1818,11 +1818,15 @@ function plugin_ocsinventoryng_ruleImportComputer_getSqlRestriction($params = ar
    foreach ($params['criteria'] as $criteria) {
       switch ($criteria->fields['criteria']) {
          case 'IPADDRESS' :
-            if (count($params['input']["IPADDRESS"])) {
+            $ips =$params['input']["IPADDRESS"];
+            if (!is_array($ips)) {
+               $ips = array($params['input']["IPADDRESS"]);
+            }
+            if (count($ips)) {
                $needport   = true;
                $needip     = true;
                $params['sql_where'] .= " AND `glpi_ipaddresses`.`name` IN ('";
-               $params['sql_where'] .= implode("','", array($params['input']["IPADDRESS"]));
+               $params['sql_where'] .= implode("','", $ips);
                $params['sql_where'] .= "')";
             } else {
                $params['sql_where'] =  " AND 0 ";
@@ -1830,10 +1834,14 @@ function plugin_ocsinventoryng_ruleImportComputer_getSqlRestriction($params = ar
             break;
 
          case 'MACADDRESS' :
-            if (count($params['input']["MACADDRESS"])) {
+            $macs =$params['input']["MACADDRESS"];
+            if (!is_array($macs)) {
+               $macs = array($params['input']["MACADDRESS"]);
+            }
+            if (count($macs)) {
                $needport   = true;
                $params['sql_where'] .= " AND `glpi_networkports`.`mac` IN ('";
-               $params['sql_where'] .= implode("','",array($params['input']['MACADDRESS']));
+               $params['sql_where'] .= implode("','",$macs);
                
                $params['sql_where'] .= "')";
             } else {
