@@ -81,6 +81,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     {
         
         $OCS_MAP = self::getOcsMap();
+        
+        $version = $this->getConfig("GUI_VERSION");
+    
         foreach ($OCS_MAP as $table => $value) {
              if ($table == "dico_soft") {
                continue;
@@ -135,6 +138,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 
             } elseif ($table == "softwares") {
                 if ($check & $checksum) {
+                
+                                        // ,
                     if (self::WANTED_DICO_SOFT & $wanted) {
                           $query   = "SELECT
                                         IFNULL(`dico_soft`.`FORMATTED`, `softwares`.`NAME`) AS NAME,
@@ -144,13 +149,15 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                                         `softwares`.`FOLDER`,
                                         `softwares`.`FILENAME`,
                                         `softwares`.`FILESIZE`,
-                                        `softwares`.`GUID`,
+                                        `softwares`.`SOURCE`,
+                                        `softwares`.`HARDWARE_ID`";
+                           if ($version['TVALUE'] < PluginOcsinventoryngOcsServer::OCS2_VERSION_LIMIT) {
+                                $query.= ",`softwares`.`GUID`,
                                         `softwares`.`LANGUAGE`,
                                         `softwares`.`INSTALLDATE`,
-                                        `softwares`.`BITSWIDTH`,
-                                        `softwares`.`SOURCE`,
-                                        `softwares`.`HARDWARE_ID`
-                                        FROM `softwares`
+                                        `softwares`.`BITSWIDTH`";
+                           }
+                          $query.= "FROM `softwares`
                                         INNER JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
                                         WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                      } else{
@@ -162,13 +169,15 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                                         `softwares`.`FOLDER`,
                                         `softwares`.`FILENAME`,
                                         `softwares`.`FILESIZE`,
-                                        `softwares`.`GUID`,
-                                        `softwares`.`LANGUAGE`,
-                                        `softwares`.`INSTALLDATE`,
-                                        `softwares`.`BITSWIDTH`,
                                         `softwares`.`SOURCE`,
-                                        `softwares`.`HARDWARE_ID`
-                                        FROM `softwares`
+                                        `softwares`.`HARDWARE_ID`";
+                        if ($version['TVALUE'] < PluginOcsinventoryngOcsServer::OCS2_VERSION_LIMIT) {
+                          $query.= ",`softwares`.`GUID`,
+                                  `softwares`.`LANGUAGE`,
+                                  `softwares`.`INSTALLDATE`,
+                                  `softwares`.`BITSWIDTH`";
+                        }
+                          $query.= "FROM `softwares`
                                         WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
 
 
