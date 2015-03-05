@@ -78,7 +78,13 @@ if (isset($_SESSION["ocs_import"]["id"])) {
       Html::redirect($_SERVER['PHP_SELF']);
    } else {
       //displayProgressBar(400, 100);
-      PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_import"]['statistics'],true);
+      if (isset($_SESSION["ocs_import"]['statistics'])) {
+         PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_import"]['statistics'],true);
+      } else {
+         echo "<div class='center b red'>";
+         _e('No import: the plugin will not import these elements', 'ocsinventoryng');
+         echo "</div>";
+      }
       unset($_SESSION["ocs_import"]);
 
       echo "<div class='center b'><br>";
