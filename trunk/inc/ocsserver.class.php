@@ -1567,13 +1567,12 @@ JAVASCRIPT;
          return false;
       }
       
-      $currentfilelink = explode("/",$_SERVER['SCRIPT_NAME']);
-      $currentfilename = end($currentfilelink);
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $deleted = $ocsClient->getDeletedComputers();
-      
-      if ($currentfilename == "deleted_equiv.php"){
+
+      //if (strpos($_SERVER['PHP_SELF'], "deleted_equiv.php") == true){
          if (count($deleted)) {
+         
             foreach ($deleted as $del => $equiv) {
                if (!empty($equiv) && !is_null($equiv)) { // New name
 
@@ -1597,7 +1596,8 @@ JAVASCRIPT;
                   } else {
                      $res = $ocsClient->searchComputers('ID', $equiv);
                      if (count($res['COMPUTERS'])) {
-                        $data = end($res['COMPUTERS']['META']);
+
+                        $data = $res['COMPUTERS'][$equiv]['META'];
                         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                                      SET `ocsid` = '" . $data["ID"] . "',
                                          `ocs_deviceid` = '" . $data["DEVICEID"] . "'
@@ -1679,13 +1679,14 @@ JAVASCRIPT;
             }
             if(!empty($to_del)){
                $ocsClient->removeDeletedComputers($to_del);
-            }if ($_SERVER['QUERY_STRING'] != "") {
-                $redirection = $_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING'];
+            }
+            if ($_SERVER['QUERY_STRING'] != "") {
+               $redirection = $_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING'];
             }
             else {
                $redirection = $_SERVER['PHP_SELF'];
             }
-            header("Location: $redirection");
+            Html::redirect($redirection);
          }
          else{
             $_SESSION['ocs_deleted_equiv']['computers_to_del']=false;
@@ -1693,12 +1694,12 @@ JAVASCRIPT;
             
          }
          // New way to delete entry from deleted_equiv table
-      } else if (count($deleted)) {
-         $message = sprintf(__('Please consider cleaning the deleted computers in OCSNG <a href="%s">Clean OCSNG datatabase </a>', 'ocsinventoryng'), $CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/deleted_equiv.php");
-         echo "<tr><th colspan='2'>";
-         Html::displayTitle($CFG_GLPI['root_doc']."/pics/warning.png", $message, $message);
-         echo "</th></tr>";
-      }
+      //} else if (count($deleted)) {
+      //   $message = sprintf(__('Please consider cleaning the deleted computers in OCSNG <a href="%s">Clean OCSNG datatabase </a>', 'ocsinventoryng'), $CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/deleted_equiv.php");
+      //   echo "<tr><th colspan='2'>";
+      //   Html::displayTitle($CFG_GLPI['root_doc']."/pics/warning.png", $message, $message);
+      //   echo "</th></tr>";
+      //}
    }
 
 
@@ -2678,7 +2679,8 @@ JAVASCRIPT;
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $computers = $ocsClient->getComputers(array());
 
-      if (count($computers['COMPUTERS']) > 0) {
+      if (isset($computers['COMPUTERS']) 
+            && count($computers['COMPUTERS']) > 0) {
          $hardware = $computers['COMPUTERS'];
       } else {
          $hardware = array();
