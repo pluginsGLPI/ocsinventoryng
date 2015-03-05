@@ -99,17 +99,20 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                      foreach($accountinfo as $column =>$value){
                         if(preg_match('/fields_\d+/',$column,$matches)){
                            $colnumb = explode("fields_",$matches['0']);
-                           $query = "SELECT ID,NAME FROM accountinfo_config WHERE ID = '".$colnumb['1']."'";
-                           $requestcolname = $this->db->query($query);
-                           $colname = $this->db->fetch_assoc($requestcolname);
-                           if($colname['NAME'] != ""){
-                              if(!is_null($value)){
-                                 $name = "ACCOUNT_VALUE_".$colname['NAME']."_".$value;
-                                 $query = "SELECT TVALUE,NAME FROM config WHERE NAME = '".$name."'";
-                                 $requestvalue = $this->db->query($query);
-                                 $custom_value  =  $this->db->fetch_assoc($requestvalue);
-                                 if(isset($custom_value['TVALUE'])){
-                                    $accountinfo[$column] = $custom_value['TVALUE'];
+                           
+                           if (TableExists("accountinfo_config")) {
+                              $query = "SELECT ID,NAME FROM accountinfo_config WHERE ID = '".$colnumb['1']."'";
+                              $requestcolname = $this->db->query($query);
+                              $colname = $this->db->fetch_assoc($requestcolname);
+                              if($colname['NAME'] != ""){
+                                 if(!is_null($value)){
+                                    $name = "ACCOUNT_VALUE_".$colname['NAME']."_".$value;
+                                    $query = "SELECT TVALUE,NAME FROM config WHERE NAME = '".$name."'";
+                                    $requestvalue = $this->db->query($query);
+                                    $custom_value  =  $this->db->fetch_assoc($requestvalue);
+                                    if(isset($custom_value['TVALUE'])){
+                                       $accountinfo[$column] = $custom_value['TVALUE'];
+                                    }
                                  }
                               }
                            }
@@ -638,18 +641,21 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         while ($column = $this->db->fetch_assoc($columns)) {
             $res[$column['Field']] = $column['Field'];
         }
-        $query   = "SELECT * FROM  `accountinfo_config` ";
-        $confs = $this->db->query($query);
-        while ($conf = $this->db->fetch_assoc($confs)) {
-            $key="fields_".$conf["ID"];
-            if (array_key_exists ( $key,$res))  {
-                if($conf["TYPE"]){
-                    $res[$key] = array("NOM"=>$conf['COMMENT'],
-                            "PREFIX"=>"ACCOUNT_INFO_".$conf["NAME"]."_",
-                    );
-                }else  {
-                   $res[$key] = $conf['COMMENT'];
-                }
+        
+        if (TableExists("accountinfo_config")) {
+           $query   = "SELECT * FROM  `accountinfo_config` ";
+           $confs = $this->db->query($query);
+           while ($conf = $this->db->fetch_assoc($confs)) {
+               $key="fields_".$conf["ID"];
+               if (array_key_exists ( $key,$res))  {
+                   if($conf["TYPE"]){
+                       $res[$key] = array("NOM"=>$conf['COMMENT'],
+                               "PREFIX"=>"ACCOUNT_INFO_".$conf["NAME"]."_",
+                       );
+                   }else  {
+                      $res[$key] = $conf['COMMENT'];
+                   }
+               }
             }
         }
         return $res;
