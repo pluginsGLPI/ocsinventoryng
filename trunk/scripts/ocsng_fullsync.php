@@ -357,12 +357,13 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
    // Filter only useful computers
    // Some conditions can't be sent to OCS, so we have to do this in a loop
    // Maybe add this to SOAP ?
-   foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
-      if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
-         $ocsComputers[$ID] = $computer;
+   if (isset($ocsResult['COMPUTERS'])) {
+      foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
+         if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
+            $ocsComputers[$ID] = $computer;
+         }
       }
    }
-
    // Limit the number of imported records according to config
    if ($config->fields["import_limit"] > 0 and count($ocsComputers) > $config->fields["import_limit"]) {
       $ocsComputers = array_splice($ocsComputers, $config->fields["import_limit"]);

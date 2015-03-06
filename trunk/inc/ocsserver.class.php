@@ -1595,7 +1595,8 @@ JAVASCRIPT;
                      }
                   } else {
                      $res = $ocsClient->searchComputers('ID', $equiv);
-                     if (count($res['COMPUTERS'])) {
+                     if (isset($res['COMPUTERS']) 
+                           && count($res['COMPUTERS'])) {
 
                         $data = $res['COMPUTERS'][$equiv]['META'];
                         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
