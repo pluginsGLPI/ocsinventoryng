@@ -5149,7 +5149,7 @@ JAVASCRIPT;
             }
          }
 
-         $res[] = $PluginOcsinventoryngDBocs->getComputersToUpdate($cfg_ocs, $max_date);
+         $res = $PluginOcsinventoryngDBocs->getComputersToUpdate($cfg_ocs, $max_date);
 
          $task->setVolume(0);
          if (count($res) > 0){
