@@ -504,7 +504,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
       if ($res->num_rows > 0) {
          while ($num = $this->db->fetch_assoc($res)) {
-            $data = $num;
+            $data[] = $num;
          }
       }
       return $data;

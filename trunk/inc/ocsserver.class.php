@@ -684,7 +684,7 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_2'><td class='center'>".__('Default status', 'ocsinventoryng').
       "</td>\n<td>";
       State::dropdown(array('name'   => 'states_id_default',
-            'value'  => $this->fields["states_id_default"]));
+                           'value'  => $this->fields["states_id_default"]));
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>".__('Behavior when disconnecting', 'ocsinventoryng')."</td>\n<td>";
@@ -1424,7 +1424,7 @@ JAVASCRIPT;
             $input["_nolock"]       = true;
 
             // Not already import from OCS / mark default state
-            if (!$ocs_id_change
+            if ((!$ocs_id_change && ($ocsConfig["states_id_default"] > 0))
             || (!$comp->fields['is_dynamic']
             && ($ocsConfig["states_id_default"] > 0))) {
                $input["states_id"] = $ocsConfig["states_id_default"];
@@ -3377,7 +3377,7 @@ JAVASCRIPT;
 
                Html::printPager($start, $numrows, $target, $parameters);
 
-            } else{
+            } else {
                echo "<table class='tab_cadre_fixe'>";
                echo "<tr><th>" . $title . "</th></tr>\n";
                echo "<tr class='tab_bg_1'>";
@@ -3387,7 +3387,7 @@ JAVASCRIPT;
             }
             echo "</div>";
 
-         } else{
+         } else {
             echo "<div class='center'>";
             echo "<table class='tab_cadre_fixe'>";
             echo "<tr><th>" .$title . "</th></tr>\n";
@@ -3396,7 +3396,7 @@ JAVASCRIPT;
            "</td></tr>\n";
             echo "</table></div>";
          }
-      } else{
+      } else {
          echo "<div class='center'>";
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr><th>" .$title . "</th></tr>\n";
@@ -5149,7 +5149,7 @@ JAVASCRIPT;
             }
          }
 
-         $res[] = $PluginOcsinventoryngDBocs->getComputersToUpdate($cfg_ocs, $max_date);
+         $res = $PluginOcsinventoryngDBocs->getComputersToUpdate($cfg_ocs, $max_date);
 
          $task->setVolume(0);
          if (count($res) > 0){
