@@ -5522,10 +5522,6 @@ JAVASCRIPT;
       $m                 = new Monitor();
       $conn              = new Computer_Item();
 
-
-
-
-
       $monitors       = array();
       $checkserial = true;
 
@@ -5535,15 +5531,10 @@ JAVASCRIPT;
             foreach ($ocsComputer["MONITORS"] as $monitor) {
                // Config says import monitor with serial number only
                // Restrict SQL query ony for monitors with serial present
-               if ($cfg_ocs["import_monitor"] == 4) {
-                  if (!empty($monitor["SERIAL"])){
-                     $monitors[] = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($monitor));
-                  }
-               }
-               else{
-                  $monitors[] = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($monitor));
+               if (empty($monitor["SERIAL"])){
                   $checkserial = false;
                }
+               $monitors[] = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($monitor));
             }
          }
       }
