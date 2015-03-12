@@ -156,13 +156,14 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
          $ip_address = new IPAddress();
          $already_known_addresses = array();
-         $query = "SELECT `id`, `name`, `is_dynamic`
+         $query = "SELECT `id`, `name`, `is_dynamic`, `mainitems_id`
                    FROM `glpi_ipaddresses`
                    WHERE `itemtype` = 'NetworkName'
                      AND `items_id` = '$networknames_id'
                    ORDER BY `is_dynamic`";
          foreach ($DB->request($query) as $line) {
-            if (in_array($line['name'], $ips)) {
+            if (in_array($line['name'], $ips) 
+                  && !empty($line['mainitems_id'])) {
                $already_known_addresses[] = $line['id'];
                $ips = array_diff($ips, array($line['name']));
             } elseif ($line['is_dynamic'] == 1) {
@@ -173,7 +174,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       if ($ips) {
          foreach ($ips as $ip) {
             $ip_input = array('name'        => $ip,
-                              'itemtype'    => 'Networkname',
+                              'itemtype'    => 'NetworkName',
                               'items_id'    => $networknames_id,
                               '_no_history' => !$dohistory,
                               'is_dynamic'  => 1,
