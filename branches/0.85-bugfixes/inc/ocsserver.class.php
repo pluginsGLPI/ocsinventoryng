@@ -1579,7 +1579,8 @@ JAVASCRIPT;
                   // Get hardware due to bug of duplicates management of OCS
                   if (strpos($equiv,"-") !== false) {
                      $res = $ocsClient->searchComputers('DEVICEID', $equiv);
-                     if (count($res['COMPUTERS'])) {
+                     if (isset($res['COMPUTERS']) 
+                           && count($res['COMPUTERS'])) {
                         $data = end($res['COMPUTERS']['META']);
                         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                                      SET `ocsid` = '" . $data["ID"] . "',
@@ -3095,8 +3096,11 @@ JAVASCRIPT;
                       SET `$field` = '" . $newArray . "'
                       WHERE `computers_id` = '$computers_id'";
             $DB->query($query);
+            
+            return true;
          }
       }
+      return false;
    }
 
 
