@@ -1579,7 +1579,8 @@ JAVASCRIPT;
                   // Get hardware due to bug of duplicates management of OCS
                   if (strpos($equiv,"-") !== false) {
                      $res = $ocsClient->searchComputers('DEVICEID', $equiv);
-                     if (count($res['COMPUTERS'])) {
+                     if (isset($res['COMPUTERS']) 
+                           && count($res['COMPUTERS'])) {
                         $data = end($res['COMPUTERS']['META']);
                         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                                      SET `ocsid` = '" . $data["ID"] . "',
@@ -3095,8 +3096,11 @@ JAVASCRIPT;
                       SET `$field` = '" . $newArray . "'
                       WHERE `computers_id` = '$computers_id'";
             $DB->query($query);
+            
+            return true;
          }
       }
+      return false;
    }
 
 
@@ -6165,5 +6169,28 @@ JAVASCRIPT;
             return;
       }
       parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
+   }
+   
+   /**
+    * @param $width
+   **/
+   function showSystemInformations($width) {
+
+      $ocsServers = getAllDatasFromTable('glpi_plugin_ocsinventoryng_ocsservers');
+      if (!empty($ocsServers)) {
+         echo "\n<tr class='tab_bg_2'><th>OCS Inventory NG</th></tr>\n";
+
+         $msg = '';
+         foreach ($ocsServers as $ocsServer) {
+         
+         echo "<tr class='tab_bg_1'><td>";
+         $msg = __('Host', 'ocsinventoryng').": ".$ocsServer['ocs_db_host']."";
+         $msg .= "<br>".__('Connection').": ".(self::checkOCSconnection($ocsServer['id']) ? "Ok" : "KO");
+         $msg .= "<br>".__('Use the OCSNG software dictionary', 'ocsinventoryng').": ".
+               ($ocsServer['use_soft_dict'] ? 'Yes' : 'No');
+         echo $msg;
+         echo "</td></tr>";
+         }
+      }
    }
 }
