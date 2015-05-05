@@ -2030,6 +2030,14 @@ JAVASCRIPT;
             if ($CFG_GLPI['transfers_id_auto']>0 && Session::isMultiEntitiesMode()) {
                self::transferComputer($line, $data_ocs);
                $comp->getFromDB($line["computers_id"]);
+            } else {
+               $rule = new RuleImportEntityCollection();
+
+               $data = array();
+               $data = $rule->processAllRules(array('ocsservers_id' => $line["plugin_ocsinventoryng_ocsservers_id"],
+                                                     '_source'       => 'ocsinventoryng'),
+               array(), array('ocsid' => $line["ocsid"]));
+               self::updateLocation($line, $data);
             }
 
             // update last_update and and last_ocs_update
