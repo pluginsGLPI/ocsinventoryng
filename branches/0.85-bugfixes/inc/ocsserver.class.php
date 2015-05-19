@@ -1682,7 +1682,7 @@ JAVASCRIPT;
             if(!empty($to_del)){
                $ocsClient->removeDeletedComputers($to_del);
             }
-            if ($_SERVER['QUERY_STRING'] != "") {
+            if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != "") {
                $redirection = $_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING'];
             }
             else {
