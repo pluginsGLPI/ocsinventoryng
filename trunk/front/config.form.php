@@ -47,7 +47,7 @@ $plugin = new Plugin();
 if ($plugin->isActivated("ocsinventoryng")) {
    Html::header(__("Automatic synchronization's configuration", 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "config");
 
-   $config->showForm($_SERVER['PHP_SELF']);
+   $config->display(array('id' => 1));
 } else {
    Html::header(__('Setup'), '', "tools", "pluginocsinventoryngmenu", "config");
    echo "<div class='center'><br><br>";

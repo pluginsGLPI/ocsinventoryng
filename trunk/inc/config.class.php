@@ -41,7 +41,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
          switch ($item->getType()) {
             case __CLASS__ :
                //If connection to the OCS DB  is ok, and all rights are ok too
-               return array('1' => self::getTypeName());
+               return array('1' => __('Check OCSNG import script', 'ocsinventoryng'));
 
          }
       }
@@ -65,6 +65,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
       $ong = array();
       $this->addDefaultFormTab($ong);
+      $this->addStandardTab(__CLASS__, $ong, $options);
       return $ong;
    }
 
