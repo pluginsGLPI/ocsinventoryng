@@ -349,7 +349,7 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
    
    // Get computers for which checksum has changed
    $secondQueryOptions = $computerOptions;
-   $secondQueryOptions['FILTER']['EXLUDE_IDS'] = $excludeIds;
+   $secondQueryOptions['FILTER']['EXCLUDE_IDS'] = $excludeIds;
    $secondQueryOptions['FILTER']['CHECKSUM'] = intval($cfg_ocs["checksum"]);
    
    $ocsResult = $ocsClient->getComputers($secondQueryOptions);
