@@ -382,14 +382,35 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          } else {
             $where_exclude_tags = "";
          }
+         
+         if (isset($filters['INVENTORIED_SINCE']) and $filters['INVENTORIED_SINCE']) {
 
+            $since = $filters['INVENTORIED_SINCE'];
+            $where_since = " AND (`hardware`.`LASTDATE` > ";
+            $where_since .= "'" .$since. "'";
+            $where_since .= ") ";
+         } else {
+            $where_since = "";
+         }
+
+         if (isset($filters['INVENTORIED_BEFORE']) and $filters['INVENTORIED_BEFORE']) {
+
+            $before = $filters['INVENTORIED_BEFORE'];
+            $where_before = " AND (UNIX_TIMESTAMP(`hardware`.`LASTDATE`) < (UNIX_TIMESTAMP(".$before.")";
+            // $where_before .= "'" .$before. "'";
+            $where_before .= ") ";
+         } else {
+            $where_before = "";
+         }
+         
+         
          if (isset($filters['CHECKSUM']) and $filters['CHECKSUM']) {
             $checksum = $filters['CHECKSUM'];
             $where_checksum = " AND ('" . $checksum . "' & hardware.CHECKSUM) ";
          } else {
             $where_checksum = "";
          }
-         $where_condition = $where_ids . $where_exclude_ids . $where_deviceids . $where_exclude_deviceids . $where_tags . $where_exclude_tags . $where_checksum;
+         $where_condition = $where_ids . $where_exclude_ids . $where_deviceids . $where_exclude_deviceids . $where_tags . $where_exclude_tags . $where_checksum. $where_since. $where_before;
       } else {
          $where_condition = "";
       }
@@ -400,6 +421,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                         AND hardware.ID = accountinfo.HARDWARE_ID
                         $where_condition";
       $request = $this->db->query($query);
+
       if ($this->db->numrows($request)) {
 
 
@@ -489,7 +511,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
       // workaround to avoid duplicate when synchro occurs during an inventory
       // "after" insert in ocsweb.hardware  and "before" insert in ocsweb.deleted_equiv
-      $query .= " AND TIMESTAMP(`LASTDATE`) < (NOW()-180) ";
+      $query .= " AND UNIX_TIMESTAMP(`LASTDATE`) < (UNIX_TIMESTAMP(NOW())-180) ";
 
       $tag_limit = PluginOcsinventoryngOcsServer::getTagLimit($cfg_ocs);
       if (!empty($tag_limit)) {
