@@ -10,6 +10,7 @@ pidfile="$pid_dir/ocsng_fullsync.pid"
 runningpid=""
 scriptname="ocsng_fullsync.sh"
 logfilename="ocsng_fullsync.log"
+options=""
 
 
 # Predefined settings
@@ -27,6 +28,7 @@ usage()
    echo "  --thread_nbr=num: number of threads to launch"
    echo "  --server_id=num: GLPI ID of the OCS server to synchronize from. Default is ALL the servers"
    echo "  --nolog: output to console"
+   echo "  --debug: run in debug mode"
 }
 
 exit_if_soft_lock()
@@ -54,6 +56,9 @@ read_argv()
          ;;
          --nolog)
          logfilename=
+         ;;
+         --debug)
+         options="--debug"
          ;;
          *)
          usage
@@ -135,7 +140,7 @@ sh -c "$cmd"
   
 while [ $cpt -lt $thread_nbr ]; do 
    cpt=$(($cpt+1))
-   cmd="php ocsng_fullsync.php --ocs_server_id=$server_id --thread_nbr=$thread_nbr --thread_id=$cpt --process_id=$PROCESS_ID"
+   cmd="php ocsng_fullsync.php $options --ocs_server_id=$server_id --thread_nbr=$thread_nbr --thread_id=$cpt --process_id=$PROCESS_ID"
    sh -c "$cmd"&
    runningpid="$runningpid $!"
    sleep 1
