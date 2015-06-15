@@ -5543,16 +5543,18 @@ JAVASCRIPT;
             foreach ($ocsComputer["MONITORS"] as $monitor) {
                // Config says import monitor with serial number only
                // Restrict SQL query ony for monitors with serial present
-               if (empty($monitor["SERIAL"])){
-                  $checkserial = false;
+               if ($cfg_ocs["import_monitor"] > 2 && empty($monitor["SERIAL"])){
+                  unset($monitor);
+               } else {
+                 $monitors[] = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($monitor));
                }
-               $monitors[] = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($monitor));
             }
          }
       }
 
-      if (count($monitors)>0
-      && ($cfg_ocs["import_monitor"] <= 2 || $checkserial)) {
+      if (count($monitors)>0 && $cfg_ocs["import_monitor"]  > 0
+      // && ($cfg_ocs["import_monitor"] <= 2 || $checkserial)
+      ) {
 
          foreach ($monitors as $monitor) {
 
@@ -5577,7 +5579,7 @@ JAVASCRIPT;
                             AND `computers_id`='$computers_id'
                             AND `itemtype`='Monitor'
                             AND `m`.`name`='".$mon["name"]."'";
-            if (!empty ($mon["serial"])) {
+            if ($cfg_ocs["import_monitor"] > 2 && !empty ($mon["serial"])) {
                $query.= " AND `m`.`serial`='".$mon["serial"]."'";
             }
             $results = $DB->query($query);
@@ -5712,9 +5714,9 @@ JAVASCRIPT;
             } else{
                $already_processed[] = $id;
             }
-         } // end foreach
+         // } // end foreach
 
-         if ($cfg_ocs["import_monitor"]<=2 || $checkserial){
+         // if ($cfg_ocs["import_monitor"]<=2 || $checkserial){
             //Look for all monitors, not locked, not linked to the computer anymore
             $query = "SELECT `id`
                          FROM `glpi_computers_items`
@@ -5725,14 +5727,41 @@ JAVASCRIPT;
             if (!empty($already_processed)){
                $query .= "AND `items_id` NOT IN (".implode(',', $already_processed).")";
             }
+
             foreach ($DB->request($query) as $data){
-               //Delete all connexions
-               $conn->delete(array('id'             => $data['id'],
-                                       '_ocsservers_id' => $ocsservers_id), true);
+               // Delete all connexions
+               //Get OCS configuration
+               $ocs_config = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
+
+               //Get the management mode for this device
+               $mode = PluginOcsinventoryngOcsServer::getDevicesManagementMode($ocs_config,'Monitor');
+               $decoConf = $ocs_config["deconnection_behavior"];
+
+               //Change status if :
+               // 1 : the management mode IS NOT global
+               // 2 : a deconnection's status have been defined
+               // 3 : unique with serial
+               if (($mode >= 2)
+               && (strlen($decoConf) > 0)) {
+   
+                  //Delete periph from glpi
+                  if ($decoConf == "delete") {
+                     $query = "DELETE
+                         FROM `glpi_computers_items`
+                         WHERE `id`='".$data['id']."'";
+                  $result = $DB->query($query);
+                  //Put periph in dustbin
+                  } else if ($decoConf == "trash") {
+                     $query = "UPDATE
+                         `glpi_computers_items`
+                        SET `is_deleted` = 1
+                         WHERE `id`='".$data['id']."'";
+                     $result = $DB->query($query);
+                  }
+               }
             }
          }
       }
-
    }
 
    /**
@@ -5902,9 +5931,40 @@ JAVASCRIPT;
          $query .= "AND `items_id` NOT IN (".implode(',', $already_processed).")";
       }
       foreach ($DB->request($query) as $data){
-         //Delete all connexions
-         $conn->delete(array('id'             => $data['id'],
-                                  '_ocsservers_id' => $ocsservers_id), true);
+         // Delete all connexions
+         //Get OCS configuration
+         $ocs_config = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
+
+         //Get the management mode for this device
+         $mode = PluginOcsinventoryngOcsServer::getDevicesManagementMode($ocs_config,'Printer');
+         $decoConf = $ocs_config["deconnection_behavior"];
+
+         //Change status if :
+         // 1 : the management mode IS NOT global
+         // 2 : a deconnection's status have been defined
+         // 3 : unique with serial
+         if (($mode >= 2)
+         && (strlen($decoConf) > 0)) {
+
+         //Delete periph from glpi
+         if ($decoConf == "delete") {
+            $query = "DELETE
+            FROM `glpi_computers_items`
+            WHERE `id`='".$data['id']."'";
+            $result = $DB->query($query);
+         //Put periph in dustbin
+         } else if ($decoConf == "trash") {
+            $query = "UPDATE
+            `glpi_computers_items`
+            SET `is_deleted` = 1
+            WHERE `id`='".$data['id']."'";
+            $result = $DB->query($query);
+         }
+      }
+      // foreach ($DB->request($query) as $data){
+         // Delete all connexions
+         // $conn->delete(array('id'             => $data['id'],
+                                  // '_ocsservers_id' => $ocsservers_id), true);
       }
 
    }
@@ -6032,7 +6092,7 @@ JAVASCRIPT;
             }
          }
       }
-     //Look for all monitors, not locked, not linked to the computer anymore
+     //Look for all peripherals, not locked, not linked to the computer anymore
       $query = "SELECT `id`
                       FROM `glpi_computers_items`
                       WHERE `itemtype`='Peripheral'
@@ -6043,9 +6103,40 @@ JAVASCRIPT;
          $query .= "AND `items_id` NOT IN (".implode(',', $already_processed).")";
       }
       foreach ($DB->request($query) as $data){
-         //Delete all connexions
-         $conn->delete(array('id'             => $data['id'],
-                                    '_ocsservers_id' => $ocsservers_id), true);
+         // Delete all connexions
+         //Get OCS configuration
+         $ocs_config = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
+
+         //Get the management mode for this device
+         $mode = PluginOcsinventoryngOcsServer::getDevicesManagementMode($ocs_config,'Peripheral');
+         $decoConf = $ocs_config["deconnection_behavior"];
+
+         //Change status if :
+         // 1 : the management mode IS NOT global
+         // 2 : a deconnection's status have been defined
+         // 3 : unique with serial
+         if (($mode >= 2)
+         && (strlen($decoConf) > 0)) {
+
+         //Delete periph from glpi
+         if ($decoConf == "delete") {
+            $query = "DELETE
+            FROM `glpi_computers_items`
+            WHERE `id`='".$data['id']."'";
+            $result = $DB->query($query);
+         //Put periph in dustbin
+         } else if ($decoConf == "trash") {
+            $query = "UPDATE
+            `glpi_computers_items`
+            SET `is_deleted` = 1
+            WHERE `id`='".$data['id']."'";
+            $result = $DB->query($query);
+         }
+      }
+      // foreach ($DB->request($query) as $data){
+         // Delete all connexions
+         // $conn->delete(array('id'             => $data['id'],
+                                    // '_ocsservers_id' => $ocsservers_id), true);
       }
    }
    

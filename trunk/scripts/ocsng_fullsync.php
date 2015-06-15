@@ -307,10 +307,11 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
    $ocsComputers = array();
    
    // Build common options
-   $inventoriedBefore = new DateTime('@'.(time() - 180));
+   //$inventoriedBefore = new DateTime('@'.(time() - 180));
+
    $computerOptions = array(
          'FILTER' => array(
-         'INVENTORIED_BEFORE' => $inventoriedBefore->format('Y-m-d H:i:s'),
+         'INVENTORIED_BEFORE' => "NOW())-180",
          )
    );
    
@@ -335,21 +336,26 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
    }
    
    $ocsResult = $ocsClient->getComputers($firstQueryOptions);
-
+	
+	// Get computers for which checksum has changed
+   $secondQueryOptions = $computerOptions;
+   
    // Filter only useful computers
    // Some conditions can't be sent to OCS, so we have to do this in a loop
    // Maybe add this to SOAP ?
-   $excludeIds = array();
-   foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
-      if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
-         $ocsComputers[$ID] = $computer;
-      }
-      $excludeIds []= $ID;
+   if (isset($ocsResult['COMPUTERS'])) {
+	   $excludeIds = array();
+	   foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
+		  if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
+			 $ocsComputers[$ID] = $computer;
+		  }
+		  $excludeIds []= $ID;
+	   }
+	   
+	   $secondQueryOptions['FILTER']['EXLUDE_IDS'] = $excludeIds;
    }
    
-   // Get computers for which checksum has changed
-   $secondQueryOptions = $computerOptions;
-   $secondQueryOptions['FILTER']['EXCLUDE_IDS'] = $excludeIds;
+   
    $secondQueryOptions['FILTER']['CHECKSUM'] = intval($cfg_ocs["checksum"]);
    
    $ocsResult = $ocsClient->getComputers($secondQueryOptions);
@@ -358,17 +364,18 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
    // Some conditions can't be sent to OCS, so we have to do this in a loop
    // Maybe add this to SOAP ?
    if (isset($ocsResult['COMPUTERS'])) {
-      foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
-         if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
-            $ocsComputers[$ID] = $computer;
-         }
-      }
+	   if (isset($ocsResult['COMPUTERS'])) {
+		  foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
+			 if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
+				$ocsComputers[$ID] = $computer;
+			 }
+		  }
+	   }
+	   // Limit the number of imported records according to config
+	   if ($config->fields["import_limit"] > 0 and count($ocsComputers) > $config->fields["import_limit"]) {
+		  $ocsComputers = array_splice($ocsComputers, $config->fields["import_limit"]);
+	   }
    }
-   // Limit the number of imported records according to config
-   if ($config->fields["import_limit"] > 0 and count($ocsComputers) > $config->fields["import_limit"]) {
-      $ocsComputers = array_splice($ocsComputers, $config->fields["import_limit"]);
-   }
-   
    $nb = count($ocsComputers);
    echo "\tThread #$threadid: $nb computer(s)\n";
 

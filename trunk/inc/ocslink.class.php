@@ -340,7 +340,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * @param $comp   Computer_Item object
    **/
    static function purgeComputer_Item(Computer_Item $comp) {
-
+	  Global $DB;
       if ($device = getItemForItemtype($comp->fields['itemtype'])) {
          if ($device->getFromDB($comp->fields['items_id'])) {
 
@@ -363,18 +363,36 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                // 1 : the management mode IS NOT global
                // 2 : a deconnection's status have been defined
                // 3 : unique with serial
+			   
+
                if (($mode >= 2)
                && (strlen($decoConf) > 0)) {
 
                   //Delete periph from glpi
-                  if ($decoConf == "delete") {
-                     $tmp["id"] = $comp->fields['items_id'];
-                     $device->delete($tmp, 1);
+                  // if ($decoConf == "delete") {
+                     // $tmp["id"] = $comp->fields['items_id'];
+                     // $device->delete(array('id'  => $tmp['id']), 1);
 
+                  // Put periph in dustbin
+                  // } else if ($decoConf == "trash") {
+                     // $tmp["id"] = $comp->fields['items_id'];
+                     // $device->delete(array('id'  => $tmp['id']), 0);
+                  // }
+				  
+				  if ($decoConf == "delete") {
+					$tmp["id"] = $comp->getID();
+                     $query = "DELETE
+                         FROM `glpi_computers_items`
+                         WHERE `id`='".$tmp['id']."'";
+				  $result = $DB->query($query);
                   //Put periph in dustbin
                   } else if ($decoConf == "trash") {
-                     $tmp["id"] = $comp->fields['items_id'];
-                     $device->delete($tmp, 0);
+					$tmp["id"] = $comp->getID();
+                     $query = "UPDATE
+                         `glpi_computers_items`
+						 SET `is_deleted` = 1
+                         WHERE `id`='".$tmp['id']."'";
+					$result = $DB->query($query);
                   }
                }
             } // $ocsservers_id>0
