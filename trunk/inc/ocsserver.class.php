@@ -1581,15 +1581,17 @@ JAVASCRIPT;
                      $res = $ocsClient->searchComputers('DEVICEID', $equiv);
                      if (isset($res['COMPUTERS']) 
                            && count($res['COMPUTERS'])) {
-                        $data = end($res['COMPUTERS']['META']);
-                        $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                                     SET `ocsid` = '" . $data["ID"] . "',
-                                         `ocs_deviceid` = '" . $data["DEVICEID"] . "'
-                                     WHERE `ocs_deviceid` = '$del'
-                                           AND `plugin_ocsinventoryng_ocsservers_id`
-                                                   = '$plugin_ocsinventoryng_ocsservers_id'";
-                        $DB->query($query);
-                        $ocsClient->setChecksum($data['CHECKSUM'] | PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE, $data['ID']);
+                        if (isset($res['COMPUTERS']['META']) && is_array(isset($res['COMPUTERS']['META']))) {
+                           $data = end($res['COMPUTERS']['META']);
+                           $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                                        SET `ocsid` = '" . $data["ID"] . "',
+                                            `ocs_deviceid` = '" . $data["DEVICEID"] . "'
+                                        WHERE `ocs_deviceid` = '$del'
+                                              AND `plugin_ocsinventoryng_ocsservers_id`
+                                                      = '$plugin_ocsinventoryng_ocsservers_id'";
+                           $DB->query($query);
+                           $ocsClient->setChecksum($data['CHECKSUM'] | PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE, $data['ID']);
+                        }
                         // } else {
                         // We're damned ! no way to find new ID
                         // TODO : delete ocslinks ?
