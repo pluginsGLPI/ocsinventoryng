@@ -1630,7 +1630,7 @@ JAVASCRIPT;
                //}
                            //TODO
                         //http://www.karlrixon.co.uk/writing/update-multiple-rows-with-different-values-and-a-single-sql-query/
-                  if ($data) {
+                  if (isset($data)) {
                      $sql_id = "SELECT `computers_id`
                                    FROM `glpi_plugin_ocsinventoryng_ocslinks`
                                    WHERE `ocsid` = '".$data["ID"]."'
