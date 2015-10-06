@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Alexander Savchenko <>, 2012
+# Alexey Petukhov <lexx015@gmail.com>, 2015
 # Nelly Mahu-Lasson <nini.lasson@orange.fr>, 2012
 # sayanvd <sayanvd@yandex.ru>, 2013
 # Sergey Krasilnikov <sekras@gmail.com>, 2012
@@ -12,14 +13,14 @@ msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-26 10:02+0100\n"
-"PO-Revision-Date: 2015-02-26 09:05+0000\n"
-"Last-Translator: Xavier CAILLAUD <tsmr@thetsmr.fr>\n"
-"Language-Team: Russian (Russia) (http://www.transifex.com/projects/p/GLPI_ocsinventoryng/language/ru_RU/)\n"
+"PO-Revision-Date: 2015-07-29 12:25+0000\n"
+"Last-Translator: Alexey Petukhov <lexx015@gmail.com>\n"
+"Language-Team: Russian (Russia) (http://www.transifex.com/yllen/GLPI_ocsinventoryng/language/ru_RU/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ru_RU\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #: hook.php:1142
 msgid "Restart import"
@@ -39,7 +40,7 @@ msgstr "Принудительная синхронизация OCSNG"
 
 #: hook.php:1161
 msgid "Lock fields"
-msgstr ""
+msgstr "Заблокировать поля"
 
 #: hook.php:1163
 msgid "Unlock fields"
@@ -83,11 +84,11 @@ msgstr "OCSNG ID"
 
 #: hook.php:1236 inc/ocslink.class.php:96
 msgid "Last OCSNG connection date"
-msgstr ""
+msgstr "Последняя дата соединения с OCSNG"
 
 #: hook.php:1243 inc/ocslink.class.php:106
 msgid "IP Source"
-msgstr ""
+msgstr "IP источника"
 
 #: hook.php:1252 hook.php:1261 inc/ocsserver.class.php:717
 #: inc/registrykey.class.php:39 inc/registrykey.class.php:102
@@ -110,6 +111,7 @@ msgid_plural "OCSNG servers"
 msgstr[0] "Сервер OCSNG"
 msgstr[1] "Серверы OCSNG"
 msgstr[2] "Серверы OCSNG"
+msgstr[3] "Серверы OCSNG"
 
 #: hook.php:1491 inc/ocslink.class.php:44 inc/ocslink.class.php:398
 msgid "OCSNG link"
@@ -117,6 +119,7 @@ msgid_plural "OCSNG links"
 msgstr[0] "Связь с OCSNG"
 msgstr[1] "Связи с OCSNG"
 msgstr[2] "Связи с OCSNG"
+msgstr[3] "Связи с OCSNG"
 
 #: hook.php:1659
 msgid "Link possible"
@@ -140,6 +143,7 @@ msgid_plural "Locked fields"
 msgstr[0] "Заблокированное поле"
 msgstr[1] "Заблокированные поля"
 msgstr[2] "Заблокированные поля"
+msgstr[3] "Заблокированные поля"
 
 #: front/config.form.php:48 inc/config.class.php:34 inc/config.class.php:84
 #: inc/ocsserver.class.php:303 inc/ocsserver.class.php:304
@@ -154,17 +158,17 @@ msgstr "Пожалуйста, активируйте плагин"
 #: front/deleted_equiv.php:40 front/deleted_equiv.php:50
 #: front/deleted_equiv.php:82
 msgid "Pc deleted"
-msgstr ""
+msgstr "ПК удален"
 
 #: front/deleted_equiv.php:44 front/deleted_equiv.php:72
 msgid "No new computers to delete"
-msgstr ""
+msgstr "Нет новых ПК для удаления"
 
 #: front/deleted_equiv.php:48 front/deleted_equiv.php:80 inc/menu.class.php:86
 #: inc/ocsserver.class.php:384 inc/ocsserver.class.php:385
 #: inc/ocsserver.class.php:386
 msgid "Clean OCSNG deleted computers"
-msgstr ""
+msgstr "Очистить список удаленных в OCSNG ПК"
 
 #: front/detail.php:33 inc/menu.class.php:77 inc/ocsserver.class.php:343
 #: inc/ocsserver.class.php:344 inc/ocsserver.class.php:345
@@ -209,6 +213,7 @@ msgid_plural "seconds"
 msgstr[0] "секунда"
 msgstr[1] "секунды"
 msgstr[2] "секунды"
+msgstr[3] "секунды"
 
 #: inc/config.class.php:130 inc/ocsserver.class.php:5182
 msgid "Check OCSNG import script"
@@ -243,6 +248,7 @@ msgid_plural "Computers not imported"
 msgstr[0] "Не импортированный ПК"
 msgstr[1] "Не импортированные ПК"
 msgstr[2] "Не импортированные ПК"
+msgstr[3] "Не импортированные ПК"
 
 #: inc/detail.class.php:51
 msgid "Process time"
@@ -329,6 +335,7 @@ msgid_plural "Unknown types from OCS"
 msgstr[0] "Неизвестный тип из OCS"
 msgstr[1] "Неизвестные типы из OCS"
 msgstr[2] "Неизвестные типы из OCS"
+msgstr[3] "Неизвестные типы из OCS"
 
 #: inc/networkport.class.php:44
 msgid "Invalid"
@@ -353,15 +360,15 @@ msgstr "Создать сопоставление"
 
 #: inc/networkport.class.php:454
 msgid "empty"
-msgstr ""
+msgstr "пустой"
 
 #: inc/networkport.class.php:467
 msgid "Unknown network port type from OCS"
-msgstr ""
+msgstr "Неизвестный тип сетевого порта из OCS"
 
 #: inc/networkport.class.php:512
 msgid "No unknown network port type from OCS !"
-msgstr ""
+msgstr "Нет неизвестных типов сетевых портов из OCS"
 
 #: inc/networkporttype.class.php:39
 msgid "Network port type"
@@ -369,10 +376,11 @@ msgid_plural "Network port types"
 msgstr[0] "Тип сетевых портов"
 msgstr[1] "Типы сетевых портов"
 msgstr[2] "Типы сетевых портов"
+msgstr[3] "Типы сетевых портов"
 
 #: inc/networkporttype.class.php:106
 msgid "Any kind"
-msgstr ""
+msgstr "Любой"
 
 #: inc/networkporttype.class.php:137
 msgid "OCS TYPE MIB"
@@ -434,7 +442,7 @@ msgstr "Сбой отправки предупреждения OCSNG о не и�
 #: inc/notimportedcomputer.class.php:590 inc/ocsserver.class.php:5182
 #: inc/profile.class.php:45 inc/thread.class.php:568
 msgid "OCSNG"
-msgstr ""
+msgstr "OCSNG"
 
 #: inc/notimportedcomputer.class.php:590
 msgid "Not imported computers alert"
@@ -623,7 +631,7 @@ msgstr "Этот параметр учитывается при ручной с�
 
 #: inc/ocsserver.class.php:838
 msgid "Database"
-msgstr ""
+msgstr "База данных"
 
 #: inc/ocsserver.class.php:843
 msgid "Standard (allow manual actions)"
@@ -635,15 +643,15 @@ msgstr "Эксперт (Полностью автоматически, для б
 
 #: inc/ocsserver.class.php:848
 msgid "Connection type"
-msgstr ""
+msgstr "Тип соединения"
 
 #: inc/ocsserver.class.php:883
 msgid "Host"
-msgstr ""
+msgstr "Хост"
 
 #: inc/ocsserver.class.php:886
 msgid "Like http://127.0.0.1 for SOAP method"
-msgstr ""
+msgstr "Например http://127.0.0.1 для SOAP"
 
 #: inc/ocsserver.class.php:888
 msgid "Synchronisation method"
@@ -801,9 +809,10 @@ msgstr "Статистика связей OCSNG"
 #: inc/profile.class.php:187
 msgid "Allowed OCSNG server"
 msgid_plural "Allowed OCSNG servers"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Разрешенный OCSNG сервер"
+msgstr[1] "Разрешенные OCSNG сервера"
+msgstr[2] "Разрешенные OCSNG сервера"
+msgstr[3] "Разрешенные OCSNG сервера"
 
 #: inc/profile.class.php:283
 msgid "Manually synchronization"
@@ -820,6 +829,7 @@ msgid_plural "%d registry keys found"
 msgstr[0] "Найден %d ключ реестра"
 msgstr[1] "Найдено %d ключей реестра"
 msgstr[2] "Найдено %d ключей реестра"
+msgstr[3] "Найдено %d ключей реестра"
 
 #: inc/registrykey.class.php:84
 msgid "Hive"

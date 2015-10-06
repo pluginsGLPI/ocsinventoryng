@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# balucha <balucha@horizon.sk>, 2013-2014
+# balucha <balucha@horizon.sk>, 2013-2015
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-26 10:02+0100\n"
-"PO-Revision-Date: 2015-02-26 09:05+0000\n"
-"Last-Translator: Xavier CAILLAUD <tsmr@thetsmr.fr>\n"
-"Language-Team: Slovak (Slovakia) (http://www.transifex.com/projects/p/GLPI_ocsinventoryng/language/sk_SK/)\n"
+"PO-Revision-Date: 2015-10-02 10:56+0000\n"
+"Last-Translator: balucha <balucha@horizon.sk>\n"
+"Language-Team: Slovak (Slovakia) (http://www.transifex.com/yllen/GLPI_ocsinventoryng/language/sk_SK/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,7 +24,7 @@ msgstr "Reštartovať import"
 
 #: hook.php:1143
 msgid "Import in the entity"
-msgstr ""
+msgstr "Import do subjektu"
 
 #: hook.php:1148
 msgid "Delete computer in OCSNG"
@@ -36,7 +36,7 @@ msgstr "Synchronizovať s OCSNG"
 
 #: hook.php:1161
 msgid "Lock fields"
-msgstr ""
+msgstr "Uzamknúť polia"
 
 #: hook.php:1163
 msgid "Unlock fields"
@@ -134,9 +134,9 @@ msgstr ""
 #: hook.php:1900
 msgid "Locked field"
 msgid_plural "Locked fields"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Uzamknuté pole"
+msgstr[1] "Uzamknuté polia"
+msgstr[2] "Uzamknuté polia"
 
 #: front/config.form.php:48 inc/config.class.php:34 inc/config.class.php:84
 #: inc/ocsserver.class.php:303 inc/ocsserver.class.php:304
@@ -231,7 +231,7 @@ msgstr "Odomknuť"
 
 #: inc/config.class.php:176 inc/thread.class.php:370
 msgid "All servers"
-msgstr ""
+msgstr "Všetky servery"
 
 #: inc/detail.class.php:36 inc/detail.class.php:150
 #: inc/notimportedcomputer.class.php:39 inc/notimportedcomputer.class.php:208
@@ -431,7 +431,7 @@ msgstr ""
 #: inc/notimportedcomputer.class.php:590 inc/ocsserver.class.php:5182
 #: inc/profile.class.php:45 inc/thread.class.php:568
 msgid "OCSNG"
-msgstr ""
+msgstr "OCSNG"
 
 #: inc/notimportedcomputer.class.php:590
 msgid "Not imported computers alert"
@@ -508,7 +508,7 @@ msgstr "Konfigurácia OCSNG servera %s"
 msgid ""
 "The selected server is not active. Import and synchronisation is not "
 "available"
-msgstr ""
+msgstr "Vybraný server nieje aktívny. Import a synchronizácia nieje dostupná"
 
 #: inc/ocsserver.class.php:444
 msgid "Warning : the import entity rules depends on selected fields"
@@ -620,7 +620,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:838
 msgid "Database"
-msgstr ""
+msgstr "Databáza"
 
 #: inc/ocsserver.class.php:843
 msgid "Standard (allow manual actions)"

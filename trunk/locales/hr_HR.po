@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Robert Okadar <aranea.network@gmail.com>, 2013
+# Robert Okadar <aranea.network@gmail.com>, 2013,2015
 # Robert Pavicic <rpavicic@brrax.hr>, 2013
 # Sime Meic-Sidic, 2013
 msgid ""
@@ -11,9 +11,9 @@ msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-26 10:02+0100\n"
-"PO-Revision-Date: 2015-02-26 09:05+0000\n"
-"Last-Translator: Xavier CAILLAUD <tsmr@thetsmr.fr>\n"
-"Language-Team: Croatian (Croatia) (http://www.transifex.com/projects/p/GLPI_ocsinventoryng/language/hr_HR/)\n"
+"PO-Revision-Date: 2015-05-31 00:58+0000\n"
+"Last-Translator: Robert Okadar <aranea.network@gmail.com>\n"
+"Language-Team: Croatian (Croatia) (http://www.transifex.com/yllen/GLPI_ocsinventoryng/language/hr_HR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -38,7 +38,7 @@ msgstr "Prisilno usklađivanje s OCSNG-om"
 
 #: hook.php:1161
 msgid "Lock fields"
-msgstr ""
+msgstr "Zaključaj polja"
 
 #: hook.php:1163
 msgid "Unlock fields"
@@ -82,11 +82,11 @@ msgstr "OCSNG ID"
 
 #: hook.php:1236 inc/ocslink.class.php:96
 msgid "Last OCSNG connection date"
-msgstr ""
+msgstr "Posljednji datum spajanja OCS NG-a"
 
 #: hook.php:1243 inc/ocslink.class.php:106
 msgid "IP Source"
-msgstr ""
+msgstr "Izvor IP-a"
 
 #: hook.php:1252 hook.php:1261 inc/ocsserver.class.php:717
 #: inc/registrykey.class.php:39 inc/registrykey.class.php:102
@@ -138,7 +138,7 @@ msgid "Locked field"
 msgid_plural "Locked fields"
 msgstr[0] "Zaključano polje"
 msgstr[1] "Zaključana polja"
-msgstr[2] "Zaključana polja"
+msgstr[2] "Zaključanih polja"
 
 #: front/config.form.php:48 inc/config.class.php:34 inc/config.class.php:84
 #: inc/ocsserver.class.php:303 inc/ocsserver.class.php:304
@@ -153,17 +153,17 @@ msgstr "Molim, aktivirajte dodatak"
 #: front/deleted_equiv.php:40 front/deleted_equiv.php:50
 #: front/deleted_equiv.php:82
 msgid "Pc deleted"
-msgstr ""
+msgstr "PC obrisan"
 
 #: front/deleted_equiv.php:44 front/deleted_equiv.php:72
 msgid "No new computers to delete"
-msgstr ""
+msgstr "Nema novih računala za obrisati"
 
 #: front/deleted_equiv.php:48 front/deleted_equiv.php:80 inc/menu.class.php:86
 #: inc/ocsserver.class.php:384 inc/ocsserver.class.php:385
 #: inc/ocsserver.class.php:386
 msgid "Clean OCSNG deleted computers"
-msgstr ""
+msgstr "Počisti obrisana računala u OCS NG-u"
 
 #: front/detail.php:33 inc/menu.class.php:77 inc/ocsserver.class.php:343
 #: inc/ocsserver.class.php:344 inc/ocsserver.class.php:345
@@ -173,7 +173,7 @@ msgstr "Računala uvezena automatizacijom"
 
 #: front/networkport.php:33
 msgid "Unknown imported network ports"
-msgstr ""
+msgstr "Uvezeni mrežni portovi nepoznati"
 
 #: front/notimportedcomputer.php:33 front/thread.php:37
 #: inc/thread.class.php:284
@@ -207,7 +207,7 @@ msgid "second"
 msgid_plural "seconds"
 msgstr[0] "sekunda"
 msgstr[1] "sekunde"
-msgstr[2] "sekundi"
+msgstr[2] "sekunda"
 
 #: inc/config.class.php:130 inc/ocsserver.class.php:5182
 msgid "Check OCSNG import script"
@@ -239,9 +239,9 @@ msgstr "Svi poslužitelji"
 #: inc/notimportedcomputer.class.php:39 inc/notimportedcomputer.class.php:208
 msgid "Computer not imported"
 msgid_plural "Computers not imported"
-msgstr[0] "Računalo koja nije uvezeno"
-msgstr[1] "Računala koja nisu uvezena"
-msgstr[2] "Računala koja nisu uvezena"
+msgstr[0] "Neuveženo računalo"
+msgstr[1] "Neuvežena računala"
+msgstr[2] "Neuveženih računala"
 
 #: inc/detail.class.php:51
 msgid "Process time"
@@ -284,12 +284,12 @@ msgstr "Duplicirana računala"
 
 #: inc/devicebiosdata.class.php:47 inc/devicebiosdata.class.php:72
 msgid "Asset Tag"
-msgstr ""
+msgstr "Oznaka imovine"
 
 #: inc/menu.class.php:54 inc/ocsserver.class.php:292
 #: inc/ocsserver.class.php:293
 msgid "Configuration of OCSNG server"
-msgstr "Konfiguracija poslužitelja OCSNG"
+msgstr "Konfiguracija poslužitelja OCS NG"
 
 #: inc/menu.class.php:61 inc/ocsserver.class.php:314
 #: inc/ocsserver.class.php:315 inc/ocsserver.class.php:316
@@ -352,15 +352,15 @@ msgstr "Stvorite mapiranje"
 
 #: inc/networkport.class.php:454
 msgid "empty"
-msgstr ""
+msgstr "prazno"
 
 #: inc/networkport.class.php:467
 msgid "Unknown network port type from OCS"
-msgstr ""
+msgstr "Nepoznata mrežna vrsta priključka iz OCS-a"
 
 #: inc/networkport.class.php:512
 msgid "No unknown network port type from OCS !"
-msgstr ""
+msgstr "Nema nepoznatih mrežnih vrsta priključaka iz OCS-a"
 
 #: inc/networkporttype.class.php:39
 msgid "Network port type"
@@ -371,7 +371,7 @@ msgstr[2] "Tipovi mrežnog priključka"
 
 #: inc/networkporttype.class.php:106
 msgid "Any kind"
-msgstr ""
+msgstr "Bilo koji"
 
 #: inc/networkporttype.class.php:137
 msgid "OCS TYPE MIB"
@@ -395,7 +395,7 @@ msgstr "Inačica WiFi kartice"
 
 #: inc/networkporttype.class.php:155
 msgid "Transform unknown ports that match"
-msgstr ""
+msgstr "Transformiraj nepoznate priključke koji odgovaraju"
 
 #: inc/networkporttype.class.php:186 inc/networkporttype.class.php:188
 msgid "Create"
@@ -433,11 +433,11 @@ msgstr "Slanje upozorenja OCSNG-a \"Neuvežena računala\" nije uspjelo"
 #: inc/notimportedcomputer.class.php:590 inc/ocsserver.class.php:5182
 #: inc/profile.class.php:45 inc/thread.class.php:568
 msgid "OCSNG"
-msgstr ""
+msgstr "OCSNG"
 
 #: inc/notimportedcomputer.class.php:590
 msgid "Not imported computers alert"
-msgstr ""
+msgstr "Nema upozorenja za uvezena računala"
 
 #: inc/ocslink.class.php:124
 msgid "OCS NG Interface"
@@ -499,7 +499,7 @@ msgstr "Izbor OCSNG poslužitelja"
 msgid ""
 "If you not find your OCSNG server in this dropdown, please check if your "
 "profile can access it !"
-msgstr ""
+msgstr "Ukoliko ne nađete vaš OCS NG poslužitelj na ovoj listi, provjerite može li mu vaš profil pristupiti !"
 
 #: inc/ocsserver.class.php:294
 #, php-format
@@ -514,7 +514,7 @@ msgstr "Odabrani poslužitelj nije aktivan. Uvoz i sinkronizacija nisu dostupni"
 
 #: inc/ocsserver.class.php:444
 msgid "Warning : the import entity rules depends on selected fields"
-msgstr ""
+msgstr "Upozorenje: pravila uvoza jedinice ovise o odabranim poljima"
 
 #: inc/ocsserver.class.php:446
 msgid "OCSNG administrative information"
@@ -523,7 +523,7 @@ msgstr "OCSNG administrativni podaci"
 #: inc/ocsserver.class.php:468 inc/ocsserver.class.php:474
 #: inc/ocsserver.class.php:482 inc/ocsserver.class.php:488
 msgid "Depends on Bios import"
-msgstr ""
+msgstr "Ovisi o uvozu BIOS-a"
 
 #: inc/ocsserver.class.php:598 inc/ocsserver.class.php:676
 #: inc/ocsserver.class.php:680 inc/ocsserver.class.php:703
@@ -622,7 +622,7 @@ msgstr "Ova opcija se razmatra tijekom ručnog povezivanja i kod sinkronizacijsk
 
 #: inc/ocsserver.class.php:838
 msgid "Database"
-msgstr ""
+msgstr "Baza podataka"
 
 #: inc/ocsserver.class.php:843
 msgid "Standard (allow manual actions)"
@@ -634,15 +634,15 @@ msgstr "Expert (potpuno automatski, za velike konfiguracije)"
 
 #: inc/ocsserver.class.php:848
 msgid "Connection type"
-msgstr ""
+msgstr "Vrsta konekcije"
 
 #: inc/ocsserver.class.php:883
 msgid "Host"
-msgstr ""
+msgstr "Domaćin"
 
 #: inc/ocsserver.class.php:886
 msgid "Like http://127.0.0.1 for SOAP method"
-msgstr ""
+msgstr "Kao http://127.0.0.1 za SOAP metodu"
 
 #: inc/ocsserver.class.php:888
 msgid "Synchronisation method"
@@ -689,7 +689,7 @@ msgstr "Nije moguć uvoz, GLPI računalo je već povezano sa elementom u OCSNG-u
 msgid ""
 "Please consider cleaning the deleted computers in OCSNG <a href=\"%s\">Clean"
 " OCSNG datatabase </a>"
-msgstr ""
+msgstr "Uzmite u obzir čišćenje pobrisanih računala u OCS NG <a href=\"%s\"> Počisti OCS NG bazu podataka </a>"
 
 #: inc/ocsserver.class.php:1848 inc/ocsserver.class.php:2544
 msgid "Swap"
@@ -800,9 +800,9 @@ msgstr "Statistika OCSNG veze"
 #: inc/profile.class.php:187
 msgid "Allowed OCSNG server"
 msgid_plural "Allowed OCSNG servers"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Dopušten poslužitelj OCS NG-a"
+msgstr[1] "Dopuštena poslužitelja OCS NG-a"
+msgstr[2] "Dopuštenih poslužitelja OCS NG-a"
 
 #: inc/profile.class.php:283
 msgid "Manually synchronization"
