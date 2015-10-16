@@ -1878,48 +1878,26 @@ function plugin_ocsinventoryng_showLocksForItem($params = array()) {
    $comp   = $params['item'];
    $header = $params['header'];
    $ID     = $comp->getID();
-
+   
+   $locks = PluginOcsinventoryngOcsServer::getLocksForComputer($ID);
+   
    if (!Session::haveRight("computer", UPDATE)) {
       return $params;
    }
-   //First of all let's look it the computer is managed by OCS Inventory
-   $query = "SELECT *
-   FROM `glpi_plugin_ocsinventoryng_ocslinks`
-   WHERE `computers_id` = '$ID'";
+      
+   $lockable_fields = PluginOcsinventoryngOcsServer::getLockableFields();
+   if (count($locks)) {
+      $header = true;
+      echo "<tr><th colspan='2'>". _n('Locked field', 'Locked fields', 2, 'ocsinventoryng').
+      "</th></tr>\n";
 
-   $result = $DB->query($query);
-   if ($DB->numrows($result) == 1) {
-      $data = $DB->fetch_assoc($result);
+      foreach ($locks as $key => $val) {
+         echo "<tr class='tab_bg_1'>";
 
-      // Print lock fields for OCSNG
-      $lockable_fields = PluginOcsinventoryngOcsServer::getLockableFields();
-      $locked          = importArrayFromDB($data["computer_update"]);
-
-      if (!in_array(PluginOcsinventoryngOcsServer::IMPORT_TAG_078, $locked)) {
-         $locked = PluginOcsinventoryngOcsServer::migrateComputerUpdates($ID, $locked);
-      }
-
-      if (count($locked) > 0) {
-         foreach ($locked as $key => $val) {
-            if (!isset($lockable_fields[$val])) {
-               unset($locked[$key]);
-            }
-         }
-      }
-
-      if (count($locked)) {
-         $header = true;
-         echo "<tr><th colspan='2'>". _n('Locked field', 'Locked fields', 2, 'ocsinventoryng').
-         "</th></tr>\n";
-
-         foreach ($locked as $key => $val) {
-            echo "<tr class='tab_bg_1'>";
-
-            echo "<td class='center' width='10'>";
-            echo "<input type='checkbox' name='lockfield[" . $key . "]'></td>";
-            echo "<td class='left' width='95%'>" . $lockable_fields[$val] . "</td>";
-            echo "</tr>\n";
-         }
+         echo "<td class='center' width='10'>";
+         echo "<input type='checkbox' name='lockfield[" . $key . "]'></td>";
+         echo "<td class='left' width='95%'>" . $lockable_fields[$val] . "</td>";
+         echo "</tr>\n";
       }
    }
    $params['header'] = $header;

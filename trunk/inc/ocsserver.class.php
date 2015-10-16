@@ -5337,12 +5337,58 @@ JAVASCRIPT;
             if ($location->fields['entities_id'] == $computer->fields['entities_id']
             || (in_array($location->fields['entities_id'], $ancestors)
             && $location->fields['is_recursive'])){
-
-               $tmp['locations_id'] = $data['locations_id'];
-               $tmp['id']           = $line_links['computers_id'];
-               $computer->update($tmp);
+               $ko = 0;
+               $locks = self::getLocksForComputer($line_links['computers_id']);
+               if (count($locks)) {
+                  if (in_array("locations_id",$locks)) {
+                     $ko = 1;
+                  }
+               }
+               if ($ko == 0) {
+                  $tmp['locations_id'] = $data['locations_id'];
+                  $tmp['id']           = $line_links['computers_id'];
+                  $computer->update($tmp);
+               }
             }
          }
+      }
+   }
+   
+   static function getLocksForComputer($ID){
+      global $DB;
+      
+      $query = "SELECT *
+      FROM `glpi_plugin_ocsinventoryng_ocslinks`
+      WHERE `computers_id` = '$ID'";
+      $locks =array();
+      $result = $DB->query($query);
+      if ($DB->numrows($result) == 1) {
+         $data = $DB->fetch_assoc($result);
+
+         // Print lock fields for OCSNG
+         $lockable_fields = PluginOcsinventoryngOcsServer::getLockableFields();
+         $locked          = importArrayFromDB($data["computer_update"]);
+
+         if (!in_array(PluginOcsinventoryngOcsServer::IMPORT_TAG_078, $locked)) {
+            $locked = PluginOcsinventoryngOcsServer::migrateComputerUpdates($ID, $locked);
+         }
+
+         if (count($locked) > 0) {
+            foreach ($locked as $key => $val) {
+               if (!isset($lockable_fields[$val])) {
+                  unset($locked[$key]);
+               }
+            }
+         }
+         
+         if (count($locked)) {
+
+            foreach ($locked as $key => $val) {
+               $locks[$key] = $val;
+            }
+         }
+         
+         return $locks;
       }
    }
 
