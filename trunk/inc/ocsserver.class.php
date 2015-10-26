@@ -4669,7 +4669,7 @@ JAVASCRIPT;
    /**
     * Update config of a new software
     *
-    * This function create a new software in GLPI with some general datas.
+    * This function create a new disk in GLPI with some general datas.
     *
     * @param $computers_id integer : glpi computer id.
     * @param $ocsid integer : ocs computer id (ID).
@@ -5004,7 +5004,7 @@ JAVASCRIPT;
                                  "softwares_id = '".$vers->fields['softwares_id']."'") == 1) {
                   // 1 is the current to be removed
                   $soft->putInTrash($vers->fields['softwares_id'],
-                  __('Software deleted by OCSNG synchronization'));
+                  __('Software deleted by OCSNG synchronization', 'ocsinventoryng'));
                                  }
                $vers->delete(array("id" => $verid));
             }
