@@ -35,7 +35,8 @@ function plugin_ocsinventoryng_install() {
 
 
    if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers_profiles")
-         && !TableExists("glpi_plugin_ocsinventoryng_ocsservers")) {
+         && !TableExists("glpi_plugin_ocsinventoryng_ocsservers")
+         && !TableExists("ocs_glpi_ocsservers")) {
 
       $install = true;
       $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.1.0-empty.sql");
@@ -780,24 +781,6 @@ function plugin_ocsinventoryng_upgrademassocsimport121to13() {
                    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
          $DB->queryOrDie($query, "1.2.1 to 1.3 ".$DB->error());
       }
-
-      //Add fields to the default view
-      $query = "INSERT INTO `glpi_displayprefs` (`itemtype`, `num`, `rank`, `users_id`)
-                VALUES (" . PLUGIN_MASSOCSIMPORT_NOTIMPORTED . ", 2, 1, 0),
-                       (" . PLUGIN_MASSOCSIMPORT_NOTIMPORTED . ", 3, 2, 0),
-                       (" . PLUGIN_MASSOCSIMPORT_NOTIMPORTED . ", 4, 3, 0),
-                       (" . PLUGIN_MASSOCSIMPORT_NOTIMPORTED . ", 5, 4, 0),
-                       (" . PLUGIN_MASSOCSIMPORT_NOTIMPORTED . ", 6, 5, 0),
-                       (" . PLUGIN_MASSOCSIMPORT_NOTIMPORTED . ", 7, 6, 0),
-                       (" . PLUGIN_MASSOCSIMPORT_NOTIMPORTED . ", 8, 7, 0),
-                       (" . PLUGIN_MASSOCSIMPORT_NOTIMPORTED . ", 8, 7, 0),
-                       (" . PLUGIN_MASSOCSIMPORT_NOTIMPORTED . ", 10, 9, 0),
-                       (" . PLUGIN_MASSOCSIMPORT_DETAIL . ", 5, 1, 0),
-                       (" . PLUGIN_MASSOCSIMPORT_DETAIL . ", 2, 2, 0),
-                       (" . PLUGIN_MASSOCSIMPORT_DETAIL . ", 3, 3, 0),
-                       (" . PLUGIN_MASSOCSIMPORT_DETAIL . ", 4, 4, 0),
-                       (" . PLUGIN_MASSOCSIMPORT_DETAIL . ", 6, 5, 0)";
-      $DB->query($query);// or die($DB->error());
 
       $drop_fields = array (//Was not used, debug only...
                             "glpi_plugin_massocsimport_config" => "warn_if_not_imported",

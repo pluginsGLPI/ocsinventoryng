@@ -176,6 +176,10 @@ INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Wifi po
 INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Loopback port', 'Local', '*', 'NetworkPortLocal', NULL, NULL, NULL, NULL);
 
 ### glpi_rules
+ALTER TABLE `ocs_glpi_rules` 
+   ADD `uuid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+   ADD `condition` int(11) NOT NULL DEFAULT '0';
+   
 INSERT INTO `glpi_rules` SELECT * FROM `ocs_glpi_rules` WHERE `sub_type` = 'RuleImportEntity';
 INSERT INTO `glpi_rulecriterias` SELECT * FROM `ocs_glpi_rulecriterias` WHERE `rules_id` IN (SELECT `id` FROM `glpi_rules` WHERE `sub_type` = 'RuleImportEntity');
 INSERT INTO `glpi_ruleactions` SELECT * FROM `ocs_glpi_ruleactions` WHERE `rules_id` IN (SELECT `id` FROM `glpi_rules` WHERE `sub_type` = 'RuleImportEntity');
