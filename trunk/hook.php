@@ -2021,8 +2021,13 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration) {
             if (!$key) { // OcsServer::IMPORT_TAG_078
                continue;
             }
-            list($type, $nomdev) = explode('$$$$$', $val);
-            list($type, $iddev)  = explode('$$$$$', $key);
+
+            if (strstr($val, '$$$$$') !== false) {
+               list($type, $nomdev) = explode('$$$$$', $val);
+            }
+            if (strstr($key, '$$$$$') !== false) {
+               list($type, $iddev) = explode('$$$$$', $key);
+            }
             if (!isset($types[$type])) { // should never happen
                continue;
             }
