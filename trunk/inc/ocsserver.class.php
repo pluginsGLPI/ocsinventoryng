@@ -6332,7 +6332,7 @@ JAVASCRIPT;
    **/
    function showSystemInformations($width) {
 
-      $ocsServers = getAllDatasFromTable('glpi_plugin_ocsinventoryng_ocsservers');
+      $ocsServers = getAllDatasFromTable('glpi_plugin_ocsinventoryng_ocsservers', "is_active = 1");
       if (!empty($ocsServers)) {
          echo "\n<tr class='tab_bg_2'><th>OCS Inventory NG</th></tr>\n";
 
