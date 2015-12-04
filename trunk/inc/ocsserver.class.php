@@ -242,7 +242,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                    FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
                    LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
                       ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
-                   WHERE `profiles_id`= ".$_SESSION["glpiactiveprofile"]['id']."
+                   WHERE `profiles_id`= ".$_SESSION["glpiactiveprofile"]['id']." AND `glpi_plugin_ocsinventoryng_ocsservers`.`is_active`='1'
                    ORDER BY `name` ASC";
          foreach($DB->request($query) as $data) {
             $ocsservers[] = $data['id'];
@@ -5531,6 +5531,7 @@ JAVASCRIPT;
                 FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
                 LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
                 ON `glpi_plugin_ocsinventoryng_ocsservers`.`id` = `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id`
+                WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`is_active`='1'
                 ORDER BY `glpi_plugin_ocsinventoryng_ocsservers`.`id` ASC LIMIT 1 ";
       $results = $DB->query($query);
       if ($DB->numrows($results) > 0){
@@ -6332,7 +6333,7 @@ JAVASCRIPT;
    **/
    function showSystemInformations($width) {
 
-      $ocsServers = getAllDatasFromTable('glpi_plugin_ocsinventoryng_ocsservers', "is_active = 1");
+      $ocsServers = getAllDatasFromTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
       if (!empty($ocsServers)) {
          echo "\n<tr class='tab_bg_2'><th>OCS Inventory NG</th></tr>\n";
 
