@@ -2580,57 +2580,61 @@ JAVASCRIPT;
       $computer = $ocsComputer;
       if (!is_null($computer)) {
          $compudate  = array();
-         $bios = $computer['BIOS'];
+         
+         if (isset($computer["BIOS"])) {
+         
+            $bios = $computer['BIOS'];
 
-         if ($cfg_ocs["import_general_serial"]
-               && $cfg_ocs["import_general_serial"] > 0
+            if ($cfg_ocs["import_general_serial"]
+                  && $cfg_ocs["import_general_serial"] > 0
+                     && intval($cfg_ocs["import_device_bios"]) > 0
+                        && !in_array("serial", $computer_updates)){
+               $compupdate["serial"] = self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
+               $bios["SSN"]);
+            }
+
+            if (intval($cfg_ocs["import_general_model"]) > 0
                   && intval($cfg_ocs["import_device_bios"]) > 0
-                     && !in_array("serial", $computer_updates)){
-            $compupdate["serial"] = self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
-            $bios["SSN"]);
-         }
+                     && !in_array("computermodels_id", $computer_updates)) {
 
-         if (intval($cfg_ocs["import_general_model"]) > 0
-               && intval($cfg_ocs["import_device_bios"]) > 0
-                  && !in_array("computermodels_id", $computer_updates)) {
+               $compupdate["computermodels_id"]
+               = Dropdown::importExternal('ComputerModel',
+               self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
+               $bios["SMODEL"]),
+               -1,
+               (isset($bios["SMANUFACTURER"])
+               ?array("manufacturer" => $bios["SMANUFACTURER"])
+               :array()));
+            }
 
-            $compupdate["computermodels_id"]
-            = Dropdown::importExternal('ComputerModel',
-            self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
-            $bios["SMODEL"]),
-            -1,
-            (isset($bios["SMANUFACTURER"])
-            ?array("manufacturer" => $bios["SMANUFACTURER"])
-            :array()));
-         }
+            if (intval($cfg_ocs["import_general_manufacturer"]) > 0
+                  && intval($cfg_ocs["import_device_bios"]) > 0
+                     && !in_array("manufacturers_id", $computer_updates)) {
 
-         if (intval($cfg_ocs["import_general_manufacturer"]) > 0
-               && intval($cfg_ocs["import_device_bios"]) > 0
-                  && !in_array("manufacturers_id", $computer_updates)) {
+               $compupdate["manufacturers_id"]
+               = Dropdown::importExternal('Manufacturer',
+               self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
+               $bios["SMANUFACTURER"]));
+            }
 
-            $compupdate["manufacturers_id"]
-            = Dropdown::importExternal('Manufacturer',
-            self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
-            $bios["SMANUFACTURER"]));
-         }
+            if (intval($cfg_ocs["import_general_type"]) > 0
+                  && intval($cfg_ocs["import_device_bios"]) > 0
+                     && !empty ($bios["TYPE"])
+                        && !in_array("computertypes_id", $computer_updates)) {
 
-         if (intval($cfg_ocs["import_general_type"]) > 0
-               && intval($cfg_ocs["import_device_bios"]) > 0
-                  && !empty ($bios["TYPE"])
-                     && !in_array("computertypes_id", $computer_updates)) {
+               $compupdate["computertypes_id"]
+               = Dropdown::importExternal('ComputerType',
+               self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
+               $bios["TYPE"]));
+            }
 
-            $compupdate["computertypes_id"]
-            = Dropdown::importExternal('ComputerType',
-            self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
-            $bios["TYPE"]));
-         }
-
-         if (count($compupdate)) {
-            $compupdate["id"]          = $computers_id;
-            $compupdate["entities_id"] = $entities_id;
-            $compupdate["_nolock"]     = true;
-            $comp                      = new Computer();
-            $comp->update($compupdate, $dohistory);
+            if (count($compupdate)) {
+               $compupdate["id"]          = $computers_id;
+               $compupdate["entities_id"] = $entities_id;
+               $compupdate["_nolock"]     = true;
+               $comp                      = new Computer();
+               $comp->update($compupdate, $dohistory);
+            }
          }
       }
    }
