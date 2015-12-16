@@ -33,7 +33,7 @@ if (!defined('GLPI_ROOT')) {
 /// Class DeviceBios
 class PluginOcsinventoryngDeviceBiosdata extends CommonDevice {
 
-   static protected $forward_entity_to = array('PluginOcsinventoryng_Item_DeviceBiosdata', 'Infocom');
+   static protected $forward_entity_to = array('PluginOcsinventoryngItem_DeviceBiosdata', 'Infocom');
 
    static function getTypeName($nb=0) {
       return __('Bios');
