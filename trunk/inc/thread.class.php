@@ -233,7 +233,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
    /**
     * @param $target
    **/
-   function showProcesses($target) {
+   function showProcesses($target, $plugin_ocsinventoryng_ocsservers_id = 0) {
       global $DB, $CFG_GLPI;
 
       $canedit = Session::haveRight("plugin_ocsinventoryng", UPDATE);
@@ -273,8 +273,11 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                      SUM(`not_unique_machines_number`) AS not_unique_machines_number,
                      SUM(`link_refused_machines_number`) AS link_refused_machines_number,
                      `end_time` >= DATE_ADD(NOW(), INTERVAL - " . $minfreq . " HOUR) AS DoStat
-              FROM `" . $this->getTable() . "`
-              GROUP BY `processid`
+              FROM `" . $this->getTable() . "` ";
+      if ($plugin_ocsinventoryng_ocsservers_id > 0) {
+         $sql .= "WHERE `plugin_ocsinventoryng_ocsservers_id` = ".$plugin_ocsinventoryng_ocsservers_id."";
+      }
+      $sql .= " GROUP BY `processid`
               ORDER BY `id` DESC
               LIMIT 50";
       $result = $DB->query($sql);
@@ -282,8 +285,11 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "<div class='center'>";
       echo "<form name='processes' id='processes' action='$target' method='post'>";
       echo "<table class='tab_cadrehov'>";
-      echo "<tr><th colspan='16'>".__('Processes execution of automatic actions', 'ocsinventoryng') .
-           "</th></tr>";
+      echo "<tr><th colspan='16'>".__('Processes execution of automatic actions', 'ocsinventoryng');
+      if (Session::haveRecursiveAccessToEntity(0)) {
+         echo "&nbsp;<a href='thread.php?plugin_ocsinventoryng_ocsservers_id=0'>(".__('See all servers', 'ocsinventoryng').")</a>";
+      }
+      echo "</th></tr>";
       echo "<tr>";
       echo"<th>&nbsp;</th>";
       echo"<th>&nbsp;</th>";

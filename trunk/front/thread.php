@@ -30,29 +30,29 @@ include ('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
+if (!isset($_GET["plugin_ocsinventoryng_ocsservers_id"]))
+   $_GET["plugin_ocsinventoryng_ocsservers_id"] = "0";
+   
 $thread = new PluginOcsinventoryngThread();
 
-if (Session::haveRecursiveAccessToEntity(0)) {
 
-   Html::header(__('Processes execution of automatic actions', 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "thread");
-   
-   if (isset ($_POST["delete_processes"])) {
-      //checkRight("ocsng", "w");
 
-      if (count($_POST["item"])) {
-         foreach ($_POST["item"] as $key => $val) {
-            $thread->deleteThreadsByProcessId($key);
-         }
+Html::header(__('Processes execution of automatic actions', 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "thread");
+
+if (isset ($_POST["delete_processes"])) {
+
+   if (count($_POST["item"])) {
+      foreach ($_POST["item"] as $key => $val) {
+         $thread->deleteThreadsByProcessId($key);
       }
-      Html::back();
-
-   } else {
-      $thread->showProcesses($_SERVER["PHP_SELF"]);
    }
-   Html::footer();
+   Html::back();
+
+} else {
+   $thread->showProcesses($_SERVER["PHP_SELF"], $_GET["plugin_ocsinventoryng_ocsservers_id"]);
 }
-else {
-   $thread->redirectToList();
-}
+
+Html::footer();
+
 
 ?>

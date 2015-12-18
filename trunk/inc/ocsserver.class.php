@@ -318,7 +318,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             if ($usemassimport) {
                //threads
                echo "<td class='center b' colspan='2'>
-                     <a href='thread.php'>
+                     <a href='thread.php?plugin_ocsinventoryng_ocsservers_id=".$plugin_ocsinventoryng_ocsservers_id."'>
                       <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/thread.png' ".
                "alt='".__s('Scripts execution of automatic actions', 'ocsinventoryng'). "' ".
                "title=\"" . __s('Scripts execution of automatic actions', 'ocsinventoryng') . "\">
