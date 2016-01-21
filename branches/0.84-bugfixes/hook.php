@@ -1241,7 +1241,7 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
     $sopt = array();
 
    if ($itemtype == 'Computer') {
-      if (plugin_ocsinventoryng_haveRight("ocsng","r")) {
+      if (plugin_ocsinventoryng_haveRight("view_ocsng","r")) {
 
          $sopt[10002]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
          $sopt[10002]['field']         = 'last_update';
