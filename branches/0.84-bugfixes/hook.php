@@ -31,14 +31,14 @@ function plugin_ocsinventoryng_install() {
 
    include_once (GLPI_ROOT."/plugins/ocsinventoryng/inc/profile.class.php");
 
-    $migration = new Migration(100);
+    $migration = new Migration(103);
 
 
    if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
        && !TableExists("ocs_glpi_ocsservers")) {
 
       $install = true;
-      $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.0-empty.sql");
+      $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.0.3-empty.sql");
       CronTask::Register('PluginOcsinventoryngOcsServer', 'ocsng', MINUTE_TIMESTAMP*5);
 
       $migration->createRule(array('sub_type'      => 'RuleImportEntity',
@@ -109,6 +109,15 @@ function plugin_ocsinventoryng_install() {
       }
       plugin_ocsinventoryng_migrateComputerLocks($migration);
 
+   }
+
+      //Update 1.0.3
+   If (TableExists("glpi_plugin_ocsinventoryng_networkports")
+       && !FieldExists('glpi_plugin_ocsinventoryng_networkports', 'speed')) {
+
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_networkports`
+                ADD `speed` varchar(255) COLLATE utf8_unicode_ci DEFAULT '10mb/s';";
+      $DB->queryOrDie($query, "1.0.3 update table glpi_plugin_ocsinventoryng_networkports");
    }
 
    PluginOcsinventoryngProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
@@ -1002,6 +1011,14 @@ function plugin_ocsinventoryng_MassiveActions($type) {
 
          }
          break;
+
+      case 'NetworkPort':
+         if (plugin_ocsinventoryng_haveRight("ocsng","w")
+             && Session::haveRight('networking','w')) {
+            return array('plugin_ocsinventoryng_update_networkport_type'
+                         =>  __('Update networkport types', 'ocsinventoryng'));
+         }
+
    }
    return array ();
 }
@@ -1044,8 +1061,16 @@ function plugin_ocsinventoryng_MassiveActionsDisplay($options=array()) {
                echo "<br><br><input type='submit' name='massiveaction' class='submit' value='".
                               _sx('button', 'Post')."'>";
                break;
-
          }
+
+      case 'NetworkPort':
+         switch ($options['action']) {
+            case "plugin_ocsinventoryng_update_networkport_type" :
+               echo "<input type='submit' name='massiveaction' class='submit' value='".
+                      _sx('button', 'Post')."'>\n";
+               break;
+         }
+
    }
    return "";
 }
@@ -1182,6 +1207,24 @@ function plugin_ocsinventoryng_MassiveActionsProcess($data) {
             }
          }
          break;
+
+      case 'plugin_ocsinventoryng_update_networkport_type':
+         $networkport = new PluginOcsinventoryngNetworkPort();
+         foreach ($data["item"] as $key => $val) {
+            if ($val == 1) {
+               if ($networkport->getFromDBByQuery("WHERE `networkports_id` = '$key'")) {
+                  if ($networkport->transformAccordingTypes()) {
+                     $nbok ++;
+                  } else {
+                     $nbko ++;
+                  }
+               } else {
+                  $nbko ++;
+               }
+            }
+         }
+         break;
+
    }
 
    return array('ok'      => $nbok,
