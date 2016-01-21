@@ -60,8 +60,10 @@ $nbtodo = 0;
 
 $crit = array('is_active' => 1);
 foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) {
-   $ocsservers_id=$serv ['id'];
+   $ocsservers_id = $serv ['id'];
    echo "\nServeur: ".$serv['name']."\n";
+
+   $PluginOcsinventoryngDBocs = PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
 
    if (!PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id)) {
       echo "** no connexion\n";
@@ -106,12 +108,12 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
       echo "+ Search OCS Computers\n";
       $query_ocs = "SELECT `ID`, `DEVICEID`
                     FROM `hardware`";
-      $result_ocs = $DBocs->query($query_ocs);
+      $result_ocs = $PluginOcsinventoryngDBocs->query($query_ocs);
 
       $hardware = array ();
-      $nb = $DBocs->numrows($result_ocs);
+      $nb = $PluginOcsinventoryngDBocs->numrows($result_ocs);
       if ($nb > 0) {
-         for ($i=1 ; $data = $DBocs->fetch_array($result_ocs) ; $i++) {
+         for ($i=1 ; $data = $PluginOcsinventoryngDBocs->fetch_array($result_ocs) ; $i++) {
             $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
             $hardware[$data["ID"]] = $data["DEVICEID"];
             echo "$i/$nb\r";

@@ -62,8 +62,8 @@ if (!isset($_GET["server"])) {
    die("\nUsage : php -q -f rollbackocs.php --server=# [ --run=1 ]\n");
 
 }
-$DBocs = new DBocs($_GET["server"]);
-echo "Connecting to ".$DBocs->dbhost."\n";
+$PluginOcsinventoryngDBocs = PluginOcsinventoryngOcsServer::getDBocs($_GET["server"]);
+echo "Connecting to ".$PluginOcsinventoryngDBocs->dbhost."\n";
 
 if (!PluginOcsinventoryngOcsServer::checkOCSconnection($_GET["server"])) {
    die("Failed connexion to OCS\n");
@@ -76,13 +76,13 @@ $sql = "SELECT *
         FROM `hardware`
         ORDER BY `ID` DESC
         LIMIT 0,1";
-$res = $DBocs->query($sql);
+$res = $PluginOcsinventoryngDBocs->query($sql);
 
-if (!($res && $DBocs->numrows($res)>0)){
+if (!($res && ($PluginOcsinventoryngDBocs->numrows($res) > 0))){
    die("No data from OCS\n");
 }
 
-$data  = $DBocs->fetch_array($res);
+$data  = $PluginOcsinventoryngDBocs->fetch_array($res);
 $maxid = $data["ID"];
 $maxti = $data["LASTCOME"];
 
@@ -131,15 +131,15 @@ while ($event=$DB->fetch_array($res)) {
          $sql = "SELECT `DEVICEID`
                  FROM `hardware`
                  WHERE `ID` = '".$event["old_value"]."'";
-         $resocs = $DBocs->query($sql);
+         $resocs = $PluginOcsinventoryngDBocs->query($sql);
 
          $olddevid = "";
-         if ($hard = $DBocs->fetch_array($resocs)) {
+         if ($hard = $PluginOcsinventoryngDBocs->fetch_array($resocs)) {
             $olddevid = $hard["DEVICEID"];
          }
 
          // Rollback the change in ocs_link
-         $sql = "UPDATE `glpi_ocslinks`
+         $sql = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                  SET `ocsid` = '" . $event["old_value"]."'";
 
          if (!empty($olddevid)) {
@@ -180,7 +180,7 @@ while ($event=$DB->fetch_array($res)) {
 
          // Unlink the computer
          $sql = "DELETE
-                 FROM `glpi_ocslinks`
+                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                  WHERE `computers_id` = '" . $event["items_id"]."'";
 
          if ($debug) {
