@@ -240,12 +240,21 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
          echo "<tr class='tab_bg_2'><td class='center'>" . __('Name'). "</td>";
          echo "<td class='center'>";
+         $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                   FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+                   LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
+                      ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`ocsservers_id`
+                           = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                   WHERE `profiles_id`= ".$_SESSION["glpiactiveprofile"]['id']."
+                   ORDER BY `name` ASC";
+         foreach($DB->request($query) as $data) {
+            $ocsservers[] = $data['id'];
+         }
          Dropdown::show('PluginOcsinventoryngOcsServer',
-                        array("condition" => "`is_active`='1'",
-                              "value"     => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                              "on_change" => "submit()",
-                              "display_emptychoice"
-                                          => false));
+                        array("condition"           => "`id` IN ('".implode("','",$ocsservers)."')",
+                              "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                              "on_change"           => "submit()",
+                              "display_emptychoice" => false));
          echo "</td></tr></table></div>";
          Html::closeForm();
       }
@@ -269,8 +278,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "</th></tr>";
 
 
-      if (plugin_ocsinventoryng_haveRight('ocsng','w')) {
-
+      if (plugin_ocsinventoryng_haveRight('ocsng','r')) {
          //config server
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                <a href='ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
@@ -280,9 +288,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                 <br>".sprintf(__('Configuration of OCSNG server %s', 'ocsinventoryng'),
                                                    $name)."
                </a></td>";
-
+      }
+      if (plugin_ocsinventoryng_haveRight('ocsng','w')) {
          if ($isactive) {
-
             if ($usemassimport) {
                //config massimport
                echo "<td class='center b' colspan='2'>
@@ -303,6 +311,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                      "title=\"".__s('Import new computers', 'ocsinventoryng')."\">
                      <br>".__('Import new computers', 'ocsinventoryng')."
                   </a></td>";
+
             if ($usemassimport) {
                //threads
                echo "<td class='center b' colspan='2'>
@@ -314,53 +323,63 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                      </a></td>";
             }
             echo "</tr>\n";
-
-            //manual synchro
-            echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-                  <a href='ocsng.sync.php'>
-                   <img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/synchro1.png' ".
-                     "alt='" .__s('Synchronize computers already imported', 'ocsinventoryng'). "' ".
-                     "title=\"" .__s('Synchronize computers already imported', 'ocsinventoryng'). "\">
-                     <br>".__('Synchronize computers already imported', 'ocsinventoryng')."
-                  </a></td>";
-            if ($usemassimport) {
-               //host imported by thread
-               echo "<td class='center b' colspan='2'>
-                     <a href='detail.php'>
-                      <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/detail.png' ".
-                        "alt='" .__s('Computers imported by automatic actions', 'ocsinventoryng'). "' ".
-                        "title=\"" .__s('Computers imported by automatic actions', 'ocsinventoryng'). "\">
-                        <br>".__('Computers imported by automatic actions', 'ocsinventoryng')."
-                     </a></td>";
-            }
-            echo "</tr>\n";
-
-            //link
-            echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-                  <a href='ocsng.link.php'>
-                   <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' ".
-                     "alt='" .__s('Link new OCSNG computers to existing GLPI computers',
-                                 'ocsinventoryng'). "' ".
-                     "title=\"" .__s('Link new OCSNG computers to existing GLPI computers',
-                                    'ocsinventoryng'). "\">
-                     <br>".__('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng')."
-                  </a></td>";
-            if ($usemassimport) {
-               //host not imported by thread
-               echo "<td class='center b' colspan='2'>
-                     <a href='notimportedcomputer.php'>
-                      <img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/notimported.png' ".
-                        "alt='" .__s('Computers not imported by automatic actions', 'ocsinventoryng'). "' ".
-                        "title=\"" . __s('Computers not imported by automatic actions', 'ocsinventoryng'). "\" >
-                        <br>".__('Computers not imported by automatic actions', 'ocsinventoryng')."
-                     </a></td>";
-            }
-            echo "</tr>\n";
-         } else {
-            echo "<tr class='tab_bg_2'><td class='center red' colspan='2'>";
-            _e('The selected server is not active. Import and synchronisation is not available', 'ocsinventoryng');
-            echo "</td></tr>\n";
          }
+      }
+      if (plugin_ocsinventoryng_haveRight('sync_ocsng','w')
+          && $isactive) {
+
+         //manual synchro
+         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+               <a href='ocsng.sync.php'>
+                <img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/synchro1.png' ".
+                  "alt='" .__s('Synchronize computers already imported', 'ocsinventoryng'). "' ".
+                  "title=\"" .__s('Synchronize computers already imported', 'ocsinventoryng'). "\">
+                  <br>".__('Synchronize computers already imported', 'ocsinventoryng')."
+               </a></td>";
+      }
+
+      if (plugin_ocsinventoryng_haveRight('ocsng','w')
+          && $isactive) {
+
+         if ($usemassimport) {
+            //host imported by thread
+            echo "<td class='center b' colspan='2'>
+                  <a href='detail.php'>
+                   <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/detail.png' ".
+                     "alt='" .__s('Computers imported by automatic actions', 'ocsinventoryng'). "' ".
+                     "title=\"" .__s('Computers imported by automatic actions', 'ocsinventoryng'). "\">
+                     <br>".__('Computers imported by automatic actions', 'ocsinventoryng')."
+                  </a></td>";
+         }
+         echo "</tr>\n";
+
+         //link
+         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+               <a href='ocsng.link.php'>
+                <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' ".
+                  "alt='" .__s('Link new OCSNG computers to existing GLPI computers',
+                               'ocsinventoryng'). "' ".
+                  "title=\"" .__s('Link new OCSNG computers to existing GLPI computers',
+                                  'ocsinventoryng'). "\">
+                  <br>".__('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng')."
+               </a></td>";
+         if ($usemassimport) {
+            //host not imported by thread
+            echo "<td class='center b' colspan='2'>
+                   <a href='notimportedcomputer.php'>
+                   <img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/notimported.png' ".
+                     "alt='" .__s('Computers not imported by automatic actions', 'ocsinventoryng'). "' ".
+                     "title=\"" . __s('Computers not imported by automatic actions', 'ocsinventoryng'). "\" >
+                    <br>".__('Computers not imported by automatic actions', 'ocsinventoryng')."
+                  </a></td>";
+         }
+         echo "</tr>\n";
+      }
+      if (!$isactive) {
+         echo "<tr class='tab_bg_2'><td class='center red' colspan='2'>";
+         _e('The selected server is not active. Import and synchronisation is not available',
+            'ocsinventoryng');
+         echo "</td></tr>\n";
       }
 
       if (plugin_ocsinventoryng_haveRight('clean_ocsng','r') && $isactive) {
@@ -387,9 +406,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    **/
    function ocsFormConfig($target, $ID) {
 
-      if (!plugin_ocsinventoryng_haveRight("ocsng", "w")) {
+      if (!plugin_ocsinventoryng_haveRight("ocsng", "r")) {
          return false;
       }
+      $canedit = plugin_ocsinventoryng_haveRight("ocsng", "w");
       $this->getFromDB($ID);
       echo "<br><div class='center'>";
       echo "<form name='formconfig' id='formconfig' action=\"$target\" method='post'>";
@@ -585,10 +605,12 @@ JAVASCRIPT;
       echo "<td class='tab_bg_2' colspan='2'>&nbsp;</td>";
       echo "</table>\n";
 
-      echo "<p class='submit'>";
-      echo "<input type='submit' name='update_server' class='submit' value=\"".
-            _sx('button', 'Save')."\">";
-      echo "</p>";
+      if ($canedit) {
+         echo "<p class='submit'>";
+         echo "<input type='submit' name='update_server' class='submit' value=\"".
+               _sx('button', 'Save')."\">";
+         echo "</p>";
+      }
       Html::closeForm();
       echo "</div>\n";
    }
@@ -699,10 +721,10 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_2'><td class='center'>".
              __('Number of items to synchronize via the automatic OCSNG action',  'ocsinventoryng').
            "</td>\n<td>";
-      Dropdown::showNumber('cron_sync_number', array(
-                'value' => $this->fields['cron_sync_number'],
-                'min'   => 1,
-                'toadd' => array(0 => __('None'))));
+      Dropdown::showNumber('cron_sync_number',
+                           array('value' => $this->fields['cron_sync_number'],
+                                 'min'   => 1,
+                                 'toadd' => array(0 => __('None'))));
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td class='center'>".
@@ -734,9 +756,10 @@ JAVASCRIPT;
    // fonction jamais appeléee
    function ocsFormAutomaticLinkConfig($target, $ID, $withtemplate='', $templateid='') {
 
-      if (!plugin_ocsinventoryng_haveRight("ocsng", "w")) {
+      if (!plugin_ocsinventoryng_haveRight("ocsng", "r")) {
          return false;
       }
+      $canedit = plugin_ocsinventoryng_haveRight("ocsng", "w");
       $this->getFromDB($ID);
       echo "<br><div class='center'>";
       echo "<form name='formconfig' action=\"$target\" method='post'>\n";
@@ -779,9 +802,10 @@ JAVASCRIPT;
                              'ocsinventoryng').
            "<br>". __('This option is taken into account during manual link and by synchronization scripts."',
                       'ocsinventoryng');
-
-      echo "<p class='submit'><input type='submit' name='update_server' class='submit' value='" .
-             _sx('button', 'Post') . "'></p>";
+      if ($canedit) {
+         echo "<p class='submit'><input type='submit' name='update_server' class='submit' value='" .
+                _sx('button', 'Post') . "'></p>";
+      }
       Html::closeForm();
       echo "</div>";
    }
@@ -798,9 +822,10 @@ JAVASCRIPT;
    **/
    function showForm($ID, $options=array()) {
 
-      if (!plugin_ocsinventoryng_haveRight("ocsng", "w")) {
+      if (!plugin_ocsinventoryng_haveRight("ocsng", "r")) {
          return false;
       }
+      $canedit = plugin_ocsinventoryng_haveRight("ocsng", "w");
 
       $rowspan = 4;
       //If no ID provided, or if the server is created using an existing template
@@ -869,8 +894,9 @@ JAVASCRIPT;
       }
 
       echo "</tr>\n";
-
-      $this->showFormButtons($options);
+      if ($canedit) {
+         $this->showFormButtons($options);
+      }
       $this->addDivForTabs();
    }
 
@@ -2499,8 +2525,8 @@ JAVASCRIPT;
          $compudate  = array();
 
          if ($cfg_ocs["import_general_serial"]
-               && $cfg_ocs["import_general_serial"] > 0
-                  && !in_array("serial", $computer_updates)){
+               && ($cfg_ocs["import_general_serial"] > 0)
+                  && !in_array("serial", $computer_updates)) {
             $compupdate["serial"] = self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
                                                               $line["SSN"]);
          }
@@ -4100,7 +4126,11 @@ JAVASCRIPT;
 
       $query = "SELECT*
                 FROM `glpi_plugin_ocsinventoryng_ocsservers`
-                WHERE `is_active`='1'
+                LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+                  ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`ocsservers_id`
+                      = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                WHERE `profiles_id`= ".$_SESSION["glpiactiveprofile"]['id']."
+                      AND `is_active`='1'
                 ORDER BY `name` ASC";
       $result = $DB->query($query);
 
@@ -5373,9 +5403,12 @@ JAVASCRIPT;
    static function getFirstServer(){
       global $DB;
 
-      $query = "SELECT `id`
-                FROM `glpi_plugin_ocsinventoryng_ocsservers`
-                ORDER BY `id` ASC LIMIT 1 ";
+      $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+                LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
+                  ON `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                        = `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`ocsservers_id`
+                ORDER BY `glpi_plugin_ocsinventoryng_ocsservers`.`id` ASC LIMIT 1 ";
       $results = $DB->query($query);
       if ($DB->numrows($results) > 0){
          return $DB->result($results, 0, 'id');

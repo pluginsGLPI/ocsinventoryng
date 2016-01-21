@@ -99,6 +99,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                if (count($data)) {
                   $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
+
                   echo "<table class='tab_glpi'>";
                   echo "<tr class='tab_bg_1'><th colspan='2'>".__('OCS Inventory NG')."</th>";
                   echo "<tr class='tab_bg_1'><td>".__('Last OCSNG inventory date', 'ocsinventoryng');
@@ -126,8 +127,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                      echo "</td></tr>";
                   }
 
-                  echo "<tr class='tab_bg_1'><td>".__('OCSNG TAG', 'ocsinventoryng').
-                       "</td>";
+                  echo "<tr class='tab_bg_1'><td>".__('OCSNG TAG', 'ocsinventoryng')."</td>";
                   echo "<td>";
                   echo $data["tag"];
                   echo "</td></tr>";

@@ -28,7 +28,7 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 include ('../../../inc/includes.php');
 
-plugin_ocsinventoryng_checkRight("ocsng", "w");
+plugin_ocsinventoryng_checkRight("ocsng", "r");
 
 $ocs = new PluginOcsinventoryngOcsServer();
 

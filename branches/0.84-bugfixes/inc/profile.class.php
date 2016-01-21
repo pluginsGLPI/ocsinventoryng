@@ -162,9 +162,15 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
     * @param $options   array
    **/
    function showForm($ID, $options=array()) {
+      global $DB;
 
       if (!Session::haveRight("profile", "r")) {
          return false;
+      }
+
+      $target = $this->getFormURL();
+      if (isset($options['target'])) {
+         $target = $options['target'];
       }
 
       $prof = new Profile();
@@ -173,18 +179,80 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
          $prof->getFromDB($ID);
       }
 
-      $this->showFormHeader($options);
+      $canedit = PluginOcsinventoryngOcsServer::canCreate();
+      echo "<form action='".$target."' method='post'>";
+      echo "<table class='tab_cadre_fixe'>";
 
       echo "<tr class='tab_bg_2'>";
       //TRANS: %$ is a profile name
-      echo "<th colspan='4' class='center b'>".sprintf(__('%1$s - %2$s'), __('Rights management'),
+      echo "<th colspan='4' class='center b'>".sprintf(__('%1$s - %2$s'), 'OcsinventoryNG',
                                                        $prof->fields["name"])."</th>";
       echo "</tr>";
 
-      echo "<tr class='tab_bg_2'>";
-      echo "<td>"._n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng')."</td><td>";
-      Profile::dropdownNoneReadWrite("ocsng", $this->fields["ocsng"], 1, 0, 1);
+      echo "<tr><th colspan='4'>"._n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng')."</th></tr>";
+
+      $used = array();
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>".sprintf(__('%1$s : %2$s'),
+                          _n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng'), "&nbsp;");
+      $profile = $this->fields['profiles_id'];
+      $crit    =  array('profiles_id' => $prof->fields['id']);
+      foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers_profiles", $crit) as $data) {
+         $used[$data['ocsservers_id']]     = $data['ocsservers_id'];
+         $configid[$data['ocsservers_id']] = $data['id'];
+      }
+      if (Session::haveRight("profile", "w")) {
+         Dropdown::show('PluginOcsinventoryngOcsServer', array('used'      => $used,
+                                                               'value'     => '',
+                                                               'condition' => "is_active = 1"));
+
+         echo "&nbsp;&nbsp;<input type='hidden' name='profile' value=$profile>";
+         echo "&nbsp;&nbsp;<input type='submit' name='addocsserver' value='Ajouter' class='submit' >";
+      }
+      $nbservers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers_profiles',
+                                        "`profiles_id` = ".$prof->fields['id']);
+
+      $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`,
+                       `glpi_plugin_ocsinventoryng_ocsservers`.`name`
+                FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+                LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
+                   ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`ocsservers_id`
+                        = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                WHERE `profiles_id`= ".$_SESSION["glpiactiveprofile"]['id']."
+                ORDER BY `name` ASC";
+      $result = $DB->query($query);
+
+      if ($data = $DB->fetch_assoc($result)) {
+         $ocsserver = new PluginOcsinventoryngOcsServer();
+         foreach ($used as $id) {
+            if ($ocsserver->getFromDB($id)) {
+               echo "<br>";
+               if (Session::haveRight("profile", "w")) {
+                  echo "<input type='checkbox' name='item[".$configid[$id]."]' value='1'>";
+               }
+               if ($data['id'] == $id) {
+                  echo $ocsserver->getLink();
+               } else {
+                  echo $ocsserver->getName();
+               }
+            }
+         }
+      }
+      if (!$nbservers) {
+         _e('None');
+      }
       echo "</td>";
+      echo "<td>".__('Rights assignment')."</td><td>";
+      Profile::dropdownNoneReadWrite("ocsng", $this->fields["ocsng"], 1, 0, 1);
+      echo "</td></tr>";
+
+      if ($nbservers && Session::haveRight("profile", "w")) {
+         echo "<tr><td class='tab_bg_2' colspan='4'>";
+         echo "<input type='submit' name='delete' value='Supprimer' class='submit' >";
+         echo "</td></tr>";
+      }
+
+      echo "<tr class='tab_bg_2'>";
       echo "<td>".__('Manually synchronization', 'ocsinventoryng')."</td><td>";
       Profile::dropdownNoneReadWrite("sync_ocsng", $this->fields["sync_ocsng"], 1, 0, 1);
       echo "</td></tr>\n";

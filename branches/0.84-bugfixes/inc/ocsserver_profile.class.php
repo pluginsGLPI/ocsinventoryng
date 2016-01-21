@@ -1,6 +1,6 @@
 <?php
 /*
- * @version $Id: HEADER 15930 2012-12-15 11:10:55Z tsmr $
+ * @version $Id$
 -------------------------------------------------------------------------
 Ocsinventoryng plugin for GLPI
 Copyright (C) 2012-2013 by the ocsinventoryng plugin Development Team.
@@ -26,26 +26,15 @@ You should have received a copy of the GNU General Public License
 along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 -------------------------------------------------------------------------- */
 
-class PluginOcsinventoryngServer extends CommonDBTM {
-
-
-   function getFromDBbyOcsServer($id) {
-      global $DB;
-
-      $query = "SELECT *
-                FROM `".$this->getTable()."`
-                WHERE `plugin_ocsinventoryng_ocsservers_id` = '$id'";
-
-      if ($result = $DB->query($query)) {
-         if ($DB->numrows($result) != 1) {
-            return false;
-         }
-         $this->fields = $DB->fetch_assoc($result);
-         if (is_array($this->fields) && count($this->fields)) {
-            return true;
-         }
-      }
-      return false;
-   }
+if (!defined('GLPI_ROOT')) {
+   die("Sorry. You can't access directly to this file");
 }
+
+class PluginOcsinventoryngOcsserver_Profile extends CommonDBTM {
+
+
+   static $rightname = "profile";
+
+}
+
 ?>

@@ -31,10 +31,46 @@ include ('../../../inc/includes.php');
 Session::checkRight("profile","r");
 
 $prof = new PluginOcsinventoryngProfile();
+$profservers = new PluginOcsinventoryngOcsserver_Profile();
+
+if (isset($_POST["addocsserver"]) && ($_POST['plugin_ocsinventoryng_ocsservers_id'] > 0)) {
+   $input['profiles_id'] = $_POST['profile'];
+   $input['ocsservers_id'] = $_POST['plugin_ocsinventoryng_ocsservers_id'];
+
+   $newID = $profservers->add($input);
+}
+
+if (isset($_POST["addallocsservers"])) {
+   global $DB;
+   $input['profiles_id'] = $_POST['profile'];
+   $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+             FROM `glpi_plugin_ocsinventoryng_ocsservers`
+             LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+               ON (`glpi_plugin_ocsinventoryng_ocsservers_profiles`.`ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                    AND `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`profiles_id` = ".$_POST['profile'].")
+             WHERE `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`id` IS NULL
+                   AND `glpi_plugin_ocsinventoryng_ocsservers`.`is_active` = 1";
+   foreach ($DB->request($query) as $data) {
+      $input['ocsservers_id'] = $data['id'];
+      $newID = $profservers->add($input);
+   }
+}
+
+if (isset ($_POST['delete']) && isset($_POST['item'])) {
+   $input = array();
+   foreach ($_POST['item'] as $id => $val) {
+      $input['id'] = $id;
+      $profservers->delete($input);
+   }
+}
+
+if (isset ($_POST['deleteall'])) {
+   $profservers->deleteByCriteria(array('profiles_id' => $_POST['profile']), true);
+}
 
 //Save profile
 if (isset ($_POST['update'])) {
    $prof->update($_POST);
-   Html::back();
 }
+Html::back();
 ?>

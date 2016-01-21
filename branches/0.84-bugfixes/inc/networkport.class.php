@@ -229,6 +229,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          } else {
             $ip = false;
          }
+
          $networkport_type = new PluginOcsinventoryngNetworkPortType();
          $networkport_type->getFromTypeAndTypeMIB($line);
 
@@ -423,11 +424,10 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
    }
 
 
-      function transformAccordingTypes() {
+   function transformAccordingTypes() {
       global $DB;
 
       $networkport_type = new PluginOcsinventoryngNetworkPortType();
-
       if ($networkport_type->getFromTypeAndTypeMIB($this->fields)) {
          if (isset($networkport_type->fields['instantiation_type'])
              && ($networkport_type->fields['instantiation_type'] != __CLASS__)) {
@@ -435,7 +435,6 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $networkport = $this->getItem();
             if ($networkport->switchInstantiationType($networkport_type->fields
                                                       ['instantiation_type']) !== false) {
-
                $instantiation = $networkport->getInstantiation();
                $input2        = $networkport_type->fields;
                unset($input2['id']);
@@ -452,7 +451,6 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                   $this->delete(array(static::getIndexName() => $this->getID()));
                   return true;
                }
-
             }
          }
       }
@@ -460,7 +458,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
    }
 
 
-      static private function getTextualType($type) {
+   static private function getTextualType($type) {
 
       if (empty($type)) {
          return '<i>'.__('empty', 'ocsinventoryng').'</i>';
