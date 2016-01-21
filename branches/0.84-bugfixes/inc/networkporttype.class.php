@@ -175,11 +175,13 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
             } else {
                $result['TYPEMIB']['type'] = 'MIB or wildcard';
             }
+         }
+      }
       return $result;
    }
 
 
-      static function getLinkToCreateFromTypeAndTypeMIB(array $fields=array()) {
+   static function getLinkToCreateFromTypeAndTypeMIB(array $fields=array()) {
 
       $link = static::getFormURL().'?TYPE='.$fields['TYPE'].'&amp;TYPEMIB='.$fields['TYPEMIB'];
       if (!empty($fields['speed'])) {
@@ -192,6 +194,7 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
       $link .= '&amp;rand=1'; // To reload main window
       return "<a href='#' onClick=\"var w=window.open('$link','glpipopup', 'height=400, ".
              "width=1000, top=100, left=100, scrollbars=yes' );w.focus();\">" .
+             __('Create', 'ocsinventoryng') . "</a>";
    }
 
 
