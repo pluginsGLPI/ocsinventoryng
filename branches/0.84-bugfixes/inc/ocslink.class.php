@@ -99,8 +99,6 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                if (count($data)) {
                   $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
-                  $target = Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcslink");
-                  echo "<form method='post' action=\"$target\">";
                   echo "<table class='tab_glpi'>";
                   echo "<tr class='tab_bg_1'><th colspan='2'>".__('OCS Inventory NG')."</th>";
                   echo "<tr class='tab_bg_1'><td>".__('Last OCSNG inventory date', 'ocsinventoryng');
@@ -127,13 +125,13 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                                                                                     __('OCS NG Interface','ocsinventoryng'));
                      echo "</td></tr>";
                   }
-                  
+
                   echo "<tr class='tab_bg_1'><td>".__('OCSNG TAG', 'ocsinventoryng').
                        "</td>";
                   echo "<td>";
                   echo $data["tag"];
                   echo "</td></tr>";
-                  
+
                   if (plugin_ocsinventoryng_haveRight("view_ocsng", "r")
                       && plugin_ocsinventoryng_haveRight("sync_ocsng", "w")) {
                      echo "<tr class='tab_bg_1'><td>".__('Automatic update OCSNG', 'ocsinventoryng').
@@ -143,7 +141,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                      echo "</td></tr>";
                   }
 
-                  
+
                   if (plugin_ocsinventoryng_haveRight("sync_ocsng", "w")) {
                      echo "<tr class='tab_bg_1'><td class='center' colspan='2'>";
                      Html::showSimpleForm($target, 'force_ocs_resynch',
@@ -151,10 +149,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                                           array('id' => $items_id,
                                                   'resynch_id' => $data["id"]));
                      echo "</td></tr>";
-                     
+
                   }
                   echo '</table>';
-                  Html::closeForm();
                }
             }
          }

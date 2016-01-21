@@ -2016,7 +2016,7 @@ function plugin_ocsinventoryng_item_transfer($options=array()) {
  * @param $migration
 **/
 function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration) {
-   global $DB;
+   global $DB, $CFG_GLPI;
 
    $import = array('import_printer'    => 'Printer',
                    'import_monitor'    => 'Monitor',
