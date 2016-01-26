@@ -967,7 +967,9 @@ function plugin_ocsinventoryng_uninstall() {
                    "glpi_plugin_ocsinventoryng_registrykeys",
                    "glpi_plugin_ocsinventoryng_networkports",
                    "glpi_plugin_ocsinventoryng_networkporttypes",
-                   "glpi_plugin_ocsinventoryng_ocsservers_profiles");
+                   "glpi_plugin_ocsinventoryng_ocsservers_profiles",
+                   "glpi_plugin_ocsinventoryng_devicebiosdatas",
+                   "glpi_plugin_ocsinventoryng_items_devicebiosdatas");
 
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
