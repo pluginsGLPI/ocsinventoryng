@@ -975,8 +975,7 @@ function plugin_ocsinventoryng_uninstall() {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
    }
 
-   $tables_glpi = array("glpi_bookmarks", "glpi_displaypreferences",
-                        "glpi_documents_items", "glpi_logs", "glpi_tickets");
+   $tables_glpi = array("glpi_bookmarks", "glpi_displaypreferences" , "glpi_logs");
 
    foreach ($tables_glpi as $table_glpi) {
       $DB->query("DELETE
