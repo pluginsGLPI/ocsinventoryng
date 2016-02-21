@@ -48,7 +48,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    const OCS_VERSION_LIMIT    = 4020;
    const OCS1_3_VERSION_LIMIT = 5004;
    const OCS2_VERSION_LIMIT   = 6000;
-
+   const OCS2_2_VERSION_LIMIT   = 7009;
+   
    // Class constants - import_ management
    const FIELD_SEPARATOR = '$$$$$';
    const IMPORT_TAG_070  = '_version_070_';
@@ -559,6 +560,13 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_2'><td class='center'>".__('Bios')."</td>\n<td>";
       Dropdown::showYesNo("import_device_bios", $this->fields["import_device_bios"]);
       echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('System board')."</td>\n<td>";
+      Dropdown::showYesNo("import_device_motherboard", $this->fields["import_device_motherboard"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('After 7009 version of OCS Inventory NG && Depends on Bios import', 'ocsinventoryng')));
+      echo "&nbsp;</td></tr>\n";
+      
       echo "</table>";
 
       echo "</td>\n";
@@ -1467,6 +1475,9 @@ JAVASCRIPT;
                if ($ocsConfig["import_device_bios"]) {
                   self::resetDevices($computers_id, 'PluginOcsinventoryngDeviceBiosdata');
                }
+               if ($ocsConfig["import_device_motherboard"]) {
+                  self::resetDevices($computers_id, 'DeviceMotherboard');
+               }
                if ($ocsConfig["import_software"]) {
                   self::resetSoftwares($computers_id);
                }
@@ -2094,7 +2105,10 @@ JAVASCRIPT;
                if ($mixed_checksum & pow(2, self::BIOS_FL)) {
                   $bios = true;
                   $ocsCheck[]= PluginOcsinventoryngOcsClient::CHECKSUM_BIOS;
-
+                  if ($cfg_ocs["import_device_motherboard"] 
+                        && $cfg_ocs['ocs_version'] >= self::OCS2_2_VERSION_LIMIT){
+                     $mb=true;
+                  }
                }
                if ($mixed_checksum & pow(2, self::MEMORIES_FL)) {
 
@@ -2295,6 +2309,11 @@ JAVASCRIPT;
             }
             if ($bios) {
                self::updateDevices("PluginOcsinventoryngItem_DeviceBiosdata", $line['computers_id'], $ocsComputer,
+               $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs,
+               $import_device, '', $dohistory);
+            }
+            if ($mb) {
+               self::updateDevices("Item_DeviceMotherboard", $line['computers_id'], $ocsComputer,
                $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs,
                $import_device, '', $dohistory);
             }
@@ -3946,9 +3965,9 @@ JAVASCRIPT;
                            $DeviceSoundCard = new DeviceSoundCard();
                            $snd_id          = $DeviceSoundCard->import($snd);
                            if ($snd_id){
-                              $devID = $CompDevice->add(array('items_id'           => $computers_id,
+                              $devID = $CompDevice->add(array('items_id'               => $computers_id,
                                                                  'itemtype'            => 'Computer',
-                                                                 'entities_id'     => $entities_id,
+                                                                 'entities_id'         => $entities_id,
                                                                  'devicesoundcards_id' => $snd_id,
                                                                  'is_dynamic'          => 1,
                                                                  '_no_history'         => !$dohistory));
@@ -3991,6 +4010,41 @@ JAVASCRIPT;
                                                             'is_dynamic'      => 1,
                                                             'entities_id'     => $entities_id,
                                                             '_no_history'     => !$dohistory));
+                     }
+                  } else{
+                     $tmp = array_search(stripslashes($prevalue.$bios["designation"]),
+                     $import_device);
+                     unset ($import_device[$tmp]);
+                  }
+               }
+            }
+            break;
+         case "Item_DeviceMotherboard":
+            $CompDevice = new $devicetype();
+            //Bios
+            $do_clean = true;
+            if ($ocsComputer) {
+
+               if (isset($ocsComputer['BIOS'])) {
+                  $mb["designation"] = $ocsComputer['BIOS']["MMODEL"];
+                  
+                  $mb["entities_id"] = $entities_id;
+                  $mb["manufacturers_id"]= Dropdown::importExternal('Manufacturer',
+                                                                           self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
+                                                                           $ocsComputer['BIOS']["MMANUFACTURER"]));
+                  if (!in_array(stripslashes($prevalue.$bios["designation"]), $import_device)){
+
+                     $DeviceMB = new DeviceMotherboard();
+                     $devicemotherboards_id = $DeviceMB->import($mb);
+                     if ($devicemotherboards_id){
+                        $serial = $ocsComputer['BIOS']["MSN"];
+                        $devID = $CompDevice->add(array('items_id'                  => $computers_id,
+                                                         'itemtype'                 => 'Computer',
+                                                         'devicemotherboards_id'    => $devicemotherboards_id,
+                                                         'is_dynamic'               => 1,
+                                                         'serial'                    => $serial,
+                                                         'entities_id'              => $entities_id,
+                                                         '_no_history'              => !$dohistory));
                      }
                   } else{
                      $tmp = array_search(stripslashes($prevalue.$bios["designation"]),

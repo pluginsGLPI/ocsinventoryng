@@ -31,7 +31,7 @@ function plugin_ocsinventoryng_install() {
 
    include_once (GLPI_ROOT."/plugins/ocsinventoryng/inc/profile.class.php");
 
-    $migration = new Migration(110);
+    $migration = new Migration(122);
 
 
    if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers_profiles")
@@ -39,7 +39,7 @@ function plugin_ocsinventoryng_install() {
          && !TableExists("ocs_glpi_ocsservers")) {
 
       $install = true;
-      $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.1.0-empty.sql");
+      $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.2.2-empty.sql");
       
       $migration->createRule(array('sub_type'      => 'RuleImportEntity',
                                    'entities_id'   => 0,
@@ -231,6 +231,7 @@ function plugin_ocsinventoryng_install() {
       $DB->queryOrDie($query, "1.1.0 add table glpi_plugin_ocsinventoryng_items_devicebiosdatas");
    }
    
+
    PluginOcsinventoryngProfile::initProfile();
    PluginOcsinventoryngProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
    
@@ -250,8 +251,17 @@ function plugin_ocsinventoryng_install() {
       }
    }
 
-   $migration = new Migration("1.1.0");
    $migration->dropTable('glpi_plugin_ocsinventoryng_profiles');
+   
+   //Update 1.2.2
+   If (TableExists("glpi_plugin_ocsinventoryng_ocsservers")
+       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_device_motherboard')) {
+
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `import_device_motherboard` tinyint(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.2.2 update table glpi_plugin_ocsinventoryng_ocsservers");
+   }
+   
    
    // Si massocsimport import est installe, on verifie qu'il soit bien dans la dernière version
    if (TableExists("glpi_plugin_mass_ocs_import")) { //1.1 ou 1.2
