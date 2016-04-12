@@ -5352,7 +5352,8 @@ JAVASCRIPT;
 
       // If entity is changing move items to the new entities_id
       if (isset($data['entities_id'])
-      && $data['entities_id'] != $line_links['entities_id']){
+            && $data['entities_id'] > -1
+               && $data['entities_id'] != $line_links['entities_id']){
 
          if (!isCommandLine() && !Session::haveAccessToEntity($data['entities_id'])){
             Html::displayRightError();
