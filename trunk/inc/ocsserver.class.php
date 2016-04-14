@@ -4032,7 +4032,8 @@ JAVASCRIPT;
                   $mb["manufacturers_id"]= Dropdown::importExternal('Manufacturer',
                                                                            self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
                                                                            $ocsComputer['BIOS']["MMANUFACTURER"]));
-                  if (!in_array(stripslashes($prevalue.$bios["designation"]), $import_device)){
+
+                  if (!in_array(stripslashes($prevalue.$mb["designation"]), $import_device)){
 
                      $DeviceMB = new DeviceMotherboard();
                      $devicemotherboards_id = $DeviceMB->import($mb);
@@ -4047,7 +4048,7 @@ JAVASCRIPT;
                                                          '_no_history'              => !$dohistory));
                      }
                   } else{
-                     $tmp = array_search(stripslashes($prevalue.$bios["designation"]),
+                     $tmp = array_search(stripslashes($prevalue.$mb["designation"]),
                      $import_device);
                      unset ($import_device[$tmp]);
                   }
