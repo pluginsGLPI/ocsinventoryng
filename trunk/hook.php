@@ -1800,14 +1800,15 @@ function plugin_ocsinventoryng_ruleImportComputer_addGlobalCriteria($global_crit
  * @since 1.0
  */
 function plugin_ocsinventoryng_ruleImportComputer_getSqlRestriction($params = array()) {
+   global $CFG_GLPI;
    // Search computer, in entity, not already linked
-   
    
    //resolve The rule result no preview : Drop this restriction `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` IS NULL
    $params['sql_where'] .= " AND `glpi_computers`.`is_template` = '0' ";
    
-   $params['sql_where'] .= " AND `glpi_computers`.`entities_id` IN (".$params['where_entity'].")";
-
+   if ($CFG_GLPI['transfers_id_auto'] < 1) {
+      $params['sql_where'] .= " AND `glpi_computers`.`entities_id` IN (".$params['where_entity'].")";
+   }
    $params['sql_from']  = "`glpi_computers`
                            LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks`
                               ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`)";
