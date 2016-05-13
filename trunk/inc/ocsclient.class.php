@@ -145,6 +145,54 @@ abstract class PluginOcsinventoryngOcsClient {
     */
    abstract public function getComputers($options);
 
+    /**
+     * Returns a list of snmp devices
+     *
+     * @param array $options Possible options :
+     * 		array(
+     * 			'OFFSET' => int,
+     * 			'MAX_RECORDS' => int,
+     * 			'FILTER' => array(						// filter the computers to return
+     * 				'IDS' => array(int),				// list of computer ids to select
+     * 				'EXCLUDE_IDS' => array(int),		// list of computer ids to exclude
+     * 				'TAGS' => array(string),			// list of computer tags to select
+     * 				'EXCLUDE_TAGS' => array(string),	// list of computer tags to exclude
+     * 				'CHECKSUM' => int					// filter which sections have been modified (see CHECKSUM_* constants)
+     * 			),
+     * 			'DISPLAY' => array(		// select which sections of the computers to return
+     * 				'CHECKSUM' => int,	// inventory sections to return (see CHECKSUM_* constants)
+     * 				'WANTED' => int		// special sections to return (see WANTED_* constants)
+     * 			)
+     * 		)
+     *
+     * @return array List of snmp devices :
+     * 		array (
+     * 			'TOTAL_COUNT' => int, // the total number of computers for this query (without taking OFFSET and MAX_RECORDS into account)
+     * 			'SNMP' => array (
+     * 				array (
+     * 					'META' => array(
+     * 						'ID' => ...
+     * 						'CHECKSUM' => ...
+     * 						'DEVICEID' => ...
+     * 						'LASTCOME' => ...
+     * 						'LASTDATE' => ...
+     * 						'NAME' => ...
+     * 						'TAG' => ...
+     * 					),
+     * 					'SECTION1' => array(
+     * 						array(...),   // Section element 1
+     * 						array(...),   // Section element 2
+     * 						...
+     * 					),
+     * 					'SECTION2' => array(...),
+     * 					...
+     * 				),
+     * 				...
+     * 			)
+     * 		)
+     */
+    abstract public function getSnmp($options);
+
    /**
     * Returns the config for the given key
     *
@@ -275,6 +323,21 @@ abstract class PluginOcsinventoryngOcsClient {
       }
       return current($result['COMPUTERS']);
    }
+
+    public function getSnmpDevice($id, $options = array()) {
+        if (!isset($options['FILTER'])) {
+            $options['FILTER'] = array();
+        }
+
+        $options['FILTER']['IDS'] = array($id);
+        $result = $this->getSnmp($options);
+
+
+        if (!isset($result['TOTAL_COUNT']) || $result['TOTAL_COUNT'] < 1 || empty($result['SNMP'])) {
+            return null;
+        }
+        return current($result['SNMP']);
+    }
 
    /**
     * Returns the integer config for the given key

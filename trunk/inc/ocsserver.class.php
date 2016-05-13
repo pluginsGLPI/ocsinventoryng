@@ -371,6 +371,28 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                      </a></td>";
             }
             echo "</tr>\n";
+
+             // SNMP device import feature :D
+           // echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+           //     <a href='ocsngsnmp.import.php'>
+           //      <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' ".
+           //    "alt='" .__s('Import new snmp devices',
+           //        'ocsinventoryng'). "' ".
+           //    "title=\"" .__s('Import new snmp devices',
+           //        'ocsinventoryng'). "\">
+           //        <br>".__('Import new snmp devices', 'ocsinventoryng')."
+           //     </a></td>";
+
+           //host not imported by thread
+           // echo "<td class='center b' colspan='2'>
+           //    <a href='ocsngsnmp.sync.php'>
+           //     <img src='" . $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/synchro1.png' ".
+           //    "alt='" .__s('Synchronize snmp devices already imported', 'ocsinventoryng'). "' ".
+           //    "title=\"" . __s('Synchronize snmp devices already imported', 'ocsinventoryng'). "\" >
+           //       <br>".__('Synchronize snmp devices already imported', 'ocsinventoryng')."
+           //    </a></td>";
+           // echo "</tr>";
+
          } else {
             echo "<tr class='tab_bg_2'><td class='center red' colspan='2'>";
             _e('The selected server is not active. Import and synchronisation is not available', 'ocsinventoryng');
@@ -3105,6 +3127,149 @@ JAVASCRIPT;
       }
    }
 
+    static function showSnmpDeviceToUpdate($plugin_ocsinventoryng_ocsservers_id, $check, $start){
+        global $DB, $CFG_GLPI;
+
+        self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+        if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)){
+            return false;
+        }
+
+        $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
+
+        // Get linked computer ids in GLPI
+        $already_linked_query = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`ocs_id` AS ocsid
+                               FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
+                               WHERE `glpi_plugin_ocsinventoryng_snmpocslinks`.`plugin_ocsinventoryng_ocsservers_id`
+                                            = '$plugin_ocsinventoryng_ocsservers_id'";
+        $already_linked_result = $DB->query($already_linked_query);
+
+        if ($DB->numrows($already_linked_result) == 0) {
+            echo "<div class='center b'>".__('No new snmp device to be updated', 'ocsinventoryng')."</div>";
+            return;
+        }
+
+        $already_linked_ids = array();
+        while ($data = $DB->fetch_assoc($already_linked_result)) {
+            $already_linked_ids []= $data['ocsid'];
+        }
+
+        // Fetch linked computers from ocs
+        $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+        $ocsResult = $ocsClient->getSnmp(array(
+            'OFFSET' => $start,
+            'MAX_RECORDS' => $_SESSION['glpilist_limit'],
+            'ORDER' => 'LASTDATE',
+            'FILTER' => array(
+                'IDS' => $already_linked_ids,
+            )
+        ));
+
+        if (isset($ocsResult['SNMP'])) {
+            if (count($ocsResult['SNMP']) > 0) {
+                // Get all ids of the returned computers
+                $ocs_snmp_ids = array();
+                $hardware = array();
+
+                foreach ($ocsResult['SNMP'] as $snmp) {
+                    $LASTDATE = $snmp['META']['LASTDATE'];
+                    $ocs_snmp_inv [$snmp['META']['ID']]= $LASTDATE;
+
+                    $ID = $snmp['META']['ID'];
+                    $ocs_snmp_ids[] = $ID;
+
+                    if(isset($snmp['PRINTER'])){
+                        $TYPE = "printer";
+                    }
+                    else{
+                        $TYPE = "";
+                    }
+                    $ocs_snmp_type [$snmp['META']['ID']]= $TYPE;
+                }
+
+                // qurey snmp links
+                $query = "SELECT * FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
+                WHERE `glpi_plugin_ocsinventoryng_snmpocslinks`.`ocs_id` IN (".implode(',', $ocs_snmp_ids).")";
+                $result = $DB->query($query);
+
+                // Get all links between glpi and OCS
+                $already_linked = array();
+                if ($DB->numrows($result) > 0){
+                    while ($data = $DB->fetch_assoc($result)){
+                        $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
+
+                        $format = 'Y-m-d H:i:s';
+                        $last_glpi_update = DateTime::createFromFormat($format, $data['last_update']);
+                        $last_ocs_inventory = DateTime::createFromFormat($format, $ocs_snmp_inv[$data['ocs_id']]);
+
+                        if($last_ocs_inventory > $last_glpi_update){
+                            $already_linked[$data['id']] = $data;
+                        }
+                    }
+                }
+                echo "<div class='center'>";
+                echo "<h2>" . __('Snmp device updated in OCSNG', 'ocsinventoryng') . "</h2>";
+
+                $target = $CFG_GLPI['root_doc'].'/plugins/ocsinventoryng/front/ocsngsnmp.sync.php';
+                if (($numrows = $ocsResult['TOTAL_COUNT']) > 0){
+                    $parameters = "check=$check";
+                    Html::printPager($start, $numrows, $target, $parameters);
+
+                    echo "<form method='post' id='ocsng_form' name='ocsng_form' action='".$target."'>";
+                    self::checkBox($target);
+
+                    echo "<table class='tab_cadre_fixe'>";
+                    echo "<tr class='tab_bg_1'><td colspan='5' class='center'>";
+                    echo "<input class='submit' type='submit' name='update_ok' value=\"".
+                        _sx('button','Synchronize', 'ocsinventoryng')."\">";
+                    echo "</td></tr>\n";
+
+                    echo "<tr><th>". __('Update snmp device', 'ocsinventoryng')."</th>";
+                    echo "<th>".__('Import date in GLPI', 'ocsinventoryng')."</th>";
+                    echo "<th>" . __('Last OCSNG inventory date', 'ocsinventoryng')."</th>";
+                    echo "<th>&nbsp;</th></tr>\n";
+
+                    foreach ($already_linked as $ID => $tab){
+                        echo "<tr class='tab_bg_2 center'>";
+                        if($ocs_snmp_type[$tab["ocs_id"]] == "printer"){
+                            echo "<td><a href='" . $CFG_GLPI["root_doc"] . "/front/printer.form.php?id=".
+                                $tab["snmp_id"] . "'>" . $tab["snmp_id"] . "</a></td>\n";
+                        }
+                        else{
+                            echo "<td><a href='" . $CFG_GLPI["root_doc"] . "/front/networkequipment.form.php?id=".
+                                $tab["snmp_id"] . "'>" . $tab["snmp_id"] . "</a></td>\n";
+                        }
+                        echo "<td>" . Html::convDateTime($tab["last_update"]) . "</td>\n";
+                        echo "<td>" . Html::convDateTime($ocs_snmp_inv[$tab["ocs_id"]]) . "</td>\n";
+                        echo "<td><input type='checkbox' name='toupdate[" . $tab["snmp_id"] . "]' ".
+                            (($check == "all") ? "checked" : "") . "></td></tr>\n";
+                    }
+
+                    echo "<tr class='tab_bg_1'><td colspan='5' class='center'>";
+                    echo "<input class='submit' type='submit' name='update_ok' value=\"".
+                        _sx('button','Synchronize', 'ocsinventoryng')."\">";
+                    echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' ".
+                        "value='$plugin_ocsinventoryng_ocsservers_id'>";
+                    echo "</td></tr>";
+
+                    echo "<tr class='tab_bg_1'><td colspan='5' class='center'>";
+                    self::checkBox($target);
+                    echo "</table>\n";
+                    Html::closeForm();
+                    Html::printPager($start, $numrows, $target, $parameters);
+
+                } else{
+                    echo "<br><span class='b'>" . __('Update snmp device', 'ocsinventoryng') . "</span>";
+                }
+                echo "</div>";
+
+            } else{
+                echo "<div class='center b'>".__('No new snmp device to be updated', 'ocsinventoryng')."</div>";
+            }
+        } else{
+            echo "<div class='center b'>".__('No new snmp device to be updated', 'ocsinventoryng')."</div>";
+        }
+    }
 
    static function mergeOcsArray($computers_id, $tomerge, $field){
       global $DB;
@@ -6553,4 +6718,577 @@ JAVASCRIPT;
          }
       }
    }
+
+    // SNMP PART HERE
+
+    static function processSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock=0,
+                                $defaultentity=-1, $defaultlocation=-1) {
+        global $DB;
+
+        self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+        $comp = new Computer();
+
+        //Check it machine is already present AND was imported by OCS AND still present in GLPI
+        $query = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`id` , `snmp_id`
+                FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
+                LEFT JOIN `glpi_computers`
+                     ON `glpi_computers`.`id`=`glpi_plugin_ocsinventoryng_snmpocslinks`.`snmp_id`
+                WHERE `glpi_computers`.`id` IS NOT NULL
+                      AND `ocs_id` = '$ocsid'
+                      AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
+        $result_glpi_plugin_ocsinventoryng_ocslinks = $DB->query($query);
+
+        if ($DB->numrows($result_glpi_plugin_ocsinventoryng_ocslinks)) {
+            $datas = $DB->fetch_array($result_glpi_plugin_ocsinventoryng_ocslinks);
+            //Return code to indicates that the machine was synchronized
+            //or only last inventory date changed
+            return self::updateSnmp($datas["id"], $plugin_ocsinventoryng_ocsservers_id, 1, 0);
+        }
+        return self::importSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock,
+            $defaultentity, $defaultlocation);
+    }
+
+    static function importSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock=0, $defaultentity=-1, $defaultlocation=-1) {
+
+        global $DB;
+
+        self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+        $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+
+        $ocsSnmp = $ocsClient->getSnmpDevice($ocsid);
+
+        if($ocsSnmp['META']['ID'] == $ocsid){
+
+            $loc_id = self::checkIfExist("location", $ocsSnmp['META']['LOCATION']);
+            $dom_id = self::checkIfExist("domain", $ocsSnmp['META']['DOMAIN']);
+            $net_id = self::checkIfExist("network", $ocsSnmp['META']['DOMAIN']);
+
+            // If not printer add a simple network device
+            if($ocsSnmp['META']['TYPE'] != "Printer"){
+
+                $snmpDevice = new NetworkEquipment();
+                if($ocsSnmp['META']['TYPE'] == null){
+                  $type_id = self::checkIfExist("NetworkEquipmentType", "Network Device");
+                }else{
+                  $type_id = self::checkIfExist("network", $ocsSnmp['META']['TYPE']);
+                }
+
+                $input = array(
+                    "is_dynamic" => 1,
+                    "entities_id" => $_SESSION['glpidefault_entity'],
+                    "is_recursive" => 0,
+                    "name" => $ocsSnmp['META']['NAME'],
+                    "ram" => NULL,
+                    "serial" => NULL,
+                    "otherserial" => $ocsSnmp['META']['SNMPDEVICEID'],
+                    "contact" => $ocsSnmp['META']['CONTACT'],
+                    "contact_num" => NULL,
+                    "comment" => $ocsSnmp['META']['DESCRIPTION'],
+                    "locations_id" => $loc_id,
+                    "domains_id" => $dom_id,
+                    "networks_id" => $net_id,
+                    "networkequipmenttypes_id" => $type_id,
+                    "networkequipmentmodels_id" => 0,
+                    "networkequipmentfirmwares_id" => 0,
+                    "manufacturers_id" => 0,
+                    "states_id" => 0,
+                );
+
+                if(!empty($ocsSnmp['SWITCH'])){
+                    // ID col
+                    $man_id = self::checkIfExist("Manufacturer", $ocsSnmp['SWITCH']['MANUFACTURER']);
+                    $input['manufacturers_id'] = $man_id;
+                    $firm_id = self::checkIfExist("network", $ocsSnmp['SWITCH']['FIRMVERSION']);
+                    $input['networkequipmentfirmwares_id'] = $firm_id;
+                    $mod_id = self::checkIfExist("NetworkEquipmentModel", $ocsSnmp['SWITCH']['REFERENCE']);
+                    $input['networkequipmentmodels_id'] = $mod_id;
+                    // TEXT col
+                    $input['comment'] = $ocsSnmp['SWITCH']['DESCRIPTION'];
+                    $input['serial'] = $ocsSnmp['SWITCH']['SERIALNUMBER'];
+                    // Type
+                    $input['networkequipmenttypes_id'] = self::checkIfExist("NetworkEquipmentType", "Switch");
+                }
+
+                if(!empty($ocsSnmp['FANS'])){
+                    // ID col
+                    $man_id = self::checkIfExist("Manufacturer", $ocsSnmp['FANS']['MANUFACTURER']);
+                    $input['manufacturers_id'] = $man_id;
+                    $mod_id = self::checkIfExist("NetworkEquipmentModel", $ocsSnmp['FANS']['REFERENCE']);
+                    $input['networkequipmentmodels_id'] = $mod_id;
+                    // TEXT col
+                    $input['comment'] = $ocsSnmp['FANS']['DESCRIPTION'];
+                    $input['serial'] = $ocsSnmp['FANS']['SERIALNUMBER'];
+                    // Type
+                    $input['networkequipmenttypes_id'] = self::checkIfExist("NetworkEquipmentType", "Fan");
+                }
+
+                if(!empty($ocsSnmp['FIREWALLS'])){
+                    $input['serial'] = $ocsSnmp['FIREWALLS']['SERIALNUMBER'];
+                    // Type
+                    $input['networkequipmenttypes_id'] = self::checkIfExist("NetworkEquipmentType", "Firewall");
+                }
+
+                $id_snmp = $snmpDevice->add($input, array('unicity_error_message' => false));
+                $id = $id_snmp;
+                $type = "";
+            }
+
+            // Printer
+            if($ocsSnmp['META']['TYPE'] == "Printer"){
+
+                $snmpDevice = new Printer();
+
+                $input = array(
+                    "is_dynamic" => 1,
+                    "entities_id" => $_SESSION['glpidefault_entity'],
+                    "name" => $ocsSnmp['PRINTER']['NAME'],
+                    "contact" => $ocsSnmp['META']['CONTACT'],
+                    "comment" => $ocsSnmp['META']['DESCRIPTION'],
+                    "serial" => $ocsSnmp['META']['SNMPDEVICEID'],
+                    "have_ethernet" => 1,
+                    "locations_id" => $loc_id,
+                    "domains_id" => $dom_id,
+                    "networks_id" => $net_id,
+                    "last_pages_counter" => $ocsSnmp['PRINTER']['COUNTER'],
+                    "otherserial" => $ocsSnmp['PRINTER']['SERIALNUMBER'],
+                );
+
+                $id_printer = $snmpDevice->add($input, array('unicity_error_message' => false));
+                $id = $id_printer;
+                $type = 'printer';
+
+                if(!empty($ocsSnmp['META']['CARTRIDGES'])){
+
+                    $cartridges_items = new cartridgeitem();
+                    $input = array (
+                        "name" => $ocsSnmp['PRINTER']['NAME'],
+                        "entities_id" => $_SESSION['glpidefault_entity'],
+                        "comment" => $ocsSnmp['CARTRIDGES']['DESCRIPTION'],
+                        "locations_id" => $loc_id,
+                    );
+                    $cartridgesitems_id = $cartridges_items->add($input, array('unicity_error_message' => false));
+
+                    $cartridges = new cartridge();
+                    $input = array (
+                        "name" => $ocsSnmp['PRINTER']['NAME'],
+                        "entities_id" => $_SESSION['glpidefault_entity'],
+                        "comment" => $ocsSnmp['CARTRIDGES']['DESCRIPTION'],
+                        "locations_id" => $loc_id,
+                        "cartridgeitems_id" => $cartridgesitems_id,
+                        "printers_id" => $id_printer,
+                    );
+                    $ok = $cartridges->add($input, array('unicity_error_message' => false));
+                }
+
+            }
+
+            $date = date("Y-m-d H:i:s");
+            //Add to snmp link.
+            $query = "INSERT INTO `glpi_plugin_ocsinventoryng_snmpocslinks`
+                       SET `snmp_id` = '".$id."',
+                            `ocs_id` = '".$ocsid."',
+                            `type` = '".$type."',
+                            `last_update` = '".$date."',
+                           `plugin_ocsinventoryng_ocsservers_id` = '".$plugin_ocsinventoryng_ocsservers_id."'";
+            //$query = "INSERT INTO `glpi_plugin_ocsinventoryng_snmpocslinks`(`snmp_id`, `ocs_id`, `type`, `plugin_ocsinventoryng_ocsservers_id`)
+            //          VALUES ($id,$ocsid,$type,$plugin_ocsinventoryng_ocsservers_id)";
+
+            $DB->query($query);
+
+        }else{
+            var_dump("ERROR : ID RECORD PROBLEM");
+        }
+
+    }
+
+
+
+    // Check if object already exist NOR create it with ocs snmp data
+    static function checkIfExist($object, $data){
+
+        // Check for loc and all theses stuff
+        if ($data != "" or !empty($data) or is_null($data)){
+            // Check for domain / loc / network .
+            $location = new $object();
+            $reponse = $location->find("name = '".$data."'");
+            if (is_null($reponse) or empty($reponse)){
+                $input = array(
+                    "entities_id" => $_SESSION['glpidefault_entity'],
+                    "name" => $data,
+                );
+                $id = $location->add($input, array('unicity_error_message' => false));
+            }else{
+                foreach($reponse as $ident => $fields){
+                    $id = $fields['id'];
+                }
+            }
+
+            return $id;
+        }
+
+        return "";
+    }
+
+    static function updateSnmp ($ID, $plugin_ocsinventoryng_ocsservers_id){
+
+        global $DB;
+
+        $query = "SELECT * FROM `glpi_plugin_ocsinventoryng_snmpocslinks` WHERE snmp_id = ".$ID." AND plugin_ocsinventoryng_ocsservers_id = ".$plugin_ocsinventoryng_ocsservers_id;
+        $rep = $DB->query($query);
+        while ($data = $DB->fetch_array($rep)){
+            $ocsid = $data['ocs_id'];
+            $snmplink_id = $data['id'];
+        }
+
+        $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+        $ocsSnmp = $ocsClient->getSnmpDevice($ocsid);
+
+        $loc_id = self::checkIfExist("location", $ocsSnmp['META']['LOCATION']);
+        $dom_id = self::checkIfExist("domain", $ocsSnmp['META']['DOMAIN']);
+        $net_id = self::checkIfExist("network", $ocsSnmp['META']['DOMAIN']);
+
+        if(isset($ocsSnmp['PRINTER'])){
+            $printer = new Printer();
+            $printer->getFromDB($ID);
+
+            $input = array(
+                "id" => $ID,
+                "is_dynamic" => 1,
+                "entities_id" => $_SESSION['glpidefault_entity'],
+                "name" => $ocsSnmp['PRINTER']['NAME'],
+                "contact" => $ocsSnmp['META']['CONTACT'],
+                "comment" => $ocsSnmp['META']['DESCRIPTION'],
+                "serial" => $ocsSnmp['META']['SNMPDEVICEID'],
+                "have_ethernet" => 1,
+                "locations_id" => $loc_id,
+                "domains_id" => $dom_id,
+                "networks_id" => $net_id,
+                "last_pages_counter" => $ocsSnmp['PRINTER']['COUNTER'],
+                "otherserial" => $ocsSnmp['PRINTER']['SERIALNUMBER'],
+            );
+
+            $printer->update($input, array('unicity_error_message' => false));
+
+        }else{
+
+            $network_eq = new NetworkEquipment();
+            $network_eq->getFromDB($ID);
+
+            if($ocsSnmp['META']['TYPE'] == null){
+                $type_id = self::checkIfExist("NetworkEquipmentType", "Network Device");
+            }else{
+            	$type_id = self::checkIfExist("NetworkEquipmentType", $ocsSnmp['META']['TYPE']);
+            }
+
+            $input = array(
+                "id" => $ID,
+                "is_dynamic" => 1,
+                "entities_id" => $_SESSION['glpidefault_entity'],
+                "is_recursive" => 0,
+                "name" => $ocsSnmp['META']['NAME'],
+                "ram" => NULL,
+                "serial" => NULL,
+                "otherserial" => $ocsSnmp['META']['SNMPDEVICEID'],
+                "contact" => $ocsSnmp['META']['CONTACT'],
+                "contact_num" => NULL,
+                "comment" => $ocsSnmp['META']['DESCRIPTION'],
+                "locations_id" => $loc_id,
+                "domains_id" => $dom_id,
+                "networks_id" => $net_id,
+                "networkequipmenttypes_id" => $type_id,
+                "networkequipmentmodels_id" => 0,
+                "networkequipmentfirmwares_id" => 0,
+                "manufacturers_id" => 0,
+                "states_id" => 0,
+            );
+
+            if(isset($ocsSnmp['SWITCH'])){
+                // ID col
+                $man_id = self::checkIfExist("Manufacturer", $ocsSnmp['SWITCH']['MANUFACTURER']);
+                $input['manufacturers_id'] = $man_id;
+                $firm_id = self::checkIfExist("network", $ocsSnmp['SWITCH']['FIRMVERSION']);
+                $input['networkequipmentfirmwares_id'] = $firm_id;
+                $mod_id = self::checkIfExist("NetworkEquipmentModel", $ocsSnmp['SWITCH']['REFERENCE']);
+                $input['networkequipmentmodels_id'] = $mod_id;
+                // TEXT col
+                $input['comment'] = $ocsSnmp['SWITCH']['DESCRIPTION'];
+                $input['serial'] = $ocsSnmp['SWITCH']['SERIALNUMBER'];
+                // Type
+                $input['networkequipmenttypes_id'] = self::checkIfExist("NetworkEquipmentType", "Switch");
+            }
+
+            if(isset($ocsSnmp['FANS'])){
+                // ID col
+                $man_id = self::checkIfExist("Manufacturer", $ocsSnmp['FANS']['MANUFACTURER']);
+                $input['manufacturers_id'] = $man_id;
+                $mod_id = self::checkIfExist("NetworkEquipmentModel", $ocsSnmp['FANS']['REFERENCE']);
+                $input['networkequipmentmodels_id'] = $mod_id;
+                // TEXT col
+                $input['comment'] = $ocsSnmp['FANS']['DESCRIPTION'];
+                $input['serial'] = $ocsSnmp['FANS']['SERIALNUMBER'];
+                // Type
+                $input['networkequipmenttypes_id'] = self::checkIfExist("NetworkEquipmentType", "Fan");
+            }
+
+            if(!empty($ocsSnmp['FIREWALLS'])){
+                $input['serial'] = $ocsSnmp['FIREWALLS']['SERIALNUMBER'];
+                // Type
+                $input['networkequipmenttypes_id'] = self::checkIfExist("NetworkEquipmentType", "Firewall");
+            }
+
+            $network_eq->update($input, array('unicity_error_message' => false));
+            
+           $now = date("Y-m-d H:i:s");
+           $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks` SET `last_update` = '".$now."' WHERE `id` = ".$ID.";";
+           $DB->query($sql);
+
+        }
+
+    }
+
+    // Show snmp devices to add :)
+    static function showSnmpDeviceToAdd($serverId, $advanced, $check, $start, $entity=0, $tolinked=false){
+        global $DB, $CFG_GLPI;
+
+        if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)){
+            return false;
+        }
+
+        $title = __('Import new snmp devices', 'ocsinventoryng');
+        if ($tolinked) {
+            $title = __('Import new snmp devices into glpi',
+                'ocsinventoryng');
+        }
+        $target = $CFG_GLPI['root_doc'].'/plugins/ocsinventoryng/front/ocsng.import.php';
+        if ($tolinked){
+            $target = $CFG_GLPI['root_doc'].'/plugins/ocsinventoryng/front/ocsng.link.php';
+        }
+
+        // Get all links between glpi and OCS
+        $query_glpi = "SELECT ocs_id
+                     FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
+                     WHERE `plugin_ocsinventoryng_ocsservers_id` = '$serverId'";
+        $result_glpi = $DB->query($query_glpi);
+        $already_linked = array();
+        if ($DB->numrows($result_glpi) > 0){
+            while ($data = $DB->fetch_array($result_glpi)){
+                $already_linked []= $data["ocs_id"];
+            }
+        }
+
+        $cfg_ocs = self::getConfig($serverId);
+
+        $snmpOptions = array(
+            'OFFSET' => $start,
+            'MAX_RECORDS' => $_SESSION['glpilist_limit'],
+            'ORDER' => 'LASTDATE',
+            'FILTER' => array(
+                'EXCLUDE_IDS' => $already_linked
+            ),
+            'DISPLAY' => array(
+                'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
+            ),
+            'ORDER' => 'NAME'
+        );
+
+        if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
+            $snmpOptions['FILTER']['TAGS'] = $tag_limit;
+        }
+
+        if ($cfg_ocs["tag_exclude"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
+            $snmpOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
+        }
+        $ocsClient = self::getDBocs($serverId);
+        $ocsResult = $ocsClient->getSnmp($snmpOptions);
+
+        if (isset($ocsResult['SNMP'])) {
+            $snmp = $ocsResult['SNMP'];
+            if (count($snmp)) {
+                // Get all hardware from OCS DB
+                $hardware = array();
+                foreach ($snmp as $data) {
+                    $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
+                    $id = $data['META']['ID'];
+                    $hardware[$id]["id"]                    = $data['META']["ID"];
+                    $hardware[$id]["date"]                  = $data['META']["LASTDATE"];
+                    $hardware[$id]["name"]                  = $data['META']["NAME"];
+                    $hardware[$id]["ipaddr"]                = $data['META']["IPADDR"];
+                    $hardware[$id]["snmpdeviceid"]          = $data['META']["SNMPDEVICEID"];
+                    $hardware[$id]["description"]           = $data['META']["DESCRIPTION"];
+                    $hardware[$id]["type"]                  = $data['META']["TYPE"];
+                    $hardware[$id]["contact"]               = $data['META']["CONTACT"];
+                    $hardware[$id]["location"]              = $data['META']["LOCATION"];
+
+                }
+
+                $target = "ocsngsnmp.import.php";
+
+                if ($tolinked && count($hardware)){
+                    echo "<div class='center b'>".
+                        __('Caution! The imported data (see your configuration) will overwrite the existing one',
+                            'ocsinventoryng')."</div>";
+                }
+                echo "<div class='center'>";
+
+                if ($numrows = $ocsResult['TOTAL_COUNT']) {
+                    $parameters = "check=$check";
+                    Html::printPager($start, $numrows, $target, $parameters);
+
+                    //Show preview form only in import even in multi-entity mode because computer import
+                    //can be refused by a rule
+                    if (!$tolinked){
+                        echo "<div class='firstbloc'>";
+                        echo "<form method='post' name='ocsng_import_mode' id='ocsng_import_mode'
+                         action='$target'>\n";
+                        echo "<table class='tab_cadre_fixe'>";
+                        echo "<tr><th>". __('Manual import mode', 'ocsinventoryng'). "</th></tr>\n";
+                        echo "<tr class='tab_bg_1'><td class='center'>";
+                        echo "</td></tr>";
+                        echo "<tr class='tab_bg_1'><td class='center b'>".
+                            __('Check first that duplicates have been correctly managed in OCSNG',
+                                'ocsinventoryng')."</td>";
+                        echo "</tr></table>";
+                        Html::closeForm();
+                        echo "</div>";
+                    }
+
+                    echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
+                    if (!$tolinked){
+                        self::checkBox($target);
+                    }
+                    echo "<table class='tab_cadre_fixe'>";
+
+                    echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
+                    echo "<input class='submit' type='submit' name='import_ok' value=\"".
+                        _sx('button', 'Import', 'ocsinventoryng')."\">";
+                    echo "</td></tr>\n";
+
+                    echo "<tr><th>".__('Name'). "</th>\n";
+                    echo "<th>".__('Description')."</th>\n";
+                    echo "<th>" .__('IP Address', 'ocsinventoryng')."</th>\n";
+                    echo "<th>".__('Snmp Device ID', 'ocsinventoryng')."</th>\n";
+                    echo "<th>" . __('Date')."</th>\n";
+                    echo "<th>" . __('Contact')."</th>\n";
+                    echo "<th>" . __('Location')."</th>\n";
+                    echo "<th>".__('Type', 'ocsinventoryng')."</th>\n";
+                    echo "<th width='20%'>&nbsp;</th></tr>\n";
+
+                    foreach ($hardware as $ID => $tab){
+
+                        echo "<tr class='tab_bg_2'><td>". $tab["name"] . "</td>\n";
+                        echo "<td>".$tab["description"]."</td><td>".$tab["ipaddr"]."</td>";
+                        echo "<td>".$tab["snmpdeviceid"]."</td>\n";
+                        echo "<td>" . Html::convDateTime($tab["date"]) . "</td>\n";
+                        echo "<td>" . $tab["contact"] . "</td>\n";
+                        echo "<td>" . $tab["location"] . "</td>\n";
+                        echo "<td>" . $tab["type"] . "</td>\n";
+                        if ($advanced && !$tolinked){
+                            if (!isset ($data['entities_id']) || $data['entities_id'] == -1){
+                                echo "<td class='center'><img src=\"".$CFG_GLPI['root_doc']. "/pics/redbutton.png\"></td>\n";
+                                $data['entities_id'] = -1;
+                            } else{
+                                echo "<td class='center'>";
+                                $tmprule = new RuleImportEntity();
+                                if ($tmprule->can($data['_ruleid'],READ)){
+                                    echo "<a href='". $tmprule->getLinkURL()."'>".$tmprule->getName()."</a>";
+                                }  else{
+                                    echo $tmprule->getName();
+                                }
+                                echo "</td>\n";
+                            }
+                            echo "<td width='30%'>";
+                            $ent = "toimport_entities[".$tab["id"]."]";
+                            Entity::dropdown(array('name'     => $ent,
+                                'value'    => $data['entities_id'],
+                                'comments' => 0));
+                            echo "</td>\n";
+                            echo "<td width='30%'>";
+                            if (!isset($data['locations_id'])){
+                                $data['locations_id'] = 0;
+                            }
+                            $loc = "toimport_locations[".$tab["id"]."]";
+                            Location::dropdown(array('name'     => $loc,
+                                'value'    => $data['locations_id'],
+                                'comments' => 0));
+                            echo "</td>\n";
+                        }
+                        echo "<td>";
+                        if (!$tolinked) {
+                            echo "<input type='checkbox' name='toimport[" . $tab["id"] . "]' ".
+                                ($check == "all" ? "checked" : "") . ">";
+                        } else {
+
+                            $tab['entities_id'] = $entity;
+                            $rulelink         = new RuleImportComputerCollection();
+                            $rulelink_results = array();
+                            $params           = array('entities_id' => $entity,
+                                'plugin_ocsinventoryng_ocsservers_id'
+                                => $serverId);
+                            $rulelink_results = $rulelink->processAllRules(Toolbox::stripslashes_deep($tab),
+                                array(), $params);
+
+                            //Look for the computer using automatic link criterias as defined in OCSNG configuration
+                            $options       = array('name' => "tolink[".$tab["id"]."]");
+                            $show_dropdown = true;
+                            //If the computer is not explicitly refused by a rule
+                            if (!isset($rulelink_results['action'])
+                                || $rulelink_results['action'] != self::LINK_RESULT_NO_IMPORT){
+
+                                if (!empty($rulelink_results['found_computers'])){
+                                    $options['value']  = $rulelink_results['found_computers'][0];
+                                    $options['entity'] = $entity;
+                                }
+                                $options['width'] = "100%";
+                                Computer::dropdown($options);
+                            } else{
+                                echo "<img src='".$CFG_GLPI['root_doc']. "/pics/redbutton.png'>";
+                            }
+                        }
+                        echo "</td></tr>\n";
+                    }
+
+                    echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
+                    echo "<input class='submit' type='submit' name='import_ok' value=\"".
+                        _sx('button', 'Import', 'ocsinventoryng')."\">\n";
+                    echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' ".
+                        "value='$serverId'>";
+                    echo "</td></tr>";
+                    echo "</table>\n";
+                    Html::closeForm();
+
+                    if (!$tolinked){
+                        self::checkBox($target);
+                    }
+
+                    Html::printPager($start, $numrows, $target, $parameters);
+
+                } else {
+                    echo "<table class='tab_cadre_fixe'>";
+                    echo "<tr><th>" . $title . "</th></tr>\n";
+                    echo "<tr class='tab_bg_1'>";
+                    echo "<td class='center b'>".__('No new snmp device to be imported', 'ocsinventoryng').
+                        "</td></tr>\n";
+                    echo "</table>";
+                }
+                echo "</div>";
+
+            } else {
+                echo "<div class='center'>";
+                echo "<table class='tab_cadre_fixe'>";
+                echo "<tr><th>" .$title . "</th></tr>\n";
+                echo "<tr class='tab_bg_1'>";
+                echo "<td class='center b'>" .__('No new snmp device to be imported', 'ocsinventoryng').
+                    "</td></tr>\n";
+                echo "</table></div>";
+            }
+        } else {
+            echo "<div class='center'>";
+            echo "<table class='tab_cadre_fixe'>";
+            echo "<tr><th>" .$title . "</th></tr>\n";
+            echo "<tr class='tab_bg_1'>";
+            echo "<td class='center b'>" .__('No new snmp device to be imported', 'ocsinventoryng').
+                "</td></tr>\n";
+            echo "</table></div>";
+        }
+    }
 }

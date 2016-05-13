@@ -704,6 +704,21 @@ function plugin_ocsinventoryng_install() {
       $DB->queryOrDie($query, "1.2.2 update table glpi_plugin_ocsinventoryng_ocsservers add use_cleancron");
    }
    
+   if (!TableExists("glpi_plugin_ocsinventoryng_snmpocslinks")) {
+
+      $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_snmpocslinks` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `snmp_id` int(11) NOT NULL DEFAULT '0',
+                  `ocs_id` int(11) NOT NULL DEFAULT '0',
+                  `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `last_update` DATETIME COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
+                  PRIMARY KEY (`id`)
+               ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+      $DB->queryOrDie($query, "add table for snmp");
+   }
+   /**/
+   
    $cron = new CronTask();
    if (!$cron->getFromDBbyName('PluginOcsinventoryngThread','CleanOldThreads')) {
       CronTask::Register('PluginOcsinventoryngThread', 'CleanOldThreads', HOUR_TIMESTAMP,
@@ -980,6 +995,7 @@ function plugin_ocsinventoryng_uninstall() {
                    "glpi_plugin_ocsinventoryng_ocsadmininfoslinks",
                    "glpi_plugin_ocsinventoryng_profiles",
                    "glpi_plugin_ocsinventoryng_threads",
+                    "glpi_plugin_ocsinventoryng_snmpocslinks",
                    "glpi_plugin_ocsinventoryng_servers",
                    "glpi_plugin_ocsinventoryng_configs",
                    "glpi_plugin_ocsinventoryng_notimportedcomputers",

@@ -291,6 +291,18 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_items_devicebiosdatas` (
   KEY `item` (`itemtype`,`items_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+### Dump table glpi_plugin_ocsinventoryng_snmpocslinks
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_snmpocslinks`;
+CREATE TABLE `glpi_plugin_ocsinventoryng_snmpocslinks` (
+   `id` int(11) NOT NULL AUTO_INCREMENT,
+   `snmp_id` int(11) NOT NULL DEFAULT '0',
+   `ocs_id` int(11) NOT NULL DEFAULT '0',
+   `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+   `last_update` DATETIME COLLATE utf8_unicode_ci DEFAULT NULL,
+   `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
+   PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `glpi_plugin_ocsinventoryng_configs`(`id`,`thread_log_frequency`,`is_displayempty`,`import_limit`) VALUES (1, 2, 1, 0);
 
