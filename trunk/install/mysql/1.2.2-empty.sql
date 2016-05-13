@@ -96,6 +96,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `import_general_uuid` tinyint(1) NOT NULL DEFAULT '0',
   `ocs_version` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `conn_type` tinyint(1) NOT NULL DEFAULT '0',
+  `use_cleancron` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `date_mod` (`date_mod`),
   KEY `is_active` (`is_active`),

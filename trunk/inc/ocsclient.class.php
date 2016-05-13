@@ -211,7 +211,18 @@ abstract class PluginOcsinventoryngOcsClient {
    abstract public function getDeletedComputers();
 
    abstract public function removeDeletedComputers($deleted, $equivclean = null);
-
+   
+   
+   /**
+    * Get the old agents without inventory in ocsinventory
+    * 
+    * @return array The list of deleted computers : (DELETED contains the id or deviceid of the computer and equivalent and EQUIV contains the new id if the computer was marged)
+    * 		array (
+    * 			'DELETED' => 'EQUIV'
+    * 		)
+    */
+   abstract public function getOldAgents();
+   
    /**
     * Get the account info columns
     * 

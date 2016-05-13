@@ -208,6 +208,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                $computers[$meta['ID']]["META"]["LASTDATE"] = $meta["LASTDATE"];
                $computers[$meta['ID']]["META"]["NAME"] = $meta["NAME"];
                $computers[$meta['ID']]["META"]["TAG"] = $meta["TAG"];
+               $computers[$meta['ID']]["META"]["USERID"] = $meta["USERID"];
             }
 
             if ($check & $checksum) {
@@ -547,6 +548,100 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          }
       }
       return $data;
+   }
+   
+   /**
+    * @see PluginOcsinventoryngOcsClient::getOldAgents()
+    */
+   public function getOldAgents() {
+      
+      $config = $this->getConfig("GUI_REPORT_AGIN_MACH");
+      $delay = $config['IVALUE'];
+      $query = "SELECT id from hardware 
+                     WHERE ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) AND ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) 
+                     AND deviceid <> '_SYSTEMGROUP_' AND deviceid <> '_DOWNLOADGROUP_'";
+      $res = $this->db->query($query);
+      $data = array();
+
+      if ($res->num_rows > 0) {
+         while ($num = $this->db->fetch_assoc($res)) {
+            $data[] = $num;
+         }
+      }
+      return $data;
+   }
+   
+   public function deleteOldAgents($agents) {
+      
+      $i = 0;
+
+      foreach ($agents as $key => $val) {
+         foreach ($val as $k => $agent) {
+
+            $query="SELECT deviceid,name,IPADDR,OSNAME FROM hardware WHERE id='".$agent."' ";
+
+            $res = $this->db->query($query);
+            
+            if ($res->num_rows > 0) {
+               while ($num = $this->db->fetch_assoc($res)) {
+
+                  $did = $num["deviceid"];
+                  if ($did) {
+                     
+                     $tables = array("accesslog",
+                                    "accountinfo",
+                                    "bios",
+                                    "controllers",
+                                    "devices",
+                                    "download_history",
+                                    "download_servers",
+                                    "drives",
+                                    "groups",
+                                    "groups_cache",
+                                    "inputs",
+                                    "itmgmt_comments",
+                                    "javainfo",
+                                    "journallog",
+                                    "locks",
+                                    "memories",
+                                    "modems",
+                                    "monitors",
+                                    "networks",
+                                    "ports",
+                                    "printers",
+                                    "registry",
+                                    "slots",
+                                    "softwares",
+                                    "sounds",
+                                    "storages",
+                                    "videos",
+                                    "virtualmachines",
+                                    "cpus",
+                                    "sim"
+                                    );
+                     if (isset($tables) and is_array($tables)) {
+                        foreach ($tables as $table) {
+                        
+                           $sql="DELETE FROM $table WHERE hardware_id='".$agent."'";
+                           $this->db->query($sql);
+                        }
+                     }
+                     $sql="DELETE FROM download_enable WHERE SERVER_ID='".$agent."'";
+                     $this->db->query($sql);
+                     
+                     $sql="DELETE FROM hardware WHERE id='".$agent."'";
+                     $this->db->query($sql);
+                     
+                     //Deleted computers tracking
+                     $sql="INSERT INTO deleted_equiv(DELETED,EQUIVALENT) VALUES('$did','NULL')";
+                     $this->db->query($sql);
+                     $i++;
+                  }
+               }
+            }
+         }
+      }
+      return $i;
    }
 
    /**

@@ -277,10 +277,6 @@ function plugin_ocsinventoryng_install() {
          plugin_ocsinventoryng_upgrademassocsimport13to14();
       }
    }
-   if (TableExists('glpi_plugin_massocsimport_threads')
-         && !FieldExists('glpi_plugin_massocsimport_threads','not_unique_machines_number')) {
-         plugin_ocsinventoryng_upgrademassocsimport14to15();
-   }
 
    //Tables from massocsimport
    if (!TableExists('glpi_plugin_ocsinventoryng_threads')
@@ -699,16 +695,30 @@ function plugin_ocsinventoryng_install() {
       $DB->queryOrDie($query, $DB->error());
 
    }
-
+   
+   /*1.2.2*/
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+         && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','use_cleancron')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `use_cleancron` tinyint(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.2.2 update table glpi_plugin_ocsinventoryng_ocsservers add use_cleancron");
+   }
+   
    $cron = new CronTask();
    if (!$cron->getFromDBbyName('PluginOcsinventoryngThread','CleanOldThreads')) {
       CronTask::Register('PluginOcsinventoryngThread', 'CleanOldThreads', HOUR_TIMESTAMP,
                       array('param' => 24));
    }
+   if (!$cron->getFromDBbyName('PluginOcsinventoryngOcsServer','ocsng')) {
+      CronTask::Register('PluginOcsinventoryngOcsServer', 'ocsng', MINUTE_TIMESTAMP*5);
+   }
    if (!$cron->getFromDBbyName('PluginOcsinventoryngNotimportedcomputer','SendAlerts')) {
       // creation du cron - param = duree de conservation
       CronTask::Register('PluginOcsinventoryngNotimportedcomputer', 'SendAlerts', 10 * MINUTE_TIMESTAMP,
                          array('param' => 24));
+   }
+   if (!$cron->getFromDBbyName('PluginOcsinventoryngOcsServer','CleanOldAgents')) {
+      CronTask::Register('PluginOcsinventoryngOcsServer', 'CleanOldAgents', DAY_TIMESTAMP,array('state' => CronTask::STATE_DISABLE));
    }
 
    return true;
@@ -1045,9 +1055,17 @@ function plugin_ocsinventoryng_uninstall() {
    $cron = new CronTask;
    if ($cron->getFromDBbyName('PluginMassocsimportThread', 'CleanOldThreads')) {
       CronTask::Unregister('massocsimport');
+      CronTask::Unregister('CleanOldThreads');
    }
-   if ($cron->getFromDBbyName('PluginOcsinventoryngThread', 'CleanOldThreads')) {
+   if ($cron->getFromDBbyName('PluginOcsinventoryngOcsServer', 'ocsng')) {
       CronTask::Unregister('ocsinventoryng');
+      CronTask::Unregister('ocsng');
+   }
+   if ($cron->getFromDBbyName('PluginOcsinventoryngNotimportedcomputer', 'SendAlerts')) {
+      CronTask::Unregister('SendAlerts');
+   }
+   if ($cron->getFromDBbyName('PluginOcsinventoryngOcsServer', 'CleanOldAgents')) {
+      CronTask::Unregister('CleanOldAgents');
    }
    
    //Delete rights associated with the plugin
@@ -1486,6 +1504,12 @@ function plugin_ocsinventoryng_getRuleActions($params) {
          $actions['_affect_entity_by_tag']['name']          = __('Entity from TAG');
          $actions['_affect_entity_by_tag']['type']          = 'text';
          $actions['_affect_entity_by_tag']['force_actions'] = array('regex_result');
+         
+         /*$actions['locations_id']['name']     = __('Location');
+         $actions['locations_id']['type']     = 'dropdown';
+         $actions['locations_id']['table']    = 'glpi_locations';
+         $actions['locations_id']['force_actions'] = array('assign','fromuser');*/
+         
          break;
       case 'RuleImportComputer':
          $actions['_fusion']['name']        = _n('OCSNG link', 'OCSNG links', 1, 'ocsinventoryng');
@@ -1609,6 +1633,16 @@ function plugin_ocsinventoryng_executeActions($params) {
    $action = $params['action'];
    $output = $params['output'];
    switch ($params['params']['rule_itemtype']) {
+      /*case 'RuleImportEntity':
+         switch ($action->fields["action_type"]) {
+            case 'fromuser' :
+              if (($action->fields['field'] == 'locations_id')
+                  &&  isset($output['users_locations'])
+                  ) {
+                 $output['locations_id'] = $output['users_locations'];
+              }
+              break;
+         }*/
       case 'RuleImportComputer':
          if ($action->fields['field'] == '_fusion') {
             if ($action->fields["value"] == RuleImportComputer::RULE_ACTION_LINK_OR_IMPORT) {

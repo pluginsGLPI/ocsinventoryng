@@ -847,7 +847,9 @@ JAVASCRIPT;
       Dropdown::showFromArray('conn_type', $conn_type_values, array('value' => $this->fields['conn_type'],
                                                                      'on_change' => "form_init_all(this.form, this.selectedIndex);"));
       echo "</td>";
-      echo "<td colspan='2'>";
+      echo "<td class='center'>".__("Active")."</td>";
+      echo "<td>";
+      Dropdown::showYesNo("is_active",$this->fields["is_active"]);
       echo "</td>";
       echo "</tr>";
 
@@ -898,9 +900,10 @@ JAVASCRIPT;
       echo "</td>";
       echo "</tr>";
 
-      echo "<tr class='tab_bg_1'><td class='center'>".__("Active")."</td>";
+      echo "<tr class='tab_bg_1'>";
+      echo "<td class='center'>".__('Use automatic action for clean old agents & drop from OCSNG software', 'ocsinventoryng')."</td>";
       echo "<td>";
-      Dropdown::showYesNo("is_active",$this->fields["is_active"]);
+      Dropdown::showYesNo("use_cleancron", $this->fields["use_cleancron"]);
       echo "</td>";
 
       echo "<td>". __("Last update")."</td>";
@@ -1570,7 +1573,7 @@ JAVASCRIPT;
    }
 
 
-   static function manageDeleted($plugin_ocsinventoryng_ocsservers_id) {
+   static function manageDeleted($plugin_ocsinventoryng_ocsservers_id, $redirect = true) {
       global $DB, $CFG_GLPI, $PLUGIN_HOOKS;
       
       if (!(self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id) 
@@ -1695,13 +1698,16 @@ JAVASCRIPT;
             if(!empty($to_del)){
                $ocsClient->removeDeletedComputers($to_del);
             }
-            if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != "") {
-               $redirection = $_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING'];
+            //If cron, no redirect
+            if ($redirect) {
+               if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != "") {
+                  $redirection = $_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING'];
+               }
+               else {
+                  $redirection = $_SERVER['PHP_SELF'];
+               }
+               Html::redirect($redirection);
             }
-            else {
-               $redirection = $_SERVER['PHP_SELF'];
-            }
-            Html::redirect($redirection);
          }
          else{
             $_SESSION['ocs_deleted_equiv']['computers_to_del']=false;
@@ -5250,10 +5256,60 @@ JAVASCRIPT;
 
    static function cronInfo($name){
       // no translation for the name of the project
-      return array('description' => __('OCSNG', 'ocsinventoryng')." - ".__('Check OCSNG import script', 'ocsinventoryng'));
+      switch ($name) {
+         case 'ocsng':
+            return array('description' => __('OCSNG', 'ocsinventoryng')." - ".__('Check OCSNG import script', 'ocsinventoryng'));
+            break;
+         case 'CleanOldAgents':
+            return array('description' => __('OCSNG', 'ocsinventoryng')." - ".__('Clean old agents & drop from OCSNG software', 'ocsinventoryng'));
+            break;
+      }
    }
 
+   static function cronCleanOldAgents($task){
+      global $DB, $CFG_GLPI;
+      
+      $CronTask=new CronTask();
+      if ($CronTask->getFromDBbyName("PluginOcsinventoryngOcsServer","CleanOldAgents")) {
+         if ($CronTask->fields["state"]==CronTask::STATE_DISABLE) {
+            return 0;
+         }
+      } else {
+         return 0;
+      }
+      
+      $cron_status = 0;
+      $plugin_ocsinventoryng_ocsservers_id = 0;
+      foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers","`is_active` = 1 AND `use_cleancron` = 1") as $config) {
+         $plugin_ocsinventoryng_ocsservers_id = $config["id"];
+         if ($plugin_ocsinventoryng_ocsservers_id > 0){
 
+            $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+            $agents = $ocsClient->getOldAgents();
+
+            $computers = array();
+            if (count($agents) > 0) {
+
+               $nb = $ocsClient->deleteOldAgents($agents);
+               if ($nb) {
+                  self::manageDeleted($plugin_ocsinventoryng_ocsservers_id, false);
+                  $cron_status = 1;
+                  if ($task) {
+                     $task->addVolume($nb);
+                     $task->log(__('Clean old agents OK', 'ocsinventoryng'));
+                     
+                  }
+               } else {
+                  $task->log(__('Clean old agents failed', 'ocsinventoryng'));
+               }
+            }
+         }
+      }
+      
+      return $cron_status;
+   }
+   
+   
    static function cronOcsng($task){
       global $DB, $CFG_GLPI;
 
