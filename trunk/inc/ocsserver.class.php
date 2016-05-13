@@ -5292,7 +5292,7 @@ JAVASCRIPT;
 
                $nb = $ocsClient->deleteOldAgents($agents);
                if ($nb) {
-                  //self::manageDeleted($plugin_ocsinventoryng_ocsservers_id, false);
+                  self::manageDeleted($plugin_ocsinventoryng_ocsservers_id, false);
                   $cron_status = 1;
                   if ($task) {
                      $task->addVolume($nb);
