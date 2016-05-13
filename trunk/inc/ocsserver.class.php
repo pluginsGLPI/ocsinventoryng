@@ -1588,7 +1588,7 @@ JAVASCRIPT;
          if (count($deleted)) {
          
             foreach ($deleted as $del => $equiv) {
-               if (!empty($equiv) && !is_null($equiv)) { // New name
+               if (!empty($equiv) && $equiv != "NULL") { // New name ($equiv = VARCHAR)
 
                   // Get hardware due to bug of duplicates management of OCS
                   if (strpos($equiv,"-") !== false) {
@@ -5292,7 +5292,7 @@ JAVASCRIPT;
 
                $nb = $ocsClient->deleteOldAgents($agents);
                if ($nb) {
-                  self::manageDeleted($plugin_ocsinventoryng_ocsservers_id, false);
+                  //self::manageDeleted($plugin_ocsinventoryng_ocsservers_id, false);
                   $cron_status = 1;
                   if ($task) {
                      $task->addVolume($nb);
