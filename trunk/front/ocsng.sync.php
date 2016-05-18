@@ -54,7 +54,15 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
       Html::redirect($_SERVER['PHP_SELF']);
 
    } else {
-      PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_update"]['statistics'], true);
+
+      if (isset($_SESSION["ocs_update"]['statistics'])) {
+         PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_update"]['statistics'], true);
+      } else {
+         echo "<div class='center b red'>";
+         _e('No synchronization: the plugin will not synchronize these elements', 'ocsinventoryng');
+         echo "</div>";
+      }
+      
       unset($_SESSION["ocs_update"]);
       $display_list = false;
       echo "<div class='center b'><br>";

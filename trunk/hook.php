@@ -700,7 +700,19 @@ function plugin_ocsinventoryng_install() {
    if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
          && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','use_cleancron')) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `use_cleancron` tinyint(1) NOT NULL DEFAULT '0';";
+               ADD `use_cleancron` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_name` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_serial` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_comment` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_contact` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_location` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_domain` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_manufacturer` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_createport` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_last_pages_counter` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_firmware` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_power` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_fan` tinyint(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.2.2 update table glpi_plugin_ocsinventoryng_ocsservers add use_cleancron");
    }
    

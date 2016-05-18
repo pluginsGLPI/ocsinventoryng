@@ -45,7 +45,7 @@ if (isset ($_POST["purge"])) {
    $ocs->redirectToList();
 
 //Update server
-} else if (isset ($_POST["update"])) {
+} else if (isset ($_POST["update"]) || isset ($_POST["updateSNMP"])) {
    $ocs->check($_POST['id'],UPDATE);
    $ocs->update($_POST);
    Html::back();
