@@ -90,7 +90,19 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
          $menu['options']['clean']['title'] = __s('Clean links between GLPI and OCSNG', 'ocsinventoryng');
          $menu['options']['clean']['page']  = '/plugins/ocsinventoryng/front/ocsng.clean.php';
       }
+      
+      // Import
+      $menu['options']['importsnmp']['title'] = __s('Import new snmp devices', 'ocsinventoryng');
+      $menu['options']['importsnmp']['page']  = '/plugins/ocsinventoryng/front/ocsngsnmp.import.php';
 
+      // Sync
+      $menu['options']['syncsnmp']['title'] = __s('Synchronize snmp devices already imported', 'ocsinventoryng');
+      $menu['options']['syncsnmp']['page']  = '/plugins/ocsinventoryng/front/ocsngsnmp.sync.php';
+      
+      // Link
+      $menu['options']['synclink']['title'] = __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng');
+      $menu['options']['synclink']['page']  = '/plugins/ocsinventoryng/front/ocsngsnmp.link.php';
+      
       return $menu;
    }
 

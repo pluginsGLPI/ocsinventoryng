@@ -30,7 +30,7 @@ include ('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "import");
+Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "importsnmp");
 
 $display_list = true;
 //First time this screen is displayed : set the import mode to 'basic'
@@ -47,45 +47,45 @@ if (isset($_POST["change_import_mode"])) {
     }
 }
 
-if (isset($_SESSION["ocs_import"]["id"])) {
-    if ($count = count($_SESSION["ocs_import"]["id"])) {
-        $percent = min(100,
-            round(100*($_SESSION["ocs_import_count"]-$count)/$_SESSION["ocs_import_count"],
+if (isset($_SESSION["ocs_importsnmp"]["id"])) {
+    if ($count = count($_SESSION["ocs_importsnmp"]["id"])) {
+      $percent = min(100,
+            round(100*($_SESSION["ocs_importsnmp_count"]-$count)/$_SESSION["ocs_importsnmp_count"],
                 0));
 
-        $key = array_pop($_SESSION["ocs_import"]["id"]);
+      $key = array_pop($_SESSION["ocs_importsnmp"]["id"]);
 
-        if (isset($_SESSION["ocs_import"]["entities_id"][$key])) {
-            $entity = $_SESSION["ocs_import"]["entities_id"][$key];
-        } else {
-            $entity = -1;
-        }
+      if (isset($_SESSION["ocs_importsnmp"]["entities_id"][$key])) {
+         $params['entity'] = $_SESSION["ocs_importsnmp"]["entities_id"][$key];
+      } else {
+         $params['entity'] = -1;
+      }
+      
+      if (isset($_SESSION["ocs_importsnmp"]["itemtype"][$key])) {
+         $params['itemtype'] = $_SESSION["ocs_importsnmp"]["itemtype"][$key];
+      } else {
+         $params['itemtype'] = -1;
+      }
 
-        if (isset($_SESSION["ocs_import"]["locations_id"][$key])) {
-            $location = $_SESSION["ocs_import"]["locations_id"][$key];
-        } else {
-            $location = -1;
-        }
-
-        $conf   = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-        $action = PluginOcsinventoryngOcsServer::processSnmp($key,
+      $conf   = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+      $action = PluginOcsinventoryngOcsServer::processSnmp($key,
             $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-            0, $entity, $location);
-        PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_import"]['statistics'],
-            $action['status']);
-        PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_import"]['statistics']);
-        Html::displayProgressBar(400, $percent);
-        Html::redirect($_SERVER['PHP_SELF']);
+            0, $params);
+      PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_importsnmp"]['statistics'],
+            $action['status'], true);
+      PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_importsnmp"]['statistics'], false, true);
+      Html::displayProgressBar(400, $percent);
+      Html::redirect($_SERVER['PHP_SELF']);
     } else {
         //displayProgressBar(400, 100);
-        if (isset($_SESSION["ocs_import"]['statistics'])) {
-            PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_import"]['statistics'],true);
+        if (isset($_SESSION["ocs_importsnmp"]['statistics'])) {
+            PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_importsnmp"]['statistics'], false,true);
         } else {
             echo "<div class='center b red'>";
             _e('No import: the plugin will not import these elements', 'ocsinventoryng');
             echo "</div>";
         }
-        unset($_SESSION["ocs_import"]);
+        unset($_SESSION["ocs_importsnmp"]);
 
         echo "<div class='center b'><br>";
         echo "<a href='".$_SERVER['PHP_SELF']."'>".__('Back')."</a></div>";
@@ -100,10 +100,10 @@ if (!isset($_POST["import_ok"])) {
     if (!isset($_GET['start'])) {
         $_GET['start'] = 0;
     }
-    if (isset($_SESSION["ocs_import"])) {
-        unset($_SESSION["ocs_import"]);
+    if (isset($_SESSION["ocs_importsnmp"])) {
+        unset($_SESSION["ocs_importsnmp"]);
     }
-    PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+    //PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
     if ($display_list) {
         PluginOcsinventoryngOcsServer::showSnmpDeviceToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
             $_SESSION["change_import_mode"],
@@ -113,19 +113,20 @@ if (!isset($_POST["import_ok"])) {
 
 } else {
     if (isset($_POST["toimport"]) && (count($_POST['toimport']) > 0)) {
-        $_SESSION["ocs_import_count"] = 0;
+        $_SESSION["ocs_importsnmp_count"] = 0;
 
         foreach ($_POST['toimport'] as $key => $val) {
             if ($val == "on") {
-                $_SESSION["ocs_import"]["id"][] = $key;
+                $_SESSION["ocs_importsnmp"]["id"][] = $key;
 
                 if (isset($_POST['toimport_entities'])) {
-                    $_SESSION["ocs_import"]["entities_id"][$key] = $_POST['toimport_entities'][$key];
+                    $_SESSION["ocs_importsnmp"]["entities_id"][$key] = $_POST['toimport_entities'][$key];
                 }
-                if (isset($_POST['toimport_locations'])) {
-                    $_SESSION["ocs_import"]["locations_id"][$key] = $_POST['toimport_locations'][$key];
+                
+                if (isset($_POST['toimport_itemtype'])) {
+                    $_SESSION["ocs_importsnmp"]["itemtype"][$key] = $_POST['toimport_itemtype'][$key];
                 }
-                $_SESSION["ocs_import_count"]++;
+                $_SESSION["ocs_importsnmp_count"]++;
             }
         }
     }

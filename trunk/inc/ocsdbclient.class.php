@@ -257,42 +257,42 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
         $query = "SELECT * FROM `snmp_printers` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
         $request = $this->db->query($query);
         while ($snmp_request = $this->db->fetch_assoc($request)) {
-            $snmp[$snmp_request['SNMP_ID']]['PRINTER'] = $snmp_request;
+            $snmp[$snmp_request['SNMP_ID']]['PRINTER'][] = $snmp_request;
         }
 
         // Cartridges
         $query = "SELECT * FROM `snmp_cartridges` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
         $request = $this->db->query($query);
         while ($snmp_request = $this->db->fetch_assoc($request)) {
-            $snmp[$snmp_request['SNMP_ID']]['CARTRIDGES'] = $snmp_request;
+            $snmp[$snmp_request['SNMP_ID']]['CARTRIDGES'][] = $snmp_request;
         }
 
         // Switches
         $query = "SELECT * FROM `snmp_switchs` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
         $request = $this->db->query($query);
         while ($snmp_request = $this->db->fetch_assoc($request)) {
-            $snmp[$snmp_request['SNMP_ID']]['SWITCH'] = $snmp_request;
+            $snmp[$snmp_request['SNMP_ID']]['SWITCH'][] = $snmp_request;
         }
 
         // Powersupplies
         $query = "SELECT * FROM `snmp_powersupplies` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
         $request = $this->db->query($query);
         while ($snmp_request = $this->db->fetch_assoc($request)) {
-            $snmp[$snmp_request['SNMP_ID']]['POWERSUPPLIES'] = $snmp_request;
+            $snmp[$snmp_request['SNMP_ID']]['POWERSUPPLIES'][] = $snmp_request;
         }
 
         // Firewall
         $query = "SELECT * FROM `snmp_firewalls` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
         $request = $this->db->query($query);
         while ($snmp_request = $this->db->fetch_assoc($request)) {
-            $snmp[$snmp_request['SNMP_ID']]['FIREWALLS'] = $snmp_request;
+            $snmp[$snmp_request['SNMP_ID']]['FIREWALLS'][] = $snmp_request;
         }
 
         // Fans
         $query = "SELECT * FROM `snmp_fans` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
         $request = $this->db->query($query);
         while ($snmp_request = $this->db->fetch_assoc($request)) {
-            $snmp[$snmp_request['SNMP_ID']]['FANS'] = $snmp_request;
+            $snmp[$snmp_request['SNMP_ID']]['FANS'][] = $snmp_request;
         }
 
         return $snmp;

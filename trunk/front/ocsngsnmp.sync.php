@@ -30,31 +30,38 @@ include ('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "sync");
+Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "syncsnmp");
 
 
 $display_list = true;
 
-if (isset($_SESSION["ocs_update"]['computers'])) {
-   if ($count = count($_SESSION["ocs_update"]['computers'])) {
+if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
+   if ($count = count($_SESSION["ocs_updatesnmp"]['id'])) {
       $percent = min(100,
-                     round(100*($_SESSION["ocs_update_count"]-$count)/$_SESSION["ocs_update_count"],
+                     round(100*($_SESSION["ocs_updatesnmp_count"]-$count)/$_SESSION["ocs_updatesnmp_count"],
                            0));
 
 
-      $key    = array_pop($_SESSION["ocs_update"]['computers']);
+      $key    = array_pop($_SESSION["ocs_updatesnmp"]['id']);
       $action = PluginOcsinventoryngOcsServer::updateSnmp($key,
                                                               $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-      PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_update"]['statistics'],
-                                                            $action['status']);
-      PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_update"]['statistics']);
+      PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_updatesnmp"]['statistics'],
+                                                            $action['status'], true);
+      PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false, true);
       Html::displayProgressBar(400, $percent);
 
       Html::redirect($_SERVER['PHP_SELF']);
 
    } else {
-      PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_update"]['statistics'], true);
-      unset($_SESSION["ocs_update"]);
+
+      if (isset($_SESSION["ocs_updatesnmp"]['statistics'])) {
+         PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false,true);
+     } else {
+         echo "<div class='center b red'>";
+         _e('No import: the plugin will not synchronize these elements', 'ocsinventoryng');
+         echo "</div>";
+     }
+      unset($_SESSION["ocs_updatesnmp"]);
       $display_list = false;
       echo "<div class='center b'><br>";
       echo "<a href='".$_SERVER['PHP_SELF']."'>".__('Back')."</a></div>";
@@ -68,7 +75,7 @@ if (!isset($_POST["update_ok"])) {
    if (!isset($_GET['start'])) {
       $_GET['start'] = 0;
    }
-   PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+   //PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($display_list) {
       PluginOcsinventoryngOcsServer::showSnmpDeviceToUpdate($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                            $_GET['check'], $_GET['start']);
@@ -76,12 +83,12 @@ if (!isset($_POST["update_ok"])) {
 
 } else {
    if (count($_POST['toupdate']) >0) {
-      $_SESSION["ocs_update_count"] = 0;
+      $_SESSION["ocs_updatesnmp_count"] = 0;
 
       foreach ($_POST['toupdate'] as $key => $val) {
          if ($val == "on") {
-            $_SESSION["ocs_update"]['computers'][] = $key;
-            $_SESSION["ocs_update_count"]++;
+            $_SESSION["ocs_updatesnmp"]['id'][] = $key;
+            $_SESSION["ocs_updatesnmp_count"]++;
          }
       }
    }

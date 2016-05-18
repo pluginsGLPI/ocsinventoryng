@@ -708,9 +708,9 @@ function plugin_ocsinventoryng_install() {
 
       $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_snmpocslinks` (
                   `id` int(11) NOT NULL AUTO_INCREMENT,
-                  `snmp_id` int(11) NOT NULL DEFAULT '0',
+                  `items_id` int(11) NOT NULL DEFAULT '0',
                   `ocs_id` int(11) NOT NULL DEFAULT '0',
-                  `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `itemtype` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
                   `last_update` DATETIME COLLATE utf8_unicode_ci DEFAULT NULL,
                   `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
                   PRIMARY KEY (`id`)
