@@ -68,7 +68,7 @@ if (isset($_SESSION["ocs_importsnmp"]["id"])) {
       }
 
       $conf   = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-      $action = PluginOcsinventoryngOcsServer::processSnmp($key,
+      $action = PluginOcsinventoryngSnmpOcslink::processSnmp($key,
             $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
             0, $params);
       PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_importsnmp"]['statistics'],
@@ -105,7 +105,7 @@ if (!isset($_POST["import_ok"])) {
     }
     //PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
     if ($display_list) {
-        PluginOcsinventoryngOcsServer::showSnmpDeviceToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+        PluginOcsinventoryngSnmpOcslink::showSnmpDeviceToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
             $_SESSION["change_import_mode"],
             $_GET['check'], $_GET['start'],
             $_SESSION['glpiactiveentities']);

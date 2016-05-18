@@ -43,7 +43,7 @@ if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
 
 
       $key    = array_pop($_SESSION["ocs_updatesnmp"]['id']);
-      $action = PluginOcsinventoryngOcsServer::updateSnmp($key,
+      $action = PluginOcsinventoryngSnmpOcslink::updateSnmp($key,
                                                               $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
       PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_updatesnmp"]['statistics'],
                                                             $action['status'], true);
@@ -77,7 +77,7 @@ if (!isset($_POST["update_ok"])) {
    }
    //PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($display_list) {
-      PluginOcsinventoryngOcsServer::showSnmpDeviceToUpdate($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+      PluginOcsinventoryngSnmpOcslink::showSnmpDeviceToUpdate($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                            $_GET['check'], $_GET['start']);
    }
 

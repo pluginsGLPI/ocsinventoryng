@@ -67,7 +67,7 @@ if (isset($_SESSION["ocs_linksnmp"]["id"])) {
          $params['itemtype'] = -1;
       }
       
-      PluginOcsinventoryngOcsServer::linkSnmpDevice($key,
+      PluginOcsinventoryngSnmpOcslink::linkSnmpDevice($key,
                                                   $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                   $params);
       Html::redirect($_SERVER['PHP_SELF']);
@@ -91,7 +91,7 @@ if (!isset($_POST["import_ok"])) {
         unset($_SESSION["ocs_linksnmp"]);
     }
    //PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-   PluginOcsinventoryngOcsServer::showSnmpDeviceToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+   PluginOcsinventoryngSnmpOcslink::showSnmpDeviceToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                      $_SESSION["change_import_mode"], $_GET['check'],
                                                      $_GET['start'], $_SESSION['glpiactiveentities'],
                                                      1);
