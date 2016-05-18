@@ -53,7 +53,8 @@ function plugin_init_ocsinventoryng() {
               'Computer'               => array('PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'),
               'Printer'                => array('PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'),
               'NetworkEquipment'       => array('PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'),
-              'Peripheral'             => array('PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'));
+              'Peripheral'             => array('PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'),
+              'Phone'                  => array('PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'));
 
    //Locks management
    $PLUGIN_HOOKS['display_locked_fields']['ocsinventoryng'] = 'plugin_ocsinventoryng_showLocksForItem';

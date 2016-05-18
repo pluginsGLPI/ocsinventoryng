@@ -31,7 +31,9 @@ if (!defined('GLPI_ROOT')) {
 }
 
 class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
-
+   
+   static $snmptypes = array('Computer', 'NetworkEquipment','Peripheral', 'Phone', 'Printer');
+   
    /**
     * if Printer purged
     *
@@ -81,6 +83,18 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
    }
    
    /**
+    * if Phone purged
+    *
+    * @param $pho   Phone object
+   **/
+   static function purgePhone(Phone $pho) {
+      $snmp = new self();
+      $snmp->deleteByCriteria(array('items_id' => $pho->getField("id"),
+                                     'itemtype' => $pho->getType()));
+
+   }
+   
+   /**
    * Show simple inventory information of an item
    *
    * @param $item                   CommonDBTM object
@@ -92,7 +106,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
 
       $target = Toolbox::getItemTypeFormURL(__CLASS__);
 
-      if (in_array($item->getType(), array('Computer', 'Printer', 'NetworkEquipment', 'Peripheral'))) {
+      if (in_array($item->getType(), self::$snmptypes)) {
          $items_id = $item->getField('id');
 
          if (!empty($items_id)
@@ -206,12 +220,15 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          if ($itemtype == "NetworkEquipment") {
 
             $id = self::addOrUpdateNetworkEquipment($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID, $ocsSnmp, $loc_id, $dom_id, "add");
+            
          } else if ($itemtype == "Printer") {
 
             $id = self::addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add");
-         } else if ($itemtype == "Peripheral" || $itemtype == "Computer") {
+            
+         } else if ($itemtype == "Peripheral" || $itemtype == "Computer"  || $itemtype == "Phone") {
 
             $id = self::addOrUpdateOther($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add");
+            
          }
          //TODOSNMP 
          //Monitor & Phone ???
@@ -579,8 +596,9 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       }
 
       $input["locations_id"] = $loc_id;
-      $input["domains_id"]   = $dom_id;
-
+      if ($itemtype != "Phone") {
+         $input["domains_id"]   = $dom_id;
+      }
       $id_item = 0;
 
       if ($action == "add") {
@@ -653,6 +671,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          $dom_id = Dropdown::importExternal('Domain', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['META']['DOMAIN']));
       }
       if ($itemtype == "Printer") {
+      
          PluginOcsinventoryngOcsServer::addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, $items_id, $ocsSnmp, $loc_id, $dom_id, "update");
 
          $now = date("Y-m-d H:i:s");
@@ -673,7 +692,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          return array('status' => PluginOcsinventoryngOcsServer::SNMP_SYNCHRONIZED,
             //'entities_id'  => $data['entities_id'],
          );
-      } else if ($itemtype == "Computer" || $itemtype == "Peripheral") {
+      } else if ($itemtype == "Computer" || $itemtype == "Peripheral" || $itemtype == "Phone") {
 
          self::addOrUpdateOther($plugin_ocsinventoryng_ocsservers_id, $itemtype, $items_id, $ocsSnmp, $loc_id, $dom_id, "update");
 
@@ -736,13 +755,13 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          'ORDER'       => 'NAME'
       );
 
-      if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
-         $snmpOptions['FILTER']['TAGS'] = $tag_limit;
-      }
+      //if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
+      //   $snmpOptions['FILTER']['TAGS'] = $tag_limit;
+      //}
 
-      if ($cfg_ocs["tag_exclude"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
-         $snmpOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
-      }
+      //if ($cfg_ocs["tag_exclude"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
+      //   $snmpOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
+      //}
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($serverId);
       $ocsResult = $ocsClient->getSnmp($snmpOptions);
 
@@ -839,7 +858,8 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                         $value = $tab["type"];
                      }
                      $type = "toimport_itemtype[" . $tab["id"] . "]";
-                     Dropdown::showItemTypes($type, $CFG_GLPI["asset_types"], array('value' => $value));
+
+                     Dropdown::showItemTypes($type, self::$snmptypes, array('value' => $value));
                      echo "</td>\n";
                   }
                   /* if ($advanced && !$tolinked){

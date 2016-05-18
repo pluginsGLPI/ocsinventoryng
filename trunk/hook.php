@@ -1174,7 +1174,8 @@ function plugin_ocsinventoryng_postinit() {
       = array('Printer'             => array('PluginOcsinventoryngSnmpOcslink', 'purgePrinter'),
                'NetworkEquipment'    => array('PluginOcsinventoryngSnmpOcslink', 'purgeNetworkEquipment'),
                'Computer'            => array('PluginOcsinventoryngSnmpOcslink', 'purgeComputer'),
-               'Peripheral'          => array('PluginOcsinventoryngSnmpOcslink', 'purgePeripheral'));
+               'Peripheral'          => array('PluginOcsinventoryngSnmpOcslink', 'purgePeripheral'),
+               'Phone'          => array('PluginOcsinventoryngSnmpOcslink', 'purgePhone'));
               
    foreach (PluginOcsinventoryngOcsServer::getTypes(true) as $type) {
 
