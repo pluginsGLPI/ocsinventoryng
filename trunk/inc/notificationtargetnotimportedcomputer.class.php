@@ -3,9 +3,9 @@
  * @version $Id: HEADER 15930 2012-12-15 11:10:55Z tsmr $
 -------------------------------------------------------------------------
 Ocsinventoryng plugin for GLPI
-Copyright (C) 2012-2013 by the ocsinventoryng plugin Development Team.
+Copyright (C) 2012-2016 by the ocsinventoryng plugin Development Team.
 
-https://forge.indepnet.net/projects/ocsinventoryng
+https://forge.glpi-project.org/projects/ocsinventoryng
 -------------------------------------------------------------------------
 
 LICENSE
@@ -25,7 +25,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 -------------------------------------------------------------------------- */
-
 if (!defined('GLPI_ROOT')){
    die("Sorry. You can't access directly to this file");
 }

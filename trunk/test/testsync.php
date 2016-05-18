@@ -1,11 +1,11 @@
 <?php
 /*
- * @version $Id: testsync.php 336 2013-10-15 14:29:58Z tsmr $
+ * @version $Id: HEADER 15930 2012-12-15 11:10:55Z tsmr $
 -------------------------------------------------------------------------
 Ocsinventoryng plugin for GLPI
-Copyright (C) 2012-2013 by the ocsinventoryng plugin Development Team.
+Copyright (C) 2012-2016 by the ocsinventoryng plugin Development Team.
 
-https://forge.indepnet.net/projects/ocsinventoryng
+https://forge.glpi-project.org/projects/ocsinventoryng
 -------------------------------------------------------------------------
 
 LICENSE

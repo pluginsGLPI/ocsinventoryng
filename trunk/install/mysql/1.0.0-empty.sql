@@ -2,15 +2,15 @@
 
 DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_profiles`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_profiles` (
-	`id` int(11) NOT NULL auto_increment,
-	`profiles_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_profiles (id)',
-	`ocsng` char(1) collate utf8_unicode_ci default NULL,
-	`sync_ocsng` char(1) collate utf8_unicode_ci default NULL,
-	`view_ocsng` char(1) collate utf8_unicode_ci default NULL,
-	`clean_ocsng` char(1) collate utf8_unicode_ci default NULL,
-	`rule_ocs` char(1) collate utf8_unicode_ci default NULL,
-	PRIMARY KEY  (`id`),
-	KEY `profiles_id` (`profiles_id`)
+   `id` int(11) NOT NULL auto_increment,
+   `profiles_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_profiles (id)',
+   `ocsng` char(1) collate utf8_unicode_ci default NULL,
+   `sync_ocsng` char(1) collate utf8_unicode_ci default NULL,
+   `view_ocsng` char(1) collate utf8_unicode_ci default NULL,
+   `clean_ocsng` char(1) collate utf8_unicode_ci default NULL,
+   `rule_ocs` char(1) collate utf8_unicode_ci default NULL,
+   PRIMARY KEY  (`id`),
+   KEY `profiles_id` (`profiles_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ### Dump table glpi_plugin_ocsinventoryng_ocsadmininfoslinks

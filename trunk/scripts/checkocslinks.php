@@ -3,9 +3,9 @@
  * @version $Id$
 -------------------------------------------------------------------------
 Ocsinventoryng plugin for GLPI
-Copyright (C) 2012-2013 by the ocsinventoryng plugin Development Team.
+Copyright (C) 2012-2016 by the ocsinventoryng plugin Development Team.
 
-https://forge.indepnet.net/projects/ocsinventoryng
+https://forge.glpi-project.org/projects/ocsinventoryng
 -------------------------------------------------------------------------
 
 LICENSE
