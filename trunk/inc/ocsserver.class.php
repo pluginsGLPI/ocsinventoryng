@@ -6430,37 +6430,42 @@ JAVASCRIPT;
       if ($action == "add") {
          $id_printer = $snmpDevice->add($input, array('unicity_error_message' => false));
       } else {
+         $id_printer = $ID;
          $input["id"] = $ID;
          $snmpDevice->update($input, array('unicity_error_message' => false));
       }
+      
 
       if ($id_printer > 0 
-            && $cfg_ocs['importsnmp_createport'] 
-               && $action == "add") {
+            && $cfg_ocs['importsnmp_createport']) {
 
          //Add network port
          $ip  = $ocsSnmp['META']['IPADDR'];
          $mac = $ocsSnmp['META']['MACADDR'];
-
-         $newinput = array(
-            "itemtype"                 => $itemtype,
-            "items_id"                 => $id_printer,
-            //TODOSNMP entities_id
-            "entities_id"              => $_SESSION["glpiactive_entity"],
-            "name"                     => $ocsSnmp['PRINTER'][0]['NAME'],
-            "instantiation_type"       => "NetworkPortEthernet",
-            "mac"                      => $mac,
-            "NetworkName__ipaddresses" => array("-100" => $ip),
-            "speed"                    => "0",
-            "speed_other_value"        => "",
-            "add"                      => __("Add"),
-         );
-
+         
          $np    = new NetworkPort();
-         $np->splitInputForElements($newinput);
-         $newID = $np->add($newinput);
-         $np->updateDependencies(1);
+         $np->getFromDBByQuery("WHERE `mac` = '$mac' ");
+         if(empty($np->fields)) {
+      
+            $newinput = array(
+               "itemtype"                 => $itemtype,
+               "items_id"                 => $id_printer,
+               //TODOSNMP entities_id
+               "entities_id"              => $_SESSION["glpiactive_entity"],
+               "name"                     => $ocsSnmp['PRINTER'][0]['NAME'],
+               "instantiation_type"       => "NetworkPortEthernet",
+               "mac"                      => $mac,
+               "NetworkName__ipaddresses" => array("-100" => $ip),
+               "speed"                    => "0",
+               "speed_other_value"        => "",
+               "add"                      => __("Add"),
+            );
 
+            
+            $np->splitInputForElements($newinput);
+            $newID = $np->add($newinput);
+            $np->updateDependencies(1);
+         }
 
          //TODOSNMP TO TEST:
          //'PRINTER' => 
@@ -6577,6 +6582,7 @@ JAVASCRIPT;
          $id_network = $snmpDevice->add($input, array('unicity_error_message' => false));
       } else {
          $input["id"] = $ID;
+         $id_network = $ID;
          $snmpDevice->update($input, array('unicity_error_message' => false));
       }
 
@@ -6631,12 +6637,17 @@ JAVASCRIPT;
                   '_no_history'   => !$dohistory));
             }
          }
+      }
+      if ($id_network > 0 
+            && $cfg_ocs['importsnmp_createport']) {
+         //Add network port
+         $ip  = $ocsSnmp['META']['IPADDR'];
+         $mac = $ocsSnmp['META']['MACADDR'];
          
-         if ($cfg_ocs['importsnmp_createport']) {
-            //Add network port
-            $ip  = $ocsSnmp['META']['IPADDR'];
-            $mac = $ocsSnmp['META']['MACADDR'];
-
+         $np    = new NetworkPort();
+         $np->getFromDBByQuery("WHERE `mac` = '$mac' ");
+         if(empty($np->fields)) {
+         
             $newinput = array(
                "itemtype"                 => $itemtype,
                "items_id"                 => $id_network,
@@ -6651,7 +6662,6 @@ JAVASCRIPT;
                "add"                      => __("Add"),
             );
 
-            $np    = new NetworkPort();
             $np->splitInputForElements($newinput);
             $newID = $np->add($newinput);
             $np->updateDependencies(1);
@@ -6690,35 +6700,39 @@ JAVASCRIPT;
          $id_item = $snmpDevice->add($input, array('unicity_error_message' => false));
       } else {
          $input["id"] = $ID;
+         $id_item = $ID;
          $snmpDevice->update($input, array('unicity_error_message' => false));
       }
 
       if ($id_item > 0 
-            && $cfg_ocs['importsnmp_createport'] 
-               && $action == "add") {
+            && $cfg_ocs['importsnmp_createport']) {
 
          //Add network port
          $ip  = $ocsSnmp['META']['IPADDR'];
          $mac = $ocsSnmp['META']['MACADDR'];
-
-         $newinput = array(
-            "itemtype"                 => $itemtype,
-            "items_id"                 => $id_item,
-            //TODOSNMP entities_id
-            "entities_id"              => $_SESSION["glpiactive_entity"],
-            "name"                     => $ocsSnmp['META']['NAME'],
-            "instantiation_type"       => "NetworkPortEthernet",
-            "mac"                      => $mac,
-            "NetworkName__ipaddresses" => array("-100" => $ip),
-            "speed"                    => "0",
-            "speed_other_value"        => "",
-            "add"                      => __("Add"),
-         );
-
          $np    = new NetworkPort();
-         $np->splitInputForElements($newinput);
-         $newID = $np->add($newinput);
-         $np->updateDependencies(1);
+         $np->getFromDBByQuery("WHERE `mac` = '$mac' ");
+         if(empty($np->fields)) {
+         
+            $newinput = array(
+               "itemtype"                 => $itemtype,
+               "items_id"                 => $id_item,
+               //TODOSNMP entities_id
+               "entities_id"              => $_SESSION["glpiactive_entity"],
+               "name"                     => $ocsSnmp['META']['NAME'],
+               "instantiation_type"       => "NetworkPortEthernet",
+               "mac"                      => $mac,
+               "NetworkName__ipaddresses" => array("-100" => $ip),
+               "speed"                    => "0",
+               "speed_other_value"        => "",
+               "add"                      => __("Add"),
+            );
+
+            $np    = new NetworkPort();
+            $np->splitInputForElements($newinput);
+            $newID = $np->add($newinput);
+            $np->updateDependencies(1);
+         }
       }
 
       return $id_item;

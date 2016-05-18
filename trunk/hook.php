@@ -1169,7 +1169,13 @@ function plugin_ocsinventoryng_postinit() {
    $PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng']
       = array('Computer'      => array('PluginOcsinventoryngOcslink', 'purgeComputer'),
               'Computer_Item' => array('PluginOcsinventoryngOcslink', 'purgeComputer_Item'));
-
+   
+   $PLUGIN_HOOKS['item_purge']['ocsinventoryng']
+      = array('Printer'             => array('PluginOcsinventoryngSnmpOcslink', 'purgePrinter'),
+               'NetworkEquipment'    => array('PluginOcsinventoryngSnmpOcslink', 'purgeNetworkEquipment'),
+               'Computer'            => array('PluginOcsinventoryngSnmpOcslink', 'purgeComputer'),
+               'Peripheral'          => array('PluginOcsinventoryngSnmpOcslink', 'purgePeripheral'));
+              
    foreach (PluginOcsinventoryngOcsServer::getTypes(true) as $type) {
 
       CommonGLPI::registerStandardTab($type, 'PluginOcsinventoryngOcsServer');
