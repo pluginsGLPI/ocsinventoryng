@@ -6674,7 +6674,9 @@ JAVASCRIPT;
    static function addOrUpdateOther($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action) {
 
       $snmpDevice = new $itemtype();
-
+      
+      $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
+      
       $input = array(
          "is_dynamic"    => 1,
          "entities_id"   => $_SESSION['glpidefault_entity'],
@@ -7127,7 +7129,7 @@ JAVASCRIPT;
          $already_linked_ids [] = $data['ocsid'];
       }
 
-      // Fetch linked computers from ocs
+      // Fetch linked items from ocs
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $ocsResult = $ocsClient->getSnmp(array(
          'OFFSET'      => $start,
@@ -7140,7 +7142,7 @@ JAVASCRIPT;
 
       if (isset($ocsResult['SNMP'])) {
          if (count($ocsResult['SNMP']) > 0) {
-            // Get all ids of the returned computers
+            // Get all ids of the returned items
             $ocs_snmp_ids = array();
             $hardware     = array();
 
@@ -7192,13 +7194,14 @@ JAVASCRIPT;
                self::checkBox($target);
 
                echo "<table class='tab_cadre_fixe'>";
-               echo "<tr class='tab_bg_1'><td colspan='5' class='center'>";
+               echo "<tr class='tab_bg_1'><td colspan='6' class='center'>";
                echo "<input class='submit' type='submit' name='update_ok' value=\"" .
                _sx('button', 'Synchronize', 'ocsinventoryng') . "\">";
                echo "</td></tr>\n";
 
                echo "<tr>";
                echo "<th>" . __('GLPI Object', 'ocsinventoryng') . "</th>";
+               echo "<th>" . __('Item type') . "</th>";
                echo "<th>" . __('OCS SNMP device', 'ocsinventoryng') . "</th>";
                echo "<th>" . __('Import date in GLPI', 'ocsinventoryng') . "</th>";
                echo "<th>" . __('Last OCSNG SNMP inventory date', 'ocsinventoryng') . "</th>";
@@ -7208,7 +7211,8 @@ JAVASCRIPT;
                   echo "<tr class='tab_bg_2 center'>";
                   $item = new $tab["itemtype"]();
                   $item->getFromDB($tab["items_id"]);
-                  echo "<td>" . $item->getlink() . "</td>\n";
+                  echo "<td>" . $item->getLink() . "</td>\n";
+                  echo "<td>" . $item->getTypeName() . "</td>\n";
                   echo "<td>" . $ocs_snmp_name[$tab["ocs_id"]] . "</td>\n";
                   echo "<td>" . Html::convDateTime($tab["last_update"]) . "</td>\n";
                   echo "<td>" . Html::convDateTime($ocs_snmp_inv[$tab["ocs_id"]]) . "</td>\n";
@@ -7217,7 +7221,7 @@ JAVASCRIPT;
                   echo "</td></tr>\n";
                }
 
-               echo "<tr class='tab_bg_1'><td colspan='5' class='center'>";
+               echo "<tr class='tab_bg_1'><td colspan='6' class='center'>";
                echo "<input class='submit' type='submit' name='update_ok' value=\"" .
                _sx('button', 'Synchronize', 'ocsinventoryng') . "\">";
                echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' " .
