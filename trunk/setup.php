@@ -91,7 +91,10 @@ function plugin_init_ocsinventoryng() {
                          
    Plugin::registerClass('PluginOcsinventoryngItem_DeviceBiosdata',
                          array('item_device_types' => true));
-
+   
+   Plugin::registerClass('PluginOcsinventoryngSnmpOcslink',
+                         array('addtabon'          => array('Computer', 'Printer', 'NetworkEquipment', 'Peripheral', 'Phone')));
+                               
    // transfer
    $PLUGIN_HOOKS['item_transfer']['ocsinventoryng']="plugin_ocsinventoryng_item_transfer";
 

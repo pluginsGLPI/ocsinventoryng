@@ -33,7 +33,116 @@ if (!defined('GLPI_ROOT')) {
 class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
    
    static $snmptypes = array('Computer', 'NetworkEquipment','Peripheral', 'Phone', 'Printer');
+   static $rightname = "plugin_ocsinventoryng";
+   /**
+    * @see inc/CommonGLPI::getTabNameForItem()
+    *
+    * @param $item               CommonGLPI object
+    * @param$withtemplate        (default 0)
+   **/
+   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+
+      if (in_array($item->getType(), self::$snmptypes)
+          && $this->canView()) {
+
+         return __('OCSNG SNMP', 'ocsinventoryng');
+      }
+      return '';
+   }
+
+
+   /**
+    * @param $item            CommonGLPI object
+    * @param $tabnum          (default 1)
+    * @param $withtemplate    (default 0)
+   **/
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+
+      if (in_array($item->getType(), self::$snmptypes)) {
+         self::showForItem($item, $withtemplate);
+      }
+      return true;
+   }
    
+   /**
+   * Show OcsLink of an item
+   *
+   * @param $item                   CommonDBTM object
+   * @param $withtemplate  integer  withtemplate param (default '')
+   *
+   * @return nothing
+   **/
+   static function showForItem(CommonDBTM $item, $withtemplate='') {
+      global $DB, $CFG_GLPI;
+
+      //$target = Toolbox::getItemTypeFormURL(__CLASS__);
+
+      if (in_array($item->getType(), self::$snmptypes)) {
+         $items_id = $item->getField('id');
+
+         if (!empty($items_id )
+             && $item->fields["is_dynamic"]
+             && Session::haveRight("plugin_ocsinventoryng_view", READ)) {
+
+            $query = "SELECT *
+                      FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
+                      WHERE `items_id` = '".$items_id."' AND `itemtype` = '".$item->getType()."'";
+
+            $result = $DB->query($query);
+            if ($DB->numrows($result) > 0) {
+               $data = $DB->fetch_assoc($result);
+               $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
+
+               if (count($data)) {
+                  $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
+                  echo "<table class='tab_cadre_fixe'>";
+                  echo "<tr class='tab_bg_1'><th colspan='2'>".__('SNMP informations OCS NG')."</th>";
+                  
+                  echo "<tr class='tab_bg_1'><td>".__('Import date in GLPI', 'ocsinventoryng');
+                  echo "</td><td>".Html::convDateTime($data["last_update"])."</td></tr>";
+                  
+                  $linked_ids [] = $data['ocs_id'];
+                  $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($data['plugin_ocsinventoryng_ocsservers_id']);
+                  $ocsResult = $ocsClient->getSnmp(array(
+                     'MAX_RECORDS' => 1,
+                     'FILTER'      => array(
+                        'IDS' => $linked_ids,
+                     )
+                  ));
+                  if (isset($ocsResult['SNMP'])) {
+                     if (count($ocsResult['SNMP']) > 0) {
+                        foreach ($ocsResult['SNMP'] as $snmp) {
+                           $LASTDATE   = $snmp['META']['LASTDATE'];
+                           $UPTIME     = $snmp['META']['UPTIME'];
+                  
+                           echo "<tr class='tab_bg_1'><td>".__('Last OCSNG SNMP inventory date', 'ocsinventoryng');
+                           echo "</td><td>".Html::convDateTime($LASTDATE)."</td></tr>";
+                           
+                           echo "<tr class='tab_bg_1'><td>".__('Uptime', 'ocsinventoryng');
+                           echo "</td><td>".$UPTIME."</td></tr>";
+                        }
+                        echo "</table><table class='tab_cadre_fixe'>";
+                        echo "<tr class='tab_bg_1'><th colspan='2'>".__('SNMP Debug')."</th>";
+                        echo "<tr class='tab_bg_1'>";
+                        echo "<td  colspan='2'>";
+                        echo "<pre>";
+                        print_r($ocsResult['SNMP']);
+                        echo "</pre>";
+                        echo "</td></tr>";
+                        echo "</table>";
+                        
+                        
+                     } else {
+                        echo "</table>";
+                     }
+                  } else {
+                     echo "</table>";
+                  }
+               }
+            }
+         }
+      }
+   }
    /**
     * if Printer purged
     *
@@ -1102,6 +1211,8 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                echo "<tr class='tab_bg_1'><td colspan='6' class='center'>";
                echo "<input class='submit' type='submit' name='update_ok' value=\"" .
                _sx('button', 'Synchronize', 'ocsinventoryng') . "\">";
+               echo "&nbsp;<input class='submit' type='submit' name='delete' value=\"" .
+               _sx('button', 'Delete link', 'ocsinventoryng') . "\">";
                echo "</td></tr>\n";
 
                echo "<tr>";
@@ -1129,11 +1240,13 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                echo "<tr class='tab_bg_1'><td colspan='6' class='center'>";
                echo "<input class='submit' type='submit' name='update_ok' value=\"" .
                _sx('button', 'Synchronize', 'ocsinventoryng') . "\">";
+               echo "&nbsp;<input class='submit' type='submit' name='delete' value=\"" .
+               _sx('button', 'Delete link', 'ocsinventoryng') . "\">";
                echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' " .
                "value='$plugin_ocsinventoryng_ocsservers_id'>";
                echo "</td></tr>";
 
-               echo "<tr class='tab_bg_1'><td colspan='5' class='center'>";
+               echo "<tr class='tab_bg_1'><td colspan='6' class='center'>";
                PluginOcsinventoryngOcsServer::checkBox($target);
                echo "</table>\n";
                Html::closeForm();

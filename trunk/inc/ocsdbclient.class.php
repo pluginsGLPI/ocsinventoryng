@@ -272,6 +272,13 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
         while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['SWITCH'][] = $snmp_request;
         }
+        
+        // cards
+        $query = "SELECT * FROM `snmp_cards` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+        $request = $this->db->query($query);
+        while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['CARDS'][] = $snmp_request;
+        }
 
         // Powersupplies
         $query = "SELECT * FROM `snmp_powersupplies` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
@@ -292,6 +299,20 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
         $request = $this->db->query($query);
         while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['FANS'][] = $snmp_request;
+        }
+        
+        // Trays
+        $query = "SELECT * FROM `snmp_trays` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+        $request = $this->db->query($query);
+        while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['TRAYS'][] = $snmp_request;
+        }
+        
+        //memories
+        $query = "SELECT * FROM `snmp_memories` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+        $request = $this->db->query($query);
+        while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['MEMORIES'][] = $snmp_request;
         }
 
         return $snmp;

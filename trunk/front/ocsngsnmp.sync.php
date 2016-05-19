@@ -35,6 +35,23 @@ Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "syncs
 
 $display_list = true;
 
+if (isset($_POST["delete"]) 
+      && isset($_POST["toupdate"])
+      ) {
+   if ($count = count($_POST["toupdate"])) {
+      
+      foreach ($_POST['toupdate'] as $key => $val) {
+         if ($val == "on") {
+            $link = new PluginOcsinventoryngSnmpOcslink();
+            $link->delete(array('id' => $key), 1);
+         }
+      }
+      Html::redirect($_SERVER['PHP_SELF']);
+
+   }
+   
+}
+
 if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
    if ($count = count($_SESSION["ocs_updatesnmp"]['id'])) {
       $percent = min(100,
