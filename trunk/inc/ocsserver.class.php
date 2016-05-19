@@ -1970,8 +1970,8 @@ JAVASCRIPT;
                   'computers_id' => $computers_id);
             }
             return array('status'       => self::COMPUTER_NOT_UNIQUE,
-               'entities_id'  => $data['entities_id'],
-               'rule_matched' => $rules_matched);
+                        'entities_id'  => $data['entities_id'],
+                        'rule_matched' => $rules_matched);
          }
 
          if ($lock) {
@@ -1980,7 +1980,7 @@ JAVASCRIPT;
       }
       //ELSE Return code to indicates that the machine was not imported because it doesn't matched rules
       return array('status'       => self::COMPUTER_FAILED_IMPORT,
-         'rule_matched' => $rules_matched);
+                     'rule_matched' => $rules_matched);
    }
 
    /** Update a ocs computer

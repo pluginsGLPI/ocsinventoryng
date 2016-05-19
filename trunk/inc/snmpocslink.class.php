@@ -44,8 +44,10 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
 
       if (in_array($item->getType(), self::$snmptypes)
           && $this->canView()) {
-
-         return __('OCSNG SNMP', 'ocsinventoryng');
+         if($this->getFromDBByQuery("WHERE `items_id` = '".$item->getID()."' 
+                                       AND `itemtype` = '".$item->getType()."'")) {
+            return __('OCSNG SNMP', 'ocsinventoryng');
+         }
       }
       return '';
    }
@@ -121,16 +123,17 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                            echo "<tr class='tab_bg_1'><td>".__('Uptime', 'ocsinventoryng');
                            echo "</td><td>".$UPTIME."</td></tr>";
                         }
-                        echo "</table><table class='tab_cadre_fixe'>";
-                        echo "<tr class='tab_bg_1'><th colspan='2'>".__('SNMP Debug')."</th>";
-                        echo "<tr class='tab_bg_1'>";
-                        echo "<td  colspan='2'>";
-                        echo "<pre>";
-                        print_r($ocsResult['SNMP']);
-                        echo "</pre>";
-                        echo "</td></tr>";
-                        echo "</table>";
-                        
+                        if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
+                           echo "</table><table class='tab_cadre_fixe'>";
+                           echo "<tr class='tab_bg_1'><th colspan='2'>".__('SNMP Debug')."</th>";
+                           echo "<tr class='tab_bg_1'>";
+                           echo "<td  colspan='2'>";
+                           echo "<pre>";
+                           print_r($ocsResult['SNMP']);
+                           echo "</pre>";
+                           echo "</td></tr>";
+                           echo "</table>";
+                        }
                         
                      } else {
                         echo "</table>";
@@ -328,7 +331,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
 
          if ($itemtype == "NetworkEquipment") {
 
-            $id = self::addOrUpdateNetworkEquipment($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID, $ocsSnmp, $loc_id, $dom_id, "add");
+            $id = self::addOrUpdateNetworkEquipment($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add");
             
          } else if ($itemtype == "Printer") {
 
@@ -458,7 +461,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          
          $np    = new NetworkPort();
          $np->getFromDBByQuery("WHERE `mac` = '$mac' ");
-         if(count($np->fields) > 0) {
+         if(count($np->fields) < 1) {
       
             $newinput = array(
                "itemtype"                 => $itemtype,
@@ -657,7 +660,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          
          $np    = new NetworkPort();
          $np->getFromDBByQuery("WHERE `mac` = '$mac' ");
-         if(count($np->fields) > 0) {
+         if(count($np->fields) < 1) {
          
             $newinput = array(
                "itemtype"                 => $itemtype,
@@ -726,7 +729,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          $mac = $ocsSnmp['META']['MACADDR'];
          $np    = new NetworkPort();
          $np->getFromDBByQuery("WHERE `mac` = '$mac' ");
-         if(count($np->fields) > 0) {
+         if(count($np->fields) < 1) {
          
             $newinput = array(
                "itemtype"                 => $itemtype,
@@ -781,7 +784,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       }
       if ($itemtype == "Printer") {
       
-         PluginOcsinventoryngOcsServer::addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, $items_id, $ocsSnmp, $loc_id, $dom_id, "update");
+         self::addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, $items_id, $ocsSnmp, $loc_id, $dom_id, "update");
 
          $now = date("Y-m-d H:i:s");
          $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks` SET `last_update` = '" . $now . "' WHERE `id` = " . $ID . ";";
