@@ -458,7 +458,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          
          $np    = new NetworkPort();
          $np->getFromDBByQuery("WHERE `mac` = '$mac' ");
-         if(empty($np->fields)) {
+         if(count($np->fields) > 0) {
       
             $newinput = array(
                "itemtype"                 => $itemtype,
@@ -657,7 +657,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          
          $np    = new NetworkPort();
          $np->getFromDBByQuery("WHERE `mac` = '$mac' ");
-         if(empty($np->fields)) {
+         if(count($np->fields) > 0) {
          
             $newinput = array(
                "itemtype"                 => $itemtype,
@@ -726,7 +726,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          $mac = $ocsSnmp['META']['MACADDR'];
          $np    = new NetworkPort();
          $np->getFromDBByQuery("WHERE `mac` = '$mac' ");
-         if(empty($np->fields)) {
+         if(count($np->fields) > 0) {
          
             $newinput = array(
                "itemtype"                 => $itemtype,
