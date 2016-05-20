@@ -89,12 +89,19 @@ if (!isset($_POST["import_ok"])) {
    }
    if (isset($_SESSION["ocs_linksnmp"])) {
         unset($_SESSION["ocs_linksnmp"]);
-    }
-   //PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-   PluginOcsinventoryngSnmpOcslink::showSnmpDeviceToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                                                     $_SESSION["change_import_mode"], $_GET['check'],
-                                                     $_GET['start'], $_SESSION['glpiactiveentities'],
-                                                     1);
+   }
+   
+   $values = $_GET;
+   if (isset($_POST["search"])) {
+      $values = $_POST;
+   }
+   $values['plugin_ocsinventoryng_ocsservers_id'] = $_SESSION["plugin_ocsinventoryng_ocsservers_id"];
+   //$values['change_import_mode'] = $_SESSION["change_import_mode"];
+   //$values['glpiactiveentities'] = $_SESSION["glpiactiveentities"];
+   $values['tolinked'] = 1;
+   PluginOcsinventoryngSnmpOcslink::searchForm($values);
+   PluginOcsinventoryngSnmpOcslink::showSnmpDeviceToAdd($values);
+
 
 } else {
    

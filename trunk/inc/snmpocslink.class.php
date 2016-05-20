@@ -822,15 +822,98 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          //'entities_id'  => $data['entities_id'],
       );
    }
+   
+   /**
+   * Prints search form
+   *
+   * @param $manufacturer the supplier choice
+   * @param $type the device type
+   * @return nothing (print out a table)
+   *
+   */
+   static function searchForm ($params) {
+      global $DB,$CFG_GLPI;
+      
 
-   // Show snmp devices to add :)
-   static function showSnmpDeviceToAdd($serverId, $advanced, $check, $start, $entity = 0, $tolinked = false) {
-      global $DB, $CFG_GLPI;
-
-      if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
-         return false;
+      // Default values of parameters
+      $p['itemtype']    = '';
+      $p['ip']          = '';
+      $p['tolinked']    = 0;
+      foreach ($params as $key => $val) {
+            $p[$key]=$val;
+      }
+      
+      $target = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng/front/ocsngsnmp.import.php';
+      if ($p['tolinked'] > 0) {
+         $target = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng/front/ocsngsnmp.link.php';
       }
 
+      echo "<form name='form' method='post' action='".$target."'>";
+      echo "<div align='center'><table class='tab_cadre_fixe' cellpadding='5'>";
+      echo "<tr><th colspan='6'>".__('Filter SNMP Objects list', 'ocsinventoryng')."</th></tr>";
+      echo "<tr class='tab_bg_2'>";
+      echo "<td class='center'>";
+      _e('By itemtype', 'ocsinventoryng');
+      echo "</td><td class='center'>";
+      Dropdown::showItemTypes("itemtype", self::$snmptypes, array('value' => $p['itemtype']));
+
+      echo "</td>";
+      
+      echo "<td class='center'>";
+      _e('By IP', 'ocsinventoryng');
+      echo "</td><td class='center'>";
+      echo "<input type=\"text\" name=\"ip\" value='".$p['ip']."'>";
+      echo "</td>";
+
+      echo "<td>";
+      echo "<input type=\"submit\" name=\"search\" class=\"submit\" value='"._sx('button', 'Post')."' >";
+      
+      echo "<a href='"
+               .$target
+               .(strpos($target,'?') ? '&amp;' : '?')
+               ."reset=reset' >";
+         echo "&nbsp;&nbsp;<img title=\"".__s('Blank')."\" alt=\"".__s('Blank')."\" src='".
+               $CFG_GLPI["root_doc"]."/pics/reset.png' class='calendrier pointer'></a>";
+      echo "</td>";
+      echo "</tr>";
+
+      echo "</table></div>";
+
+      Html::closeForm();
+   }
+   
+   // Show snmp devices to add :)
+   static function showSnmpDeviceToAdd($params) {
+      global $DB, $CFG_GLPI;
+
+      // Default values of parameters
+      $p['link']              = array();
+      $p['field']             = array();
+      $p['contains']          = array();
+      $p['searchtype']        = array();
+      $p['sort']              = '1';
+      $p['order']             = 'ASC';
+      $p['start']             = 0;
+      $p['export_all']        = 0;
+      $p['link2']             = '';
+      $p['contains2']         = '';
+      $p['field2']            = '';
+      $p['itemtype2']         = '';
+      $p['searchtype2']       = '';
+      $p['itemtype']          = '';
+      $p['ip']                = '';
+      $p['tolinked']          = 0;
+      $p['check']             = 'all';
+      $p['plugin_ocsinventoryng_ocsservers_id']          = 0;
+      
+      foreach ($params as $key => $val) {
+            $p[$key]=$val;
+      }
+
+      $tolinked = $p['tolinked'];
+      $start = $p['start'];
+      $plugin_ocsinventoryng_ocsservers_id = $p['plugin_ocsinventoryng_ocsservers_id'];
+      
       $title = __('Import new SNMP devices', 'ocsinventoryng');
       if ($tolinked) {
          $title = __('Import new SNMP devices into glpi', 'ocsinventoryng');
@@ -839,11 +922,15 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       if ($tolinked) {
          $target = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng/front/ocsngsnmp.link.php';
       }
+      
+      if (!$start) {
+         $start = 0;
+      }
 
       // Get all links between glpi and OCS
       $query_glpi     = "SELECT ocs_id
                      FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
-                     WHERE `plugin_ocsinventoryng_ocsservers_id` = '$serverId'";
+                     WHERE `plugin_ocsinventoryng_ocsservers_id` = '".$plugin_ocsinventoryng_ocsservers_id."'";
       $result_glpi    = $DB->query($query_glpi);
       $already_linked = array();
       if ($DB->numrows($result_glpi) > 0) {
@@ -852,7 +939,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          }
       }
 
-      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($serverId);
+      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
       $snmpOptions = array(
          'OFFSET'      => $start,
@@ -874,7 +961,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       //if ($cfg_ocs["tag_exclude"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
       //   $snmpOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
       //}
-      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($serverId);
+      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $ocsResult = $ocsClient->getSnmp($snmpOptions);
 
       if (isset($ocsResult['SNMP'])) {
@@ -895,20 +982,53 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                $hardware[$id]["contact"]      = $data['META']["CONTACT"];
                $hardware[$id]["location"]     = $data['META']["LOCATION"];
             }
+            
+            foreach ($hardware as $id => $field) {
+               if (!empty($p['itemtype']) 
+                     && $field['type'] != $p['itemtype']) {
+                  unset($hardware[$id]);
+               }
+               if (!empty($p['ip']) 
+                     && !preg_match("/".$p['ip']."/", $field['ipaddr'])) {
+                  unset($hardware[$id]);
+               }
+               
+            }
+            $count = count($hardware);
+            $output_type=Search::HTML_OUTPUT;
+            if (isset($_GET["display_type"])) {
+               $output_type = $_GET["display_type"];
+            }
+            $parameters = "itemtype=".$p['itemtype'].
+                          "&amp;ip=".$p['ip']
+                          ;
+               
+            // Define begin and end var for loop
+            // Search case
+            $begin_display=$start;
+            $end_display=$start+$_SESSION["glpilist_limit"];
 
-            if ($tolinked && count($hardware)) {
+            // Export All case
+            if (isset($_GET['export_all'])) {
+               $begin_display=0;
+               $end_display=$numrows;
+            }
+            $nbcols = 10;
+            
+            if ($output_type == Search::HTML_OUTPUT 
+                  && $tolinked 
+                     && count($hardware)) {
                echo "<div class='center b'>" .
                __('Caution! The imported data (see your configuration) will overwrite the existing one', 'ocsinventoryng') . "</div>";
             }
-            echo "<div class='center'>";
 
-            if ($numrows = $ocsResult['TOTAL_COUNT']) {
-               $parameters = "check=$check";
+            if ($numrows = $count) {
+               $parameters = "";
                Html::printPager($start, $numrows, $target, $parameters);
 
                //Show preview form only in import even in multi-entity mode because computer import
                //can be refused by a rule
-               if (!$tolinked) {
+               /*if (!$tolinked) {
                   echo "<div class='firstbloc'>";
                   echo "<form method='post' name='ocsng_import_mode' id='ocsng_import_mode'
                          action='$target'>\n";
@@ -919,53 +1039,74 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                   echo "</table>";
                   Html::closeForm();
                   echo "</div>";
+               }*/
+               if ($output_type == Search::HTML_OUTPUT) {
+                  echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
                }
-
-               echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
-               if (!$tolinked) {
+               if ($output_type == Search::HTML_OUTPUT && !$tolinked) {
+                  echo "<div class='center'>";
                   PluginOcsinventoryngOcsServer::checkBox($target);
+                  echo "</div>";
                }
-               echo "<table class='tab_cadrehov'>";
+               
+               if ($output_type == Search::HTML_OUTPUT) {
+                  echo "<table class='tab_cadrehov'>";
 
-               echo "<tr class='tab_bg_1'><td colspan='10' class='center'>";
+                  echo "<tr class='tab_bg_1'><td colspan='10' class='center'>";
+                  if (!$tolinked) {
+                     echo "<input class='submit' type='submit' name='import_ok' value=\"" .
+                     _sx('button', 'Import', 'ocsinventoryng') . "\">";
+                  } else {
+                     echo "<input class='submit' type='submit' name='import_ok' value=\"" .
+                     _sx('button', 'Link', 'ocsinventoryng') . "\">";
+                  }
+                  echo "</td></tr>\n";
+               }
+
+               echo Search::showHeader($output_type,$end_display-$begin_display+1,$nbcols);
+               echo Search::showNewLine($output_type);
+               $header_num = 1;
+
+               echo Search::showHeaderItem($output_type, __('Name'), $header_num);//, $linkto, $p['sort']==$val, $p['order']
+               echo Search::showHeaderItem($output_type, __('Description'), $header_num);
+               echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
+               echo Search::showHeaderItem($output_type, __('Date'), $header_num);
+               echo Search::showHeaderItem($output_type, __('Contact SNMP'), $header_num);
+               echo Search::showHeaderItem($output_type, __('Location SNMP'), $header_num);
+               echo Search::showHeaderItem($output_type, __('Type SNMP', 'ocsinventoryng'), $header_num);
+               
                if (!$tolinked) {
-                  echo "<input class='submit' type='submit' name='import_ok' value=\"" .
-                  _sx('button', 'Import', 'ocsinventoryng') . "\">";
+                  echo Search::showHeaderItem($output_type, __('Item type to create', 'ocsinventoryng'), $header_num, "", 0, "", 'width=15%');
+                  echo Search::showHeaderItem($output_type, "", $header_num);
                } else {
-                  echo "<input class='submit' type='submit' name='import_ok' value=\"" .
-                  _sx('button', 'Link', 'ocsinventoryng') . "\">";
+                  echo Search::showHeaderItem($output_type, __('Item type to link', 'ocsinventoryng'), $header_num, "", 0, "", 'width=15%');
                }
-               echo "</td></tr>\n";
-
-               echo "<tr><th>" . __('Name') . "</th>\n";
-               echo "<th>" . __('Description') . "</th>\n";
-               echo "<th>" . __('IP address') . "</th>\n";
-               echo "<th>" . __('Date') . "</th>\n";
-               echo "<th>" . __('Contact SNMP') . "</th>\n";
-               echo "<th>" . __('Location SNMP') . "</th>\n";
-               echo "<th>" . __('Type SNMP', 'ocsinventoryng') . "</th>\n";
-               if (!$tolinked) {
-                  echo "<th width='15%'>" . __('Item type to create', 'ocsinventoryng') . "</th>\n";
-                  echo "<th width='10'>&nbsp;</th></tr>\n";
-               } else {
-                  echo "<th width='15%'>" . __('Item type to link', 'ocsinventoryng') . "</th>\n";
-               }
-
+               // End Line for column headers
+               echo Search::showEndLine($output_type);
+               
+               $row_num = 1;
+               
                foreach ($hardware as $ID => $tab) {
+                  $row_num++;
+                  $item_num   = 1;
+                  
+                  if ($tab["type"] == "Network") {
+                     $tab["type"] = "NetworkEquipment";
+                  }
 
-                  echo "<tr class='tab_bg_2'><td>" . $tab["name"] . "</td>\n";
-                  echo "<td>" . $tab["description"] . "</td><td>" . $tab["ipaddr"] . "</td>";
-                  echo "<td>" . Html::convDateTime($tab["date"]) . "</td>\n";
-                  echo "<td>" . $tab["contact"] . "</td>\n";
-                  echo "<td>" . $tab["location"] . "</td>\n";
-                  echo "<td>" . $tab["type"] . "</td>\n";
+                  echo Search::showNewLine($output_type,$row_num%2);
+                  echo Search::showItem($output_type,$tab["name"],$item_num,$row_num);
+                  echo Search::showItem($output_type,$tab["description"],$item_num,$row_num, 'width=15%');
+                  echo Search::showItem($output_type,$tab["ipaddr"],$item_num,$row_num, 'width=5%');
+                  echo Search::showItem($output_type,Html::convDateTime($tab["date"]),$item_num,$row_num, 'width=15%');
+                  echo Search::showItem($output_type,$tab["contact"],$item_num,$row_num, 'width=5%');
+                  echo Search::showItem($output_type,$tab["location"],$item_num,$row_num, 'width=15%');
+                  echo Search::showItem($output_type,$tab["type"],$item_num,$row_num);
 
                   if (!$tolinked) {
                      echo "<td width='15%'>";
                      $value = false;
-                     if ($tab["type"] == "Network") {
-                        $tab["type"] = "NetworkEquipment";
-                     }
+                     
                      if (getItemForItemtype($tab["type"])) {
                         $value = $tab["type"];
                      }
@@ -974,7 +1115,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                      Dropdown::showItemTypes($type, self::$snmptypes, array('value' => $value));
                      echo "</td>\n";
                   }
-                  /* if ($advanced && !$tolinked){
+                  /* if ($p['change_import_mode'] && !$tolinked){
                     if (!isset ($data['entities_id']) || $data['entities_id'] == -1){
                     echo "<td class='center'><img src=\"".$CFG_GLPI['root_doc']. "/pics/redbutton.png\"></td>\n";
                     $data['entities_id'] = -1;
@@ -998,15 +1139,15 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                   echo "<td width='10'>";
                   if (!$tolinked) {
                      echo "<input type='checkbox' name='toimport[" . $tab["id"] . "]' " .
-                     ($check == "all" ? "checked" : "") . ">";
+                     ($p['check'] == "all" ? "checked" : "") . ">";
                   } else {
 
-                     /* $tab['entities_id'] = $entity;
+                     /* $tab['entities_id'] = $p['glpiactiveentities'];
                        $rulelink         = new RuleImportComputerCollection();
                        $rulelink_results = array();
-                       $params           = array('entities_id' => $entity,
+                       $params           = array('entities_id' => $p['glpiactiveentities'],
                        'plugin_ocsinventoryng_ocsservers_id'
-                       => $serverId);
+                       => $plugin_ocsinventoryng_ocsservers_id);
                        $rulelink_results = $rulelink->processAllRules(Toolbox::stripslashes_deep($tab),
                        array(), $params);
 
@@ -1019,7 +1160,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
 
                        if (!empty($rulelink_results['found_computers'])){
                        $options['value']  = $rulelink_results['found_computers'][0];
-                       $options['entity'] = $entity;
+                       $options['entity'] = $p['glpiactiveentities'];
                        } */
 
                      /* } else{
@@ -1027,9 +1168,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                        } */
 
                      $value = false;
-                     if ($tab["type"] == "Network") {
-                        $tab["type"] = "NetworkEquipment";
-                     }
+                     
                      if (getItemForItemtype($tab["type"])) {
                         $type            = $tab["type"];
                         $options['name'] = "tolink_items[" . $tab["id"] . "]";
@@ -1074,13 +1213,15 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                   _sx('button', 'Link', 'ocsinventoryng') . "\">";
                }
                echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' " .
-               "value='$serverId'>";
+               "value='".$plugin_ocsinventoryng_ocsservers_id."'>";
                echo "</td></tr>";
                echo "</table>\n";
                Html::closeForm();
 
                if (!$tolinked) {
+                  echo "<div class='center'>";
                   PluginOcsinventoryngOcsServer::checkBox($target);
+                  echo "</div>";
                }
 
                Html::printPager($start, $numrows, $target, $parameters);
