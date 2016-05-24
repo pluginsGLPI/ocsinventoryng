@@ -1324,7 +1324,12 @@ JAVASCRIPT;
       // Retrieve informations from computer
       $comp = new Computer();
       $comp->getFromDB($glpi_computers_id);
-
+      if (isset($glpi_computers_id)
+            && $glpi_computers_id > 0) {
+         $input["is_dynamic"]    = 1;
+         $input["id"]            = $glpi_computers_id;
+         $comp->update($input);
+      }
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
@@ -1840,6 +1845,7 @@ JAVASCRIPT;
       if (intval($cfg_ocs["import_general_domain"]) == 0) {
          unset($input["domains_id"]);
       }
+
       return $input;
    }
 
@@ -2028,6 +2034,7 @@ JAVASCRIPT;
             if ($CFG_GLPI['transfers_id_auto'] > 0 && Session::isMultiEntitiesMode()) {
                self::transferComputer($line, $data_ocs);
                $comp->getFromDB($line["computers_id"]);
+               
             } else {
 
                $locations_id = 0;
@@ -5524,7 +5531,7 @@ JAVASCRIPT;
     * @param dohistory record in history link between monitor and computer
     */
    static function importMonitor($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity, $dohistory) {
-      global $DB;
+      global $DB, $CFG_GLPI;
       $already_processed = array();
       $do_clean          = true;
       $m                 = new Monitor();
@@ -5608,8 +5615,10 @@ JAVASCRIPT;
                   $query            = "SELECT `id`
                                FROM `glpi_monitors`
                                WHERE `name` = '" . $mon["name"] . "'
-                                  AND `is_global` = '1'
-                                  AND `entities_id` = '$entity'";
+                                  AND `is_global` = '1' ";
+                  if ($CFG_GLPI['transfers_id_auto'] < 1) {
+                     $query .= " AND `entities_id` = '$entity'";
+                  }
                   $result_search    = $DB->query($query);
 
                   if ($DB->numrows($result_search) > 0) {
@@ -5634,8 +5643,10 @@ JAVASCRIPT;
                      $query         = "SELECT `id`
                                   FROM `glpi_monitors`
                                   WHERE `serial` LIKE '%" . $mon["serial"] . "%'
-                                     AND `is_global` = '0'
-                                     AND `entities_id` = '$entity'";
+                                     AND `is_global` = '0' ";
+                     if ($CFG_GLPI['transfers_id_auto'] < 1) {
+                        $query .= " AND `entities_id` = '$entity'";
+                     }
                      $result_search = $DB->query($query);
                      if ($DB->numrows($result_search) == 1) {
                         //Monitor founded
@@ -5656,8 +5667,10 @@ JAVASCRIPT;
                                            WHERE `serial` = ''
                                                  AND `name` = '" . $mon["name"] . "'
                                                        AND `is_global` = '0'
-                                                       AND `entities_id` = '$entity'
                                                        AND `glpi_computers_items`.`computers_id` IS NULL";
+                        if ($CFG_GLPI['transfers_id_auto'] < 1) {
+                           $query .= " AND `entities_id` = '$entity'";
+                        }
                         $result_search = $DB->query($query);
                         if ($DB->numrows($result_search) == 1) {
                            $id_monitor = $DB->result($result_search, 0, "id");
@@ -5702,8 +5715,8 @@ JAVASCRIPT;
                      if (empty($old->fields["serial"]) && !empty($mon["serial"])) {
                         $input["serial"] = $mon["serial"];
                      }
+                     $input["id"]          = $id_monitor;
                      if (count($input)) {
-                        $input["id"]          = $id_monitor;
                         $input['entities_id'] = $entity;
                         $m->update($input);
                      }
@@ -5772,7 +5785,7 @@ JAVASCRIPT;
     * @param $dohistory record in history link between printer and computer
     */
    static function importPrinter($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity, $dohistory) {
-      global $DB;
+      global $DB, $CFG_GLPI;
 
       $already_processed = array();
 
@@ -5850,8 +5863,10 @@ JAVASCRIPT;
                            $query              = "SELECT `id`
                                          FROM `glpi_printers`
                                          WHERE `name` = '" . $print["name"] . "'
-                                            AND `is_global` = '1'
-                                            AND `entities_id` = '$entity'";
+                                            AND `is_global` = '1' ";
+                           if ($CFG_GLPI['transfers_id_auto'] < 1) {
+                              $query .= " AND `entities_id` = '$entity'";
+                           }
                            $result_search      = $DB->query($query);
 
                            if ($DB->numrows($result_search) > 0) {
@@ -5969,7 +5984,7 @@ JAVASCRIPT;
     * @param $dohistory record in history link between peripheral and computer
     */
    static function importPeripheral($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity, $dohistory) {
-      global $DB;
+      global $DB, $CFG_GLPI;
       $already_processed = array();
       $p                 = new Peripheral();
       $conn              = new Computer_Item();
@@ -6020,8 +6035,10 @@ JAVASCRIPT;
                         $query               = "SELECT `id`
                                            FROM `glpi_peripherals`
                                            WHERE `name` = '" . $periph["name"] . "'
-                                           AND `is_global` = '1'
-                                           AND `entities_id` = '$entity'";
+                                           AND `is_global` = '1' ";
+                        if ($CFG_GLPI['transfers_id_auto'] < 1) {
+                           $query .= " AND `entities_id` = '$entity'";
+                        }
                         $result_search       = $DB->query($query);
                         if ($DB->numrows($result_search) > 0) {
                            //Periph is already in GLPI
