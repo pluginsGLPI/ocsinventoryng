@@ -693,8 +693,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       
       $input = array(
          "is_dynamic"    => 1,
-         "entities_id"   => $_SESSION['glpidefault_entity'],
-         "have_ethernet" => 1,
+         "entities_id"   => $_SESSION['glpidefault_entity']
       );
       
       if ($cfg_ocs['importsnmp_name']) {

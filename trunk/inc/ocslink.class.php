@@ -153,6 +153,63 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo '</table>';
                }
             }
+            
+            //SNMP Link
+            $query = "SELECT *
+                      FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
+                      WHERE `items_id` = '".$items_id."' AND  `itemtype` = '".$item->getType()."'";
+
+            $result = $DB->query($query);
+            if ($DB->numrows($result) > 0) {
+               $data = $DB->fetch_assoc($result);
+
+               if (count($data)) {
+                  $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
+                  echo "<table class='tab_glpi'>";
+                  echo "<tr class='tab_bg_1'><th colspan='2'>".__('SNMP informations OCS NG')."</th>";
+                  
+                  echo "<tr class='tab_bg_1'><td>".__('Import date in GLPI', 'ocsinventoryng');
+                  echo "</td><td>".Html::convDateTime($data["last_update"]).'</td></tr>';
+                  
+                  $linked_ids [] = $data['ocs_id'];
+                  $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($data['plugin_ocsinventoryng_ocsservers_id']);
+                  $ocsResult = $ocsClient->getSnmp(array(
+                     'MAX_RECORDS' => 1,
+                     'FILTER'      => array(
+                        'IDS' => $linked_ids,
+                     )
+                  ));
+                  if (isset($ocsResult['SNMP'])) {
+                     if (count($ocsResult['SNMP']) > 0) {
+                        foreach ($ocsResult['SNMP'] as $snmp) {
+                           $LASTDATE   = $snmp['META']['LASTDATE'];
+                           $UPTIME     = $snmp['META']['UPTIME'];
+                  
+                           echo "<tr class='tab_bg_1'><td>".__('Last OCSNG SNMP inventory date', 'ocsinventoryng');
+                           echo "</td><td>".Html::convDateTime($LASTDATE).'</td></tr>';
+                           
+                           echo "<tr class='tab_bg_1'><td>".__('Uptime', 'ocsinventoryng');
+                           echo "</td><td>".$UPTIME.'</td></tr>';
+                        }
+                     }
+                  }
+                  
+                  
+                  
+                  if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
+                     echo "<tr class='tab_bg_1'><td class='center' colspan='2'>";
+                     Html::showSimpleForm($target, 'force_ocssnmp_resynch',
+                                          _sx('button', 'Force SNMP synchronization', 'ocsinventoryng'),
+                                          array('items_id' => $items_id,
+                                                 'itemtype' => $item->getType(),
+                                                 'id' => $data["id"],
+                                                  'plugin_ocsinventoryng_ocsservers_id' => $data["plugin_ocsinventoryng_ocsservers_id"]));
+                     echo "</td></tr>";
+                     
+                  }
+                  echo '</table>';
+               }
+            }
          }
       }
    }

@@ -50,7 +50,6 @@ function plugin_init_ocsinventoryng() {
       = array('Computer'               => array('PluginOcsinventoryngOcslink', 'showSimpleForItem'),
               'ComputerDisk'           => array('PluginOcsinventoryngOcslink', 'showSimpleForChild'),
               'ComputerVirtualMachine' => array('PluginOcsinventoryngOcslink', 'showSimpleForChild'),
-              'Computer'               => array('PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'),
               'Printer'                => array('PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'),
               'NetworkEquipment'       => array('PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'),
               'Peripheral'             => array('PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'),
