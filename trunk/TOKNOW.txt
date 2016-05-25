@@ -1,0 +1,2 @@
+La tache automatique ocsng ne se lance que si le serveur n'est pas en mode expert
+La tache automatique ocsng ne fait que synchroniser des pcs existants - Pas d'import de nouvelles machines

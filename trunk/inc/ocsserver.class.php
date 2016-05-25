@@ -5019,7 +5019,7 @@ JAVASCRIPT;
       // no translation for the name of the project
       switch ($name) {
          case 'ocsng':
-            return array('description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Check OCSNG import script', 'ocsinventoryng'));
+            return array('description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Check OCSNG synchronization script', 'ocsinventoryng'));
             break;
          case 'CleanOldAgents':
             return array('description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Clean old agents & drop from OCSNG software', 'ocsinventoryng'));
@@ -5103,10 +5103,22 @@ JAVASCRIPT;
 
             foreach ($res as $k => $data) {
                if (count($data) > 0) {
-                  $task->addVolume(1);
-                  $task->log(sprintf(__('%1$s: %2$s'), _n('Computer', 'Computer', 1), sprintf(__('%1$s (%2$s)'), $data["DEVICEID"], $data["ID"])));
+                  // Fetch all linked computers from GLPI that were returned from OCS
+                  $query_glpi  = "SELECT `id`, `ocs_deviceid`
+                                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                                 WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
+                                             = '$plugin_ocsinventoryng_ocsservers_id'
+                                        AND `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` = '".$data["ID"]."'";
+                  $result_glpi = $DB->query($query_glpi);
+                  if ($DB->numrows($result_glpi) > 0) {
+                     while ($values = $DB->fetch_assoc($result_glpi)) {
+                        $task->addVolume(1);
+                        $task->log(sprintf(__('%1$s: %2$s'), _n('Computer', 'Computer', 1), sprintf(__('%1$s (%2$s)'), $values["ocs_deviceid"], $values["id"])));
 
-                  self::processComputer($data["ID"], $plugin_ocsinventoryng_ocsservers_id, 0);
+                        self::updateComputer($values["id"], $plugin_ocsinventoryng_ocsservers_id, 0);
+
+                     }
+                  }
                }
             }
          } else {
