@@ -1520,7 +1520,7 @@ JAVASCRIPT;
       $comp = new Computer();
 
       //Check it machine is already present AND was imported by OCS AND still present in GLPI
-      $query                                      = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`id`, `computers_id`, `ocsid`
+      $query  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`id`, `computers_id`, `ocsid`
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 LEFT JOIN `glpi_computers`
                      ON `glpi_computers`.`id`=`glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`
@@ -2851,6 +2851,16 @@ JAVASCRIPT;
       while ($data               = $DB->fetch_assoc($already_linked_result)) {
          $already_linked_ids [] = $data['ocsid'];
       }
+      
+      $query    = "SELECT MAX(`last_ocs_update`)
+                   FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                   WHERE `plugin_ocsinventoryng_ocsservers_id`='$plugin_ocsinventoryng_ocsservers_id'";
+      $max_date = "0000-00-00 00:00:00";
+      if ($result   = $DB->query($query)) {
+         if ($DB->numrows($result) > 0) {
+            $max_date = $DB->result($result, 0, 0);
+         }
+      }
 
       // Fetch linked computers from ocs
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
@@ -2860,7 +2870,9 @@ JAVASCRIPT;
          'ORDER'       => 'LASTDATE',
          'FILTER'      => array(
             'IDS'      => $already_linked_ids,
-            'CHECKSUM' => $cfg_ocs["checksum"]
+            'CHECKSUM' => $cfg_ocs["checksum"],
+            'INVENTORIED_BEFORE' => 'NOW())-180',
+            'INVENTORIED_SINCE' => $max_date,
          )
       ));
 
@@ -5057,7 +5069,7 @@ JAVASCRIPT;
       return $cron_status;
    }
 
-   static function cronOcsng($task) {
+   static function cronocsng($task) {
       global $DB, $CFG_GLPI;
 
       //Get a randon server id

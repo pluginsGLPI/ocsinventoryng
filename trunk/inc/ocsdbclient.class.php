@@ -469,11 +469,15 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          }
          
          if (isset($filters['INVENTORIED_SINCE']) and $filters['INVENTORIED_SINCE']) {
-
-            $since = $filters['INVENTORIED_SINCE'];
-            $where_since = " AND (`hardware`.`LASTDATE` > ";
-            $where_since .= "'" .$since. "'";
-            $where_since .= ") ";
+            
+            if (!isset($filters['CHECKSUM'])) {
+               $since = $filters['INVENTORIED_SINCE'];
+               $where_since = " AND (`hardware`.`LASTDATE` > ";
+               $where_since .= "'" .$since. "'";
+               $where_since .= ") ";
+            } else {
+               $where_since = "";
+            }
          } else {
             $where_since = "";
          }
@@ -491,7 +495,13 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          
          if (isset($filters['CHECKSUM']) and $filters['CHECKSUM']) {
             $checksum = $filters['CHECKSUM'];
-            $where_checksum = " AND ('" . $checksum . "' & hardware.CHECKSUM) ";
+            
+            $where_checksum = " AND (('" . $checksum . "' & `hardware`.`CHECKSUM`) > '0'";
+            if (isset($filters['INVENTORIED_SINCE']) and $filters['INVENTORIED_SINCE']) {
+               $since = $filters['INVENTORIED_SINCE'];
+               $where_checksum .= " OR `hardware`.`LASTDATE` > '$since'";
+            }
+            $where_checksum .= ")";
          } else {
             $where_checksum = "";
          }
@@ -501,9 +511,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       }
 
 
-      $query = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
-                        WHERE hardware.DEVICEID NOT LIKE '\\_%'
-                        AND hardware.ID = accountinfo.HARDWARE_ID
+      $query = "SELECT * FROM `hardware`, `accountinfo`
+                        WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
+                        AND `hardware`.`ID` = `accountinfo`.`HARDWARE_ID`
                         $where_condition";
       $request = $this->db->query($query);
 
