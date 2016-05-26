@@ -311,7 +311,7 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
 
    $computerOptions = array(
          'FILTER' => array(
-         'INVENTORIED_BEFORE' => "NOW())-180",
+         'INVENTORIED_BEFORE' => "NOW()",
          )
    );
    

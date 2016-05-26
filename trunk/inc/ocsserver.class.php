@@ -2871,7 +2871,7 @@ JAVASCRIPT;
          'FILTER'      => array(
             'IDS'      => $already_linked_ids,
             'CHECKSUM' => $cfg_ocs["checksum"],
-            'INVENTORIED_BEFORE' => 'NOW())-180',
+            'INVENTORIED_BEFORE' => 'NOW()',
             'INVENTORIED_SINCE' => $max_date,
          )
       ));
