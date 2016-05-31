@@ -983,6 +983,11 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
             }
             
             foreach ($hardware as $id => $field) {
+               
+               if ($field["type"] == "Network") {
+                  $field["type"] = "NetworkEquipment";
+               }
+                  
                if (!empty($p['itemtype']) 
                      && $field['type'] != $p['itemtype']) {
                   unset($hardware[$id]);
@@ -1178,14 +1183,15 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                         }
                         $type::dropdown($options);
                         echo "<input type='hidden' name='tolink_itemtype[" . $tab["id"] . "]' value='" . $tab["type"] . "'>";
+                        
                      } else {
 
-                        $rand = mt_rand();
+                        $mtrand = mt_rand();
 
                         $mynamei = "itemtype";
                         $myname  = "tolink_items[" . $tab["id"] . "]";
 
-                        Dropdown::showItemTypes($mynamei, $CFG_GLPI["asset_types"], array('rand' => $rand));
+                        $rand = Dropdown::showItemTypes($mynamei, $CFG_GLPI["asset_types"], array('rand' => $mtrand));
 
 
                         $p = array('itemtype' => '__VALUE__',
@@ -1193,9 +1199,8 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                            'id'       => $tab["id"],
                            'rand'     => $rand,
                            'myname'   => $myname);
-
-                        Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", $CFG_GLPI["root_doc"] .
-                           "/plugins/ocsinventoryng/ajax/dropdownitems.php", $p);
+//print_r($p);
+                        Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", $CFG_GLPI["root_doc"] ."/plugins/ocsinventoryng/ajax/dropdownitems.php", $p);
                         echo "<span id='results_$mynamei$rand'>\n";
                         echo "</span>\n";
                      }

@@ -32,7 +32,7 @@ header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkLoginUser();
-
+if (!isset($_POST) || empty($_POST)) $_POST = $_GET;
 // Security
 if (!TableExists($_POST['table'])) {
    exit();

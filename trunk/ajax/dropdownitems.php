@@ -56,6 +56,7 @@ if (isset($_POST["itemtype"])
          $p["used"] = $_POST["used"][$_POST["itemtype"]];
       }
    }
+
    echo Html::jsAjaxDropdown($_POST['myname'], $field_id,
                              $CFG_GLPI['root_doc']."/plugins/ocsinventoryng/ajax/getDropdownFindItem.php",
                              $p);
