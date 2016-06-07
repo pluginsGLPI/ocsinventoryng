@@ -1338,7 +1338,11 @@ JAVASCRIPT;
       if (is_null($ocsComputer)) {
          return false;
       }
-
+      $link = new PluginOcsinventoryngOcslink;
+      $data     = $link->find("`ocsid` = '".$ocsid."' AND `plugin_ocsinventoryng_ocsservers_id` = '".$plugin_ocsinventoryng_ocsservers_id."'");
+      if (count($data) > 0) {
+         return false;
+      }
       $query  = "INSERT INTO `glpi_plugin_ocsinventoryng_ocslinks`
                        (`computers_id`, `ocsid`, `ocs_deviceid`,
                         `last_update`, `plugin_ocsinventoryng_ocsservers_id`,
@@ -2341,7 +2345,7 @@ JAVASCRIPT;
             self::updateTag($line, $data_ocs);
             // Update OCS Cheksum
             $oldChecksum = $ocsClient->getChecksum($line['ocsid']);
-            $newchecksum = "(".$oldChecksum - $mixed_checksum.")";
+            $newchecksum = $oldChecksum - $mixed_checksum;
             $ocsClient->setChecksum($newchecksum, $line['ocsid']);
             //Return code to indicate that computer was synchronized
             return array('status'       => self::COMPUTER_SYNCHRONIZED,
