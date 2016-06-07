@@ -2340,8 +2340,9 @@ JAVASCRIPT;
             //Update TAG
             self::updateTag($line, $data_ocs);
             // Update OCS Cheksum
-            $newchecksum = "(CHECKSUM - $mixed_checksum)";
-            self::getDBocs($plugin_ocsinventoryng_ocsservers_id)->setChecksum($newchecksum, $line['ocsid']);
+            $oldChecksum = $ocsClient->getChecksum($line['ocsid']);
+            $newchecksum = "(".$oldChecksum - $mixed_checksum.")";
+            $ocsClient->setChecksum($newchecksum, $line['ocsid']);
             //Return code to indicate that computer was synchronized
             return array('status'       => self::COMPUTER_SYNCHRONIZED,
                'entities_id'  => $comp->fields["entities_id"],
