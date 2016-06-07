@@ -215,18 +215,18 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       $nbdel=0;
 
       if ($delete_frequency > 0) {
-         $sql = "SELECT `id`
+         $sql = "DELETE
                  FROM `" . $this->getTable() . "`
                  WHERE (`status` = " . PLUGIN_OCSINVENTORYNG_STATE_FINISHED . "
                         AND `end_time` < DATE_ADD(NOW(), INTERVAL -".$delete_frequency." HOUR))";
-
-         foreach($DB->request($sql) as $data) {
+         $DB->query($sql);
+         //foreach($DB->request($sql) as $data) {
             // Requires to clean details
-            $this->delete(array('id'=>$data['id']), true);
-            $nbdel++;
-         }
+         //   $this->delete(array('id'=>$data['id']), true);
+         //   $nbdel++;
+         //}
       }
-      return $nbdel;
+      return true;
    }
 
 
