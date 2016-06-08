@@ -385,48 +385,50 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                </a></td><tr>";
       }
       echo "</table></div>";
+      
+      if ($isactive) {
+         $client  = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+         $version = $client->getTextConfig('GUI_VERSION');
+         $snmp    = $client->getIntConfig('SNMP');
 
-      $client  = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-      $version = $client->getTextConfig('GUI_VERSION');
-      $snmp    = $client->getIntConfig('SNMP');
+         if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $version > self::OCS2_1_VERSION_LIMIT && $snmp) {
+            //host not imported by thread
+            echo "<div class='center'><table class='tab_cadre' width='40%'>";
+            echo "<tr><th colspan='" . ($usemassimport ? 4 : 2) . "'>";
+            _e('OCSNG SNMP import', 'ocsinventoryng');
+            echo "</th></tr>";
 
-      if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $version > self::OCS2_1_VERSION_LIMIT && $snmp) {
-         //host not imported by thread
-         echo "<div class='center'><table class='tab_cadre' width='40%'>";
-         echo "<tr><th colspan='" . ($usemassimport ? 4 : 2) . "'>";
-         _e('OCSNG SNMP import', 'ocsinventoryng');
-         echo "</th></tr>";
+            // SNMP device link feature
+            echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+                  <a href='ocsngsnmp.link.php'>
+                   <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' " .
+            "alt='" . __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "' " .
+            "title=\"" . __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "\">
+                     <br>" . __('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "
+                  </a></td>";
 
-         // SNMP device link feature
-         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-               <a href='ocsngsnmp.link.php'>
-                <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' " .
-         "alt='" . __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "' " .
-         "title=\"" . __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "\">
-                  <br>" . __('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "
+            echo "<td class='center b' colspan='2'>
+               <a href='ocsngsnmp.sync.php'>
+                <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro1.png' " .
+            "alt='" . __s('Synchronize SNMP devices already imported', 'ocsinventoryng') . "' " .
+            "title=\"" . __s('Synchronize SNMP devices already imported', 'ocsinventoryng') . "\" >
+                  <br>" . __('Synchronize SNMP devices already imported', 'ocsinventoryng') . "
                </a></td>";
+            echo "</tr>";
 
-         echo "<td class='center b' colspan='2'>
-            <a href='ocsngsnmp.sync.php'>
-             <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro1.png' " .
-         "alt='" . __s('Synchronize SNMP devices already imported', 'ocsinventoryng') . "' " .
-         "title=\"" . __s('Synchronize SNMP devices already imported', 'ocsinventoryng') . "\" >
-               <br>" . __('Synchronize SNMP devices already imported', 'ocsinventoryng') . "
-            </a></td>";
-         echo "</tr>";
+            //SNMP device import feature :D
+            echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+             <a href='ocsngsnmp.import.php'>
+              <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' " .
+            "alt='" . __s('Import new SNMP devices', 'ocsinventoryng') . "' " .
+            "title=\"" . __s('Import new SNMP devices', 'ocsinventoryng') . "\">
+                <br>" . __('Import new SNMP devices', 'ocsinventoryng') . "
+             </a></td>";
 
-         //SNMP device import feature :D
-         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-          <a href='ocsngsnmp.import.php'>
-           <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' " .
-         "alt='" . __s('Import new SNMP devices', 'ocsinventoryng') . "' " .
-         "title=\"" . __s('Import new SNMP devices', 'ocsinventoryng') . "\">
-             <br>" . __('Import new SNMP devices', 'ocsinventoryng') . "
-          </a></td>";
-
-         echo "<td></td>";
-         echo "</tr>";
-         echo "</table></div>";
+            echo "<td></td>";
+            echo "</tr>";
+            echo "</table></div>";
+         }
       }
    }
 
