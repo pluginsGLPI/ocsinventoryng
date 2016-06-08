@@ -92,7 +92,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "<div class='center' id='tabsbody'>";
       echo "<form name=cas action='' method='post'>";
       echo "<table class='tab_cadre' cellpadding='11'>";
-      echo "<tr><th colspan='14'>".sprintf(__('%1$s: %2$s'), __('Process information'), $pid).
+      echo "<tr><th colspan='14'>".sprintf(__('%1$s: %2$s'), __('Process information', 'ocsinventoryng'), $pid).
            "</th></tr>";
       echo "<tr>";
       echo "<th>" . __('Thread', 'ocsinventoryng') . "</th>";
