@@ -2598,20 +2598,23 @@ JAVASCRIPT;
          return 0;
       }
 
-      $query2  = "SELECT `id`
+      $query  = "SELECT `id`
                  FROM `glpi_groups`
-                 WHERE `name` = '$value'
-                       AND `entities_id` = '$entities_id'";
-      $result2 = $DB->query($query2);
+                 WHERE `name` = '$value' ";
+      
+      $query .= getEntitiesRestrictRequest(' AND ', 'glpi_groups', '',
+                                                 $entities_id, true);
+                                                 
+      $result = $DB->query($query);
 
-      if ($DB->numrows($result2) == 0) {
+      if ($DB->numrows($result) == 0) {
          $group                = new Group();
          $input["name"]        = $value;
          $input["entities_id"] = $entities_id;
          return $group->add($input);
       }
-      $line2 = $DB->fetch_array($result2);
-      return $line2["id"];
+      $line = $DB->fetch_array($result);
+      return $line["id"];
    }
 
    /**
@@ -4961,7 +4964,7 @@ JAVASCRIPT;
     *
     * @return Nothing (void).
     * */
-   static function updateAdministrativeInfo($computers_id, $ocsid, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $entity, $dohistory) {
+   static function updateAdministrativeInfo($computers_id, $ocsid, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $entities_id, $dohistory) {
       global $DB;
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient       = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
@@ -4989,7 +4992,9 @@ JAVASCRIPT;
                   //get info from ocs
                   $ocs_column  = $links_glpi_ocs['ocs_column'];
                   $glpi_column = $links_glpi_ocs['glpi_column'];
-                  if (array_key_exists($ocs_column, $accountinfo) && !in_array($glpi_column, $computer_updates)) {
+                  if ($computer_updates 
+                        && array_key_exists($ocs_column, $accountinfo) 
+                           && !in_array($glpi_column, $computer_updates)) {
                      if (isset($accountinfo[$ocs_column])) {
                         $var = addslashes($accountinfo[$ocs_column]);
                      } else {
@@ -4997,11 +5002,11 @@ JAVASCRIPT;
                      }
                      switch ($glpi_column) {
                         case "groups_id":
-                           $var = self::importGroup($var, $entity);
+                           $var = self::importGroup($var, $entities_id);
                            break;
 
                         case "locations_id":
-                           $var = Dropdown::importExternal("Location", $var, $entity);
+                           $var = Dropdown::importExternal("Location", $var, $entities_id);
                            break;
 
                         case "networks_id":
@@ -5012,7 +5017,7 @@ JAVASCRIPT;
                      $input                = array();
                      $input[$glpi_column]  = $var;
                      $input["id"]          = $computers_id;
-                     $input["entities_id"] = $entity;
+                     $input["entities_id"] = $entities_id;
                      $input["_nolock"]     = true;
                      $comp->update($input, $dohistory);
                   }
