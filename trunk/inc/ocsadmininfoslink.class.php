@@ -47,5 +47,38 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
       return $this->getFromDBByQuery("WHERE `".$this->getTable()."`.`plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id' AND `".$this->getTable()."`.`glpi_column` = '$glpi_column'");
 
    }
+   
+   static function addInfocomsForComputer($computers_id, $date, $computer_updates){
+      global $DB;
+      
+      $infocom = new Infocom();
+      $use_date = substr($date, 0, 10);
+      if($infocom->getFromDBByQuery("WHERE `items_id` = $computers_id AND `itemtype` = 'Computer'")){
+         if(empty($infocom->fields['use_date']) || $infocom->fields['use_date'] == 'NULL'){
+            //add use_date
+            $infocom->update(array('id' => $infocom->fields['id'], 'use_date' =>$use_date ));
+            
+             //Add lock
+            $computer_updates[] = "use_date";
+            $query              = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                                    SET `computer_update` = '" . addslashes(exportArrayToDB($computer_updates)) . "'
+                                    WHERE `computers_id` = '$computers_id'";
+            $DB->query($query);
+         }
+      }else{
+         //add infocom
+         $infocom->add(array('items_id' => $computers_id, 'itemtype' => 'Computer', 'use_date' =>$use_date ));
+         
+         //Add lock
+         $computer_updates[] = "use_date";
+         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                      SET `computer_update` = '" . addslashes(exportArrayToDB($computer_updates)) . "'
+                      WHERE `computers_id` = '$computers_id'";
+         $DB->query($query);
+      }
+      return $computer_updates;
+      
+      
+   }
 }
 ?>

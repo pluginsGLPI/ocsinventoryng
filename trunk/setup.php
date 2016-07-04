@@ -111,8 +111,9 @@ function plugin_init_ocsinventoryng() {
 
          //TODO Change for menu
          $PLUGIN_HOOKS['config_page']['ocsinventoryng'] = 'front/config.php';
-         $PLUGIN_HOOKS['post_init']['ocsinventoryng']   = 'plugin_ocsinventoryng_postinit';
       }
+      
+      $PLUGIN_HOOKS['post_init']['ocsinventoryng']   = 'plugin_ocsinventoryng_postinit';
    }
 
    $CFG_GLPI['ocsinventoryng_devices_index'] = array(1  => 'Item_DeviceMotherboard',

@@ -270,39 +270,46 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "<input type='hidden' name='id' value='$items_id'>";
                   echo "<table class='tab_cadre_fixe'>";
                   echo "<tr><th colspan = '4'>OCS Inventory NG</th>";
-
+                  
                   echo "<tr class='tab_bg_1'>";
-
-                  $colspan = 4;
-                  if (Session::haveRight("plugin_ocsinventoryng_view", READ)
-                      && Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
-
-                     $colspan = 2;
-                     echo "<td class='center'>".__('Automatic update OCSNG', 'ocsinventoryng').
-                          "</td>";
-                     echo "<td class='left'>";
-                     Dropdown::showYesNo("use_auto_update", $data["use_auto_update"]);
-                     echo "</td>";
-                  }
-                  echo "<td class='center' colspan='".$colspan."'>";
-                  printf(__('%1$s: %2$s'), __('OCSNG TAG', 'ocsinventoryng'), $data['tag']);
-                  echo "</td></tr>";
+                  echo "<td class='left'>";
+                   _e('OCSNG DEVICE ID', 'ocsinventoryng');
+                  echo "</td>";
+                  echo "<td class='left'>";
+                  echo $data['ocs_deviceid'];
+                  echo "</td>";
+                  
+                  echo "<td class='left'>";
+                  _e('OCSNG TAG', 'ocsinventoryng');
+                  echo "</td>";
+                  echo "<td class='left'>";
+                  echo $data['tag'];
+                  echo "</td>";
+                  
+                  echo "<tr class='tab_bg_1'>";
+                  echo "<td class='left'>".__('Automatic update OCSNG', 'ocsinventoryng').
+                       "</td>";
+                  echo "<td class='left'>";
+                  Dropdown::showYesNo("use_auto_update", $data["use_auto_update"]);
+                  echo "</td><td colspan='2'></td>";
+                     
+                  echo "</tr>";
 
                   if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
                      echo "<tr class='tab_bg_1'>";
-                     $colspan=4;
+                     echo "<td class='center' colspan='2'>";
+                     echo "<input type='hidden' name='link_id' value='" . $data["id"] . "'>";
+                     echo "<input class=submit type='submit' name='update' value=\"" .
+                            _sx('button', 'Save')."\">";
+                     echo "</td>";
+                     
                      echo "<td class='center' colspan='2'>";
                      echo "<input type='hidden' name='resynch_id' value='" . $data["id"] . "'>";
                      echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
                            _sx('button', 'Force synchronization', 'ocsinventoryng'). "\">";
                      echo "</td>";
 
-                     //echo "<tr class='tab_bg_1'>";
-                     echo "<td class='center' colspan='2'>";
-                     echo "<input type='hidden' name='link_id' value='" . $data["id"] . "'>";
-                     echo "<input class=submit type='submit' name='update' value=\"" .
-                            _sx('button', 'Save')."\">";
-                     echo "</td></tr>";
+                     echo "</tr>";
                   }
 
                   echo "</table>\n";
@@ -466,7 +473,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
 
       if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))
-          && $this->canView()) {
+          && Session::haveRight("plugin_ocsinventoryng_view", READ)) {
 
          switch ($item->getType()) {
             case 'Computer' :

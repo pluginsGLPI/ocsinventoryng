@@ -280,7 +280,7 @@ abstract class PluginOcsinventoryngOcsClient {
     * 			'2' => ...
     * 		)
     */
-   abstract public function getAccountInfoColumns();
+   abstract public function getAccountInfoColumns($table);
 
    /**
     * Sets the ssn for the given computer

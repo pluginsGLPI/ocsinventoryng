@@ -1159,12 +1159,17 @@ function plugin_ocsinventoryng_postinit() {
 
    $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng']    = array();
    $PLUGIN_HOOKS['item_update']['ocsinventoryng']     = array();
-
+   
    $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng']
       = array('Computer_Item' => array('PluginOcsinventoryngOcslink', 'addComputer_Item'));
-
+   
+   $PLUGIN_HOOKS['pre_item_update']['ocsinventoryng'] = array(
+          'Infocom'  => 'plugin_ocsinventoryng_pre_item_update',
+       );
+     
    $PLUGIN_HOOKS['item_update']['ocsinventoryng']
-      = array('Computer' => array('PluginOcsinventoryngOcslink', 'updateComputer'));
+      = array('Computer' => array('PluginOcsinventoryngOcslink', 'updateComputer'),
+               'Infocom'  => 'plugin_ocsinventoryng_item_update');
 
    $PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng']
       = array('Computer'      => array('PluginOcsinventoryngOcslink', 'purgeComputer'),
@@ -1176,10 +1181,14 @@ function plugin_ocsinventoryng_postinit() {
                'Computer'            => array('PluginOcsinventoryngSnmpOcslink', 'purgeComputer'),
                'Peripheral'          => array('PluginOcsinventoryngSnmpOcslink', 'purgePeripheral'),
                'Phone'          => array('PluginOcsinventoryngSnmpOcslink', 'purgePhone'));
-              
-   foreach (PluginOcsinventoryngOcsServer::getTypes(true) as $type) {
+   
+   if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
+         || Session::haveRight("plugin_ocsinventoryng_view", READ)
+            || Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
+      foreach (PluginOcsinventoryngOcsServer::getTypes(true) as $type) {
 
-      CommonGLPI::registerStandardTab($type, 'PluginOcsinventoryngOcsServer');
+         CommonGLPI::registerStandardTab($type, 'PluginOcsinventoryngOcsServer');
+      }
    }
 }
 
@@ -2159,6 +2168,56 @@ function plugin_ocsinventoryng_migrateImportDevice($import_device=array()) {
       }
    }
    return $new_import_device;
+}
+
+/**
+ * Checking locks before updating
+ * @param type $item
+ */
+function plugin_ocsinventoryng_pre_item_update($item){
+
+   if($item->fields['itemtype'] == "Computer"){
+      $ocslink = new PluginOcsinventoryngOcslink();
+      if($ocslink->getFromDBforComputer($item->fields['items_id'])){
+         $field_set    = false;
+         $computers_update = importArrayFromDB($ocslink->fields['computer_update']);
+         foreach ($computers_update as $key => $field){
+            if (isset ($item->input[$field]) 
+                  && $item->input[$field] != $item->fields[$field]) {
+               $field_set           = true;
+               $item->input[$field] = $item->fields[$field];
+            }
+         }
+         if ($field_set) {
+            Session::addMessageAfterRedirect(__("The startup date field is locked by ocsinventoryng please unlock it before update.", "ocsinventoryng"), true, ERROR);
+         }
+      }
+   }
+}
+
+function plugin_ocsinventoryng_item_update($item) {
+   global $DB;
+
+   if ($item->fields['itemtype'] == "Computer") {
+      
+      if(in_array('use_date', $item->updates)){
+         $query  = "SELECT *
+                   FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                   WHERE `computers_id` = '" . $item->fields['items_id'] . "'";
+         $result = $DB->query($query);
+         
+         if ($DB->numrows($result) == 1) {
+            $line               = $DB->fetch_assoc($result);
+            $computer_updates   = importArrayFromDB($line["computer_update"]);
+            //Add lock
+            $computer_updates[] = "use_date";
+            $query              = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                         SET `computer_update` = '" . addslashes(exportArrayToDB($computer_updates)) . "'
+                         WHERE `computers_id` = '" . $item->fields['items_id'] . "'";
+            $DB->query($query);
+         }
+      }
+   }
 }
 
 ?>

@@ -799,30 +799,34 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     * @see PluginOcsinventoryngOcsClient::getAccountInfoColumns()
     */
 
-   public function getAccountInfoColumns() {
-      $query = "SHOW COLUMNS FROM `accountinfo`";
-      $columns = $this->db->query($query);
-      while ($column = $this->db->fetch_assoc($columns)) {
-         $res[$column['Field']] = $column['Field'];
-      }
-
-      if (TableExists("accountinfo_config")) {
-         $query = "SELECT * FROM  `accountinfo_config` ";
-         $confs = $this->db->query($query);
-         while ($conf = $this->db->fetch_assoc($confs)) {
-            $key = "fields_" . $conf["ID"];
-            if (array_key_exists($key, $res)) {
-               if ($conf["TYPE"]) {
-                  $res[$key] = array("NOM" => $conf['COMMENT'],
-                      "PREFIX" => "ACCOUNT_INFO_" . $conf["NAME"] . "_",
-                  );
-               } else {
-                  $res[$key] = $conf['COMMENT'];
+   public function getAccountInfoColumns($table = 'accountinfo') {
+      if($table == 'accountinfo'){
+         $query = "SHOW COLUMNS FROM `$table`";
+         $columns = $this->db->query($query);
+         while ($column = $this->db->fetch_assoc($columns)) {
+            $res[$column['Field']] = $column['Field'];
+         }
+         if (TableExists($table."_config")) {
+            $query = "SELECT * FROM  `accountinfo_config` ";
+            $confs = $this->db->query($query);
+            while ($conf = $this->db->fetch_assoc($confs)) {
+               $key = "fields_" . $conf["ID"];
+               if (array_key_exists($key, $res)) {
+                  if ($conf["TYPE"]) {
+                     $res[$key] = array("NOM" => $conf['COMMENT'],
+                         "PREFIX" => "ACCOUNT_INFO_" . $conf["NAME"] . "_",
+                     );
+                  } else {
+                     $res[$key] = $conf['COMMENT'];
+                  }
                }
             }
          }
+      }elseif($table == 'hardware') {
+         $res['DEVICEID'] = 'DEVICEID';
       }
       return $res;
+      
    }
 
     /**
