@@ -2096,7 +2096,8 @@ JAVASCRIPT;
                              `last_ocs_update` = '" . $data_ocs["META"]["LASTDATE"] . "',
                              `ocs_agent_version` = '" . $data_ocs["HARDWARE"]["USERAGENT"] . " ',
                              `last_ocs_conn` = '" . $data_ocs["HARDWARE"]["LASTCOME"] . " ',
-                             `ip_src` = '" . $data_ocs["HARDWARE"]["IPSRC"] . " '
+                             `ip_src` = '" . $data_ocs["HARDWARE"]["IPSRC"] . " ',
+                             `ocs_deviceid` = '" . $data_ocs["HARDWARE"]["DEVICEID"] . " '
                              WHERE `id` = '$ID'";
             $DB->query($query);
             //Add  || $data_ocs["META"]["CHECKSUM"] > self::MAX_CHECKSUM for bug of checksum 18446744073689088230
