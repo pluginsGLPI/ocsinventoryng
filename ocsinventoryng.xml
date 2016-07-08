@@ -14,7 +14,7 @@
          <en><![CDATA[This plugin allows you to synchronize with GLPI inventory solution OCS Inventory NG. It's intended to replace native mode OCS of GLPI and use the plugin massocsimport functionalities to provide better compatibility and expandability with OCS. It's composed of a script (PHP or Shell) to automate import or synchronisation of computers (need that OCS mode is operational)<br />A graphical interface displays the list of scripts running or finished and all the datas related ot them.]]></en>
       </long>
    </description>
-   <homepagehttps://github.com/pluginsGLPI/ocsinventoryng</homepage>
+   <homepage>https://github.com/pluginsGLPI/ocsinventoryng</homepage>
    <download>https://github.com/InfotelGLPI/ocsinventoryng/releases</download>
    <authors>
       <author>Remi Collet</author>
