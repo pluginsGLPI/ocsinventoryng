@@ -2950,6 +2950,9 @@ JAVASCRIPT;
                   if (isset($hardware[$data["ocsid"]])) {
                      $already_linked[$data["ocsid"]]["date"]            = $data["last_update"];
                      $already_linked[$data["ocsid"]]["name"]            = $data["name"];
+                     if ($_SESSION["glpiis_ids_visible"] || empty($data["name"])) {
+                        $already_linked[$data["ocsid"]]["name"]         = sprintf(__('%1$s (%2$s)'), $data["name"], $data["id"]);
+                     }
                      $already_linked[$data["ocsid"]]["id"]              = $data["id"];
                      $already_linked[$data["ocsid"]]["computers_id"]    = $data["computers_id"];
                      $already_linked[$data["ocsid"]]["ocsid"]           = $data["ocsid"];
