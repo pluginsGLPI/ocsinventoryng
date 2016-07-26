@@ -3,7 +3,7 @@
    <name>OCS Inventory NG</name>
    <key>ocsinventoryng</key>
    <state>stable</state>
-   <logo>https://forge.glpi-project.org/svn/ocsinventoryng/ocsinventoryng.png</logo>
+   <logo>https://github.com/pluginsGLPI/ocsinventoryng/blob/master/ocsinventoryng.png?raw=true</logo>
    <description>
       <short>
          <fr><![CDATA[Synchronisation OCSInventory-NG]]></fr>
@@ -15,7 +15,7 @@
       </long>
    </description>
    <homepage>https://github.com/pluginsGLPI/ocsinventoryng</homepage>
-   <download>https://github.com/InfotelGLPI/ocsinventoryng/releases</download>
+   <download>https://github.com/pluginsGLPI/ocsinventoryng/releases</download>
    <authors>
       <author>Remi Collet</author>
       <author>Nelly Mahu-Lasson</author>
