@@ -11,7 +11,7 @@ Automatisation de l'import OCSInventory-NG
 Il est composée d'un script (PHP ou Shell) permettant d'automatiser l'import et la mise à jour des machines.
 Une interface affiche la liste des scripts en cours ou terminés, ainsi que l'ensemble des données qui s'y rattachent.
 
-WIKI : https://forge.glpi-project.org/projects/ocsinventoryng/wiki/Documentations
+WIKI : https://github.com/pluginsGLPI/ocsinventoryng/wiki
 
 Archives (releases) : https://forge.glpi-project.org/projects/ocsinventoryng/files
 
@@ -27,7 +27,7 @@ OCSInventory-NG import automation
 It's composed of a script (PHP or Shell) to automate import or synchronisation of computers.
 A graphical interface displays the list of scripts running or finished and all the datas related ot them.
 
-WIKI : https://forge.glpi-project.org/projects/ocsinventoryng/wiki/En_Documentations
+WIKI : https://github.com/pluginsGLPI/ocsinventoryng/wiki
 
 Archives (releases) : https://forge.glpi-project.org/projects/ocsinventoryng/files
 
