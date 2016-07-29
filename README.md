@@ -5,7 +5,7 @@ Plugin ocsinventoryng for GLPI
 
 Ce plugin permet de synchroniser GLPI avec la solution d'inventaire OCS Inventory NG (http://www.ocsinventory-ng.org/fr/).
 
-Il est destiné à remplacer le mode OCS natif de GLPI et d'apporter les fonctionnalités du plugin massocsimport afin d'offrir une meilleure compatibilité et évolutivité avec OCS Inventory.
+Il remplace le mode OCS natif de GLPI (en version 0.84) et d'apporter les fonctionnalités du plugin massocsimport afin d'offrir une meilleure compatibilité et évolutivité avec OCS Inventory.
 
 Automatisation de l'import OCSInventory-NG
 Il est composée d'un script (PHP ou Shell) permettant d'automatiser l'import et la mise à jour des machines.
@@ -21,7 +21,7 @@ Ce plugin est sur Transifex - Aidez-nous à le traduire : https://www.transifex.
 
 This plugin allows you to synchronize with GLPI inventory solution OCS Inventory NG (http://www.ocsinventory-ng.org/fr/).
 
-It's intended to replace native mode OCS of GLPI and use the plugin massocsimport functionalities to provide better compatibility and expandability with OCS.
+It replace native mode OCS of GLPI (0.84 version) and use the plugin massocsimport functionalities to provide better compatibility and expandability with OCS.
 
 OCSInventory-NG import automation
 It's composed of a script (PHP or Shell) to automate import or synchronisation of computers.
