@@ -1,9 +1,9 @@
 # ocsinventoryng
-Plugin ocsinventoryng for GLPI 0.90
+Plugin ocsinventoryng for GLPI
 
 * Français
 
-Ce plugin permet de synchroniser GLPI avec la solution d'inventaire OCS Inventory NG.
+Ce plugin permet de synchroniser GLPI avec la solution d'inventaire OCS Inventory NG (http://www.ocsinventory-ng.org/fr/).
 
 Il est destiné à remplacer le mode OCS natif de GLPI et d'apporter les fonctionnalités du plugin massocsimport afin d'offrir une meilleure compatibilité et évolutivité avec OCS Inventory.
 
@@ -19,7 +19,7 @@ Ce plugin est sur Transifex - Aidez-nous à le traduire : https://www.transifex.
 
 * English
 
-This plugin allows you to synchronize with GLPI inventory solution OCS Inventory NG.
+This plugin allows you to synchronize with GLPI inventory solution OCS Inventory NG (http://www.ocsinventory-ng.org/fr/).
 
 It's intended to replace native mode OCS of GLPI and use the plugin massocsimport functionalities to provide better compatibility and expandability with OCS.
 
