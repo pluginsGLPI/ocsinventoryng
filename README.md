@@ -13,6 +13,8 @@ Une interface affiche la liste des scripts en cours ou terminés, ainsi que l'en
 
 WIKI : https://forge.glpi-project.org/projects/ocsinventoryng/wiki/Documentations
 
+Archives (releases) : https://forge.glpi-project.org/projects/ocsinventoryng/files
+
 Ce plugin est sur Transifex - Aidez-nous à le traduire : https://www.transifex.com/yllen/GLPI_ocsinventoryng/dashboard/
 
 * English
@@ -27,4 +29,6 @@ A graphical interface displays the list of scripts running or finished and all t
 
 WIKI : https://forge.glpi-project.org/projects/ocsinventoryng/wiki/En_Documentations
 
- This plugin is on Transifex - Help us to translate : https://www.transifex.com/yllen/GLPI_ocsinventoryng/dashboard/
+Archives (releases) : https://forge.glpi-project.org/projects/ocsinventoryng/files
+
+This plugin is on Transifex - Help us to translate : https://www.transifex.com/yllen/GLPI_ocsinventoryng/dashboard/
