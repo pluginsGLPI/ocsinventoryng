@@ -386,6 +386,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       }
       echo "</table></div>";
       
+      /* Tsmr : UNACTIVATE SNMP WHILE MUCH TESTS
       if ($isactive) {
          $client  = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
          $version = $client->getTextConfig('GUI_VERSION');
@@ -429,7 +430,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             echo "</tr>";
             echo "</table></div>";
          }
-      }
+      }*/
    }
 
    /**
@@ -3288,10 +3289,11 @@ JAVASCRIPT;
                   $data               = array();
 
                   if ($advanced && !$tolinked) {
+                     $location = isset($tab["locations_id"])?$tab["locations_id"]:0;
                      $data = $rule->processAllRules(array('ocsservers_id' => $serverId,
                         '_source'       => 'ocsinventoryng',
-                        'locations_id'  => $tab["locations_id"]
-                        ), array('locations_id' => $tab["locations_id"]), array('ocsid' => $tab["id"]));
+                        'locations_id'  => $location
+                        ), array('locations_id' => $location), array('ocsid' => $tab["id"]));
                   }
                   echo "<tr class='tab_bg_2'><td>" . $tab["name"] . "</td>\n";
                   echo "<td>" . $tab["manufacturer"] . "</td><td>" . $tab["model"] . "</td>";
