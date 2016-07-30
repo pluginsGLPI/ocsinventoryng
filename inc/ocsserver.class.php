@@ -105,7 +105,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                if (self::checkOCSconnection($item->getID()) && self::checkVersion($item->getID()) && self::checkTraceDeleted($item->getID())) {
                   $ong[2] = __('Import options', 'ocsinventoryng');
                   $ong[3] = __('General information', 'ocsinventoryng');
-                  
+                  $ong[4] = __('General history', 'ocsinventoryng');
                   /* Tsmr : UNACTIVATE SNMP WHILE MUCH TESTS
                   $client  = self::getDBocs($item->getID());
                   $version = $client->getTextConfig('GUI_VERSION');
@@ -116,7 +116,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   }*/
                }
                if ($item->getField('ocs_url')) {
-                  $ong[4] = __('OCSNG console', 'ocsinventoryng');
+                  $ong[6] = __('OCSNG console', 'ocsinventoryng');
                }
 
                return $ong;
@@ -142,11 +142,15 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                break;
 
             case 4 :
-               self::showOcsReportsConsole($item->getID());
+               $item->ocsHistoryConfig($item->getID());
                break;
 
             case 5 :
                $item->ocsFormSNMPImportOptions($item->getID());
+               break;
+            
+            case 6 :
+               self::showOcsReportsConsole($item->getID());
                break;
          }
       }
@@ -712,7 +716,129 @@ JAVASCRIPT;
       Html::closeForm();
       echo "</div>\n";
    }
+   
+   /**
+    * Print ocs history form
+    *
+    * @param $ID Integer : Id of the ocs config
+    *
+    * @return Nothing (display)
+    * */
+   function ocsHistoryConfig($ID) {
 
+      if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+         return false;
+      }
+      $this->getFromDB($ID);
+      echo "<div class='center'>";
+      echo "<form name='historyconfig' id='historyconfig' action='" . Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer") . "' method='post'>";
+      echo "<table class='tab_cadre_fixe'>\n";
+      echo "<tr><th colspan ='2'>";
+      _e('All');
+
+      echo $JS = <<<JAVASCRIPT
+         <script type='text/javascript'>
+            function form_init_all(form, value) {
+               var selects = $("form[id='historyconfig'] select");
+
+               $.each(selects, function(index, select){
+                    $(select).select2('val', value);
+               });
+            }
+         </script>
+JAVASCRIPT;
+      Dropdown::showYesNo('init_all', 0, -1, array(
+         'width'     => '10%',
+         'on_change' => "form_init_all(this.form, this.selectedIndex);"
+      ));
+      echo "</th></tr>";
+      echo "<tr>
+      <th colspan='2'><input type='hidden' name='id' value='$ID'>" . __('General history', 'ocsinventoryng') .
+      "</th>\n";
+      echo "</tr>\n";
+
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Do history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      Dropdown::showYesNo("dohistory", $this->fields["dohistory"]);
+      echo "</td></tr>\n";
+
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('System history') . "</td>\n<td>";
+      Dropdown::showYesNo("history_hardware", $this->fields["history_hardware"]);
+      echo "&nbsp;";
+      $fields = __('Operating system');
+      $fields .= "<br>";
+      $fields .= __('Serial of the operating system');
+      $fields .= "<br>";
+      $fields .= __('Domain');
+      $fields .= "<br>";
+      $fields .= __('Alternate username');
+      $fields .= "<br>";
+      $fields .= __('Comments');
+      Html::showToolTip(nl2br($fields));
+      echo "&nbsp;</td></tr>\n";
+      
+      //history_bios
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Bios history', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("history_bios", $this->fields["history_bios"]);
+      echo "&nbsp;";
+      $fields = __('Serial number');
+      $fields .= "<br>";
+      $fields .= __('Model');
+      $fields .= "<br>";
+      $fields .= _n('Manufacturer', 'Manufacturers', 1);
+      $fields .= "<br>";
+      $fields .= __('Type');
+      $fields .= "<br>";
+      if (self::checkOCSconnection($ID) && self::checkVersion($ID)) {
+         $fields .= __('UUID');
+      }
+      Html::showToolTip(nl2br($fields));
+      echo "&nbsp;</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Devices history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      Dropdown::showYesNo("history_devices", $this->fields["history_devices"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Volumes history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      Dropdown::showYesNo("history_drives", $this->fields["history_drives"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Network history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      Dropdown::showYesNo("history_network", $this->fields["history_network"]);
+      echo "</td></tr>\n";
+      
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Monitor connection history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      Dropdown::showYesNo("history_monitor", $this->fields["history_monitor"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Printer connection history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      Dropdown::showYesNo("history_printer", $this->fields["history_printer"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Peripheral connection history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      Dropdown::showYesNo("history_peripheral", $this->fields["history_peripheral"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Software connection history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      Dropdown::showYesNo("history_sofware", $this->fields["history_sofware"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Virtual machines history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      Dropdown::showYesNo("history_vm", $this->fields["history_vm"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Administrative infos history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      Dropdown::showYesNo("history_admininfos", $this->fields["history_admininfos"]);
+      echo "</td></tr>\n";
+
+      echo "<tr class='tab_bg_2 center'><td colspan='2'>";
+      echo "<input type='submit' name='update' class='submit' value=\"" .
+      _sx('button', 'Save') . "\">";
+      echo "</td></tr>\n";
+      echo "</table>\n";
+      Html::closeForm();
+      echo "</div>\n";
+   }
    /**
     * @param $ID
     * @param $withtemplate    (default '')
@@ -1555,7 +1681,8 @@ JAVASCRIPT;
       global $DB;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
-      $comp = new Computer();
+      $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
+      $dohistory = (isset($cfg_ocs['dohistory'])?$cfg_ocs['dohistory']:false);
 
       //Check it machine is already present AND was imported by OCS AND still present in GLPI
       $query  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`id`, `computers_id`, `ocsid`
@@ -1571,7 +1698,7 @@ JAVASCRIPT;
          $datas = $DB->fetch_array($result_glpi_plugin_ocsinventoryng_ocslinks);
          //Return code to indicates that the machine was synchronized
          //or only last inventory date changed
-         return self::updateComputer($datas["id"], $plugin_ocsinventoryng_ocsservers_id, 1, 0);
+         return self::updateComputer($datas["id"], $plugin_ocsinventoryng_ocsservers_id, $dohistory, 0);
       }
       return self::importComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock, $defaultentity, $defaultlocation);
    }
@@ -2063,6 +2190,7 @@ JAVASCRIPT;
          $data_ocs  = $computer;
 
          // Need do history to be 2 not to lock fields
+         //TODO MODIFY ???
          if ($dohistory) {
             $dohistory = 2;
          }
@@ -2117,8 +2245,7 @@ JAVASCRIPT;
                $ocs_checksum = $data_ocs["META"]["CHECKSUM"];
             }
             $mixed_checksum        = intval($ocs_checksum) & intval($cfg_ocs["checksum"]);
-            //By default log history
-            $loghistory["history"] = 1;
+
             // Is an update to do ?
             $bios                  = false;
             $memories              = false;
@@ -2276,8 +2403,11 @@ JAVASCRIPT;
                );
                $ocsComputer = $ocsClient->getComputer($line['ocsid'], $options);
                // Update Administrative informations
-               self::updateAdministrativeInfo($line['computers_id'], $line['ocsid'], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $comp->fields['entities_id'], $dohistory);
+               self::updateAdministrativeInfo($line['computers_id'], $line['ocsid'], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $comp->fields['entities_id']);
                $computer_updates = self::updateAdministrativeInfoUseDate($line['computers_id'], $plugin_ocsinventoryng_ocsservers_id, $computer_updates, $ocsComputer);
+               
+               //By default log history
+               $loghistory["history"] = $cfg_ocs['history_hardware'];
                
                if ($mixed_checksum & pow(2, self::HARDWARE_FL)) {
                   $p          = array('computers_id'                        => $line['computers_id'],
@@ -2286,13 +2416,13 @@ JAVASCRIPT;
                      => $plugin_ocsinventoryng_ocsservers_id,
                      'cfg_ocs'                             => $cfg_ocs,
                      'computers_updates'                   => $computer_updates,
-                     'dohistory'                           => $dohistory,
+                     'dohistory'                           => $cfg_ocs['history_hardware'],
                      'check_history'                       => true,
                      'entities_id'                         => $comp->fields['entities_id']);
                   $loghistory = self::updateHardware($p);
                }
                if ($bios) {
-                  self::updateBios($line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $dohistory, $comp->fields['entities_id']);
+                  self::updateBios($line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $comp->fields['entities_id']);
                }
                // Get import devices
                $import_device = array();
@@ -2320,47 +2450,47 @@ JAVASCRIPT;
                   }
                }
                if ($memories) {
-                  self::updateDevices("Item_DeviceMemory", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '', $dohistory);
+                  self::updateDevices("Item_DeviceMemory", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
                }
                if ($storages) {
                   if ($storages["hdd"]) {
-                     self::updateDevices("Item_DeviceHardDrive", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '', $dohistory);
+                     self::updateDevices("Item_DeviceHardDrive", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
                   }
                   if ($storages["drive"]) {
                      
                   }
-                  self::updateDevices("Item_DeviceDrive", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '', $dohistory);
+                  self::updateDevices("Item_DeviceDrive", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
                }
             }
             if ($hardware) {
-               self::updateDevices("Item_DeviceProcessor", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '', $dohistory);
+               self::updateDevices("Item_DeviceProcessor", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
             }
             if ($videos) {
-               self::updateDevices("Item_DeviceGraphicCard", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '', $dohistory);
+               self::updateDevices("Item_DeviceGraphicCard", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
             }
             if ($bios) {
-               self::updateDevices("PluginOcsinventoryngItem_DeviceBiosdata", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '', $dohistory);
+               self::updateDevices("PluginOcsinventoryngItem_DeviceBiosdata", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
             }
             if ($mb) {
-               self::updateDevices("Item_DeviceMotherboard", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '', $dohistory);
+               self::updateDevices("Item_DeviceMotherboard", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
             }
             if ($sounds) {
-               self::updateDevices("Item_DeviceSoundCard", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '', $dohistory);
+               self::updateDevices("Item_DeviceSoundCard", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
             }
             if ($networks) {
-               self::updateDevices("Item_DeviceNetworkCard", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, array(), $dohistory);
+               self::updateDevices("Item_DeviceNetworkCard", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, array());
             }
             if ($modems) {
-               self::updateDevices("Item_DevicePci", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '', $dohistory);
+               self::updateDevices("Item_DevicePci", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
             }
             if ($monitors) {
-               self::importMonitor($cfg_ocs, $line['computers_id'], $plugin_ocsinventoryng_ocsservers_id, $ocsComputer, $comp->fields["entities_id"], $dohistory);
+               self::importMonitor($cfg_ocs, $line['computers_id'], $plugin_ocsinventoryng_ocsservers_id, $ocsComputer, $comp->fields["entities_id"]);
             }
             if ($printers) {
-               self::importPrinter($cfg_ocs, $line['computers_id'], $plugin_ocsinventoryng_ocsservers_id, $ocsComputer, $comp->fields["entities_id"], $dohistory);
+               self::importPrinter($cfg_ocs, $line['computers_id'], $plugin_ocsinventoryng_ocsservers_id, $ocsComputer, $comp->fields["entities_id"]);
             }
             if ($inputs) {
-               self::importPeripheral($cfg_ocs, $line['computers_id'], $plugin_ocsinventoryng_ocsservers_id, $ocsComputer, $comp->fields["entities_id"], $dohistory);
+               self::importPeripheral($cfg_ocs, $line['computers_id'], $plugin_ocsinventoryng_ocsservers_id, $ocsComputer, $comp->fields["entities_id"]);
             }
             if ($softwares) {
                // Get import software
@@ -2368,7 +2498,7 @@ JAVASCRIPT;
             }
             if ($drives) {
                // Get import drives
-               self::updateDisk($line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $dohistory);
+               self::updateDisk($line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs);
             }
             if ($registry) {
                //import registry entries not needed
@@ -2376,7 +2506,7 @@ JAVASCRIPT;
             }
             if ($virtualmachines) {
                // Get import vm
-               self::updateVirtualMachines($line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $dohistory);
+               self::updateVirtualMachines($line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs);
             }
             //Update TAG
             self::updateTag($line, $data_ocs);
@@ -2424,7 +2554,7 @@ JAVASCRIPT;
          )
       ));
 
-      $logHistory = 1;
+      $logHistory = $options['cfg_ocs']["history_hardware"];
 
       if ($ocsComputer) {
          $hardware   = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer['HARDWARE']));
@@ -2537,13 +2667,13 @@ JAVASCRIPT;
       global $DB;
 
       $p = array('computers_id'                        => 0,
-         'ocs_id'                              => 0,
-         'plugin_ocsinventoryng_ocsservers_id' => 0,
-         'cfg_ocs'                             => array(),
-         'computers_updates'                   => array(),
-         'dohistory'                           => true,
-         'check_history'                       => true,
-         'entities_id'                         => 0);
+                  'ocs_id'                              => 0,
+                  'plugin_ocsinventoryng_ocsservers_id' => 0,
+                  'cfg_ocs'                             => array(),
+                  'computers_updates'                   => array(),
+                  'dohistory'                           => true,
+                  'check_history'                       => true,
+                  'entities_id'                         => 0);
       foreach ($params as $key => $value) {
          $p[$key] = $value;
       }
@@ -2572,12 +2702,11 @@ JAVASCRIPT;
     * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
     * @param $cfg_ocs array : ocs config
     * @param $computer_updates array : already updated fields of the computer
-    * @param $dohistory boolean : log changes?
     * @param entities_id the entity in which the computer is imported
     *
     * @return nothing.
     * */
-   static function updateBios($computers_id, $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $dohistory = 2, $entities_id = 0) {
+   static function updateBios($computers_id, $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $entities_id = 0) {
 
       $compupdate = array();
       $computer   = $ocsComputer;
@@ -2612,7 +2741,7 @@ JAVASCRIPT;
                $compupdate["entities_id"] = $entities_id;
                $compupdate["_nolock"]     = true;
                $comp                      = new Computer();
-               $comp->update($compupdate, $dohistory);
+               $comp->update($compupdate, $cfg_ocs['history_bios']);
             }
          }
       }
@@ -3568,7 +3697,7 @@ JAVASCRIPT;
     *
     * @return Nothing (void).
     * */
-   static function updateDevices($devicetype, $computers_id, $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, $import_ip, $dohistory) {
+   static function updateDevices($devicetype, $computers_id, $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, $import_ip) {
       global $DB;
       $prevalue    = $devicetype . self::FIELD_SEPARATOR;
       $do_clean    = false;
@@ -3631,14 +3760,15 @@ JAVASCRIPT;
                                  'devicememories_id' => $ram_id,
                                  'size'              => $line2["CAPACITY"],
                                  'is_dynamic'        => 1,
-                                 '_no_history'       => !$dohistory));
+                                 '_no_history'       => !$cfg_ocs['history_devices']));
                            }
                         } else {
                            $tmp = array_search(stripslashes($prevalue . $ram["designation"]), $import_device);
                            list($type, $id) = explode(self::FIELD_SEPARATOR, $tmp);
 
                            $CompDevice->update(array('id'   => $id,
-                              'size' => $line2["CAPACITY"]));
+                                                      'size' => $line2["CAPACITY"],
+                                                      '_no_history' => !$cfg_ocs['history_devices']));
                            unset($import_device[$tmp]);
                         }
                      }
@@ -3683,14 +3813,15 @@ JAVASCRIPT;
                                  'serial'              => $line2["SERIALNUMBER"],
                                  'capacity'            => $line2["DISKSIZE"],
                                  'is_dynamic'          => 1,
-                                 '_no_history'         => !$dohistory));
+                                 '_no_history'         => !$cfg_ocs['history_devices']));
                            }
                         } else {
                            $tmp = array_search(stripslashes($prevalue . $dd["designation"]), $import_device);
                            list($type, $id) = explode(self::FIELD_SEPARATOR, $tmp);
                            $CompDevice->update(array('id'       => $id,
-                              'capacity' => $line2["DISKSIZE"],
-                              'serial'   => $line2["SERIALNUMBER"]));
+                                                      'capacity' => $line2["DISKSIZE"],
+                                                      'serial'   => $line2["SERIALNUMBER"],
+                                                      '_no_history'         => !$cfg_ocs['history_devices']));
                            unset($import_device[$tmp]);
                         }
                      }
@@ -3727,7 +3858,7 @@ JAVASCRIPT;
                                  'entities_id'     => $entities_id,
                                  'devicedrives_id' => $stor_id,
                                  'is_dynamic'      => 1,
-                                 '_no_history'     => !$dohistory));
+                                 '_no_history'     => !$cfg_ocs['history_devices']));
                            }
                         } else {
                            $tmp = array_search(stripslashes($prevalue . $stor["designation"]), $import_device);
@@ -3762,7 +3893,7 @@ JAVASCRIPT;
                               'entities_id'   => $entities_id,
                               'devicepcis_id' => $mdm_id,
                               'is_dynamic'    => 1,
-                              '_no_history'   => !$dohistory));
+                              '_no_history'   => !$cfg_ocs['history_devices']));
                         }
                      } else {
                         $tmp = array_search(stripslashes($prevalue . $mdm["designation"]), $import_device);
@@ -3799,7 +3930,7 @@ JAVASCRIPT;
                                  'entities_id'   => $entities_id,
                                  'devicepcis_id' => $port_id,
                                  'is_dynamic'    => 1,
-                                 '_no_history'   => !$dohistory));
+                                 '_no_history'   => !$cfg_ocs['history_devices']));
                            }
                         } else {
                            $tmp = array_search(stripslashes($prevalue . $port["designation"]), $import_device);
@@ -3837,13 +3968,14 @@ JAVASCRIPT;
                               'deviceprocessors_id' => $proc_id,
                               'frequency'           => $line["PROCESSORS"],
                               'is_dynamic'          => 1,
-                              '_no_history'         => !$dohistory));
+                              '_no_history'         => !$cfg_ocs['history_devices']));
                         }
                      } else {
                         $tmp = array_search(stripslashes($prevalue . $processor["designation"]), $import_device);
                         list($type, $id) = explode(self::FIELD_SEPARATOR, $tmp);
                         $CompDevice->update(array('id'        => $id,
-                           'frequency' => $line["PROCESSORS"]));
+                                                   'frequency' => $line["PROCESSORS"],
+                                                   '_no_history' => !$cfg_ocs['history_devices']));
                         unset($import_device[$tmp]);
                      }
                   }
@@ -3881,13 +4013,14 @@ JAVASCRIPT;
                                  'devicegraphiccards_id' => $video_id,
                                  'memory'                => $line2["MEMORY"],
                                  'is_dynamic'            => 1,
-                                 '_no_history'           => !$dohistory));
+                                 '_no_history'           => !$cfg_ocs['history_devices']));
                            }
                         } else {
                            $tmp = array_search(stripslashes($prevalue . $video["designation"]), $import_device);
                            list($type, $id) = explode(self::FIELD_SEPARATOR, $tmp);
                            $CompDevice->update(array('id'     => $id,
-                              'memory' => $line2["MEMORY"]));
+                                                      'memory' => $line2["MEMORY"],
+                                                      '_no_history' => !$cfg_ocs['history_devices']));
                            unset($import_device[$tmp]);
                         }
                      }
@@ -3924,7 +4057,7 @@ JAVASCRIPT;
                                  'entities_id'         => $entities_id,
                                  'devicesoundcards_id' => $snd_id,
                                  'is_dynamic'          => 1,
-                                 '_no_history'         => !$dohistory));
+                                 '_no_history'         => !$cfg_ocs['history_devices']));
                            }
                         } else {
                            $id = array_search(stripslashes($prevalue . $snd["designation"]), $import_device);
@@ -3960,7 +4093,7 @@ JAVASCRIPT;
                            'plugin_ocsinventoryng_devicebiosdatas_id' => $bios_id,
                            'is_dynamic'                               => 1,
                            'entities_id'                              => $entities_id,
-                           '_no_history'                              => !$dohistory));
+                           '_no_history'                              => !$cfg_ocs['history_devices']));
                      }
                   } else {
                      $tmp = array_search(stripslashes($prevalue . $bios["designation"]), $import_device);
@@ -3993,7 +4126,7 @@ JAVASCRIPT;
                            'is_dynamic'            => 1,
                            'serial'                => $serial,
                            'entities_id'           => $entities_id,
-                           '_no_history'           => !$dohistory));
+                           '_no_history'           => !$cfg_ocs['history_devices']));
                      }
                   } else {
                      $tmp = array_search(stripslashes($prevalue . $mb["designation"]), $import_device);
@@ -4010,7 +4143,7 @@ JAVASCRIPT;
             if (!(strpos($key, $devicetype . '$$') === false)) {
                list($type, $id) = explode(self::FIELD_SEPARATOR, $key);
                $CompDevice->delete(array('id'          => $id,
-                  '_no_history' => !$dohistory, 1), true);
+                  '_no_history' => !$cfg_ocs['history_devices'], 1), true);
             }
          }
       }
@@ -4020,7 +4153,8 @@ JAVASCRIPT;
          foreach ($import_ip as $key => $val) {
             if ($key > 0) {
                $netport = new NetworkPort();
-               $netport->delete(array('id' => $key));
+               $netport->delete(array('id' => $key,
+                  '_no_history' => !$cfg_ocs['history_network']));
             }
          }
       }
@@ -4561,7 +4695,7 @@ JAVASCRIPT;
     * @param unknown $dohistory
     * @return boolean
     */
-   static function updateVirtualMachines($computers_id, $ocsComuter, $ocsservers_id, $cfg_ocs, $dohistory) {
+   static function updateVirtualMachines($computers_id, $ocsComuter, $ocsservers_id, $cfg_ocs) {
       global $DB;
       $already_processed = array();
 
@@ -4602,7 +4736,7 @@ JAVASCRIPT;
                }
                if (!$id) {
                   $virtualmachine->reset();
-                  if (!$dohistory) {
+                  if (!$cfg_ocs['history_vm']) {
                      $vm['_no_history'] = true;
                   }
                   $id_vm = $virtualmachine->add($vm);
@@ -4644,11 +4778,10 @@ JAVASCRIPT;
     * @param $ocsid integer : ocs computer id (ID).
     * @param $ocsservers_id integer : ocs server id
     * @param $cfg_ocs array : ocs config
-    * @param $dohistory array:
     *
     * @return Nothing (void).
     * */
-   static function updateDisk($computers_id, $ocsComputer, $ocsservers_id, $cfg_ocs, $dohistory) {
+   static function updateDisk($computers_id, $ocsComputer, $ocsservers_id, $cfg_ocs) {
       global $DB;
       $already_processed = array();
       $drives            = array();
@@ -4720,7 +4853,7 @@ JAVASCRIPT;
 
                   if (!$id) {
                      $d->reset();
-                     if (!$dohistory) {
+                     if (!$cfg_ocs['history_drives']) {
                         $disk['_no_history'] = true;
                      }
                      $disk['is_dynamic']  = 1;
@@ -4737,6 +4870,7 @@ JAVASCRIPT;
                            $toupdate['totalsize']      = $disk['totalsize'];
                            $toupdate['freesize']       = $disk['freesize'];
                            $toupdate['filesystems_id'] = $disk['filesystems_id'];
+                           $toupdate['_no_history']    = !$cfg_ocs['history_drives'];
                            $d->update($toupdate);
                         }
                         $already_processed[] = $id;
@@ -5003,7 +5137,7 @@ JAVASCRIPT;
     *
     * @return Nothing (void).
     * */
-   static function updateAdministrativeInfo($computers_id, $ocsid, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $entities_id, $dohistory) {
+   static function updateAdministrativeInfo($computers_id, $ocsid, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $entities_id) {
       global $DB;
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient       = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
@@ -5058,7 +5192,7 @@ JAVASCRIPT;
                      $input["id"]          = $computers_id;
                      $input["entities_id"] = $entities_id;
                      $input["_nolock"]     = true;
-                     $comp->update($input, $dohistory);
+                     $comp->update($input, $cfg_ocs['history_admininfos']);
                   }
                }
             }
@@ -5665,9 +5799,8 @@ JAVASCRIPT;
     * @param $ocsservers_id OCS server id
     * @param $ocsid computer's id in OCS
     * @param entity the entity in which the monitor will be created
-    * @param dohistory record in history link between monitor and computer
     */
-   static function importMonitor($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity, $dohistory) {
+   static function importMonitor($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity) {
       global $DB, $CFG_GLPI;
       $already_processed = array();
       $do_clean          = true;
@@ -5792,7 +5925,8 @@ JAVASCRIPT;
                   }
 
                   //Search by serial failed, search by name
-                  if ($cfg_ocs["import_monitor"] == 2 && !$id_monitor) {
+                  if ($cfg_ocs["import_monitor"] == 2 
+                        && !$id_monitor) {
                      //Try to find a monitor with no serial, the same name and not already connected.
                      if (!empty($mon["name"])) {
                         $query         = "SELECT `glpi_monitors`.`id`
@@ -5831,7 +5965,7 @@ JAVASCRIPT;
                   $connID              = $conn->add(array('computers_id' => $computers_id,
                      'itemtype'     => 'Monitor',
                      'items_id'     => $id_monitor,
-                     '_no_history'  => !$dohistory,
+                     '_no_history'  => !$cfg_ocs['history_monitor'],
                      'is_dynamic'   => 1,
                      'is_deleted'   => 0));
                   $already_processed[] = $id_monitor;
@@ -5843,13 +5977,16 @@ JAVASCRIPT;
                      if ($old->fields["is_deleted"]) {
                         $input["is_deleted"] = 0;
                      }
-                     if ($cfg_ocs["states_id_default"] > 0 && $old->fields["states_id"] != $cfg_ocs["states_id_default"]) {
+                     if ($cfg_ocs["states_id_default"] > 0 
+                           && $old->fields["states_id"] != $cfg_ocs["states_id_default"]) {
                         $input["states_id"] = $cfg_ocs["states_id_default"];
                      }
-                     if (empty($old->fields["name"]) && !empty($mon["name"])) {
+                     if (empty($old->fields["name"]) 
+                           && !empty($mon["name"])) {
                         $input["name"] = $mon["name"];
                      }
-                     if (empty($old->fields["serial"]) && !empty($mon["serial"])) {
+                     if (empty($old->fields["serial"]) 
+                           && !empty($mon["serial"])) {
                         $input["serial"] = $mon["serial"];
                      }
                      $input["id"]          = $id_monitor;
@@ -5919,9 +6056,8 @@ JAVASCRIPT;
     * @param $ocsid computer's id in OCS
     * @param $ocsservers_id OCS server id
     * @param $entity the entity in which the printer will be created
-    * @param $dohistory record in history link between printer and computer
     */
-   static function importPrinter($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity, $dohistory) {
+   static function importPrinter($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity) {
       global $DB, $CFG_GLPI;
 
       $already_processed = array();
@@ -6040,7 +6176,7 @@ JAVASCRIPT;
                            $connID               = $conn->add(array('computers_id' => $computers_id,
                               'itemtype'     => 'Printer',
                               'items_id'     => $id_printer,
-                              '_no_history'  => !$dohistory,
+                              '_no_history'  => !$cfg_ocs['history_printer'],
                               'is_dynamic'   => 1));
                            //Update column "is_deleted" set value to 0 and set status to default
                            $input                = array();
@@ -6118,9 +6254,8 @@ JAVASCRIPT;
     * @param $ocsid computer's id in OCS
     * @param $ocsservers_id OCS server id
     * @param $entity the entity in which the peripheral will be created
-    * @param $dohistory record in history link between peripheral and computer
     */
-   static function importPeripheral($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity, $dohistory) {
+   static function importPeripheral($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity) {
       global $DB, $CFG_GLPI;
       $already_processed = array();
       $p                 = new Peripheral();
@@ -6207,7 +6342,7 @@ JAVASCRIPT;
                         if ($connID              = $conn->add(array('computers_id' => $computers_id,
                            'itemtype'     => 'Peripheral',
                            'items_id'     => $id_periph,
-                           '_no_history'  => !$dohistory,
+                           '_no_history'  => !$cfg_ocs['history_peripheral'],
                            'is_dynamic'   => 1))) {
                            //Update column "is_deleted" set value to 0 and set status to default
                            $input                = array();
@@ -6336,8 +6471,11 @@ JAVASCRIPT;
                $result = $DB->query($query);
                if ($DB->numrows($result) == 1) {
                   $data = $DB->fetch_assoc($result);
-
-                  if (self::updateComputer($data['id'], $data['plugin_ocsinventoryng_ocsservers_id'], 1, 1)) {
+                  
+                  $cfg_ocs = self::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
+                  $dohistory = (isset($cfg_ocs['dohistory'])?$cfg_ocs['dohistory']:false);
+                  
+                  if (self::updateComputer($data['id'], $data['plugin_ocsinventoryng_ocsservers_id'],$dohistory, 1)) {
                      $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                   } else {
                      $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);

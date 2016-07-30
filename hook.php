@@ -729,6 +729,25 @@ function plugin_ocsinventoryng_install() {
                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
       $DB->queryOrDie($query, "add table for snmp");
    }
+   
+   /*1.2.3*/
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+         && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','dohistory')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `dohistory` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_hardware` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_bios` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_drives` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_network` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_devices` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_monitor` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_printer` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_peripheral` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_sofware` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_vm` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_admininfos` tinyint(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.2.3 update table glpi_plugin_ocsinventoryng_ocsservers add history");
+   }
    /**/
    
    $cron = new CronTask();

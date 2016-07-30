@@ -131,7 +131,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       if ((!$ips) || (count($ips) == 0)) {
          foreach ($DB->request($query) as $line) {
             if ($line['is_dynamic']) {
-               $network_name->delete($line, true);
+               $network_name->delete($line, true, $dohistory);
             }
          }
       } else {
@@ -149,7 +149,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $networknames_id = $line['id'];
             foreach ($names as $line) {
                if (($line['is_dynamic'] == 1) && ($line['id'] != $networknames_id)){
-                  $network_port->delete($line, true);
+                  $network_port->delete($line, true, $dohistory);
                }
             }
          }
@@ -167,7 +167,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                $already_known_addresses[] = $line['id'];
                $ips = array_diff($ips, array($line['name']));
             } elseif ($line['is_dynamic'] == 1) {
-               $ip_address->delete($line, true);
+               $ip_address->delete($line, true, $dohistory);
             }
          }
       }
@@ -187,7 +187,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
    }
 
    // importNetwork
-   static function importNetwork($ocsServerId, $cfg_ocs, $ocsComputer, $computers_id, $dohistory, $entities_id) {
+   static function importNetwork($ocsServerId, $cfg_ocs, $ocsComputer, $computers_id, $entities_id) {
       global $DB;
       
       // Group by DESCRIPTION, MACADDR, TYPE, TYPEMIB, SPEED, VIRTUALDEV
@@ -279,7 +279,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                           'entities_id'           => $entities_id,
                                           'devicenetworkcards_id' => $net_id,
                                           'mac'                   => $mac,
-                                          '_no_history'           => !$dohistory,
+                                          '_no_history'           => !$cfg_ocs['history_network'],
                                           'is_dynamic'            => 1,
                                           'is_deleted'            => 0));
                }
@@ -305,7 +305,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $networkports_id = self::updateNetworkPort($mac, $main['name'], $computers_id,
                                                        $type->fields['instantiation_type'],
                                                        $inst_input, $main['ip'], false,
-                                                       $dohistory, $already_known_ports);
+                                                       $cfg_ocs['history_network'], $already_known_ports);
 
             if ($networkports_id < 0) {
                continue;
@@ -320,7 +320,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $inst_input = array('networkports_id_alias' => $networkports_id);
             $id = self::updateNetworkPort($mac, $port['name'], $computers_id,
                                           'NetworkPortAlias', $inst_input, $port['ip'],
-                                          true, $dohistory, $already_known_ports);
+                                          true, $cfg_ocs['history_network'], $already_known_ports);
             if ($id > 0) {
                $already_known_ports[] = $id;
             }
@@ -337,7 +337,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       }
       $network_ports = new NetworkPort();
       foreach ($DB->request($query) as $line) {
-         $network_ports->delete($line, true);
+         $network_ports->delete($line, true, $cfg_ocs['history_network']);
       }
 
       $query = "SELECT `id`
@@ -350,7 +350,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       }
       $item_device = new Item_DeviceNetworkCard();
       foreach ($DB->request($query) as $line) {
-         $item_device->delete($line, true);
+         $item_device->delete($line, true, $cfg_ocs['history_network']);
       }
    }
 
