@@ -105,7 +105,15 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                if (self::checkOCSconnection($item->getID()) && self::checkVersion($item->getID()) && self::checkTraceDeleted($item->getID())) {
                   $ong[2] = __('Import options', 'ocsinventoryng');
                   $ong[3] = __('General information', 'ocsinventoryng');
-                  $ong[5] = __('Import SNMP', 'ocsinventoryng');
+                  
+                  /* Tsmr : UNACTIVATE SNMP WHILE MUCH TESTS
+                  $client  = self::getDBocs($item->getID());
+                  $version = $client->getTextConfig('GUI_VERSION');
+                  $snmp    = $client->getIntConfig('SNMP');
+
+                  if ($version > self::OCS2_1_VERSION_LIMIT && $snmp) {
+                     $ong[5] = __('Import SNMP', 'ocsinventoryng');
+                  }*/
                }
                if ($item->getField('ocs_url')) {
                   $ong[4] = __('OCSNG console', 'ocsinventoryng');
