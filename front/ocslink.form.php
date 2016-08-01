@@ -39,7 +39,6 @@ if (isset($_POST["force_ocs_resynch"])) {
    //Update the computer
    PluginOcsinventoryngOcsServer::updateComputer($_POST["resynch_id"], $ocsservers_id, 1, 1);
    Html::back();
-
 } else if (isset ($_POST["update"])) {
    $link                      = new PluginOcsinventoryngOcslink();
    $values["id"]              = $_POST["link_id"];

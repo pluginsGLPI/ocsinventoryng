@@ -96,12 +96,14 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    }
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-
-      if (!$withtemplate) {
+      if(!$withtemplate) {
          switch ($item->getType()) {
             case __CLASS__ :
                //If connection to the OCS DB  is ok, and all rights are ok too
+               
                $ong[1] = __('Test');
+              
+               
                if (self::checkOCSconnection($item->getID()) && self::checkVersion($item->getID()) && self::checkTraceDeleted($item->getID())) {
                   $ong[2] = __('Import options', 'ocsinventoryng');
                   $ong[3] = __('General information', 'ocsinventoryng');
@@ -110,14 +112,16 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                if ($item->getField('ocs_url')) {
                   $ong[4] = __('OCSNG console', 'ocsinventoryng');
                }
-
-               return $ong;
+               
+                return $ong;
          }
+      
+      
       }
       return '';
    }
 
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1,$withtemplate = 0) {
 
       if ($item->getType() == __CLASS__) {
          switch ($tabnum) {
@@ -146,15 +150,18 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    }
 
    function defineTabs($options = array()) {
-
+     
       $ong = array();
       $this->addDefaultFormTab($ong);
       $this->addStandardTab(__CLASS__, $ong, $options);
       $this->addStandardTab('PluginOcsinventoryngConfig', $ong, $options);
+      $this->addStandardTab('PluginOcsinventoryngOcsServer', $ong, $options);
+      $this->addStandardTab('OCS Server', $ong, $options);
       $this->addStandardTab('PluginOcsinventoryngOcslink', $ong, $options);
       $this->addStandardTab('PluginOcsinventoryngRegistryKey', $ong, $options);
       $this->addStandardTab('Log', $ong, $options);
       return $ong;
+      
    }
 
    function getSearchOptions() {
@@ -216,8 +223,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
     * @return Nothing (display)
     * */
    static function ocsMenu($plugin_ocsinventoryng_ocsservers_id) {
-      global $CFG_GLPI, $DB;
-
+      global $CFG_GLPI, $DB, $conf;
       $name                = "";
       $ocsservers          = array();
       echo "<div class='center'>";
@@ -244,9 +250,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             $ocsservers[] = $data['id'];
          }
          Dropdown::show('PluginOcsinventoryngOcsServer', array("condition"           => "`id` IN ('" . implode("','", $ocsservers) . "')",
-            "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-            "on_change"           => "this.form.submit()",
-            "display_emptychoice" => false));
+             "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+             "on_change"           => "this.form.submit()",
+             "display_emptychoice" => false));
          echo "</td></tr>";
          echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
          _e('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
@@ -254,7 +260,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          echo "</table></div>";
          Html::closeForm();
       }
-
       $sql      = "SELECT `name`, `is_active`
               FROM `glpi_plugin_ocsinventoryng_ocsservers`
               LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers_profiles`
@@ -385,14 +390,66 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                </a></td><tr>";
       }
       echo "</table></div>";
-      
+   }
+
+   static function snmpMenu($plugin_ocsinventoryng_ocsservers_id) {
+      global $CFG_GLPI, $DB;
+      $ocsservers          = array();
+      echo "<div class='center'>";
+      echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png' " .
+      "alt='OCS Inventory NG' title='OCS Inventory NG'>";
+      echo "</div>";
+      $numberActiveServers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
+      if ($numberActiveServers > 0) {
+         echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
+                method='post'>";
+         echo "<div class='center'><table class='tab_cadre' width='40%'>";
+         echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an OCSNG server', 'ocsinventoryng') .
+         "</th></tr>\n";
+
+         echo "<tr class='tab_bg_2'><td class='center'>" . __('Name') . "</td>";
+         echo "<td class='center'>";
+         $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                   FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+                   LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
+                      ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                   WHERE `profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . " AND `glpi_plugin_ocsinventoryng_ocsservers`.`is_active`='1'
+                   ORDER BY `name` ASC";
+         //var_dump($query);
+         foreach ($DB->request($query) as $data) {
+            $ocsservers[] = $data['id'];
+         }
+         Dropdown::show('PluginOcsinventoryngOcsServer', array("condition"           => "`id` IN ('" . implode("','", $ocsservers) . "')",
+             "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+             "on_change"           => "this.form.submit()",
+             "display_emptychoice" => false));
+         echo "</td></tr>";
+         echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
+         _e('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
+         echo "</td></tr>";
+         echo "</table></div>";
+         Html::closeForm();
+      }
+      $sql      = "SELECT `name`, `is_active`
+              FROM `glpi_plugin_ocsinventoryng_ocsservers`
+              LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+                  ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+              WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`id` = '" . $plugin_ocsinventoryng_ocsservers_id . "' AND `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . "";
+      $result   = $DB->query($sql);
+      $isactive = 0;
+      if ($DB->numrows($result) > 0) {
+         $datas    = $DB->fetch_array($result);
+         $name     = " : " . $datas["name"];
+         $isactive = $datas["is_active"];
+      }
       if ($isactive) {
          $client  = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
          $version = $client->getTextConfig('GUI_VERSION');
          $snmp    = $client->getIntConfig('SNMP');
-
-         if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $version > self::OCS2_1_VERSION_LIMIT && $snmp) {
+         
+         //if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $version > self::OCS2_1_VERSION_LIMIT && $snmp) {
             //host not imported by thread
+            $usemassimport = self::useMassImport();
             echo "<div class='center'><table class='tab_cadre' width='40%'>";
             echo "<tr><th colspan='" . ($usemassimport ? 4 : 2) . "'>";
             _e('OCSNG SNMP import', 'ocsinventoryng');
@@ -429,7 +486,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             echo "</tr>";
             echo "</table></div>";
          }
-      }
+      //}
    }
 
    /**
@@ -1544,10 +1601,8 @@ JAVASCRIPT;
 
    static function processComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock = 0, $defaultentity = -1, $defaultlocation = -1) {
       global $DB;
-
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
-      $comp = new Computer();
-
+      
       //Check it machine is already present AND was imported by OCS AND still present in GLPI
       $query  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`id`, `computers_id`, `ocsid`
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -1565,6 +1620,7 @@ JAVASCRIPT;
          return self::updateComputer($datas["id"], $plugin_ocsinventoryng_ocsservers_id, 1, 0);
       }
       return self::importComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock, $defaultentity, $defaultlocation);
+      
    }
 
    public static function checkVersion($ID) {
@@ -1585,6 +1641,7 @@ JAVASCRIPT;
          return true;
       }
    }
+   
 
    public static function checkTraceDeleted($ID) {
       $client = self::getDBocs($ID);
@@ -1999,6 +2056,8 @@ JAVASCRIPT;
                }
 
                //Return code to indicates that the machine was imported
+              // var_dump("post",$_POST,"session",$_SESSION,"server",$_SERVER,"get",$_GET,"cookie",$_COOKIE,"request",$_REQUEST);
+               //die("lets see the thisngs in post get session, cookie and reques");
                return array('status'       => self::COMPUTER_IMPORTED,
                   'entities_id'  => $data['entities_id'],
                   'rule_matched' => $rules_matched,
@@ -3133,7 +3192,6 @@ JAVASCRIPT;
     * */
    static function showComputersToAdd($serverId, $advanced, $check, $start, $entity = 0, $tolinked = false) {
       global $DB, $CFG_GLPI;
-
       if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
          return false;
       }
@@ -3160,7 +3218,6 @@ JAVASCRIPT;
       }
 
       $cfg_ocs = self::getConfig($serverId);
-
       $computerOptions = array(
          'OFFSET'      => $start,
          'MAX_RECORDS' => $_SESSION['glpilist_limit'],
@@ -3286,7 +3343,6 @@ JAVASCRIPT;
                   $comp               = new Computer();
                   $comp->fields["id"] = $tab["id"];
                   $data               = array();
-
                   if ($advanced && !$tolinked) {
                      $data = $rule->processAllRules(array('ocsservers_id' => $serverId,
                         '_source'       => 'ocsinventoryng',
@@ -6509,5 +6565,6 @@ JAVASCRIPT;
       Html::closeForm();
       echo "</div>";
    }
+   
 
 }

@@ -102,6 +102,15 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
       $menu['options']['synclink']['title'] = __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng');
       $menu['options']['synclink']['page']  = '/plugins/ocsinventoryng/front/ocsngsnmp.link.php';
       
+      //ipdiscover
+      $menu['options']['ipdiscover']['title'] = __s('IPDiscover', 'ocsinventoryng');
+      $menu['options']['ipdiscover']['page']  = '/plugins/ocsinventoryng/front/ipdiscover.php';
+      
+      $menu['options']['ipdiscmodifynetwork']['title'] = __s('Identify Network', 'ocsinventoryng');
+      $menu['options']['ipdiscmodifynetwork']['page']  = '/plugins/ocsinventoryng/front/ipdiscmodifynetwork.php';
+      
+      //Identify Network
+      
       return $menu;
    }
 
