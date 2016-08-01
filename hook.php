@@ -2182,11 +2182,11 @@ function plugin_ocsinventoryng_pre_item_update($item){
       if($ocslink->getFromDBforComputer($item->fields['items_id'])){
          $field_set    = false;
          $computers_update = importArrayFromDB($ocslink->fields['computer_update']);
-         foreach ($computers_update as $key => $field){
-            if (isset ($item->input[$field]) 
-                  && $item->input[$field] != $item->fields[$field]) {
+         if (in_array('use_date', $computers_update)) {
+            if (isset ($item->input["use_date"]) 
+                  && $item->input["use_date"] != $item->fields["use_date"]) {
                $field_set           = true;
-               $item->input[$field] = $item->fields[$field];
+               $item->input["use_date"] = $item->fields["use_date"];
             }
          }
          if ($field_set) {
@@ -2200,7 +2200,7 @@ function plugin_ocsinventoryng_item_update($item) {
    global $DB;
 
    if ($item->fields['itemtype'] == "Computer") {
-      
+
       if(in_array('use_date', $item->updates)){
          $query  = "SELECT *
                    FROM `glpi_plugin_ocsinventoryng_ocslinks`
