@@ -855,7 +855,6 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       _e('By itemtype', 'ocsinventoryng');
       echo "</td><td class='center'>";
       Dropdown::showItemTypes("itemtype", self::$snmptypes, array('value' => $p['itemtype']));
-
       echo "</td>";
       
       echo "<td class='center'>";
