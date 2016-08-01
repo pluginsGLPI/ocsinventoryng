@@ -496,7 +496,7 @@ static function showPercentItem($value,$linkto = "") {
       echo Search::showHeaderItem($output_type, __('Percent'), $header_num);
       echo Search::showEndLine($output_type);
       $row_num    = 1;
-      $modNetwork = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdisc.modifynetwork.php";
+      $modNetwork = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.form.php";
       $zelda      = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php";
       $img        = $CFG_GLPI['root_doc'] . "/pics/loader.png";
 
@@ -528,7 +528,7 @@ static function showPercentItem($value,$linkto = "") {
               FROM subnet
               WHERE `subnet`.`NETID` = '$ipAdress'";
       $result=$OCSDB->query($query);
-      echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdisc.modifynetwork.php\" method='post'>"; 
+      echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.form.php\" method='post'>"; 
       echo "<tr class='tab_bg_2' ><td class='center' >" . __('Subnet Name') . "</td>";
       
       //this is for the identified subnets
@@ -584,7 +584,7 @@ static function showPercentItem($value,$linkto = "") {
        
        
        //html::closeForm();
-       echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/test.php\"
+       echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php\"
          method='post'>";
        echo "<td class='right'> <input type=\"submit\" name=\"cancel\" value=\"Cancel\" ></td></tr>";
        html::closeForm();
@@ -613,7 +613,7 @@ static function showPercentItem($value,$linkto = "") {
        
        html::closeForm();
        
-       echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/test.php\"
+       echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php\"
          method='post'>";
        echo "<td class='right'> <input type=\"submit\" name=\"cancel\" value=\"Cancel\" ></td></tr>";
        html::closeForm();
