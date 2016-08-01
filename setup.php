@@ -152,7 +152,7 @@ function plugin_version_ocsinventoryng() {
 **/
 function plugin_ocsinventoryng_check_prerequisites() {
 
-   if (version_compare(GLPI_VERSION,'0.90','lt') || version_compare(GLPI_VERSION,'0.92','ge')) {
+   if (version_compare(GLPI_VERSION,'0.90','lt') || version_compare(GLPI_VERSION,'9.2','ge')) {
       echo "This plugin requires GLPI = 0.90";
       return false;
    }
