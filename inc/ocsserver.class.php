@@ -399,6 +399,103 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       }
       echo "</table></div>";
    }
+   
+   static function snmpMenu($plugin_ocsinventoryng_ocsservers_id) {
+      global $CFG_GLPI, $DB;
+      $ocsservers          = array();
+      echo "<div class='center'>";
+      echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png' " .
+      "alt='OCS Inventory NG' title='OCS Inventory NG'>";
+      echo "</div>";
+      $numberActiveServers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
+      if ($numberActiveServers > 0) {
+         echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
+                method='post'>";
+         echo "<div class='center'><table class='tab_cadre' width='40%'>";
+         echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an OCSNG server', 'ocsinventoryng') .
+         "</th></tr>\n";
+
+         echo "<tr class='tab_bg_2'><td class='center'>" . __('Name') . "</td>";
+         echo "<td class='center'>";
+         $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                   FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+                   LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
+                      ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                   WHERE `profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . " AND `glpi_plugin_ocsinventoryng_ocsservers`.`is_active`='1'
+                   ORDER BY `name` ASC";
+         //var_dump($query);
+         foreach ($DB->request($query) as $data) {
+            $ocsservers[] = $data['id'];
+         }
+         Dropdown::show('PluginOcsinventoryngOcsServer', array("condition"           => "`id` IN ('" . implode("','", $ocsservers) . "')",
+             "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+             "on_change"           => "this.form.submit()",
+             "display_emptychoice" => false));
+         echo "</td></tr>";
+         echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
+         _e('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
+         echo "</td></tr>";
+         echo "</table></div>";
+         Html::closeForm();
+      }
+      $sql      = "SELECT `name`, `is_active`
+              FROM `glpi_plugin_ocsinventoryng_ocsservers`
+              LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+                  ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+              WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`id` = '" . $plugin_ocsinventoryng_ocsservers_id . "' AND `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . "";
+      $result   = $DB->query($sql);
+      $isactive = 0;
+      if ($DB->numrows($result) > 0) {
+         $datas    = $DB->fetch_array($result);
+         $name     = " : " . $datas["name"];
+         $isactive = $datas["is_active"];
+      }
+      if ($isactive) {
+         $client  = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+         $version = $client->getTextConfig('GUI_VERSION');
+         $snmp    = $client->getIntConfig('SNMP');
+         
+         //if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $version > self::OCS2_1_VERSION_LIMIT && $snmp) {
+            //host not imported by thread
+            $usemassimport = self::useMassImport();
+            echo "<div class='center'><table class='tab_cadre' width='40%'>";
+            echo "<tr><th colspan='" . ($usemassimport ? 4 : 2) . "'>";
+            _e('OCSNG SNMP import', 'ocsinventoryng');
+            echo "</th></tr>";
+
+            // SNMP device link feature
+            echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+                  <a href='ocsngsnmp.link.php'>
+                   <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' " .
+            "alt='" . __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "' " .
+            "title=\"" . __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "\">
+                     <br>" . __('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "
+                  </a></td>";
+
+            echo "<td class='center b' colspan='2'>
+               <a href='ocsngsnmp.sync.php'>
+                <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro1.png' " .
+            "alt='" . __s('Synchronize SNMP devices already imported', 'ocsinventoryng') . "' " .
+            "title=\"" . __s('Synchronize SNMP devices already imported', 'ocsinventoryng') . "\" >
+                  <br>" . __('Synchronize SNMP devices already imported', 'ocsinventoryng') . "
+               </a></td>";
+            echo "</tr>";
+
+            //SNMP device import feature :D
+            echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+             <a href='ocsngsnmp.import.php'>
+              <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' " .
+            "alt='" . __s('Import new SNMP devices', 'ocsinventoryng') . "' " .
+            "title=\"" . __s('Import new SNMP devices', 'ocsinventoryng') . "\">
+                <br>" . __('Import new SNMP devices', 'ocsinventoryng') . "
+             </a></td>";
+
+            echo "<td></td>";
+            echo "</tr>";
+            echo "</table></div>";
+         }
+      //}
+   }
 
       /* Tsmr : UNACTIVATE SNMP WHILE MUCH TESTS
       if ($isactive) {
