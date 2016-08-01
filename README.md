@@ -2,6 +2,8 @@
 
 ![Plugin ocsinventoryng](https://github.com/pluginsGLPI/ocsinventoryng/blob/master/ocsinventoryng.png?raw=true "Plugin ocsinventoryng")
 
+![Menu ocsinventoryng](https://raw.githubusercontent.com/pluginsGLPI/ocsinventoryng/master/wiki/menu.png "Menu ocsinventoryng")
+
 Plugin ocsinventoryng for GLPI
 
 * Français
