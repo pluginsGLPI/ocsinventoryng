@@ -1,4 +1,7 @@
 # ocsinventoryng
+
+![Plugin ocsinventoryng](https://github.com/pluginsGLPI/ocsinventoryng/blob/master/ocsinventoryng.png?raw=true "Plugin ocsinventoryng")
+
 Plugin ocsinventoryng for GLPI
 
 * Français
