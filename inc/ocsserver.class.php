@@ -5094,7 +5094,7 @@ JAVASCRIPT;
       if ($DB->numrows($result) > 0) {
         
 
-         if ($ocsComputer) {
+         if (isset($ocsComputer['HARDWARE'])) {
             $metas = $ocsComputer['HARDWARE'];
             foreach ($metas as $key => $meta) {
                
