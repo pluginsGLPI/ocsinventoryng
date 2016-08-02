@@ -12,7 +12,9 @@
  * @author cmak
  */
 include ('../../../inc/includes.php');
-Session::checkRight("plugin_ocsinventoryng", READ);
+//Session::checkRight("plugin_ocsinventoryng", READ);
+Session::checkSeveralRightsOr(array("plugin_ocsinventoryng"  => READ,
+                                    "plugin_ocsinventoryng_clean"  => READ));
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ipdiscover");
 $ip             = new PluginOcsinventoryngIpDiscover();
 if ((isset($_POST["subnetsChoise"]) && isset($_SESSION["subnets"])) || (isset($_SESSION["subnets"]) && $_GET["subnetsChoise"])) {

@@ -13,9 +13,11 @@
  */
 include ('../../../inc/includes.php');
 
-Session::checkRight("plugin_ocsinventoryng", READ);
+Session::checkSeveralRightsOr(array("plugin_ocsinventoryng"  => READ,
+                                    "plugin_ocsinventoryng_clean"  => READ));
+
+//Session::checkRight("plugin_ocsinventoryng", READ);
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ipdiscmodifynetwork");
-var_dump($_GET,$_POST);
 $ip=new PluginOcsinventoryngIpDiscover();
 if (isset($_GET["ip"])){
 $ipAdress=$_GET["ip"];
