@@ -109,7 +109,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   $ong[3] = __('General information', 'ocsinventoryng');
                   
                    //Tsmr : UNACTIVATE SNMP WHILE MUCH TESTS
-                  $client  = self::getDBocs($item->getID());
+                  /*$client  = self::getDBocs($item->getID());
                   $version = $client->getTextConfig('GUI_VERSION');
                   $snmp    = $client->getIntConfig('SNMP');
 
