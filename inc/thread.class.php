@@ -133,7 +133,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
             echo "<td class='center'>" . $thread["link_refused_machines_number"] . "</td>";
             echo "<td class='center'>";
             if ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED) {
-               echo Html::timestampToString($thread["duree"]);
+               echo $this->timestampToStringShort($thread["duree"]);
             } else {
                echo Dropdown::EMPTY_VALUE;
                $finished = false;
@@ -363,7 +363,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
 
                echo "<td class='center'>";
                if ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED) {
-                  echo Html::timestampToString($thread["duree"]);
+                  echo $this->timestampToStringShort($thread["duree"]);
                } else {
                    echo Dropdown::EMPTY_VALUE;
                }
@@ -455,10 +455,10 @@ class PluginOcsinventoryngThread extends CommonDBTM {
              "<br />" . $linkedrefused->GetMaximum() .
              "<br />" . round($linkedrefused->GetAverage(),2) .
              "<br />&nbsp;</td>";
-      echo "<td class='center'>" . Html::timestampToString($time->GetMinimum()) .
-             "<br />" . Html::timestampToString($time->GetMaximum()) . "<br />" .
-             Html::timestampToString(round($time->GetAverage())) .
-             "<br />" . Html::timestampToString($time->GetTotal()) . "</td>";
+      echo "<td class='center'>" . $this->timestampToStringShort($time->GetMinimum()) .
+             "<br />" . $this->timestampToStringShort($time->GetMaximum()) . "<br />" .
+             $this->timestampToStringShort(round($time->GetAverage())) .
+             "<br />" . $this->timestampToStringShort($time->GetTotal()) . "</td>";
       if ($time->GetTotal()>0) {
          echo "<td class='center' colspan='2'>" . __('Speed') . "<br />" .
                 sprintf(__('%1$s %2$s'),
@@ -594,6 +594,34 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       $task->setVolume($nb);
 
       return $nb;
+   }
+   
+   /**
+    * Make a short string from the unix timestamp $sec
+    * derived from html::timestampToString
+    *
+    * @param $time         integer  timestamp
+    *
+    * @return string
+   **/
+   static function timestampToStringShort($time) {
+
+      $sign = '';
+      if ($time < 0) {
+         $sign = '- ';
+         $time = abs($time);
+      }
+      $time = floor($time);
+
+      $units = Toolbox::getTimestampTimeUnits($time);
+      // if more than 24 hours
+      if ($units['day'] > 0) {
+         $units['hour'] += 24*$units['day'];
+      }
+      //TRANS:  %1$s is the sign (-or empty), %2$d number of hours, %3$d number of minutes,
+      //        %4$d number of seconds
+      return sprintf('%1$s%2$02d:%3$02d:%4$02d', $sign, $units['hour'], $units['minute'], $units['second']);
+
    }
 
 }
