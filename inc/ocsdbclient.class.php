@@ -209,6 +209,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                $computers[$meta['ID']]["META"]["NAME"] = $meta["NAME"];
                $computers[$meta['ID']]["META"]["TAG"] = $meta["TAG"];
                $computers[$meta['ID']]["META"]["USERID"] = $meta["USERID"];
+               $computers[$meta['ID']]["META"]["UUID"] = $meta["UUID"];
             }
 
             if ($check & $checksum) {
@@ -512,23 +513,29 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       }
 
 
-      $query = "SELECT * FROM `hardware`, `accountinfo`
+      /*$query = "SELECT * FROM `hardware`, `accountinfo`
                         WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
                         AND `hardware`.`ID` = `accountinfo`.`HARDWARE_ID`
-                        $where_condition";
+                        $where_condition";*/
+      $query = "SELECT DISTINCT `hardware`.`ID` FROM `hardware`, `accountinfo`
+                           WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
+                           AND `hardware`.`ID` = `accountinfo`.`HARDWARE_ID`
+                           $where_condition
+                           ORDER BY $order
+                           $max_records $offset";
       $request = $this->db->query($query);
 
       if ($this->db->numrows($request)) {
 
-
          $count = $this->db->numrows($request);
-         $query = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
+         /*$query = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
                            WHERE hardware.DEVICEID NOT LIKE '\\_%'
                            AND hardware.ID = accountinfo.HARDWARE_ID
                            $where_condition
                            ORDER BY $order
                            $max_records  $offset";
-         $request = $this->db->query($query);
+         
+         $request = $this->db->query($query);*/
          $accountinfomap = $this->getAccountInfoColumns();
          while ($hardwareid = $this->db->fetch_assoc($request)) {
             $hardwareids[] = $hardwareid['ID'];
