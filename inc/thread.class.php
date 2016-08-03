@@ -265,7 +265,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       $sql = "SELECT `id`, `processid`, SUM(`total_number_machines`) AS total_machines,
                      `plugin_ocsinventoryng_ocsservers_id`, `status`, COUNT(*) AS threads_number,
                      MIN(`start_time`) AS starting_date, MAX(`end_time`) AS ending_date,
-                     TIMESTAMPDIFF(SECOND,MIN(start_time),MAX(end_time)) AS duree,,
+                     TIMESTAMPDIFF(SECOND,MIN(start_time),MAX(end_time)) AS duree,
                      SUM(`imported_machines_number`) AS imported_machines,
                      SUM(`synchronized_machines_number`) AS synchronized_machines,
                      SUM(`linked_machines_number`) AS linked_machines,
@@ -379,9 +379,8 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                }
                echo "</td>";
                echo "<td class='center'>";
-               echo "<a href=\"detail.php?reset=reset_before&field[0]=".
-                      "5&contains[0]=^".$thread["processid"].'$">'.
-                      "<img  src='".$CFG_GLPI["root_doc"]."/pics/rdv.png'</a></td>";
+               echo "<a href=\"detail.php?criteria[0][field]=5&".
+                      "criteria[0][searchtype]=contains&criteria[0][value]=^".$thread["processid"].'$">'."<img  src='".$CFG_GLPI["root_doc"]."/pics/rdv.png'</a></td>";
                echo "</tr>\n";
             }
          }
