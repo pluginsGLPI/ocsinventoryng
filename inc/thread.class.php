@@ -265,7 +265,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       $sql = "SELECT `id`, `processid`, SUM(`total_number_machines`) AS total_machines,
                      `plugin_ocsinventoryng_ocsservers_id`, `status`, COUNT(*) AS threads_number,
                      MIN(`start_time`) AS starting_date, MAX(`end_time`) AS ending_date,
-                     TIME_TO_SEC(MAX(`end_time`)) - TIME_TO_SEC(MIN(`start_time`)) AS duree,
+                     TIMESTAMPDIFF(SECOND,MIN(start_time),MAX(end_time)) AS duree,,
                      SUM(`imported_machines_number`) AS imported_machines,
                      SUM(`synchronized_machines_number`) AS synchronized_machines,
                      SUM(`linked_machines_number`) AS linked_machines,
