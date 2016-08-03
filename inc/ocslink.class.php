@@ -263,8 +263,6 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
 
                if (count($data)) {
-                  $ocs_config
-                     = PluginOcsinventoryngOcsServer::getConfig(PluginOcsinventoryngOcsServer::getByMachineID($items_id));
 
                   echo "<div class='center'>";
                   echo "<form method='post' action=\"$target\">";
@@ -316,6 +314,56 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "</table>\n";
                   Html::closeForm();
                   echo "</div>";
+                  if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
+                     $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($data["plugin_ocsinventoryng_ocsservers_id"]);
+
+                     $options   = array(
+                        'DISPLAY' => array(
+                           'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
+                        )
+                     );
+                     $computer  = $ocsClient->getComputer($data["ocsid"], $options);
+                     echo "<br><table class='tab_cadre_fixe'>";
+                     echo "<tr>";
+                     echo "<th colspan='2'>".__('DEBUG')." ".__('OCSNG', "ocsinventoryng")."</th>";
+                     echo "</tr>";
+                     foreach($computer as $key => $val) {
+                        echo "<tr class='tab_bg_1'>";
+                        echo "<td>";
+                        print_r($key);
+                        echo "</td>";
+                        echo "<td>";
+                        foreach($val as $name => $value) {
+                           printf(__('%1$s: %2$s'), $name,
+                              $value);
+                           if ($name == "CHECKSUM") {
+                              $checksum_client = $value;
+                           }
+                           echo "</br>";
+                        }
+                        echo "</td>";
+                        echo "</tr>";
+                     }
+                     $server = new PluginOcsinventoryngOcsServer();
+                     if ($server->getFromDB($data["plugin_ocsinventoryng_ocsservers_id"]) 
+                           && $checksum_client > 0) {
+                        echo "<tr class='tab_bg_1'>";
+                        echo "<td>";
+                        _e('Checksum test', 'ocsinventoryng');
+                        echo "</td>";
+                        echo "<td>";
+                        $format = '(%1$2d = %1$04b) = (%2$2d = %2$04b)'
+           . ' %3$s (%4$2d = %4$04b)' . "\n";
+                        
+                        $checksum_server = $server->fields["checksum"];
+                        $result = $checksum_server & $checksum_client;
+                        printf($format, $result, $checksum_server, '&', $checksum_client);
+                        echo "</td>";
+                        echo "</tr>";
+                     }
+                     echo "</table>";
+                     
+                  }
                }
             }
          }
