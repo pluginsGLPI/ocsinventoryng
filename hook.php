@@ -40,7 +40,7 @@ function plugin_ocsinventoryng_install() {
          && !TableExists("ocs_glpi_ocsservers")) {
 
       $install = true;
-      $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.2.2-empty.sql");
+      $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.2.3-empty.sql");
       
       $migration->createRule(array('sub_type'      => 'RuleImportEntity',
                                    'entities_id'   => 0,
