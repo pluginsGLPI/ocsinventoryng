@@ -243,7 +243,7 @@ function FirstPass($ocsservers_id) {
       // Handle ID changed or PC deleted in OCS.
       $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
       echo "\tManage delete items in OCS server #$ocsservers_id: \"" . $cfg_ocs["name"] . "\"\n";
-      PluginOcsinventoryngOcsServer::manageDeleted($ocsservers_id);
+      PluginOcsinventoryngOcsServer::manageDeleted($ocsservers_id, false);
    } else {
       echo "*** Can't connect to OCS server #$ocsservers_id ***";
    }
