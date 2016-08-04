@@ -1,5 +1,6 @@
-# ocsinventoryng
-Plugin ocsinventoryng for GLPI
+# Plugin ocsinventoryng for GLPI
+
+![Menu ocsinventoryng](https://raw.githubusercontent.com/pluginsGLPI/ocsinventoryng/master/wiki/menu.png "Menu ocsinventoryng")
 
 * Français
 

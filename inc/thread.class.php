@@ -1,30 +1,31 @@
 <?php
 /*
- * @version $Id: HEADER 15930 2012-12-15 11:10:55Z tsmr $
--------------------------------------------------------------------------
-Ocsinventoryng plugin for GLPI
-Copyright (C) 2012-2016 by the ocsinventoryng plugin Development Team.
+ * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
+ -------------------------------------------------------------------------
+ ocsinventoryng plugin for GLPI
+ Copyright (C) 2015-2016 by the ocsinventoryng Development Team.
 
-https://forge.glpi-project.org/projects/ocsinventoryng
--------------------------------------------------------------------------
+ https://github.com/pluginsGLPI/ocsinventoryng
+ -------------------------------------------------------------------------
 
-LICENSE
+ LICENSE
+      
+ This file is part of ocsinventoryng.
 
-This file is part of ocsinventoryng.
+ ocsinventoryng is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-Ocsinventoryng plugin is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ ocsinventoryng is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-Ocsinventoryng plugin is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
--------------------------------------------------------------------------- */
+ You should have received a copy of the GNU General Public License
+ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
+ */
 
 class PluginOcsinventoryngThread extends CommonDBTM {
 
@@ -132,7 +133,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
             echo "<td class='center'>" . $thread["link_refused_machines_number"] . "</td>";
             echo "<td class='center'>";
             if ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED) {
-               echo Html::timestampToString($thread["duree"]);
+               echo $this->timestampToStringShort($thread["duree"]);
             } else {
                echo Dropdown::EMPTY_VALUE;
                $finished = false;
@@ -264,7 +265,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       $sql = "SELECT `id`, `processid`, SUM(`total_number_machines`) AS total_machines,
                      `plugin_ocsinventoryng_ocsservers_id`, `status`, COUNT(*) AS threads_number,
                      MIN(`start_time`) AS starting_date, MAX(`end_time`) AS ending_date,
-                     TIME_TO_SEC(MAX(`end_time`)) - TIME_TO_SEC(MIN(`start_time`)) AS duree,
+                     TIMESTAMPDIFF(SECOND,MIN(start_time),MAX(end_time)) AS duree,
                      SUM(`imported_machines_number`) AS imported_machines,
                      SUM(`synchronized_machines_number`) AS synchronized_machines,
                      SUM(`linked_machines_number`) AS linked_machines,
@@ -362,7 +363,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
 
                echo "<td class='center'>";
                if ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED) {
-                  echo Html::timestampToString($thread["duree"]);
+                  echo $this->timestampToStringShort($thread["duree"]);
                } else {
                    echo Dropdown::EMPTY_VALUE;
                }
@@ -378,9 +379,8 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                }
                echo "</td>";
                echo "<td class='center'>";
-               echo "<a href=\"detail.php?reset=reset_before&field[0]=".
-                      "5&contains[0]=^".$thread["processid"].'$">'.
-                      "<img  src='".$CFG_GLPI["root_doc"]."/pics/rdv.png'</a></td>";
+               echo "<a href=\"detail.php?criteria[0][field]=5&".
+                      "criteria[0][searchtype]=contains&criteria[0][value]=^".$thread["processid"].'$">'."<img  src='".$CFG_GLPI["root_doc"]."/pics/rdv.png'</a></td>";
                echo "</tr>\n";
             }
          }
@@ -455,10 +455,10 @@ class PluginOcsinventoryngThread extends CommonDBTM {
              "<br />" . $linkedrefused->GetMaximum() .
              "<br />" . round($linkedrefused->GetAverage(),2) .
              "<br />&nbsp;</td>";
-      echo "<td class='center'>" . Html::timestampToString($time->GetMinimum()) .
-             "<br />" . Html::timestampToString($time->GetMaximum()) . "<br />" .
-             Html::timestampToString(round($time->GetAverage())) .
-             "<br />" . Html::timestampToString($time->GetTotal()) . "</td>";
+      echo "<td class='center'>" . $this->timestampToStringShort($time->GetMinimum()) .
+             "<br />" . $this->timestampToStringShort($time->GetMaximum()) . "<br />" .
+             $this->timestampToStringShort(round($time->GetAverage())) .
+             "<br />" . $this->timestampToStringShort($time->GetTotal()) . "</td>";
       if ($time->GetTotal()>0) {
          echo "<td class='center' colspan='2'>" . __('Speed') . "<br />" .
                 sprintf(__('%1$s %2$s'),
@@ -594,6 +594,34 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       $task->setVolume($nb);
 
       return $nb;
+   }
+   
+   /**
+    * Make a short string from the unix timestamp $sec
+    * derived from html::timestampToString
+    *
+    * @param $time         integer  timestamp
+    *
+    * @return string
+   **/
+   static function timestampToStringShort($time) {
+
+      $sign = '';
+      if ($time < 0) {
+         $sign = '- ';
+         $time = abs($time);
+      }
+      $time = floor($time);
+
+      $units = Toolbox::getTimestampTimeUnits($time);
+      // if more than 24 hours
+      if ($units['day'] > 0) {
+         $units['hour'] += 24*$units['day'];
+      }
+      //TRANS:  %1$s is the sign (-or empty), %2$d number of hours, %3$d number of minutes,
+      //        %4$d number of seconds
+      return sprintf('%1$s%2$02d:%3$02d:%4$02d', $sign, $units['hour'], $units['minute'], $units['second']);
+
    }
 
 }
