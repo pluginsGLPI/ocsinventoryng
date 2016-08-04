@@ -421,9 +421,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             echo "<td class='center b' colspan='2'>
                <a href='ocsngsnmp.sync.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro1.png' " .
-            "alt='" . __s('Synchronize SNMP devices already imported', 'ocsinventoryng') . "' " .
-            "title=\"" . __s('Synchronize SNMP devices already imported', 'ocsinventoryng') . "\" >
-                  <br>" . __('Synchronize SNMP devices already imported', 'ocsinventoryng') . "
+            "alt='" . __s('Synchronize snmp devices already imported', 'ocsinventoryng') . "' " .
+            "title=\"" . __s('Synchronize snmp devices already imported', 'ocsinventoryng') . "\" >
+                  <br>" . __('Synchronize snmp devices already imported', 'ocsinventoryng') . "
                </a></td>";
             echo "</tr>";
 

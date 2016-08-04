@@ -1076,8 +1076,8 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                echo Search::showHeaderItem($output_type, __('Description'), $header_num);
                echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
                echo Search::showHeaderItem($output_type, __('Date'), $header_num);
-               echo Search::showHeaderItem($output_type, __('Contact SNMP'), $header_num);
-               echo Search::showHeaderItem($output_type, __('Location SNMP'), $header_num);
+               echo Search::showHeaderItem($output_type, __('Contact SNMP', 'ocsinventoryng'), $header_num);
+               echo Search::showHeaderItem($output_type, __('Location SNMP', 'ocsinventoryng'), $header_num);
                echo Search::showHeaderItem($output_type, __('Type SNMP', 'ocsinventoryng'), $header_num);
                
                if (!$tolinked) {
