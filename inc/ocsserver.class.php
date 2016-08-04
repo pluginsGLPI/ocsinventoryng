@@ -106,14 +106,13 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   $ong[2] = __('Import options', 'ocsinventoryng');
                   $ong[3] = __('General information', 'ocsinventoryng');
                   $ong[4] = __('General history', 'ocsinventoryng');
-                  /* Tsmr : UNACTIVATE SNMP WHILE MUCH TESTS
                   $client  = self::getDBocs($item->getID());
                   $version = $client->getTextConfig('GUI_VERSION');
                   $snmp    = $client->getIntConfig('SNMP');
 
                   if ($version > self::OCS2_1_VERSION_LIMIT && $snmp) {
                      $ong[5] = __('Import SNMP', 'ocsinventoryng');
-                  }*/
+                  }
                }
                if ($item->getField('ocs_url')) {
                   $ong[6] = __('OCSNG console', 'ocsinventoryng');
@@ -398,7 +397,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       }
       echo "</table></div>";
       
-      /* Tsmr : UNACTIVATE SNMP WHILE MUCH TESTS
       if ($isactive) {
          $client  = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
          $version = $client->getTextConfig('GUI_VERSION');
@@ -442,7 +440,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             echo "</tr>";
             echo "</table></div>";
          }
-      }*/
+      }
    }
 
    /**
