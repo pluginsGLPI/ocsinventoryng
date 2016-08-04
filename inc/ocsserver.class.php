@@ -3040,12 +3040,12 @@ JAVASCRIPT;
                   echo "<td>" . Dropdown::getYesNo($tab["use_auto_update"]) . "</td>\n";
                   echo "<td>";
                   if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
-                     $checksum_server = $cfg_ocs["checksum"];
-                     $checksum_client = $hardware[$tab["ocsid"]]["checksum"];
+                     $checksum_server = intval($cfg_ocs["checksum"]);
+                     $checksum_client = intval($hardware[$tab["ocsid"]]["checksum"]);
                      if ($checksum_client > 0 
                            && $checksum_client > 0) {
                         $result = $checksum_server & $checksum_client;
-                        echo $result;
+                        echo intval($result);
                      }
                   }
                   echo "</td>";

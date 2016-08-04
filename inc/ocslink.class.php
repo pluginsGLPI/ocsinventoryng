@@ -337,7 +337,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                            printf(__('%1$s: %2$s'), $name,
                               $value);
                            if ($name == "CHECKSUM") {
-                              $checksum_client = $value;
+                              $checksum_client = intval($value);
                            }
                            echo "</br>";
                         }
@@ -355,7 +355,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                         $format = '(%1$2d = %1$04b) = (%2$2d = %2$04b)'
            . ' %3$s (%4$2d = %4$04b)' . "\n";
                         
-                        $checksum_server = $server->fields["checksum"];
+                        $checksum_server = intval($server->fields["checksum"]);
                         $result = $checksum_server & $checksum_client;
                         printf($format, $result, $checksum_server, '&', $checksum_client);
                         echo "</td>";
