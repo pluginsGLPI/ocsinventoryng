@@ -14,27 +14,23 @@
 include ('../../../inc/includes.php');
 
 Session::checkSeveralRightsOr(array("plugin_ocsinventoryng"  => READ,
-                                    "plugin_ocsinventoryng_clean"  => READ));
+                                    "plugin_ocsinventoryng_clean" => READ));
 
 //Session::checkRight("plugin_ocsinventoryng", READ);
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ipdiscmodifynetwork");
-$ip=new PluginOcsinventoryngIpDiscover();
-if (isset($_GET["ip"])){
-$ipAdress=$_GET["ip"];
-$values=array();
-if (isset($_POST["subnetName"])&&isset($_POST["subnetChoise"])&&isset($_POST["newSubnetId"])&&isset($_POST["subnetMask"])) {
- $values=array("subnetName" => $_POST["subnetName"],"subnetChoise" => $_POST["subnetChoise"],"newId" => $_POST["newSubnetId"],"subnetMask" => $_POST["subnetMask"]);  
+$ip = new PluginOcsinventoryngIpDiscover();
+
+if (isset($_GET["ip"])) {
+   $_POST["ip"] = $_GET["ip"];
 }
-$ip->modifyNetworkForm($ipAdress,$values);
+if (isset($_POST["ip"])) {
+   $ip       = new PluginOcsinventoryngIpDiscover();
+   $ipAdress = $_POST["ip"];
+   $values   = array();
+   if (isset($_POST["subnetName"]) && isset($_POST["subnetChoise"]) && isset($_POST["SubnetMask"])) {
+      $values = array("subnetName" => $_POST["subnetName"], "subnetChoise" => $_POST["subnetChoise"], "subnetMask" => $_POST["SubnetMask"]);
+   }
+   $ip->modifyNetworkForm($ipAdress, $values);
 }
-if (isset($_POST["ip"])){
- $ip=new PluginOcsinventoryngIpDiscover();
-$ipAdress=$_POST["ip"];
-$values=array();
-if (isset($_POST["subnetName"])&&isset($_POST["subnetChoise"])&&isset($_POST["newSubnetId"])&&isset($_POST["subnetMask"])) {
- $values=array("subnetName" => $_POST["subnetName"],"subnetChoise" => $_POST["subnetChoise"],"newId" => $_POST["newSubnetId"],"subnetMask" => $_POST["subnetMask"]);  
-}
-$ip->modifyNetworkForm($ipAdress,$values);
-}  
-$ip->ipDiscFooter();
+Html::footer();
 ?>

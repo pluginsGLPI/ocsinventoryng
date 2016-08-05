@@ -15,23 +15,28 @@ include ('../../../inc/includes.php');
 //Session::checkRight("plugin_ocsinventoryng", READ);
 Session::checkSeveralRightsOr(array("plugin_ocsinventoryng"  => READ,
                                     "plugin_ocsinventoryng_clean"  => READ));
+
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ipdiscover");
 $ip             = new PluginOcsinventoryngIpDiscover();
-if ((isset($_POST["subnetsChoise"]) && isset($_SESSION["subnets"])) || (isset($_SESSION["subnets"]) && $_GET["subnetsChoise"])) {
+if (empty($_POST)) {
+   $_POST = $_GET;
+}
+if (isset($_POST["subnetsChoise"]) && isset($_SESSION["subnets"])||isset($_SESSION["subnets"])) {
    $sN             = "";
    $networksDetail = array();
    $ocsServerId    = $_SESSION["plugin_ocsinventoryng_ocsservers_id"];
    $tab            = $_SESSION["subnets"];
    $subnets        = $ip->getSubnets($ocsServerId);
-   if (isset($_POST["subnetsChoise"])) {
-      $sN                              = $tab[$_POST["subnetsChoise"]];
-      $networksDetail["subnets"]       = $ip->showSubnets($ocsServerId, $subnets, $sN);
-      $networksDetail["subnetsChoise"] = $_POST["subnetsChoise"];
-   } else {
-      $sN                              = $tab[$_GET["subnetsChoise"]];
-      $networksDetail["subnets"]       = $ip->showSubnets($ocsServerId, $subnets, $sN);
-      $networksDetail["subnetsChoise"] = $_GET["subnetsChoise"];
-   }
+if (isset($_POST["subnetsChoise"])){
+   $sN                              = $tab[$_POST["subnetsChoise"]];
+   $networksDetail["subnets"]       = $ip->showSubnets($ocsServerId, $subnets, $sN);
+   $networksDetail["subnetsChoise"] = $_POST["subnetsChoise"];
+}else{
+   $sN                              = $tab[1];
+   $networksDetail["subnets"]       = $ip->showSubnets($ocsServerId, $subnets, $sN);
+   $networksDetail["subnetsChoise"] = 1;
+}
+   
    $lim = count($networksDetail["subnets"]);
    if ($lim > $_SESSION["glpilist_limit"]) {
       $ip->showSubnetsDetails($networksDetail, $_SESSION["glpilist_limit"]);
@@ -39,6 +44,6 @@ if ((isset($_POST["subnetsChoise"]) && isset($_SESSION["subnets"])) || (isset($_
       $ip->showSubnetsDetails($networksDetail, $lim);
    }
 }
-$ip->ipDiscFooter();
 
+Html::footer();
 ?>
