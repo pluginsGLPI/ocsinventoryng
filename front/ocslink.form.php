@@ -48,6 +48,13 @@ if (isset($_POST["force_ocs_resynch"])) {
    $link->update($values);
    Html::back();
 
+} else if (isset ($_POST["delete_link"])) {
+   $comp = new Computer();
+   $link = new PluginOcsinventoryngOcslink();
+   if ($comp->getFromDB($_POST["items_id"])) {
+      $link->purgeComputer($comp);
+      Html::back();
+   }
 } else {
    Html::displayErrorAndDie("lost");
 }

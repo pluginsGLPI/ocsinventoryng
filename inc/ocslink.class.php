@@ -268,7 +268,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "<form method='post' action=\"$target\">";
                   echo "<input type='hidden' name='id' value='$items_id'>";
                   echo "<table class='tab_cadre_fixe'>";
-                  echo "<tr><th colspan = '4'>OCS Inventory NG</th>";
+                  echo "<tr><th colspan = '4'>".__('OCSNG link', 'ocsinventoryng')."</th>";
                   
                   echo "<tr class='tab_bg_1'>";
                   echo "<td class='left'>";
@@ -296,18 +296,27 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                   if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
                      echo "<tr class='tab_bg_1'>";
-                     echo "<td class='center' colspan='2'>";
+                     echo "<td class='center'>";
                      echo "<input type='hidden' name='link_id' value='" . $data["id"] . "'>";
                      echo "<input class=submit type='submit' name='update' value=\"" .
                             _sx('button', 'Save')."\">";
                      echo "</td>";
                      
-                     echo "<td class='center' colspan='2'>";
+                     echo "<td class='center'>";
                      echo "<input type='hidden' name='resynch_id' value='" . $data["id"] . "'>";
                      echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
                            _sx('button', 'Force synchronization', 'ocsinventoryng'). "\">";
                      echo "</td>";
-
+                     
+                     echo "<td class='center'>";
+                     echo "<input type='hidden' name='items_id' value='" . $items_id . "'>";
+                     echo "<input class=submit type='submit' name='delete_link' value=\"" .
+                           _sx('button', 'Delete link', 'ocsinventoryng'). "\">";
+                     echo "</td>";
+                     
+                     echo "<td>";
+                     echo "</td>";
+                     
                      echo "</tr>";
                   }
 
@@ -322,25 +331,35 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                            'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
                         )
                      );
+                     $computer  = array();
+                     $checksum_client = 0;
                      $computer  = $ocsClient->getComputer($data["ocsid"], $options);
                      echo "<br><table class='tab_cadre_fixe'>";
                      echo "<tr>";
                      echo "<th colspan='2'>".__('DEBUG')." ".__('OCSNG', "ocsinventoryng")."</th>";
                      echo "</tr>";
-                     foreach($computer as $key => $val) {
-                        echo "<tr class='tab_bg_1'>";
-                        echo "<td>";
-                        print_r($key);
-                        echo "</td>";
-                        echo "<td>";
-                        foreach($val as $name => $value) {
-                           printf(__('%1$s: %2$s'), $name,
-                              $value);
-                           if ($name == "CHECKSUM") {
-                              $checksum_client = intval($value);
+                     if (count($computer) > 0) {
+                        foreach($computer as $key => $val) {
+                           echo "<tr class='tab_bg_1'>";
+                           echo "<td>";
+                           print_r($key);
+                           echo "</td>";
+                           echo "<td>";
+                           foreach($val as $name => $value) {
+                              printf(__('%1$s: %2$s'), $name,
+                                 $value);
+                              if ($name == "CHECKSUM") {
+                                 $checksum_client = intval($value);
+                              }
+                              echo "</br>";
                            }
-                           echo "</br>";
+                           echo "</td>";
+                           echo "</tr>";
                         }
+                     } else {
+                        echo "<tr class='tab_bg_1'>";
+                        echo "<td colspan='2' class='red'>";
+                        _e('No computer found into OCSNG Database', 'ocsinventoryng');
                         echo "</td>";
                         echo "</tr>";
                      }
@@ -364,7 +383,31 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                      echo "</table>";
                      
                   }
+               } else {
+                  
+                  echo "<div class='center'>";
+                  echo "<table class='tab_cadre_fixe'>";
+                  echo "<tr><th colspan = '2'>".__('OCSNG link', 'ocsinventoryng')."</th>";
+                  echo "<tr class='tab_bg_1'>";
+                  echo "<td colspan='2' >";
+                  _e('No computer found into OCSNG Database', 'ocsinventoryng');
+                  echo "</td>";
+                  echo "</tr>";
+                  echo "</table>";
+                  echo "</div>";
                }
+            } else {
+                  
+               echo "<div class='center'>";
+               echo "<table class='tab_cadre_fixe'>";
+               echo "<tr><th colspan = '2'>".__('OCSNG link', 'ocsinventoryng')."</th>";
+               echo "<tr class='tab_bg_1'>";
+               echo "<td colspan='2' '>";
+               _e('No computer found into OCSNG Database', 'ocsinventoryng');
+               echo "</td>";
+               echo "</tr>";
+               echo "</table>";
+               echo "</div>";
             }
          }
       }
