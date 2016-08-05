@@ -44,7 +44,8 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
 
    function getWidgetsForItem() {
       return array(
-         $this->getType()."1" => __("Last synchronization of computers by month","mydashboard"),
+         $this->getType()."1" => __("Last synchronization of computers by month","ocsinventoryng"),
+         $this->getType()."2" => __("Detail of imported computers","ocsinventoryng"),
       );
    }
 
@@ -71,26 +72,92 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                            ." GROUP BY period_name ORDER BY period ASC";
                   
                   $widget = PluginMydashboardHelper::getWidgetsFromDBQuery('vbarchart',$query );
-                  
-                  //$dropdown = PluginMydashboardHelper::getFormHeader($widgetId).Group::dropdown(array('name' => 'groups_id',
-                  //                                                                                    'display' => false,
-                  //                                                                                    'value' => isset($this->options['groups_id'])? $this->options['groups_id'] : 0,
-                  //                                                                                    'entity'    => $_SESSION['glpiactiveentities'],
-                  //                                                                                    'condition' => '`is_assign`'))
-                              //."</form>";
-                  $widget->setWidgetTitle(__("Last synchronization of computers by month","mydashboard"));
+
+                  $widget->setWidgetTitle(__("Last synchronization of computers by month","ocsinventoryng"));
                   $widget->setOption("xaxis", array("ticks" => PluginMydashboardBarChart::getTicksFromLabels($widget->getTabDatas())));
                   $widget->setOption("markers", array("show" => true,"position" => "ct" ,"labelFormatter" => PluginMydashboardBarChart::getLabelFormatter(2)));
                   $widget->setOption('legend', array('show' => false));
-                  //$widget->appendWidgetHtmlContent($dropdown);
                   $widget->toggleWidgetRefresh();
                   return $widget;
                } else {
                   $widget = new PluginMydashboardDatatable();
-                  $widget->setWidgetTitle(__("Last synchronization of computers by month","mydashboard"));
+                  $widget->setWidgetTitle(__("Last synchronization of computers by month","ocsinventoryng"));
                   return $widget;
                }
-             break;
+            break;
+             
+             case $this->getType()."2":
+               $plugin = new Plugin();
+               if ($plugin->isActivated("ocsinventoryng")) {
+                  
+                  $counts = array();
+                  
+                  $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) as nb
+                              FROM `glpi_computers`
+                              LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks` ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` ) 
+                              WHERE `glpi_computers`.`is_deleted` = '0' AND `glpi_computers`.`is_template` = '0' ";
+
+                  $query .= getEntitiesRestrictRequest("AND", Computer::getTable())
+                           ." AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` = 1) )";
+
+                  $result = $DB->query($query);
+                  $nb     = $DB->numrows($result);
+
+                  if ($nb) {
+                     while ($data = $DB->fetch_assoc($result)) {
+                        $counts[__('OCS Inventory NG')] = $data["nb"];
+                     }
+                  }
+                  
+                  $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) as nb
+                              FROM `glpi_computers`
+                              LEFT JOIN `glpi_plugin_fusioninventory_inventorycomputercomputers` ON (`glpi_computers`.`id` = `glpi_plugin_fusioninventory_inventorycomputercomputers`.`computers_id` ) 
+                              WHERE `glpi_computers`.`is_deleted` = '0' AND `glpi_computers`.`is_template` = '0' ";
+
+                  $query .= getEntitiesRestrictRequest("AND", Computer::getTable())
+                           ." AND ( `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` NOT LIKE '' )";
+
+
+                  $result = $DB->query($query);
+                  $nb     = $DB->numrows($result);
+
+                  if ($nb) {
+                     while ($data = $DB->fetch_assoc($result)) {
+                        $counts[__('Fusion Inventory')] = $data["nb"];
+                     }
+                  }
+                  $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) as nb
+                              FROM `glpi_computers`
+                              LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks` ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` ) 
+                              LEFT JOIN `glpi_plugin_fusioninventory_inventorycomputercomputers` ON (`glpi_computers`.`id` = `glpi_plugin_fusioninventory_inventorycomputercomputers`.`computers_id` ) 
+                              WHERE `glpi_computers`.`is_deleted` = '0' AND `glpi_computers`.`is_template` = '0' ";
+
+                  $query .= getEntitiesRestrictRequest("AND", Computer::getTable())
+                           ." AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`last_update` LIKE '' OR `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` IS NULL) AND (`glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` LIKE '' OR `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` IS NULL) )";
+                  
+                  $result = $DB->query($query);
+                  $nb     = $DB->numrows($result);
+
+                  if ($nb) {
+                     while ($data = $DB->fetch_assoc($result)) {
+                        $counts[__('Without agent')] = $data["nb"];
+                     }
+                  }
+                  
+                  $widget = PluginMydashboardHelper::getWidgetsFromDBQuery('piechart',$query );
+                  $datas = $widget->getTabDatas();
+
+                  
+                  $widget->setTabDatas($counts);
+                  $widget->toggleWidgetRefresh();
+                  $widget->setWidgetTitle(__("Detail of imported computers","ocsinventoryng"));
+                  return $widget;
+               } else {
+                  $widget = new PluginMydashboardDatatable();
+                  $widget->setWidgetTitle(__("Detail of imported computers","ocsinventoryng"));
+                  return $widget;
+               }
+            break;
       }
    }
 }

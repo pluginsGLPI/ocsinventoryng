@@ -409,6 +409,18 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                echo "</table>";
                echo "</div>";
             }
+         } else {
+                  
+            echo "<div class='center'>";
+            echo "<table class='tab_cadre_fixe'>";
+            echo "<tr><th colspan = '2'>".__('OCSNG link', 'ocsinventoryng')."</th>";
+            echo "<tr class='tab_bg_1'>";
+            echo "<td colspan='2' '>";
+            _e('No computer found into OCSNG Database', 'ocsinventoryng');
+            echo "</td>";
+            echo "</tr>";
+            echo "</table>";
+            echo "</div>";
          }
       }
    }
