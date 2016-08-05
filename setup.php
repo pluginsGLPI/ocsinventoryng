@@ -115,6 +115,10 @@ function plugin_init_ocsinventoryng() {
       }
       
       $PLUGIN_HOOKS['post_init']['ocsinventoryng']   = 'plugin_ocsinventoryng_postinit';
+      
+      if (class_exists('PluginMydashboardMenu')) {
+         $PLUGIN_HOOKS['mydashboard']['ocsinventoryng'] = array ("PluginOcsinventoryngDashboard");
+      }
    }
 
    $CFG_GLPI['ocsinventoryng_devices_index'] = array(1  => 'Item_DeviceMotherboard',
