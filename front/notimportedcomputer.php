@@ -31,7 +31,7 @@ include ('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-Html::header(__('Processes execution of automatic actions', 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "notimported");
+Html::header(__('Computers not imported by automatic actions', 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "notimported");
 
 Search::show('PluginOcsinventoryngNotimportedcomputer');
 

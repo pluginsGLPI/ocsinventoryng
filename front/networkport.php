@@ -31,7 +31,7 @@ include ('../../../inc/includes.php');
 
 Session::checkRight('networking', READ);
 
-Html::header(__('Unknown imported network ports', 'ocsinventory'), '', "tools", "pluginocsinventoryngmenu", 'networkport');
+Html::header(_n('Unknown imported network port type', 'Unknown imported network ports types', 2, 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", 'networkport');
 
 PluginOcsinventoryngNetworkPort::displayInvalidList();
 

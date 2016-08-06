@@ -1132,10 +1132,9 @@ function plugin_ocsinventoryng_uninstall() {
 function plugin_ocsinventoryng_getDropdown() {
    // Table => Name
    return array('PluginOcsinventoryngNetworkPortType' => PluginOcsinventoryngNetworkPortType::getTypeName(2),
-                  'PluginOcsinventoryngNetworkPort'     => PluginOcsinventoryngNetworkPort::getTypeName(2));
+                  'PluginOcsinventoryngNetworkPort'     => PluginOcsinventoryngNetworkPort::getTypeName(2),
+                  "PluginOcsinventoryngNotimportedcomputer" => __('Computers not imported by automatic actions', 'ocsinventoryng'));
 }
-
-
 
 /**
  * Define dropdown relations

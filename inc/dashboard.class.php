@@ -105,7 +105,7 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
 
                   if ($nb) {
                      while ($data = $DB->fetch_assoc($result)) {
-                        $counts[__('OCS Inventory NG')] = $data["nb"];
+                        $counts[__('OCS Inventory NG', 'ocsinventoryng')] = $data["nb"];
                      }
                   }
                   
@@ -123,7 +123,7 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
 
                   if ($nb) {
                      while ($data = $DB->fetch_assoc($result)) {
-                        $counts[__('Fusion Inventory')] = $data["nb"];
+                        $counts[__('Fusion Inventory', 'ocsinventoryng')] = $data["nb"];
                      }
                   }
                   $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) as nb
@@ -140,7 +140,7 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
 
                   if ($nb) {
                      while ($data = $DB->fetch_assoc($result)) {
-                        $counts[__('Without agent')] = $data["nb"];
+                        $counts[__('Without agent', 'ocsinventoryng')] = $data["nb"];
                      }
                   }
                   

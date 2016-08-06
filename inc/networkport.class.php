@@ -38,7 +38,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
    static $rightname = "plugin_ocsinventoryng";
    
    static function getTypeName($nb=0) {
-      return _n('Unknown type from OCS', 'Unknown types from OCS', $nb, 'ocsinventoryng');
+      return _n('Unknown imported network port type', 'Unknown imported network ports types', $nb, 'ocsinventoryng');
    }
 
    static private function getInvalidIPString($ip) {
@@ -466,8 +466,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       $type_results = $DB->request($query);
       echo "<br>\n<div class ='center'><table class='tab_cadrehov'>";
       if ($type_results->numrows() > 0) {
-         echo "<tr class='tab_bg_2'><th colspan='4'>".__('Unknown network port type from OCS',
-                                                         'ocsinventoryng')."</th></tr>";
+         echo "<tr class='tab_bg_2'><th colspan='4'>".self::getTypeName(2)."</th></tr>";
          foreach ($type_results as $type) {
             $query = "SELECT `TYPEMIB`, `TYPE`,
                              GROUP_CONCAT(DISTINCT `speed` SEPARATOR '#') AS speed

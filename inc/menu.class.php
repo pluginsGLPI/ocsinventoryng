@@ -81,6 +81,10 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
       $menu['options']['notimported']['title'] = __s('Computers not imported by automatic actions', 'ocsinventoryng');
       $menu['options']['notimported']['page']  = '/plugins/ocsinventoryng/front/notimportedcomputer.php';
       
+      // networkport
+      $menu['options']['networkport']['title'] = _n('Unknown imported network port type', 'Unknown imported network ports types', 2, 'ocsinventoryng');
+      $menu['options']['networkport']['page']  = '/plugins/ocsinventoryng/front/networkport.php';
+      
       if (Session::haveRight("plugin_ocsinventoryng_clean", READ)) {
          // Deleted_equiv
          $menu['options']['deleted_equiv']['title'] = __s('Clean OCSNG deleted computers', 'ocsinventoryng');
