@@ -1855,13 +1855,14 @@ JAVASCRIPT;
                }
                self::cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_toclean);
             }
-
+            //Delete from deleted_equiv
             if (!empty($equiv)) {
                $ocsClient->removeDeletedComputers($del, $equiv);
             } else {
                $to_del[] = $del;
             }
          }
+         //Delete from deleted_equiv
          if (!empty($to_del)) {
             $ocsClient->removeDeletedComputers($to_del);
          }
@@ -4101,7 +4102,7 @@ JAVASCRIPT;
 
          case "Item_DeviceNetworkCard":
             //Carte reseau
-            PluginOcsinventoryngNetworkPort::importNetwork($plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $ocsComputer, $computers_id, $dohistory, $entities_id);
+            PluginOcsinventoryngNetworkPort::importNetwork($plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $ocsComputer, $computers_id, $entities_id);
             break;
 
          case "Item_DeviceGraphicCard":

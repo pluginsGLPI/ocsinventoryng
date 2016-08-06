@@ -85,7 +85,7 @@ else{
       }
    }
 }
-Html::displayBackLink();
+
 echo "</div>";
 
 Html::footer();
