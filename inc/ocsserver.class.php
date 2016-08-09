@@ -618,7 +618,8 @@ JAVASCRIPT;
       echo "<td class='tab_bg_2 top'>\n";
 
       $opt = self::getColumnListFromAccountInfoTable($ID, 'accountinfo');
-
+      $oserial = $opt;
+      $oserial['ASSETTAG']= "ASSETTAG";
       echo "<table width='100%'>";
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Inventory number') . " </td>\n";
       echo "<td>";
@@ -626,7 +627,7 @@ JAVASCRIPT;
       $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "otherserial");
 
       $value = (isset($link->fields["ocs_column"]) ? $link->fields["ocs_column"] : "");
-      Dropdown::showFromArray("import_otherserial", $opt, array('value' => $value,
+      Dropdown::showFromArray("import_otherserial", $oserial, array('value' => $value,
          'width' => '100%'));
       echo "</td></tr>\n";
 
@@ -1273,7 +1274,12 @@ JAVASCRIPT;
     * @param $tab data array
     * */
    function updateAdminInfo($tab) {
-      if (isset($tab["import_location"]) || isset($tab["import_otherserial"]) || isset($tab["import_group"]) || isset($tab["import_network"]) || isset($tab["import_contact_num"]) || isset($tab["import_use_date"])) {
+      if (isset($tab["import_location"]) 
+            || isset($tab["import_otherserial"]) 
+               || isset($tab["import_group"]) 
+                  || isset($tab["import_network"]) 
+                     || isset($tab["import_contact_num"]) 
+                        || isset($tab["import_use_date"])) {
 
          $adm = new PluginOcsinventoryngOcsAdminInfosLink();
          $adm->cleanForOcsServer($tab["id"]);
@@ -5287,9 +5293,13 @@ JAVASCRIPT;
                   //get info from ocs
                   $ocs_column  = $links_glpi_ocs['ocs_column'];
                   $glpi_column = $links_glpi_ocs['glpi_column'];
+                  
                   if ($computer_updates 
                         && array_key_exists($ocs_column, $accountinfo) 
                            && !in_array($glpi_column, $computer_updates)) {
+                           
+                           
+                           
                      if (isset($accountinfo[$ocs_column])) {
                         $var = addslashes($accountinfo[$ocs_column]);
                      } else {
@@ -5315,6 +5325,22 @@ JAVASCRIPT;
                      $input["entities_id"] = $entities_id;
                      $input["_nolock"]     = true;
                      $comp->update($input, $cfg_ocs['history_admininfos']);
+                  }
+
+                  if ($computer_updates 
+                        && $ocs_column == 'ASSETTAG'
+                           && !in_array($glpi_column, $computer_updates)) {
+                     
+                     $var = $computer["BIOS"]["ASSETTAG"];
+                     if (isset($computer["BIOS"]["ASSETTAG"]) 
+                           && !empty($computer["BIOS"]["ASSETTAG"])){
+                        $input                = array();
+                        $input[$glpi_column]  = $var;
+                        $input["id"]          = $computers_id;
+                        $input["entities_id"] = $entities_id;
+                        $input["_nolock"]     = true;
+                        $comp->update($input, $cfg_ocs['history_admininfos']);
+                     }
                   }
                }
             }
