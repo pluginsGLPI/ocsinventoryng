@@ -64,6 +64,37 @@
    <langs>
       <lang>fr_FR</lang>
       <lang>en_GB</lang>
+      <lang>ar_SA</lang>
+      <lang>bg_BG</lang>
+      <lang>ca_ES</lang>
+      <lang>cs_CZ</lang>
+      <lang>da_DK</lang>
+      <lang>de_DE</lang>
+      <lang>el_GR</lang>
+      <lang>en_US</lang>
+      <lang>es_ES</lang>
+      <lang>es_VE</lang>
+      <lang>et_EE</lang>
+      <lang>fa_IR</lang>
+      <lang>gl_ES</lang>
+      <lang>he_IL</lang>
+      <lang>hr_HR</lang>
+      <lang>hu_HU</lang>
+      <lang>it_IT</lang>
+      <lang>ja_JP</lang>
+      <lang>lt_LT</lang>
+      <lang>nl_NL</lang>
+      <lang>nn_NO</lang>
+      <lang>pl_PL</lang>
+      <lang>pt_BR</lang>
+      <lang>pt_PT</lang>
+      <lang>ro_RO</lang>
+      <lang>ru_RU</lang>
+      <lang>sk_SK</lang>
+      <lang>sr_RS</lang>
+      <lang>tr_TR</lang>
+      <lang>uk_UA</lang>
+      <lang>zh_CN</lang>
    </langs>
    <license><![CDATA[GPL v2+]]></license>
    <category>Injection/import</category>
