@@ -1045,6 +1045,10 @@ JAVASCRIPT;
       echo "</td>";
       echo "<td>";
       printf(__('%1$s : %2$s'), "Checksum", $this->fields["checksum"]);
+      echo "&nbsp;";
+      Html::showSimpleForm(Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer"), 'force_checksum',
+                                          _sx('button', 'Reload Checksum', 'ocsinventoryng'),
+                                          array('id' => $ID));
       echo "</td>";
       echo "</tr>";
 
@@ -1228,17 +1232,6 @@ JAVASCRIPT;
       if ($this->fields["import_device_processor"]) {
          $checksum |= pow(2, self::CPUS_FL);
       }
-      
-
-      /* if ($this->fields["import_general_manufacturer"]
-        || $this->fields["import_general_type"]
-        || $this->fields["import_general_model"]
-        || $this->fields["import_general_serial"]) {
-
-        $checksum |= pow(2,self::BIOS_FL);
-        } */
-
-      toolbox::logdebug($checksum);
 
       $this->updates[]          = "checksum";
       $this->fields["checksum"] = $checksum;

@@ -46,7 +46,8 @@ if (isset ($_POST["purge"])) {
    $ocs->redirectToList();
 
 //Update server
-} else if (isset ($_POST["update"]) || isset ($_POST["updateSNMP"])) {
+} else if (isset ($_POST["update"]) 
+      || isset ($_POST["updateSNMP"])) {
    $ocs->check($_POST['id'],UPDATE);
    $ocs->update($_POST);
    Html::back();
@@ -61,6 +62,12 @@ if (isset ($_POST["purge"])) {
    Html::back();
 
 //Other
+} else if (isset ($_POST["force_checksum"])) {
+   $ocs->check($_POST['id'],UPDATE);
+   $_POST['checksum'] = 0;
+   $ocs->update($_POST);
+   Html::back();
+
 } else {
    $ocs->display($_GET);
 }
