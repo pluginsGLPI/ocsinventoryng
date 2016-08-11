@@ -749,6 +749,14 @@ function plugin_ocsinventoryng_install() {
                ADD `history_admininfos` tinyint(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.2.3 update table glpi_plugin_ocsinventoryng_ocsservers add history");
    }
+   
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+         && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','import_device_controller')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `import_device_controller` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `import_device_slot` tinyint(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.2.3 update table glpi_plugin_ocsinventoryng_ocsservers add import_device_controller & slot");
+   }
    /**/
    
    $cron = new CronTask();
