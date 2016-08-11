@@ -14,29 +14,33 @@ if (!defined('GLPI_ROOT')) {
 }
 
 //class PluginOcsinventoryngIpDiscover extends CommonDBTM{
-   class PluginOcsinventoryngIpDiscover extends CommonGLPI {
+class PluginOcsinventoryngIpDiscover extends CommonGLPI {
       
    static $hardwareItemTypes = array('Computer', 'NetworkEquipment','Peripheral', 'Phone', 'Printer');
-
-    
-      static protected $notable                = false;
-     //public $taborientation          = 'vertical';
-       //var $fields                              = array();//need it for Search::show('PluginOcsinventoryngIpDiscover');
+   static protected $notable                = false;
+ //public $taborientation          = 'vertical';
+   //var $fields                              = array();//need it for Search::show('PluginOcsinventoryngIpDiscover');
    
    static function getTypeName($nb = 0) {
       return _n('OCS Inventory NG ', 'OCS Inventorys NG', $nb, 'ocsinventoryng');
    }
    
 
+   
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-
       switch ($item->getType()) {
          case __CLASS__ :
-
             $ong[0] = __('Server OCS Inventory NG', 'ocsinventoryng');
+            $ocsClient = new PluginOcsinventoryngOcsServer();
+            $client= $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+            $version = $client->getTextConfig('GUI_VERSION');
+            $snmp    = $client->getIntConfig('SNMP');
+            if ($version > $ocsClient::OCS2_1_VERSION_LIMIT && $snmp) {
             $ong[1] = __('SNMP', 'ocsinventoryng');
+            }
             $ong[2] = __('IPDISCOVER', 'ocsinventoryng');
             return $ong;
+         
          default :
             return '';
       }
@@ -284,6 +288,20 @@ if (!defined('GLPI_ROOT')) {
          $out["entities_id"][]= $ent["entities_id"];
       }
    }
+   
+   public static function getOCSTypes(&$out) {
+      $ocsClient = new PluginOcsinventoryngOcsServer();
+      $DBOCS     = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"])->getDB();
+      $query    = "SELECT `devicetype`.`id` , `devicetype`.`name`
+             FROM `devicetype`";
+      $result = $DBOCS->query($query);
+      
+      while ($ent    = $DBOCS->fetch_assoc($result)) {
+         $out["id"][]= $ent["id"];
+         $out["name"][]= $ent["name"];
+      }
+   }
+   
 
    public static function getSubnets($plugin_ocsinventoryng_ocsservers_id) {
       $subnets   = array();
@@ -456,10 +474,10 @@ static function showPercentItem($value,$linkto = "") {
 
       
    
-   static function showItem($value, $linkto="",$ip="",$type="",$checkbox=false,$check="") {
+   static function showItem($value, $linkto="",$id="",$type="",$checkbox=false,$check="") {
       $out = "<td class='tab_bg_2 rowHover'>";
        if ($checkbox){
-       $out = "<td><input type='checkbox' name='toimport[" . $value . "]' " .
+       $out .= "<td><input type='checkbox' name='macToImport[" . $value . "]' " .
                      ($check == "all" ? "checked" : "") . "></td>";
       
        $out .= "</td>\n";
@@ -467,7 +485,7 @@ static function showPercentItem($value,$linkto = "") {
        } else {
       
       if (!empty($linkto)) {
-         $out .= "<a href=\"$linkto"."?ip=$ip&status=$type\">";  
+         $out .= "<a href=\"$linkto"."?ip=$id&status=$type\">";  
       }
 
       $out .= $value;
@@ -491,9 +509,22 @@ static function showPercentItem($value,$linkto = "") {
    }
    
    
+   static function getKnownMacAdresseFromGlpi(){
+      global $DB;
+      $macAdresses=array();
+      $query = "SELECT `glpi_plugin_ocsinventoryng_ipdiscoverlinks`.`MACADDRESS`
+                FROM `glpi_plugin_ocsinventoryng_ipdiscoverlinks`";
+      $result = $DB->query($query);
+      while ($res      = $DB->fetch_assoc($result)) {
+         $macAdresses[] = $res;
+      }
+      return $macAdresses;
+   }
+   
+   
  //TODO compress the code : static function getHardware($ipAdress,$plugin_ocsinventoryng_ocsservers_id) for all the hardware
    
- static function getHardware($ipAdress, $plugin_ocsinventoryng_ocsservers_id, $status) {
+ static function getHardware($ipAdress, $plugin_ocsinventoryng_ocsservers_id, $status,$knownMacAdresses=array()) {
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS     = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
       $query     = "";
@@ -520,17 +551,11 @@ static function showPercentItem($value,$linkto = "") {
          $query = "SELECT `network_devices`.`ID`,`network_devices`.`TYPE`,`network_devices`.`DESCRIPTION`,`network_devices`.`USER`,`netmap`.`IP`,`netmap`.`MAC`,`netmap`.`MASK`,`netmap`.`NETID`,`netmap`.`NAME`,`netmap`.`DATE`
               FROM `network_devices`
               LEFT JOIN `netmap` 
-              ON `network_devices`.`MACADDr`=`netmap`.`MAC` 
-              WHERE `netmap`.`NETID`='$ipAdress' 
+              ON `network_devices`.`MACADDR`=`netmap`.`MAC` 
+              WHERE `netmap`.`NETID`='$ipAdress'
+              AND `network_devices`.`MACADDR` NOT IN('". implode(',', $knownMacAdresses) . "')
               GROUP BY `network_devices`.`MACADDr`
-              ORDER BY `network_devices`.`TYPE` asc";/*
-         $query = "SELECT DISTINCT `network_devices`.`ID`,`network_devices`.`TYPE`,`network_devices`.`DESCRIPTION`,`network_devices`.`USER`,`netmap`.`IP`,`netmap`.`MAC`,`netmap`.`MASK`,`netmap`.`NETID`,`netmap`.`NAME`,`netmap`.`DATE`
-              FROM `network_devices`,`netmap`
-              WHERE `network_devices`.`MACADDr`=`netmap`.`MAC` 
-              AND `netmap`.`NETID`='$ipAdress'
-              GROUP BY `network_devices`.`MACADDr`
-              ORDER BY `network_devices`.`TYPE` asc";*/
-         
+              ORDER BY `network_devices`.`TYPE` asc";
       }
       $result   = $DBOCS->query($query);
       $hardware = array();
@@ -611,14 +636,14 @@ static function showPercentItem($value,$linkto = "") {
       $header_num    = 1;
       echo "<div class='tab_cadre_fixe'><table width='95%'class='tab_cadre_fixe'>\n";
       echo Search::showHeaderItem($output_type, __('Description'), $header_num);
-      echo Search::showHeaderItem($output_type, __('IP Adress'), $header_num);
+      echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
       echo Search::showHeaderItem($output_type, __('Non Inventoried'), $header_num);
       echo Search::showHeaderItem($output_type, __('Inventoried'), $header_num);
       echo Search::showHeaderItem($output_type, __('Identified'), $header_num);
       echo Search::showHeaderItem($output_type, __('Percent'), $header_num);
       echo Search::showEndLine($output_type);
       $row_num    = 1;
-      $modNetwork = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscoveridentifynetwork.form.php";
+      $modNetwork = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscovermodifynetwork.form.php";
       $hardwareNetwork      = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscoverinventoriedcomputers.form.php";
       $img        = $CFG_GLPI['root_doc'] . "/pics/loader.png";
 
@@ -653,14 +678,9 @@ static function showPercentItem($value,$linkto = "") {
               FROM subnet
               WHERE `subnet`.`NETID` = '$ipAdress'";
       $result    = $OCSDB->query($query);
+      $target=$CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscovermodifynetwork.form.php\"";
       
-      if(isset($_POST["Modify"])){
-      $target=$CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscoveridentifynetwork.form.php";
-      } else if(isset($_POST["Cancel"])){
-       $target=$CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscoveridentifynetwork.form.php";  
-      }
-      
-      echo "<form name=\"idSelection\" action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscoveridentifynetwork.form.php\" method='post'>";
+      echo "<form name=\"idSelection\" action=\"" . $target. " method='post'>";
       echo "<tr class='tab_bg_2' ><td class='center' >" . __('Subnet Name', 'ocsinventoryng') . "</td>";
       //this is for the identified subnets
       if ($result->num_rows > 0) {
@@ -733,113 +753,45 @@ static function showPercentItem($value,$linkto = "") {
    }
    echo "</table></div>";
    }
-
-   static function importIdentifiedHardware(){
+   
+   
+   static function processIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id) {
+      $ocsClient          = new PluginOcsinventoryngOcsServer();
+      $ocsClient->checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      $mac=$ipDiscoveryObject["macAdress"];
+      //Check it machine is already present AND was imported by OCS AND still present in GLPI
+      $query  = "SELECT `glpi_plugin_ocsinventoryng_ipdiscoverlinks`.`id`, `glpi_plugin_ocsinventoryng_ipdiscoverlinks`.`macaddress`,
+                FROM `glpi_plugin_ocsinventoryng_ipdiscoverlinks`
+                WHERE `glpi_plugin_ocsinventoryng_ipdiscoverlinks`.`macaddress`
+                LIKE `'$mac'`
+                AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
+      $DBOCS              = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
+      $result= $DBOCS->query($query);
+      var_dump($result,$query);
+      die("hello kids");
+      if ($DBOCS->numrows($result)) {
+         $datas = $DB->fetch_array($result);
+         //return self::updateIpDiscover($datas["id"], $plugin_ocsinventoryng_ocsservers_id, 1, 0);
+      }
+      //return self::importIpDiscover($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock, $defaultentity, $defaultlocation);
       
    }
    
-   /*static function showHardware($hardware, $lim,$start=0, $ipAdress,$status) {
-      global $CFG_GLPI;
-      $output_type   = Search::HTML_OUTPUT; //0
-      $end   = $start + $lim;
-      $link          = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscoverinventoriedcomputers.form.php";
-      $reload        = "ip=$ipAdress&status=$status";
-      echo html::printPager($start, count($hardware), $link, $reload);
-      echo Search::showNewLine($output_type, true);
-      //echo Search::showHeader($output_type, $end - $start + 1, 1);
-      echo "<div class='tab_cadre_fixe'><table width='95%'class='tab_cadre_fixe'>\n";
-      $header_num    = 1;
-       $modNetwork = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscoveridentifynetwork.form.php";
-      if ($status == "inventoried") {
-         echo Search::showHeaderItem($output_type, __('User'), $header_num);
-         echo Search::showHeaderItem($output_type, __('Name'), $header_num);
-         echo Search::showHeaderItem($output_type, __('System'), $header_num);
-         echo Search::showHeaderItem($output_type, __('System Version'), $header_num);
-         echo Search::showHeaderItem($output_type, __('IP Adress'), $header_num);
-         echo Search::showHeaderItem($output_type, __('Last Inventory'), $header_num);
-         echo Search::showEndLine($output_type);
-         $row_num = 1;
-         for ($i = $start; $i < $lim; $i++) {
-            $row_num++;
-            echo Search::showNewLine($output_type, $row_num % 2);
-            echo self::showItem($hardware[$i]["userid"]);
-            echo self::showItem($hardware[$i]["name"]);
-            echo self::showItem($hardware[$i]["osname"]);
-            echo self::showItem($hardware[$i]["osversion"]);
-            echo self::showItem($hardware[$i]["ipaddr"]);
-            echo self::showItem($hardware[$i]["lastdate"]);
-            
-            echo Search::showEndLine($output_type);
-         }
-          echo "</table></div>\n";
-      } else if ($status == "noninventoried") {
-         echo Search::showHeaderItem($output_type, __('IP Adress'), $header_num);
-         echo Search::showHeaderItem($output_type, __('MAC Adress'), $header_num);
-         echo Search::showHeaderItem($output_type, __('Mask'), $header_num);
-         echo Search::showHeaderItem($output_type, __('Date'), $header_num);
-         echo Search::showHeaderItem($output_type, __('DNS'), $header_num);
-         echo Search::showEndLine($output_type);
-         $row_num = 1;
-         for ($i = $start; $i < $lim; $i++) {
-            $row_num++;
-            echo Search::showNewLine($output_type, $row_num % 2);
-            echo self::showItem($hardware[$i]["ip"],$modNetwork);
-            echo self::showItem($hardware[$i]["mac"],$modNetwork);
-            echo self::showItem($hardware[$i]["mask"],$modNetwork);
-            echo self::showItem($hardware[$i]["date"],$modNetwork);
-            echo self::showItem($hardware[$i]["DNS"],$modNetwork);
-         }
-          echo "</table></div>\n";
-      } else {
-         
-         $entities=array("id"=>array(Dropdown::EMPTY_VALUE),"name"=>array(Dropdown::EMPTY_VALUE),"entities_id"=>array(Dropdown::EMPTY_VALUE));
-         $link=$CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
-         
-         self::getEntities($entities);
-         echo Search::showHeaderItem($output_type, __('Type'), $header_num);
-         echo Search::showHeaderItem($output_type, __('Description'), $header_num);
-         echo Search::showHeaderItem($output_type, __('IP Adress'), $header_num);
-         echo Search::showHeaderItem($output_type, __('Mac Adress'), $header_num);
-         echo Search::showHeaderItem($output_type, __('Date'), $header_num);
-         echo Search::showHeaderItem($output_type, __('Entity'), $header_num);
-         echo Search::showHeaderItem($output_type, __('GLPI Type','ocsinventoryng'), $header_num);
-          echo Search::showHeaderItem($output_type, __(''), $header_num);
-         echo Search::showEndLine($output_type);
-         
-         
-         
-         $row_num = 1;
-         
-         
-         echo "<div class='center'>\n";
-         self::checkBox($target);
-         echo "</div>\n";
-         for ($i = $start; $i < $lim; $i++) {
-            $row_num++;
-            echo Search::showNewLine($output_type, $row_num % 2);
-            echo self::showItem($hardware[$i]["TYPE"],$modNetwork);
-            echo self::showItem($hardware[$i]["DESCRIPTION"]);
-            echo self::showItem($hardware[$i]["IP"]);
-            echo self::showItem($hardware[$i]["MAC"]);
-            echo self::showItem($hardware[$i]["DATE"]);
-            //echo self::showItem($hardware[$i]["USER"]);
-            echo "<td>";
-            Dropdown::showFromArray("entities", $entities["name"]);
-            echo "</td>";
-            echo '<td width=200 px>';
-            Dropdown::showItemTypes("toimport_itemtype[$i]", self::$hardwareItemTypes);   
-            
-            echo '</td>';
-            echo self::showItem($hardware[$i]["MAC"],"","","",true,"");
-            //echo "<td><input type='checkbox' name='toimport'></td>\n";
-            
-         }
-         echo "</table></div>\n";
-         echo "<div class='center'>\n<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\"></div>";
-         html::closeForm();
+
+   static function getIpDiscoverobject($macAdresses, $entities=array(), $itemsTypes, $itemsNames=""){
+      //$ocsClient          = new PluginOcsinventoryngOcsServer();
+      //$DBOCS              = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
+      $objectToImport=array();
+      $macs=array();
+      foreach ($macAdresses as $mac => $on){
+      $macs[]=$mac;   
       }
-      
-   }*/
+      for($i=0; $i < sizeof($macs); $i++){
+         $objectToImport[]=array("macAdress"=>$macs[$i],"entity"=>$entities[$i],"itemType"=>$itemsTypes[$i],"itemName"=>$itemsNames[$i]);
+      }
+      return $objectToImport;
+   }
+   
    
    static function showHardware($hardware, $lim,$start=0, $ipAdress,$status) {
       global $CFG_GLPI;
@@ -881,25 +833,61 @@ static function showPercentItem($value,$linkto = "") {
           break;
          
          case "noninventoried" :
+            $entities=array("id"=>array(Dropdown::EMPTY_VALUE),"name"=>array(Dropdown::EMPTY_VALUE),"entities_id"=>array(Dropdown::EMPTY_VALUE));
+            $ocsTypes=array("id"=>array(Dropdown::EMPTY_VALUE),"name"=>array(Dropdown::EMPTY_VALUE));
+            $link=$CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
+            $target=$CFG_GLPI['root_doc'] ."/plugins/ocsinventoryng/front/ipdiscoverinventoriedcomputers.form.php";
+
+            echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
+            self::checkBox($target);
             echo "<table width='95%' class='tab_cadre_fixe'>";
-            echo Search::showHeaderItem($output_type, __('IP Adress'), $header_num);
-            echo Search::showHeaderItem($output_type, __('MAC Adress'), $header_num);
+            echo "<tr class='tab_bg_1'><td colspan='8' class='center' >";
+            echo "<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\">";
+            echo "</tr>\n";
+            self::getEntities($entities);
+            self::getOCSTypes($ocsTypes);
+            echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
+            echo Search::showHeaderItem($output_type, __('MAC address'), $header_num);
             echo Search::showHeaderItem($output_type, __('Mask'), $header_num);
             echo Search::showHeaderItem($output_type, __('Date'), $header_num);
             echo Search::showHeaderItem($output_type, __('DNS'), $header_num);
+            echo Search::showHeaderItem($output_type, __('OCS Type'), $header_num);
+            echo Search::showHeaderItem($output_type, __('Description'), $header_num);
+            echo Search::showHeaderItem($output_type, __('Name'), $header_num);
+            if(Session::isMultiEntitiesMode()){
+            echo Search::showHeaderItem($output_type, __('Entity'), $header_num);
+            }
+            echo Search::showHeaderItem($output_type, __('GLPI Type','ocsinventoryng'), $header_num);
+            echo Search::showHeaderItem($output_type, __(''), $header_num);
             echo Search::showEndLine($output_type);
             $row_num = 1;
             for ($i = $start; $i < $lim; $i++) {
                $row_num++;
                echo Search::showNewLine($output_type, $row_num % 2);
-               echo self::showItem($hardware[$i]["ip"], $modNetwork);
-               echo self::showItem($hardware[$i]["mac"], $modNetwork);
-               echo self::showItem($hardware[$i]["mask"], $modNetwork);
-               echo self::showItem($hardware[$i]["date"], $modNetwork);
-               echo self::showItem($hardware[$i]["DNS"], $modNetwork);
+               echo self::showItem($hardware[$i]["ip"]);
+               echo self::showItem($hardware[$i]["mac"]);
+               echo self::showItem($hardware[$i]["mask"]);
+               echo self::showItem($hardware[$i]["date"]);
+               echo self::showItem($hardware[$i]["DNS"]);
+               echo "<td>"; Dropdown::showFromArray("ocstype[$i]", $ocsTypes["name"]) ; echo "</td>";
+               echo "<td><input type=\"text\" name='itemsdescription[" . $i . "]' value=\"\"></td>";
+               echo "<td><input type=\"text\" name='itemsname[" . $i . "]' value=\"\"></td>";
+               if(Session::isMultiEntitiesMode()){
+               echo "<td>"; Dropdown::showFromArray("entities[$i]", $entities["name"]) ; echo "</td>";
+               }
+               $itemstypes=array(Dropdown::EMPTY_VALUE);
+               foreach (self::$hardwareItemTypes as $items){
+                  $itemstypes[$items]=__($items);
+               }
+               echo "<td>"; Dropdown::showFromArray("itemstypes[$i]", $itemstypes); echo "</td>";
+               //echo "<td>"; Dropdown::showItemTypes("itemstypes[$i]", self::$hardwareItemTypes); echo "</td>";
+               echo self::showItem($hardware[$i]["ip"],"","","",true,"");
             }
             echo "</table></div>\n";
-            break;
+            echo "<div class='center'>\n<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\"></div>";
+            html::closeForm();
+            self::checkBox($target);
+         break;
          
          default :
          
@@ -912,40 +900,40 @@ static function showPercentItem($value,$linkto = "") {
             echo "<table width='95%' class='tab_cadre_fixe'>";
             echo "<tr class='tab_bg_1'><td colspan='8' class='center' >";
             echo "<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\">";
-            echo "</td></tr>\n";
+            echo "</tr>\n";
             
             self::getEntities($entities);
-            echo Search::showHeaderItem($output_type, __('Type'), $header_num);
+            echo Search::showHeaderItem($output_type, __('OCS Type'), $header_num);
             echo Search::showHeaderItem($output_type, __('Description'), $header_num);
-            echo Search::showHeaderItem($output_type, __('IP Adress'), $header_num);
-            echo Search::showHeaderItem($output_type, __('Mac Adress'), $header_num);
+            echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
+            echo Search::showHeaderItem($output_type, __('Mac address'), $header_num);
             echo Search::showHeaderItem($output_type, __('Date'), $header_num);
+            if(Session::isMultiEntitiesMode()){
             echo Search::showHeaderItem($output_type, __('Entity'), $header_num);
+            }
             echo Search::showHeaderItem($output_type, __('GLPI Type','ocsinventoryng'), $header_num);
-             echo Search::showHeaderItem($output_type, __(''), $header_num);
+            echo Search::showHeaderItem($output_type, __('Name'), $header_num);
+            echo Search::showHeaderItem($output_type, __(''), $header_num);
             echo Search::showEndLine($output_type);
-
-
-
             $row_num = 1;
-
-
             for ($i = $start; $i < $lim; $i++) {
                $row_num++;
                echo Search::showNewLine($output_type, $row_num % 2);
-               echo self::showItem($hardware[$i]["TYPE"],$modNetwork);
+               echo self::showItem($hardware[$i]["TYPE"]);
                echo self::showItem($hardware[$i]["DESCRIPTION"]);
                echo self::showItem($hardware[$i]["IP"]);
                echo self::showItem($hardware[$i]["MAC"]);
                echo self::showItem($hardware[$i]["DATE"]);
-               //echo self::showItem($hardware[$i]["USER"]);
-               echo "<td>";
-               Dropdown::showFromArray("entities", $entities["name"]);
-               echo "</td>";
-               echo '<td width=200 px>';
-               Dropdown::showItemTypes("item_type_to_import[$i]", self::$hardwareItemTypes);   
-
-               echo '</td>';
+               if(Session::isMultiEntitiesMode()){
+               echo "<td>"; Dropdown::showFromArray("entities[$i]", $entities["name"]) ; echo "</td>";
+               }
+               $itemstypes=array(Dropdown::EMPTY_VALUE);
+               foreach (self::$hardwareItemTypes as $items){
+                  $itemstypes[$items]=__($items);
+               }
+               echo "<td>"; Dropdown::showFromArray("itemstypes[$i]", $itemstypes); echo "</td>";
+               //echo "<td>"; Dropdown::showItemTypes("itemstypes[$i]", self::$hardwareItemTypes); echo "</td>";
+               echo "<td><input type=\"text\" name='itemsname[" . $i . "]' value=\"\"></td>";
                echo self::showItem($hardware[$i]["MAC"],"","","",true,"");
             }
             echo "</table></div>\n";

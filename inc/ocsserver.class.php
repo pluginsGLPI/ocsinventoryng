@@ -109,13 +109,13 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   $ong[3] = __('General information', 'ocsinventoryng');
                   
                    //Tsmr : UNACTIVATE SNMP WHILE MUCH TESTS
-                  /*$client  = self::getDBocs($item->getID());
+                  $client  = self::getDBocs($item->getID());
                   $version = $client->getTextConfig('GUI_VERSION');
                   $snmp    = $client->getIntConfig('SNMP');
 
                   if ($version > self::OCS2_1_VERSION_LIMIT && $snmp) {
                   $ong[5] = __('Import SNMP', 'ocsinventoryng');
-                  }*/
+                  }
                }
                if ($item->getField('ocs_url')) {
                   $ong[4] = __('OCSNG console', 'ocsinventoryng');
@@ -1668,7 +1668,8 @@ JAVASCRIPT;
                       AND `ocsid` = '$ocsid'
                       AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
       $result_glpi_plugin_ocsinventoryng_ocslinks = $DB->query($query);
-
+      var_dump($query,$result_glpi_plugin_ocsinventoryng_ocslinks);
+      die("heyHo");
       if ($DB->numrows($result_glpi_plugin_ocsinventoryng_ocslinks)) {
          $datas = $DB->fetch_array($result_glpi_plugin_ocsinventoryng_ocslinks);
          //Return code to indicates that the machine was synchronized

@@ -6,11 +6,9 @@
  * and open the template in the editor.
  */
 include ('../../../inc/includes.php');
-var_dump($_POST,$_GET);
-Session::checkSeveralRightsOr(array("plugin_ocsinventoryng"       => READ,
-    "plugin_ocsinventoryng_clean" => READ));
-//Session::checkRight("plugin_ocsinventoryng", READ);
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ipdiscmodifynetwork");
+Session::checkRight("plugin_ocsinventoryng", READ);
+Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu");
+//Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ipdiscmodifynetwork");
 $ip = new PluginOcsinventoryngIpDiscover();
 if (isset($_GET["ip"]) || isset($_POST["ip"])) {
    $ipAdress = "";
@@ -38,5 +36,17 @@ if (isset($_GET["ip"]) || isset($_POST["ip"])) {
       }
    } 
 }
+
+if (sizeof($_POST["macToImport"]) > 0) {
+   $macAdresses=$_POST["macToImport"];
+   $entities=$_POST["entities"];
+   $itemsTypes=$_POST["itemstypes"];
+   $itemsNames=$_POST["itemsname"];
+   //var_dump($_SESSION);
+   $ipObjects=$ip->getIpDiscoverobject($macAdresses,$entities,$itemsTypes,$itemsNames);
+   $ipObject = array_pop($ipObjects);
+   $action=$ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+}
+
 html::footer();
 ?>

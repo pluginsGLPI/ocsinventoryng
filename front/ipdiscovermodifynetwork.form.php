@@ -13,11 +13,9 @@
  */
 include ('../../../inc/includes.php');
 
-Session::checkSeveralRightsOr(array("plugin_ocsinventoryng"  => READ,
-                                    "plugin_ocsinventoryng_clean" => READ));
-
-//Session::checkRight("plugin_ocsinventoryng", READ);
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ipdiscmodifynetwork");
+Session::checkRight("plugin_ocsinventoryng", READ);
+//Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu",'ipdiscmodifynetwork');
+Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu");
 $ip = new PluginOcsinventoryngIpDiscover();
 
 if (isset($_GET["ip"])) {
@@ -32,5 +30,6 @@ if (isset($_POST["ip"])) {
    }
    $ip->modifyNetworkForm($ipAdress, $values);
 }
+
 Html::footer();
 ?>

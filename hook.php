@@ -39,7 +39,7 @@ function plugin_ocsinventoryng_install() {
          && !TableExists("ocs_glpi_ocsservers")) {
 
       $install = true;
-      $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.2.2-empty.sql");
+      $DB->runFile(GLPI_ROOT ."/plugins/ocsinventoryng/install/mysql/1.2.3-empty.sql");
       
       $migration->createRule(array('sub_type'      => 'RuleImportEntity',
                                    'entities_id'   => 0,
@@ -260,6 +260,22 @@ function plugin_ocsinventoryng_install() {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
                ADD `import_device_motherboard` tinyint(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.2.2 update table glpi_plugin_ocsinventoryng_ocsservers");
+   }
+   
+      //Update 1.2.3
+   If (!TableExists("glpi_plugin_ocsinventoryng_ipdiscoverlinks"))
+        {
+
+      $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_ipdiscoverlinks` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `items_id` int(11) NOT NULL,
+                `itemtype` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                `macaddress` varchar(255) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
+                `last_update` DATETIME COLLATE utf8_unicode_ci DEFAULT NULL,
+                `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
+                 PRIMARY KEY (`id`)
+                 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+      $DB->queryOrDie($query, "1.2.3 add table glpi_plugin_ocsinventoryng_ipdiscoverlinks");
    }
    
    

@@ -106,10 +106,15 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
       $menu['options']['ipdiscover']['title'] = __s('IPDiscover', 'ocsinventoryng');
       $menu['options']['ipdiscover']['page']  = '/plugins/ocsinventoryng/front/ipdiscover.php';
       
-      $menu['options']['ipdiscmodifynetwork']['title'] = __s('Identify Network', 'ocsinventoryng');
-      $menu['options']['ipdiscmodifynetwork']['page']  = '/plugins/ocsinventoryng/front/ipdiscmodifynetwork.php';
+      //Modify Network
+      $menu['options']['ipdiscmodifynetwork']['title'] = __s('Modifiy Network', 'ocsinventoryng');
+      $menu['options']['ipdiscmodifynetwork']['page']  = '/plugins/ocsinventoryng/front/ipdiscovermodifynetwork.form.php';
       
-      //Identify Network
+      //inventoried computers
+      $menu['options']['ipdiscoverinventoriedcomputers.form.php']['title'] = __s('Inventoried Computers', 'ocsinventoryng');
+      $menu['options']['ipdiscoverinventoriedcomputers.form.php']['page']  = '/plugins/ocsinventoryng/front/ipdiscoverinventoriedcomputers.form.php';
+      
+    
       
       return $menu;
    }

@@ -12,11 +12,9 @@
  * @author cmak
  */
 include ('../../../inc/includes.php');
-//Session::checkRight("plugin_ocsinventoryng", READ);
-Session::checkSeveralRightsOr(array("plugin_ocsinventoryng"  => READ,
-                                    "plugin_ocsinventoryng_clean"  => READ));
-
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ipdiscover");
+Session::checkRight("plugin_ocsinventoryng", READ);
+Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu");
+//Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu",'ipdiscover');
 $ip             = new PluginOcsinventoryngIpDiscover();
 if (empty($_POST)) {
    $_POST = $_GET;
@@ -36,13 +34,13 @@ if (isset($_POST["subnetsChoise"])){
    $networksDetail["subnets"]       = $ip->showSubnets($ocsServerId, $subnets, $sN);
    $networksDetail["subnetsChoise"] = 1;
 }
-   
    $lim = count($networksDetail["subnets"]);
    if ($lim > $_SESSION["glpilist_limit"]) {
       $ip->showSubnetsDetails($networksDetail, $_SESSION["glpilist_limit"]);
    } else {
       $ip->showSubnetsDetails($networksDetail, $lim);
    }
+   
 }
 
 Html::footer();
