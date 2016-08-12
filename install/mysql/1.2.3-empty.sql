@@ -348,8 +348,8 @@ INSERT INTO `glpi_crontasks` VALUES (NULL,'PluginOcsinventoryngOcsServer','ocsng
 
 ### Dump table glpi_plugin_ocsinventoryng_ipdiscoverlinks
 
-DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_ipdiscoverlinks`;
-CREATE TABLE `glpi_plugin_ocsinventoryng_ipdiscoverlinks` (
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`;
+CREATE TABLE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `items_id` int(11) NOT NULL,
   `itemtype` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
