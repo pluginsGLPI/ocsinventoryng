@@ -37,15 +37,26 @@ if (isset($_GET["ip"]) || isset($_POST["ip"])) {
    } 
 }
 
-if (sizeof($_POST["macToImport"]) > 0) {
+if (isset($_POST["macToImport"])&&sizeof($_POST["macToImport"]) > 0) {
+   var_dump($_POST);
    $macAdresses=$_POST["macToImport"];
-   $entities=$_POST["entities"];
    $itemsTypes=$_POST["itemstypes"];
    $itemsNames=$_POST["itemsname"];
-   //var_dump($_SESSION);
+   $entities=array();
+   if (isset($_POST["entities"])){
+   $entities=$_POST["entities"];
+   }
+   
+   var_dump($entities,  empty($entities));
    $ipObjects=$ip->getIpDiscoverobject($macAdresses,$entities,$itemsTypes,$itemsNames);
-   $ipObject = array_pop($ipObjects);
-   $action=$ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+   
+   while($ipObject = array_pop($ipObjects)){
+   $action[]=$ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+   }
+   /*if(!empty($action)){
+      var_dump($action,"Printer Imported");
+   }*/
+   
 }
 
 html::footer();

@@ -206,16 +206,16 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
    }*/
    
 
-   public static function parseSubnetsToString($ipArray=array()) {
-      $ipString = "";
-      for ($i = 0; $i < sizeof($ipArray); $i++) {
-         if ($i == sizeof($ipArray)-1) {
-            $ipString .="'" . $ipArray[$i] . "'";
+   public static function parseArrayToString($array=array()) {
+      $token = "";
+      for ($i = 0; $i < sizeof($array); $i++) {
+         if ($i == sizeof($array)-1) {
+            $token .="'" . $array[$i] . "'";
          } else {
-            $ipString .="'" . $ipArray[$i] . "'" . ",";
+            $token .="'" . $array[$i] . "'" . ",";
          }
       }
-      return $ipString;
+      return $token;
    }
    
    
@@ -347,14 +347,14 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
       $ocsClient      = new PluginOcsinventoryngOcsServer();
       $DBOCS          = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
       if ($option == "Known Subnets") {
-         $knownNets = self::parseSubnetsToString($subnets["knownIP"]);
+         $knownNets = self::parseArrayToString($subnets["knownIP"]);
          $Nets      = $knownNets;
       } else if ($option == "Unknown Subnets") {
-         $unknownNets = self::parseSubnetsToString($subnets["unknownIP"]);
+         $unknownNets = self::parseArrayToString($subnets["unknownIP"]);
          $Nets        = $unknownNets;
       } else if ($option == "All Subnets") {
-         $knownNets   = self::parseSubnetsToString($subnets["knownIP"]);
-         $unknownNets = self::parseSubnetsToString($subnets["unknownIP"]);
+         $knownNets   = self::parseArrayToString($subnets["knownIP"]);
+         $unknownNets = self::parseArrayToString($subnets["unknownIP"]);
          $Nets        = $knownNets . "," . $unknownNets;
       } else {
          if ($option != "") {
@@ -370,7 +370,7 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
             $theSubnet[$i]=$subnet[$i]["NETID"];
             $i++;
             }
-            $Nets = self::parseSubnetsToString($theSubnet);
+            $Nets = self::parseArrayToString($theSubnet);
          }
       }
       if ($Nets == "") {
@@ -474,10 +474,10 @@ static function showPercentItem($value,$linkto = "") {
 
       
    
-   static function showItem($value, $linkto="",$id="",$type="",$checkbox=false,$check="") {
+   static function showItem($value, $linkto="",$id="",$type="",$checkbox=false,$check="",$iterator=0) {
       $out = "<td class='tab_bg_2 rowHover'>";
        if ($checkbox){
-       $out .= "<td><input type='checkbox' name='macToImport[" . $value . "]' " .
+       $out .= "<td><input type='checkbox' name='macToImport[$iterator][" . $value . "]' " .
                      ($check == "all" ? "checked" : "") . "></td>";
       
        $out .= "</td>\n";
@@ -548,13 +548,14 @@ static function showPercentItem($value,$linkto = "") {
               GROUP BY `netmap`.`mac`
               ORDER BY `netmap`.`ip`";
       } else {
+         $macAdresses=self::parseArrayToString($knownMacAdresses);
          $query = "SELECT `network_devices`.`ID`,`network_devices`.`TYPE`,`network_devices`.`DESCRIPTION`,`network_devices`.`USER`,`netmap`.`IP`,`netmap`.`MAC`,`netmap`.`MASK`,`netmap`.`NETID`,`netmap`.`NAME`,`netmap`.`DATE`
               FROM `network_devices`
               LEFT JOIN `netmap` 
               ON `network_devices`.`MACADDR`=`netmap`.`MAC` 
               WHERE `netmap`.`NETID`='$ipAdress'
-              AND `network_devices`.`MACADDR` NOT IN('". implode(',', $knownMacAdresses) . "')
-              GROUP BY `network_devices`.`MACADDr`
+              AND ".($macAdresses != ''? "`network_devices`.`MACADDR` NOT IN($macAdresses)" : " 1=1" ).
+              " GROUP BY `network_devices`.`MACADDR`
               ORDER BY `network_devices`.`TYPE` asc";
       }
       $result   = $DBOCS->query($query);
@@ -756,43 +757,53 @@ static function showPercentItem($value,$linkto = "") {
    
    
    static function processIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id) {
+      global $DB;
       $ocsClient          = new PluginOcsinventoryngOcsServer();
       $ocsClient->checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $mac=$ipDiscoveryObject["macAdress"];
-      //Check it machine is already present AND was imported by OCS AND still present in GLPI
-      $query  = "SELECT `glpi_plugin_ocsinventoryng_ipdiscoverlinks`.`id`, `glpi_plugin_ocsinventoryng_ipdiscoverlinks`.`macaddress`,
-                FROM `glpi_plugin_ocsinventoryng_ipdiscoverlinks`
-                WHERE `glpi_plugin_ocsinventoryng_ipdiscoverlinks`.`macaddress`
-                LIKE `'$mac'`
-                AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
-      $DBOCS              = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
-      $result= $DBOCS->query($query);
-      var_dump($result,$query);
-      die("hello kids");
-      if ($DBOCS->numrows($result)) {
+      $query  = "SELECT `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`.`macaddress`
+                FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
+                WHERE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`.`macaddress`
+                LIKE '$mac'";
+      var_dump($ipDiscoveryObject);
+      $result= $DB->query($query);
+      if ($DB->numrows($result)) {
          $datas = $DB->fetch_array($result);
-         //return self::updateIpDiscover($datas["id"], $plugin_ocsinventoryng_ocsservers_id, 1, 0);
+         return self::updateIpDiscover();
       }
-      //return self::importIpDiscover($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock, $defaultentity, $defaultlocation);
+      return self::importIpDiscover();
+      
+   }
+   
+   static function importIpDiscover(){
+      
+   }
+   
+   
+   static function updateIpDiscover(){
       
    }
    
 
-   static function getIpDiscoverobject($macAdresses, $entities=array(), $itemsTypes, $itemsNames=""){
-      //$ocsClient          = new PluginOcsinventoryngOcsServer();
-      //$DBOCS              = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
-      $objectToImport=array();
-      $macs=array();
-      foreach ($macAdresses as $mac => $on){
-      $macs[]=$mac;   
+   static function getIpDiscoverobject($macAdresses, $entities = array(), $itemsTypes, $itemsNames = "") {
+      $objectToImport = array();
+      if (!empty($entities)) {
+         foreach ($macAdresses as $key => $val) {
+            foreach ($val as $mac => $on) {
+               $objectToImport[] = array("macAdress" => $mac[$key], "entity" => $entities[$key], "itemType" => $itemsTypes[$key], "itemName" => $itemsNames[$key]);
+            }
+         }
+      } else {
+         foreach ($macAdresses as $key => $val) {
+            foreach ($val as $mac => $on) {
+               $objectToImport[] = array("macAdress" => $mac[$key], "entity" => 0, "itemType" => $itemsTypes[$key], "itemName" => $itemsNames[$key]);
+            }
+         }
       }
-      for($i=0; $i < sizeof($macs); $i++){
-         $objectToImport[]=array("macAdress"=>$macs[$i],"entity"=>$entities[$i],"itemType"=>$itemsTypes[$i],"itemName"=>$itemsNames[$i]);
-      }
+
       return $objectToImport;
    }
-   
-   
+
    static function showHardware($hardware, $lim,$start=0, $ipAdress,$status) {
       global $CFG_GLPI;
       $output_type   = Search::HTML_OUTPUT; //0
@@ -881,7 +892,7 @@ static function showPercentItem($value,$linkto = "") {
                }
                echo "<td>"; Dropdown::showFromArray("itemstypes[$i]", $itemstypes); echo "</td>";
                //echo "<td>"; Dropdown::showItemTypes("itemstypes[$i]", self::$hardwareItemTypes); echo "</td>";
-               echo self::showItem($hardware[$i]["ip"],"","","",true,"");
+               echo self::showItem($hardware[$i]["ip"],"","","",true,"",$i);
             }
             echo "</table></div>\n";
             echo "<div class='center'>\n<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\"></div>";
@@ -934,7 +945,7 @@ static function showPercentItem($value,$linkto = "") {
                echo "<td>"; Dropdown::showFromArray("itemstypes[$i]", $itemstypes); echo "</td>";
                //echo "<td>"; Dropdown::showItemTypes("itemstypes[$i]", self::$hardwareItemTypes); echo "</td>";
                echo "<td><input type=\"text\" name='itemsname[" . $i . "]' value=\"\"></td>";
-               echo self::showItem($hardware[$i]["MAC"],"","","",true,"");
+               echo self::showItem($hardware[$i]["MAC"],"","","",true,"",$i);
             }
             echo "</table></div>\n";
             echo "<div class='center'>\n<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\"></div>";
