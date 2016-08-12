@@ -6697,13 +6697,13 @@ JAVASCRIPT;
                      if (self::addToOcsArray($id, array_flip($fields), "computer_update")) {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                      } else {
-                        $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
                      }
                   } else {
                      if (self::addToOcsArray($id, array($_POST['field']), "computer_update")) {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                      } else {
-                        $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
                      }
                   }
                }
@@ -6721,13 +6721,13 @@ JAVASCRIPT;
                      if (self::replaceOcsArray($id, array(), "computer_update")) {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                      } else {
-                        $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
                      }
                   } else {
                      if (self::deleteInOcsArray($id, $_POST['field'], "computer_update", true)) {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                      } else {
-                        $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
                      }
                   }
                }
