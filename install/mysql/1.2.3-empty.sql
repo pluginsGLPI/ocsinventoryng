@@ -94,6 +94,8 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `deleted_behavior` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '1',
   `import_vms` tinyint(1) NOT NULL DEFAULT '0',
   `import_general_uuid` tinyint(1) NOT NULL DEFAULT '0',
+  `import_device_controller` tinyint(1) NOT NULL DEFAULT '0',
+  `import_device_slot` tinyint(1) NOT NULL DEFAULT '0',
   `ocs_version` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `conn_type` tinyint(1) NOT NULL DEFAULT '0',
   `use_cleancron` tinyint(1) NOT NULL DEFAULT '0',
