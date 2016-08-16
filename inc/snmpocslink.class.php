@@ -214,7 +214,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
    * @return nothing
    **/
    static function showSimpleForItem(CommonDBTM $item) {
-      global $DB, $CFG_GLPI;
+      /*global $DB, $CFG_GLPI;
 
       $target = Toolbox::getItemTypeFormURL(__CLASS__);
 
@@ -280,7 +280,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                }
             }
          }
-      }
+      }*/
    }
    
    // SNMP PART HERE
@@ -713,6 +713,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       $id_item = 0;
 
       if ($action == "add") {
+         
          $id_item = $snmpDevice->add($input, array('unicity_error_message' => false));
       } else {
          $input["id"] = $ID;

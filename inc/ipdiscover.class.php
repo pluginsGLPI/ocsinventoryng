@@ -338,7 +338,7 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
       return array("All Subnets" => $subnets, "Known Subnets" => $known, "Unknown Subnets" => $unknown, "knownIP" => $knownIP, "unknownIP" => $unknownIP);
    }
 
-   public static function showSubnets($plugin_ocsinventoryng_ocsservers_id, $subnets, $option = "") {
+   public static function showSubnets($plugin_ocsinventoryng_ocsservers_id, $subnets, $knownMacAdresses, $option = "") {
       //this query displays all the elements on the the networks we found :
       $subnetsDetails = array();
       $knownNets      = "";
@@ -363,12 +363,12 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
                           FROM `subnet`
                           WHERE `ID` LIKE '$option'";
             $result         = $DBOCS->query($getKnownSubnet);
-            
-            $i=0;
+
+            $i      = 0;
             while ($subNet = $DBOCS->fetch_assoc($result)) {
-            $subnet[] = $subNet;
-            $theSubnet[$i]=$subnet[$i]["NETID"];
-            $i++;
+               $subnet[]      = $subNet;
+               $theSubnet[$i] = $subnet[$i]["NETID"];
+               $i++;
             }
             $Nets = self::parseArrayToString($theSubnet);
          }
@@ -376,26 +376,39 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
       if ($Nets == "") {
          return array();
       } else {
-         $query = " SELECT * from (select inv.RSX as IP, inv.c as 'INVENTORIED', non_ident.c as 'NON_INVENTORIED', ipdiscover.c as 'IPDISCOVER', ident.c as 'IDENTIFIED', inv.name as 'NAME', CASE WHEN ident.c IS NULL and ipdiscover.c IS NULL THEN 100 WHEN ident.c IS NULL THEN 0 ELSE round(100-(non_ident.c*100/(ident.c+non_ident.c)), 1) END as 'PERCENT' 
+         $macAdresses = self::parseArrayToString($knownMacAdresses);
+
+         $percentQuery = " SELECT * from (select inv.RSX as IP, inv.c as 'INVENTORIED', non_ident.c as 'NON_INVENTORIED', ipdiscover.c as 'IPDISCOVER', ident.c as 'IDENTIFIED', inv.name as 'NAME', CASE WHEN ident.c IS NULL and ipdiscover.c IS NULL THEN 100 WHEN ident.c IS NULL THEN 0 ELSE round(100-(non_ident.c*100/(ident.c+non_ident.c)), 1) END as 'PERCENT' 
 from (SELECT COUNT(DISTINCT hardware_id) as c, 'IPDISCOVER' as TYPE, tvalue as RSX FROM devices WHERE name = 'IPDISCOVER' and tvalue in (" . $Nets . ")
 GROUP BY tvalue) ipdiscover 
 right join 
 (SELECT count(distinct(hardware_id)) as c, 'INVENTORIED' as TYPE, ipsubnet as RSX, subnet.name as name FROM networks left join subnet on networks.ipsubnet = subnet.netid WHERE ipsubnet in (" . $Nets . ")
-and status = 'Up' GROUP BY ipsubnet) inv on ipdiscover.RSX = inv.RSX left join (SELECT COUNT(DISTINCT mac) as c, 'IDENTIFIED' as TYPE, netid as RSX FROM netmap WHERE mac IN (SELECT DISTINCT(macaddr) FROM network_devices) and netid in (" . $Nets . ")
+and status = 'Up' GROUP BY ipsubnet) inv on ipdiscover.RSX = inv.RSX left join (SELECT COUNT(DISTINCT mac) as c, 'IDENTIFIED' as TYPE, netid as RSX FROM netmap WHERE mac IN (SELECT DISTINCT(macaddr) FROM network_devices ) and netid in (" . $Nets . ")
 GROUP BY netid) ident on ipdiscover.RSX = ident.RSX left join (SELECT COUNT(DISTINCT mac) as c, 'NON IDENTIFIED' as TYPE, netid as RSX FROM netmap n LEFT JOIN networks ns ON ns.macaddr = n.mac WHERE n.mac NOT IN (SELECT DISTINCT(macaddr) FROM network_devices) and (ns.macaddr IS NULL OR ns.IPSUBNET <> n.netid) and n.netid in (" . $Nets . ")
 GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP asc";
-         
-         $result = $DBOCS->query($query);
+         //this is for the right percentage
+         $percent = $DBOCS->query($percentQuery);
+
+         $query = " SELECT * from (select inv.RSX as IP, inv.c as 'INVENTORIED', non_ident.c as 'NON_INVENTORIED', ipdiscover.c as 'IPDISCOVER', ident.c as 'IDENTIFIED', inv.name as 'NAME'
+from (SELECT COUNT(DISTINCT hardware_id) as c, 'IPDISCOVER' as TYPE, tvalue as RSX FROM devices WHERE name = 'IPDISCOVER' and tvalue in (" . $Nets . ")
+GROUP BY tvalue) ipdiscover 
+right join 
+(SELECT count(distinct(hardware_id)) as c, 'INVENTORIED' as TYPE, ipsubnet as RSX, subnet.name as name FROM networks left join subnet on networks.ipsubnet = subnet.netid WHERE ipsubnet in (" . $Nets . ")
+and status = 'Up' GROUP BY ipsubnet) inv on ipdiscover.RSX = inv.RSX left join (SELECT COUNT(DISTINCT mac) as c, 'IDENTIFIED' as TYPE, netid as RSX FROM netmap WHERE mac IN (SELECT DISTINCT(macaddr) FROM network_devices WHERE " . ($macAdresses != '' ? "`network_devices`.`MACADDR` NOT IN($macAdresses)" : " 1=1" ) . " ) and netid in (" . $Nets . ")
+GROUP BY netid) ident on ipdiscover.RSX = ident.RSX left join (SELECT COUNT(DISTINCT mac) as c, 'NON IDENTIFIED' as TYPE, netid as RSX FROM netmap n LEFT JOIN networks ns ON ns.macaddr = n.mac WHERE n.mac NOT IN (SELECT DISTINCT(macaddr) FROM network_devices) and (ns.macaddr IS NULL OR ns.IPSUBNET <> n.netid) and n.netid in (" . $Nets . ")
+GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP asc";
+
+         $result  = $DBOCS->query($query);
          while ($details = $DBOCS->fetch_assoc($result)) {
-            $subnetsDetails[] = $details;
+             $per= $DBOCS->fetch_assoc($percent);
+            $details['PERCENT'] = $per['PERCENT'];
+            $subnetsDetails[]   = $details;
          }
          return $subnetsDetails;
       }
    }
-   
-   
-   
-    static function ipDiscoverMenu($plugin_ocsinventoryng_ocsservers_id) {
+
+   static function ipDiscoverMenu($plugin_ocsinventoryng_ocsservers_id) {
       global $CFG_GLPI, $DB;
       $ocsservers          = array();
       echo "<div class='center'>";
@@ -512,17 +525,17 @@ static function showPercentItem($value,$linkto = "") {
    static function getKnownMacAdresseFromGlpi(){
       global $DB;
       $macAdresses=array();
-      $query = "SELECT `glpi_plugin_ocsinventoryng_ipdiscoverlinks`.`MACADDRESS`
-                FROM `glpi_plugin_ocsinventoryng_ipdiscoverlinks`";
+      $query = "SELECT `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`.`macaddress`
+                FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`";
       $result = $DB->query($query);
       while ($res      = $DB->fetch_assoc($result)) {
-         $macAdresses[] = $res;
+         $macAdresses[] = $res["macaddress"];
       }
       return $macAdresses;
    }
    
-   
- //TODO compress the code : static function getHardware($ipAdress,$plugin_ocsinventoryng_ocsservers_id) for all the hardware
+
+   //TODO compress the code : static function getHardware($ipAdress,$plugin_ocsinventoryng_ocsservers_id) for all the hardware
    
  static function getHardware($ipAdress, $plugin_ocsinventoryng_ocsservers_id, $status,$knownMacAdresses=array()) {
       $ocsClient = new PluginOcsinventoryngOcsServer();
@@ -557,6 +570,7 @@ static function showPercentItem($value,$linkto = "") {
               AND ".($macAdresses != ''? "`network_devices`.`MACADDR` NOT IN($macAdresses)" : " 1=1" ).
               " GROUP BY `network_devices`.`MACADDR`
               ORDER BY `network_devices`.`TYPE` asc";
+     
       }
       $result   = $DBOCS->query($query);
       $hardware = array();
@@ -765,42 +779,96 @@ static function showPercentItem($value,$linkto = "") {
                 FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
                 WHERE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`.`macaddress`
                 LIKE '$mac'";
-      var_dump($ipDiscoveryObject);
+
       $result= $DB->query($query);
       if ($DB->numrows($result)) {
          $datas = $DB->fetch_array($result);
-         return self::updateIpDiscover();
+       
       }
-      return self::importIpDiscover();
+      return self::importIpDiscover($plugin_ocsinventoryng_ocsservers_id,$ipDiscoveryObject);
       
    }
    
-   static function importIpDiscover(){
+   static function importIpDiscover($plugin_ocsinventoryng_ocsservers_id, $ipDiscoveryObject) {
+      global $DB;
+      $id  = null;
+      $res = null;
+      $input   = array(
+                'is_dynamic'   => 1,
+                'locations_id' => 0,
+                'domains_id'   => 0,
+                'entities_id'  => $ipDiscoveryObject["entity"],
+                'name'         => $ipDiscoveryObject["itemName"],
+                'comment'      => $ipDiscoveryObject["itemDescription"]);
       
+      switch ($ipDiscoveryObject["itemType"]) {
+         case "Computer" :
+           $computer = new Computer();
+            $id      = $computer->add($input);
+            break;
+
+         case "NetworkEquipment" :
+            $netEquip = new NetworkEquipment();
+            $id      = $netEquip->add($input);
+            break;
+
+         case "Peripheral" :
+            $peripheral = new Peripheral();
+             $id      = $peripheral->add($input);
+            break;
+
+         case "Printer" :
+            $printer = new Printer();
+            $id      = $printer->add($input);
+
+            break;
+
+         case "Phone" :
+            $phone = new Phone();
+            $id      = $phone->add($input);
+            break;
+      }
+
+      if ($id) {
+         $date  = date("Y-m-d H:i:s");
+         //Add to ipdiscover link
+         $query = "INSERT INTO `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
+                       SET `items_id` = '" . $id . "',
+                            `itemtype` = '" . $ipDiscoveryObject["itemType"] . "',
+                               `macaddress` = '" . $ipDiscoveryObject["macAdress"] . "',
+                            `last_update` = '" . $date . "',
+                           `plugin_ocsinventoryng_ocsservers_id` = '" . $plugin_ocsinventoryng_ocsservers_id . "'";
+
+         $res = $DB->query($query);
+      }
+      if ($res) {
+         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_IMPORTED);
+      } else {
+         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
+      }
    }
-   
-   
+
    static function updateIpDiscover(){
       
    }
    
 
-   static function getIpDiscoverobject($macAdresses, $entities = array(), $itemsTypes, $itemsNames = "") {
+   static function getIpDiscoverobject($macAdresses, $entities = array(), $itemsTypes, $itemsNames = "",$itemsDescription) {
       $objectToImport = array();
       if (!empty($entities)) {
          foreach ($macAdresses as $key => $val) {
             foreach ($val as $mac => $on) {
-               $objectToImport[] = array("macAdress" => $mac[$key], "entity" => $entities[$key], "itemType" => $itemsTypes[$key], "itemName" => $itemsNames[$key]);
+               $objectToImport[] = array("macAdress" => $mac, "entity" => intval($entities[$key])-1, "itemType" => $itemsTypes[$key], "itemName" => $itemsNames[$key],"itemDescription" => $itemsDescription[$key]);
             }
          }
       } else {
          foreach ($macAdresses as $key => $val) {
             foreach ($val as $mac => $on) {
-               $objectToImport[] = array("macAdress" => $mac[$key], "entity" => 0, "itemType" => $itemsTypes[$key], "itemName" => $itemsNames[$key]);
+               $objectToImport[] = array("macAdress" => $mac, "entity" => 0, "itemType" => $itemsTypes[$key], "itemName" => $itemsNames[$key],"itemDescription" => $itemsDescription[$key]);
             }
          }
       }
-
+      
       return $objectToImport;
    }
 
@@ -880,8 +948,9 @@ static function showPercentItem($value,$linkto = "") {
                echo self::showItem($hardware[$i]["mask"]);
                echo self::showItem($hardware[$i]["date"]);
                echo self::showItem($hardware[$i]["DNS"]);
+               $description=$hardware[$i]["DESCRIPTION"];
                echo "<td>"; Dropdown::showFromArray("ocstype[$i]", $ocsTypes["name"]) ; echo "</td>";
-               echo "<td><input type=\"text\" name='itemsdescription[" . $i . "]' value=\"\"></td>";
+               echo "<td><input type=\"hidden\" name='itemsdescription[" . $i . "]' value=\"$description\" ></td>";
                echo "<td><input type=\"text\" name='itemsname[" . $i . "]' value=\"\"></td>";
                if(Session::isMultiEntitiesMode()){
                echo "<td>"; Dropdown::showFromArray("entities[$i]", $entities["name"]) ; echo "</td>";
@@ -935,6 +1004,7 @@ static function showPercentItem($value,$linkto = "") {
                echo self::showItem($hardware[$i]["IP"]);
                echo self::showItem($hardware[$i]["MAC"]);
                echo self::showItem($hardware[$i]["DATE"]);
+               $description=$hardware[$i]["DESCRIPTION"];
                if(Session::isMultiEntitiesMode()){
                echo "<td>"; Dropdown::showFromArray("entities[$i]", $entities["name"]) ; echo "</td>";
                }
@@ -942,8 +1012,10 @@ static function showPercentItem($value,$linkto = "") {
                foreach (self::$hardwareItemTypes as $items){
                   $itemstypes[$items]=__($items);
                }
+                
                echo "<td>"; Dropdown::showFromArray("itemstypes[$i]", $itemstypes); echo "</td>";
                //echo "<td>"; Dropdown::showItemTypes("itemstypes[$i]", self::$hardwareItemTypes); echo "</td>";
+               echo "<td><input type=\"hidden\" name='itemsdescription[" . $i . "]' value=\"$description\" ></td>";
                echo "<td><input type=\"text\" name='itemsname[" . $i . "]' value=\"\"></td>";
                echo self::showItem($hardware[$i]["MAC"],"","","",true,"",$i);
             }

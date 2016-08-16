@@ -90,6 +90,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    const SNMP_LINKED        = 12; //SNMP is linked to another object already in GLPI
    const SNMP_FAILED_IMPORT = 13; //SNMP cannot be imported - no itemtype
    const SNMP_NOTUPDATED    = 14; //SNMP should not be updated, nothing to do
+   const IPDISCOVER_IMPORTED = 15; //IPDISCOVER Object is imported in GLPI
+   const IPDISCOVER_FAILED_IMPORT = 16; //IPDISCOVER failed to imported 
 
    static function getTypeName($nb = 0) {
       return _n('OCSNG server', 'OCSNG servers', $nb, 'ocsinventoryng');
@@ -1668,8 +1670,6 @@ JAVASCRIPT;
                       AND `ocsid` = '$ocsid'
                       AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
       $result_glpi_plugin_ocsinventoryng_ocslinks = $DB->query($query);
-      var_dump($query,$result_glpi_plugin_ocsinventoryng_ocslinks);
-      die("heyHo");
       if ($DB->numrows($result_glpi_plugin_ocsinventoryng_ocslinks)) {
          $datas = $DB->fetch_array($result_glpi_plugin_ocsinventoryng_ocslinks);
          //Return code to indicates that the machine was synchronized
@@ -5355,7 +5355,7 @@ JAVASCRIPT;
       }
    }
 
-   static function getAvailableStatistics($snmp = false) {
+   static function getAvailableStatistics($snmp = false,$ipdisc=false) {
 
       $stats = array('imported_machines_number'     => __('Computers imported', 'ocsinventoryng'),
          'synchronized_machines_number' => __('Computers synchronized', 'ocsinventoryng'),
@@ -5371,13 +5371,18 @@ JAVASCRIPT;
             'notupdated_snmp_number'      => __('SNMP objects not updated', 'ocsinventoryng'),
             'failed_imported_snmp_number' => __("SNMP objects not imported", 'ocsinventoryng'));
       }
+      if ($ipdisc) {
+         $stats = array('imported_ipdiscover_number'        => __('IPDISCOVER objects imported', 'ocsinventoryng'),
+            'failed_imported_ipdiscover_number'    => __('IPDISCOVER objects not imported', 'ocsinventoryng'),
+            );
+      }
       return $stats;
    }
 
-   static function manageImportStatistics(&$statistics = array(), $action = false, $snmp = false) {
+   static function manageImportStatistics(&$statistics = array(), $action = false, $snmp = false,$ipdisc=false) {
 
       if (empty($statistics)) {
-         foreach (self::getAvailableStatistics($snmp) as $field => $label) {
+         foreach (self::getAvailableStatistics($snmp,$ipdisc) as $field => $label) {
             $statistics[$field] = 0;
          }
       }
@@ -5430,10 +5435,18 @@ JAVASCRIPT;
          case self::SNMP_NOTUPDATED:
             $statistics["notupdated_snmp_number"] ++;
             break;
+         
+         case self::IPDISCOVER_IMPORTED:
+            $statistics["imported_ipdiscover_number"] ++;
+            break;
+         
+         case self::IPDISCOVER_FAILED_IMPORT:
+            $statistics["failed_imported_ipdiscover_number"] ++;
+            break;
       }
    }
 
-   static function showStatistics($statistics = array(), $finished = false, $snmp = false) {
+   static function showStatistics($statistics = array(), $finished = false, $snmp = false,$ipdisc=false) {
 
       echo "<div class='center b'>";
       echo "<table class='tab_cadre_fixe'>";
@@ -5442,13 +5455,19 @@ JAVASCRIPT;
       } else {
          echo "<th colspan='2'>" . __('Statistics of the OCSNG link', 'ocsinventoryng');
       }
+      if ($ipdisc) {
+         echo "<th colspan='2'>" . __('Statistics of the OCSNG IPDISCOVER import', 'ocsinventoryng');
+      } else {
+         echo "<th colspan='2'>" . __('Statistics of the IPDISCOVER link', 'ocsinventoryng');
+      }
+      
       if ($finished) {
          echo "&nbsp;-&nbsp;";
          _e('Task completed.');
       }
       echo "</th>";
 
-      foreach (self::getAvailableStatistics($snmp) as $field => $label) {
+      foreach (self::getAvailableStatistics($snmp,$ipdisc) as $field => $label) {
          echo "<tr class='tab_bg_1'><td>" . $label . "</td><td>" . $statistics[$field] . "</td></tr>";
       }
       echo "</table></div>";

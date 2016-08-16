@@ -27,11 +27,12 @@ if (isset($_POST["subnetsChoise"]) && isset($_SESSION["subnets"])||isset($_SESSI
    $subnets        = $ip->getSubnets($ocsServerId);
 if (isset($_POST["subnetsChoise"])){
    $sN                              = $tab[$_POST["subnetsChoise"]];
-   $networksDetail["subnets"]       = $ip->showSubnets($ocsServerId, $subnets, $sN);
+   $knownMacAdresses=$ip->getKnownMacAdresseFromGlpi();
+   $networksDetail["subnets"]       = $ip->showSubnets($ocsServerId, $subnets,$knownMacAdresses, $sN);
    $networksDetail["subnetsChoise"] = $_POST["subnetsChoise"];
 }else{
    $sN                              = $tab[1];
-   $networksDetail["subnets"]       = $ip->showSubnets($ocsServerId, $subnets, $sN);
+   $networksDetail["subnets"]       = $ip->showSubnets($ocsServerId, $subnets,$knownMacAdresses, $sN);
    $networksDetail["subnetsChoise"] = 1;
 }
    $lim = count($networksDetail["subnets"]);
