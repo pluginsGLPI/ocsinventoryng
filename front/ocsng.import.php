@@ -67,6 +67,8 @@ if (isset($_SESSION["ocs_import"]["id"])) {
       }
 
       $conf   = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+      var_dump($conf,$_SESSION);
+      die("lets see the config");
       $action = PluginOcsinventoryngOcsServer::processComputer($key,
                                                                $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                                0, $entity, $location);

@@ -3208,6 +3208,7 @@ JAVASCRIPT;
       return false;
    }
 
+   
    static function addToOcsArray($computers_id, $toadd, $field) {
       global $DB;
 
