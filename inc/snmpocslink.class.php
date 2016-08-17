@@ -1093,7 +1093,6 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                foreach ($hardware as $ID => $tab) {
                   $row_num++;
                   $item_num   = 1;
-                  
                   if ($tab["type"] == "Network") {
                      $tab["type"] = "NetworkEquipment";
                   }
