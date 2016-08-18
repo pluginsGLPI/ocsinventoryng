@@ -40,6 +40,13 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
 
    //public $taborientation          = 'vertical';
    //var $fields                              = array();//need it for Search::show('PluginOcsinventoryngIpDiscover');
+   
+   /*const IPDISCOVER_SYNCHRONIZED =15;
+   const IPDISCOVER_IMPORTED =16;
+   const IPDISCOVER_FAILED_IMPORT =17;
+   const IPDISCOVER_LINKED =18;
+   const IPDISCOVER_NOTUPDATED =19;*/
+            
 
    static function getTypeName($nb = 0) {
       return _n('OCS Inventory NG ', 'OCS Inventorys NG', $nb, 'ocsinventoryng');
@@ -265,7 +272,7 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
          return array();
       } else {
          $macAdresses  = self::parseArrayToString($knownMacAdresses);
-         $percentQuery = " SELECT * from (select inv.RSX as IP, inv.c as 'INVENTORIED', non_ident.c as 'NON_INVENTORIED', ipdiscover.c as 'IPDISCOVER', ident.c as 'IDENTIFIED', inv.name as 'NAME', CASE WHEN ident.c IS NULL and ipdiscover.c IS NULL THEN 100 WHEN ident.c IS NULL THEN 0 ELSE round(100-(non_ident.c*100/(ident.c+non_ident.c)), 1) END as 'PERCENT' 
+         $percentQuery = " SELECT * from (select inv.RSX as IP, inv.c as 'INVENTORIED', non_ident.c as 'NON_INVENTORIED', ipdiscover.c as 'IPDISCOVER', ident.c as 'IDENTIFIED', inv.name as 'NAME', CASE WHEN ident.c IS NULL and ipdiscover.c IS NULL THEN 100 WHEN ident.c IS NULL THEN 0 WHEN non_ident.c IS NULL THEN 0 ELSE round(100-(non_ident.c*100/(ident.c+non_ident.c)), 1) END as 'PERCENT' 
 from (SELECT COUNT(DISTINCT hardware_id) as c, 'IPDISCOVER' as TYPE, tvalue as RSX FROM devices WHERE name = 'IPDISCOVER' and tvalue in (" . $Nets . ")
 GROUP BY tvalue) ipdiscover 
 right join 
@@ -542,13 +549,15 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          if ($subnets[$i]["NAME"] != "") {
             $name = $subnets[$i]["NAME"];
          }
+         
          echo self::showItem($name, $modNetwork, $subnets[$i]["IP"]);
          echo self::showItem($subnets[$i]["IP"]);
          echo self::showItem($subnets[$i]["NON_INVENTORIED"], $hardwareNetwork, $subnets[$i]["IP"], "noninventoried");
          echo self::showItem($subnets[$i]["INVENTORIED"], $hardwareNetwork, $subnets[$i]["IP"], "inventoried");
          echo self::showItem($subnets[$i]["IDENTIFIED"], $hardwareNetwork, $subnets[$i]["IP"], "identified");
          echo "<td>";
-         echo Html::displayProgressBar(10, $subnets[$i]["PERCENT"], array("simple" => true, "forcepadding" => false));
+         //echo Html::displayProgressBar(10, $subnets[$i]["PERCENT"], array("simple" => true, "forcepadding" => false));
+         echo self::showPercentBar($subnets[$i]["PERCENT"]);
          echo "</td>";
       }
       echo "</table></div>\n";
@@ -651,10 +660,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       if ($DB->numrows($result)) {
          $datas = $DB->fetch_array($result);
       }
-      return self::importIpDiscover($plugin_ocsinventoryng_ocsservers_id, $ipDiscoveryObject);
+      return self::importIpDiscover($ipDiscoveryObject,$plugin_ocsinventoryng_ocsservers_id);
    }
 
-   static function importIpDiscover($plugin_ocsinventoryng_ocsservers_id, $ipDiscoveryObject) {
+   static function importIpDiscover($ipDiscoveryObject,$plugin_ocsinventoryng_ocsservers_id) {
       global $DB;
       $id  = null;
       $res = null;
@@ -695,11 +704,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          $res = $DB->query($query);
       }
       if ($res) {
-         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_IMPORTED);
-         return "Imported";
+          return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_IMPORTED);
+         
       } else {
          return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
-         return "Not Imported";
       }
    }
 
@@ -718,12 +726,30 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       } else {
          foreach ($macAdresses as $key => $val) {
             foreach ($val as $mac => $on) {
-               $objectToImport[] = array("macAdress" => $mac, "entity" => $_SESSION["glpiactiveentities"], "itemType" => $itemsTypes[$key], "itemName" => $itemsNames[$key], "itemDescription" => $itemsDescription[$key]);
+               $ent=null;
+               foreach ($_SESSION["glpiactiveentities"] as $ent => $entval) {
+                  $ent=$entval;
+               }
+               toolbox::logDebug($ent);
+               $objectToImport[] = array("macAdress" => $mac, "entity" => $ent, "itemType" => $itemsTypes[$key], "itemName" => $itemsNames[$key], "itemDescription" => $itemsDescription[$key]);
             }
          }
       }
 
       return $objectToImport;
+   }
+   
+   static function showPercentBar($status) {
+      if (!is_numeric($status)) {
+         return $status;
+      }
+      if (($status < 0) or ( $status > 100)) {
+         return $status;
+      }
+      return "<div class='percent_bar'><!--" . str_pad($status, 3, "0", STR_PAD_LEFT) . "-->
+             <div class='percent_status' style='width:" . $status . "px;'>&nbsp;</div>
+             <div class='percent_text'>" . $status . "%</div>
+             </div>";
    }
 
    static function showHardware($hardware, $lim, $start = 0, $ipAdress, $status) {
@@ -732,7 +758,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $link        = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscoverinventoriedcomputers.form.php";
       $return      = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
       $reload      = "ip=$ipAdress&status=$status";
-      $test        = "?b[]=$ipAdress&b[]=$status";
+      $backValues        = "?b[]=$ipAdress&b[]=$status";
       echo html::printPager($start, count($hardware), $link, $reload);
       echo Search::showNewLine($output_type, true);
       if (empty($hardware)) {
@@ -774,8 +800,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                $target   = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscoverinventoriedcomputers.form.php";
 
                echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
+               echo "<div class='center' style=\"width=95%\">";
                self::checkBox($target);
-               echo "<div class='center' >";
                echo "<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\"></div>";
                echo "<table width='95%' class='tab_cadre_fixe'>";
                echo "</tr></div>\n";
@@ -834,7 +860,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
 
                $entities = array("id" => array(Dropdown::EMPTY_VALUE), "name" => array(Dropdown::EMPTY_VALUE), "entities_id" => array(Dropdown::EMPTY_VALUE));
                $link     = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
-               $target   = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscoverinventoriedcomputers.form.php" . $test;
+               $target   = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscoverinventoriedcomputers.form.php" . $backValues;
 
                echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
                self::checkBox($target);
@@ -890,6 +916,66 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          }
       }
    }
+   
+   
+   /*static function getAvailableStatistics() {
+
+      
+         $stats = array('imported_ipdiscover_number'        => __('IPDISCOVER objects imported', 'ocsinventoryng'),
+            'synchronized_ipdiscover_number'    => __('IPDISCOVER objects synchronized', 'ocsinventoryng'),
+            'linked_ipdiscover_number'          => __('IPDISCOVER objects linked', 'ocsinventoryng'),
+            'notupdated_ipdiscover_number'      => __('IPDISCOVER objects not updated', 'ocsinventoryng'),
+            'failed_imported_ipdiscover_number' => __("IPDISCOVER objects not imported", 'ocsinventoryng'));
+     
+      return $stats;
+   }
+
+   static function manageImportStatistics(&$statistics = array(), $action = false, $snmp = false) {
+
+      if (empty($statistics)) {
+         foreach (self::getAvailableStatistics() as $field => $label) {
+            $statistics[$field] = 0;
+         }
+      }
+
+      switch ($action) {
+         case self::IPDISCOVER_SYNCHRONIZED:
+            $statistics["synchronized_ipdiscover_number"] ++;
+            break;
+
+         case self::IPDISCOVER_IMPORTED:
+            $statistics["imported_ipdiscover_number"] ++;
+            break;
+
+         case self::IPDISCOVER_FAILED_IMPORT:
+            $statistics["failed_imported_ipdiscover_number"] ++;
+            break;
+
+         case self::IPDISCOVER_LINKED:
+            $statistics["linked_ipdiscover_number"] ++;
+            break;
+
+         case self::IPDISCOVER_NOTUPDATED:
+            $statistics["notupdated_snmp_number"] ++;
+            break;
+      }
+   }
+
+   static function showStatistics($statistics = array(), $finished = false) {
+
+      echo "<div class='center b'>";
+      echo "<table class='tab_cadre_fixe'>";
+      if ($finished) {
+         echo "&nbsp;-&nbsp;";
+         _e('Task completed.');
+      }
+      echo "</th>";
+
+      foreach (self::getAvailableStatistics() as $field => $label) {
+         echo "<tr class='tab_bg_1'><td>" . $label . "</td><td>" . $statistics[$field] . "</td></tr>";
+      }
+      echo "</table></div>";
+   }*/
 
 }
 

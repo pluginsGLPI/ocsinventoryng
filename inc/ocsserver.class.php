@@ -91,7 +91,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    const SNMP_FAILED_IMPORT = 13; //SNMP cannot be imported - no itemtype
    const SNMP_NOTUPDATED    = 14; //SNMP should not be updated, nothing to do
    const IPDISCOVER_IMPORTED=15;
-   const IPDISCOVER_FAILED_IMPORT=16;
+   const IPDISCOVER_NOTUPDATED=16;
+   const IPDISCOVER_FAILED_IMPORT=17;
 
    static function getTypeName($nb = 0) {
       return _n('OCSNG server', 'OCSNG servers', $nb, 'ocsinventoryng');
@@ -5356,7 +5357,7 @@ JAVASCRIPT;
       }
    }
 
-   static function getAvailableStatistics($snmp = false) {
+   static function getAvailableStatistics($snmp = false,$ipdiscover=false) {
 
       $stats = array('imported_machines_number'     => __('Computers imported', 'ocsinventoryng'),
          'synchronized_machines_number' => __('Computers synchronized', 'ocsinventoryng'),
@@ -5371,15 +5372,19 @@ JAVASCRIPT;
             'linked_snmp_number'          => __('SNMP objects linked', 'ocsinventoryng'),
             'notupdated_snmp_number'      => __('SNMP objects not updated', 'ocsinventoryng'),
             'failed_imported_snmp_number' => __("SNMP objects not imported", 'ocsinventoryng'));
+      } if ($ipdiscover) {
+        $stats = array('imported_ipdiscover_number'        => __('IPDISCOVER objects imported', 'ocsinventoryng'),
+            'notupdated_ipdiscover_number'      => __('IPDISCOVER objects not updated', 'ocsinventoryng'),
+            'failed_imported_ipdiscover_number' => __("IPDISCOVER objects not imported", 'ocsinventoryng')); 
       }
       
       return $stats;
    }
 
-   static function manageImportStatistics(&$statistics = array(), $action = false, $snmp = false) {
+   static function manageImportStatistics(&$statistics = array(), $action = false, $snmp = false,$ipdiscover=false) {
 
       if (empty($statistics)) {
-         foreach (self::getAvailableStatistics($snmp) as $field => $label) {
+         foreach (self::getAvailableStatistics($snmp,$ipdiscover) as $field => $label) {
             $statistics[$field] = 0;
          }
       }
@@ -5432,26 +5437,40 @@ JAVASCRIPT;
          case self::SNMP_NOTUPDATED:
             $statistics["notupdated_snmp_number"] ++;
             break;
+         
+         case self::IPDISCOVER_IMPORTED:
+            $statistics["imported_ipdiscover_number"] ++;
+            break;
+
+         case self::IPDISCOVER_FAILED_IMPORT:
+            $statistics["failed_imported_ipdiscover_number"] ++;
+            break;
+
+         case self::IPDISCOVER_NOTUPDATED:
+            $statistics["notupdated_ipdiscover_number"] ++;
+            break;
       }
    }
 
-   static function showStatistics($statistics = array(), $finished = false, $snmp = false,$ipdisc=false) {
+   static function showStatistics($statistics = array(), $finished = false, $snmp = false,$ipdiscover=false) {
 
       echo "<div class='center b'>";
       echo "<table class='tab_cadre_fixe'>";
       if ($snmp) {
          echo "<th colspan='2'>" . __('Statistics of the OCSNG SNMP import', 'ocsinventoryng');
+      } else if ($ipdiscover) {
+         echo "<th colspan='2'>" . __('Statistics of the OCSNG IPDISCOVER import', 'ocsinventoryng');
       } else {
          echo "<th colspan='2'>" . __('Statistics of the OCSNG link', 'ocsinventoryng');
       }
-      
+
       if ($finished) {
          echo "&nbsp;-&nbsp;";
          _e('Task completed.');
       }
       echo "</th>";
 
-      foreach (self::getAvailableStatistics($snmp) as $field => $label) {
+      foreach (self::getAvailableStatistics($snmp,$ipdiscover) as $field => $label) {
          echo "<tr class='tab_bg_1'><td>" . $label . "</td><td>" . $statistics[$field] . "</td></tr>";
       }
       echo "</table></div>";

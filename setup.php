@@ -97,7 +97,9 @@ function plugin_init_ocsinventoryng() {
    // transfer
    $PLUGIN_HOOKS['item_transfer']['ocsinventoryng']="plugin_ocsinventoryng_item_transfer";
 
-
+    // Css file
+    $PLUGIN_HOOKS['add_css']['ocsinventoryng'] = 'css/ocsinventoryng.css';
+    
    if (Session::getLoginUserID()) {
 
       // Display a menu entry ?
@@ -114,6 +116,7 @@ function plugin_init_ocsinventoryng() {
       }
       
       $PLUGIN_HOOKS['post_init']['ocsinventoryng']   = 'plugin_ocsinventoryng_postinit';
+      
    }
 
    $CFG_GLPI['ocsinventoryng_devices_index'] = array(1  => 'Item_DeviceMotherboard',
