@@ -730,7 +730,6 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                foreach ($_SESSION["glpiactiveentities"] as $ent => $entval) {
                   $ent=$entval;
                }
-               toolbox::logDebug($ent);
                $objectToImport[] = array("macAdress" => $mac, "entity" => $ent, "itemType" => $itemsTypes[$key], "itemName" => $itemsNames[$key], "itemDescription" => $itemsDescription[$key]);
             }
          }
