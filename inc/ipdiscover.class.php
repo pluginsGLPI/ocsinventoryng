@@ -377,7 +377,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
    static function showItem($value, $linkto = "", $id = "", $type = "", $checkbox = false, $check = "", $iterator = 0) {
       $out = "<td class='tab_bg_2 rowHover'>";
       if ($checkbox) {
-         $out .= "<td><input type='checkbox' name='macToImport[$iterator][" . $value . "]' " .
+         $out .= "<td><input type='checkbox' name='mactoimport[$iterator][" . $value . "]' " .
                  ($check == "all" ? "checked" : "") . "></td>\n";
 
          $out .= "</td>\n";
@@ -663,13 +663,32 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       return self::importIpDiscover($ipDiscoveryObject,$plugin_ocsinventoryng_ocsservers_id);
    }
 
-   static function importIpDiscover($ipDiscoveryObject,$plugin_ocsinventoryng_ocsservers_id) {
+   static function importIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id) {
       global $DB;
       $id  = null;
       $res = null;
+
+      if ($ipDiscoveryObject["ocsItemType"] == Dropdown::EMPTY_VALUE) {
+         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
+      }
+      if ($ipDiscoveryObject["itemDescription"] == '') {
+         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
+      }
+
       if ($ipDiscoveryObject["itemName"] == "") {
          $ipDiscoveryObject["itemName"] = $ipDiscoveryObject["itemDescription"];
       }
+
+      switch ($ipDiscoveryObject["glpiItemType"]) {
+         //empty dropdown value
+         case '0' :
+            return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
+         case "Device" : $ipDiscoveryObject["glpiItemType"] = "Peripheral";
+            break;
+         case "Network device": $ipDiscoveryObject["glpiItemType"] = "NetworkEquipment";
+            break;
+      }
+
       $input = array(
           'is_dynamic'   => 1,
           'locations_id' => 0,
@@ -678,16 +697,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
           'name'         => $ipDiscoveryObject["itemName"],
           'comment'      => $ipDiscoveryObject["itemDescription"]);
 
-      switch ($ipDiscoveryObject["itemType"]) {
-         //empty dropdown value
-         case '0' :
-            return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
-         case "Device" : $ipDiscoveryObject["itemType"] = "Peripheral";
-            break;
-         case "Network device": $ipDiscoveryObject["itemType"] = "NetworkEquipment";
-            break;
-      }
-      $device = new $ipDiscoveryObject["itemType"]();
+      $device = new $ipDiscoveryObject["glpiItemType"]();
 
       $id = $device->add($input);
 
@@ -704,8 +714,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          $res = $DB->query($query);
       }
       if ($res) {
-          return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_IMPORTED);
-         
+         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_IMPORTED);
       } else {
          return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
       }
@@ -715,29 +724,34 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       
    }
 
-   static function getIpDiscoverobject($macAdresses, $entities = array(), $itemsTypes, $itemsNames = "", $itemsDescription) {
+   static function getIpDiscoverobject($macAdresses, $entities = array(), $glpiItemsTypes, $itemsNames = "", $itemsDescription, $ocsItemsTypes = array()) {
       $objectToImport = array();
+      $macs           = self::getMacAdressKeyVal($macAdresses);
       if (!empty($entities)) {
-         foreach ($macAdresses as $key => $val) {
-            foreach ($val as $mac => $on) {
-               $objectToImport[] = array("macAdress" => $mac, "entity" => $entities[$key], "itemType" => $itemsTypes[$key], "itemName" => $itemsNames[$key], "itemDescription" => $itemsDescription[$key]);
+         foreach ($macs as $key => $mac) {
+            if (!empty($ocsItemsTypes)) {
+               $objectToImport[] = array("macAdress" => $mac, "entity" => $entities[$key], "glpiItemType" => $glpiItemsTypes[$key], "ocsItemType" => $ocsItemsTypes[$key], "itemName" => $itemsNames[$key], "itemDescription" => $itemsDescription[$key]);
+            } else {
+               $objectToImport[] = array("macAdress" => $mac, "entity" => $entities[$key], "glpiItemType" => $glpiItemsTypes[$key], "itemName" => $itemsNames[$key], "itemDescription" => $itemsDescription[$key]);
             }
          }
       } else {
-         foreach ($macAdresses as $key => $val) {
-            foreach ($val as $mac => $on) {
-               $ent=null;
-               foreach ($_SESSION["glpiactiveentities"] as $ent => $entval) {
-                  $ent=$entval;
-               }
-               $objectToImport[] = array("macAdress" => $mac, "entity" => $ent, "itemType" => $itemsTypes[$key], "itemName" => $itemsNames[$key], "itemDescription" => $itemsDescription[$key]);
+         foreach ($macs as $key => $mac) {
+            $ent = null;
+            foreach ($_SESSION["glpiactiveentities"] as $e => $eval) {
+               $ent = $eval;
+            }
+            if (!empty($ocsItemsTypes)) {
+               $objectToImport[] = array("macAdress" => $mac, "entity" => $ent, "glpiItemType" => $glpiItemsTypes[$key], "ocsItemType" => $ocsItemsTypes[$key], "itemName" => $itemsNames[$key], "itemDescription" => $itemsDescription[$key]);
+            } else {
+               $objectToImport[] = array("macAdress" => $mac, "entity" => $ent, "glpiItemType" => $glpiItemsTypes[$key], "itemName" => $itemsNames[$key], "itemDescription" => $itemsDescription[$key]);
             }
          }
       }
 
       return $objectToImport;
    }
-   
+
    static function showPercentBar($status) {
       if (!is_numeric($status)) {
          return $status;
@@ -796,12 +810,12 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                $entities = array("id" => array(Dropdown::EMPTY_VALUE), "name" => array(Dropdown::EMPTY_VALUE), "entities_id" => array(Dropdown::EMPTY_VALUE));
                $ocsTypes = array("id" => array(Dropdown::EMPTY_VALUE), "name" => array(Dropdown::EMPTY_VALUE));
                $link     = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
-               $target   = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php";
+               $target   = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php".$backValues;
 
                echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
                echo "<div class='center' style=\"width=95%\">";
                self::checkBox($target);
-               echo "<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\"></div>";
+               echo "<input type='submit' class='submit' name='IdentifyAndImport'  value=\"" . _sx('button', 'Import') . "\"></div>";
                echo "<table width='95%' class='tab_cadre_fixe'>";
                echo "</tr></div>\n";
                self::getOCSTypes($ocsTypes);
@@ -822,6 +836,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo Search::showHeaderItem($output_type, __('&nbsp;'), $header_num);
                echo Search::showEndLine($output_type);
                $row_num = 1;
+               $ocstypr=array();
+               foreach ($ocsTypes["name"] as $items){
+                  $ocstypr[$items]=$items;
+               }
                for ($i = $start; $i < $lim; $i++) {
                   $row_num++;
                   echo Search::showNewLine($output_type, $row_num % 2);
@@ -831,9 +849,9 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   echo self::showItem(Html::convDateTime($hardware[$i]["date"]));
                   echo self::showItem($hardware[$i]["DNS"]);
                   echo "<td>";
-                  Dropdown::showFromArray("ocstype[$i]", $ocsTypes["name"]);
+                  Dropdown::showFromArray("ocsitemstype[$i]", $ocstypr);
                   echo "</td>";
-                  echo "<td><input type=\"text\" name='itemsdescription[" . $i . "]' value=\"\"></td>";
+                  echo "<td><input type=\"text\" name='itemsdescription[" . $i . "]' value=\"\" ></td>";
                   echo "<td><input type=\"text\" name='itemsname[" . $i . "]' value=\"\"></td>";
                   if (Session::isMultiEntitiesMode()) {
                      echo "<td>";
@@ -845,12 +863,12 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                      $itemstypes[$items] = __($items);
                   }
                   echo "<td>";
-                  Dropdown::showFromArray("itemstypes[$i]", $itemstypes);
+                  Dropdown::showFromArray("glpiitemstype[$i]", $itemstypes);
                   echo "</td>";
-                  echo self::showItem($hardware[$i]["ip"], "", "", "", true, "", $i);
+                  echo self::showItem($hardware[$i]["mac"], "", "", "", true, "", $i);
                }
                echo "</table></div>\n";
-               echo "<div class='center'>\n<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\"></div>";
+               echo "<div class='center'>\n<input type='submit' class='submit' name='IdentifyAndImport'  value=\"" . _sx('button', 'Import') . "\"></div>";
                html::closeForm();
                self::checkBox($target);
                break;
@@ -900,7 +918,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                      $itemstypes[$items] = __($items);
                   }
                   echo "<td>";
-                  Dropdown::showFromArray("itemstypes[$i]", $itemstypes);
+                  Dropdown::showFromArray("glpiitemstype[$i]", $itemstypes);
                   echo "</td>";
                   echo "<td><input type=\"text\" name='itemsname[" . $i . "]' value=\"\"></td>";
                   echo self::showItem($hardware[$i]["MAC"], "", "", "", true, "", $i);
@@ -916,65 +934,15 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       }
    }
    
-   
-   /*static function getAvailableStatistics() {
-
-      
-         $stats = array('imported_ipdiscover_number'        => __('IPDISCOVER objects imported', 'ocsinventoryng'),
-            'synchronized_ipdiscover_number'    => __('IPDISCOVER objects synchronized', 'ocsinventoryng'),
-            'linked_ipdiscover_number'          => __('IPDISCOVER objects linked', 'ocsinventoryng'),
-            'notupdated_ipdiscover_number'      => __('IPDISCOVER objects not updated', 'ocsinventoryng'),
-            'failed_imported_ipdiscover_number' => __("IPDISCOVER objects not imported", 'ocsinventoryng'));
-     
-      return $stats;
-   }
-
-   static function manageImportStatistics(&$statistics = array(), $action = false, $snmp = false) {
-
-      if (empty($statistics)) {
-         foreach (self::getAvailableStatistics() as $field => $label) {
-            $statistics[$field] = 0;
+   static function getMacAdressKeyVal($macAdresses) {
+      $keys = array();
+      foreach ($macAdresses as $key => $val) {
+         foreach ($val as $mac => $on) {
+            $keys[$key] = $mac;
          }
       }
-
-      switch ($action) {
-         case self::IPDISCOVER_SYNCHRONIZED:
-            $statistics["synchronized_ipdiscover_number"] ++;
-            break;
-
-         case self::IPDISCOVER_IMPORTED:
-            $statistics["imported_ipdiscover_number"] ++;
-            break;
-
-         case self::IPDISCOVER_FAILED_IMPORT:
-            $statistics["failed_imported_ipdiscover_number"] ++;
-            break;
-
-         case self::IPDISCOVER_LINKED:
-            $statistics["linked_ipdiscover_number"] ++;
-            break;
-
-         case self::IPDISCOVER_NOTUPDATED:
-            $statistics["notupdated_snmp_number"] ++;
-            break;
-      }
+      return $keys;
    }
-
-   static function showStatistics($statistics = array(), $finished = false) {
-
-      echo "<div class='center b'>";
-      echo "<table class='tab_cadre_fixe'>";
-      if ($finished) {
-         echo "&nbsp;-&nbsp;";
-         _e('Task completed.');
-      }
-      echo "</th>";
-
-      foreach (self::getAvailableStatistics() as $field => $label) {
-         echo "<tr class='tab_bg_1'><td>" . $label . "</td><td>" . $statistics[$field] . "</td></tr>";
-      }
-      echo "</table></div>";
-   }*/
 
 }
 

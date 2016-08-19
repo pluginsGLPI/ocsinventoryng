@@ -67,9 +67,9 @@ if (isset($_GET["ip"]) || isset($_POST["ip"])) {
 
 if (isset($_POST["Import"]) || isset($_SESSION["ocs_importipdiscover"]["datas"])) {
    $percent = 0;
-   if (isset($_POST["Import"]) && isset($_POST["macToImport"]) && sizeof($_POST["macToImport"]) > 0) {
-      $macAdresses      = $_POST["macToImport"];
-      $itemsTypes       = $_POST["itemstypes"];
+   if (isset($_POST["Import"]) && isset($_POST["mactoimport"]) && sizeof($_POST["mactoimport"]) > 0) {
+      $macAdresses      = $_POST["mactoimport"];
+      $itemsTypes       = $_POST["glpiitemstype"];
       $itemsNames       = $_POST["itemsname"];
       $itemsDescription = $_POST["itemsdescription"];
       $entities         = array();
@@ -98,6 +98,77 @@ if (isset($_POST["Import"]) || isset($_SESSION["ocs_importipdiscover"]["datas"])
       while ($ipObject    = array_pop($_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"])) {
          $percent                                                = min(100, round(100 * (sizeof($_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"]) - sizeof($_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"])) / sizeof($_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"]), 0));
          $action                                                 = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+         PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
+         PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
+         Html::displayProgressBar(400, $percent);
+         Html::redirect($_SERVER['PHP_SELF']);
+      }
+      PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
+      if (isset($_GET["b"])) {
+         $b        = $_GET["b"];
+         $ipAdress = $b[0];
+         $status   = $b[1];
+         echo "<div class='center b'><br>";
+         echo "<a href='" . $_SERVER['PHP_SELF'] . "?ip=$ipAdress&status=$status'>" . __('Back') . "</a></div>";
+      }
+      if (isset($_SESSION["ocs_importipdiscover"]["datas"]["b"])) {
+         $b        = $_SESSION["ocs_importipdiscover"]["datas"]["b"];
+         $ipAdress = $b[0];
+         $status   = $b[1];
+         echo "<div class='center b'><br>";
+         echo "<a href='" . $_SERVER['PHP_SELF'] . "?ip=$ipAdress&status=$status'>" . __('Back') . "</a></div>";
+      }
+
+      if (isset($_SESSION["ocs_importipdiscover"]["datas"])) {
+         unset($_SESSION["ocs_importipdiscover"]["datas"]);
+      }
+
+      if (isset($_SESSION["ocs_importipdiscover"]['statistics'])) {
+         unset($_SESSION["ocs_importipdiscover"]['statistics']);
+      }
+   } else {
+      if (isset($_GET["b"])) {
+         $b        = $_GET["b"];
+         $ipAdress = $b[0];
+         $status   = $b[1];
+
+         Html::redirect($_SERVER['PHP_SELF'] . "?ip=$ipAdress&status=$status");
+      }
+   }
+} else if (isset($_POST["IdentifyAndImport"]) || isset($_SESSION["ocs_importipdiscover"]["datas"])) {
+   $percent = 0;
+   if (isset($_POST["IdentifyAndImport"]) && isset($_POST["mactoimport"]) && sizeof($_POST["mactoimport"]) > 0) {
+      $macAdresses      = $_POST["mactoimport"];
+      $glpiItemsTypes       = $_POST["glpiitemstype"];
+      $itemsNames       = $_POST["itemsname"];
+      $itemsDescription = $_POST["itemsdescription"];
+      $ocsItemstypes = $_POST["ocsitemstype"];
+      $entities         = array();
+
+      if (isset($_POST["entities"])) {
+         $entities = $_POST["entities"];
+      }
+      $ipObjects = $ip->getIpDiscoverobject($macAdresses, $entities, $glpiItemsTypes, $itemsNames, $itemsDescription,$ocsItemstypes);
+      $action    = null;
+      while ($ipObject  = array_pop($ipObjects)) {
+         $percent = min(100, round(100 * (sizeof($macAdresses) - sizeof($ipObjects)) / sizeof($macAdresses), 0));
+
+         $action                                                   = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+         PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
+         PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
+         Html::displayProgressBar(400, $percent);
+         $_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"]   = $ipObjects;
+         $_SESSION["ocs_importipdiscover"]["datas"]["b"]           = $_GET["b"];
+         $_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"] = $macAdresses;
+         Html::redirect($_SERVER['PHP_SELF']);
+      }
+   } else if (isset($_SESSION["ocs_importipdiscover"]["datas"])) {
+      $action = null;
+
+
+      while ($ipObject = array_pop($_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"])) {
+         $percent = min(100, round(100 * (sizeof($_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"]) - sizeof($_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"])) / sizeof($_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"]), 0));
+         $action  = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
          PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
          PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
          Html::displayProgressBar(400, $percent);
