@@ -66,6 +66,22 @@ if (isset($_GET["ip"]) || isset($_POST["ip"])) {
 }
 
 if (isset($_POST["Import"]) || isset($_SESSION["ocs_importipdiscover"]["datas"])) {
+   /*$np  = new NetworkPort();
+   //$input=array("entities_id"=>"0","items_id" => "55","mac"=>"sqdfsdfsdf","NetworkName__ipaddresses"=>"123456","itemtype" => "Computer");
+   //$r=$np->splitInputForElements($_POST);
+   $r=array('name'               => "test123",
+                             'mac'                => "02:00:5A:93:B0:CA",
+                             'NetworkName__ipaddresses'=>"172.16.0.1",
+                             'items_id'           => 56,
+                             'itemtype'           => 'Computer',
+       
+                             '_no_history'        => 0,
+                             'is_dynamic'         => 1,
+                             'is_deleted'         => 0);
+   //'instantiation_type' => "NetworkPortEthernet",
+   $np->add($r);
+   //$np->updateDependencies(1);
+   die("added networkPort");*/
    $percent = 0;
    if (isset($_POST["Import"]) && isset($_POST["mactoimport"]) && sizeof($_POST["mactoimport"]) > 0) {
       $macAdresses      = $_POST["mactoimport"];
