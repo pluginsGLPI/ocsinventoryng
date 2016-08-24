@@ -464,9 +464,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
    
    
    static function loadMacConstructor(){
-      global $CFG_GLPI;
-      //$macFile=$CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/tools/macManufacturers.txt";
-      $macFile="D:/xampp/htdocs/glpi/plugins/ocsinventoryng/tools/macManufacturers.txt";
+      $macFile=GLPI_ROOT."/plugins/ocsinventoryng/files/macManufacturers.txt";
+      $result="";
       if( $file=@fopen($macFile,"r") ) {			
 		while (!feof($file)) {				 
 			$line  = fgets($file, 4096);
@@ -896,7 +895,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                         $macConstructor = __("unknow");
                      }
                   }
-                  $mac = $hardware[$i]["mac"] . "<small>(" . $macConstructor . ")</small>";
+                  $mac = $hardware[$i]["mac"] . "<small> ( " . $macConstructor . " )</small>";
                   echo self::showItem($mac);
                   echo self::showItem($hardware[$i]["mask"]);
                   echo self::showItem(Html::convDateTime($hardware[$i]["date"]));
@@ -935,7 +934,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
                echo "<table width='100%' class='tab_cadre_fixe'>";
                echo "<div class='center' style=\"width=100%\">";
-               echo "<input type='submit' class='submit' name='IdentifyAndImport'  value=\"" . _sx('button', 'Import') . "\">";
+               echo "<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\">";
                echo Search::showHeaderItem($output_type, __('OCS Type'), $header_num);
                echo Search::showHeaderItem($output_type, __('Description'), $header_num);
                echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
@@ -965,7 +964,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                         $macConstructor = __("unknow");
                      }
                   }
-                  $mac = $hardware[$i]["MAC"] . "<small>(" . $macConstructor . ")</small>";
+                  $mac = $hardware[$i]["MAC"] . "<small> ( " . $macConstructor . " )</small>";
                   echo self::showItem($mac);
                   echo self::showItem(Html::convDateTime($hardware[$i]["DATE"]));
                   if (Session::isMultiEntitiesMode()) {
