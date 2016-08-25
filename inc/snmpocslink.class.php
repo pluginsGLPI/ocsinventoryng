@@ -675,7 +675,8 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                "speed_other_value"        => "",
                "add"                      => __("Add"),
             );
-
+            var_dump($newinput);
+            die("let see the imputs");
             $np->splitInputForElements($newinput);
             $newID = $np->add($newinput);
             $np->updateDependencies(1);
