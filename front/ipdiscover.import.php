@@ -33,6 +33,8 @@ include ('../../../inc/includes.php');
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu");
 //Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ipdiscmodifynetwork");
+var_dump($_POST);
+die("halt");
 $ip = new PluginOcsinventoryngIpDiscover();
 if (isset($_GET["ip"]) || isset($_POST["ip"])) {
    $ocsServerId   = $_SESSION["plugin_ocsinventoryng_ocsservers_id"];
