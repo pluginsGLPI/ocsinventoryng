@@ -674,10 +674,6 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $ocsClient->checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $mac       = $ipDiscoveryObject["macAdress"];
-      /*$query     = "SELECT `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`.`macaddress`
-                FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
-                WHERE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`.`macaddress`
-                LIKE '$mac'";*/
       
       $query     = "SELECT *
                 FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
@@ -884,7 +880,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $link        = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php";
       $return      = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
       $reload      = "ip=$ipAdress&status=$status";
-      $backValues        = "?b[]=$ipAdress&b[]=$status";
+      $backValues  = "?b[]=$ipAdress&b[]=$status";
       echo html::printPager($start, count($hardware), $link, $reload);
       echo Search::showNewLine($output_type, true);
       if (empty($hardware)) {
@@ -906,25 +902,25 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                $row_num = 1;
                for ($i = $start; $i < $lim; $i++) {
                   $row_num++;
-                  $item_num=1;
+                  $item_num = 1;
                   echo Search::showNewLine($output_type, $row_num % 2);
-                  echo Search::showItem($output_type,$hardware[$i]["userid"],$item_num,$row_num);
-                  echo Search::showItem($output_type,$hardware[$i]["name"],$item_num,$row_num);
-                  echo Search::showItem($output_type,$hardware[$i]["osname"],$item_num,$row_num);
-                  echo Search::showItem($output_type,$hardware[$i]["osversion"],$item_num,$row_num);
-                  echo Search::showItem($output_type,$hardware[$i]["ipaddr"],$item_num,$row_num);
-                  echo Search::showItem($output_type,html::convDateTime($hardware[$i]["lastdate"]),$item_num,$row_num);
+                  echo Search::showItem($output_type, $hardware[$i]["userid"], $item_num, $row_num);
+                  echo Search::showItem($output_type, $hardware[$i]["name"], $item_num, $row_num);
+                  echo Search::showItem($output_type, $hardware[$i]["osname"], $item_num, $row_num);
+                  echo Search::showItem($output_type, $hardware[$i]["osversion"], $item_num, $row_num);
+                  echo Search::showItem($output_type, $hardware[$i]["ipaddr"], $item_num, $row_num);
+                  echo Search::showItem($output_type, html::convDateTime($hardware[$i]["lastdate"]), $item_num, $row_num);
                   echo Search::showEndLine($output_type);
                }
                echo "</table>\n";
-               $back=__('Back');
+               $back = __('Back');
                echo "<div class='center'><a href='$return'>$back</div>";
                break;
 
             case "noninventoried" :
-               $ocsTypes = array("id" => array(Dropdown::EMPTY_VALUE), "name" => array(Dropdown::EMPTY_VALUE));
-               $link     = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
-               $target   = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php".$backValues;
+               $ocsTypes       = array("id" => array(Dropdown::EMPTY_VALUE), "name" => array(Dropdown::EMPTY_VALUE));
+               $link           = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
+               $target         = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php" . $backValues;
                $macConstructor = "";
                self::getOCSTypes($ocsTypes);
                self::checkBox($target);
@@ -946,15 +942,15 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo Search::showHeaderItem($output_type, __('GLPI Type', 'ocsinventoryng'), $header_num);
                echo Search::showHeaderItem($output_type, __('&nbsp;'), $header_num);
                echo Search::showEndLine($output_type);
-               $row_num = 1;
-               $ocstypes=array();
-               foreach ($ocsTypes["name"] as $items){
-                  $ocstypes[$items]=$items;
+               $row_num  = 1;
+               $ocstypes = array();
+               foreach ($ocsTypes["name"] as $items) {
+                  $ocstypes[$items] = $items;
                }
                for ($i = $start; $i < $lim; $i++) {
                   $row_num++;
                   echo Search::showNewLine($output_type, $row_num % 2);
-                  echo self::showItem($hardware[$i]["ip"]);
+                  echo self::showItem($ip = $hardware[$i]["ip"]);
                   if (isset($_SESSION["OCS"]["IpdiscoverMacConstructors"])) {
                      if (isset($_SESSION["OCS"]["IpdiscoverMacConstructors"][mb_strtoupper(substr($hardware[$i]["mac"], 0, 8))])) {
                         $macConstructor = $_SESSION["OCS"]["IpdiscoverMacConstructors"][mb_strtoupper(substr($hardware[$i]["mac"], 0, 8))];
@@ -974,10 +970,6 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                      Entity::dropdown(array('name' => "entities[$i]", 'entity' => $_SESSION["glpiactiveentities"]));
                      echo "</td>";
                   }
-                  $itemstypes = array(Dropdown::EMPTY_VALUE);
-                  foreach (self::$hardwareItemTypes as $items) {
-                     $itemstypes[$items] = __($items);
-                  }
                   echo "<td>";
                   Dropdown::showFromArray("ocsitemstype[$i]", $ocstypes);
                   echo "</td>";
@@ -985,7 +977,9 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   Dropdown::showFromArray("glpiitemstype[$i]", $itemstypes);
                   echo "</td>";
                   echo self::showItem($hardware[$i]["mac"], "", "", "", true, "", $i);
-                  
+                  echo "<tbody style=\"display:none\">";
+                  echo "<tr><input type=\"hidden\" name='itemsip[" . $i . "]' value=\"$ip\" ><td>";
+                  echo "</tbody>";
                }
                echo "</table>\n";
                echo "<div class='center' style=\"width=100%\">\n<input type='submit' class='submit' name='IdentifyAndImport'  value=\"" . _sx('button', 'Import') . "\"></div>";
@@ -994,8 +988,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                break;
 
             default :
-               $link     = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
-               $target   = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php" . $backValues;
+               $link           = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
+               $target         = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php" . $backValues;
                $macConstructor = "";
                self::checkBox($target);
                echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
@@ -1014,13 +1008,17 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo Search::showHeaderItem($output_type, __('GLPI Type', 'ocsinventoryng'), $header_num);
                echo Search::showHeaderItem($output_type, __('&nbsp;'), $header_num);
                echo Search::showEndLine($output_type);
-               $row_num = 1;
+               $row_num    = 1;
+               $itemstypes = array(Dropdown::EMPTY_VALUE);
+               foreach (self::$hardwareItemTypes as $items) {
+                  $itemstypes[$items] = __($items);
+               }
                for ($i = $start; $i < $lim; $i++) {
                   $row_num++;
-                  $item=1;
+
                   echo Search::showNewLine($output_type, $row_num % 2);
-                  echo self::showItem();
-                  echo self::showItem($ip=$hardware[$i]["IP"]);
+                  echo self::showItem($description = $hardware[$i]["DESCRIPTION"]);
+                  echo self::showItem($ip          = $hardware[$i]["IP"]);
                   if (isset($_SESSION["OCS"]["IpdiscoverMacConstructors"])) {
                      if (isset($_SESSION["OCS"]["IpdiscoverMacConstructors"][mb_strtoupper(substr($hardware[$i]["MAC"], 0, 8))])) {
                         $macConstructor = $_SESSION["OCS"]["IpdiscoverMacConstructors"][mb_strtoupper(substr($hardware[$i]["MAC"], 0, 8))];
@@ -1036,22 +1034,18 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                      Entity::dropdown(array('name' => "entities[$i]", 'entity' => $_SESSION["glpiactiveentities"]));
                      echo "</td>";
                   }
-                  $itemstypes = array(Dropdown::EMPTY_VALUE);
-                  foreach (self::$hardwareItemTypes as $items) {
-                     $itemstypes[$items] = __($items);
-                  }
+
                   echo "<td><input type=\"text\" name='itemsname[" . $i . "]' value=\"\"></td>";
                   echo self::showItem($hardware[$i]["TYPE"]);
                   echo "<td>";
                   Dropdown::showFromArray("glpiitemstype[$i]", $itemstypes);
                   echo "</td>";
-                 
+
                   echo self::showItem($hardware[$i]["MAC"], "", "", "", true, "", $i);
                   echo "<tbody style=\"display:none\">";
                   echo "<tr><input type=\"hidden\" name='itemsip[" . $i . "]' value=\"$ip\" ><td>";
                   echo "<tr><input type=\"hidden\" name='itemsdescription[" . $i . "]' value=\"$description\" ></tr>";
-                  echo "<tbody style=\"display:none\">";
-                  
+                  echo "</tbody>";
                }
                echo "</table>";
                echo "<div class='center' style=\"width=100%\"><input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\"></div>";
@@ -1062,190 +1056,6 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          }
       }
    }
-  
-/*static function showHardware($hardware, $lim, $start = 0, $ipAdress, $status) {
-      global $CFG_GLPI;
-      $link       = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php";
-      $return     = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
-      $reload     = "ip=$ipAdress&status=$status";
-      $backValues = "?b[]=$ipAdress&b[]=$status";
-      echo html::printPager($start, count($hardware), $link, $reload);
-      echo "<br>";
-      if (empty($hardware)) {
-         echo "<div class='center b'><br>" . __('No new IPDISCOVER device to import', 'ocsinventoryng') . "</div>";
-         Html::footer();
-      } else {
-         switch ($status) {
-            case "inventoried" :
-               echo "<br>\n<div class='ipdisc_tab'><table width='100%' class='ipdisc_tab'>";
-               echo "<tr class='ipdisc_tab_header'>";
-               echo self::showHeader(__('User'));
-               echo self::showHeader(__('Name'));
-               echo self::showHeader(__('System'));
-               echo self::showHeader(__('System Version'));
-               echo self::showHeader(__('IP Adress'));
-               echo self::showHeader(__('Last Inventory'));
-               echo "</tr>";
-
-               for ($i = $start; $i < $lim; $i++) {
-                  echo "<tr class='ipdisc_tab_row'>";
-                  echo self::showItem($hardware[$i]["userid"]);
-                  echo self::showItem($hardware[$i]["name"]);
-                  echo self::showItem($hardware[$i]["osname"]);
-                  echo self::showItem($hardware[$i]["osversion"]);
-                  echo self::showItem($hardware[$i]["ipaddr"]);
-                  echo self::showItem(html::convDateTime($hardware[$i]["lastdate"]));
-                  echo "</tr>";
-               }
-               echo "</table></div>\n";
-               echo "<div class='center'><a href='$return'>retour</div>";
-               break;
-
-            case "noninventoried" :
-               $ocsTypes       = array("id" => array(Dropdown::EMPTY_VALUE), "name" => array(Dropdown::EMPTY_VALUE));
-               $link           = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
-               $target         = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php" . $backValues;
-               $macConstructor = "";
-               self::getOCSTypes($ocsTypes);
-               self::checkBox($target);
-               echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
-               echo "<div class='center' style=\"width=100%\">";
-               echo "<input type='submit' class='submit' name='IdentifyAndImport'  value=\"" . _sx('button', 'Import') . "\"></div>";
-               echo "<br>\n<div class='ipdisc_tab'><table width='100%' class='ipdisc_tab'>";
-               echo "<tr class='ipdisc_tab_header'>";
-               echo self::showHeader(__('IP address'));
-               echo self::showHeader(__('MAC address'));
-               echo self::showHeader(__('Mask'));
-               echo self::showHeader(__('Date'));
-               echo self::showHeader(__('DNS'));
-               echo self::showHeader(__('OCS Type'));
-               echo self::showHeader(__('Description'));
-               echo self::showHeader(__('Name'));
-               if (Session::isMultiEntitiesMode()) {
-                  echo self::showHeader(__('Entity'));
-               }
-               echo self::showHeader(__('GLPI Type', 'ocsinventoryng'));
-               echo "</tr>";
-
-               $ocstypr = array();
-               foreach ($ocsTypes["name"] as $items) {
-                  $ocstypr[$items] = $items;
-               }
-
-               for ($i = $start; $i < $lim; $i++) {
-                  echo "<tr class='ipdisc_tab_row'>";
-                  echo self::showItem($hardware[$i]["ip"]);
-                  if (isset($_SESSION["OCS"]["IpdiscoverMacConstructors"])) {
-                     if (isset($_SESSION["OCS"]["IpdiscoverMacConstructors"][mb_strtoupper(substr($hardware[$i]["mac"], 0, 8))])) {
-                        $macConstructor = $_SESSION["OCS"]["IpdiscoverMacConstructors"][mb_strtoupper(substr($hardware[$i]["mac"], 0, 8))];
-                     } else {
-                        $macConstructor = __("unknow");
-                     }
-                  }
-                  $mac = $hardware[$i]["mac"] . "<small> (" . $macConstructor . ")</small>";
-                  echo self::showItem($mac);
-                  echo self::showItem($hardware[$i]["mask"]);
-                  echo self::showItem(Html::convDateTime($hardware[$i]["date"]));
-                  echo self::showItem($hardware[$i]["DNS"]);
-                  echo "<td>";
-                  Dropdown::showFromArray("ocsitemstype[$i]", $ocstypr);
-                  echo "</td>";
-                  echo "<td><input type=\"text\" name='itemsdescription[" . $i . "]' value=\"\" ></td>";
-                  echo "<td><input type=\"text\" name='itemsname[" . $i . "]' value=\"\"></td>";
-                  if (Session::isMultiEntitiesMode()) {
-                     echo "<td>";
-                     Entity::dropdown(array('name' => "entities[$i]", 'entity' => $_SESSION["glpiactiveentities"]));
-                     echo "</td>";
-                  }
-                  $itemstypes = array(Dropdown::EMPTY_VALUE);
-                  foreach (self::$hardwareItemTypes as $items) {
-                     $itemstypes[$items] = __($items);
-                  }
-                  echo "<td>";
-                  Dropdown::showFromArray("glpiitemstype[$i]", $itemstypes);
-                  echo "</td>";
-                  echo self::showItem($hardware[$i]["mac"], "", "", "", true, "", $i);
-                  $ip=$hardware[$i]["ip"];
-                  echo "<input type=\"hidden\" name='itemsip[" . $i . "]' value=\"$ip\" >";
-                  echo "</tr>";
-               }
-               echo "</table></div>\n";
-               echo "<div class='center' style=\"width=100%\">\n<input type='submit' class='submit' name='IdentifyAndImport'  value=\"" . _sx('button', 'Import') . "\"></div>";
-               html::closeForm();
-               self::checkBox($target);
-               break;
-
-            default :
-               $ocsTypes       = array("id" => array(Dropdown::EMPTY_VALUE), "name" => array(Dropdown::EMPTY_VALUE));
-               $link           = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
-               $target         = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php" . $backValues;
-               $macConstructor = "";
-               self::getOCSTypes($ocsTypes);
-               self::checkBox($target);
-               echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
-               echo "<div class='center' style=\"width=100%\">";
-               echo "<input type='submit' class='submit' name='IdentifyAndImport'  value=\"" . _sx('button', 'Import') . "\"></div>";
-               echo "<br>\n<div class='ipdisc_tab'><table width='100%' class='ipdisc_tab'>";
-               echo "<tr class='ipdisc_tab_header'>";
-               echo self::showHeader(__('OCS Type', 'ocsinventoryng'));
-               echo self::showHeader(__('Description'));
-               echo self::showHeader(__('IP address'));
-               echo self::showHeader(__('MAC Address', 'ocsinventoryng'));
-               echo self::showHeader(__('Date'));
-               if (Session::isMultiEntitiesMode()) {
-                  echo self::showHeader(__('Entity'));
-               }
-               echo self::showHeader(__('GLPI Type', 'ocsinventoryng'));
-               echo self::showHeader(__('Name'));
-               echo "</tr>";
-
-               $ocstypr = array();
-               foreach ($ocsTypes["name"] as $items) {
-                  $ocstypr[$items] = $items;
-               }
-               for ($i = $start; $i < $lim; $i++) {
-                  echo "<tr class='ipdisc_tab_row'>";
-                  echo self::showItem($description = $hardware[$i]["TYPE"]);
-                  echo self::showItem($hardware[$i]["DESCRIPTION"]);
-                  echo self::showItem($hardware[$i]["IP"]);
-
-                  if (isset($_SESSION["OCS"]["IpdiscoverMacConstructors"])) {
-                     if (isset($_SESSION["OCS"]["IpdiscoverMacConstructors"][mb_strtoupper(substr($hardware[$i]["MAC"], 0, 8))])) {
-                        $macConstructor = $_SESSION["OCS"]["IpdiscoverMacConstructors"][mb_strtoupper(substr($hardware[$i]["MAC"], 0, 8))];
-                     } else {
-                        $macConstructor = __("unknow");
-                     }
-                  }
-                  $mac = $hardware[$i]["MAC"] . "<small> ( " . $macConstructor . " )</small>";
-                  echo self::showItem($mac);
-                  echo self::showItem(Html::convDateTime($hardware[$i]["DATE"]));
-                  if (Session::isMultiEntitiesMode()) {
-                     echo "<td>";
-                     Entity::dropdown(array('name' => "entities[$i]", 'entity' => $_SESSION["glpiactiveentities"]));
-                     echo "</td>";
-                  }
-                  $itemstypes = array(Dropdown::EMPTY_VALUE);
-                  foreach (self::$hardwareItemTypes as $items) {
-                     $itemstypes[$items] = __($items);
-                  }
-                  echo "<td>";
-                  Dropdown::showFromArray("glpiitemstype[$i]", $itemstypes);
-                  echo "</td>";
-                  echo "<td><input type=\"text\" name='itemsname[" . $i . "]' value=\"\"></td>";
-                  echo self::showItem($hardware[$i]["MAC"], "", "", "", true, "", $i);
-                  echo "<input type=\"hidden\" name='itemsdescription[" . $i . "]' value=\"$description\" >";
-                  $ip=$hardware[$i]["IP"];
-                  echo "<input type=\"hidden\" name='itemsip[" . $i . "]' value=\"$ip\" >";
-                  echo "</tr>";
-               }
-               echo "</table></div>\n";
-               echo "<div class='center' style=\"width=100%\">\n<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\"></div>";
-               html::closeForm();
-               self::checkBox($target);
-               break;
-         }
-      }
-   }*/
 
    static function getMacAdressKeyVal($macAdresses) {
       $keys = array();
