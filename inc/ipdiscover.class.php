@@ -334,17 +334,27 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          echo "<div class='center'><table class='tab_cadre' width='40%'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an subnet', 'ocsinventoryng') .
          "</th></tr>\n";
-         echo "<tr class='tab_bg_2'><td class='center'>" . __('subnet') . "</td>";
+         echo "<tr class='tab_bg_2'><td class='center'>" . __('Subnet', 'ocsinventoryng') . "</td>";
          echo "<td class='center'>";
          $tab                 = array(Dropdown::EMPTY_VALUE, "All Subnets", "Known Subnets", "Unknown Subnets");
          $subnets             = self::getSubnets($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
          self::getSubnetsID($subnets["All Subnets"], $tab);
          $_SESSION["subnets"] = $tab;
          Dropdown::showFromArray("subnetsChoise", $tab, array("on_change" => "this.form.submit()", "display_emptychoice" => false));
-
          echo "</td></tr>";
-         echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
-
+         /*echo "<tr class='tab_bg_1'>";
+         echo "<td class='center'><a href='config.form.php'>
+                      <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' " .
+         "alt='" . __s("Manage Subnets ID", 'ocsinventoryng') . "' " .
+         "title=\"" . __s("Manage Subnets ID", 'ocsinventoryng') . "\">
+                        <br>" . __("Manage Subnets ID", 'ocsinventoryng') . "
+                     </a></td>";
+         echo "<td class='center'><a href='config.form.php'>
+                      <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' " .
+         "alt='" . __s("Manage Ocsserver Types", 'ocsinventoryng') . "' " .
+         "title=\"" . __s("Manage Ocsserver Types", 'ocsinventoryng') . "\">
+                        <br>" . __("Manage Ocsserver Types", 'ocsinventoryng') . "
+                     </a></td></tr>";*/
          Html::closeForm();
       }
    }
@@ -674,17 +684,18 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $ocsClient->checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $mac       = $ipDiscoveryObject["macAdress"];
-      
       $query     = "SELECT *
                 FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
                 WHERE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`.`macaddress`
-                LIKE '$mac'";
+                LIKE '$mac' 
+                AND `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`.`plugin_ocsinventoryng_ocsservers_id` ='$plugin_ocsinventoryng_ocsservers_id'";
 
       $result = $DB->query($query);
       if ($DB->numrows($result)) {
          $datas = $DB->fetch_assoc($result);
          return self::updateIpDiscover($ipDiscoveryObject,$datas,$plugin_ocsinventoryng_ocsservers_id);
       }
+     
       return self::importIpDiscover($ipDiscoveryObject,$plugin_ocsinventoryng_ocsservers_id);
    }
 
@@ -816,22 +827,93 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       }
    }
 
-   static function updateIpDiscover($ipDiscoveryObject,$datas,$plugin_ocsinventoryng_ocsservers_id) {
+   
+   
+   static function updateIpDiscover($ipDiscoveryObject, $datas, $plugin_ocsinventoryng_ocsservers_id) {
       global $DB;
-      $item1=new $ipDiscoveryObject["glpiItemType"]();
-      $item2=new $datas["itemtype"]();
-      if ($item1==$item2){
-         //die("gonna make an update");
+      $res = null;
+
+      if (isset($ipDiscoveryObject["ocsItemType"]) && $ipDiscoveryObject["ocsItemType"] == Dropdown::EMPTY_VALUE) {
+         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED);
       }
-      $table1=$item1->getTable();
-      $table2=$item2->getTable();
-      $id=$datas["items_id"];
-      $query="select * from $table2 where id like '$id'";
-      $res=$DB->query($query);
-      $result=$DB->fetch_assoc($res);
-      //var_dump($ipDiscoveryObject,$datas,$item1,$table1,$item2,$table2,$query,$result);
-      //die("delete old equipement and add onther one");
-      
+      if ($ipDiscoveryObject["itemDescription"] == '') {
+         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED);
+      }
+
+      if ($ipDiscoveryObject["itemName"] == "") {
+         $ipDiscoveryObject["itemName"] = $ipDiscoveryObject["itemDescription"];
+      }
+
+      switch ($ipDiscoveryObject["glpiItemType"]) {
+         //empty dropdown value
+         case '0' :
+            return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED);
+         case "Device" : $ipDiscoveryObject["glpiItemType"] = "Peripheral";
+            break;
+         case "Network device": $ipDiscoveryObject["glpiItemType"] = "NetworkEquipment";
+            break;
+      }
+
+      $itemType1 = new $ipDiscoveryObject["glpiItemType"]();
+      $itemType2 = new $datas["itemtype"]();
+
+      //same type of object
+      //simple data update
+      if ($itemType1 == $itemType2) {
+         $input     = array("id"          => $datas["id"],
+             'entities_id' => $ipDiscoveryObject["entity"],
+             'name'        => $ipDiscoveryObject["itemName"],
+             'comment'     => $ipDiscoveryObject["itemDescription"]);
+         $res       = $itemType1->update($input);
+         $date      = date("Y-m-d H:i:s");
+         $glpiQuery = "UPDATE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
+                         SET `last_update` = '$date'";
+         $DB->query($glpiQuery);
+      }
+      //not same type 
+      //delete old object and create a new one
+      else {
+         $itemId = $datas["items_id"];
+         $id     = $datas["id"];
+         $result = $itemType2->delete(array("id" => $itemId));
+
+         //create new object
+         if ($result) {
+            $description = $ipDiscoveryObject["itemDescription"];
+            $input       = array(
+                'is_dynamic'   => 1,
+                'locations_id' => 0,
+                'domains_id'   => 0,
+                'entities_id'  => $ipDiscoveryObject["entity"],
+                'name'         => $ipDiscoveryObject["itemName"],
+                'comment'      => $description);
+
+            $newIDid = $itemType1->add($input);
+
+            //add ipdiscover link
+            if ($newIDid) {
+               $date     = date("Y-m-d H:i:s");
+               $itemType = $ipDiscoveryObject["glpiItemType"];
+
+               $glpiQuery = "UPDATE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks` 
+                        SET `items_id`='$newIDid', `itemtype`='$itemType', `last_update`='$date'
+                        WHERE `id` = '$id'";
+               $result    = $DB->query($glpiQuery);
+               if ($result) {
+                  $action = self::importIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id);
+                  if ($action["status"] == 15) {
+                     return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_SYNCHRONIZED);
+                  }
+               }
+            }
+         }
+      }
+
+      if ($res) {
+         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_SYNCHRONIZED);
+      } else {
+         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED);
+      }
    }
 
    static function getIpDiscoverobject($macAdresses, $entities = array(), $glpiItemsTypes, $itemsNames = "", $itemsDescription,$itempsIp, $ocsItemsTypes = array()) {
@@ -946,6 +1028,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                $ocstypes = array();
                foreach ($ocsTypes["name"] as $items) {
                   $ocstypes[$items] = $items;
+               }
+               $itemstypes = array(Dropdown::EMPTY_VALUE);
+               foreach (self::$hardwareItemTypes as $items) {
+                  $itemstypes[$items] = __($items);
                }
                for ($i = $start; $i < $lim; $i++) {
                   $row_num++;

@@ -137,6 +137,7 @@ if (isset($_POST["Import"]) || isset($_SESSION["ocs_importipdiscover"]["datas"])
       }
    }
 } else if (isset($_POST["IdentifyAndImport"]) || isset($_SESSION["ocs_importipdiscover"]["datas"])) {
+  
    $percent = 0;
    if (isset($_POST["IdentifyAndImport"]) && isset($_POST["mactoimport"]) && sizeof($_POST["mactoimport"]) > 0) {
       $macAdresses      = $_POST["mactoimport"];

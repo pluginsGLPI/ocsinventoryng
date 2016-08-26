@@ -90,9 +90,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    const SNMP_LINKED        = 12; //SNMP is linked to another object already in GLPI
    const SNMP_FAILED_IMPORT = 13; //SNMP cannot be imported - no itemtype
    const SNMP_NOTUPDATED    = 14; //SNMP should not be updated, nothing to do
-   const IPDISCOVER_IMPORTED=15;
-   const IPDISCOVER_NOTUPDATED=16;
-   const IPDISCOVER_FAILED_IMPORT=17;
+   const IPDISCOVER_IMPORTED=15; //IPDISCOVER Object is imported in GLPI
+   const IPDISCOVER_NOTUPDATED=16; //IPDISCOVER should not be updated, nothing to do
+   const IPDISCOVER_FAILED_IMPORT=17; //IPDISCOVER cannot be imported - no itemtype
+   const IPDISCOVER_SYNCHRONIZED  = 18; //IPDISCOVER is synchronized
+  
 
    static function getTypeName($nb = 0) {
       return _n('OCSNG server', 'OCSNG servers', $nb, 'ocsinventoryng');
@@ -5374,6 +5376,7 @@ JAVASCRIPT;
             'failed_imported_snmp_number' => __("SNMP objects not imported", 'ocsinventoryng'));
       } if ($ipdiscover) {
         $stats = array('imported_ipdiscover_number'        => __('IPDISCOVER objects imported', 'ocsinventoryng'),
+            'synchronized_ipdiscover_number'    => __('IPDISCOVER objects synchronized', 'ocsinventoryng'),
             'notupdated_ipdiscover_number'      => __('IPDISCOVER objects not updated', 'ocsinventoryng'),
             'failed_imported_ipdiscover_number' => __("IPDISCOVER objects not imported", 'ocsinventoryng')); 
       }
@@ -5448,6 +5451,10 @@ JAVASCRIPT;
 
          case self::IPDISCOVER_NOTUPDATED:
             $statistics["notupdated_ipdiscover_number"] ++;
+            break;
+         
+         case self::IPDISCOVER_SYNCHRONIZED:
+            $statistics["synchronized_ipdiscover_number"] ++;
             break;
       }
    }
