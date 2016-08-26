@@ -109,6 +109,11 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
       return $token;
    }
 
+   /**
+    * get subnets name
+    * @param type $inputs array
+    * @param type $outputs array 
+    */
    public static function getSubnetsName($inputs, &$outputs) {
 
       foreach ($inputs as $subnets) {
@@ -122,7 +127,7 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
 
    /**
     * get all the subnets ID
-    * 
+    * @param type outputs array  
     */
    public static function getAllSubnetsID(&$outputs) {
       $ocsClient = new PluginOcsinventoryngOcsServer();
@@ -148,6 +153,7 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
       }
    }
 
+   
    public static function countSubnetsID(&$count) {
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS     = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"])->getDB();
@@ -161,6 +167,7 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
       $count     = intval($subNetId["MAX"]);
    }
 
+   
    public static function getEntities(&$out) {
       global $DB;
       $query  = "SELECT `glpi_entities`.`id` , `glpi_entities`.`name` , `glpi_entities`.`entities_id`
@@ -174,6 +181,10 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
       }
    }
 
+   /**
+    * get the OCS types from DB
+    * @param type $out array
+    */
    public static function getOCSTypes(&$out) {
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS     = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"])->getDB();
@@ -187,6 +198,12 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
       }
    }
 
+   
+   /**
+    * get all the subnets informations
+    * @param type $plugin_ocsinventoryng_ocsservers_id
+    * @return type array with All Subnets , Known Subnets, Unknown Subnets, knownIP, unknownIP
+    */
    public static function getSubnets($plugin_ocsinventoryng_ocsservers_id) {
       $subnets   = array();
       $unknown   = array();
@@ -222,6 +239,8 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
       return array("All Subnets" => $subnets, "Known Subnets" => $known, "Unknown Subnets" => $unknown, "knownIP" => $knownIP, "unknownIP" => $unknownIP);
    }
 
+   
+   
    public static function showSubnets($plugin_ocsinventoryng_ocsservers_id, $subnets, $knownMacAdresses, $option = "") {
       //this query displays all the elements on the the networks we found :
       $subnetsDetails = array();
@@ -343,13 +362,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          Dropdown::showFromArray("subnetsChoise", $tab, array("on_change" => "this.form.submit()", "display_emptychoice" => false));
          echo "</td></tr>";
          /*echo "<tr class='tab_bg_1'>";
-         echo "<td class='center'><a href='config.form.php'>
+         echo "<td class='center'><a href='.form.php'>
                       <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' " .
          "alt='" . __s("Manage Subnets ID", 'ocsinventoryng') . "' " .
          "title=\"" . __s("Manage Subnets ID", 'ocsinventoryng') . "\">
                         <br>" . __("Manage Subnets ID", 'ocsinventoryng') . "
                      </a></td>";
-         echo "<td class='center'><a href='config.form.php'>
+         echo "<td class='center'><a href='.form.php'>
                       <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' " .
          "alt='" . __s("Manage Ocsserver Types", 'ocsinventoryng') . "' " .
          "title=\"" . __s("Manage Ocsserver Types", 'ocsinventoryng') . "\">
@@ -360,7 +379,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       }
    }
 
-   static function showPercentItem($value, $linkto = "") {
+   /*static function showPercentItem($value, $linkto = "") {
 
       $width = "200px";
       $out   = "<td class='tab_bg_2 rowHover'>";
@@ -373,7 +392,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $out .= $value . "%";
       $out .= "</td>\n";
       return $out;
-   }
+   }*/
 
    static function showItem($value, $linkto = "", $id = "", $type = "", $checkbox = false, $check = "", $iterator = 0) {
       $out="<td>";
@@ -399,13 +418,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       }
    }
    
-   static function showHeader($value) {
+   /*static function showHeader($value) {
     
       $out ="<th class='ipdisc_tab_header'>";
             $out .= $value;
             $out .= "</th>\n";
       return $out;
-   }
+   }*/
    
    
 
@@ -419,6 +438,12 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       __('Uncheck all') . "</a></div>\n";
    }
 
+   /**
+    * get the mac adresses in glpi_plugin_ocsinventoryng_ipdiscoverocslinks table
+    * @global type $DB
+    * @return type array with mac addresses
+    */
+   
    static function getKnownMacAdresseFromGlpi() {
       global $DB;
       $macAdresses = array();
@@ -431,6 +456,14 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       return $macAdresses;
    }
 
+   /**
+    * this function get datas on an certain ipaddress
+    * @param type $ipAdress string
+    * @param type $plugin_ocsinventoryng_ocsservers_id string
+    * @param type $status string
+    * @param type $knownMacAdresses array
+    * @return type array
+    */
    static function getHardware($ipAdress, $plugin_ocsinventoryng_ocsservers_id, $status, $knownMacAdresses = array()) {
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS     = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
@@ -473,7 +506,9 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       return $hardware;
    }
    
-   
+   /**
+    * this function load in memory the mac address constructor
+    */
    static function loadMacConstructor(){
       $macFile=GLPI_ROOT."/plugins/ocsinventoryng/files/macManufacturers.txt";
       $result="";
@@ -489,6 +524,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
 	}
    }
 
+   
    static function getInventoriedComputers($ipAdress, $plugin_ocsinventoryng_ocsservers_id) {
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS     = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
@@ -542,6 +578,12 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       return $identifiedHardware;
    }
 
+   /**
+    * show details on a certain subnet
+    * @global type $CFG_GLPI
+    * @param type $subnetsArray array
+    * @param type $lim integer
+    */
    static function showSubnetsDetails($subnetsArray, $lim = 0) {
       global $CFG_GLPI;
       $start           = 0;
@@ -594,7 +636,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       echo "<div class='center'><a href='$return'>$back</div>";
    }
    
-
+   /**
+    * this method alows you to modify a subnet name id and mask
+    * @global type $CFG_GLPI
+    * @param type $ipAdress string
+    * @param type $values array
+    */
+   
    static function modifyNetworkForm($ipAdress, $values = array()) {
       global $CFG_GLPI;
       $ocsClient = new PluginOcsinventoryngOcsServer();
@@ -680,6 +728,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       echo "</table></div><br>\n";
    }
 
+   /**
+    * check if ipdiscover object must be updated or imported
+    * @global type $DB
+    * @param type $ipDiscoveryObject array 
+    * @param type $plugin_ocsinventoryng_ocsservers_id integer
+    * @return type array with the status of the import or update process
+    */
    static function processIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id) {
       global $DB;
       $ocsClient = new PluginOcsinventoryngOcsServer();
@@ -700,6 +755,12 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       return self::importIpDiscover($ipDiscoveryObject,$plugin_ocsinventoryng_ocsservers_id);
    }
 
+   /**
+    * import ipdiscover object 
+    * @param type $ipDiscoveryObject array
+    * @param type $plugin_ocsinventoryng_ocsservers_id integer
+    * @return type array
+    */
    static function importIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id) {
       global $DB;
       $res      = null;
@@ -857,7 +918,14 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
    }
 
    
-   
+   /**
+    * update ipdiscover object 
+    * @global type $DB
+    * @param type $ipDiscoveryObject array
+    * @param type $datas array
+    * @param type $plugin_ocsinventoryng_ocsservers_id integer
+    * @return type array
+    */
    static function updateIpDiscover($ipDiscoveryObject, $datas, $plugin_ocsinventoryng_ocsservers_id) {
       global $DB;
       $res = null;
@@ -925,7 +993,19 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED);
       }
    }
-
+   
+   /**
+    * get all the ipdiscover objects to be imported or updated
+    * @param type $macAdresses array
+    * @param type $entities array
+    * @param type $glpiItemsTypes array
+    * @param type $itemsNames array
+    * @param type $itemsDescription array
+    * @param type $itempsIp array
+    * @param type $ocsItemsTypes array
+    * @return type array
+    */
+   
    static function getIpDiscoverobject($macAdresses, $entities = array(), $glpiItemsTypes, $itemsNames = "", $itemsDescription,$itempsIp, $ocsItemsTypes = array()) {
       $objectToImport = array();
       $macs           = self::getMacAdressKeyVal($macAdresses);
@@ -966,6 +1046,15 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
              </div></td>";
    }
 
+   /**
+    * show  hardware to be identified, or identified and imported, or just the hardware with agents installed on them
+    * @global type $CFG_GLPI
+    * @param type $hardware array
+    * @param type $lim integer
+    * @param type $start integer
+    * @param type $ipAdress string
+    * @param type $status string
+    */
    static function showHardware($hardware, $lim, $start = 0, $ipAdress, $status) {
       global $CFG_GLPI;
       $output_type = Search::HTML_OUTPUT; //0
@@ -1153,7 +1242,11 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       }
    }
    
-
+   /**
+    * get the key(position) of the macaddress
+    * @param type $macAdresses array
+    * @return type array with the keys(positions)
+    */
    static function getMacAdressKeyVal($macAdresses) {
       $keys = array();
       foreach ($macAdresses as $key => $val) {
