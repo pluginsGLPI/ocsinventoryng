@@ -1,30 +1,31 @@
 <?php
 /*
- * @version $Id: HEADER 15930 2012-12-15 11:10:55Z tsmr $
--------------------------------------------------------------------------
-Ocsinventoryng plugin for GLPI
-Copyright (C) 2012-2016 by the ocsinventoryng plugin Development Team.
+ * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
+ -------------------------------------------------------------------------
+ ocsinventoryng plugin for GLPI
+ Copyright (C) 2015-2016 by the ocsinventoryng Development Team.
 
-https://forge.glpi-project.org/projects/ocsinventoryng
--------------------------------------------------------------------------
+ https://github.com/pluginsGLPI/ocsinventoryng
+ -------------------------------------------------------------------------
 
-LICENSE
+ LICENSE
+      
+ This file is part of ocsinventoryng.
 
-This file is part of ocsinventoryng.
+ ocsinventoryng is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-Ocsinventoryng plugin is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ ocsinventoryng is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-Ocsinventoryng plugin is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
--------------------------------------------------------------------------- */
+ You should have received a copy of the GNU General Public License
+ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
+ */
 
 ini_set("memory_limit", "-1");
 ini_set("max_execution_time", "0");
@@ -242,7 +243,7 @@ function FirstPass($ocsservers_id) {
       // Handle ID changed or PC deleted in OCS.
       $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
       echo "\tManage delete items in OCS server #$ocsservers_id: \"" . $cfg_ocs["name"] . "\"\n";
-      PluginOcsinventoryngOcsServer::manageDeleted($ocsservers_id);
+      PluginOcsinventoryngOcsServer::manageDeleted($ocsservers_id, false);
    } else {
       echo "*** Can't connect to OCS server #$ocsservers_id ***";
    }
@@ -336,23 +337,23 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
    }
    
    $ocsResult = $ocsClient->getComputers($firstQueryOptions);
-	
-	// Get computers for which checksum has changed
+   
+   // Get computers for which checksum has changed
    $secondQueryOptions = $computerOptions;
    
    // Filter only useful computers
    // Some conditions can't be sent to OCS, so we have to do this in a loop
    // Maybe add this to SOAP ?
    if (isset($ocsResult['COMPUTERS'])) {
-	   $excludeIds = array();
-	   foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
-		  if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
-			 $ocsComputers[$ID] = $computer;
-		  }
-		  $excludeIds []= $ID;
-	   }
-	   
-	   $secondQueryOptions['FILTER']['EXLUDE_IDS'] = $excludeIds;
+      $excludeIds = array();
+      foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
+        if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
+          $ocsComputers[$ID] = $computer;
+        }
+        $excludeIds []= $ID;
+      }
+      
+      $secondQueryOptions['FILTER']['EXCLUDE_IDS'] = $excludeIds;
    }
    
    
@@ -364,17 +365,17 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
    // Some conditions can't be sent to OCS, so we have to do this in a loop
    // Maybe add this to SOAP ?
    if (isset($ocsResult['COMPUTERS'])) {
-	   if (isset($ocsResult['COMPUTERS'])) {
-		  foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
-			 if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
-				$ocsComputers[$ID] = $computer;
-			 }
-		  }
-	   }
-	   // Limit the number of imported records according to config
-	   if ($config->fields["import_limit"] > 0 and count($ocsComputers) > $config->fields["import_limit"]) {
-		  $ocsComputers = array_splice($ocsComputers, $config->fields["import_limit"]);
-	   }
+      if (isset($ocsResult['COMPUTERS'])) {
+        foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
+          if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
+            $ocsComputers[$ID] = $computer;
+          }
+        }
+      }
+      // Limit the number of imported records according to config
+      if ($config->fields["import_limit"] > 0 and count($ocsComputers) > $config->fields["import_limit"]) {
+        $ocsComputers = array_splice($ocsComputers, $config->fields["import_limit"]);
+      }
    }
    $nb = count($ocsComputers);
    echo "\tThread #$threadid: $nb computer(s)\n";

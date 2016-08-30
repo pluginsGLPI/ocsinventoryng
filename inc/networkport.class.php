@@ -1,30 +1,31 @@
 <?php
 /*
- * @version $Id: HEADER 15930 2012-12-15 11:10:55Z tsmr $
--------------------------------------------------------------------------
-Ocsinventoryng plugin for GLPI
-Copyright (C) 2012-2016 by the ocsinventoryng plugin Development Team.
+ * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
+ -------------------------------------------------------------------------
+ ocsinventoryng plugin for GLPI
+ Copyright (C) 2015-2016 by the ocsinventoryng Development Team.
 
-https://forge.glpi-project.org/projects/ocsinventoryng
--------------------------------------------------------------------------
+ https://github.com/pluginsGLPI/ocsinventoryng
+ -------------------------------------------------------------------------
 
-LICENSE
+ LICENSE
+      
+ This file is part of ocsinventoryng.
 
-This file is part of ocsinventoryng.
+ ocsinventoryng is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-Ocsinventoryng plugin is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ ocsinventoryng is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-Ocsinventoryng plugin is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
--------------------------------------------------------------------------- */
+ You should have received a copy of the GNU General Public License
+ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
+ */
 
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
@@ -37,7 +38,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
    static $rightname = "plugin_ocsinventoryng";
    
    static function getTypeName($nb=0) {
-      return _n('Unknown type from OCS', 'Unknown types from OCS', $nb, 'ocsinventoryng');
+      return _n('Unknown imported network port type', 'Unknown imported network ports types', $nb, 'ocsinventoryng');
    }
 
    static private function getInvalidIPString($ip) {
@@ -131,7 +132,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       if ((!$ips) || (count($ips) == 0)) {
          foreach ($DB->request($query) as $line) {
             if ($line['is_dynamic']) {
-               $network_name->delete($line, true);
+               $network_name->delete($line, true, $dohistory);
             }
          }
       } else {
@@ -149,7 +150,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $networknames_id = $line['id'];
             foreach ($names as $line) {
                if (($line['is_dynamic'] == 1) && ($line['id'] != $networknames_id)){
-                  $network_port->delete($line, true);
+                  $network_port->delete($line, true, $dohistory);
                }
             }
          }
@@ -167,7 +168,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                $already_known_addresses[] = $line['id'];
                $ips = array_diff($ips, array($line['name']));
             } elseif ($line['is_dynamic'] == 1) {
-               $ip_address->delete($line, true);
+               $ip_address->delete($line, true, $dohistory);
             }
          }
       }
@@ -187,23 +188,21 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
    }
 
    // importNetwork
-   static function importNetwork($ocsServerId, $cfg_ocs, $ocsComputer, $computers_id, $dohistory, $entities_id) {
+   static function importNetwork($ocsServerId, $cfg_ocs, $ocsComputer, $computers_id, $entities_id) {
       global $DB;
       
       // Group by DESCRIPTION, MACADDR, TYPE, TYPEMIB, SPEED, VIRTUALDEV
       // to get an array in IPADDRESS
       $ocsNetworks = array();
-      if(isset($ocsComputer['NETWORKS'])) {
-         foreach ($ocsComputer['NETWORKS'] as $ocsNetwork) {
-            $key = $ocsNetwork['DESCRIPTION'].$ocsNetwork['MACADDR'].$ocsNetwork['TYPE']
-                  .$ocsNetwork['TYPEMIB'].$ocsNetwork['SPEED'].$ocsNetwork['VIRTUALDEV'];
-            
-            if (!isset($ocsNetworks[$key])) {
-               $ocsNetworks[$key] = $ocsNetwork;
-               $ocsNetworks[$key]['IPADDRESS'] = array($ocsNetwork['IPADDRESS']);
-            } else {
-               $ocsNetworks[$key]['IPADDRESS'] []= $ocsNetwork['IPADDRESS'];
-            }
+      foreach ($ocsComputer as $ocsNetwork) {
+         $key = $ocsNetwork['DESCRIPTION'].$ocsNetwork['MACADDR'].$ocsNetwork['TYPE']
+               .$ocsNetwork['TYPEMIB'].$ocsNetwork['SPEED'].$ocsNetwork['VIRTUALDEV'];
+         
+         if (!isset($ocsNetworks[$key])) {
+            $ocsNetworks[$key] = $ocsNetwork;
+            $ocsNetworks[$key]['IPADDRESS'] = array($ocsNetwork['IPADDRESS']);
+         } else {
+            $ocsNetworks[$key]['IPADDRESS'] []= $ocsNetwork['IPADDRESS'];
          }
       }
       $network_ports  = array();
@@ -278,7 +277,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                           'entities_id'           => $entities_id,
                                           'devicenetworkcards_id' => $net_id,
                                           'mac'                   => $mac,
-                                          '_no_history'           => !$dohistory,
+                                          '_no_history'           => !$cfg_ocs['history_network'],
                                           'is_dynamic'            => 1,
                                           'is_deleted'            => 0));
                }
@@ -304,7 +303,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $networkports_id = self::updateNetworkPort($mac, $main['name'], $computers_id,
                                                        $type->fields['instantiation_type'],
                                                        $inst_input, $main['ip'], false,
-                                                       $dohistory, $already_known_ports);
+                                                       $cfg_ocs['history_network'], $already_known_ports);
 
             if ($networkports_id < 0) {
                continue;
@@ -319,7 +318,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $inst_input = array('networkports_id_alias' => $networkports_id);
             $id = self::updateNetworkPort($mac, $port['name'], $computers_id,
                                           'NetworkPortAlias', $inst_input, $port['ip'],
-                                          true, $dohistory, $already_known_ports);
+                                          true, $cfg_ocs['history_network'], $already_known_ports);
             if ($id > 0) {
                $already_known_ports[] = $id;
             }
@@ -336,7 +335,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       }
       $network_ports = new NetworkPort();
       foreach ($DB->request($query) as $line) {
-         $network_ports->delete($line, true);
+         $network_ports->delete($line, true, $cfg_ocs['history_network']);
       }
 
       $query = "SELECT `id`
@@ -349,7 +348,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       }
       $item_device = new Item_DeviceNetworkCard();
       foreach ($DB->request($query) as $line) {
-         $item_device->delete($line, true);
+         $item_device->delete($line, true, $cfg_ocs['history_network']);
       }
    }
 
@@ -464,8 +463,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       $type_results = $DB->request($query);
       echo "<br>\n<div class ='center'><table class='tab_cadrehov'>";
       if ($type_results->numrows() > 0) {
-         echo "<tr class='tab_bg_2'><th colspan='4'>".__('Unknown network port type from OCS',
-                                                         'ocsinventoryng')."</th></tr>";
+         echo "<tr class='tab_bg_2'><th colspan='4'>".self::getTypeName(2)."</th></tr>";
          foreach ($type_results as $type) {
             $query = "SELECT `TYPEMIB`, `TYPE`,
                              GROUP_CONCAT(DISTINCT `speed` SEPARATOR '#') AS speed

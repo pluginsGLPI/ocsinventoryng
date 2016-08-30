@@ -1,30 +1,31 @@
 <?php
 /*
- * @version $Id: HEADER 15930 2012-12-15 11:10:55Z tsmr $
--------------------------------------------------------------------------
-Ocsinventoryng plugin for GLPI
-Copyright (C) 2012-2016 by the ocsinventoryng plugin Development Team.
+ * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
+ -------------------------------------------------------------------------
+ ocsinventoryng plugin for GLPI
+ Copyright (C) 2015-2016 by the ocsinventoryng Development Team.
 
-https://forge.glpi-project.org/projects/ocsinventoryng
--------------------------------------------------------------------------
+ https://github.com/pluginsGLPI/ocsinventoryng
+ -------------------------------------------------------------------------
 
-LICENSE
+ LICENSE
+      
+ This file is part of ocsinventoryng.
 
-This file is part of ocsinventoryng.
+ ocsinventoryng is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-Ocsinventoryng plugin is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ ocsinventoryng is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-Ocsinventoryng plugin is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
--------------------------------------------------------------------------- */
+ You should have received a copy of the GNU General Public License
+ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
+ */
 
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
@@ -262,14 +263,12 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
 
                if (count($data)) {
-                  $ocs_config
-                     = PluginOcsinventoryngOcsServer::getConfig(PluginOcsinventoryngOcsServer::getByMachineID($items_id));
 
                   echo "<div class='center'>";
                   echo "<form method='post' action=\"$target\">";
                   echo "<input type='hidden' name='id' value='$items_id'>";
                   echo "<table class='tab_cadre_fixe'>";
-                  echo "<tr><th colspan = '4'>OCS Inventory NG</th>";
+                  echo "<tr><th colspan = '4'>".__('OCSNG link', 'ocsinventoryng')."</th>";
                   
                   echo "<tr class='tab_bg_1'>";
                   echo "<td class='left'>";
@@ -297,26 +296,131 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                   if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
                      echo "<tr class='tab_bg_1'>";
-                     echo "<td class='center' colspan='2'>";
+                     echo "<td class='center'>";
                      echo "<input type='hidden' name='link_id' value='" . $data["id"] . "'>";
                      echo "<input class=submit type='submit' name='update' value=\"" .
                             _sx('button', 'Save')."\">";
                      echo "</td>";
                      
-                     echo "<td class='center' colspan='2'>";
+                     echo "<td class='center'>";
                      echo "<input type='hidden' name='resynch_id' value='" . $data["id"] . "'>";
                      echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
                            _sx('button', 'Force synchronization', 'ocsinventoryng'). "\">";
                      echo "</td>";
-
+                     
+                     echo "<td class='center'>";
+                     echo "<input type='hidden' name='items_id' value='" . $items_id . "'>";
+                     echo "<input class=submit type='submit' name='delete_link' value=\"" .
+                           _sx('button', 'Delete link', 'ocsinventoryng'). "\">";
+                     echo "</td>";
+                     
+                     echo "<td>";
+                     echo "</td>";
+                     
                      echo "</tr>";
                   }
 
                   echo "</table>\n";
                   Html::closeForm();
                   echo "</div>";
+                  if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
+                     $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($data["plugin_ocsinventoryng_ocsservers_id"]);
+
+                     $options   = array(
+                        'DISPLAY' => array(
+                           'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
+                        )
+                     );
+                     $computer  = array();
+                     $checksum_client = 0;
+                     $computer  = $ocsClient->getComputer($data["ocsid"], $options);
+                     echo "<br><table class='tab_cadre_fixe'>";
+                     echo "<tr>";
+                     echo "<th colspan='2'>".__('DEBUG')." ".__('OCSNG', "ocsinventoryng")."</th>";
+                     echo "</tr>";
+                     if (count($computer) > 0) {
+                        foreach($computer as $key => $val) {
+                           echo "<tr class='tab_bg_1'>";
+                           echo "<td>";
+                           print_r($key);
+                           echo "</td>";
+                           echo "<td>";
+                           foreach($val as $name => $value) {
+                              printf(__('%1$s: %2$s'), $name,
+                                 $value);
+                              if ($name == "CHECKSUM") {
+                                 $checksum_client = intval($value);
+                              }
+                              echo "</br>";
+                           }
+                           echo "</td>";
+                           echo "</tr>";
+                        }
+                     } else {
+                        echo "<tr class='tab_bg_1'>";
+                        echo "<td colspan='2' class='red'>";
+                        _e('No computer found into OCSNG Database', 'ocsinventoryng');
+                        echo "</td>";
+                        echo "</tr>";
+                     }
+                     $server = new PluginOcsinventoryngOcsServer();
+                     if ($server->getFromDB($data["plugin_ocsinventoryng_ocsservers_id"]) 
+                           && $checksum_client > 0) {
+                        echo "<tr class='tab_bg_1'>";
+                        echo "<td>";
+                        _e('Checksum test', 'ocsinventoryng');
+                        echo "</td>";
+                        echo "<td>";
+                        $format = '(%1$2d = %1$04b) = (%2$2d = %2$04b)'
+           . ' %3$s (%4$2d = %4$04b)' . "\n";
+                        
+                        $checksum_server = intval($server->fields["checksum"]);
+                        $result = $checksum_server & $checksum_client;
+                        printf($format, $result, $checksum_server, '&', $checksum_client);
+                        echo "</td>";
+                        echo "</tr>";
+                     }
+                     echo "</table>";
+                     
+                  }
+               } else {
+                  
+                  echo "<div class='center'>";
+                  echo "<table class='tab_cadre_fixe'>";
+                  echo "<tr><th colspan = '2'>".__('OCSNG link', 'ocsinventoryng')."</th>";
+                  echo "<tr class='tab_bg_1'>";
+                  echo "<td colspan='2' >";
+                  _e('No computer found into OCSNG Database', 'ocsinventoryng');
+                  echo "</td>";
+                  echo "</tr>";
+                  echo "</table>";
+                  echo "</div>";
                }
+            } else {
+                  
+               echo "<div class='center'>";
+               echo "<table class='tab_cadre_fixe'>";
+               echo "<tr><th colspan = '2'>".__('OCSNG link', 'ocsinventoryng')."</th>";
+               echo "<tr class='tab_bg_1'>";
+               echo "<td colspan='2' '>";
+               _e('No computer found into OCSNG Database', 'ocsinventoryng');
+               echo "</td>";
+               echo "</tr>";
+               echo "</table>";
+               echo "</div>";
             }
+         } else {
+                  
+            echo "<div class='center'>";
+            echo "<table class='tab_cadre_fixe'>";
+            echo "<tr><th colspan = '2'>".__('OCSNG link', 'ocsinventoryng')."</th>";
+            echo "<tr class='tab_bg_1'>";
+            echo "<td colspan='2' '>";
+            _e('No computer found into OCSNG Database', 'ocsinventoryng');
+            echo "</td>";
+            echo "</tr>";
+            echo "</table>";
+            echo "</div>";
          }
       }
    }

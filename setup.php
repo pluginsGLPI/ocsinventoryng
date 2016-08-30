@@ -1,30 +1,31 @@
 <?php
 /*
- * @version $Id: HEADER 15930 2012-12-15 11:10:55Z tsmr $
+ * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
 -------------------------------------------------------------------------
-Ocsinventoryng plugin for GLPI
-Copyright (C) 2012-2016 by the ocsinventoryng plugin Development Team.
+ ocsinventoryng plugin for GLPI
+ Copyright (C) 2015-2016 by the ocsinventoryng Development Team.
 
-https://forge.glpi-project.org/projects/ocsinventoryng
+ https://github.com/pluginsGLPI/ocsinventoryng
 -------------------------------------------------------------------------
 
 LICENSE
 
 This file is part of ocsinventoryng.
 
-Ocsinventoryng plugin is free software; you can redistribute it and/or modify
+ ocsinventoryng is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 
-Ocsinventoryng plugin is distributed in the hope that it will be useful,
+ ocsinventoryng is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
--------------------------------------------------------------------------- */
+ --------------------------------------------------------------------------
+ */
 
 define("PLUGIN_OCSINVENTORYNG_STATE_STARTED", 1);
 define("PLUGIN_OCSINVENTORYNG_STATE_RUNNING", 2);
@@ -117,6 +118,9 @@ function plugin_init_ocsinventoryng() {
       
       $PLUGIN_HOOKS['post_init']['ocsinventoryng']   = 'plugin_ocsinventoryng_postinit';
       
+      if (class_exists('PluginMydashboardMenu')) {
+         $PLUGIN_HOOKS['mydashboard']['ocsinventoryng'] = array ("PluginOcsinventoryngDashboard");
+   }
    }
 
    $CFG_GLPI['ocsinventoryng_devices_index'] = array(1  => 'Item_DeviceMotherboard',
@@ -141,10 +145,10 @@ function plugin_init_ocsinventoryng() {
 function plugin_version_ocsinventoryng() {
 
    return array('name'           => "OCS Inventory NG",
-                'version'        => '1.2.2',
+                'version'        => '1.2.3',
                 'author'         => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
                 'license'        => 'GPLv2+',
-                'homepage'       => 'https://forge.indepnet.net/projects/ocsinventoryng',
+                'homepage'       => 'https://github.com/pluginsGLPI/ocsinventoryng',
                 'minGlpiVersion' => '0.90');
 
 }

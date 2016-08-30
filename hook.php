@@ -1,30 +1,31 @@
 <?php
 /*
- * @version $Id: HEADER 15930 2012-12-15 11:10:55Z tsmr $
--------------------------------------------------------------------------
-Ocsinventoryng plugin for GLPI
-Copyright (C) 2012-2016 by the ocsinventoryng plugin Development Team.
+ * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
+ -------------------------------------------------------------------------
+ ocsinventoryng plugin for GLPI
+ Copyright (C) 2015-2016 by the ocsinventoryng Development Team.
 
-https://forge.glpi-project.org/projects/ocsinventoryng
--------------------------------------------------------------------------
+ https://github.com/pluginsGLPI/ocsinventoryng
+ -------------------------------------------------------------------------
 
-LICENSE
+ LICENSE
+      
+ This file is part of ocsinventoryng.
 
-This file is part of ocsinventoryng.
+ ocsinventoryng is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-Ocsinventoryng plugin is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ ocsinventoryng is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-Ocsinventoryng plugin is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
--------------------------------------------------------------------------- */
+ You should have received a copy of the GNU General Public License
+ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
+ */
 
 function plugin_ocsinventoryng_install() {
    global $DB;
@@ -745,6 +746,33 @@ function plugin_ocsinventoryng_install() {
                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
       $DB->queryOrDie($query, "add table for snmp");
    }
+   
+   /*1.2.3*/
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+         && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','dohistory')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `dohistory` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_hardware` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_bios` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_drives` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_network` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_devices` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_monitor` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_printer` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_peripheral` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_sofware` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_vm` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `history_admininfos` tinyint(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.2.3 update table glpi_plugin_ocsinventoryng_ocsservers add history");
+   }
+   
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+         && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','import_device_controller')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `import_device_controller` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `import_device_slot` tinyint(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.2.3 update table glpi_plugin_ocsinventoryng_ocsservers add import_device_controller & slot");
+   }
    /**/
    
    $cron = new CronTask();
@@ -1128,10 +1156,9 @@ function plugin_ocsinventoryng_uninstall() {
 function plugin_ocsinventoryng_getDropdown() {
    // Table => Name
    return array('PluginOcsinventoryngNetworkPortType' => PluginOcsinventoryngNetworkPortType::getTypeName(2),
-                  'PluginOcsinventoryngNetworkPort'     => PluginOcsinventoryngNetworkPort::getTypeName(2));
+                  'PluginOcsinventoryngNetworkPort'     => PluginOcsinventoryngNetworkPort::getTypeName(2),
+                  "PluginOcsinventoryngNotimportedcomputer" => __('Computers not imported by automatic actions', 'ocsinventoryng'));
 }
-
-
 
 /**
  * Define dropdown relations
@@ -2197,11 +2224,11 @@ function plugin_ocsinventoryng_pre_item_update($item){
       if($ocslink->getFromDBforComputer($item->fields['items_id'])){
          $field_set    = false;
          $computers_update = importArrayFromDB($ocslink->fields['computer_update']);
-         foreach ($computers_update as $key => $field){
-            if (isset ($item->input[$field]) 
-                  && $item->input[$field] != $item->fields[$field]) {
+         if (in_array('use_date', $computers_update)) {
+            if (isset ($item->input["use_date"]) 
+                  && $item->input["use_date"] != $item->fields["use_date"]) {
                $field_set           = true;
-               $item->input[$field] = $item->fields[$field];
+               $item->input["use_date"] = $item->fields["use_date"];
             }
          }
          if ($field_set) {
@@ -2215,7 +2242,7 @@ function plugin_ocsinventoryng_item_update($item) {
    global $DB;
 
    if ($item->fields['itemtype'] == "Computer") {
-      
+
       if(in_array('use_date', $item->updates)){
          $query  = "SELECT *
                    FROM `glpi_plugin_ocsinventoryng_ocslinks`
