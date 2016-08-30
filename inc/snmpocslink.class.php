@@ -215,7 +215,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
    * @return nothing
    **/
    static function showSimpleForItem(CommonDBTM $item) {
-      global $DB, $CFG_GLPI;
+      /*global $DB, $CFG_GLPI;
 
       $target = Toolbox::getItemTypeFormURL(__CLASS__);
 
@@ -281,7 +281,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                }
             }
          }
-      }
+      }*/
    }
    
    // SNMP PART HERE
@@ -676,7 +676,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                "speed_other_value"        => "",
                "add"                      => __("Add"),
             );
-
+            
             $np->splitInputForElements($newinput);
             $newID = $np->add($newinput);
             $np->updateDependencies(1);
@@ -714,6 +714,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       $id_item = 0;
 
       if ($action == "add") {
+         
          $id_item = $snmpDevice->add($input, array('unicity_error_message' => false));
       } else {
          $input["id"] = $ID;
@@ -856,7 +857,6 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       _e('By itemtype', 'ocsinventoryng');
       echo "</td><td class='center'>";
       Dropdown::showItemTypes("itemtype", self::$snmptypes, array('value' => $p['itemtype']));
-
       echo "</td>";
       
       echo "<td class='center'>";
@@ -1094,7 +1094,6 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                foreach ($hardware as $ID => $tab) {
                   $row_num++;
                   $item_num   = 1;
-                  
                   if ($tab["type"] == "Network") {
                      $tab["type"] = "NetworkEquipment";
                   }
@@ -1117,7 +1116,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                      }
                      $type = "toimport_itemtype[" . $tab["id"] . "]";
 
-                     Dropdown::showItemTypes($type, self::$snmptypes, array('value' => $value));
+                    // Dropdown::showItemTypes($type, self::$snmptypes, array('value' => $value));
                      echo "</td>\n";
                   }
                   /* if ($p['change_import_mode'] && !$tolinked){

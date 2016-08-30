@@ -252,7 +252,6 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          if (isset($ports['main'])) {
             $main = $ports['main'];
             $type = $network_ifaces[$main['type']];
-            
             // First search for the Network Card
             $item_device = new Item_DeviceNetworkCard();
             $item_device->getFromDBByQuery(

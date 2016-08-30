@@ -49,13 +49,12 @@ if (isset($_POST["change_import_mode"])) {
 }
 
 if (isset($_SESSION["ocs_import"]["id"])) {
+   
    if ($count = count($_SESSION["ocs_import"]["id"])) {
       $percent = min(100,
                      round(100*($_SESSION["ocs_import_count"]-$count)/$_SESSION["ocs_import_count"],
                            0));
-
       $key = array_pop($_SESSION["ocs_import"]["id"]);
-
       if (isset($_SESSION["ocs_import"]["entities_id"][$key])) {
          $entity = $_SESSION["ocs_import"]["entities_id"][$key];
       } else {
@@ -76,6 +75,7 @@ if (isset($_SESSION["ocs_import"]["id"])) {
                                                             $action['status']);
       PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_import"]['statistics']);
       Html::displayProgressBar(400, $percent);
+      
       Html::redirect($_SERVER['PHP_SELF']);
    } else {
       //displayProgressBar(400, 100);

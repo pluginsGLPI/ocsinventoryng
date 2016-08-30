@@ -1,29 +1,29 @@
 <?php
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
- -------------------------------------------------------------------------
+-------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
  Copyright (C) 2015-2016 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
- -------------------------------------------------------------------------
+-------------------------------------------------------------------------
 
- LICENSE
-      
- This file is part of ocsinventoryng.
+LICENSE
+
+This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
  ocsinventoryng is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
@@ -94,11 +94,13 @@ function plugin_init_ocsinventoryng() {
    
    Plugin::registerClass('PluginOcsinventoryngSnmpOcslink',
                          array('addtabon'          => array('Computer', 'Printer', 'NetworkEquipment', 'Peripheral', 'Phone')));
-                               
+   
    // transfer
    $PLUGIN_HOOKS['item_transfer']['ocsinventoryng']="plugin_ocsinventoryng_item_transfer";
 
-
+    // Css file
+    $PLUGIN_HOOKS['add_css']['ocsinventoryng'] = 'css/ocsinventoryng.css';
+    
    if (Session::getLoginUserID()) {
 
       // Display a menu entry ?
@@ -108,7 +110,7 @@ function plugin_init_ocsinventoryng() {
 
       if (Session::haveRight("plugin_ocsinventoryng", UPDATE) || Session::haveRight("config", UPDATE)) {
          $PLUGIN_HOOKS['use_massive_action']['ocsinventoryng'] = 1;
-         $PLUGIN_HOOKS['redirect_page']['ocsinventoryng']      = "front/notimportedcomputer.form.php";
+         $PLUGIN_HOOKS['redirect_page']['ocsinventoryng']      = "front/ocsng.php";
 
          //TODO Change for menu
          $PLUGIN_HOOKS['config_page']['ocsinventoryng'] = 'front/config.php';
@@ -118,7 +120,7 @@ function plugin_init_ocsinventoryng() {
       
       if (class_exists('PluginMydashboardMenu')) {
          $PLUGIN_HOOKS['mydashboard']['ocsinventoryng'] = array ("PluginOcsinventoryngDashboard");
-      }
+   }
    }
 
    $CFG_GLPI['ocsinventoryng_devices_index'] = array(1  => 'Item_DeviceMotherboard',

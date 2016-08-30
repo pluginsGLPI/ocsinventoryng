@@ -358,3 +358,17 @@ INSERT INTO `glpi_displaypreferences` (`itemtype`, `num`, `rank`, `users_id`)
                        ('PluginOcsinventoryngDetail', 80, 6, 0);
 
 INSERT INTO `glpi_crontasks` VALUES (NULL,'PluginOcsinventoryngOcsServer','ocsng','300',NULL,'0','1','3','0','24','30',NULL,NULL,NULL);
+
+
+### Dump table glpi_plugin_ocsinventoryng_ipdiscoverlinks
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`;
+CREATE TABLE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `items_id` int(11) NOT NULL,
+  `itemtype` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `macaddress` varchar(255) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
+  `last_update` DATETIME COLLATE utf8_unicode_ci DEFAULT NULL,
+  `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

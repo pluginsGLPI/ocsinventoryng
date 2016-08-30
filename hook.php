@@ -263,6 +263,22 @@ function plugin_ocsinventoryng_install() {
       $DB->queryOrDie($query, "1.2.2 update table glpi_plugin_ocsinventoryng_ocsservers");
    }
    
+      //Update 1.2.3
+   If (!TableExists("glpi_plugin_ocsinventoryng_ipdiscoverocslinks"))
+        {
+
+      $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `items_id` int(11) NOT NULL,
+                `itemtype` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                `macaddress` varchar(255) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
+                `last_update` DATETIME COLLATE utf8_unicode_ci DEFAULT NULL,
+                `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
+                 PRIMARY KEY (`id`)
+                 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+      $DB->queryOrDie($query, "1.2.3 add table glpi_plugin_ocsinventoryng_ipdiscoverocslinks");
+   }
+   
    
    // Si massocsimport import est installe, on verifie qu'il soit bien dans la dernière version
    if (TableExists("glpi_plugin_mass_ocs_import")) { //1.1 ou 1.2
