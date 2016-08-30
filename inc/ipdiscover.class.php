@@ -177,6 +177,25 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
       return $subnet;
    }
    
+   static function getSubnetNamebyIP($ipAdress) {
+      
+      $name = "";
+      $ocsClient = new PluginOcsinventoryngOcsServer();
+      $ocsdb     = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+      $OCSDB     = $ocsdb->getDB();
+      
+      $query     = "SELECT *
+              FROM `subnet`
+              WHERE `subnet`.`NETID` = '$ipAdress'";
+      $result    = $OCSDB->query($query);
+      if ($result->num_rows > 0) {
+         $res   = $OCSDB->fetch_assoc($result);
+         $subnet = $res["NAME"];
+      
+      }
+      return $subnet;
+   }
+   
    public static function countSubnetsID(&$count) {
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS     = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"])->getDB();
@@ -221,12 +240,12 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
       $unknownIP = array();
       $knownIP   = array();
       $IP        = array();
-      $query     = "SELECT DISTINCT `NETWORKS`.`IPSUBNET`,`SUBNET`.`NAME`,`SUBNET`.`ID`
-               FROM `NETWORKS` 
-               LEFT JOIN `SUBNET` 
-               ON (`NETWORKS`.`IPSUBNET` = `SUBNET`.`NETID`) ,`ACCOUNTINFO`
-               WHERE `NETWORKS`.`HARDWARE_ID`=`ACCOUNTINFO`.`HARDWARE_ID`
-               AND `NETWORKS`.`STATUS`='Up'";
+      $query     = "SELECT DISTINCT `networks`.`IPSUBNET`,`subnet`.`NAME`,`subnet`.`ID`
+               FROM `networks` 
+               LEFT JOIN `subnet` 
+               ON (`networks`.`IPSUBNET` = `subnet`.`NETID`) ,`accountinfo`
+               WHERE `networks`.`HARDWARE_ID`=`accountinfo`.`HARDWARE_ID`
+               AND `networks`.`STATUS`='Up'";
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS     = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
       $result    = $DBOCS->query($query);
@@ -328,15 +347,15 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
    static function ipDiscoverMenu($plugin_ocsinventoryng_ocsservers_id) {
       global $CFG_GLPI, $DB;
       $ocsservers          = array();
-      echo "<div class='center'>";
-      echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png' " .
-      "alt='OCS Inventory NG' title='OCS Inventory NG'>";
-      echo "</div>";
+      //echo "<div class='center'>";
+      //echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png' " .
+      //"alt='OCS Inventory NG' title='OCS Inventory NG'>";
+      //echo "</div>";
       $numberActiveServers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
       if ($numberActiveServers > 0) {
          echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
          method='post'>";
-         echo "<div class='center'><table class='tab_cadre' width='40%'>";
+         echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an OCSNG server', 'ocsinventoryng') .
          "</th></tr>\n";
 
@@ -364,7 +383,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          Html::closeForm();
          echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php\"
                 method='post'>";
-         echo "<div class='center'><table class='tab_cadre' width='40%'>";
+         echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an subnet', 'ocsinventoryng') .
          "</th></tr>\n";
          echo "<tr class='tab_bg_2'><td class='center'>" . __('Subnet', 'ocsinventoryng') . "</td>";
@@ -1103,10 +1122,14 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $reload      = "ip=$ipAdress&status=$status";
       $backValues  = "?b[]=$ipAdress&b[]=$status";
       
+      $subnet = PluginOcsinventoryngIpDiscover::getSubnetNamebyIP($ipAdress);
+      echo "<div class='center'><h2>".__('Subnet', 'ocsinventoryng')." ".$subnet." (".$ipAdress.")</h2></div>";
+      
       if ($subnet >= 0) {
          $back = __('Back');
          echo "<div class='center'><a href='$return?$returnargs'>$back</div>";
       }
+      
       echo Html::printPager($start, count($hardware), $link, $reload);
       echo Search::showNewLine($output_type, true);
       if (empty($hardware)) {

@@ -248,15 +248,15 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       global $CFG_GLPI, $DB, $conf;
       $name                = "";
       $ocsservers          = array();
-      echo "<div class='center'>";
-      echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png' " .
-      "alt='OCS Inventory NG' title='OCS Inventory NG'>";
-      echo "</div>";
+      //echo "<div class='center'>";
+      //echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png' " .
+      //"alt='OCS Inventory NG' title='OCS Inventory NG'>";
+      //echo "</div>";
       $numberActiveServers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
       if ($numberActiveServers > 0) {
          echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
                 method='post'>";
-         echo "<div class='center'><table class='tab_cadre' width='40%'>";
+         echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an OCSNG server', 'ocsinventoryng') .
          "</th></tr>\n";
 
@@ -297,7 +297,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       $usemassimport = self::useMassImport();
 
-      echo "<div class='center'><table class='tab_cadre' width='40%'>";
+      echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
       echo "<tr><th colspan='" . ($usemassimport ? 4 : 2) . "'>";
       printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
       echo "</th></tr>";
@@ -417,15 +417,15 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    static function snmpMenu($plugin_ocsinventoryng_ocsservers_id) {
       global $CFG_GLPI, $DB;
       $ocsservers          = array();
-      echo "<div class='center'>";
-      echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png' " .
-      "alt='OCS Inventory NG' title='OCS Inventory NG'>";
-      echo "</div>";
+      //echo "<div class='center'>";
+      //echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png' " .
+      //"alt='OCS Inventory NG' title='OCS Inventory NG'>";
+      //echo "</div>";
       $numberActiveServers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
       if ($numberActiveServers > 0) {
          echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
                 method='post'>";
-         echo "<div class='center'><table class='tab_cadre' width='40%'>";
+         echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an OCSNG server', 'ocsinventoryng') .
          "</th></tr>\n";
 
@@ -472,7 +472,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          //if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $version > self::OCS2_1_VERSION_LIMIT && $snmp) {
             //host not imported by thread
             $usemassimport = self::useMassImport();
-            echo "<div class='center'><table class='tab_cadre' width='40%'>";
+            echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
             echo "<tr><th colspan='" . ($usemassimport ? 4 : 2) . "'>";
             _e('OCSNG SNMP import', 'ocsinventoryng');
             echo "</th></tr>";
