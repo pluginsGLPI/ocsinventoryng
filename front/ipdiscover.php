@@ -28,32 +28,32 @@
   --------------------------------------------------------------------------
  */
 
-
-
 include ('../../../inc/includes.php');
+
 Session::checkRight("plugin_ocsinventoryng", READ);
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu");
-//Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu",'ipdiscover');
+
+Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "importipdiscover");
+
 $ip = new PluginOcsinventoryngIpDiscover();
 if (empty($_POST)) {
    $_POST = $_GET;
 }
-if (isset($_POST["subnetsChoise"]) && isset($_SESSION["subnets"]) || isset($_SESSION["subnets"])) {
+if (isset($_POST["subnetsChoice"]) && isset($_SESSION["subnets"]) || isset($_SESSION["subnets"])) {
    $sN             = "";
    $networksDetail = array();
    $ocsServerId    = $_SESSION["plugin_ocsinventoryng_ocsservers_id"];
    $tab            = $_SESSION["subnets"];
    $subnets        = $ip->getSubnets($ocsServerId);
-   if (isset($_POST["subnetsChoise"])) {
-      $sN                              = $tab[$_POST["subnetsChoise"]];
+   if (isset($_POST["subnetsChoice"])) {
+      $sN                              = $tab[$_POST["subnetsChoice"]];
       $knownMacAdresses                = $ip->getKnownMacAdresseFromGlpi();
       $networksDetail["subnets"]       = $ip->showSubnets($ocsServerId, $subnets, $knownMacAdresses, $sN);
-      $networksDetail["subnetsChoise"] = $_POST["subnetsChoise"];
+      $networksDetail["subnetsChoice"] = $_POST["subnetsChoice"];
    } else {
       $sN                              = $tab[1];
       $knownMacAdresses                = $ip->getKnownMacAdresseFromGlpi();
       $networksDetail["subnets"]       = $ip->showSubnets($ocsServerId, $subnets, $knownMacAdresses, $sN);
-      $networksDetail["subnetsChoise"] = 1;
+      $networksDetail["subnetsChoice"] = 1;
    }
    $lim = count($networksDetail["subnets"]);
    if ($lim > $_SESSION["glpilist_limit"]) {

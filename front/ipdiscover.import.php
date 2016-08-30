@@ -30,10 +30,13 @@
 
 
 include ('../../../inc/includes.php');
+
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu");
-//Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ipdiscmodifynetwork");
+
+Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "importipdiscover");
+
 $ip = new PluginOcsinventoryngIpDiscover();
+
 if (isset($_GET["ip"]) || isset($_POST["ip"])) {
    $ocsServerId   = $_SESSION["plugin_ocsinventoryng_ocsservers_id"];
    $status        = $_GET["status"];
@@ -44,6 +47,8 @@ if (isset($_GET["ip"]) || isset($_POST["ip"])) {
    } else {
       $ipAdress = $_POST["ip"];
    }
+   
+   $subnet = PluginOcsinventoryngIpDiscover::getSubnetIDbyIP($ipAdress);
    $hardware         = array();
    $knownMacAdresses = $ip->getKnownMacAdresseFromGlpi();
    if (isset($status)) {
@@ -51,15 +56,15 @@ if (isset($_GET["ip"]) || isset($_POST["ip"])) {
       $lim      = count($hardware);
       if ($lim > $glpiListLimit) {
          if (isset($_GET["start"])) {
-            $ip->showHardware($hardware, $glpiListLimit, intval($_GET["start"]), $ipAdress, $status);
+            $ip->showHardware($hardware, $glpiListLimit, intval($_GET["start"]), $ipAdress, $status, $subnet);
          } else {
-            $ip->showHardware($hardware, $glpiListLimit, 0, $ipAdress, $status);
+            $ip->showHardware($hardware, $glpiListLimit, 0, $ipAdress, $status, $subnet);
          }
       } else {
          if (isset($_GET["start"])) {
-            $ip->showHardware($hardware, $lim, intval($_GET["start"]), $ipAdress, $status);
+            $ip->showHardware($hardware, $lim, intval($_GET["start"]), $ipAdress, $status, $subnet);
          } else {
-            $ip->showHardware($hardware, $lim, 0, $ipAdress, $status);
+            $ip->showHardware($hardware, $lim, 0, $ipAdress, $status, $subnet);
          }
       }
    }
@@ -211,5 +216,6 @@ if (isset($_POST["Import"]) || isset($_SESSION["ocs_importipdiscover"]["datas"])
    }
 }
 
-html::footer();
+Html::footer();
+
 ?>
