@@ -2340,6 +2340,13 @@ JAVASCRIPT;
                      $mb = true;
                   }
                }
+               if ($mixed_checksum & pow(2, self::MEMORIES_FL)) {
+
+                  if ($cfg_ocs["import_device_memory"]) {
+                     $memories   = true;
+                     $ocsCheck[] = PluginOcsinventoryngOcsClient::CHECKSUM_MEMORY_SLOTS;
+                  }
+               }
                if ($mixed_checksum & pow(2, self::CONTROLLERS_FL)) {
 
                   if ($cfg_ocs["import_device_controller"]) {
