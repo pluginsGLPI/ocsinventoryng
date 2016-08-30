@@ -159,7 +159,7 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
 
    static function getSubnetIDbyIP($ipAdress) {
       
-      $subnet = 0;
+      $subnet = -1;
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $ocsdb     = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
       $OCSDB     = $ocsdb->getDB();
@@ -599,19 +599,19 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param type $subnetsArray array
     * @param type $lim integer
     */
-   static function showSubnetsDetails($subnetsArray, $lim = 0) {
-      global $CFG_GLPI;
-      $start           = 0;
+   static function showSubnetsDetails($subnetsArray, $lim = 0, $start = 0) {
+      global $CFG_GLPI;+
+      
       $output_type     = Search::HTML_OUTPUT; //0
       $return          = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php";
       $link            = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
-      $choise          = "subnetsChoice=" . $subnetsArray["subnetsChoice"];
+      $choice          = "subnetsChoice=" . $subnetsArray["subnetsChoice"];
       $subnets         = $subnetsArray["subnets"];
-       $row_num         = 1;
+      $row_num         = 1;
       $modNetwork      = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.modifynetwork.php";
       $hardwareNetwork = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php";
       
-      echo Html::printPager($start, count($subnets), $link, $choise);
+      echo Html::printPager($start, count($subnets), $link, $choice);
       echo Search::showNewLine($output_type, true);
       $header_num      = 1;
       echo "<table width='100%'class='tab_cadrehov'>\n";
@@ -624,7 +624,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       echo Search::showEndLine($output_type);
 
       //limit number of displayed items
-      for ($i = $start; $i < $lim; $i++) {
+      for ($i = $start; $i < $lim + $start; $i++) {
          $row_num++;
          $item_num=1;
          $name = "unknow";
@@ -1099,9 +1099,14 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $output_type = Search::HTML_OUTPUT; //0
       $link        = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php";
       $return      = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
-      $reload      = "subnetsChoice=$subnet";
-
+      $returnargs     = "subnetsChoice=$subnet";
+      $reload      = "ip=$ipAdress&status=$status";
       $backValues  = "?b[]=$ipAdress&b[]=$status";
+      
+      if ($subnet >= 0) {
+         $back = __('Back');
+         echo "<div class='center'><a href='$return?$returnargs'>$back</div>";
+      }
       echo Html::printPager($start, count($hardware), $link, $reload);
       echo Search::showNewLine($output_type, true);
       if (empty($hardware)) {
@@ -1121,7 +1126,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo Search::showHeaderItem($output_type, __('Last OCSNG inventory date', 'ocsinventoryng'), $header_num);
                echo Search::showEndLine($output_type);
                $row_num = 1;
-               for ($i = $start; $i < $lim; $i++) {
+               for ($i = $start; $i < $lim + $start; $i++) {
                   $row_num++;
                   $item_num = 1;
                   echo Search::showNewLine($output_type, $row_num % 2);
@@ -1170,7 +1175,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                foreach (self::$hardwareItemTypes as $items) {
                   $itemstypes[$items] = __($items);
                }
-               for ($i = $start; $i < $lim; $i++) {
+               for ($i = $start; $i < $lim + $start; $i++) {
                   $row_num++;
                   echo Search::showNewLine($output_type, $row_num % 2);
                   echo self::showItem($ip = $hardware[$i]["ip"]);
@@ -1236,7 +1241,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                foreach (self::$hardwareItemTypes as $items) {
                   $itemstypes[$items] = __($items);
                }
-               for ($i = $start; $i < $lim; $i++) {
+               for ($i = $start; $i < $lim + $start; $i++) {
                   $row_num++;
 
                   echo Search::showNewLine($output_type, $row_num % 2);
@@ -1277,8 +1282,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                break;
          }
       }
-      $back = __('Back');
-      echo "<div class='center'><a href='$return?$reload'>$back</div>";
+      if ($subnet >= 0) {
+         $back = __('Back');
+         echo "<div class='center'><a href='$return?$returnargs'>$back</div>";
+      }
    }
    
    /**

@@ -56,10 +56,11 @@ if (isset($_POST["subnetsChoice"]) && isset($_SESSION["subnets"]) || isset($_SES
       $networksDetail["subnetsChoice"] = 1;
    }
    $lim = count($networksDetail["subnets"]);
+   $start = isset($_POST['start'])? $_POST['start'] : 0;
    if ($lim > $_SESSION["glpilist_limit"]) {
-      $ip->showSubnetsDetails($networksDetail, $_SESSION["glpilist_limit"]);
+      $ip->showSubnetsDetails($networksDetail, $_SESSION["glpilist_limit"], $start);
    } else {
-      $ip->showSubnetsDetails($networksDetail, $lim);
+      $ip->showSubnetsDetails($networksDetail, $lim, $start);
    }
 }
 
