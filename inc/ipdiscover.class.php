@@ -190,10 +190,10 @@ class PluginOcsinventoryngIpDiscover extends CommonGLPI {
       $result    = $OCSDB->query($query);
       if ($result->num_rows > 0) {
          $res   = $OCSDB->fetch_assoc($result);
-         $subnet = $res["NAME"];
+         $name = $res["NAME"];
       
       }
-      return $subnet;
+      return $name;
    }
    
    public static function countSubnetsID(&$count) {
@@ -1122,8 +1122,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $reload      = "ip=$ipAdress&status=$status";
       $backValues  = "?b[]=$ipAdress&b[]=$status";
       
-      $subnet = PluginOcsinventoryngIpDiscover::getSubnetNamebyIP($ipAdress);
-      echo "<div class='center'><h2>".__('Subnet', 'ocsinventoryng')." ".$subnet." (".$ipAdress.")</h2></div>";
+      $subnet_name = PluginOcsinventoryngIpDiscover::getSubnetNamebyIP($ipAdress);
+      echo "<div class='center'><h2>".__('Subnet', 'ocsinventoryng')." ".$subnet_name." (".$ipAdress.")</h2></div>";
       
       if ($subnet >= 0) {
          $back = __('Back');
