@@ -488,7 +488,30 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       }
       return $macAdresses;
    }
-
+   
+   
+   /**
+    * this function delete datas on an certain mac
+    * @param type $plugin_ocsinventoryng_ocsservers_id string
+    * @param type $macAdresses array
+    * @return none
+    */
+   static function deleteMACFromOCS($plugin_ocsinventoryng_ocsservers_id, $macAdresses) {
+   
+      $ocsClient = new PluginOcsinventoryngOcsServer();
+      $DBOCS     = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
+      
+      $macs           = self::getMacAdressKeyVal($macAdresses);
+      
+      foreach ($macs as $key => $mac) {
+         $query = " DELETE FROM `netmap` WHERE `MAC`='$mac' ";
+         $result   = $DBOCS->query($query);
+      
+         $query = " DELETE FROM `network_devices` WHERE `MACADDR`='$mac' ";
+         $result   = $DBOCS->query($query);
+      }
+   }
+   
    /**
     * this function get datas on an certain ipaddress
     * @param type $ipAdress string
@@ -1169,7 +1192,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                self::checkBox($target);
                echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
                echo "<div class='center' style=\"width=100%\">";
-               echo "<input type='submit' class='submit' name='IdentifyAndImport'  value=\"" . _sx('button', 'Import') . "\"></div>";
+               echo "<input type='submit' class='submit' name='IdentifyAndImport'  value=\"" . _sx('button', 'Import') . "\">&nbsp;";
+               echo "<input type='submit' class='submit' name='delete'  value=\"" . _sx('button', 'Delete from OCSNG', 'ocsinventoryng') . "\"></div>";
                echo "<table width='100%'class='tab_cadrehov'>\n";
                echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
                echo Search::showHeaderItem($output_type, __('MAC address'), $header_num);
@@ -1230,7 +1254,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   echo "</tbody>";
                }
                echo "</table>\n";
-               echo "<div class='center' style=\"width=100%\">\n<input type='submit' class='submit' name='IdentifyAndImport'  value=\"" . _sx('button', 'Import') . "\"></div>";
+               echo "<div class='center' style=\"width=100%\">\n<input type='submit' class='submit' name='IdentifyAndImport'  value=\"" . _sx('button', 'Import') . "\">&nbsp;";
+               echo "<input type='submit' class='submit' name='delete'  value=\"" . _sx('button', 'Delete from OCSNG', 'ocsinventoryng') . "\"></div>";
                Html::closeForm();
                self::checkBox($target);
                break;
@@ -1242,7 +1267,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                self::checkBox($target);
                echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
                echo "<div class='center' style=\"width=100%\">";
-               echo "<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\"></div>";
+               echo "<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\">&nbsp;";
+               echo "<input type='submit' class='submit' name='delete'  value=\"" . _sx('button', 'Delete from OCSNG', 'ocsinventoryng') . "\"></div>";
                echo "<table width='100%'class='tab_cadrehov'>";
                echo Search::showHeaderItem($output_type, __('Description'), $header_num);
                echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
@@ -1297,7 +1323,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   echo "</tbody>";
                }
                echo "</table>";
-               echo "<div class='center' style=\"width=100%\"><input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\"></div>";
+               echo "<div class='center' style=\"width=100%\"><input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\">&nbsp;";
+               echo "<input type='submit' class='submit' name='delete'  value=\"" . _sx('button', 'Delete from OCSNG', 'ocsinventoryng') . "\"></div>";
                Html::closeForm();
                self::checkBox($target);
                break;

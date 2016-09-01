@@ -70,9 +70,12 @@ if (isset($_GET["ip"]) || isset($_POST["ip"])) {
    }
 }
 
-if (isset($_POST["Import"]) || isset($_SESSION["ocs_importipdiscover"]["datas"])) {
+if (isset($_POST["Import"]) 
+      || isset($_SESSION["ocs_importipdiscover"]["datas"])) {
    $percent = 0;
-   if (isset($_POST["Import"]) && isset($_POST["mactoimport"]) && sizeof($_POST["mactoimport"]) > 0) {
+   if (isset($_POST["Import"]) 
+         && isset($_POST["mactoimport"]) 
+            && sizeof($_POST["mactoimport"]) > 0) {
       $macAdresses      = $_POST["mactoimport"];
       $itemsTypes       = $_POST["glpiitemstype"];
       $itemsNames       = $_POST["itemsname"];
@@ -141,10 +144,13 @@ if (isset($_POST["Import"]) || isset($_SESSION["ocs_importipdiscover"]["datas"])
          Html::redirect($_SERVER['PHP_SELF'] . "?ip=$ipAdress&status=$status");
       }
    }
-} else if (isset($_POST["IdentifyAndImport"]) || isset($_SESSION["ocs_importipdiscover"]["datas"])) {
+} else if (isset($_POST["IdentifyAndImport"]) 
+               || isset($_SESSION["ocs_importipdiscover"]["datas"])) {
   
    $percent = 0;
-   if (isset($_POST["IdentifyAndImport"]) && isset($_POST["mactoimport"]) && sizeof($_POST["mactoimport"]) > 0) {
+   if (isset($_POST["IdentifyAndImport"]) 
+         && isset($_POST["mactoimport"]) 
+            && sizeof($_POST["mactoimport"]) > 0) {
       $macAdresses      = $_POST["mactoimport"];
       $glpiItemsTypes       = $_POST["glpiitemstype"];
       $itemsNames       = $_POST["itemsname"];
@@ -214,6 +220,15 @@ if (isset($_POST["Import"]) || isset($_SESSION["ocs_importipdiscover"]["datas"])
          Html::redirect($_SERVER['PHP_SELF'] . "?ip=$ipAdress&status=$status");
       }
    }
+} else if (isset($_POST["delete"])) {
+   
+   if (isset($_POST["mactoimport"]) 
+         && sizeof($_POST["mactoimport"]) > 0) {
+      $macAdresses      = $_POST["mactoimport"];
+      $ip->deleteMACFromOCS($_SESSION["plugin_ocsinventoryng_ocsservers_id"],$macAdresses);
+   }
+   Html::back();
+
 }
 
 Html::footer();
