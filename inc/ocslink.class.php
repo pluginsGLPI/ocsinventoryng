@@ -211,6 +211,32 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo '</table>';
                }
             }
+            if (in_array($item->getType(), PluginOcsinventoryngIpdiscoverOcslink::$hardwareItemTypes)) {
+               $items_id = $item->getField('id');
+
+               if (!empty($items_id)
+                   //&& $item->fields["is_dynamic"]
+                   && Session::haveRight("plugin_ocsinventoryng_view", READ)) {
+                  $query = "SELECT *
+                            FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
+                            WHERE `items_id` = '".$items_id."' AND  `itemtype` = '".$item->getType()."'";
+
+                  $result = $DB->query($query);
+                  if ($DB->numrows($result) > 0) {
+                     $data = $DB->fetch_assoc($result);
+
+                     if (count($data)) {
+                        $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
+                        echo "<table class='tab_glpi'>";
+                        echo "<tr class='tab_bg_1'><th colspan='2'>".__('IPDiscover informations OCS NG')."</th>";
+                        
+                        echo "<tr class='tab_bg_1'><td>".__('Import date in GLPI', 'ocsinventoryng');
+                        echo "</td><td>".Html::convDateTime($data["last_update"]).'</td></tr>';
+                        echo "</table>";
+                     }
+                  }
+               }
+            }
          }
       }
    }

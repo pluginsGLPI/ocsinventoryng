@@ -393,8 +393,6 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       //IPDiscover Links
       global $DB, $CFG_GLPI;
 
-      $target = Toolbox::getItemTypeFormURL(__CLASS__);
-
       if (in_array($item->getType(), PluginOcsinventoryngIpdiscoverOcslink::$hardwareItemTypes)) {
          $items_id = $item->getField('id');
 

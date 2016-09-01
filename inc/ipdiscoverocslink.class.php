@@ -491,8 +491,9 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          GROUP BY `hardware`.`id`
          ORDER BY `hardware`.`lastdate`";
       } else if ($status == "imported") {
-         $query = " SELECT `*`
+         $query = " SELECT *
          FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks` 
+         WHERE `subnet` = '$ipAdress'
          ORDER BY `last_update`";
       } else if ($status == "noninventoried") {
          $query = " SELECT `netmap`.`ip`, `netmap`.`mac`, `netmap`.`mask`, `netmap`.`date`, `netmap`.`name` as DNS
@@ -644,18 +645,18 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          if ($subnets[$i]["NAME"] != "") {
             $name = $subnets[$i]["NAME"];
          }
-          echo Search::showNewLine($output_type,$row_num%2);
-          $ip=$subnets[$i]["IP"];
-          $link=$CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.modifynetwork.php?ip=$ip";
-          echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$name,$item_num,$row_num)."</a></td>";
-          echo Search::showItem($output_type,$ip,$item_num,$row_num);
-          $link=$hardwareNetwork."?ip=$ip&status=noninventoried";
-          echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$subnets[$i]["NON_INVENTORIED"],$item_num,$row_num)."</a></td>";
-          $link=$hardwareNetwork."?ip=$ip&status=inventoried";
-          echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$subnets[$i]["INVENTORIED"],$item_num,$row_num)."</a></td>";
-          $link=$hardwareNetwork."?ip=$ip&status=identified";
-          echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$subnets[$i]["IDENTIFIED"],$item_num,$row_num)."</a></td>";
-         $imported_count = "";
+         echo Search::showNewLine($output_type,$row_num%2);
+         $ip=$subnets[$i]["IP"];
+         $link=$CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.modifynetwork.php?ip=$ip";
+         echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$name,$item_num,$row_num)."</a></td>";
+         echo Search::showItem($output_type,$ip,$item_num,$row_num);
+         $link=$hardwareNetwork."?ip=$ip&status=noninventoried";
+         echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$subnets[$i]["NON_INVENTORIED"],$item_num,$row_num)."</a></td>";
+         $link=$hardwareNetwork."?ip=$ip&status=inventoried";
+         echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$subnets[$i]["INVENTORIED"],$item_num,$row_num)."</a></td>";
+         $link=$hardwareNetwork."?ip=$ip&status=identified";
+         echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$subnets[$i]["IDENTIFIED"],$item_num,$row_num)."</a></td>";
+         $imported_count = 0;
          $query     = "SELECT count(`id`) AS count
                         FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
                         WHERE `subnet` = '$ip'";
@@ -664,9 +665,14 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             $datas = $DB->fetch_assoc($result);
             $imported_count = $datas['count'];
          }
-          $link=$hardwareNetwork."?ip=$ip&status=imported";
-          echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$imported_count,$item_num,$row_num)."</a></td>";
-          echo self::showPercentBar($subnets[$i]["PERCENT"]);
+         if ($imported_count > 0) {
+            $link=$hardwareNetwork."?ip=$ip&status=imported";
+            echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$imported_count,$item_num,$row_num)."</a></td>";
+         } else {
+            echo "<td class='center'>0</td>";
+         }
+         
+         echo self::showPercentBar($subnets[$i]["PERCENT"]);
          
       }
       echo "</table>\n";
