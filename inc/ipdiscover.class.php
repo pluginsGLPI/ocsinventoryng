@@ -35,7 +35,7 @@ if (!defined('GLPI_ROOT')) {
 //class PluginOcsinventoryngIpDiscover extends CommonDBTM{
 class PluginOcsinventoryngIpDiscover extends CommonGLPI {
 
-   static $hardwareItemTypes = array('Computer', 'Network device', 'Device', 'Phone', 'Printer');
+   static $hardwareItemTypes = array('Computer', 'NetworkEquipment','Peripheral', 'Phone', 'Printer');
    static protected $notable = false;
    //public $taborientation          = 'vertical';
    static function getTypeName($nb = 0) {
@@ -815,10 +815,6 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          //empty dropdown value
          case '0' :
             return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
-         case "Device" : $ipDiscoveryObject["glpiItemType"] = "Peripheral";
-            break;
-         case "Network device": $ipDiscoveryObject["glpiItemType"] = "NetworkEquipment";
-            break;
       }
 
       $input = array(
@@ -1196,7 +1192,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                }
                $itemstypes = array(Dropdown::EMPTY_VALUE);
                foreach (self::$hardwareItemTypes as $items) {
-                  $itemstypes[$items] = __($items);
+                  $class = getItemForItemtype($items);
+                  $itemstypes[$items] = $class->getTypeName();
                }
                for ($i = $start; $i < $lim + $start; $i++) {
                   $row_num++;
@@ -1262,7 +1259,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                $row_num    = 1;
                $itemstypes = array(Dropdown::EMPTY_VALUE);
                foreach (self::$hardwareItemTypes as $items) {
-                  $itemstypes[$items] = __($items);
+                  $class = getItemForItemtype($items);
+                  $itemstypes[$items] = $class->getTypeName();
                }
                for ($i = $start; $i < $lim + $start; $i++) {
                   $row_num++;

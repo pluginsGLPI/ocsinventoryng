@@ -66,10 +66,10 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                         FROM `glpi_plugin_ocsinventoryng_ocslinks`
                         LEFT JOIN `glpi_computers`
                            ON `glpi_computers`.`id`=`glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`
-                        WHERE glpi_computers.is_deleted = '0'";
+                        WHERE `glpi_computers`.`is_deleted` = '0' AND `glpi_computers`.`entities_id` = '".$_SESSION["glpiactive_entity"]."'";
 
-                  $query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-                           ." GROUP BY period_name ORDER BY period ASC";
+                  //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
+                  $query .= " GROUP BY period_name ORDER BY period ASC";
                   
                   $widget = PluginMydashboardHelper::getWidgetsFromDBQuery('vbarchart',$query );
 
@@ -95,10 +95,10 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                   $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) as nb
                               FROM `glpi_computers`
                               LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks` ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` ) 
-                              WHERE `glpi_computers`.`is_deleted` = '0' AND `glpi_computers`.`is_template` = '0' ";
+                              WHERE `glpi_computers`.`is_deleted` = '0' AND `glpi_computers`.`is_template` = '0' AND `glpi_computers`.`entities_id` = '".$_SESSION["glpiactive_entity"]."' ";
 
-                  $query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-                           ." AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` = 1) )";
+                  //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
+                  $query .= " AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` = 1) )";
 
                   $result = $DB->query($query);
                   $nb     = $DB->numrows($result);
@@ -112,10 +112,10 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                   $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) as nb
                               FROM `glpi_computers`
                               LEFT JOIN `glpi_plugin_fusioninventory_inventorycomputercomputers` ON (`glpi_computers`.`id` = `glpi_plugin_fusioninventory_inventorycomputercomputers`.`computers_id` ) 
-                              WHERE `glpi_computers`.`is_deleted` = '0' AND `glpi_computers`.`is_template` = '0' ";
+                              WHERE `glpi_computers`.`is_deleted` = '0' AND `glpi_computers`.`is_template` = '0' AND `glpi_computers`.`entities_id` = '".$_SESSION["glpiactive_entity"]."'";
 
-                  $query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-                           ." AND ( `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` NOT LIKE '' )";
+                  //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
+                  $query .= " AND ( `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` NOT LIKE '' )";
 
 
                   $result = $DB->query($query);
@@ -130,10 +130,10 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                               FROM `glpi_computers`
                               LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks` ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` ) 
                               LEFT JOIN `glpi_plugin_fusioninventory_inventorycomputercomputers` ON (`glpi_computers`.`id` = `glpi_plugin_fusioninventory_inventorycomputercomputers`.`computers_id` ) 
-                              WHERE `glpi_computers`.`is_deleted` = '0' AND `glpi_computers`.`is_template` = '0' ";
+                              WHERE `glpi_computers`.`is_deleted` = '0' AND `glpi_computers`.`is_template` = '0' AND `glpi_computers`.`entities_id` = '".$_SESSION["glpiactive_entity"]."'";
 
-                  $query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-                           ." AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`last_update` LIKE '' OR `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` IS NULL) AND (`glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` LIKE '' OR `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` IS NULL) )";
+                  //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
+                   $query .= " AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`last_update` LIKE '' OR `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` IS NULL) AND (`glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` LIKE '' OR `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` IS NULL) )";
                   
                   $result = $DB->query($query);
                   $nb     = $DB->numrows($result);
