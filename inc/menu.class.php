@@ -126,5 +126,57 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
          unset($_SESSION['glpimenu']['tools']['content']['pluginocsinventoryngmenu']);
       }
    }
+   
+   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
+      switch ($item->getType()) {
+         case __CLASS__ :
+            $ong[0]    = __('Server Setup', 'ocsinventoryng');
+            
+            $ong[1] = __('IPDiscover Import', 'ocsinventoryng');
+            
+            $ocsClient = new PluginOcsinventoryngOcsServer();
+            $client    = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+            $version   = $client->getTextConfig('GUI_VERSION');
+            $snmp      = $client->getIntConfig('SNMP');
+            if ($version > $ocsClient::OCS2_1_VERSION_LIMIT && $snmp) {
+               $ong[2] = __('SNMP Import', 'ocsinventoryng');
+            }
+            
+            return $ong;
 
+         default :
+            return '';
+      }
+   }
+
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 0, $withtemplate = 0) {
+
+      if ($item->getType() == __CLASS__) {
+         $ocs = new PluginOcsinventoryngOcsServer();
+         $ipdisc = new PluginOcsinventoryngIpdiscoverOcslink();
+         $snmp = new PluginOcsinventoryngSnmpOcslink();
+         switch ($tabnum) {
+            case 0 :
+               $ocs->ocsMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+               break;
+            
+            case 1 :
+               $ipdisc->ipDiscoverMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+               break;
+               
+            case 2 :
+               $snmp->snmpMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+               break;
+
+         }
+      }
+      return true;
+   }
+
+   function defineTabs($options = array()) {
+
+      $ong = array();
+      $this->addStandardTab(__CLASS__, $ong, $options);
+      return $ong;
+   }
 }

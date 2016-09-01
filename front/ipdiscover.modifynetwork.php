@@ -34,13 +34,13 @@ Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "modifysubnet");
 
-$ip = new PluginOcsinventoryngIpDiscover();
+$ip = new PluginOcsinventoryngIpdiscoverOcslink();
 
 if (isset($_GET["ip"])) {
    $_POST["ip"] = $_GET["ip"];
 }
 if (isset($_POST["ip"])) {
-   $ip       = new PluginOcsinventoryngIpDiscover();
+
    $ipAdress = $_POST["ip"];
    $values   = array();
    if (isset($_POST["subnetName"]) && isset($_POST["subnetChoice"]) && isset($_POST["SubnetMask"])) {

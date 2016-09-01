@@ -35,7 +35,7 @@ Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "importipdiscover");
 
-$ip = new PluginOcsinventoryngIpDiscover();
+$ip = new PluginOcsinventoryngIpdiscoverOcslink();
 
 if (isset($_GET["ip"]) || isset($_POST["ip"])) {
    $ocsServerId   = $_SESSION["plugin_ocsinventoryng_ocsservers_id"];
@@ -48,7 +48,7 @@ if (isset($_GET["ip"]) || isset($_POST["ip"])) {
       $ipAdress = $_POST["ip"];
    }
    
-   $subnet = PluginOcsinventoryngIpDiscover::getSubnetIDbyIP($ipAdress);
+   $subnet = PluginOcsinventoryngIpdiscoverOcslink::getSubnetIDbyIP($ipAdress);
    $hardware         = array();
    $knownMacAdresses = $ip->getKnownMacAdresseFromGlpi();
    if (isset($status)) {

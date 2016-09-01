@@ -50,8 +50,8 @@ if (isset($_POST["plugin_ocsinventoryng_ocsservers_id"])) {
 }
 
 //PluginOcsinventoryngOcsServer::newOcsMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-$ip = new PluginOcsinventoryngIpDiscover();
-$ip->show();
+$menu = new PluginOcsinventoryngMenu();
+$menu->show();
 //load mac constructors in sessionMemory
 $_SESSION["OCS"]["count"]=0;
 if (!isset($_SESSION["OCS"]["IpdiscoverMacConstructors"])){

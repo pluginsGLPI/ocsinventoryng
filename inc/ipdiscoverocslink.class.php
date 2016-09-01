@@ -32,66 +32,15 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-//class PluginOcsinventoryngIpDiscover extends CommonDBTM{
-class PluginOcsinventoryngIpDiscover extends CommonGLPI {
+//class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM{
+class PluginOcsinventoryngIpdiscoverOcslink extends CommonGLPI {
 
    static $hardwareItemTypes = array('Computer', 'NetworkEquipment','Peripheral', 'Phone', 'Printer');
-   static protected $notable = false;
-   //public $taborientation          = 'vertical';
+
    static function getTypeName($nb = 0) {
-      return _n('OCS Inventory NG ', 'OCS Inventorys NG', $nb, 'ocsinventoryng');
+      return __('IPDiscover Import', 'ocsinventoryng');
    }
 
-   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-      switch ($item->getType()) {
-         case __CLASS__ :
-            $ong[0]    = __('Server Setup', 'ocsinventoryng');
-            
-            $ong[1] = __('IPDiscover Import', 'ocsinventoryng');
-            
-            $ocsClient = new PluginOcsinventoryngOcsServer();
-            $client    = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-            $version   = $client->getTextConfig('GUI_VERSION');
-            $snmp      = $client->getIntConfig('SNMP');
-            if ($version > $ocsClient::OCS2_1_VERSION_LIMIT && $snmp) {
-               $ong[2] = __('SNMP Import', 'ocsinventoryng');
-            }
-            
-            return $ong;
-
-         default :
-            return '';
-      }
-   }
-
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 0, $withtemplate = 0) {
-
-      if ($item->getType() == __CLASS__) {
-         $ocs = new PluginOcsinventoryngOcsServer();
-         switch ($tabnum) {
-            case 0 :
-               $ocs->ocsMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-               break;
-            
-            case 1 :
-               $item->ipDiscoverMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-               break;
-               
-            case 2 :
-               $ocs->snmpMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-               break;
-
-         }
-      }
-      return true;
-   }
-
-   function defineTabs($options = array()) {
-
-      $ong = array();
-      $this->addStandardTab(__CLASS__, $ong, $options);
-      return $ong;
-   }
 
    /**
     * parse array with ip or mac into one string
@@ -1148,7 +1097,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $reload      = "ip=$ipAdress&status=$status";
       $backValues  = "?b[]=$ipAdress&b[]=$status";
       
-      $subnet_name = PluginOcsinventoryngIpDiscover::getSubnetNamebyIP($ipAdress);
+      $subnet_name = self::getSubnetNamebyIP($ipAdress);
       echo "<div class='center'><h2>".__('Subnet', 'ocsinventoryng')." ".$subnet_name." (".$ipAdress.")</h2></div>";
       
       if ($subnet >= 0) {
