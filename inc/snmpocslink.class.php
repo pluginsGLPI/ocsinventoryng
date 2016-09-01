@@ -267,8 +267,8 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       $snmp->deleteByCriteria(array('items_id' => $per->getField("id"),
                                      'itemtype' => $per->getType()));
       $ipdiscover = new PluginOcsinventoryngIpdiscoverOcslink();
-      $ipdiscover->deleteByCriteria(array('items_id' => $print->getField("id"),
-                                     'itemtype' => $print->getType()));
+      $ipdiscover->deleteByCriteria(array('items_id' => $per->getField("id"),
+                                     'itemtype' => $per->getType()));
    }
    
    /**
@@ -281,8 +281,8 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       $snmp->deleteByCriteria(array('items_id' => $net->getField("id"),
                                      'itemtype' => $net->getType()));
       $ipdiscover = new PluginOcsinventoryngIpdiscoverOcslink();
-      $ipdiscover->deleteByCriteria(array('items_id' => $print->getField("id"),
-                                     'itemtype' => $print->getType()));
+      $ipdiscover->deleteByCriteria(array('items_id' => $net->getField("id"),
+                                     'itemtype' => $net->getType()));
 
    }
    
@@ -296,8 +296,8 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       $snmp->deleteByCriteria(array('items_id' => $comp->getField("id"),
                                      'itemtype' => $comp->getType()));
       $ipdiscover = new PluginOcsinventoryngIpdiscoverOcslink();
-      $ipdiscover->deleteByCriteria(array('items_id' => $print->getField("id"),
-                                     'itemtype' => $print->getType()));
+      $ipdiscover->deleteByCriteria(array('items_id' => $comp->getField("id"),
+                                     'itemtype' => $comp->getType()));
 
    }
    
@@ -311,8 +311,8 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       $snmp->deleteByCriteria(array('items_id' => $pho->getField("id"),
                                      'itemtype' => $pho->getType()));
       $ipdiscover = new PluginOcsinventoryngIpdiscoverOcslink();
-      $ipdiscover->deleteByCriteria(array('items_id' => $print->getField("id"),
-                                     'itemtype' => $print->getType()));
+      $ipdiscover->deleteByCriteria(array('items_id' => $pho->getField("id"),
+                                     'itemtype' => $pho->getType()));
    }
    
    /**

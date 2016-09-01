@@ -32,8 +32,7 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-//class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM{
-class PluginOcsinventoryngIpdiscoverOcslink extends CommonGLPI {
+class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM {
 
    static $hardwareItemTypes = array('Computer', 'NetworkEquipment','Peripheral', 'Phone', 'Printer');
 
@@ -477,6 +476,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @return type array
     */
    static function getHardware($ipAdress, $plugin_ocsinventoryng_ocsservers_id, $status, $knownMacAdresses = array()) {
+      global $DB;
+      
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS     = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
       $query     = "";
@@ -489,6 +490,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          AND status='Up' 
          GROUP BY `hardware`.`id`
          ORDER BY `hardware`.`lastdate`";
+      } else if ($status == "imported") {
+         $query = " SELECT `*`
+         FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks` 
+         ORDER BY `last_update`";
       } else if ($status == "noninventoried") {
          $query = " SELECT `netmap`.`ip`, `netmap`.`mac`, `netmap`.`mask`, `netmap`.`date`, `netmap`.`name` as DNS
               FROM `netmap` 
@@ -511,10 +516,18 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
               GROUP BY `network_devices`.`MACADDR`
               ORDER BY `network_devices`.`TYPE` asc";
       }
-      $result   = $DBOCS->query($query);
-      $hardware = array();
-      while ($res      = $DBOCS->fetch_assoc($result)) {
-         $hardware[] = $res;
+      if ($status == "imported") {
+         $result   = $DB->query($query);
+         $hardware = array();
+         while ($res      = $DB->fetch_assoc($result)) {
+            $hardware[] = $res;
+         }
+      } else {
+         $result   = $DBOCS->query($query);
+         $hardware = array();
+         while ($res      = $DBOCS->fetch_assoc($result)) {
+            $hardware[] = $res;
+         }
       }
       return $hardware;
    }
@@ -598,7 +611,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param type $lim integer
     */
    static function showSubnetsDetails($subnetsArray, $lim = 0, $start = 0) {
-      global $CFG_GLPI;+
+      global $CFG_GLPI,$DB;
       
       $output_type     = Search::HTML_OUTPUT; //0
       $return          = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php";
@@ -615,9 +628,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       echo "<table width='100%'class='tab_cadrehov'>\n";
       echo Search::showHeaderItem($output_type, __('Description'), $header_num);
       echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
-      echo Search::showHeaderItem($output_type, __('Non Inventoried'), $header_num);
-      echo Search::showHeaderItem($output_type, __('Inventoried'), $header_num);
-      echo Search::showHeaderItem($output_type, __('Identified'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Non Inventoried', 'ocsinventoryng'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Inventoried', 'ocsinventoryng'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Identified', 'ocsinventoryng'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Imported / Linked', 'ocsinventoryng'), $header_num);
       echo Search::showHeaderItem($output_type, __('Percent done'), $header_num);
       echo Search::showEndLine($output_type);
 
@@ -641,6 +655,16 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
           echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$subnets[$i]["INVENTORIED"],$item_num,$row_num)."</a></td>";
           $link=$hardwareNetwork."?ip=$ip&status=identified";
           echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$subnets[$i]["IDENTIFIED"],$item_num,$row_num)."</a></td>";
+         $imported_count = "";
+         $query     = "SELECT count(id) AS count
+                        FROM glpi_plugin_ocsinventoryng_ipdiscoverocslinks";
+         $result    = $DB->query($query);
+         if ($DB->numrows($result)) {
+            $datas = $DB->fetch_assoc($result);
+            $imported_count = $datas['count'];
+         }
+          $link=$hardwareNetwork."?ip=$ip&status=imported";
+          echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$imported_count,$item_num,$row_num)."</a></td>";
           echo self::showPercentBar($subnets[$i]["PERCENT"]);
          
       }
@@ -1138,7 +1162,31 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                }
                echo "</table>\n";
                break;
-
+            
+            case "imported" :
+               //echo "<div class='tab_cadre_fixe'>\n";
+               echo "<table width='100%'class='tab_cadrehov'>\n";
+               echo Search::showHeaderItem($output_type, __('Item'), $header_num);
+               echo Search::showHeaderItem($output_type, __('Item type'), $header_num);
+               echo Search::showHeaderItem($output_type, __('MAC address'), $header_num);
+               echo Search::showHeaderItem($output_type, __('Import date in GLPI', 'ocsinventoryng'), $header_num);
+               echo Search::showEndLine($output_type);
+               $row_num = 1;
+               for ($i = $start; $i < $lim + $start; $i++) {
+                  $row_num++;
+                  $item_num = 1;
+                  echo Search::showNewLine($output_type, $row_num % 2);
+                  $class = getItemForItemtype($hardware[$i]["itemtype"]);
+                  $class->getFromDB($hardware[$i]["items_id"]);
+                  echo Search::showItem($output_type, $class->getLink(), $item_num, $row_num);
+                  echo Search::showItem($output_type, $class->getTypeName(), $item_num, $row_num);
+                  echo Search::showItem($output_type, $hardware[$i]["macaddress"], $item_num, $row_num);
+                  echo Search::showItem($output_type, Html::convDateTime($hardware[$i]["last_update"]), $item_num, $row_num);
+                  echo Search::showEndLine($output_type);
+               }
+               echo "</table>\n";
+               break;
+               
             case "noninventoried" :
                $ocsTypes       = array("id" => array(Dropdown::EMPTY_VALUE), "name" => array(Dropdown::EMPTY_VALUE));
                $link           = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
