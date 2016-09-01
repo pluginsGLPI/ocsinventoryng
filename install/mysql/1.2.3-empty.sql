@@ -341,6 +341,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks` (
   `itemtype` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `macaddress` varchar(255) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
   `last_update` DATETIME COLLATE utf8_unicode_ci DEFAULT NULL,
+  `subnet` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL,
   `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

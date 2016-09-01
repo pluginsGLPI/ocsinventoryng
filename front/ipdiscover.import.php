@@ -80,7 +80,7 @@ if (isset($_POST["Import"])
       $itemsTypes       = $_POST["glpiitemstype"];
       $itemsNames       = $_POST["itemsname"];
       $itemsDescription = $_POST["itemsdescription"];
-      $itemsIp = $_POST["itemsip"];
+      $itemsIp          = $_POST["itemsip"];
       $entities         = array();
 
       if (isset($_POST["entities"])) {
@@ -91,7 +91,7 @@ if (isset($_POST["Import"])
       while ($ipObject  = array_pop($ipObjects)) {
          $percent = min(100, round(100 * (sizeof($macAdresses) - sizeof($ipObjects)) / sizeof($macAdresses), 0));
 
-         $action                                                   = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+         $action = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"],$_POST["subnet"]);
          PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
          PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
          Html::displayProgressBar(400, $percent);
@@ -105,8 +105,8 @@ if (isset($_POST["Import"])
    
       
       while ($ipObject    = array_pop($_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"])) {
-         $percent                                                = min(100, round(100 * (sizeof($_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"]) - sizeof($_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"])) / sizeof($_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"]), 0));
-         $action                                                 = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+         $percent = min(100, round(100 * (sizeof($_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"]) - sizeof($_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"])) / sizeof($_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"]), 0));
+         $action = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"],$_POST["subnet"]);
          PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
          PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
          Html::displayProgressBar(400, $percent);
@@ -152,11 +152,11 @@ if (isset($_POST["Import"])
          && isset($_POST["mactoimport"]) 
             && sizeof($_POST["mactoimport"]) > 0) {
       $macAdresses      = $_POST["mactoimport"];
-      $glpiItemsTypes       = $_POST["glpiitemstype"];
+      $glpiItemsTypes   = $_POST["glpiitemstype"];
       $itemsNames       = $_POST["itemsname"];
       $itemsDescription = $_POST["itemsdescription"];
-      $ocsItemstypes = $_POST["ocsitemstype"];
-       $itemsIp = $_POST["itemsip"];
+      $ocsItemstypes    = $_POST["ocsitemstype"];
+      $itemsIp          = $_POST["itemsip"];
       $entities         = array();
 
       if (isset($_POST["entities"])) {
@@ -167,7 +167,7 @@ if (isset($_POST["Import"])
       while ($ipObject  = array_pop($ipObjects)) {
          $percent = min(100, round(100 * (sizeof($macAdresses) - sizeof($ipObjects)) / sizeof($macAdresses), 0));
 
-         $action                                                   = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+         $action = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"],$_POST["subnet"]);
          PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
          PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
          Html::displayProgressBar(400, $percent);
@@ -182,7 +182,7 @@ if (isset($_POST["Import"])
 
       while ($ipObject = array_pop($_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"])) {
          $percent = min(100, round(100 * (sizeof($_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"]) - sizeof($_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"])) / sizeof($_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"]), 0));
-         $action  = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+         $action  = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"],$_POST["subnet"]);
          PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
          PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
          Html::displayProgressBar(400, $percent);
