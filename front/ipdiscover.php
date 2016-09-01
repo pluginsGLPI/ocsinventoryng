@@ -57,6 +57,7 @@ if (isset($_POST["subnetsChoice"]) && isset($_SESSION["subnets"]) || isset($_SES
    }
    $lim = count($networksDetail["subnets"]);
    $start = isset($_POST['start'])? $_POST['start'] : 0;
+   PluginOcsinventoryngIpDiscover::showSubnetSearchForm();
    if ($lim > $_SESSION["glpilist_limit"]) {
       $ip->showSubnetsDetails($networksDetail, $_SESSION["glpilist_limit"], $start);
    } else {

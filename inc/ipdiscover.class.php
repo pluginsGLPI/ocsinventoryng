@@ -381,7 +381,15 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          echo "</td></tr>";
          echo "</table></div>";
          Html::closeForm();
-         echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php\"
+
+         self::showSubnetSearchForm();
+      }
+   }
+   
+   static function showSubnetSearchForm() {
+      global $CFG_GLPI;
+      
+      echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php\"
                 method='post'>";
          echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an subnet', 'ocsinventoryng') .
@@ -409,7 +417,6 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                      </a></td></tr>";*/
          echo "</table></div>";
          Html::closeForm();
-      }
    }
 
    /*static function showPercentItem($value, $linkto = "") {
