@@ -37,7 +37,12 @@ Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "impor
 
 $ip = new PluginOcsinventoryngIpdiscoverOcslink();
 
-if (isset($_GET["ip"]) || isset($_POST["ip"])) {
+if (!isset($_GET['action'])) {
+   $_GET['action'] = "import";
+}
+
+if (isset($_GET["ip"]) 
+      || isset($_POST["ip"])) {
    $ocsServerId   = $_SESSION["plugin_ocsinventoryng_ocsservers_id"];
    $status        = $_GET["status"];
    $glpiListLimit = $_SESSION["glpilist_limit"];
@@ -56,15 +61,15 @@ if (isset($_GET["ip"]) || isset($_POST["ip"])) {
       $lim      = count($hardware);
       if ($lim > $glpiListLimit) {
          if (isset($_GET["start"])) {
-            $ip->showHardware($hardware, $glpiListLimit, intval($_GET["start"]), $ipAdress, $status, $subnet);
+            $ip->showHardware($hardware, $glpiListLimit, intval($_GET["start"]), $ipAdress, $status, $subnet, $_GET['action']);
          } else {
-            $ip->showHardware($hardware, $glpiListLimit, 0, $ipAdress, $status, $subnet);
+            $ip->showHardware($hardware, $glpiListLimit, 0, $ipAdress, $status, $subnet, $_GET['action']);
          }
       } else {
          if (isset($_GET["start"])) {
-            $ip->showHardware($hardware, $lim, intval($_GET["start"]), $ipAdress, $status, $subnet);
+            $ip->showHardware($hardware, $lim, intval($_GET["start"]), $ipAdress, $status, $subnet, $_GET['action']);
          } else {
-            $ip->showHardware($hardware, $lim, 0, $ipAdress, $status, $subnet);
+            $ip->showHardware($hardware, $lim, 0, $ipAdress, $status, $subnet, $_GET['action']);
          }
       }
    }
@@ -220,6 +225,38 @@ if (isset($_POST["Import"])
          Html::redirect($_SERVER['PHP_SELF'] . "?ip=$ipAdress&status=$status");
       }
    }
+} else if (isset($_POST["Link"])) {
+   
+   if ((isset($_POST["tolink_itemtype"]) 
+         && sizeof($_POST["tolink_itemtype"]) > 0)
+            &&(isset($_POST["tolink_items"]) 
+         && sizeof($_POST["tolink_items"]) > 0)) {
+      $itemtypes        = $_POST["tolink_itemtype"];
+      $items_id         = $_POST["tolink_items"];
+      $macAdresses      = $_POST["mactoimport"];
+      $itemsDescription = (isset($_POST["itemsdescription"])?$_POST["itemsdescription"]:array());
+      $ocsItemstypes    = (isset($_POST["ocsitemstype"])?$_POST["ocsitemstype"]:array());
+
+      $ip->linkIpDiscover($_SESSION["plugin_ocsinventoryng_ocsservers_id"],$itemtypes, $items_id, $macAdresses,$ocsItemstypes, $itemsDescription, $_POST["subnet"], 0);
+   }
+   Html::back();
+
+} else if (isset($_POST["IdentifyAndLink"])) {
+   
+   if ((isset($_POST["tolink_itemtype"]) 
+         && sizeof($_POST["tolink_itemtype"]) > 0)
+            &&(isset($_POST["tolink_items"]) 
+         && sizeof($_POST["tolink_items"]) > 0)) {
+      $itemtypes      = $_POST["tolink_itemtype"];
+      $items_id       = $_POST["tolink_items"];
+      $macAdresses     = $_POST["mactoimport"];
+      $itemsDescription = $_POST["itemsdescription"];
+      $ocsItemstypes    = $_POST["ocsitemstype"];
+
+      $ip->linkIpDiscover($_SESSION["plugin_ocsinventoryng_ocsservers_id"],$itemtypes, $items_id, $macAdresses,$ocsItemstypes, $itemsDescription, $_POST["subnet"], 1);
+   }
+   Html::back();
+
 } else if (isset($_POST["delete"])) {
    
    if (isset($_POST["mactoimport"]) 

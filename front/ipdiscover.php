@@ -38,6 +38,10 @@ $ip = new PluginOcsinventoryngIpdiscoverOcslink();
 if (empty($_POST)) {
    $_POST = $_GET;
 }
+if (!isset($_GET['action'])) {
+   $_GET['action'] = "import";
+}
+
 if (isset($_POST["subnetsChoice"]) && isset($_SESSION["subnets"]) || isset($_SESSION["subnets"])) {
    $sN             = "";
    $networksDetail = array();
@@ -57,11 +61,11 @@ if (isset($_POST["subnetsChoice"]) && isset($_SESSION["subnets"]) || isset($_SES
    }
    $lim = count($networksDetail["subnets"]);
    $start = isset($_POST['start'])? $_POST['start'] : 0;
-   PluginOcsinventoryngIpdiscoverOcslink::showSubnetSearchForm();
+   PluginOcsinventoryngIpdiscoverOcslink::showSubnetSearchForm($_GET["action"]);
    if ($lim > $_SESSION["glpilist_limit"]) {
-      $ip->showSubnetsDetails($networksDetail, $_SESSION["glpilist_limit"], $start);
+      $ip->showSubnetsDetails($networksDetail, $_SESSION["glpilist_limit"], $start, $_GET["action"]);
    } else {
-      $ip->showSubnetsDetails($networksDetail, $lim, $start);
+      $ip->showSubnetsDetails($networksDetail, $lim, $start, $_GET["action"]);
    }
 }
 

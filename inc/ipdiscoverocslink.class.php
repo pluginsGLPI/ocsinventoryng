@@ -329,15 +329,24 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          echo "</td></tr>";
          echo "</table></div>";
          Html::closeForm();
-
-         self::showSubnetSearchForm();
+         
+         echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
+         echo "<tr class='tab_bg_2'><th>" . __('Import IPDiscover', 'ocsinventoryng') .
+         "</th><th>" . __('Link IPDiscover', 'ocsinventoryng') .
+         "</th></tr>\n";
+         echo "<tr class='tab_bg_2'><td class='center'>";
+         self::showSubnetSearchForm("import");
+         echo "</td><td class='center'>";
+         self::showSubnetSearchForm("link");
+         echo "</td></tr>";
+         echo "</table></div>";
       }
    }
    
-   static function showSubnetSearchForm() {
+   static function showSubnetSearchForm($action) {
       global $CFG_GLPI;
       
-      echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php\"
+      echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php?action=$action\"
                 method='post'>";
          echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an subnet', 'ocsinventoryng') .
@@ -540,18 +549,18 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $macFile=GLPI_ROOT."/plugins/ocsinventoryng/files/macManufacturers.txt";
       $result="";
       if( $file=@fopen($macFile,"r") ) {
-      while (!feof($file)) {
-         $line  = fgets($file, 4096);
-         if( preg_match("/^((?:[a-fA-F0-9]{2}-){2}[a-fA-F0-9]{2})\s+\(.+\)\s+(.+)\s*$/", $line, $result ) ) {
-            $_SESSION["OCS"]["IpdiscoverMacConstructors"][mb_strtoupper(str_replace("-",":",$result[1]))] = $result[2];
-           
+         while (!feof($file)) {
+            $line  = fgets($file, 4096);
+            if( preg_match("/^((?:[a-fA-F0-9]{2}-){2}[a-fA-F0-9]{2})\s+\(.+\)\s+(.+)\s*$/", $line, $result ) ) {
+               $_SESSION["OCS"]["IpdiscoverMacConstructors"][mb_strtoupper(str_replace("-",":",$result[1]))] = $result[2];
+              
+            }
          }
+         fclose($file);
       }
-      fclose($file);
-   }
    }
 
-   
+   /*
    static function getInventoriedComputers($ipAdress, $plugin_ocsinventoryng_ocsservers_id) {
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS     = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
@@ -603,7 +612,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          $identifiedHardware[] = $res;
       }
       return $identifiedHardware;
-   }
+   }*/
 
    /**
     * show details on a certain subnet
@@ -611,13 +620,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param type $subnetsArray array
     * @param type $lim integer
     */
-   static function showSubnetsDetails($subnetsArray, $lim = 0, $start = 0) {
+   static function showSubnetsDetails($subnetsArray, $lim = 0, $start = 0, $action = "import") {
       global $CFG_GLPI,$DB;
       
       $output_type     = Search::HTML_OUTPUT; //0
       $return          = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php";
       $link            = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
-      $choice          = "subnetsChoice=" . $subnetsArray["subnetsChoice"];
+      $choice          = "subnetsChoice=" . $subnetsArray["subnetsChoice"]."&action=$action";
       $subnets         = $subnetsArray["subnets"];
       $row_num         = 1;
       $modNetwork      = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.modifynetwork.php";
@@ -632,7 +641,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       echo Search::showHeaderItem($output_type, __('Non Inventoried', 'ocsinventoryng'), $header_num);
       echo Search::showHeaderItem($output_type, __('Inventoried', 'ocsinventoryng'), $header_num);
       echo Search::showHeaderItem($output_type, __('Identified', 'ocsinventoryng'), $header_num);
-      echo Search::showHeaderItem($output_type, __('Imported / Linked', 'ocsinventoryng'), $header_num);
+      echo Search::showHeaderItem($output_type,  __('Imported / Linked', 'ocsinventoryng'), $header_num);
       echo Search::showHeaderItem($output_type, __('Percent done'), $header_num);
       echo Search::showEndLine($output_type);
 
@@ -650,11 +659,11 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          $link=$CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.modifynetwork.php?ip=$ip";
          echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$name,$item_num,$row_num)."</a></td>";
          echo Search::showItem($output_type,$ip,$item_num,$row_num);
-         $link=$hardwareNetwork."?ip=$ip&status=noninventoried";
+         $link=$hardwareNetwork."?ip=$ip&status=noninventoried&action=$action";
          echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$subnets[$i]["NON_INVENTORIED"],$item_num,$row_num)."</a></td>";
-         $link=$hardwareNetwork."?ip=$ip&status=inventoried";
+         $link=$hardwareNetwork."?ip=$ip&status=inventoried&action=$action";
          echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$subnets[$i]["INVENTORIED"],$item_num,$row_num)."</a></td>";
-         $link=$hardwareNetwork."?ip=$ip&status=identified";
+         $link=$hardwareNetwork."?ip=$ip&status=identified&action=$action";
          echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$subnets[$i]["IDENTIFIED"],$item_num,$row_num)."</a></td>";
          $imported_count = 0;
          $query     = "SELECT count(`id`) AS count
@@ -666,7 +675,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             $imported_count = $datas['count'];
          }
          if ($imported_count > 0) {
-            $link=$hardwareNetwork."?ip=$ip&status=imported";
+            $link=$hardwareNetwork."?ip=$ip&status=imported&action=$action";
             echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type,$imported_count,$item_num,$row_num)."</a></td>";
          } else {
             echo "<td class='center'>0</td>";
@@ -806,7 +815,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param type $plugin_ocsinventoryng_ocsservers_id integer
     * @return type array
     */
-   static function importIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id, $subnet) {
+   static function importIpDiscover($plugin_ocsinventoryng_ocsservers_id, $subnet, $ipDiscoveryObject) {
       global $DB;
       
       $id         = null;
@@ -919,7 +928,93 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
       }
    }
+   
+   
+   /**
+    * link ipdiscover object 
+    * @param type $ipDiscoveryObject array
+    * @param type $plugin_ocsinventoryng_ocsservers_id integer
+    * @return type array
+    */
+   static function linkIpDiscover($plugin_ocsinventoryng_ocsservers_id, $itemtypes, $items_id, $macAdresses,$ocsItemstypes, $itemsDescription, $subnet, $identify = 0) {
+      global $DB;
+      
+      /*$id         = null;
+      $identify   = false;
+      
+      if (isset($ipDiscoveryObject["ocsItemType"]) 
+            && $ipDiscoveryObject["ocsItemType"] == Dropdown::EMPTY_VALUE) {
+         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
+      }
+      if ($ipDiscoveryObject["itemDescription"] == '') {
+         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
+      }
 
+      if ($ipDiscoveryObject["itemName"] == "") {
+         $ipDiscoveryObject["itemName"] = $ipDiscoveryObject["itemDescription"];
+      }
+
+      switch ($ipDiscoveryObject["glpiItemType"]) {
+         //empty dropdown value
+         case '0' :
+            return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
+      }
+
+      if (isset($ipDiscoveryObject["ocsItemType"])) {
+         $identify = true;
+      }*/
+      
+      //ipdiscover link
+      $objs = array();
+      $macs           = self::getMacAdressKeyVal($macAdresses);
+      
+      foreach ($itemtypes as $key => $type) {
+         $objs[$items_id[$key]] = array("itemtype" => $type, 
+                                          "mac" => $macs[$key], 
+                                          "description" => (isset($itemsDescription[$key])?$itemsDescription[$key]:0), 
+                                          "ocsType" => (isset($ocsItemstypes[$key])?$ocsItemstypes[$key]:0));
+      }
+      
+      foreach ($objs as $id => $tab) {
+         $date       = date("Y-m-d H:i:s");
+
+         $glpiQuery = "INSERT INTO `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
+                       (`items_id`,`itemtype`,`macaddress`,`last_update`,`subnet`,`plugin_ocsinventoryng_ocsservers_id`)
+                       VALUES('$id','".$tab["itemtype"]."','".$tab["mac"]."','$date','$subnet','$plugin_ocsinventoryng_ocsservers_id')";
+         $DB->query($glpiQuery);
+         
+         if ($identify) {
+         //identify object
+         //WAS IS DAS ? CHMA
+         $userId      = Session::getLoginUserID();
+         $query       = "SELECT `glpi_users`.`name` 
+                         FROM `glpi_users`
+                         WHERE glpi_users.id like '$userId'";
+         $queryResult = $DB->query($query);
+         $userAssoc   = $DB->fetch_assoc($queryResult);
+
+         if ($userAssoc) {
+            $ocsClient   = new PluginOcsinventoryngOcsServer();
+            $DBOCS       = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
+            $ocsType     = $tab["ocsType"];
+            $description = $tab["description"];
+            $user     = $userAssoc["name"];
+            $ocsQuery = "INSERT INTO `network_devices` (`description`,`type`,`macaddr`,`user`)
+                            VALUES('$description','$ocsType','".$tab["mac"]."','$user')";
+            $DBOCS->query($ocsQuery);
+         }
+      }
+   }
+      
+
+     /*if ($id) {
+         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_IMPORTED);
+      } else {
+         Session::addMessageAfterRedirect($mac." : ".__('Unable to add. an object with same MAC address already exists.', 'ocsinventoryng'), false, ERROR);
+         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
+      }*/
+   }
+   
    
    /**
     * update ipdiscover object 
@@ -1076,12 +1171,12 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param type $ipAdress string
     * @param type $status string
     */
-   static function showHardware($hardware, $lim, $start = 0, $ipAdress, $status, $subnet) {
+   static function showHardware($hardware, $lim, $start = 0, $ipAdress, $status, $subnet, $action) {
       global $CFG_GLPI;
       $output_type = Search::HTML_OUTPUT; //0
       $link        = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php";
       $return      = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
-      $returnargs     = "subnetsChoice=$subnet";
+      $returnargs     = "subnetsChoice=$subnet&action=$action";
       $reload      = "ip=$ipAdress&status=$status";
       $backValues  = "?b[]=$ipAdress&b[]=$status";
       
@@ -1174,21 +1269,32 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                self::checkBox($target);
                echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
                echo "<div class='center' style=\"width=100%\">";
-               echo "<input type='submit' class='submit' name='IdentifyAndImport'  value=\"" . _sx('button', 'Import') . "\">&nbsp;";
+               if ($action == "import") {
+                  echo "<input type='submit' class='submit' name='IdentifyAndImport'  value=\"" . _sx('button', 'Import') . "\">";
+                  echo "&nbsp;";
+               } else {
+                  echo "<input type='submit' class='submit' name='IdentifyAndLink'  value=\"" . _sx('button', 'Link', 'ocsinventoryng') . "\">";
+                  echo "&nbsp;";
+               }
                echo "<input type='submit' class='submit' name='delete'  value=\"" . _sx('button', 'Delete from OCSNG', 'ocsinventoryng') . "\"></div>";
                echo "<table width='100%'class='tab_cadrehov'>\n";
-               echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
-               echo Search::showHeaderItem($output_type, __('MAC address'), $header_num);
-               echo Search::showHeaderItem($output_type, __('Subnet mask'), $header_num);
                echo Search::showHeaderItem($output_type, __('Date'), $header_num);
+               echo Search::showHeaderItem($output_type, __('MAC address'), $header_num);
+               echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
+               echo Search::showHeaderItem($output_type, __('Subnet mask'), $header_num);
                echo Search::showHeaderItem($output_type, __('DNS', 'ocsinventoryng'), $header_num);
                echo Search::showHeaderItem($output_type, __('Description')."<span class='red'>*</span>", $header_num);
-               echo Search::showHeaderItem($output_type, __('Name'), $header_num);
-               if (Session::isMultiEntitiesMode()) {
-                  echo Search::showHeaderItem($output_type, __('Entity'), $header_num);
-               }
                echo Search::showHeaderItem($output_type, __('OCS Type', 'ocsinventoryng')."<span class='red'>*</span>", $header_num);
-               echo Search::showHeaderItem($output_type, __('GLPI Type', 'ocsinventoryng')."<span class='red'>*</span>", $header_num);
+               if ($action == "import") {
+                  echo Search::showHeaderItem($output_type, __('Name'), $header_num);
+                  if (Session::isMultiEntitiesMode()) {
+                     echo Search::showHeaderItem($output_type, __('Entity'), $header_num);
+                  }
+                  
+                  echo Search::showHeaderItem($output_type, __('GLPI Type', 'ocsinventoryng')."<span class='red'>*</span>", $header_num);
+               }  else {
+                  echo Search::showHeaderItem($output_type, __('Item to link', 'ocsinventoryng'), $header_num, "", 0, "", 'width=15%');
+               }
                echo Search::showHeaderItem($output_type, __('&nbsp;'), $header_num);
                echo Search::showEndLine($output_type);
                $row_num  = 1;
@@ -1204,7 +1310,9 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                for ($i = $start; $i < $lim + $start; $i++) {
                   $row_num++;
                   echo Search::showNewLine($output_type, $row_num % 2);
-                  echo self::showItem($ip = $hardware[$i]["ip"]);
+                  echo self::showItem(Html::convDateTime($hardware[$i]["date"]));
+                  
+                  
                   if (isset($_SESSION["OCS"]["IpdiscoverMacConstructors"])) {
                      if (isset($_SESSION["OCS"]["IpdiscoverMacConstructors"][mb_strtoupper(substr($hardware[$i]["mac"], 0, 8))])) {
                         $macConstructor = $_SESSION["OCS"]["IpdiscoverMacConstructors"][mb_strtoupper(substr($hardware[$i]["mac"], 0, 8))];
@@ -1214,22 +1322,61 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   }
                   $mac = $hardware[$i]["mac"] . "<small> ( " . $macConstructor . " )</small>";
                   echo self::showItem($mac);
+                  echo self::showItem($ip = $hardware[$i]["ip"]);
                   echo self::showItem($hardware[$i]["mask"]);
-                  echo self::showItem(Html::convDateTime($hardware[$i]["date"]));
+                  
                   echo self::showItem($hardware[$i]["DNS"]);
                   echo "<td><input type=\"text\" name='itemsdescription[" . $i . "]' value=\"\" ></td>";
-                  echo "<td><input type=\"text\" name='itemsname[" . $i . "]' value=\"\"></td>";
-                  if (Session::isMultiEntitiesMode()) {
-                     echo "<td>";
-                     Entity::dropdown(array('name' => "entities[$i]", 'entity' => $_SESSION["glpiactiveentities"]));
-                     echo "</td>";
-                  }
                   echo "<td>";
                   Dropdown::showFromArray("ocsitemstype[$i]", $ocstypes);
                   echo "</td>";
-                  echo "<td>";
-                  Dropdown::showFromArray("glpiitemstype[$i]", $itemstypes);
-                  echo "</td>";
+                  
+                  if ($action == "import") {
+                     echo "<td><input type=\"text\" name='itemsname[" . $i . "]' value=\"\"></td>";
+                     if (Session::isMultiEntitiesMode()) {
+                        echo "<td>";
+                        Entity::dropdown(array('name' => "entities[$i]", 'entity' => $_SESSION["glpiactiveentities"]));
+                        echo "</td>";
+                     }
+                     
+                     echo "<td>";
+                     Dropdown::showFromArray("glpiitemstype[$i]", $itemstypes);
+                     echo "</td>";
+                  } else {
+                     echo "<td width='10'>";
+                     //if (getItemForItemtype($tab["type"])) {
+                     //   $type            = $tab["type"];
+                     //   $options['name'] = "tolink_items[" . $i . "]";
+
+                     //   $self = new self;
+                     //   if ($item = $self->getFromDBbyName($tab["type"], $tab["name"])) {
+                     //      $options['value'] = (isset($item->fields['id'])) ? $item->fields['id'] : false;
+                     //   }
+                     //   $type::dropdown($options);
+                     //   echo "<input type='hidden' name='tolink_itemtype[" . $i . "]' value='" . $tab["type"] . "'>";
+                        
+                     //} else {
+
+                        $mtrand = mt_rand();
+
+                        $mynamei = "itemtype";
+                        $myname  = "tolink_items[" . $i . "]";
+
+                        $rand = Dropdown::showItemTypes($mynamei, $CFG_GLPI["asset_types"], array('rand' => $mtrand));
+
+
+                        $p = array('itemtype' => '__VALUE__',
+                                 'entity_restrict' => $_SESSION["glpiactiveentities"],
+                                 'id'       => $i,
+                                 'rand'     => $rand,
+                                 'myname'   => $myname);
+                        //print_r($p);
+                        Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", $CFG_GLPI["root_doc"] ."/plugins/ocsinventoryng/ajax/dropdownitems.php", $p);
+                        echo "<span id='results_$mynamei$rand'>\n";
+                        echo "</span>\n";
+                     //}
+                     echo "</td>";
+                  }
                   echo self::showItem($hardware[$i]["mac"], "", "", "", true, "", $i);
                   echo "<tbody style=\"display:none\">";
                   echo "<tr><input type=\"hidden\" name='itemsip[" . $i . "]' value=\"$ip\" >
@@ -1237,7 +1384,14 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   echo "</tbody>";
                }
                echo "</table>\n";
-               echo "<div class='center' style=\"width=100%\">\n<input type='submit' class='submit' name='IdentifyAndImport'  value=\"" . _sx('button', 'Import') . "\">&nbsp;";
+               echo "<div class='center' style=\"width=100%\">";
+               if ($action == "import") {
+                  echo "<input type='submit' class='submit' name='IdentifyAndImport'  value=\"" . _sx('button', 'Import') . "\">";
+                  echo "&nbsp;";
+               } else {
+                  echo "<input type='submit' class='submit' name='IdentifyAndLink'  value=\"" . _sx('button', 'Link', 'ocsinventoryng') . "\">";
+                  echo "&nbsp;";
+               }
                echo "<input type='submit' class='submit' name='delete'  value=\"" . _sx('button', 'Delete from OCSNG', 'ocsinventoryng') . "\"></div>";
                Html::closeForm();
                self::checkBox($target);
@@ -1250,19 +1404,31 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                self::checkBox($target);
                echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
                echo "<div class='center' style=\"width=100%\">";
-               echo "<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\">&nbsp;";
+               if ($action == "import") {
+                  echo "<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\">";
+                  echo "&nbsp;";
+               } else {
+                  echo "<input type='submit' class='submit' name='Link'  value=\"" . _sx('button', 'Link', 'ocsinventoryng') . "\">";
+                  echo "&nbsp;";
+               }
                echo "<input type='submit' class='submit' name='delete'  value=\"" . _sx('button', 'Delete from OCSNG', 'ocsinventoryng') . "\"></div>";
                echo "<table width='100%'class='tab_cadrehov'>";
+               echo Search::showHeaderItem($output_type, __('Date'), $header_num);
                echo Search::showHeaderItem($output_type, __('Description'), $header_num);
+               echo Search::showHeaderItem($output_type, __('OCS Type', 'ocsinventoryng'), $header_num);
                echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
                echo Search::showHeaderItem($output_type, __('MAC address'), $header_num);
-               echo Search::showHeaderItem($output_type, __('Date'), $header_num);
-               if (Session::isMultiEntitiesMode()) {
-                  echo Search::showHeaderItem($output_type, __('Entity'), $header_num);
+
+               if ($action == "import") {
+                  if (Session::isMultiEntitiesMode()) {
+                     echo Search::showHeaderItem($output_type, __('Entity'), $header_num);
+                  }
+                  echo Search::showHeaderItem($output_type, __('Name'), $header_num);
+               
+                  echo Search::showHeaderItem($output_type, __('GLPI Type', 'ocsinventoryng')."<span class='red'>*</span>", $header_num);
+               } else {
+                  echo Search::showHeaderItem($output_type, __('Item to link', 'ocsinventoryng'), $header_num, "", 0, "", 'width=15%');
                }
-               echo Search::showHeaderItem($output_type, __('Name'), $header_num);
-               echo Search::showHeaderItem($output_type, __('OCS Type', 'ocsinventoryng'), $header_num);
-               echo Search::showHeaderItem($output_type, __('GLPI Type', 'ocsinventoryng')."<span class='red'>*</span>", $header_num);
                echo Search::showHeaderItem($output_type, __('&nbsp;'), $header_num);
                echo Search::showEndLine($output_type);
                $row_num    = 1;
@@ -1275,7 +1441,9 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   $row_num++;
 
                   echo Search::showNewLine($output_type, $row_num % 2);
+                  echo self::showItem(Html::convDateTime($hardware[$i]["DATE"]));
                   echo self::showItem($description = $hardware[$i]["DESCRIPTION"]);
+                  echo self::showItem($hardware[$i]["TYPE"]);
                   echo self::showItem($ip          = $hardware[$i]["IP"]);
                   if (isset($_SESSION["OCS"]["IpdiscoverMacConstructors"])) {
                      if (isset($_SESSION["OCS"]["IpdiscoverMacConstructors"][mb_strtoupper(substr($hardware[$i]["MAC"], 0, 8))])) {
@@ -1286,19 +1454,53 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   }
                   $mac = $hardware[$i]["MAC"] . "<small> ( " . $macConstructor . " )</small>";
                   echo self::showItem($mac);
-                  echo self::showItem(Html::convDateTime($hardware[$i]["DATE"]));
-                  if (Session::isMultiEntitiesMode()) {
+                  
+                  if ($action == "import") {
+                     if (Session::isMultiEntitiesMode()) {
+                        echo "<td>";
+                        Entity::dropdown(array('name' => "entities[$i]", 'entity' => $_SESSION["glpiactiveentities"]));
+                        echo "</td>";
+                     }
+
+                     echo "<td><input type=\"text\" name='itemsname[" . $i . "]' value=\"\"></td>";
                      echo "<td>";
-                     Entity::dropdown(array('name' => "entities[$i]", 'entity' => $_SESSION["glpiactiveentities"]));
+                     Dropdown::showFromArray("glpiitemstype[$i]", $itemstypes);
+                     echo "</td>";
+                  } else {
+                     echo "<td width='10'>";
+                     //if (getItemForItemtype($tab["type"])) {
+                     //   $type            = $tab["type"];
+                     //   $options['name'] = "tolink_items[" . $i . "]";
+
+                     //   $self = new self;
+                     //   if ($item = $self->getFromDBbyName($tab["type"], $tab["name"])) {
+                     //      $options['value'] = (isset($item->fields['id'])) ? $item->fields['id'] : false;
+                     //   }
+                     //   $type::dropdown($options);
+                     //   echo "<input type='hidden' name='tolink_itemtype[" . $i . "]' value='" . $tab["type"] . "'>";
+                        
+                     //} else {
+
+                        $mtrand = mt_rand();
+
+                        $mynamei = "itemtype";
+                        $myname  = "tolink_items[" . $i . "]";
+
+                        $rand = Dropdown::showItemTypes($mynamei, $CFG_GLPI["asset_types"], array('rand' => $mtrand));
+
+
+                        $p = array('itemtype' => '__VALUE__',
+                                 'entity_restrict' => $_SESSION["glpiactiveentities"],
+                                 'id'       => $i,
+                                 'rand'     => $rand,
+                                 'myname'   => $myname);
+                        //print_r($p);
+                        Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", $CFG_GLPI["root_doc"] ."/plugins/ocsinventoryng/ajax/dropdownitems.php", $p);
+                        echo "<span id='results_$mynamei$rand'>\n";
+                        echo "</span>\n";
+                     //}
                      echo "</td>";
                   }
-
-                  echo "<td><input type=\"text\" name='itemsname[" . $i . "]' value=\"\"></td>";
-                  echo self::showItem($hardware[$i]["TYPE"]);
-                  echo "<td>";
-                  Dropdown::showFromArray("glpiitemstype[$i]", $itemstypes);
-                  echo "</td>";
-
                   echo self::showItem($hardware[$i]["MAC"], "", "", "", true, "", $i);
                   echo "<tbody style=\"display:none\">";
                   echo "<tr><input type=\"hidden\" name='itemsip[" . $i . "]' value=\"$ip\" ><td>";
@@ -1307,7 +1509,14 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   echo "</tbody>";
                }
                echo "</table>";
-               echo "<div class='center' style=\"width=100%\"><input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\">&nbsp;";
+               echo "<div class='center' style=\"width=100%\">";
+               if ($action == "import") {
+                  echo "<input type='submit' class='submit' name='Import'  value=\"" . _sx('button', 'Import') . "\">";
+                  echo "&nbsp;";
+               } else {
+                  echo "<input type='submit' class='submit' name='Link'  value=\"" . _sx('button', 'Link', 'ocsinventoryng') . "\">";
+                  echo "&nbsp;";
+               }
                echo "<input type='submit' class='submit' name='delete'  value=\"" . _sx('button', 'Delete from OCSNG', 'ocsinventoryng') . "\"></div>";
                Html::closeForm();
                self::checkBox($target);
