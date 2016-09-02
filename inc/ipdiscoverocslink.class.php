@@ -808,9 +808,12 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     */
    static function importIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id, $subnet) {
       global $DB;
-      $res      = null;
-      $identify = false;
-      if (isset($ipDiscoveryObject["ocsItemType"]) && $ipDiscoveryObject["ocsItemType"] == Dropdown::EMPTY_VALUE) {
+      
+      $id         = null;
+      $identify   = false;
+      
+      if (isset($ipDiscoveryObject["ocsItemType"]) 
+            && $ipDiscoveryObject["ocsItemType"] == Dropdown::EMPTY_VALUE) {
          return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
       }
       if ($ipDiscoveryObject["itemDescription"] == '') {
@@ -827,7 +830,16 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
       }
 
-      $input = array(
+      if (isset($ipDiscoveryObject["ocsItemType"])) {
+         $identify = true;
+      }
+      
+      $mac        = $ipDiscoveryObject["macAdress"];
+      $netPort = new NetworkPort();
+      $netPort->getFromDBByQuery("WHERE `mac` = '$mac' ");
+      if (count($netPort->fields) < 1) {
+      
+         $input = array(
           'is_dynamic'   => 1,
           'locations_id' => 0,
           'domains_id'   => 0,
@@ -835,82 +847,53 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
           'name'         => $ipDiscoveryObject["itemName"],
           'comment'      => $ipDiscoveryObject["itemDescription"]);
 
-      $device = new $ipDiscoveryObject["glpiItemType"]();
+         $device = new $ipDiscoveryObject["glpiItemType"]();
 
-      $id = $device->add($input);
-
-
-      if (isset($ipDiscoveryObject["ocsItemType"])) {
-         $identify = true;
-      }
-      if ($id && !$identify) {
+         $id = $device->add($input);
+      
          //ipdiscover link
          $date       = date("Y-m-d H:i:s");
          $glpiType   = $ipDiscoveryObject["glpiItemType"];
-         $mac        = $ipDiscoveryObject["macAdress"];
          $ip         = $ipDiscoveryObject["itemIp"];
 
          $glpiQuery = "INSERT INTO `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
                        (`items_id`,`itemtype`,`macaddress`,`last_update`,`subnet`,`plugin_ocsinventoryng_ocsservers_id`)
                        VALUES('$id','$glpiType','$mac','$date','$subnet','$plugin_ocsinventoryng_ocsservers_id')";
-         $res       = $DB->query($glpiQuery);
+         $DB->query($glpiQuery);
+         
+         //add port
+         $netPortInput = array(
+             "itemtype"           => $glpiType,
+             "items_id"           => $id,
+             'entities_id'        => $ipDiscoveryObject["entity"],
+             "name"               => $ipDiscoveryObject["itemName"] . "-" . $ip,
+             "instantiation_type" => "NetworkPortEthernet",
+             "mac"                => $mac
+         );
 
-         //add networkPort
-         $netPort = new NetworkPort();
-         $netPort->getFromDBByQuery("WHERE `mac` = '$mac' ");
-         if (count($netPort->fields) < 1) {
+         $netPort->splitInputForElements($netPortInput);
+         $NewNetPortId = $netPort->add($netPortInput);
+         $netPort->updateDependencies(1);
+         //make link to IPAdress manualy
+       
+         //add ipAdress
+         $networkName= new NetworkName();
+         $networkNameId=$networkName->add(array("items_id"=>$NewNetPortId,"itemtype"=>"NetworkPort"));
+         $ipAdresses = new IPAddress();
 
-            $netPortInput = array(
-                "itemtype"           => $glpiType,
-                "items_id"           => $id,
-                'entities_id'        => $ipDiscoveryObject["entity"],
-                "name"               => $ipDiscoveryObject["itemName"] . "-" . $ip,
-                "instantiation_type" => "NetworkPortEthernet",
-                "mac"                => $mac
-            );
-
-            $netPort->splitInputForElements($netPortInput);
-            $NewNetPortId = $netPort->add($netPortInput);
-            $netPort->updateDependencies(1);
-            //make link to IPAdress manualy
-          
-          //add ipAdress
-          $networkName= new NetworkName();
-          $networkNameId=$networkName->add(array("items_id"=>$NewNetPortId,"itemtype"=>"NetworkPort"));
-          $ipAdresses = new IPAddress();
-        
-                $input = array('name'        => $ip,
-                              'itemtype'    => 'NetworkName',
-                              'items_id'    => $networkNameId,
-                              'is_deleted'  => 0,
-                               'mainitems_id'=>$id,
-                               'mainitemtype'=>$glpiType);
-               $ipAdresses->add($input);
-             
-            
-         }
+         $input = array('name'        => $ip,
+                     'itemtype'    => 'NetworkName',
+                     'items_id'    => $networkNameId,
+                     'is_deleted'  => 0,
+                      'mainitems_id'=>$id,
+                      'mainitemtype'=>$glpiType);
+         $ipAdresses->add($input);
       }
 
       if ($id && $identify) {
-         //ipdiscover link
-         $ocsClient   = new PluginOcsinventoryngOcsServer();
-         $DBOCS       = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
-         $date        = date("Y-m-d H:i:s");
-         $glpiType    = $ipDiscoveryObject["glpiItemType"];
-         $ocsType     = $ipDiscoveryObject["ocsItemType"];
-         $mac         = $ipDiscoveryObject["macAdress"];
-         $userId      = Session::getLoginUserID();
-         $description = $ipDiscoveryObject["itemDescription"];
-         $ip          = $ipDiscoveryObject["itemIp"];
-         $subnet      = "172.14.0.0";
-         
-         $glpiQuery   = "INSERT INTO `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
-                       (`items_id`,`itemtype`,`macaddress`,`last_update`,`subnet`,`plugin_ocsinventoryng_ocsservers_id`)
-                       VALUES('$id','$glpiType','$mac','$date','$subnet','$plugin_ocsinventoryng_ocsservers_id')";
-         $res         = $DB->query($glpiQuery);
-
          //identify object
          //WAS IS DAS ? CHMA
+         $userId      = Session::getLoginUserID();
          $query       = "SELECT `glpi_users`.`name` 
                          FROM `glpi_users`
                          WHERE glpi_users.id like '$userId'";
@@ -918,46 +901,21 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          $userAssoc   = $DB->fetch_assoc($queryResult);
 
          if ($userAssoc) {
+            $ocsClient   = new PluginOcsinventoryngOcsServer();
+            $DBOCS       = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
+            $ocsType     = $ipDiscoveryObject["ocsItemType"];
+            $description = $ipDiscoveryObject["itemDescription"];
             $user     = $userAssoc["name"];
             $ocsQuery = "INSERT INTO `network_devices` (`description`,`type`,`macaddr`,`user`)
                             VALUES('$description','$ocsType','$mac','$user')";
             $DBOCS->query($ocsQuery);
          }
-
-         //add networkPort
-         $netPort = new NetworkPort();
-         $netPort->getFromDBByQuery("WHERE `mac` = '$mac' ");
-         if (count($netPort->fields) < 1) {
-
-            $netPortInput = array(
-                "itemtype"           => $glpiType,
-                "items_id"           => $id,
-                'entities_id'        => $ipDiscoveryObject["entity"],
-                "name"               => $ipDiscoveryObject["itemName"] . "-" . $ip,
-                "instantiation_type" => "NetworkPortEthernet",
-                "mac"                => $mac
-            );
-
-            $netPort->splitInputForElements($netPortInput);
-            $NewNetPortId = $netPort->add($netPortInput);
-            $netPort->updateDependencies(1);
-            
-             //add ipAdress
-            $networkName   = new NetworkName();
-            $networkNameId = $networkName->add(array("items_id" => $NewNetPortId, "itemtype" => "NetworkPort"));
-            $ipAdresses    = new IPAddress();
-            $input         = array('name'         => $ip,
-                'itemtype'     => 'NetworkName',
-                'items_id'     => $networkNameId,
-                'is_deleted'   => 0,
-                'mainitems_id' => $id,
-                'mainitemtype' => $glpiType);
-            $ipAdresses->add($input);
-         }
       }
-      if ($res) {
+
+      if ($id) {
          return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_IMPORTED);
       } else {
+         Session::addMessageAfterRedirect($mac." : ".__('Unable to add. an object with same MAC address already exists.', 'ocsinventoryng'), false, ERROR);
          return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
       }
    }
@@ -1127,8 +1085,18 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $reload      = "ip=$ipAdress&status=$status";
       $backValues  = "?b[]=$ipAdress&b[]=$status";
       
+      if ($status == "inventoried") {
+         $status_name = __('Inventoried', 'ocsinventoryng');
+      } elseif ($status == "imported") {
+         $status_name = __('Imported / Linked', 'ocsinventoryng');
+      } elseif ($status == "noninventoried") {
+         $status_name = __('Non Inventoried', 'ocsinventoryng');
+      } else {
+         $status_name = __('Identified', 'ocsinventoryng');
+      }
+      
       $subnet_name = self::getSubnetNamebyIP($ipAdress);
-      echo "<div class='center'><h2>".__('Subnet', 'ocsinventoryng')." ".$subnet_name." (".$ipAdress.")</h2></div>";
+      echo "<div class='center'><h2>".__('Subnet', 'ocsinventoryng')." ".$subnet_name." (".$ipAdress.") - ".$status_name."</h2></div>";
       
       if ($subnet >= 0) {
          $back = __('Back');
@@ -1175,6 +1143,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo Search::showHeaderItem($output_type, __('Item'), $header_num);
                echo Search::showHeaderItem($output_type, __('Item type'), $header_num);
                echo Search::showHeaderItem($output_type, __('MAC address'), $header_num);
+               echo Search::showHeaderItem($output_type, __('Location'), $header_num);
                echo Search::showHeaderItem($output_type, __('Import date in GLPI', 'ocsinventoryng'), $header_num);
                echo Search::showHeaderItem($output_type, __('Subnet'), $header_num);
                echo Search::showEndLine($output_type);
@@ -1188,6 +1157,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   echo Search::showItem($output_type, $class->getLink(), $item_num, $row_num);
                   echo Search::showItem($output_type, $class->getTypeName(), $item_num, $row_num);
                   echo Search::showItem($output_type, $hardware[$i]["macaddress"], $item_num, $row_num);
+                  echo Search::showItem($output_type, Dropdown::getDropdownName("glpi_locations",$class->fields["locations_id"]), $item_num, $row_num);
                   echo Search::showItem($output_type, Html::convDateTime($hardware[$i]["last_update"]), $item_num, $row_num);
                   echo Search::showItem($output_type, $hardware[$i]["subnet"], $item_num, $row_num);
                   echo Search::showEndLine($output_type);
