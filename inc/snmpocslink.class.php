@@ -343,7 +343,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
 
                if (count($data)) {
                   $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
-                  echo "<table class='tab_glpi'>";
+                  echo "<table class='tab_glpi' width='100%'>";
                   echo "<tr class='tab_bg_1'><th colspan='2'>".__('SNMP informations OCS NG')."</th>";
                   
                   echo "<tr class='tab_bg_1'><td>".__('Import date in GLPI', 'ocsinventoryng');
@@ -409,7 +409,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
 
                if (count($data)) {
                   $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
-                  echo "<table class='tab_glpi'>";
+                  echo "<table class='tab_glpi' width='100%'>";
                   echo "<tr class='tab_bg_1'><th colspan='2'>".__('IPDiscover informations OCS NG')."</th>";
                   
                   echo "<tr class='tab_bg_1'><td>".__('Import date in GLPI', 'ocsinventoryng');

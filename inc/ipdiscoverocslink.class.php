@@ -983,6 +983,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                        VALUES('$id','".$tab["itemtype"]."','".$tab["mac"]."','$date','$subnet','$plugin_ocsinventoryng_ocsservers_id')";
          $DB->query($glpiQuery);
          
+         $input = array(
+          'is_dynamic'   => 1,
+          'id' => $id);
+
+         $device = new $tab["itemtype"]();
+         $device->update($input);
+         
          if ($identify) {
          //identify object
          //WAS IS DAS ? CHMA
