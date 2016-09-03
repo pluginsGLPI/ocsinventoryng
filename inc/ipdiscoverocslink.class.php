@@ -477,6 +477,22 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
    }
    
    /**
+    * this function delete link on an certain mac
+    * @param type $plugin_ocsinventoryng_ocsservers_id string
+    * @param type $ids array
+    * @return none
+    */
+   static function deleteLink($plugin_ocsinventoryng_ocsservers_id, $id_links) {
+   
+      $ids           = self::getMacAdressKeyVal($id_links);
+
+      foreach ($ids as $key => $id) {
+         $disc = new self();
+         $disc->deleteByCriteria(array('id' => $id));
+      }
+   }
+   
+   /**
     * this function get datas on an certain ipaddress
     * @param type $ipAdress string
     * @param type $plugin_ocsinventoryng_ocsservers_id string
@@ -1184,7 +1200,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $link        = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php";
       $return      = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
       $returnargs     = "subnetsChoice=$subnet&action=$action";
-      $reload      = "ip=$ipAdress&status=$status";
+      $reload      = "ip=$ipAdress&status=$status&action=$action";
       $backValues  = "?b[]=$ipAdress&b[]=$status";
       
       if ($status == "inventoried") {
@@ -1198,7 +1214,16 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       }
       
       $subnet_name = self::getSubnetNamebyIP($ipAdress);
-      echo "<div class='center'><h2>".__('Subnet', 'ocsinventoryng')." ".$subnet_name." (".$ipAdress.") - ".$status_name."</h2></div>";
+      echo "<div class='center'>";
+      echo "<h2>".__('Subnet', 'ocsinventoryng')." ".$subnet_name." (".$ipAdress.") - ".$status_name;
+      echo "&nbsp;";
+      $refresh         = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php?" . $reload;
+      Html::showSimpleForm($refresh, 'refresh',
+                                          _sx('button', 'Refresh'),
+                                          array(),
+                                    $CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/pics/synchro.png");
+      echo "</h2>";
+      echo "</div>";
       
       if ($subnet >= 0) {
          $back = __('Back');
@@ -1240,7 +1265,11 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                break;
             
             case "imported" :
-               //echo "<div class='tab_cadre_fixe'>\n";
+               $target         = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php" . $backValues;
+               self::checkBox($target);
+               echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
+               echo "<div class='center' style=\"width=100%\">";
+               echo "<input type='submit' class='submit' name='deletelink'  value=\"" . _sx('button', 'Delete link', 'ocsinventoryng') . "\"></div>";
                echo "<table width='100%'class='tab_cadrehov'>\n";
                echo Search::showHeaderItem($output_type, __('Item'), $header_num);
                echo Search::showHeaderItem($output_type, __('Item type'), $header_num);
@@ -1248,6 +1277,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo Search::showHeaderItem($output_type, __('Location'), $header_num);
                echo Search::showHeaderItem($output_type, __('Import date in GLPI', 'ocsinventoryng'), $header_num);
                echo Search::showHeaderItem($output_type, __('Subnet'), $header_num);
+               echo Search::showHeaderItem($output_type, __('&nbsp;'), $header_num);
                echo Search::showEndLine($output_type);
                $row_num = 1;
                for ($i = $start; $i < $lim + $start; $i++) {
@@ -1262,9 +1292,18 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   echo Search::showItem($output_type, Dropdown::getDropdownName("glpi_locations",$class->fields["locations_id"]), $item_num, $row_num);
                   echo Search::showItem($output_type, Html::convDateTime($hardware[$i]["last_update"]), $item_num, $row_num);
                   echo Search::showItem($output_type, $hardware[$i]["subnet"], $item_num, $row_num);
+                  echo self::showItem($hardware[$i]["id"], "", "", "", true, "", $i);
                   echo Search::showEndLine($output_type);
                }
+               
+               echo "<tbody style=\"display:none\">";
+               echo "<tr><input type=\"hidden\" name='subnet' value=\"$ipAdress\" ></tr>";
+               echo "</tbody>";
                echo "</table>\n";
+               echo "<div class='center' style=\"width=100%\">";
+               echo "<input type='submit' class='submit' name='deletelink'  value=\"" . _sx('button', 'Delete link', 'ocsinventoryng') . "\"></div>";
+               Html::closeForm();
+               self::checkBox($target);
                break;
                
             case "noninventoried" :
@@ -1351,36 +1390,24 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                      echo "</td>";
                   } else {
                      echo "<td width='10'>";
-                     //if (getItemForItemtype($tab["type"])) {
-                     //   $type            = $tab["type"];
-                     //   $options['name'] = "tolink_items[" . $i . "]";
 
-                     //   $self = new self;
-                     //   if ($item = $self->getFromDBbyName($tab["type"], $tab["name"])) {
-                     //      $options['value'] = (isset($item->fields['id'])) ? $item->fields['id'] : false;
-                     //   }
-                     //   $type::dropdown($options);
-                     //   echo "<input type='hidden' name='tolink_itemtype[" . $i . "]' value='" . $tab["type"] . "'>";
-                        
-                     //} else {
+                     $mtrand = mt_rand();
 
-                        $mtrand = mt_rand();
+                     $mynamei = "itemtype";
+                     $myname  = "tolink_items[" . $i . "]";
 
-                        $mynamei = "itemtype";
-                        $myname  = "tolink_items[" . $i . "]";
-
-                        $rand = Dropdown::showItemTypes($mynamei, $CFG_GLPI["asset_types"], array('rand' => $mtrand));
+                     $rand = Dropdown::showItemTypes($mynamei, $CFG_GLPI["asset_types"], array('rand' => $mtrand));
 
 
-                        $p = array('itemtype' => '__VALUE__',
-                                 'entity_restrict' => $_SESSION["glpiactiveentities"],
-                                 'id'       => $i,
-                                 'rand'     => $rand,
-                                 'myname'   => $myname);
-                        //print_r($p);
-                        Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", $CFG_GLPI["root_doc"] ."/plugins/ocsinventoryng/ajax/dropdownitems.php", $p);
-                        echo "<span id='results_$mynamei$rand'>\n";
-                        echo "</span>\n";
+                     $p = array('itemtype' => '__VALUE__',
+                              'entity_restrict' => $_SESSION["glpiactiveentities"],
+                              'id'       => $i,
+                              'rand'     => $rand,
+                              'myname'   => $myname);
+                     //print_r($p);
+                     Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", $CFG_GLPI["root_doc"] ."/plugins/ocsinventoryng/ajax/dropdownitems.php", $p);
+                     echo "<span id='results_$mynamei$rand'>\n";
+                     echo "</span>\n";
                      //}
                      echo "</td>";
                   }
@@ -1475,37 +1502,25 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                      echo "</td>";
                   } else {
                      echo "<td width='10'>";
-                     //if (getItemForItemtype($tab["type"])) {
-                     //   $type            = $tab["type"];
-                     //   $options['name'] = "tolink_items[" . $i . "]";
 
-                     //   $self = new self;
-                     //   if ($item = $self->getFromDBbyName($tab["type"], $tab["name"])) {
-                     //      $options['value'] = (isset($item->fields['id'])) ? $item->fields['id'] : false;
-                     //   }
-                     //   $type::dropdown($options);
-                     //   echo "<input type='hidden' name='tolink_itemtype[" . $i . "]' value='" . $tab["type"] . "'>";
-                        
-                     //} else {
+                     $mtrand = mt_rand();
 
-                        $mtrand = mt_rand();
+                     $mynamei = "itemtype";
+                     $myname  = "tolink_items[" . $i . "]";
 
-                        $mynamei = "itemtype";
-                        $myname  = "tolink_items[" . $i . "]";
-
-                        $rand = Dropdown::showItemTypes($mynamei, $CFG_GLPI["asset_types"], array('rand' => $mtrand));
+                     $rand = Dropdown::showItemTypes($mynamei, $CFG_GLPI["asset_types"], array('rand' => $mtrand));
 
 
-                        $p = array('itemtype' => '__VALUE__',
-                                 'entity_restrict' => $_SESSION["glpiactiveentities"],
-                                 'id'       => $i,
-                                 'rand'     => $rand,
-                                 'myname'   => $myname);
-                        //print_r($p);
-                        Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", $CFG_GLPI["root_doc"] ."/plugins/ocsinventoryng/ajax/dropdownitems.php", $p);
-                        echo "<span id='results_$mynamei$rand'>\n";
-                        echo "</span>\n";
-                     //}
+                     $p = array('itemtype' => '__VALUE__',
+                              'entity_restrict' => $_SESSION["glpiactiveentities"],
+                              'id'       => $i,
+                              'rand'     => $rand,
+                              'myname'   => $myname);
+ 
+                     Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", $CFG_GLPI["root_doc"] ."/plugins/ocsinventoryng/ajax/dropdownitems.php", $p);
+                     echo "<span id='results_$mynamei$rand'>\n";
+                     echo "</span>\n";
+
                      echo "</td>";
                   }
                   echo self::showItem($hardware[$i]["MAC"], "", "", "", true, "", $i);

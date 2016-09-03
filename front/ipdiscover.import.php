@@ -266,6 +266,16 @@ if (isset($_POST["Import"])
    }
    Html::back();
 
+} else if (isset($_POST["deletelink"])) {
+   
+   if (isset($_POST["mactoimport"]) 
+         && sizeof($_POST["mactoimport"]) > 0) {
+      $ids      = $_POST["mactoimport"];
+      $ip->deleteLink($_SESSION["plugin_ocsinventoryng_ocsservers_id"],$ids);
+      
+   }
+   Html::back();
+
 }
 
 Html::footer();
