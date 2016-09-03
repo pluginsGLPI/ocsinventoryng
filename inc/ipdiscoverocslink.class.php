@@ -98,7 +98,8 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM {
    public static function getSubnetsID($inputs, &$outputs) {
       foreach ($inputs as $subnets) {
          if (isset($subnets["ID"])) {
-            if ($subnets["ID"] != null && !in_array($subnets["ID"], $outputs)) {
+            if ($subnets["ID"] != null 
+                  && !in_array($subnets["ID"], $outputs)) {
                $outputs[] = $subnets["ID"];
             }
          }
@@ -331,9 +332,6 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          Html::closeForm();
          
          echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
-         echo "<tr class='tab_bg_2'><th>" . __('Import IPDiscover', 'ocsinventoryng') .
-         "</th><th>" . __('Link IPDiscover', 'ocsinventoryng') .
-         "</th></tr>\n";
          echo "<tr class='tab_bg_2'><td class='center'>";
          self::showSubnetSearchForm("import");
          echo "</td><td class='center'>";
@@ -349,14 +347,28 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php?action=$action\"
                 method='post'>";
          echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
-         echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an subnet', 'ocsinventoryng') .
-         "</th></tr>\n";
+         if ($action == "import") {
+            echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Import IPDiscover', 'ocsinventoryng') .
+            "</th></tr>\n";
+         } else {
+            echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Link IPDiscover', 'ocsinventoryng') .
+            "</th></tr>\n";
+         }
+         //echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an subnet', 'ocsinventoryng') .
+         //"</th></tr>\n";
          echo "<tr class='tab_bg_2'><td class='center'>" . __('Subnet', 'ocsinventoryng') . "</td>";
          echo "<td class='center'>";
-         $tab                 = array(Dropdown::EMPTY_VALUE, __('All Subnets', 'ocsinventoryng'), __('Known Subnets', 'ocsinventoryng'), __('Unknown Subnets', 'ocsinventoryng'));
+         $tab                 = array('0' => Dropdown::EMPTY_VALUE,
+                                       'All Subnets' => __('All Subnets', 'ocsinventoryng'), 
+                                       'Known Subnets' => __('Known Subnets', 'ocsinventoryng'), 
+                                       'Unknown Subnets' => __('Unknown Subnets', 'ocsinventoryng'));
+                                       
          $subnets             = self::getSubnets($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+         
          self::getSubnetsID($subnets["All Subnets"], $tab);
+         
          $_SESSION["subnets"] = $tab;
+
          Dropdown::showFromArray("subnetsChoice", $tab, array("on_change" => "this.form.submit()", "display_emptychoice" => false));
          echo "</td></tr>";
          /*echo "<tr class='tab_bg_1'>";
@@ -532,7 +544,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
               AND `netmap`.`mac` NOT IN ( SELECT DISTINCT(`network_devices`.`macaddr`) 
               FROM `network_devices`)
               GROUP BY `netmap`.`mac`
-              ORDER BY `netmap`.`ip`";
+              ORDER BY `netmap`.`date` DESC";
       } else {
          $macAdresses = self::parseArrayToString($knownMacAdresses);
          $query = "SELECT `network_devices`.`ID`,`network_devices`.`TYPE`,`network_devices`.`DESCRIPTION`,`network_devices`.`USER`,`netmap`.`IP`,`netmap`.`MAC`,`netmap`.`MASK`,`netmap`.`NETID`,`netmap`.`NAME`,`netmap`.`DATE`
@@ -542,7 +554,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
               WHERE `netmap`.`NETID`='$ipAdress'
               AND `network_devices`.`MACADDR` NOT IN($macAdresses)
               GROUP BY `network_devices`.`MACADDR`
-              ORDER BY `network_devices`.`TYPE` asc";
+              ORDER BY `netmap`.`DATE` DESC";
       }
       if ($status == "imported") {
          $result   = $DB->query($query);
@@ -736,7 +748,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          }
          $res = $OCSDB->query($addQuery);
          if ($res) {
-            $link = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php?subnetsChoice=2"; //2 is for the known subnets
+            $link = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php?subnetsChoice='Known Subnets'"; //2 is for the known subnets
             Html::redirect($link);
          }
       } else{

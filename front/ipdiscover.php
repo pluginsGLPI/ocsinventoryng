@@ -42,22 +42,34 @@ if (!isset($_GET['action'])) {
    $_GET['action'] = "import";
 }
 
-if (isset($_POST["subnetsChoice"]) && isset($_SESSION["subnets"]) || isset($_SESSION["subnets"])) {
+if (isset($_GET['subnetsChoice'])) {
+   $_POST["subnetsChoice"] = $_GET['subnetsChoice'];
+}
+
+if (isset($_POST["subnetsChoice"]) 
+      && isset($_SESSION["subnets"]) 
+   || isset($_SESSION["subnets"])) {
    $sN             = "";
    $networksDetail = array();
    $ocsServerId    = $_SESSION["plugin_ocsinventoryng_ocsservers_id"];
    $tab            = $_SESSION["subnets"];
    $subnets        = $ip->getSubnets($ocsServerId);
+
    if (isset($_POST["subnetsChoice"])) {
-      $sN                              = $tab[$_POST["subnetsChoice"]];
+      if (strlen($_POST["subnetsChoice"]) > 1) {
+         $sN                              = $_POST["subnetsChoice"];
+      } else {
+         $sN                              = $tab[$_POST["subnetsChoice"]];
+      }
       $knownMacAdresses                = $ip->getKnownMacAdresseFromGlpi();
       $networksDetail["subnets"]       = $ip->showSubnets($ocsServerId, $subnets, $knownMacAdresses, $sN);
       $networksDetail["subnetsChoice"] = $_POST["subnetsChoice"];
+
    } else {
-      $sN                              = $tab[1];
+      $sN                              = "Known Subnets";
       $knownMacAdresses                = $ip->getKnownMacAdresseFromGlpi();
       $networksDetail["subnets"]       = $ip->showSubnets($ocsServerId, $subnets, $knownMacAdresses, $sN);
-      $networksDetail["subnetsChoice"] = 1;
+      $networksDetail["subnetsChoice"] = "Known Subnets";
    }
    $lim = count($networksDetail["subnets"]);
    $start = isset($_POST['start'])? $_POST['start'] : 0;
