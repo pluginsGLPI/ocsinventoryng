@@ -516,10 +516,12 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          GROUP BY `hardware`.`id`
          ORDER BY `hardware`.`lastdate`";
       } else if ($status == "imported") {
+      
          $query = " SELECT *
          FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks` 
          WHERE `subnet` = '$ipAdress'
          ORDER BY `last_update`";
+         
       } else if ($status == "noninventoried") {
          $query = " SELECT `netmap`.`ip`, `netmap`.`mac`, `netmap`.`mask`, `netmap`.`date`, `netmap`.`name` as DNS
               FROM `netmap` 
@@ -1195,7 +1197,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param type $status string
     */
    static function showHardware($hardware, $lim, $start = 0, $ipAdress, $status, $subnet, $action) {
-      global $CFG_GLPI;
+      global $CFG_GLPI, $DB;
+      
       $output_type = Search::HTML_OUTPUT; //0
       $link        = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php";
       $return      = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
@@ -1274,6 +1277,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo Search::showHeaderItem($output_type, __('Item'), $header_num);
                echo Search::showHeaderItem($output_type, __('Item type'), $header_num);
                echo Search::showHeaderItem($output_type, __('MAC address'), $header_num);
+               echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
                echo Search::showHeaderItem($output_type, __('Location'), $header_num);
                echo Search::showHeaderItem($output_type, __('Import date in GLPI', 'ocsinventoryng'), $header_num);
                echo Search::showHeaderItem($output_type, __('Subnet'), $header_num);
@@ -1286,9 +1290,27 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   echo Search::showNewLine($output_type, $row_num % 2);
                   $class = getItemForItemtype($hardware[$i]["itemtype"]);
                   $class->getFromDB($hardware[$i]["items_id"]);
+                  $iplist = "";
+                  $ip = new IPAddress();
+                  // Update IPAddress
+                  foreach ($DB->request('glpi_networkports',
+                                        array('itemtype' => $hardware[$i]["itemtype"],
+                                               'items_id' => $hardware[$i]["items_id"])) as $netname) {
+                     foreach ($DB->request('glpi_networknames',
+                                           array('itemtype' => 'NetworkPort',
+                                                  'items_id' => $netname['id'])) as $dataname) {
+                        foreach ($DB->request('glpi_ipaddresses',
+                                              array('itemtype' => 'NetworkName',
+                                                    'items_id' => $dataname['id'])) as $data) {
+                           $ip->getfromDB($data['id']);
+                           $iplist .= $ip->getName()."<br>";
+                        }
+                     }
+                  }
                   echo Search::showItem($output_type, $class->getLink(), $item_num, $row_num);
                   echo Search::showItem($output_type, $class->getTypeName(), $item_num, $row_num);
                   echo Search::showItem($output_type, $hardware[$i]["macaddress"], $item_num, $row_num);
+                  echo Search::showItem($output_type, $iplist, $item_num, $row_num);
                   echo Search::showItem($output_type, Dropdown::getDropdownName("glpi_locations",$class->fields["locations_id"]), $item_num, $row_num);
                   echo Search::showItem($output_type, Html::convDateTime($hardware[$i]["last_update"]), $item_num, $row_num);
                   echo Search::showItem($output_type, $hardware[$i]["subnet"], $item_num, $row_num);
