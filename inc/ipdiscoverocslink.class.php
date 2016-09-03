@@ -353,7 +353,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          "</th></tr>\n";
          echo "<tr class='tab_bg_2'><td class='center'>" . __('Subnet', 'ocsinventoryng') . "</td>";
          echo "<td class='center'>";
-         $tab                 = array(Dropdown::EMPTY_VALUE, "All Subnets", "Known Subnets", "Unknown Subnets");
+         $tab                 = array(Dropdown::EMPTY_VALUE, __('All Subnets', 'ocsinventoryng'), __('Known Subnets', 'ocsinventoryng'), __('Unknown Subnets', 'ocsinventoryng'));
          $subnets             = self::getSubnets($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
          self::getSubnetsID($subnets["All Subnets"], $tab);
          $_SESSION["subnets"] = $tab;

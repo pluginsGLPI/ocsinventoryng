@@ -132,14 +132,16 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
          case __CLASS__ :
             $ong[0]    = __('Server Setup', 'ocsinventoryng');
             
-            $ong[1] = __('IPDiscover Import', 'ocsinventoryng');
+            $ong[1] = __('Inventory Import', 'ocsinventoryng');
+            
+            $ong[2] = __('IPDiscover Import', 'ocsinventoryng');
             
             $ocsClient = new PluginOcsinventoryngOcsServer();
             $client    = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
             $version   = $client->getTextConfig('GUI_VERSION');
             $snmp      = $client->getIntConfig('SNMP');
             if ($version > $ocsClient::OCS2_1_VERSION_LIMIT && $snmp) {
-               $ong[2] = __('SNMP Import', 'ocsinventoryng');
+               $ong[3] = __('SNMP Import', 'ocsinventoryng');
             }
             
             return $ong;
@@ -157,14 +159,18 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
          $snmp = new PluginOcsinventoryngSnmpOcslink();
          switch ($tabnum) {
             case 0 :
-               $ocs->ocsMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+               $ocs->setupMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
                break;
             
             case 1 :
-               $ipdisc->ipDiscoverMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+               $ocs->importMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
                break;
                
             case 2 :
+               $ipdisc->ipDiscoverMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+               break;
+               
+            case 3 :
                $snmp->snmpMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
                break;
 
