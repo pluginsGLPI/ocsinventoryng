@@ -1240,7 +1240,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                   echo Search::showHeaderItem($output_type, __('Item type to create', 'ocsinventoryng'), $header_num, "", 0, "", 'width=15%');
                   echo Search::showHeaderItem($output_type, "", $header_num);
                } else {
-                  echo Search::showHeaderItem($output_type, __('Item type to link', 'ocsinventoryng'), $header_num, "", 0, "", 'width=15%');
+                  echo Search::showHeaderItem($output_type, __('Item to link', 'ocsinventoryng'), $header_num, "", 0, "", 'width=15%');
                }
                // End Line for column headers
                echo Search::showEndLine($output_type);

@@ -812,7 +812,7 @@ JAVASCRIPT;
       Dropdown::showYesNo("dohistory", $this->fields["dohistory"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('System history') . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('System history', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("history_hardware", $this->fields["history_hardware"]);
       echo "&nbsp;";
       $fields = __('Operating system');

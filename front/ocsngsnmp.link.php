@@ -76,7 +76,7 @@ if (isset($_SESSION["ocs_linksnmp"]["id"])) {
       Html::displayProgressBar(400,100);
 
       unset($_SESSION["ocs_link"]);
-      echo "<div class='center b'>".__('Successful link')."<br>";
+      echo "<div class='center b'>".__('Successful link', 'ocsinventoryng')."<br>";
       echo "<a href='".$_SERVER['PHP_SELF']."'>".__('Back')."</a></div>";
    }
 }
