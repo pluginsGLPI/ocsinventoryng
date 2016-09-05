@@ -323,7 +323,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
    * @return nothing
    **/
    static function showSimpleForItem(CommonDBTM $item) {
-      /*global $DB, $CFG_GLPI;
+      global $DB, $CFG_GLPI;
 
       $target = Toolbox::getItemTypeFormURL(__CLASS__);
 
@@ -389,10 +389,8 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                }
             }
          }
-      }*/
+      }
       //IPDiscover Links
-      global $DB, $CFG_GLPI;
-
       if (in_array($item->getType(), PluginOcsinventoryngIpdiscoverOcslink::$hardwareItemTypes)) {
          $items_id = $item->getField('id');
 
@@ -462,10 +460,15 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       
       if ($ocsSnmp['META']['ID'] == $ocsid && $p['itemtype'] != -1) {
          $itemtype = $p['itemtype'];
-
-         $loc_id = Dropdown::importExternal('Location', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['META']['LOCATION']));
-
-         $dom_id = Dropdown::importExternal('Domain', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['META']['DOMAIN']));
+         
+         $loc_id = 0;
+         $dom_id = 0;
+         if ($cfg_ocs['importsnmp_location']) {
+            $loc_id = Dropdown::importExternal('Location', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['META']['LOCATION']));
+         }
+         if ($cfg_ocs['importsnmp_domain']) {
+            $dom_id = Dropdown::importExternal('Domain', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['META']['DOMAIN']));
+         }
 
          if ($itemtype == "NetworkEquipment") {
 
@@ -575,9 +578,13 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       if ($cfg_ocs['importsnmp_last_pages_counter']) {
          $input["last_pages_counter"] = $ocsSnmp['PRINTER'][0]['COUNTER'];
       }
-
-      $input["locations_id"] = $loc_id;
-      $input["domains_id"]   = $dom_id;
+      
+      if ($loc_id > 0) {
+         $input["locations_id"] = $loc_id;
+      }
+      if ($dom_id > 0) {
+         $input["domains_id"] = $dom_id;
+      }
 
       $id_printer = 0;
 
@@ -689,8 +696,12 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          $input["comment"] = $ocsSnmp['META']['DESCRIPTION'];
       }
 
-      $input["locations_id"] = $loc_id;
-      $input["domains_id"]   = $dom_id;
+      if ($loc_id > 0) {
+         $input["locations_id"] = $loc_id;
+      }
+      if ($dom_id > 0) {
+         $input["domains_id"] = $dom_id;
+      }
 
       //if($ocsSnmp['META']['TYPE'] == null){
       //   $type_id = self::checkIfExist("NetworkEquipmentType", "Network Device");
@@ -844,10 +855,13 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          $input["comment"] = $ocsSnmp['META']['DESCRIPTION'];
       }
 
-      $input["locations_id"] = $loc_id;
-      if ($itemtype != "Phone") {
-         $input["domains_id"]   = $dom_id;
+      if ($loc_id > 0) {
+         $input["locations_id"] = $loc_id;
       }
+      if ($dom_id > 0 && $itemtype != "Phone") {
+         $input["domains_id"] = $dom_id;
+      }
+      
       $id_item = 0;
 
       if ($action == "add") {
