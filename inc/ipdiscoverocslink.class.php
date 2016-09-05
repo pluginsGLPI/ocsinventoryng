@@ -661,7 +661,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $row_num         = 1;
       $modNetwork      = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.modifynetwork.php";
       $hardwareNetwork = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php";
-      
+
       echo Html::printPager($start, count($subnets), $link, $choice);
       echo Search::showNewLine($output_type, true);
       $header_num      = 1;
@@ -845,7 +845,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param type $plugin_ocsinventoryng_ocsservers_id integer
     * @return type array
     */
-   static function importIpDiscover($plugin_ocsinventoryng_ocsservers_id, $subnet, $ipDiscoveryObject) {
+   static function importIpDiscover($ipDiscoveryObject,$plugin_ocsinventoryng_ocsservers_id, $subnet) {
       global $DB;
       
       $id         = null;
