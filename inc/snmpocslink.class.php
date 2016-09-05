@@ -523,7 +523,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
      $reponse = $location->find("name = '".$data."'");
      if (is_null($reponse) or empty($reponse)){
      $input = array(
-     "entities_id" => $_SESSION['glpidefault_entity'],
+     "entities_id" => $_SESSION['glpiactive_entity'],
      "name" => $data,
      );
      $id = $location->add($input, array('unicity_error_message' => false));
@@ -545,7 +545,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
 
       $input = array(
          "is_dynamic"    => 1,
-         "entities_id"   => $_SESSION['glpidefault_entity'],
+         "entities_id"   => $_SESSION['glpiactive_entity'],
          "have_ethernet" => 1,
       );
 
@@ -646,7 +646,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          //     $cartridge_item = new CartridgeItem();
          //     $input = array (
          //         "name" => $val['DESCRIPTION'],
-         //         "entities_id" => $_SESSION['glpidefault_entity'],
+         //         "entities_id" => $_SESSION['glpiactive_entity'],
          //"comment" => $ocsSnmp['CARTRIDGES']['DESCRIPTION'],
          //         "locations_id" => $loc_id,
          //     );
@@ -657,7 +657,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          //     $cartridge_items_id = $cartridge_item->add($input, array('unicity_error_message' => false));
          //     $cartridges = new Cartridge();
          //     $values = array (
-         //         "entities_id" => $_SESSION['glpidefault_entity'],
+         //         "entities_id" => $_SESSION['glpiactive_entity'],
          //         "cartridgeitems_id" => $cartridge_items_id,
          //         "printers_id" => $id_printer,
          //         "date_use" => date("Y-m-d")
@@ -678,7 +678,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
 
       $input = array(
          "is_dynamic"   => 1,
-         "entities_id"  => $_SESSION['glpidefault_entity'],
+         "entities_id"  => $_SESSION['glpiactive_entity'],
          "is_recursive" => 0,
       );
       
@@ -750,7 +750,8 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       }
 
       if ($id_network > 0 
-            && $action == "add") {
+            //&& $action == "add"
+            ) {
 
          if (isset($ocsSnmp['POWERSUPPLIES']) 
                && $cfg_ocs['importsnmp_power'] 
@@ -761,20 +762,22 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
             $pow['manufacturers_id'] = $man_id;
             $pow['designation']      = $ocsSnmp['POWERSUPPLIES'][0]['REFERENCE'];
             $pow['comment']          = $ocsSnmp['POWERSUPPLIES'][0]['DESCRIPTION'];
-            $pow['entities_id']      = $_SESSION['glpidefault_entity'];
+            $pow['entities_id']      = $_SESSION['glpiactive_entity'];
 
             $power    = new DevicePowerSupply();
             $power_id = $power->import($pow);
             if ($power_id) {
                $serial     = $ocsSnmp['POWERSUPPLIES'][0]['SERIALNUMBER'];
                $CompDevice = new Item_DevicePowerSupply();
+               $CompDevice->deleteByCriteria(array('items_id' => $id_network,
+                                     'itemtype' => $itemtype));
                $CompDevice->add(array('items_id'               => $id_network,
                   'itemtype'               => $itemtype,
-                  'entities_id'            => $_SESSION['glpidefault_entity'],
+                  'entities_id'            => $_SESSION['glpiactive_entity'],
                   'serial'                 => $serial,
                   'devicepowersupplies_id' => $power_id,
                   'is_dynamic'             => 1,
-                  '_no_history'            => !$dohistory));
+                  '_no_history'            => !$cfg_ocs['history_devices']));
             }
          }
 
@@ -787,17 +790,19 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
 
             $dev['designation'] = $ocsSnmp['FANS'][0]['REFERENCE'];
             $dev['comment']     = $ocsSnmp['FANS'][0]['DESCRIPTION'];
-            $dev['entities_id'] = $_SESSION['glpidefault_entity'];
+            $dev['entities_id'] = $_SESSION['glpiactive_entity'];
 
             $device    = new DevicePci();
             $device_id = $device->import($dev);
             if ($device_id) {
                $CompDevice = new Item_DevicePci();
+               $CompDevice->deleteByCriteria(array('items_id' => $id_network,
+                                     'itemtype' => $itemtype));
                $CompDevice->add(array('items_id'      => $id_network,
                   'itemtype'      => $itemtype,
-                  'entities_id'   => $_SESSION['glpidefault_entity'],
+                  'entities_id'   => $_SESSION['glpiactive_entity'],
                   'devicepcis_id' => $device_id,
-                  '_no_history'   => !$dohistory));
+                  '_no_history'   => !$cfg_ocs['history_devices']));
             }
          }
       }
@@ -842,7 +847,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       
       $input = array(
          "is_dynamic"    => 1,
-         "entities_id"   => $_SESSION['glpidefault_entity']
+         "entities_id"   => $_SESSION['glpiactive_entity']
       );
       
       if ($cfg_ocs['importsnmp_name']) {
