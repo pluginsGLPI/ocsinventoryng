@@ -1272,7 +1272,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                      }
                      $type = "toimport_itemtype[" . $tab["id"] . "]";
 
-                    // Dropdown::showItemTypes($type, self::$snmptypes, array('value' => $value));
+                     Dropdown::showItemTypes($type, self::$snmptypes, array('value' => $value));
                      echo "</td>\n";
                   }
                   /* if ($p['change_import_mode'] && !$tolinked){
