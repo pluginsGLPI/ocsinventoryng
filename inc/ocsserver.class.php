@@ -1961,21 +1961,22 @@ JAVASCRIPT;
    static function getOcsFieldsMatching() {
 
       // Manufacturer and Model both as text (for rules) and as id (for import)
-      return array('manufacturer'                   => array('BIOS', 'SMANUFACTURER'),
-         'manufacturers_id'               => array('BIOS', 'SMANUFACTURER'),
-         'os_license_number'              => array('HARDWARE', 'WINPRODKEY'),
-         'os_licenseid'                   => array('HARDWARE', 'WINPRODID'),
-         'operatingsystems_id'            => array('HARDWARE', 'OSNAME'),
-         'operatingsystemversions_id'     => array('HARDWARE', 'OSVERSION'),
-         'operatingsystemservicepacks_id' => array('HARDWARE', 'OSCOMMENTS'),
-         'domains_id'                     => array('HARDWARE', 'WORKGROUP'),
-         'contact'                        => array('HARDWARE', 'USERID'),
-         'name'                           => array('META', 'NAME'),
-         'comment'                        => array('HARDWARE', 'DESCRIPTION'),
-         'serial'                         => array('BIOS', 'SSN'),
-         'model'                          => array('BIOS', 'SMODEL'),
-         'computermodels_id'              => array('BIOS', 'SMODEL'),
-         'TAG'                            => array('ACCOUNTINFO', 'TAG')
+      return array('manufacturer'                     => array('BIOS', 'SMANUFACTURER'),
+                     'manufacturers_id'                  => array('BIOS', 'SMANUFACTURER'),
+                     'os_license_number'                 => array('HARDWARE', 'WINPRODKEY'),
+                     'os_licenseid'                      => array('HARDWARE', 'WINPRODID'),
+                     'operatingsystems_id'               => array('HARDWARE', 'OSNAME'),
+                     'operatingsystemversions_id'        => array('HARDWARE', 'OSVERSION'),
+                     'operatingsystemarchitectures_id'   => array('HARDWARE', 'ARCH'),
+                     'operatingsystemservicepacks_id'    => array('HARDWARE', 'OSCOMMENTS'),
+                     'domains_id'                        => array('HARDWARE', 'WORKGROUP'),
+                     'contact'                           => array('HARDWARE', 'USERID'),
+                     'name'                              => array('META', 'NAME'),
+                     'comment'                           => array('HARDWARE', 'DESCRIPTION'),
+                     'serial'                            => array('BIOS', 'SSN'),
+                     'model'                             => array('BIOS', 'SMODEL'),
+                     'computermodels_id'                 => array('BIOS', 'SMODEL'),
+                     'TAG'                               => array('ACCOUNTINFO', 'TAG')
       );
    }
 
@@ -2062,6 +2063,7 @@ JAVASCRIPT;
          unset($input["operatingsystems_id"]);
          unset($input["operatingsystemversions_id"]);
          unset($input["operatingsystemservicepacks_id"]);
+         unset($input["operatingsystemarchitectures_id"]);
       }
 
       if (intval($cfg_ocs["import_os_serial"]) == 0) {
@@ -2687,7 +2689,8 @@ JAVASCRIPT;
          $hardware   = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer['HARDWARE']));
          $compupdate = array();
 
-         if (intval($options['cfg_ocs']["import_os_serial"]) > 0 && !in_array("os_license_number", $options['computers_updates'])) {
+         if (intval($options['cfg_ocs']["import_os_serial"]) > 0 
+               && !in_array("os_license_number", $options['computers_updates'])) {
 
             if (!empty($hardware["WINPRODKEY"])) {
                $compupdate["os_license_number"] = self::encodeOcsDataInUtf8($is_utf8, $hardware["WINPRODKEY"]);
@@ -2723,7 +2726,9 @@ JAVASCRIPT;
                $computerOSSP  = $data_computer["os_sp"];
 
                //Do not log software history in case of OS or Service Pack change
-               if (!$options['do_history'] || $computerOS != $hardware["OSNAME"] || $computerOSSP != $hardware["OSCOMMENTS"]) {
+               if (!$options['do_history'] 
+                     || $computerOS != $hardware["OSNAME"] 
+                        || $computerOSSP != $hardware["OSCOMMENTS"]) {
                   $logHistory = 0;
                }
             }
@@ -2739,16 +2744,23 @@ JAVASCRIPT;
                $compupdate["operatingsystemversions_id"] = Dropdown::importExternal('OperatingSystemVersion', self::encodeOcsDataInUtf8($is_utf8, $hardware["OSVERSION"]));
             }
 
-            if (!strpos($hardware["OSCOMMENTS"], "CEST") && !in_array("operatingsystemservicepacks_id", $options['computers_updates'])) {// Not linux comment
+            if (!strpos($hardware["OSCOMMENTS"], "CEST") 
+                  && !in_array("operatingsystemservicepacks_id", $options['computers_updates'])) {// Not linux comment
                $compupdate["operatingsystemservicepacks_id"] = Dropdown::importExternal('OperatingSystemServicePack', self::encodeOcsDataInUtf8($is_utf8, $hardware["OSCOMMENTS"]));
             }
+            //TODO For 9.1
+            //if (!in_array("operatingsystemarchitectures_id", $options['computers_updates'])) {
+            //   $compupdate["operatingsystemarchitectures_id"] = Dropdown::importExternal('OperatingSystemArchitecture', self::encodeOcsDataInUtf8($is_utf8, $hardware["ARCH"]));
+            //}
          }
 
-         if (intval($options['cfg_ocs']["import_general_domain"]) > 0 && !in_array("domains_id", $options['computers_updates'])) {
+         if (intval($options['cfg_ocs']["import_general_domain"]) > 0 
+               && !in_array("domains_id", $options['computers_updates'])) {
             $compupdate["domains_id"] = Dropdown::importExternal('Domain', self::encodeOcsDataInUtf8($is_utf8, $hardware["WORKGROUP"]));
          }
 
-         if (intval($options['cfg_ocs']["import_general_contact"]) > 0 && !in_array("contact", $options['computers_updates'])) {
+         if (intval($options['cfg_ocs']["import_general_contact"]) > 0 
+               && !in_array("contact", $options['computers_updates'])) {
 
             $compupdate["contact"] = self::encodeOcsDataInUtf8($is_utf8, $hardware["USERID"]);
             $query                 = "SELECT `id`
@@ -2756,16 +2768,19 @@ JAVASCRIPT;
                       WHERE `name` = '" . $hardware["USERID"] . "';";
             $result                = $DB->query($query);
 
-            if ($DB->numrows($result) == 1 && !in_array("users_id", $options['computers_updates'])) {
+            if ($DB->numrows($result) == 1 
+                  && !in_array("users_id", $options['computers_updates'])) {
                $compupdate["users_id"] = $DB->result($result, 0, 0);
             }
          }
 
-         if (intval($options['cfg_ocs']["import_general_name"]) > 0 && !in_array("name", $options['computers_updates'])) {
+         if (intval($options['cfg_ocs']["import_general_name"]) > 0 
+               && !in_array("name", $options['computers_updates'])) {
             $compupdate["name"] = self::encodeOcsDataInUtf8($is_utf8, $hardware["NAME"]);
          }
 
-         if (intval($options['cfg_ocs']["import_general_comment"]) > 0 && !in_array("comment", $options['computers_updates'])) {
+         if (intval($options['cfg_ocs']["import_general_comment"]) > 0 
+               && !in_array("comment", $options['computers_updates'])) {
 
             $compupdate["comment"] = "";
             if (!empty($hardware["DESCRIPTION"]) && $hardware["DESCRIPTION"] != NOT_AVAILABLE) {
@@ -2775,7 +2790,9 @@ JAVASCRIPT;
             $compupdate["comment"] .= sprintf(__('%1$s: %2$s'), __('Swap', 'ocsinventoryng'), self::encodeOcsDataInUtf8($is_utf8, $hardware["SWAP"]));
          }
 
-         if ($options['cfg_ocs']['ocs_version'] >= self::OCS1_3_VERSION_LIMIT && intval($options['cfg_ocs']["import_general_uuid"]) > 0 && !in_array("uuid", $options['computers_updates'])) {
+         if ($options['cfg_ocs']['ocs_version'] >= self::OCS1_3_VERSION_LIMIT 
+               && intval($options['cfg_ocs']["import_general_uuid"]) > 0 
+                  && !in_array("uuid", $options['computers_updates'])) {
             $compupdate["uuid"] = $hardware["UUID"];
          }
 
@@ -2794,13 +2811,13 @@ JAVASCRIPT;
       global $DB;
 
       $p = array('computers_id'                        => 0,
-         'ocs_id'                              => 0,
-         'plugin_ocsinventoryng_ocsservers_id' => 0,
-         'cfg_ocs'                             => array(),
-         'computers_updates'                   => array(),
-         'dohistory'                           => true,
-         'check_history'                       => true,
-         'entities_id'                         => 0);
+                  'ocs_id'                              => 0,
+                  'plugin_ocsinventoryng_ocsservers_id' => 0,
+                  'cfg_ocs'                             => array(),
+                  'computers_updates'                   => array(),
+                  'dohistory'                           => true,
+                  'check_history'                       => true,
+                  'entities_id'                         => 0);
       foreach ($params as $key => $value) {
          $p[$key] = $value;
       }
@@ -5981,25 +5998,26 @@ JAVASCRIPT;
    static function getLockableFields() {
 
       return array("name"                           => __('Name'),
-         "computertypes_id"               => __('Type'),
-         "manufacturers_id"               => __('Manufacturer'),
-         "computermodels_id"              => __('Model'),
-         "serial"                         => __('Serial number'),
-         "otherserial"                    => __('Inventory number'),
-         "comment"                        => __('Comments'),
-         "contact"                        => __('Alternate username'),
-         "contact_num"                    => __('Alternate username number'),
-         "domains_id"                     => __('Domain'),
-         "networks_id"                    => __('Network'),
-         "operatingsystems_id"            => __('Operating system'),
-         "operatingsystemservicepacks_id" => __('Service pack'),
-         "operatingsystemversions_id"     => __('Version of the operating system'),
-         "os_license_number"              => __('Serial of the operating system'),
-         "os_licenseid"                   => __('Product ID of the operating system'),
-         "users_id"                       => __('User'),
-         "locations_id"                   => __('Location'),
-         "use_date"                       => __('Startup date'),
-         "groups_id"                      => __('Group'));
+                  "computertypes_id"                  => __('Type'),
+                  "manufacturers_id"                  => __('Manufacturer'),
+                  "computermodels_id"                 => __('Model'),
+                  "serial"                            => __('Serial number'),
+                  "otherserial"                       => __('Inventory number'),
+                  "comment"                           => __('Comments'),
+                  "contact"                           => __('Alternate username'),
+                  "contact_num"                       => __('Alternate username number'),
+                  "domains_id"                        => __('Domain'),
+                  "networks_id"                       => __('Network'),
+                  "operatingsystems_id"               => __('Operating system'),
+                  "operatingsystemservicepacks_id"    => __('Service pack'),
+                  "operatingsystemversions_id"        => __('Version of the operating system'),
+                  //'operatingsystemarchitectures_id'   => __('Operating system architecture'),//TODO 9.1
+                  "os_license_number"                 => __('Serial of the operating system'),
+                  "os_licenseid"                      => __('Product ID of the operating system'),
+                  "users_id"                          => __('User'),
+                  "locations_id"                      => __('Location'),
+                  "use_date"                          => __('Startup date'),
+                  "groups_id"                         => __('Group'));
    }
 
    static function showOcsReportsConsole($id) {
