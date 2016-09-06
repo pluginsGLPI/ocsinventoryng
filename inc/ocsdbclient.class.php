@@ -517,7 +517,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                         WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
                         AND `hardware`.`ID` = `accountinfo`.`HARDWARE_ID`
                         $where_condition";*/
-      $query = "SELECT DISTINCT `hardware`.`ID` FROM `hardware`, `accountinfo`
+      $query = "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` FROM `hardware`, `accountinfo`
                            WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
                            AND `hardware`.`ID` = `accountinfo`.`HARDWARE_ID`
                            $where_condition
