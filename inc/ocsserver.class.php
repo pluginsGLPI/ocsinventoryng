@@ -117,14 +117,14 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                
                if (self::checkOCSconnection($item->getID()) && self::checkVersion($item->getID()) && self::checkTraceDeleted($item->getID())) {
                   $ong[2] = __('Import options', 'ocsinventoryng');
-                  $ong[3] = __('General information', 'ocsinventoryng');
+                  $ong[3] = __('Datas to import', 'ocsinventoryng');
                   $ong[4] = __('General history', 'ocsinventoryng');
                   $client  = self::getDBocs($item->getID());
                   $version = $client->getTextConfig('GUI_VERSION');
                   $snmp    = $client->getIntConfig('SNMP');
 
                   if ($version > self::OCS2_1_VERSION_LIMIT && $snmp) {
-                  $ong[5] = __('Import SNMP', 'ocsinventoryng');
+                  $ong[5] = __('SNMP Import', 'ocsinventoryng');
                   }
                }
                if ($item->getField('ocs_url')) {
@@ -397,6 +397,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
       echo "<tr><th colspan='" . ($usemassimport ? 4 : 2) . "'>";
       printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
+      echo "&nbsp;";
+         echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.form.php?id=".$plugin_ocsinventoryng_ocsservers_id."'>";
+         _e('See Setup : Datas to import before', 'ocsinventoryng');
+         echo "</a>";
       echo "</th></tr>";
 
 
@@ -3090,7 +3094,9 @@ JAVASCRIPT;
          Html::printPager($start, $numrows, $target, $parameters);
       } else {
          echo "<div class='center b '>" . __('No item to clean', 'ocsinventoryng') . "</div>";
-         Html::displayBackLink();
+         echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsng.php'>";
+         _e('Back');
+         echo "</a>";
       }
       echo "</div>";
    }

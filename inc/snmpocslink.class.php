@@ -126,8 +126,12 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
             //host not imported by thread
             $usemassimport = PluginOcsinventoryngOcsServer::useMassImport();
             echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
-            echo "<tr><th colspan='" . ($usemassimport ? 4 : 2) . "'>";
+            echo "<tr><th colspan='4'>";
             _e('OCSNG SNMP import', 'ocsinventoryng');
+            echo "&nbsp;";
+            echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.form.php?id=".$plugin_ocsinventoryng_ocsservers_id."'>";
+            _e('See Setup : SNMP Import before', 'ocsinventoryng');
+            echo "</a>";
             echo "</th></tr>";
 
             // SNMP device link feature
