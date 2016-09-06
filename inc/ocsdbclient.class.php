@@ -939,7 +939,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
 
             $count = $this->db->numrows($request);
-            $query = "SELECT DISTINCT snmp.ID FROM snmp, snmp_accountinfo
+            $query = "SELECT DISTINCT snmp.ID, snmp.NAME FROM snmp, snmp_accountinfo
                            WHERE snmp.SNMPDEVICEID NOT LIKE '\\_%'
                            AND snmp.ID = snmp_accountinfo.SNMP_ID
                            $where_condition

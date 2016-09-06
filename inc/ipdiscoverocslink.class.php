@@ -525,7 +525,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          LEFT JOIN `networks` ON `networks`.`hardware_id`=`hardware`.`id` 
          WHERE `networks`.`ipsubnet`='$ipAdress' 
          AND status='Up' 
-         GROUP BY `hardware`.`id`
+         GROUP BY `hardware`.`id`,`hardware`.`lastdate`, `hardware`.`name`, `hardware`.`userid`, `hardware`.`osname`, `hardware`.`workgroup`, `hardware`.`osversion`, `hardware`.`ipaddr`, `hardware`.`userdomain`
          ORDER BY `hardware`.`lastdate`";
       } else if ($status == "imported") {
       
@@ -543,7 +543,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
               AND (`networks`.`macaddr` IS NULL OR `networks`.`ipsubnet` <> `netmap`.`netid`) 
               AND `netmap`.`mac` NOT IN ( SELECT DISTINCT(`network_devices`.`macaddr`) 
               FROM `network_devices`)
-              GROUP BY `netmap`.`mac`
+              GROUP BY `netmap`.`mac`,`netmap`.`ip`,`netmap`.`mask`, `netmap`.`date`, `netmap`.`name`
               ORDER BY `netmap`.`date` DESC";
       } else {
          $macAdresses = self::parseArrayToString($knownMacAdresses);
@@ -553,7 +553,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
               ON `network_devices`.`MACADDR`=`netmap`.`MAC` 
               WHERE `netmap`.`NETID`='$ipAdress'
               AND `network_devices`.`MACADDR` NOT IN($macAdresses)
-              GROUP BY `network_devices`.`MACADDR`
+              GROUP BY `network_devices`.`MACADDR`,`network_devices`.`ID`,`network_devices`.`TYPE`,`network_devices`.`DESCRIPTION`,`network_devices`.`USER`,`netmap`.`IP`,`netmap`.`MAC`,`netmap`.`MASK`,`netmap`.`NETID`,`netmap`.`NAME`,`netmap`.`DATE`
               ORDER BY `netmap`.`DATE` DESC";
       }
       if ($status == "imported") {
