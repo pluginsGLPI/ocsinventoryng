@@ -1079,14 +1079,18 @@ JAVASCRIPT;
       echo "<td class='center'>" . __("Name") . "</td>";
       echo "<td><input type='text' name='name' value='" . $this->fields["name"] . "'></td>";
       echo "<td class='center'>";
-      printf(__('%1$s : %2$s'), _n("Version", "Versions", 1), $this->fields["ocs_version"]);
+      if ($ID) {
+         printf(__('%1$s : %2$s'), _n("Version", "Versions", 1), $this->fields["ocs_version"]);
+      }
       echo "</td>";
       echo "<td>";
+      if ($ID) {
       printf(__('%1$s : %2$s'), "Checksum", $this->fields["checksum"]);
       echo "&nbsp;";
       Html::showSimpleForm(Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer"), 'force_checksum',
                                           _sx('button', 'Reload Checksum', 'ocsinventoryng'),
                                           array('id' => $ID));
+      }
       echo "</td>";
       echo "</tr>";
 
@@ -2014,7 +2018,9 @@ JAVASCRIPT;
 
             //Field is a foreing key
             if ($table != '') {
-               $itemtype        = getItemTypeForTable($table);
+               if (!($item = getItemForItemtype($table))) {
+                  continue;
+               }
                $item            = new $itemtype();
                $external_params = array();
 

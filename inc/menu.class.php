@@ -128,22 +128,41 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
    }
    
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
+      global $CFG_GLPI;
+      
       switch ($item->getType()) {
          case __CLASS__ :
-            $ong[0]    = __('Server Setup', 'ocsinventoryng');
             
-            $ong[1] = __('Inventory Import', 'ocsinventoryng');
-            
-            $ong[2] = __('IPDiscover Import', 'ocsinventoryng');
-            
-            $ocsClient = new PluginOcsinventoryngOcsServer();
-            $client    = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-            $version   = $client->getTextConfig('GUI_VERSION');
-            $snmp      = $client->getIntConfig('SNMP');
-            if ($version > $ocsClient::OCS2_1_VERSION_LIMIT && $snmp) {
-               $ong[3] = __('SNMP Import', 'ocsinventoryng');
+            $ocsServers = getAllDatasFromTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
+            if (!empty($ocsServers)) {
+         
+               $ong[0]    = __('Server Setup', 'ocsinventoryng');
+               
+               $ong[1] = __('Inventory Import', 'ocsinventoryng');
+               
+               $ong[2] = __('IPDiscover Import', 'ocsinventoryng');
+               
+               $ocsClient = new PluginOcsinventoryngOcsServer();
+               $client    = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+               $version   = $client->getTextConfig('GUI_VERSION');
+               $snmp      = $client->getIntConfig('SNMP');
+               if ($version > $ocsClient::OCS2_1_VERSION_LIMIT && $snmp) {
+                  $ong[3] = __('SNMP Import', 'ocsinventoryng');
+               }
+            } else {
+               $ong = array();
+               echo "<div align='center'>";
+               echo Html::image($CFG_GLPI["root_doc"] . "/pics/warning.png", array('alt' => __('Warning')));
+               echo "<br>";
+               echo "<div class='red b'>";
+               _e('No OCSNG server defined', 'ocsinventoryng');
+               echo "<br>";
+               _e('You must to configure a OCSNG server', 'ocsinventoryng');
+               echo " : <a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.php'>";
+               _e('Add a OCSNG server', 'ocsinventoryng');
+               echo "</a>";
+               echo "</div></div>";
             }
-            
             return $ong;
 
          default :
