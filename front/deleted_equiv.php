@@ -45,12 +45,16 @@ if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient"){
          echo "<div class='center b'>". __('No new computers to delete', 'ocsinventoryng') .".</div>";
       }else{
          echo "<div class='center b'>";
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<th colspan='2'>".__('Clean OCSNG deleted computers', 'ocsinventoryng');
-            echo "</th>";
-            echo "<tr class='tab_bg_1'><td>".__('Pc deleted', 'ocsinventoryng')."</td><td>".$_SESSION["ocs_deleted_equiv"]['computers_deleted']."</td></tr>";
-            echo "</table></div>";
+         echo "<table class='tab_cadre_fixe'>";
+         echo "<th colspan='2'>".__('Clean OCSNG deleted computers', 'ocsinventoryng');
+         echo "</th>";
+         echo "<tr class='tab_bg_1'><td>".__('Pc deleted', 'ocsinventoryng')."</td><td>".$_SESSION["ocs_deleted_equiv"]['computers_deleted']."</td></tr>";
+         echo "</table></div>";
+         
       }
+      echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsng.php'>";
+      _e('Back');
+      echo "</a>";
    }
 }
 else{
@@ -83,6 +87,9 @@ else{
          echo "<tr class='tab_bg_1'><td>".__('Pc deleted', 'ocsinventoryng')."</td><td>".$count."/".$total."</td></tr>";
          echo "</table></div>";
       }
+      echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsng.php'>";
+      _e('Back');
+      echo "</a>";
    }
 }
 

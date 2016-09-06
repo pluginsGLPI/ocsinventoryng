@@ -3174,7 +3174,11 @@ JAVASCRIPT;
       $already_linked_result = $DB->query($already_linked_query);
 
       if ($DB->numrows($already_linked_result) == 0) {
-         echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng') . "</div>";
+         echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
+         echo "<br><a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsng.php'>";
+         _e('Back');
+         echo "</a>";
+         echo "</div>";
          return;
       }
 
@@ -3329,10 +3333,18 @@ JAVASCRIPT;
             }
             echo "</div>";
          } else {
-            echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng') . "</div>";
+            echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
+            echo "<br><a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsng.php'>";
+            _e('Back');
+            echo "</a>";
+            echo "</div>";
          }
       } else {
-         echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng') . "</div>";
+         echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
+         echo "<br><a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsng.php'>";
+         _e('Back');
+         echo "</a>";
+         echo "</div>";
       }
    }
 
@@ -3767,6 +3779,11 @@ JAVASCRIPT;
                echo "<td class='center b'>" . __('No new computer to be imported', 'ocsinventoryng') .
                "</td></tr>\n";
                echo "</table>";
+               echo "<br><div class='center'>";
+               echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsng.php'>";
+               _e('Back');
+               echo "</a>";
+               echo "</div>";
             }
             echo "</div>";
          } else {
@@ -3777,6 +3794,11 @@ JAVASCRIPT;
             echo "<td class='center b'>" . __('No new computer to be imported', 'ocsinventoryng') .
             "</td></tr>\n";
             echo "</table></div>";
+            echo "<br><div class='center'>";
+            echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsng.php'>";
+            _e('Back');
+            echo "</a>";
+            echo "</div>";
          }
       } else {
          echo "<div class='center'>";
@@ -3786,6 +3808,11 @@ JAVASCRIPT;
          echo "<td class='center b'>" . __('No new computer to be imported', 'ocsinventoryng') .
          "</td></tr>\n";
          echo "</table></div>";
+         echo "<br><div class='center'>";
+         echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsng.php'>";
+         _e('Back');
+         echo "</a>";
+         echo "</div>";
       }
    }
 
