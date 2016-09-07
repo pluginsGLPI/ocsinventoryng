@@ -128,7 +128,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
             echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
             echo "<tr><th colspan='4'>";
             _e('OCSNG SNMP import', 'ocsinventoryng');
-            echo "&nbsp;";
+            echo "<br>";
             echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.form.php?id=".$plugin_ocsinventoryng_ocsservers_id."'>";
             _e('See Setup : SNMP Import before', 'ocsinventoryng');
             echo "</a>";

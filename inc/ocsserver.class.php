@@ -397,7 +397,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
       echo "<tr><th colspan='" . ($usemassimport ? 4 : 2) . "'>";
       printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
-      echo "&nbsp;";
+      echo "<br>";
          echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.form.php?id=".$plugin_ocsinventoryng_ocsservers_id."'>";
          _e('See Setup : Datas to import before', 'ocsinventoryng');
          echo "</a>";
