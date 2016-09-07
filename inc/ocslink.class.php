@@ -91,23 +91,16 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                if (count($data)) {
                   $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
-                  echo "<table class='tab_glpi'>";
-                  echo "<tr class='tab_bg_1'><th colspan='2'>".__('OCS Inventory NG')."</th>";
-                  if (isset($data["last_ocs_conn"])) {
-                     echo "<tr class='tab_bg_1'><td>".__('Last OCSNG connection date', 'ocsinventoryng');
-                     echo "</td><td>".Html::convDateTime($data["last_ocs_conn"]).'</td></tr>';
-                  }
+                  echo "<tr class='tab_bg_1'><th colspan='4'>".__('OCS Inventory NG Import informations')."</th>";
+                  
                   echo "<tr class='tab_bg_1'><td>".__('Last OCSNG inventory date', 'ocsinventoryng');
-                  echo "</td><td>".Html::convDateTime($data["last_ocs_update"]).'</td></tr>';
+                  echo "</td><td>".Html::convDateTime($data["last_ocs_update"])."</td>";
+                  echo "<td>".__('Inventory agent',  'ocsinventoryng');
+                  echo "</td><td>".$data["ocs_agent_version"]."</td></tr>";
+                  
                   echo "<tr class='tab_bg_1'><td>".__('GLPI import date',  'ocsinventoryng');
-                  echo "</td><td>".Html::convDateTime($data["last_update"]).'</td></tr>';
-                  echo "<tr class='tab_bg_1'><td>".__('Inventory agent',  'ocsinventoryng');
-                  echo "</td><td>".$data["ocs_agent_version"].'</td></tr>';
-                  if (isset($data["ip_src"])) {
-                     echo "<tr class='tab_bg_1'><td>".__('IP Source',  'ocsinventoryng');
-                     echo "</td><td>".$data["ip_src"].'</td></tr>';
-                  }
-                  echo "<tr class='tab_bg_1'><td>".__('Server');
+                  echo "</td><td>".Html::convDateTime($data["last_update"])."</td>";
+                  echo "<td>".__('Server');
                   echo "</td><td>";
                   if (Session::haveRight("plugin_ocsinventoryng", READ)) {
                      echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.form.php?id="
@@ -115,43 +108,67 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   } else {
                      echo $ocs_config['name'];
                   }
-                  echo '</td></tr>';
-                 //If have write right on OCS and ocsreports url is not empty in OCS config
-                  if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
-                      && ($ocs_config["ocs_url"] != '')) {
-                     echo "<tr class='tab_bg_1'><td colspan='2' class='center'>";
-                     echo PluginOcsinventoryngOcsServer::getComputerLinkToOcsConsole($ocs_config['id'],
-                                                                                    $data["ocsid"],
-                                                                                    __('OCS NG Interface','ocsinventoryng'));
-                     echo "</td></tr>";
+                  echo "</td></tr>";
+                  echo "<tr class='tab_bg_1'>";
+                  if (isset($data["last_ocs_conn"])) {
+                     echo "<td>".__('Last OCSNG connection date', 'ocsinventoryng');
+                     echo "</td><td>".Html::convDateTime($data["last_ocs_conn"])."</td>";
+                  } else {
+                     echo "<td colspan='2'></td>";
                   }
                   
-                  echo "<tr class='tab_bg_1'><td>".__('OCSNG TAG', 'ocsinventoryng').
+                  if (isset($data["ip_src"])) {
+                     echo "<td>".__('IP Source',  'ocsinventoryng');
+                     echo "</td><td>".$data["ip_src"]."</td>";
+                  } else {
+                     echo "<td colspan='2'></td>";
+                  }
+                  
+                  
+                  echo "<tr class='tab_bg_1'>";
+                  echo "<td>".__('OCSNG TAG', 'ocsinventoryng').
                        "</td>";
                   echo "<td>";
                   echo $data["tag"];
-                  echo "</td></tr>";
+                  echo "</td>";
                   
                   if (Session::haveRight("plugin_ocsinventoryng_view", READ)
                       && Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
-                     echo "<tr class='tab_bg_1'><td>".__('Automatic update OCSNG', 'ocsinventoryng').
+                     echo "<td>".__('Automatic update OCSNG', 'ocsinventoryng').
                           "</td>";
                      echo "<td>";
                      echo Dropdown::getYesNo($data["use_auto_update"]);
-                     echo "</td></tr>";
+                     echo "</td>";
+                  } else {
+                     echo "<td colspan='2'></td>";
                   }
-
+                  echo "</tr>";
+                  
+                  echo "<tr class='tab_bg_1'>";
+                  //If have write right on OCS and ocsreports url is not empty in OCS config
+                  if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
+                      && ($ocs_config["ocs_url"] != '')) {
+                     echo "<td colspan='2' class='center'>";
+                     echo PluginOcsinventoryngOcsServer::getComputerLinkToOcsConsole($ocs_config['id'],
+                                                                                    $data["ocsid"],
+                                                                                    __('OCS NG Interface','ocsinventoryng'));
+                     echo "</td>";
+                  } else {
+                     echo "<td colspan='2'></td>";
+                  }
                   
                   if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
-                     echo "<tr class='tab_bg_1'><td class='center' colspan='2'>";
+                     echo "<td class='center' colspan='2'>";
                      Html::showSimpleForm($target, 'force_ocs_resynch',
                                           _sx('button', 'Force synchronization', 'ocsinventoryng'),
                                           array('id' => $items_id,
                                                   'resynch_id' => $data["id"]));
-                     echo "</td></tr>";
+                     echo "</td>";
                      
+                  } else {
+                     echo "<td colspan='2'></td>";
                   }
-                  echo '</table>';
+                  echo "</tr>";
                }
             }
             
@@ -166,11 +183,22 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                if (count($data)) {
                   $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
-                  echo "<table class='tab_glpi'>";
-                  echo "<tr class='tab_bg_1'><th colspan='2'>".__('SNMP informations OCS NG')."</th>";
+                  echo "<tr class='tab_bg_1'><th colspan='4'>".__('OCS Inventory NG SNMP Import informations', 'ocsinventoryng')."</th>";
                   
                   echo "<tr class='tab_bg_1'><td>".__('Import date in GLPI', 'ocsinventoryng');
-                  echo "</td><td>".Html::convDateTime($data["last_update"]).'</td></tr>';
+                  echo "</td><td>".Html::convDateTime($data["last_update"])."</td>";
+                  if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
+                     echo "<td class='center' colspan='2'>";
+                     Html::showSimpleForm($target, 'force_ocssnmp_resynch',
+                                          _sx('button', 'Force SNMP synchronization', 'ocsinventoryng'),
+                                          array('items_id' => $items_id,
+                                                 'itemtype' => $item->getType(),
+                                                 'id' => $data["id"],
+                                                  'plugin_ocsinventoryng_ocsservers_id' => $data["plugin_ocsinventoryng_ocsservers_id"]));
+                     echo "</td>";
+                     
+                  }
+                  echo "</tr>";
                   
                   $linked_ids [] = $data['ocs_id'];
                   $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($data['plugin_ocsinventoryng_ocsservers_id']);
@@ -187,28 +215,13 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                            $UPTIME     = $snmp['META']['UPTIME'];
                   
                            echo "<tr class='tab_bg_1'><td>".__('Last OCSNG SNMP inventory date', 'ocsinventoryng');
-                           echo "</td><td>".Html::convDateTime($LASTDATE).'</td></tr>';
+                           echo "</td><td>".Html::convDateTime($LASTDATE)."</td>";
                            
-                           echo "<tr class='tab_bg_1'><td>".__('Uptime', 'ocsinventoryng');
-                           echo "</td><td>".$UPTIME.'</td></tr>';
+                           echo "<td>".__('Uptime', 'ocsinventoryng');
+                           echo "</td><td>".$UPTIME."</td></tr>";
                         }
                      }
                   }
-                  
-                  
-                  
-                  if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
-                     echo "<tr class='tab_bg_1'><td class='center' colspan='2'>";
-                     Html::showSimpleForm($target, 'force_ocssnmp_resynch',
-                                          _sx('button', 'Force SNMP synchronization', 'ocsinventoryng'),
-                                          array('items_id' => $items_id,
-                                                 'itemtype' => $item->getType(),
-                                                 'id' => $data["id"],
-                                                  'plugin_ocsinventoryng_ocsservers_id' => $data["plugin_ocsinventoryng_ocsservers_id"]));
-                     echo "</td></tr>";
-                     
-                  }
-                  echo '</table>';
                }
             }
             if (in_array($item->getType(), PluginOcsinventoryngIpdiscoverOcslink::$hardwareItemTypes)) {
@@ -227,12 +240,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                      if (count($data)) {
                         $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
-                        echo "<table class='tab_glpi'>";
-                        echo "<tr class='tab_bg_1'><th colspan='2'>".__('IPDiscover informations OCS NG')."</th>";
+                        echo "<tr class='tab_bg_1'><th colspan='4'>".__('OCS Inventory NG IPDiscover Import informations', 'ocsinventoryng')."</th>";
                         
                         echo "<tr class='tab_bg_1'><td>".__('Import date in GLPI', 'ocsinventoryng');
-                        echo "</td><td>".Html::convDateTime($data["last_update"]).'</td></tr>';
-                        echo "</table>";
+                        echo "</td><td>".Html::convDateTime($data["last_update"])."</td><td colspan='2'>&nbsp;</td></tr>";
                      }
                   }
                }

@@ -1430,7 +1430,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                      $mynamei = "itemtype";
                      $myname  = "tolink_items[" . $i . "]";
 
-                     $rand = Dropdown::showItemTypes($mynamei, $CFG_GLPI["asset_types"], array('rand' => $mtrand));
+                     $rand = Dropdown::showItemTypes($mynamei, self::$hardwareItemTypes, array('rand' => $mtrand));
 
 
                      $p = array('itemtype' => '__VALUE__',

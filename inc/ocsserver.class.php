@@ -4482,7 +4482,7 @@ JAVASCRIPT;
          if ($only_url) {
             return $url;
          }
-         return "<a href='$url'>" . $todisplay . "</a>";
+         return "<a class='vsubmit' href='$url'>" . $todisplay . "</a>";
       }
       return $url;
    }
