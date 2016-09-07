@@ -2758,10 +2758,10 @@ JAVASCRIPT;
                   && !in_array("operatingsystemservicepacks_id", $options['computers_updates'])) {// Not linux comment
                $compupdate["operatingsystemservicepacks_id"] = Dropdown::importExternal('OperatingSystemServicePack', self::encodeOcsDataInUtf8($is_utf8, $hardware["OSCOMMENTS"]));
             }
-            //TODO For 9.1
-            //if (!in_array("operatingsystemarchitectures_id", $options['computers_updates'])) {
-            //   $compupdate["operatingsystemarchitectures_id"] = Dropdown::importExternal('OperatingSystemArchitecture', self::encodeOcsDataInUtf8($is_utf8, $hardware["ARCH"]));
-            //}
+            //Enable For GLPI 9.1
+            if (!in_array("operatingsystemarchitectures_id", $options['computers_updates'])) {
+               $compupdate["operatingsystemarchitectures_id"] = Dropdown::importExternal('OperatingSystemArchitecture', self::encodeOcsDataInUtf8($is_utf8, $hardware["ARCH"]));
+            }
          }
 
          if (intval($options['cfg_ocs']["import_general_domain"]) > 0 
@@ -6050,7 +6050,7 @@ JAVASCRIPT;
                   "operatingsystems_id"               => __('Operating system'),
                   "operatingsystemservicepacks_id"    => __('Service pack'),
                   "operatingsystemversions_id"        => __('Version of the operating system'),
-                  //'operatingsystemarchitectures_id'   => __('Operating system architecture'),//TODO 9.1
+                  'operatingsystemarchitectures_id'   => __('Operating system architecture'),//Enable 9.1
                   "os_license_number"                 => __('Serial of the operating system'),
                   "os_licenseid"                      => __('Product ID of the operating system'),
                   "users_id"                          => __('User'),
