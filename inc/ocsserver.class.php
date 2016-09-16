@@ -329,9 +329,33 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             echo "</tr>\n";
 
          }
-         echo "</table></div>";
+         
       }
+      
+      echo "<tr><th colspan='4'>";
+      _e('Setup rules engine', 'ocsinventoryng');
+      echo "</th></tr>";
+      
+      echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+            <a href='" . $CFG_GLPI["root_doc"] . "/front/ruleimportentity.php'>" . __('Rules for assigning an item to an entity') . "
+            </a>";
+      echo "<br><div class='red'>";
+      _e('Setup rules for choose entity on items import', 'ocsinventoryng');
+      echo "</div></td>";
+
+      echo "<td class='center b' colspan='2'>
+            <a href='" . $CFG_GLPI["root_doc"] . "/front/ruleimportcomputer.php'>" . __('Rules for import and link computers') . "
+         </a>";
+         echo "<br><div class='red'>";
+      _e('Setup rules for select criteria for items link', 'ocsinventoryng');
+      echo "</div></td>";
+
+      echo "</tr>\n";
+      
+      echo "</table></div>";
    }
+   
+   
    
    
    /**
@@ -398,7 +422,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<tr><th colspan='" . ($usemassimport ? 4 : 2) . "'>";
       printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
       echo "<br>";
-         echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.form.php?id=".$plugin_ocsinventoryng_ocsservers_id."'>";
+         echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.form.php?id=".$plugin_ocsinventoryng_ocsservers_id."&forcetab=PluginOcsinventoryngOcsServer\$main'>";
          _e('See Setup : Datas to import before', 'ocsinventoryng');
          echo "</a>";
       echo "</th></tr>";
