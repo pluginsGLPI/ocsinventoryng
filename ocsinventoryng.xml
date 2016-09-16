@@ -16,6 +16,8 @@
    </description>
    <homepage>https://github.com/pluginsGLPI/ocsinventoryng</homepage>
    <download>https://github.com/pluginsGLPI/ocsinventoryng/releases</download>
+   <issues>https://github.com/pluginsGLPI/ocsinventoryng/issues</issues>
+   <readme>https://github.com/pluginsGLPI/ocsinventoryng/wiki</readme>
    <authors>
       <author>Remi Collet</author>
       <author>Nelly Mahu-Lasson</author>
