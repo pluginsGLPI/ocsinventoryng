@@ -1102,8 +1102,6 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
       $snmpOptions = array(
-         'OFFSET'      => $start,
-         'MAX_RECORDS' => $_SESSION['glpilist_limit'],
          'ORDER'       => 'LASTDATE',
          'FILTER'      => array(
             'EXCLUDE_IDS' => $already_linked
@@ -1125,10 +1123,10 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       $ocsResult = $ocsClient->getSnmp($snmpOptions);
 
       if (isset($ocsResult['SNMP'])) {
-         $snmp = $ocsResult['SNMP'];
-         if (count($snmp)) {
+         if (count($ocsResult['SNMP'])) {
             // Get all hardware from OCS DB
             $hardware = array();
+            $snmp = array_slice($ocsResult['SNMP'], $start, $_SESSION['glpilist_limit']);
             foreach ($snmp as $data) {
                $data                          = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
                $id                            = $data['META']['ID'];
@@ -1159,7 +1157,6 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                }
                
             }
-            $count = count($hardware);
             $output_type=Search::HTML_OUTPUT;
             if (isset($_GET["display_type"])) {
                $output_type = $_GET["display_type"];
@@ -1187,7 +1184,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                __('Caution! The imported data (see your configuration) will overwrite the existing one', 'ocsinventoryng') . "</div>";
             }
 
-            if ($numrows = $count) {
+            if ($numrows = $ocsResult['TOTAL_COUNT']) {
                $parameters = "";
                Html::printPager($start, $numrows, $target, $parameters);
 
@@ -1454,8 +1451,6 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       // Fetch linked items from ocs
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $ocsResult = $ocsClient->getSnmp(array(
-         'OFFSET'      => $start,
-         'MAX_RECORDS' => $_SESSION['glpilist_limit'],
          'ORDER'       => 'LASTDATE',
          'FILTER'      => array(
             'IDS' => $already_linked_ids,
@@ -1468,7 +1463,8 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
             $ocs_snmp_ids = array();
             $hardware     = array();
 
-            foreach ($ocsResult['SNMP'] as $snmp) {
+            $snmps = array_slice($ocsResult['SNMP'], $start, $_SESSION['glpilist_limit']);
+            foreach ($snmps as $snmp) {
                $LASTDATE                            = $snmp['META']['LASTDATE'];
                $ocs_snmp_inv [$snmp['META']['ID']]  = $LASTDATE;
                $NAME                                = $snmp['META']['NAME'];
