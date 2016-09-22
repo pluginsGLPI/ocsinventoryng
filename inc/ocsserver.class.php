@@ -298,7 +298,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $usemassimport = self::useMassImport();
 
       echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
-      echo "<tr><th colspan='" . ($usemassimport ? 4 : 2) . "'>";
+      echo "<tr><th colspan='4'>";
       printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
       echo "</th></tr>";
 
@@ -308,7 +308,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          //config server
 
          if ($isactive) {
-            echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
+            echo "<tr class='tab_bg_1'><td class='center b' colspan='".($usemassimport ? 2 : 4)."'>
                   <a href='ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
                    <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsserver.png' " .
             "alt='" . __s("Configuration of OCSNG server", 'ocsinventoryng') . "' " .
@@ -3224,8 +3224,6 @@ JAVASCRIPT;
       // Fetch linked computers from ocs
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $ocsResult = $ocsClient->getComputers(array(
-         'OFFSET'      => $start,
-         'MAX_RECORDS' => $_SESSION['glpilist_limit'],
          'ORDER'       => 'LASTDATE',
          'FILTER'      => array(
             'IDS'      => $already_linked_ids,
@@ -3240,7 +3238,8 @@ JAVASCRIPT;
             // Get all ids of the returned computers
             $ocs_computer_ids = array();
             $hardware         = array();
-            foreach ($ocsResult['COMPUTERS'] as $computer) {
+            $computers = array_slice($ocsResult['COMPUTERS'], $start, $_SESSION['glpilist_limit']);
+            foreach ($computers as $computer) {
                $ID                  = $computer['META']['ID'];
                $ocs_computer_ids [] = $ID;
 
@@ -3514,10 +3513,7 @@ JAVASCRIPT;
       }
 
       $cfg_ocs = self::getConfig($serverId);
-      $computerOptions = array(
-         'OFFSET'      => $start,
-         'MAX_RECORDS' => $_SESSION['glpilist_limit'],
-         'ORDER'       => 'LASTDATE',
+      $computerOptions = array('ORDER'       => 'LASTDATE',
          'FILTER'      => array(
             'EXCLUDE_IDS' => $already_linked
          ),
@@ -3539,11 +3535,11 @@ JAVASCRIPT;
 
 
       if (isset($ocsResult['COMPUTERS'])) {
-         $computers = $ocsResult['COMPUTERS'];
-         if (count($computers)) {
+         if (count($ocsResult['COMPUTERS'])) {
             // Get all hardware from OCS DB
             
             $hardware = array();
+            $computers = array_slice($ocsResult['COMPUTERS'], $start, $_SESSION['glpilist_limit']);
             foreach ($computers as $data) {
 
                $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
