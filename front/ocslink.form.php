@@ -38,7 +38,7 @@ if (isset($_POST["force_ocs_resynch"])) {
    //Get the ocs server id associated with the machine
    $ocsservers_id = PluginOcsinventoryngOcsServer::getByMachineID($_POST["id"]);
    //Update the computer
-   $cfg_ocs = self::getConfig($ocsservers_id);
+   $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
    $dohistory = (isset($cfg_ocs['dohistory'])?$cfg_ocs['dohistory']:false);
    PluginOcsinventoryngOcsServer::updateComputer($_POST["resynch_id"], $ocsservers_id, $dohistory, 1);
    Html::back();
