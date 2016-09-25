@@ -1164,12 +1164,9 @@ JAVASCRIPT;
 
       echo "<tr class='tab_bg_1'>";
       echo "<td class='center'>" . __('Use automatic action for clean old agents & drop from OCSNG software', 'ocsinventoryng') . "</td>";
-      echo "<td>";
+      echo "<td colspan='3'>";
       Dropdown::showYesNo("use_cleancron", $this->fields["use_cleancron"]);
       echo "</td>";
-
-      echo "<td>" . __("Last update") . "</td>";
-      echo "<td>" . Html::convDateTime($this->fields["date_mod"]) . "</td>";
       echo "</tr>";
 
       $this->showFormButtons($options);
@@ -5593,7 +5590,7 @@ JAVASCRIPT;
       // no translation for the name of the project
       switch ($name) {
          case 'ocsng':
-            return array('description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Check OCSNG synchronization script', 'ocsinventoryng'));
+            return array('description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Launch OCSNG synchronization script', 'ocsinventoryng'));
             break;
          case 'CleanOldAgents':
             return array('description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Clean old agents & drop from OCSNG software', 'ocsinventoryng'));
@@ -5653,7 +5650,7 @@ JAVASCRIPT;
          $PluginOcsinventoryngDBocs = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
          $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
-         $task->log(__('Check updates from server', 'ocsinventoryng') . " " . $cfg_ocs['name'] . "\n");
+         $task->log(__('Launch OCSNG synchronization script from server', 'ocsinventoryng') . " " . $cfg_ocs['name'] . "\n");
 
          if (!$cfg_ocs["cron_sync_number"]) {
             return 0;

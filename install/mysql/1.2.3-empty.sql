@@ -372,5 +372,3 @@ INSERT INTO `glpi_displaypreferences` (`itemtype`, `num`, `rank`, `users_id`)
                        ('PluginOcsinventoryngDetail', 4, 4, 0),
                        ('PluginOcsinventoryngDetail', 6, 5, 0),
                        ('PluginOcsinventoryngDetail', 80, 6, 0);
-
-INSERT INTO `glpi_crontasks` VALUES (NULL,'PluginOcsinventoryngOcsServer','ocsng','300',NULL,'0','1','3','0','24','30',NULL,NULL,NULL);
