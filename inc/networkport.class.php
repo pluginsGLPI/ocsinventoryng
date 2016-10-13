@@ -83,7 +83,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                              'is_dynamic'         => 1,
                              'is_deleted'         => 0);
 
-         $networkports_id = $network_port->add($port_input);
+         $networkports_id = $network_port->add($port_input, array(), $dohistory);
          if ($networkports_id === false) {
             return -1;
          }
