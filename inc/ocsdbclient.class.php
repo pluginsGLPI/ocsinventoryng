@@ -660,7 +660,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       $config = $this->getConfig("GUI_REPORT_AGIN_MACH");
       $delay = $config['IVALUE'];
       $query = "SELECT id from hardware 
-                     WHERE ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) AND ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) 
+                     WHERE ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY))
                      AND deviceid <> '_SYSTEMGROUP_' AND deviceid <> '_DOWNLOADGROUP_'";
       $res = $this->db->query($query);
       $data = array();
@@ -745,7 +745,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       }
       return $i;
    }
-
+   
    /**
     * @see PluginOcsinventoryngOcsClient::getDeletedComputers()
     */
@@ -970,7 +970,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
         return $res;
     }
-
+    
 }
 
 ?>
