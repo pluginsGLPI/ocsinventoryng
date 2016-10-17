@@ -1002,7 +1002,13 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Registry', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("import_registry", $this->fields["import_registry"]);
       echo "</td></tr>\n";
-
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Antivirus', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_antivirus", $this->fields["import_antivirus"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Security Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td></tr>\n";
+      
       //check version
       if ($this->fields['ocs_version'] > self::OCS1_3_VERSION_LIMIT) {
          echo "<tr class='tab_bg_2'><td class='center'>" .
@@ -1778,6 +1784,9 @@ JAVASCRIPT;
                if ($ocsConfig["import_registry"]) {
                   self::resetRegistry($computers_id);
                }
+               //if ($ocsConfig["import_antivirus"]) {
+                  self::resetAntivirus($computers_id);
+               //}
                $changes[0] = '0';
                $changes[1] = "";
                $changes[2] = $ocsid;
@@ -2389,6 +2398,7 @@ JAVASCRIPT;
             $softwares             = false;
             $drives                = false;
             $registry              = false;
+            $antivirus             = false;
             $virtualmachines       = false;
             $mb                    = false;
             $controllers           = false;
@@ -2530,6 +2540,10 @@ JAVASCRIPT;
                      $ocsCheck[] = PluginOcsinventoryngOcsClient::CHECKSUM_REGISTRY;
                   }
                }
+               //if ($cfg_ocs["import_antivirus"]) {
+                  $antivirus  = true;
+                  $ocsCheck[] = PluginOcsinventoryngOcsClient::CHECKSUM_SECURITY;
+               //}
                if ($mixed_checksum & pow(2, self::VIRTUALMACHINES_FL)) {
                   //no vm in ocs before 1.3
                   if (!($cfg_ocs['ocs_version'] < self::OCS1_3_VERSION_LIMIT)) {
@@ -2664,6 +2678,12 @@ JAVASCRIPT;
                //import registry entries not needed
                   self::updateRegistry($line['computers_id'], $ocsComputer["REGISTRY"], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs);
                }
+
+               if ($antivirus && isset($ocsComputer["SECURITYCENTER"])) {
+                  //import registry entries not needed
+                     self::updateAntivirus($line['computers_id'], $ocsComputer["SECURITYCENTER"], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs);
+               }
+               
                if ($virtualmachines && isset($ocsComputer["VIRTUALMACHINES"])) {
                // Get import vm
                   self::updateVirtualMachines($line['computers_id'], $ocsComputer["VIRTUALMACHINES"], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs);
@@ -4757,6 +4777,19 @@ JAVASCRIPT;
          }
       }
    }
+   
+   /**
+    * Delete old antivirus entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    *
+    * @return nothing.
+    * */
+   static function resetAntivirus($glpi_computers_id) {
+      
+      $av = new ComputerAntivirus();
+      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id, 'is_dynamic' => 1));
+   }
 
    /**
     * Delete all old printers of a computer.
@@ -5440,7 +5473,45 @@ JAVASCRIPT;
 
       return;
    }
+   
+   /**
+    * Update config of the antivirus
+    *
+    * This function erase old data and import the new ones about antivirus
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsid integer : ocs computer id (ID).
+    * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
+    * @param $cfg_ocs array : ocs config
+    *
+    * @return Nothing (void).
+    * */
+   static function updateAntivirus($computers_id, $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs) {
+      global $DB;
 
+      $av = new ComputerAntivirus();
+      //update data
+      foreach ($ocsComputer as $anti) {
+
+         $antivirus = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($anti));
+         $input                 = array();
+
+         if ($antivirus["category"] == "AntiVirus") {
+            $input["computers_id"]        = $computers_id;
+            $input["name"]                = $antivirus["product"];
+            $input["manufacturers_id"]    = Dropdown::importExternal('Manufacturer', self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $antivirus["company"]));
+            $input["antivirus_version"]   = $antivirus["version"];
+            $input["is_active"]           = $antivirus["enabled"];
+            $input["is_uptodate"]         = $antivirus["uptodate"];
+            $input["is_dynamic"]          = 1;
+            $isNewAV                      = $av->add($input, array('disable_unicity_check' => true));
+            unset($anti->fields);
+         }
+      }
+
+      return;
+   }
+   
    /**
     * Update the administrative informations
     *

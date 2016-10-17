@@ -194,6 +194,28 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                   }
                }
             }
+         } elseif ($table == "securitycenter") {
+
+            if ($check & $checksum) {
+               $query = "SELECT `securitycenter`.`SCV` AS scv,
+                          `securitycenter`.`CATEGORY` AS category,
+                          `securitycenter`.`HARDWARE_ID` AS HARDWARE_ID,
+                          `securitycenter`.`COMPANY` AS company,
+                          `securitycenter`.`PRODUCT` AS product,
+                          `securitycenter`.`VERSION` AS version,
+                          `securitycenter`.`ENABLED` AS enabled,
+                          `securitycenter`.`UPTODATE` AS uptodate
+                   FROM `securitycenter`
+                   WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+               $request = $this->db->query($query);
+               while ($av = $this->db->fetch_assoc($request)) {
+                  if ($multi) {
+                     $computers[$av['HARDWARE_ID']][strtoupper($table)][] = $av;
+                  } else {
+                     $computers[$av['HARDWARE_ID']][strtoupper($table)] = $av;
+                  }
+               }
+            }
          } elseif ($table == "hardware") {
 
             $query = "SELECT `hardware`.*,`accountinfo`.`TAG` FROM `hardware`
@@ -712,6 +734,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                                     "ports",
                                     "printers",
                                     "registry",
+                                    "securitycenter",
                                     "slots",
                                     "softwares",
                                     "sounds",
@@ -724,7 +747,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                      if (isset($tables) and is_array($tables)) {
                         foreach ($tables as $table) {
                         
-                           $sql="DELETE FROM $table WHERE hardware_id='".$agent."'";
+                           $sql="DELETE FROM $table WHERE HARDWARE_ID='".$agent."'";
                            $this->db->query($sql);
                         }
                      }

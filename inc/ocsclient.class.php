@@ -57,7 +57,8 @@ abstract class PluginOcsinventoryngOcsClient {
    const WANTED_ACCOUNTINFO = 0x00001;
    const WANTED_DICO_SOFT = 0x00002;
    const WANTED_ALL = 0x00003;
-
+   const CHECKSUM_SECURITY = 0x00004;
+   
    private $id;
 
    public function __construct($id) {
@@ -382,6 +383,10 @@ abstract class PluginOcsinventoryngOcsClient {
           ),
           'registry' => array(
               'checksum' => self::CHECKSUM_REGISTRY,
+              'multi' => 1,
+          ),
+          'securitycenter' => array(
+              'checksum' => self::CHECKSUM_SECURITY,
               'multi' => 1,
           ),
           'controllers' => array(
