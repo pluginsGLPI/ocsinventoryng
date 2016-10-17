@@ -1784,9 +1784,9 @@ JAVASCRIPT;
                if ($ocsConfig["import_registry"]) {
                   self::resetRegistry($computers_id);
                }
-               //if ($ocsConfig["import_antivirus"]) {
+               if ($ocsConfig["import_antivirus"]) {
                   self::resetAntivirus($computers_id);
-               //}
+               }
                $changes[0] = '0';
                $changes[1] = "";
                $changes[2] = $ocsid;
@@ -2540,10 +2540,10 @@ JAVASCRIPT;
                      $ocsCheck[] = PluginOcsinventoryngOcsClient::CHECKSUM_REGISTRY;
                   }
                }
-               //if ($cfg_ocs["import_antivirus"]) {
+               if ($cfg_ocs["import_antivirus"]) {
                   $antivirus  = true;
                   $ocsCheck[] = PluginOcsinventoryngOcsClient::CHECKSUM_SECURITY;
-               //}
+               }
                if ($mixed_checksum & pow(2, self::VIRTUALMACHINES_FL)) {
                   //no vm in ocs before 1.3
                   if (!($cfg_ocs['ocs_version'] < self::OCS1_3_VERSION_LIMIT)) {
@@ -2681,7 +2681,7 @@ JAVASCRIPT;
 
                if ($antivirus && isset($ocsComputer["SECURITYCENTER"])) {
                   //import registry entries not needed
-                     self::updateAntivirus($line['computers_id'], $ocsComputer["SECURITYCENTER"], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs);
+                  self::updateAntivirus($line['computers_id'], $ocsComputer["SECURITYCENTER"], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs);
                }
                
                if ($virtualmachines && isset($ocsComputer["VIRTUALMACHINES"])) {
@@ -5457,19 +5457,19 @@ JAVASCRIPT;
                           WHERE `computers_id` = '$computers_id'";
       $DB->query($query_delete);
 
-            $reg = new PluginOcsinventoryngRegistryKey();
-            //update data
+      $reg = new PluginOcsinventoryngRegistryKey();
+      //update data
       foreach ($ocsComputer as $registry) {
          $registry = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($registry));
-               $input                 = array();
-               $input["computers_id"] = $computers_id;
-               $input["hive"]         = $registry["regtree"];
-               $input["value"]        = $registry["regvalue"];
-               $input["path"]         = $registry["regkey"];
-               $input["ocs_name"]     = $registry["name"];
-               $isNewReg              = $reg->add($input, array('disable_unicity_check' => true));
-               unset($reg->fields);
-            }
+         $input                 = array();
+         $input["computers_id"] = $computers_id;
+         $input["hive"]         = $registry["regtree"];
+         $input["value"]        = $registry["regvalue"];
+         $input["path"]         = $registry["regkey"];
+         $input["ocs_name"]     = $registry["name"];
+         $isNewReg              = $reg->add($input, array('disable_unicity_check' => true));
+         unset($reg->fields);
+      }
 
       return;
    }
@@ -5488,7 +5488,9 @@ JAVASCRIPT;
     * */
    static function updateAntivirus($computers_id, $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs) {
       global $DB;
-
+      
+      self::resetAntivirus($computers_id);
+      
       $av = new ComputerAntivirus();
       //update data
       foreach ($ocsComputer as $anti) {
