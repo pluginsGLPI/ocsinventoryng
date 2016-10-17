@@ -4712,7 +4712,24 @@ JAVASCRIPT;
          echo "</table></div>\n";
       }
    }
+   
+   
+   /**
+    * Delete old devices settings
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    * @param $itemtype integer : device type identifier.
+    *
+    * @return nothing.
+    * */
+   static function resetDevices($glpi_computers_id, $itemtype) {
 
+      $item = new $itemtype();
+      $item->deleteByCriteria(array('computers_id' => $glpi_computers_id, 
+                                    'itemtype' => 'Computer',
+                                    'is_dynamic' => 1));
+   }
+   
    /**
     * Delete old dropdown value
     *
@@ -4756,26 +4773,9 @@ JAVASCRIPT;
     * @return nothing.
     * */
    static function resetRegistry($glpi_computers_id) {
-      global $DB;
 
-      $query  = "SELECT *
-                FROM `glpi_plugin_ocsinventoryng_registrykeys`
-                WHERE `computers_id` = '$glpi_computers_id'";
-      $result = $DB->query($query);
-
-      if ($DB->numrows($result) > 0) {
-         while ($data = $DB->fetch_assoc($result)) {
-            $query2  = "SELECT COUNT(*)
-                       FROM `glpi_plugin_ocsinventoryng_registrykeys`
-                       WHERE `computers_id` = '" . $data['computers_id'] . "'";
-            $result2 = $DB->query($query2);
-
-            $registry = new PluginOcsinventoryngRegistryKey();
-            if ($DB->result($result2, 0, 0) == 1) {
-               $registry->delete(array('id' => $data['computers_id']), 1);
-            }
-         }
-      }
+      $registry = new PluginOcsinventoryngRegistryKey();
+      $registry->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
    }
    
    /**
@@ -4788,7 +4788,8 @@ JAVASCRIPT;
    static function resetAntivirus($glpi_computers_id) {
       
       $av = new ComputerAntivirus();
-      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id, 'is_dynamic' => 1));
+      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id, 
+                                  'is_dynamic' => 1));
    }
 
    /**
@@ -4801,10 +4802,11 @@ JAVASCRIPT;
    static function resetPrinters($glpi_computers_id) {
       global $DB;
 
-      $query  = "SELECT*
+      $query  = "SELECT *
                 FROM `glpi_computers_items`
                 WHERE `computers_id` = '$glpi_computers_id'
-                      AND `itemtype` = 'Printer'";
+                      AND `itemtype` = 'Printer'
+                      AND `is_dynamic`";
       $result = $DB->query($query);
 
       if ($DB->numrows($result) > 0) {
@@ -4837,10 +4839,11 @@ JAVASCRIPT;
    static function resetMonitors($glpi_computers_id) {
       global $DB;
 
-      $query  = "SELECT*
+      $query  = "SELECT *
                 FROM `glpi_computers_items`
                 WHERE `computers_id` = '$glpi_computers_id'
-                      AND `itemtype` = 'Monitor'";
+                      AND `itemtype` = 'Monitor'
+                      AND `is_dynamic`";
       $result = $DB->query($query);
 
       $mon = new Monitor();
@@ -4848,6 +4851,7 @@ JAVASCRIPT;
          $conn = new Computer_Item();
 
          while ($data = $DB->fetch_assoc($result)) {
+         
             $conn->delete(array('id' => $data['id']));
 
             $query2  = "SELECT COUNT(*)
@@ -4873,10 +4877,11 @@ JAVASCRIPT;
    static function resetPeripherals($glpi_computers_id) {
       global $DB;
 
-      $query  = "SELECT*
+      $query  = "SELECT *
                 FROM `glpi_computers_items`
                 WHERE `computers_id` = '$glpi_computers_id'
-                      AND `itemtype` = 'Peripheral'";
+                      AND `itemtype` = 'Peripheral'
+                      AND `is_dynamic`";
       $result = $DB->query($query);
 
       $per = new Peripheral();
@@ -4908,9 +4913,10 @@ JAVASCRIPT;
    static function resetSoftwares($glpi_computers_id) {
       global $DB;
 
-      $query  = "SELECT*
+      $query  = "SELECT *
                 FROM `glpi_computers_softwareversions`
-                WHERE `computers_id` = '$glpi_computers_id'";
+                WHERE `computers_id` = '$glpi_computers_id'
+                     AND `is_dynamic`";
       $result = $DB->query($query);
 
       if ($DB->numrows($result) > 0) {
@@ -4936,10 +4942,9 @@ JAVASCRIPT;
             }
          }
 
-         $query = "DELETE
-                   FROM `glpi_computers_softwareversions`
-                   WHERE `computers_id` = '$glpi_computers_id'";
-         $DB->query($query);
+         $csv = new Computer_SoftwareVersion();
+         $csv->deleteByCriteria(array('computers_id' => $glpi_computers_id, 
+                                  'is_dynamic' => 1));
       }
    }
 
@@ -4951,12 +4956,10 @@ JAVASCRIPT;
     * @return nothing.
     * */
    static function resetDisks($glpi_computers_id) {
-      global $DB;
-
-      $query = "DELETE
-                FROM `glpi_computerdisks`
-                WHERE `computers_id` = '$glpi_computers_id'";
-      $DB->query($query);
+      
+      $dd = new ComputerDisk();
+      $dd->deleteByCriteria(array('computers_id' => $glpi_computers_id, 
+                                  'is_dynamic' => 1));
    }
 
    /**
@@ -5452,10 +5455,7 @@ JAVASCRIPT;
    static function updateRegistry($computers_id, $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs) {
       global $DB;
       //before update, delete all entries about $computers_id
-      $query_delete = "DELETE
-                          FROM `glpi_plugin_ocsinventoryng_registrykeys`
-                          WHERE `computers_id` = '$computers_id'";
-      $DB->query($query_delete);
+      self::resetRegistry($computers_id);
 
       $reg = new PluginOcsinventoryngRegistryKey();
       //update data
@@ -6209,29 +6209,6 @@ JAVASCRIPT;
    }
 
    /**
-    * Delete old devices settings
-    *
-    * @param $glpi_computers_id integer : glpi computer id.
-    * @param $itemtype integer : device type identifier.
-    *
-    * @return nothing.
-    * */
-   static function resetDevices($glpi_computers_id, $itemtype) {
-      global $DB;
-
-      $linktable = getTableForItemType('Item_' . $itemtype);
-      if ($itemtype == "PluginOcsinventoryngDeviceBiosdata") {
-         $linktable = getTableForItemType('PluginOcsinventoryngItem_DeviceBiosdata');
-      }
-
-      $query = "DELETE
-                FROM `$linktable`
-                WHERE `items_id` = '$glpi_computers_id'
-                     AND `itemtype` = 'Computer'";
-      $DB->query($query);
-   }
-
-   /**
     *
     * Import monitors from OCS
     * @since 1.0
@@ -6293,7 +6270,7 @@ JAVASCRIPT;
             $query         = "SELECT `m`.`id`, `gci`.`is_deleted`
                          FROM `glpi_monitors` as `m`, `glpi_computers_items` as `gci`
                          WHERE `m`.`id` = `gci`.`items_id`
-                            AND `gci`.`is_dynamic`='1'
+                            AND `gci`.`is_dynamic`
                             AND `computers_id`='$computers_id'
                             AND `itemtype`='Monitor'
                             AND `m`.`name`='" . $mon["name"] . "'";
@@ -6445,7 +6422,7 @@ JAVASCRIPT;
                          FROM `glpi_computers_items`
                          WHERE `itemtype`='Monitor'
                             AND `computers_id`='$computers_id'
-                            AND `is_dynamic`='1'
+                            AND `is_dynamic`
                             AND `is_deleted`='0'";
             if (!empty($already_processed)) {
                $query .= "AND `items_id` NOT IN (" . implode(',', $already_processed) . ")";
@@ -6547,7 +6524,7 @@ JAVASCRIPT;
                      $query   = "SELECT `p`.`id`, `gci`.`is_deleted`
                                   FROM `glpi_printers` as `p`, `glpi_computers_items` as `gci`
                                   WHERE `p`.`id` = `gci`.`items_id`
-                                     AND `gci`.`is_dynamic`='1'
+                                     AND `gci`.`is_dynamic`
                                      AND `computers_id`='$computers_id'
                                      AND `itemtype`='Printer'
                                      AND `p`.`name`='" . $print["name"] . "'";
@@ -6638,7 +6615,7 @@ JAVASCRIPT;
                     FROM `glpi_computers_items`
                     WHERE `itemtype`='Printer'
                        AND `computers_id`='$computers_id'
-                       AND `is_dynamic`='1'
+                       AND `is_dynamic`
                        AND `is_deleted`='0'";
       if (!empty($already_processed)) {
          $query .= "AND `items_id` NOT IN (" . implode(',', $already_processed) . ")";
@@ -6712,7 +6689,7 @@ JAVASCRIPT;
                   $query          = "SELECT `p`.`id`, `gci`.`is_deleted`
                                        FROM `glpi_printers` as `p`, `glpi_computers_items` as `gci`
                                        WHERE `p`.`id` = `gci`.`items_id`
-                                       AND `gci`.`is_dynamic`='1'
+                                       AND `gci`.`is_dynamic`
                                        AND `computers_id`='$computers_id'
                                        AND `itemtype`='Peripheral'
                                        AND `p`.`name`='" . $periph["name"] . "'";
@@ -6800,7 +6777,7 @@ JAVASCRIPT;
                       FROM `glpi_computers_items`
                       WHERE `itemtype`='Peripheral'
                          AND `computers_id`='$computers_id'
-                         AND `is_dynamic`='1'
+                         AND `is_dynamic`
                          AND `is_deleted`='0'";
       if (!empty($already_processed)) {
          $query .= "AND `items_id` NOT IN (" . implode(',', $already_processed) . ")";
