@@ -939,11 +939,11 @@ JAVASCRIPT;
          "1" => __('Global import', 'ocsinventoryng'),
          "2" => __('Unit import', 'ocsinventoryng'));
 
-      $import_array2 = array("0" => __('No import'),
-         "1" => __('Global import', 'ocsinventoryng'),
-         "2" => __('Unit import', 'ocsinventoryng'),
-         "3" => __('Unit import on serial number', 'ocsinventoryng'),
-         "4" => __('Unit import serial number only', 'ocsinventoryng'));
+      $import_array2 = array ("0" => __('No import'),
+                              "1" => __('Global import', 'ocsinventoryng'),
+                              "2" => __('Unit import', 'ocsinventoryng'),
+                              "3" => __('Unit import on serial number', 'ocsinventoryng'),
+                              "4" => __('Unit import serial number only', 'ocsinventoryng'));
 
       $periph   = $this->fields["import_periph"];
       $monitor  = $this->fields["import_monitor"];
@@ -978,7 +978,7 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Registry', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("import_registry", $this->fields["import_registry"]);
       echo "</td></tr>\n";
-
+      
       //check version
       if ($this->fields['ocs_version'] > self::OCS1_3_VERSION_LIMIT) {
          echo "<tr class='tab_bg_2'><td class='center'>" .
@@ -1144,10 +1144,10 @@ JAVASCRIPT;
       Dropdown::showYesNo("use_cleancron", $this->fields["use_cleancron"]);
       echo "</td>";
       echo "</tr>";
-
+      
       $this->showFormButtons($options);
    }
-
+   
    /**
     * check is one of the servers use_mass_import sync mode
     *
@@ -1958,7 +1958,7 @@ JAVASCRIPT;
       //   echo "</th></tr>";
       //}
    }
-
+   
    /**
     * Return field matching between OCS and GLPI
     *
@@ -2128,7 +2128,7 @@ JAVASCRIPT;
             'WANTED'   => PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO
          )
       ));
-
+      
       $locations_id = 0;
       $contact      = (isset($ocsComputer['META']["USERID"])) ? $ocsComputer['META']["USERID"] : "";
       if (!empty($contact)) {
@@ -2189,10 +2189,9 @@ JAVASCRIPT;
             //Check if machine could be linked with another one already in DB
             $rulelink         = new RuleImportComputerCollection();
             $rulelink_results = array();
-            $params           = array('entities_id'                         => $data['entities_id'],
-               'plugin_ocsinventoryng_ocsservers_id'
-               => $plugin_ocsinventoryng_ocsservers_id,
-               'ocsid'                               => $ocsid);
+            $params           = array ('entities_id'                         => $data['entities_id'],
+                                       'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                       'ocsid'                               => $ocsid);
             $rulelink_results = $rulelink->processAllRules(Toolbox::stripslashes_deep($input), array(), $params);
 
             //If at least one rule matched
@@ -2213,9 +2212,9 @@ JAVASCRIPT;
                            
                            if (self::linkComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $computers_id)) {
                               return array('status'       => self::COMPUTER_LINKED,
-                                 'entities_id'  => $data['entities_id'],
-                                 'rule_matched' => $rules_matched,
-                                 'computers_id' => $computers_id);
+                                          'entities_id'  => $data['entities_id'],
+                                          'rule_matched' => $rules_matched,
+                                          'computers_id' => $computers_id);
                            }
                         }
                         break;
@@ -2238,9 +2237,9 @@ JAVASCRIPT;
               // var_dump("post",$_POST,"session",$_SESSION,"server",$_SERVER,"get",$_GET,"cookie",$_COOKIE,"request",$_REQUEST);
                //die("lets see the thisngs in post get session, cookie and reques");
                return array('status'       => self::COMPUTER_IMPORTED,
-                  'entities_id'  => $data['entities_id'],
-                  'rule_matched' => $rules_matched,
-                  'computers_id' => $computers_id);
+                           'entities_id'  => $data['entities_id'],
+                           'rule_matched' => $rules_matched,
+                           'computers_id' => $computers_id);
             }
             return array('status'       => self::COMPUTER_NOT_UNIQUE,
                         'entities_id'  => $data['entities_id'],
@@ -2253,7 +2252,7 @@ JAVASCRIPT;
       }
       //ELSE Return code to indicates that the machine was not imported because it doesn't matched rules
       return array('status'       => self::COMPUTER_FAILED_IMPORT,
-                     'rule_matched' => $rules_matched);
+                   'rule_matched' => $rules_matched);
    }
 
    /** Update a ocs computer
@@ -2644,7 +2643,7 @@ JAVASCRIPT;
                // Get import vm
                   self::updateVirtualMachines($line['computers_id'], $ocsComputer["VIRTUALMACHINES"], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs);
                }
-            }
+               }
             //Update TAG
             self::updateTag($line, $data_ocs);
             // Update OCS Cheksum
@@ -4712,27 +4711,11 @@ JAVASCRIPT;
     * @return nothing.
     * */
    static function resetRegistry($glpi_computers_id) {
-      global $DB;
-
-      $query  = "SELECT *
-                FROM `glpi_plugin_ocsinventoryng_registrykeys`
-                WHERE `computers_id` = '$glpi_computers_id'";
-      $result = $DB->query($query);
-
-      if ($DB->numrows($result) > 0) {
-         while ($data = $DB->fetch_assoc($result)) {
-            $query2  = "SELECT COUNT(*)
-                       FROM `glpi_plugin_ocsinventoryng_registrykeys`
-                       WHERE `computers_id` = '" . $data['computers_id'] . "'";
-            $result2 = $DB->query($query2);
-
-            $registry = new PluginOcsinventoryngRegistryKey();
-            if ($DB->result($result2, 0, 0) == 1) {
-               $registry->delete(array('id' => $data['computers_id']), 1);
-            }
-         }
-      }
+      $registry = new PluginOcsinventoryngRegistryKey();
+      $registry->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+      
    }
+
 
    /**
     * Delete all old printers of a computer.
@@ -4851,9 +4834,9 @@ JAVASCRIPT;
    static function resetSoftwares($glpi_computers_id) {
       global $DB;
 
-      $query  = "SELECT*
+      $query  = "SELECT *
                 FROM `glpi_computers_softwareversions`
-                WHERE `computers_id` = '$glpi_computers_id'";
+                WHERE `computers_id` = '$glpi_computers_id' AND `is_dynamic`";
       $result = $DB->query($query);
 
       if ($DB->numrows($result) > 0) {
@@ -4879,10 +4862,8 @@ JAVASCRIPT;
             }
          }
 
-         $query = "DELETE
-                   FROM `glpi_computers_softwareversions`
-                   WHERE `computers_id` = '$glpi_computers_id'";
-         $DB->query($query);
+         $computer_softwareversions = new Computer_SoftwareVersion();
+         $computer_softwareversions->deleteByCriteria(array('computers_id' => $glpi_computers_id));
       }
    }
 
@@ -4894,12 +4875,9 @@ JAVASCRIPT;
     * @return nothing.
     * */
    static function resetDisks($glpi_computers_id) {
-      global $DB;
 
-      $query = "DELETE
-                FROM `glpi_computerdisks`
-                WHERE `computers_id` = '$glpi_computers_id'";
-      $DB->query($query);
+      $computerDisk = new ComputerDisk();
+      $computerDisk->deleteByCriteria(array("computers_id" => $glpi_computers_id, "is_dynamic" => 1));
    }
 
    /**
@@ -5395,24 +5373,21 @@ JAVASCRIPT;
    static function updateRegistry($computers_id, $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs) {
       global $DB;
       //before update, delete all entries about $computers_id
-      $query_delete = "DELETE
-                          FROM `glpi_plugin_ocsinventoryng_registrykeys`
-                          WHERE `computers_id` = '$computers_id'";
-      $DB->query($query_delete);
+      self::resetRegistry($computers_id);
 
-            $reg = new PluginOcsinventoryngRegistryKey();
-            //update data
+      $reg = new PluginOcsinventoryngRegistryKey();
+      //update data
       foreach ($ocsComputer as $registry) {
          $registry = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($registry));
-               $input                 = array();
-               $input["computers_id"] = $computers_id;
-               $input["hive"]         = $registry["regtree"];
-               $input["value"]        = $registry["regvalue"];
-               $input["path"]         = $registry["regkey"];
-               $input["ocs_name"]     = $registry["name"];
-               $isNewReg              = $reg->add($input, array('disable_unicity_check' => true));
-               unset($reg->fields);
-            }
+         $input                 = array();
+         $input["computers_id"] = $computers_id;
+         $input["hive"]         = $registry["regtree"];
+         $input["value"]        = $registry["regvalue"];
+         $input["path"]         = $registry["regkey"];
+         $input["ocs_name"]     = $registry["name"];
+         $isNewReg              = $reg->add($input, array('disable_unicity_check' => true));
+         unset($reg->fields);
+      }
 
       return;
    }
@@ -5609,27 +5584,27 @@ JAVASCRIPT;
             $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
             $agents    = $ocsClient->getOldAgents();
 
-            $computers = array();
-            if (count($agents) > 0) {
+               $computers = array();
+               if (count($agents) > 0) {
 
-               $nb = $ocsClient->deleteOldAgents($agents);
-               if ($nb) {
-                  self::manageDeleted($plugin_ocsinventoryng_ocsservers_id, false);
-                  $cron_status = 1;
-                  if ($task) {
-                     $task->addVolume($nb);
-                     $task->log(__('Clean old agents OK', 'ocsinventoryng'));
+                  $nb = $ocsClient->deleteOldAgents($agents);
+                  if ($nb) {
+                     self::manageDeleted($plugin_ocsinventoryng_ocsservers_id, false);
+                     $cron_status = 1;
+                     if ($task) {
+                        $task->addVolume($nb);
+                        $task->log(__('Clean old agents OK', 'ocsinventoryng'));
+                     }
+                  } else {
+                     $task->log(__('Clean old agents failed', 'ocsinventoryng'));
                   }
-               } else {
-                  $task->log(__('Clean old agents failed', 'ocsinventoryng'));
                }
-            }
-         }
-      }
-
+                     }
+                  }
+               
       return $cron_status;
    }
-
+   
    static function cronocsng($task) {
       global $DB, $CFG_GLPI;
 
