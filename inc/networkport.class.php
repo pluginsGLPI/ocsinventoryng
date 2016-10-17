@@ -89,7 +89,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          }
          $inst_input['networkports_id'] = $networkports_id;
          $instantiation                 = $network_port->getInstantiation();
-         $instantiation->add($inst_input);
+         $instantiation->update($inst_input);
          unset($instantiation);
 
       } else {
