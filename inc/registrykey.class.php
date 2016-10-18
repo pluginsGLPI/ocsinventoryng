@@ -116,10 +116,12 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
 
          switch ($item->getType()) {
             case 'Computer' :
-               if ($_SESSION['glpishow_count_on_tabs']) {
-                  return self::createTabEntry(self::getTypeName(2), self::countForItem($item));
+               if (!$withtemplate) {
+                  if ($_SESSION['glpishow_count_on_tabs']) {
+                     return self::createTabEntry(self::getTypeName(2), self::countForItem($item));
+                  }
+                  return self::getTypeName(2);
                }
-               return self::getTypeName(2);
          }
       }
       return '';

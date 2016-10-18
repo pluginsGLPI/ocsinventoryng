@@ -618,7 +618,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          switch ($item->getType()) {
             case 'Computer' :
-               return array('1' => _n('OCSNG link', 'OCSNG links', 1, 'ocsinventoryng'));
+               if (!$withtemplate) {
+                  return array('1' => _n('OCSNG link', 'OCSNG links', 1, 'ocsinventoryng'));
+               }
          }
       }
       return '';
