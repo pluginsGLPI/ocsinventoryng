@@ -92,6 +92,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `comment` text COLLATE utf8_unicode_ci,
   `is_active` tinyint(1) NOT NULL DEFAULT '0',
   `use_massimport` tinyint(1) NOT NULL DEFAULT '0',
+  `use_locks` tinyint(1) NOT NULL DEFAULT '1',
   `deleted_behavior` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '1',
   `import_vms` tinyint(1) NOT NULL DEFAULT '1',
   `import_general_uuid` tinyint(1) NOT NULL DEFAULT '1',

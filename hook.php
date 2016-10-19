@@ -783,6 +783,12 @@ function plugin_ocsinventoryng_install() {
                ADD `import_antivirus` tinyint(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_ocsservers add import_antivirus");
    }
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+         && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','use_locks')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `use_locks` tinyint(1) NOT NULL DEFAULT '1';";
+      $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_ocsservers add use_locks");
+   }
    /**/
    
    $cron = new CronTask();
@@ -1788,9 +1794,8 @@ function plugin_ocsinventoryng_showLocksForItem($params = array()) {
    if (!Session::haveRight("computer", UPDATE)) {
       return $params;
    }
-      
    $lockable_fields = PluginOcsinventoryngOcsServer::getLockableFields();
-   if (count($locks)) {
+   if (is_array($locks) && count($locks)) {
       $header = true;
       echo "<tr><th colspan='2'>". _n('Locked field', 'Locked fields', 2, 'ocsinventoryng').
       "</th></tr>\n";
@@ -1803,6 +1808,10 @@ function plugin_ocsinventoryng_showLocksForItem($params = array()) {
          echo "<td class='left' width='95%'>" . $lockable_fields[$val] . "</td>";
          echo "</tr>\n";
       }
+   }
+   if (!is_array($locks)) {
+      echo "<tr class='tab_bg_1'><td class='center red' colspan='2'>". __("You don't use locks - See setup for activate them", 'ocsinventoryng').
+         "</td></tr>\n";
    }
    $params['header'] = $header;
    return $params;
@@ -2005,17 +2014,21 @@ function plugin_ocsinventoryng_pre_item_update($item){
    if($item->fields['itemtype'] == "Computer"){
       $ocslink = new PluginOcsinventoryngOcslink();
       if($ocslink->getFromDBforComputer($item->fields['items_id'])){
-         $field_set    = false;
-         $computers_update = importArrayFromDB($ocslink->fields['computer_update']);
-         if (in_array('use_date', $computers_update)) {
-            if (isset ($item->input["use_date"]) 
-                  && $item->input["use_date"] != $item->fields["use_date"]) {
-               $field_set           = true;
-               $item->input["use_date"] = $item->fields["use_date"];
+         
+         $cfg_ocs = self::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
+         if ($cfg_ocs["use_locks"]) {
+            $field_set    = false;
+            $computers_update = importArrayFromDB($ocslink->fields['computer_update']);
+            if (in_array('use_date', $computers_update)) {
+               if (isset ($item->input["use_date"]) 
+                     && $item->input["use_date"] != $item->fields["use_date"]) {
+                  $field_set           = true;
+                  $item->input["use_date"] = $item->fields["use_date"];
+               }
             }
-         }
-         if ($field_set) {
-            Session::addMessageAfterRedirect(__("The startup date field is locked by ocsinventoryng please unlock it before update.", "ocsinventoryng"), true, ERROR);
+            if ($field_set) {
+               Session::addMessageAfterRedirect(__("The startup date field is locked by ocsinventoryng please unlock it before update.", "ocsinventoryng"), true, ERROR);
+            }
          }
       }
    }
@@ -2034,13 +2047,16 @@ function plugin_ocsinventoryng_item_update($item) {
          
          if ($DB->numrows($result) == 1) {
             $line               = $DB->fetch_assoc($result);
-            $computer_updates   = importArrayFromDB($line["computer_update"]);
-            //Add lock
-            $computer_updates[] = "use_date";
-            $query              = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                         SET `computer_update` = '" . addslashes(exportArrayToDB($computer_updates)) . "'
-                         WHERE `computers_id` = '" . $item->fields['items_id'] . "'";
-            $DB->query($query);
+            $cfg_ocs = self::getConfig($line["plugin_ocsinventoryng_ocsservers_id"]);
+            if ($cfg_ocs["use_locks"]) {
+               $computer_updates   = importArrayFromDB($line["computer_update"]);
+               //Add lock
+               $computer_updates[] = "use_date";
+               $query              = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                            SET `computer_update` = '" . addslashes(exportArrayToDB($computer_updates)) . "'
+                            WHERE `computers_id` = '" . $item->fields['items_id'] . "'";
+               $DB->query($query);
+            }
          }
       }
    }

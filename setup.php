@@ -108,7 +108,8 @@ function plugin_init_ocsinventoryng() {
          $PLUGIN_HOOKS['menu_toadd']['ocsinventoryng'] = array('tools'   => 'PluginOcsinventoryngMenu');
       }
 
-      if (Session::haveRight("plugin_ocsinventoryng", UPDATE) || Session::haveRight("config", UPDATE)) {
+      if (Session::haveRight("plugin_ocsinventoryng", UPDATE) 
+            || Session::haveRight("config", UPDATE)) {
          $PLUGIN_HOOKS['use_massive_action']['ocsinventoryng'] = 1;
          //$PLUGIN_HOOKS['redirect_page']['ocsinventoryng']      = "front/ocsng.php";
          $PLUGIN_HOOKS['redirect_page']['ocsinventoryng']      = "front/notimportedcomputer.form.php";

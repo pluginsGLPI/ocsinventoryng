@@ -475,16 +475,21 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       global $DB;
       // Manage changes for OCS if more than 1 element (date_mod)
       // Need dohistory==1 if dohistory==2 no locking fields
+      
+      $ocslink = new self();
       if ($item->fields["is_dynamic"]
-            && countElementsInTable('glpi_plugin_ocsinventoryng_ocslinks', "`computers_id`='".$item->getID()."'")
-            && ($item->dohistory == 1)
-            && (count($item->updates) > 1)
-            && (!isset($item->input["_nolock"]))) {
-
-         PluginOcsinventoryngOcsServer::mergeOcsArray($item->fields["id"], $item->updates,
-                                                      "computer_update");
+            && $ocslink->getFromDBforComputer($item->getID())
+               && ($item->dohistory == 1)
+                  && (count($item->updates) > 1)
+                     && (!isset($item->input["_nolock"]))) {
+         
+         $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
+         if ($cfg_ocs["use_locks"]) {
+            
+            PluginOcsinventoryngOcsServer::mergeOcsArray($item->fields["id"], $item->updates,
+                                                                        "computer_update");
+         }
       }
-
       if (isset($item->input["_auto_update_ocs"])) {
          $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                    SET `use_auto_update` = '".$item->input["_auto_update_ocs"]."'
@@ -495,7 +500,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
 
    /**
-    * Update lockable linked items of an item
+    * Update linked items of an item
     *
     * @param $item                     CommonDBTM object
     * @param $withtemplate    integer  withtemplate param (default '')
