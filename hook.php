@@ -2015,7 +2015,7 @@ function plugin_ocsinventoryng_pre_item_update($item){
       $ocslink = new PluginOcsinventoryngOcslink();
       if($ocslink->getFromDBforComputer($item->fields['items_id'])){
          
-         $cfg_ocs = self::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
+         $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
          if ($cfg_ocs["use_locks"]) {
             $field_set    = false;
             $computers_update = importArrayFromDB($ocslink->fields['computer_update']);
@@ -2047,7 +2047,7 @@ function plugin_ocsinventoryng_item_update($item) {
          
          if ($DB->numrows($result) == 1) {
             $line               = $DB->fetch_assoc($result);
-            $cfg_ocs = self::getConfig($line["plugin_ocsinventoryng_ocsservers_id"]);
+            $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($line["plugin_ocsinventoryng_ocsservers_id"]);
             if ($cfg_ocs["use_locks"]) {
                $computer_updates   = importArrayFromDB($line["computer_update"]);
                //Add lock
