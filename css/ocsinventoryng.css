@@ -139,3 +139,38 @@ td.ipdisc_tab , td.ipdisc_tab_row, table.ipdisc_tab_header {
 td {
     padding: 5px;
 }
+
+.ocsinventoryng_toner_level{
+   height:15px;
+   width:300px;
+   border:solid 1px #CCCCCC;
+
+   -moz-border-radius: 5px;
+   -webkit-border-radius: 5px;
+   border-radius: 5px;
+}
+
+.ocsinventoryng_toner_level_cyan{
+   border:0px;
+   background-color:cyan;
+}
+
+.ocsinventoryng_toner_level_yellow{
+   border:0px;
+   background-color:yellow;
+}
+
+.ocsinventoryng_toner_level_black{
+   border:0px;
+   background-color:black;
+}
+
+.ocsinventoryng_toner_level_magenta{
+   border:0px;
+   background-color:magenta;
+}
+
+.ocsinventoryng_toner_level_other{
+   border:0px;
+   background-color: #0464BB;
+}

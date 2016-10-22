@@ -35,6 +35,12 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
    
    static $snmptypes = array('Computer', 'NetworkEquipment','Peripheral', 'Phone', 'Printer');
    static $rightname = "plugin_ocsinventoryng";
+   
+   const CARTRIDGE_COLOR_CYAN = array('cyan');
+   const CARTRIDGE_COLOR_MAGENTA = array('magenta');
+   const CARTRIDGE_COLOR_YELLOW = array('yellow', 'jaune');
+   const CARTRIDGE_COLOR_BLACK = array('black', 'noir');
+   const OTHER_DATA = 'other';
    /**
     * @see inc/CommonGLPI::getTabNameForItem()
     *
@@ -376,8 +382,8 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                   $linked_ids [] = $data['ocs_id'];
                   $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($data['plugin_ocsinventoryng_ocsservers_id']);
                   $ocsResult = $ocsClient->getSnmp(array(
-                     'MAX_RECORDS' => 1,
-                     'FILTER'      => array(
+                        'MAX_RECORDS' => 1,
+                        'FILTER'      => array(
                         'IDS' => $linked_ids,
                      )
                   ));
@@ -386,13 +392,85 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                         foreach ($ocsResult['SNMP'] as $snmp) {
                            $LASTDATE   = $snmp['META']['LASTDATE'];
                            $UPTIME     = $snmp['META']['UPTIME'];
-                  
+
                            echo "<tr class='tab_bg_1'><td>".__('Last OCSNG SNMP inventory date', 'ocsinventoryng');
                            echo "</td><td>".Html::convDateTime($LASTDATE)."</td>";
                            
                            echo "<td>".__('Uptime', 'ocsinventoryng');
                            echo "</td><td>".$UPTIME."</td></tr>";
                         }
+                     }
+                  }
+                  if ($item->getType() == 'Printer') {
+                     $cartridges = array();
+                     $trays = array();
+                     if (isset($ocsResult['SNMP'])) {
+                        if (count($ocsResult['SNMP']) > 0) {
+                           foreach ($ocsResult['SNMP'] as $snmp) {
+                              $cartridges = $snmp['CARTRIDGES'];
+                              $trays = $snmp['TRAYS'];
+                           }
+                        }
+                     }
+                     if (count($cartridges)>0) {
+                        
+                        $colors = array(self::CARTRIDGE_COLOR_BLACK,
+                         self::CARTRIDGE_COLOR_CYAN,
+                         self::CARTRIDGE_COLOR_MAGENTA,
+                         self::CARTRIDGE_COLOR_YELLOW);
+                         
+                        echo "<tr class='tab_bg_1'><th colspan='4'>".__('Cartridges informations', 'ocsinventoryng')."</th>";
+                        foreach ($cartridges as $cartridge) {
+                           
+                           if ($cartridge['TYPE'] != "wasteToner") {
+                              echo "<tr class='tab_bg_1'>";
+                              echo "<td>".$cartridge['DESCRIPTION']."</td>";
+                              $class = 'ocsinventoryng_toner_level_other';
+                              foreach ($colors as $k => $v) {
+                                 foreach ($v as $color) {
+                                    
+                                    if (preg_match('/('.$color.')/i', $cartridge['DESCRIPTION'], $matches)) {
+                                       $class = 'ocsinventoryng_toner_level_'.strtolower($matches[1]);
+                                       if ($matches[1] == "jaune") {
+                                          $class = 'ocsinventoryng_toner_level_yellow';
+                                       }
+                                       if ($matches[1] == "noir") {
+                                          $class = 'ocsinventoryng_toner_level_black';
+                                       }
+                                       break;
+                                    }
+                                 }
+                              }
+                              $percent = 0;
+                              if ($cartridge['LEVEL'] > 0) {
+                                 $percent = ($cartridge['LEVEL']*100)/$cartridge['MAXCAPACITY'];
+                              }
+                              echo "<td colspan='2'><div class='ocsinventoryng_toner_level'><div class='ocsinventoryng_toner_level $class' style='width:".$percent."%'></div></div></td>";
+                              echo "<td>".$cartridge['LEVEL']." %</td>";
+                              echo "</tr>";
+                           }
+                        }
+                        
+                     }
+                     if (count($trays)>0) {
+                         
+                        echo "<tr class='tab_bg_1'><th colspan='4'>".__('Trays informations', 'ocsinventoryng')."</th>";
+                        foreach ($trays as $tray) {
+                           
+                           if ($tray['NAME'] != "Bypass Tray") {
+                              echo "<tr class='tab_bg_1'>";
+                              echo "<td>".$tray['DESCRIPTION']."</td>";
+                              $class = 'ocsinventoryng_toner_level_other';
+                              $percent = 0;
+                              if ($tray['LEVEL'] > 0) {
+                                 $percent = ($tray['LEVEL']*100)/$tray['MAXCAPACITY'];
+                              }
+                              echo "<td colspan='2'><div class='ocsinventoryng_toner_level'><div class='ocsinventoryng_toner_level $class' style='width:".$percent."%'></div></div></td>";
+                              echo "<td>".$tray['LEVEL']." / ".$tray['MAXCAPACITY']."</td>";
+                              echo "</tr>";
+                           }
+                        }
+                        
                      }
                   }
                }
