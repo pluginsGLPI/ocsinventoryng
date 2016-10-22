@@ -114,6 +114,19 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `importsnmp_power` tinyint(1) NOT NULL DEFAULT '0',
   `importsnmp_fan` tinyint(1) NOT NULL DEFAULT '0',
   `importsnmp_printermemory` tinyint(1) NOT NULL DEFAULT '0',
+  `linksnmp_name` tinyint(1) NOT NULL DEFAULT '0',
+  `linksnmp_serial` tinyint(1) NOT NULL DEFAULT '0',
+  `linksnmp_comment` tinyint(1) NOT NULL DEFAULT '0',
+  `linksnmp_contact` tinyint(1) NOT NULL DEFAULT '0',
+  `linksnmp_location` tinyint(1) NOT NULL DEFAULT '0',
+  `linksnmp_domain` tinyint(1) NOT NULL DEFAULT '0',
+  `linksnmp_manufacturer` tinyint(1) NOT NULL DEFAULT '0',
+  `linksnmp_createport` tinyint(1) NOT NULL DEFAULT '0',
+  `linksnmp_last_pages_counter` tinyint(1) NOT NULL DEFAULT '0',
+  `linksnmp_firmware` tinyint(1) NOT NULL DEFAULT '0',
+  `linksnmp_power` tinyint(1) NOT NULL DEFAULT '0',
+  `linksnmp_fan` tinyint(1) NOT NULL DEFAULT '0',
+  `linksnmp_printermemory` tinyint(1) NOT NULL DEFAULT '0',
   `dohistory` tinyint(1) NOT NULL DEFAULT '1',
   `history_hardware` tinyint(1) NOT NULL DEFAULT '1',
   `history_bios` tinyint(1) NOT NULL DEFAULT '1',
@@ -330,6 +343,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_snmpocslinks` (
    `itemtype` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
    `last_update` DATETIME COLLATE utf8_unicode_ci DEFAULT NULL,
    `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
+   `linked` tinyint(1) NOT NULL DEFAULT '0',
    PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

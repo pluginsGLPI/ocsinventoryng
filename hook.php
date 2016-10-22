@@ -730,7 +730,7 @@ function plugin_ocsinventoryng_install() {
                ADD `importsnmp_last_pages_counter` tinyint(1) NOT NULL DEFAULT '0',
                ADD `importsnmp_firmware` tinyint(1) NOT NULL DEFAULT '0',
                ADD `importsnmp_power` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `importsnmp_fan` tinyint(1) NOT NULL DEFAULT '0';";
+               ADD `importsnmp_fan` tinyint(1) NOT NULL DEFAULT '0';z";
       $DB->queryOrDie($query, "1.2.2 update table glpi_plugin_ocsinventoryng_ocsservers add use_cleancron");
    }
    
@@ -794,6 +794,32 @@ function plugin_ocsinventoryng_install() {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
                ADD `importsnmp_printermemory` tinyint(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_ocsservers add importsnmp_printermemory");
+   }
+   
+   if (TableExists('glpi_plugin_ocsinventoryng_snmpocslinks')
+         && !FieldExists('glpi_plugin_ocsinventoryng_snmpocslinks','linked')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_snmpocslinks` 
+               ADD `linked` tinyint(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_snmpocslinks add linked");
+   }
+   
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+         && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','linksnmp_name')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `linksnmp_name` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_serial` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_comment` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_contact` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_location` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_domain` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_manufacturer` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_createport` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_last_pages_counter` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_firmware` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_power` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_fan` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_printermemory` tinyint(1) NOT NULL DEFAULT '0'";
+      $DB->queryOrDie($query, "1.2.2 update table glpi_plugin_ocsinventoryng_ocsservers add linksnmp fields");
    }
    /**/
    

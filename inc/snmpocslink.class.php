@@ -350,7 +350,11 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                   echo "<tr class='tab_bg_1'><th colspan='4'>".__('OCS Inventory NG SNMP Import informations', 'ocsinventoryng')."</th>";
                   
                   echo "<tr class='tab_bg_1'><td>".__('Import date in GLPI', 'ocsinventoryng');
-                  echo "</td><td>".Html::convDateTime($data["last_update"])."</td>";
+                  $linked = __('Imported object', 'ocsinventoryng');
+                  if ($data["linked"]) {
+                     $linked = __('Linked object', 'ocsinventoryng');
+                  }
+                  echo "</td><td>".Html::convDateTime($data["last_update"])." (".$linked.")</td>";
                   if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
                      echo "<td class='center' colspan='2'>";
                      Html::showSimpleForm($target, 'force_ocssnmp_resynch',
@@ -427,7 +431,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
 
       //Check it machine is already present AND was imported by OCS AND still present in GLPI
-      $query                                      = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`id`
+      $query = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`id`
              FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
              WHERE `ocs_id` = '$ocsid'
                    AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
@@ -539,7 +543,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
      return "";
      } */
 
-   static function addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action) {
+   static function addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action,$linked = false) {
 
       $snmpDevice = new $itemtype();
 
@@ -563,21 +567,37 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       
       $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
       
-      if ($cfg_ocs['importsnmp_name']) {
+      if (($cfg_ocs['importsnmp_name'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_name'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)) {
          $input["name"]               = $ocsSnmp['PRINTER'][0]['NAME'];
       }
-      if ($cfg_ocs['importsnmp_contact']) {
-         $input["contact"]            = $ocsSnmp['META']['CONTACT'];
+      if (($cfg_ocs['importsnmp_contact'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_contact'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)) {
+         $input["contact"] = $ocsSnmp['META']['CONTACT'];
       }
-      if ($cfg_ocs['importsnmp_comment']) {
-         $input["comment"]            = $ocsSnmp['META']['DESCRIPTION'];
+      if (($cfg_ocs['importsnmp_comment'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_comment'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)) {
+         $input["comment"] = $ocsSnmp['META']['DESCRIPTION'];
       }
-      if ($cfg_ocs['importsnmp_serial']) {
+      if (($cfg_ocs['importsnmp_serial'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_serial'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_serial'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_serial'] && $linked)) {
          $input["serial"]             = $ocsSnmp['PRINTER'][0]['SERIALNUMBER'];
       }
-      if ($cfg_ocs['importsnmp_last_pages_counter']) {
+      if (($cfg_ocs['importsnmp_last_pages_counter'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_last_pages_counter'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_last_pages_counter'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_last_pages_counter'] && $linked)) {
          $input["last_pages_counter"] = $ocsSnmp['PRINTER'][0]['COUNTER'];
       }
+
       
       if ($loc_id > 0) {
          $input["locations_id"] = $loc_id;
@@ -599,7 +619,10 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       
       if ($id_printer > 0 
             && isset($ocsSnmp['MEMORIES']) 
-               && $cfg_ocs['importsnmp_printermemory'] 
+               && (($cfg_ocs['importsnmp_printermemory'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_printermemory'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_printermemory'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_printermemory'] && $linked))
                   && count($ocsSnmp['MEMORIES']) > 0
                      && $ocsSnmp['MEMORIES'][0]['CAPACITY'] > 0) {
 
@@ -630,7 +653,10 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       }
       
       if ($id_printer > 0 
-            && $cfg_ocs['importsnmp_createport']) {
+            && (($cfg_ocs['importsnmp_createport'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_createport'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_createport'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_createport'] && $linked))) {
 
          //Add network port
          $ip  = $ocsSnmp['META']['IPADDR'];
@@ -703,7 +729,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       return $id_printer;
    }
 
-   static function addOrUpdateNetworkEquipment($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action) {
+   static function addOrUpdateNetworkEquipment($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action,$linked = false) {
 
       $snmpDevice = new $itemtype();
 
@@ -715,17 +741,26 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          "is_recursive" => 0,
       );
       
-      if ($cfg_ocs['importsnmp_name']) {
+      if (($cfg_ocs['importsnmp_name'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_name'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)) {
          if ($ocsSnmp['META']['NAME'] != "N/A") {
             $input["name"] = $ocsSnmp['META']['NAME'];
          } else {
             $input["name"] = $ocsSnmp['META']['DESCRIPTION'];
          }
       }
-      if ($cfg_ocs['importsnmp_contact']) {
+      if (($cfg_ocs['importsnmp_contact'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_contact'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)) {
          $input["contact"] = $ocsSnmp['META']['CONTACT'];
       }
-      if ($cfg_ocs['importsnmp_comment']) {
+      if (($cfg_ocs['importsnmp_comment'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_comment'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)) {
          $input["comment"] = $ocsSnmp['META']['DESCRIPTION'];
       }
 
@@ -744,17 +779,26 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
 
       if (!empty($ocsSnmp['SWITCH'])) {
          
-         if ($cfg_ocs['importsnmp_manufacturer']) {
+         if (($cfg_ocs['importsnmp_manufacturer'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_manufacturer'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_manufacturer'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_manufacturer'] && $linked)) {
             $man_id = Dropdown::importExternal('Manufacturer', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['SWITCH'][0]['MANUFACTURER']));
             $input['manufacturers_id'] = $man_id;
          }
          
-         if ($cfg_ocs['importsnmp_firmware']) {
+         if (($cfg_ocs['importsnmp_firmware'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_firmware'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_firmware'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_firmware'] && $linked)) {
             $firm_id = Dropdown::importExternal('NetworkEquipmentFirmware', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['SWITCH'][0]['FIRMVERSION']));
             $input['networkequipmentfirmwares_id'] = $firm_id;
          }
          
-         if ($cfg_ocs['importsnmp_serial']) {
+         if (($cfg_ocs['importsnmp_serial'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_serial'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_serial'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_serial'] && $linked)) {
             $input['serial'] = $ocsSnmp['SWITCH'][0]['SERIALNUMBER'];
          }
          //TODOSNMP = chassis ??
@@ -767,7 +811,10 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       }
       if (!empty($ocsSnmp['FIREWALLS'])) {
          
-         if ($cfg_ocs['importsnmp_serial']) {
+         if (($cfg_ocs['importsnmp_serial'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_serial'] && $action == $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_serial'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_serial'] && $linked)) {
             $input['serial'] = $ocsSnmp['FIREWALLS']['SERIALNUMBER'];
          }
          // TODOSNMP ?
@@ -787,7 +834,10 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
             ) {
 
          if (isset($ocsSnmp['POWERSUPPLIES']) 
-               && $cfg_ocs['importsnmp_power'] 
+               && (($cfg_ocs['importsnmp_power'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_power'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_power'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_power'] && $linked)) 
                   && count($ocsSnmp['POWERSUPPLIES']) > 0) {
 
             $man_id = Dropdown::importExternal('Manufacturer', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['POWERSUPPLIES'][0]['MANUFACTURER']));
@@ -822,7 +872,10 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          }
 
          if (isset($ocsSnmp['FANS']) 
-               && $cfg_ocs['importsnmp_fan'] 
+               && (($cfg_ocs['importsnmp_fan'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_fan'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_fan'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_fan'] && $linked))
                   && count($ocsSnmp['FANS']) > 0) {
 
             $man_id                  = Dropdown::importExternal('Manufacturer', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['FANS'][0]['MANUFACTURER']));
@@ -855,7 +908,10 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          }
       }
       if ($id_network > 0 
-            && $cfg_ocs['importsnmp_createport']) {
+            && (($cfg_ocs['importsnmp_createport'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_createport'] && $linked)
+              || ($action == "update" && $cfg_ocs['importsnmp_createport'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_createport'] && $linked))) {
          //Add network port
          $ip  = $ocsSnmp['META']['IPADDR'];
          $mac = $ocsSnmp['META']['MACADDR'];
@@ -888,7 +944,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       return $id_network;
    }
 
-   static function addOrUpdateOther($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action) {
+   static function addOrUpdateOther($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action,$linked = false) {
 
       $snmpDevice = new $itemtype();
       
@@ -899,13 +955,22 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          "entities_id"   => $_SESSION['glpiactive_entity']
       );
       
-      if ($cfg_ocs['importsnmp_name']) {
+      if (($cfg_ocs['importsnmp_name'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_name'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)) {
          $input["name"] = $ocsSnmp['META']['NAME'];
       }
-      if ($cfg_ocs['importsnmp_contact']) {
+      if (($cfg_ocs['importsnmp_contact'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_contact'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)) {
          $input["contact"] = $ocsSnmp['META']['CONTACT'];
       }
-      if ($cfg_ocs['importsnmp_comment']) {
+      if (($cfg_ocs['importsnmp_comment'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_comment'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)) {
          $input["comment"] = $ocsSnmp['META']['DESCRIPTION'];
       }
 
@@ -928,7 +993,10 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       }
 
       if ($id_item > 0 
-            && $cfg_ocs['importsnmp_createport']) {
+            && (($cfg_ocs['importsnmp_createport'] && $action == "add") 
+            || ($cfg_ocs['linksnmp_createport'] && $linked)
+               || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked))) {
 
          //Add network port
          $ip  = $ocsSnmp['META']['IPADDR'];
@@ -973,6 +1041,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          $itemtype    = $data['itemtype'];
          $items_id    = $data['items_id'];
          $snmplink_id = $data['id'];
+         $linked      = $data['linked'];
       }
 
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
@@ -982,15 +1051,17 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       
       $loc_id = 0;
       $dom_id = 0;
-      if ($cfg_ocs['importsnmp_location']) {
+      if (($cfg_ocs['importsnmp_location'] && $linked == 0)
+            || ($cfg_ocs['linksnmp_location'] && $linked)) {
          $loc_id = Dropdown::importExternal('Location', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['META']['LOCATION']));
       }
-      if ($cfg_ocs['importsnmp_domain']) {
+      if (($cfg_ocs['importsnmp_domain']  && $linked == 0)
+            || ($cfg_ocs['linksnmp_domain'] && $linked)) {
          $dom_id = Dropdown::importExternal('Domain', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['META']['DOMAIN']));
       }
       if ($itemtype == "Printer") {
       
-         self::addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, $items_id, $ocsSnmp, $loc_id, $dom_id, "update");
+         self::addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, $items_id, $ocsSnmp, $loc_id, $dom_id, "update",$linked);
 
          $now = date("Y-m-d H:i:s");
          $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks` SET `last_update` = '" . $now . "' WHERE `id` = " . $ID . ";";
@@ -1001,7 +1072,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          );
       } else if ($itemtype == "NetworkEquipment") {
 
-         self::addOrUpdateNetworkEquipment($plugin_ocsinventoryng_ocsservers_id, $itemtype, $items_id, $ocsSnmp, $loc_id, $dom_id, "update");
+         self::addOrUpdateNetworkEquipment($plugin_ocsinventoryng_ocsservers_id, $itemtype, $items_id, $ocsSnmp, $loc_id, $dom_id, "update",$linked);
 
          $now = date("Y-m-d H:i:s");
          $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks` SET `last_update` = '" . $now . "' WHERE `id` = " . $ID . ";";
@@ -1010,9 +1081,11 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          return array('status' => PluginOcsinventoryngOcsServer::SNMP_SYNCHRONIZED,
             //'entities_id'  => $data['entities_id'],
          );
-      } else if ($itemtype == "Computer" || $itemtype == "Peripheral" || $itemtype == "Phone") {
+      } else if ($itemtype == "Computer" 
+                  || $itemtype == "Peripheral" 
+                     || $itemtype == "Phone") {
 
-         self::addOrUpdateOther($plugin_ocsinventoryng_ocsservers_id, $itemtype, $items_id, $ocsSnmp, $loc_id, $dom_id, "update");
+         self::addOrUpdateOther($plugin_ocsinventoryng_ocsservers_id, $itemtype, $items_id, $ocsSnmp, $loc_id, $dom_id, "update",$linked);
 
          $now = date("Y-m-d H:i:s");
          $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks` SET `last_update` = '" . $now . "' WHERE `id` = " . $ID . ";";
@@ -1637,9 +1710,9 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
 
       $query  = "INSERT INTO `glpi_plugin_ocsinventoryng_snmpocslinks`
                        (`items_id`, `ocs_id`, `itemtype`,
-                        `last_update`, `plugin_ocsinventoryng_ocsservers_id`)
+                        `last_update`, `plugin_ocsinventoryng_ocsservers_id`, `linked`)
                 VALUES ('$items_id', '$ocsid', '" . $itemtype . "',
-                        '" . $_SESSION["glpi_currenttime"] . "', '$plugin_ocsinventoryng_ocsservers_id')";
+                        '" . $_SESSION["glpi_currenttime"] . "', '$plugin_ocsinventoryng_ocsservers_id', '1')";
       $result = $DB->query($query);
 
       if ($result) {
@@ -1816,7 +1889,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
            PluginOcsinventoryngOcslink::HISTORY_OCS_LINK);
            }
           */
-         self::updateSnmp($idlink, $plugin_ocsinventoryng_ocsservers_id);
+         self::updateSnmp($idlink, $plugin_ocsinventoryng_ocsservers_id, true);
          return array('status' => PluginOcsinventoryngOcsServer::SNMP_LINKED,
             //'entities_id'  => $data['entities_id'],
          );

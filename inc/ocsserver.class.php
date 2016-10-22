@@ -7097,7 +7097,67 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP Fans', 'ocsinventoryng')."</td>\n<td>";
       Dropdown::showYesNo("importsnmp_fan", $this->fields["importsnmp_fan"]);
       echo "</td><td colspan='2'></td></tr>\n";
+      echo "</table><br>";
+      
+      /******Link ***/
+      echo "<table class='tab_cadre_fixe'>\n";
+      echo "<tr><th colspan='4'>" . __('General SNMP link options', 'ocsinventoryng'). "</th></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP name', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_name", $this->fields["linksnmp_name"]);
+      echo "</td>\n";
+      
+      echo "<td class='center'>".__('Link SNMP serial', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_serial", $this->fields["linksnmp_serial"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP comment', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_comment", $this->fields["linksnmp_comment"]);
+      echo "</td>\n";
+      
+      echo "<td class='center'>".__('Link SNMP contact', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_contact", $this->fields["linksnmp_contact"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP location', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_location", $this->fields["linksnmp_location"]);
+      echo "</td>\n";
+      
+      echo "<td class='center'>".__('Link SNMP domain', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_domain", $this->fields["linksnmp_domain"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP manufacturer', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_manufacturer", $this->fields["linksnmp_manufacturer"]);
+      echo "</td>\n";
+      
+      echo "<td class='center'>".__('Create network port', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_createport", $this->fields["linksnmp_createport"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr><th colspan='4'>" . __('Printer SNMP link options', 'ocsinventoryng'). "</th></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP last pages counter', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_last_pages_counter", $this->fields["linksnmp_last_pages_counter"]);
+      
+      echo "</td><td class='center'>".__('Link SNMP printer memory', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_printermemory", $this->fields["linksnmp_printermemory"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr><th colspan='4'>" . __('Networking SNMP link options', 'ocsinventoryng'). "</th></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP firmware', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_firmware", $this->fields["linksnmp_firmware"]);
+      echo "</td>\n";
 
+      echo "<td class='center'>".__('Link SNMP Power supplies', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_power", $this->fields["linksnmp_power"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP Fans', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_fan", $this->fields["linksnmp_fan"]);
+      echo "</td><td colspan='2'></td></tr>\n";
+      
       echo "<tr class='tab_bg_2'><td class='center' colspan='4'>";
       echo "<input type='hidden' name='id' value='$ID'>";
       echo "<input type='submit' name='updateSNMP' class='submit' value='" .
