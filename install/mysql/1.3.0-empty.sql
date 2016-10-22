@@ -113,6 +113,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `importsnmp_firmware` tinyint(1) NOT NULL DEFAULT '0',
   `importsnmp_power` tinyint(1) NOT NULL DEFAULT '0',
   `importsnmp_fan` tinyint(1) NOT NULL DEFAULT '0',
+  `importsnmp_printermemory` tinyint(1) NOT NULL DEFAULT '0',
   `dohistory` tinyint(1) NOT NULL DEFAULT '1',
   `history_hardware` tinyint(1) NOT NULL DEFAULT '1',
   `history_bios` tinyint(1) NOT NULL DEFAULT '1',

@@ -7079,7 +7079,10 @@ JAVASCRIPT;
       
       echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP last pages counter', 'ocsinventoryng')."</td>\n<td>";
       Dropdown::showYesNo("importsnmp_last_pages_counter", $this->fields["importsnmp_last_pages_counter"]);
-      echo "</td><td colspan='2'></tr>\n";
+      
+      echo "</td><td class='center'>".__('Import SNMP printer memory', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_printermemory", $this->fields["importsnmp_printermemory"]);
+      echo "</td></tr>\n";
       
       echo "<tr><th colspan='4'>" . __('Networking SNMP import options', 'ocsinventoryng'). "</th></tr>\n";
       

@@ -867,6 +867,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       
       $id         = null;
       $identify   = false;
+      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
       
       if (isset($ipDiscoveryObject["ocsItemType"]) 
             && $ipDiscoveryObject["ocsItemType"] == Dropdown::EMPTY_VALUE) {
@@ -918,7 +919,20 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          $DB->query($glpiQuery);
          
          //add port
-         $netPortInput = array(
+         $port_input = array('name'                         => $ipDiscoveryObject["itemName"] . "-" . $ip,
+                                'mac'                       => $mac,
+                                'items_id'                  => $id,
+                                'itemtype'                  => $glpiType,
+                                '_no_history'               => !$cfg_ocs['history_network'],
+                                'instantiation_type'        => "NetworkPortEthernet",
+                                "entities_id"               => $ipDiscoveryObject["entity"],
+                                "NetworkName__ipaddresses"  => array("-100" => $ip),
+                                //'is_dynamic'                => 1,
+                                'is_deleted'                => 0);
+
+         $netPort = $netPort->add($port_input, array(), $cfg_ocs['history_network']);
+            
+        /* $netPortInput = array(
              "itemtype"           => $glpiType,
              "items_id"           => $id,
              'entities_id'        => $ipDiscoveryObject["entity"],
@@ -943,7 +957,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                      'is_deleted'  => 0,
                       'mainitems_id'=>$id,
                       'mainitemtype'=>$glpiType);
-         $ipAdresses->add($input);
+         $ipAdresses->add($input);*/
       }
 
       if ($id && $identify) {

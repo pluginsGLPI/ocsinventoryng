@@ -596,7 +596,39 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          $snmpDevice->update($input, array('unicity_error_message' => false));
       }
       
+      
+      if ($id_printer > 0 
+            && isset($ocsSnmp['MEMORIES']) 
+               && $cfg_ocs['importsnmp_printermemory'] 
+                  && count($ocsSnmp['MEMORIES']) > 0
+                     && $ocsSnmp['MEMORIES'][0]['CAPACITY'] > 0) {
 
+         $dev['designation'] = __('Printer Memory', 'ocsinventoryng');
+         
+         $item = new $itemtype();
+         $entity = $_SESSION["glpiactive_entity"];
+         if($item ->getFromDB($id_printer)) {
+            $entity = $item->fields['entities_id'];
+         }
+            
+         $dev['entities_id'] = $entity;
+
+         $device    = new DeviceMemory();
+         $device_id = $device->import($dev);
+         if ($device_id) {
+            $CompDevice = new Item_DeviceMemory();
+            $CompDevice->deleteByCriteria(array('items_id' => $id_printer,
+                                                'itemtype' => $itemtype));
+            $CompDevice->add(array('items_id'      => $id_printer,
+                                    'itemtype'      => $itemtype,
+                                    'size'          => $ocsSnmp['MEMORIES'][0]['CAPACITY'],
+                                    'entities_id'   => $entity,
+                                    'devicememories_id' => $device_id,
+                                    'is_dynamic'             => 1,
+                                    '_no_history'   => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+         }
+      }
+      
       if ($id_printer > 0 
             && $cfg_ocs['importsnmp_createport']) {
 
@@ -605,27 +637,28 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          $mac = $ocsSnmp['META']['MACADDR'];
          
          $np    = new NetworkPort();
-         $np->getFromDBByQuery("WHERE `mac` = '$mac' ");
-         if(count($np->fields) < 1) {
-      
-            $newinput = array(
-               "itemtype"                 => $itemtype,
-               "items_id"                 => $id_printer,
-               //TODOSNMP entities_id
-               "entities_id"              => $_SESSION["glpiactive_entity"],
-               "name"                     => $ocsSnmp['PRINTER'][0]['NAME'],
-               "instantiation_type"       => "NetworkPortEthernet",
-               "mac"                      => $mac,
-               "NetworkName__ipaddresses" => array("-100" => $ip),
-               "speed"                    => "0",
-               "speed_other_value"        => "",
-               "add"                      => __("Add"),
-            );
+         $np->getFromDBByQuery("WHERE `mac` LIKE '$mac' AND `items_id` = '$id_printer' AND `itemtype` LIKE '$itemtype' ");
 
+         if(count($np->fields) < 1) {
             
-            $np->splitInputForElements($newinput);
-            $newID = $np->add($newinput);
-            $np->updateDependencies(1);
+            $item = new $itemtype();
+            $entity = $_SESSION["glpiactive_entity"];
+            if($item ->getFromDB($id_printer)) {
+               $entity = $item->fields['entities_id'];
+            }
+         
+            $port_input = array('name'                      => $ocsSnmp['PRINTER'][0]['NAME'],
+                                'mac'                       => $mac,
+                                'items_id'                  => $id_printer,
+                                'itemtype'                  => $itemtype,
+                                '_no_history'               => !$cfg_ocs['history_network'],
+                                'instantiation_type'        => "NetworkPortEthernet",
+                                "entities_id"               => $entity,
+                                "NetworkName__ipaddresses"  => array("-100" => $ip),
+                                //'is_dynamic'                => 1,
+                                'is_deleted'                => 0);
+
+            $networkports_id = $np->add($port_input, array(), $cfg_ocs['history_network']);
          }
 
          //TODOSNMP TO TEST:
@@ -762,7 +795,14 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
             $pow['manufacturers_id'] = $man_id;
             $pow['designation']      = $ocsSnmp['POWERSUPPLIES'][0]['REFERENCE'];
             $pow['comment']          = $ocsSnmp['POWERSUPPLIES'][0]['DESCRIPTION'];
-            $pow['entities_id']      = $_SESSION['glpiactive_entity'];
+            
+            $item = new $itemtype();
+            $entity = $_SESSION["glpiactive_entity"];
+            if($item ->getFromDB($id_network)) {
+               $entity = $item->fields['entities_id'];
+            }
+            
+            $pow['entities_id']      = $entity;
 
             $power    = new DevicePowerSupply();
             $power_id = $power->import($pow);
@@ -773,11 +813,11 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                                      'itemtype' => $itemtype));
                $CompDevice->add(array('items_id'               => $id_network,
                   'itemtype'               => $itemtype,
-                  'entities_id'            => $_SESSION['glpiactive_entity'],
+                  'entities_id'            => $entity,
                   'serial'                 => $serial,
                   'devicepowersupplies_id' => $power_id,
                   'is_dynamic'             => 1,
-                  '_no_history'            => !$cfg_ocs['history_devices']));
+                  '_no_history'            => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
             }
          }
 
@@ -790,7 +830,14 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
 
             $dev['designation'] = $ocsSnmp['FANS'][0]['REFERENCE'];
             $dev['comment']     = $ocsSnmp['FANS'][0]['DESCRIPTION'];
-            $dev['entities_id'] = $_SESSION['glpiactive_entity'];
+            
+            $item = new $itemtype();
+            $entity = $_SESSION["glpiactive_entity"];
+            if($item ->getFromDB($id_network)) {
+               $entity = $item->fields['entities_id'];
+            }
+            
+            $dev['entities_id'] = $entity;
 
             $device    = new DevicePci();
             $device_id = $device->import($dev);
@@ -800,9 +847,10 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                                      'itemtype' => $itemtype));
                $CompDevice->add(array('items_id'      => $id_network,
                   'itemtype'      => $itemtype,
-                  'entities_id'   => $_SESSION['glpiactive_entity'],
+                  'entities_id'   => $entity,
                   'devicepcis_id' => $device_id,
-                  '_no_history'   => !$cfg_ocs['history_devices']));
+                  'is_dynamic'             => 1,
+                  '_no_history'   => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
             }
          }
       }
@@ -813,26 +861,27 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          $mac = $ocsSnmp['META']['MACADDR'];
          
          $np    = new NetworkPort();
-         $np->getFromDBByQuery("WHERE `mac` = '$mac' ");
+         $np->getFromDBByQuery("WHERE `mac` LIKE '$mac' AND `items_id` = '$id_network' AND `itemtype` LIKE '$itemtype' ");
          if(count($np->fields) < 1) {
-         
-            $newinput = array(
-               "itemtype"                 => $itemtype,
-               "items_id"                 => $id_network,
-               //TODOSNMP entities_id
-               "entities_id"              => $_SESSION["glpiactive_entity"],
-               "name"                     => $ocsSnmp['META']['NAME'],
-               "instantiation_type"       => "NetworkPortEthernet",
-               "mac"                      => $mac,
-               "NetworkName__ipaddresses" => array("-100" => $ip),
-               "speed"                    => "0",
-               "speed_other_value"        => "",
-               "add"                      => __("Add"),
-            );
             
-            $np->splitInputForElements($newinput);
-            $newID = $np->add($newinput);
-            $np->updateDependencies(1);
+            $item = new $itemtype();
+            $entity = $_SESSION["glpiactive_entity"];
+            if($item ->getFromDB($id_network)) {
+               $entity = $item->fields['entities_id'];
+            }
+            
+            $port_input = array('name'               => $ocsSnmp['META']['NAME'],
+                                'mac'                => $mac,
+                                'items_id'           => $id_network,
+                                'itemtype'           => $itemtype,
+                                '_no_history'        => !$cfg_ocs['history_network'],
+                                'instantiation_type' => "NetworkPortEthernet",
+                                "entities_id"        => $entity,
+                                "NetworkName__ipaddresses" => array("-100" => $ip),
+                                //'is_dynamic'         => 1,
+                                'is_deleted'         => 0);
+
+            $networkports_id = $np->add($port_input, array(), $cfg_ocs['history_network']);
          }
       }
 
@@ -884,28 +933,28 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
          //Add network port
          $ip  = $ocsSnmp['META']['IPADDR'];
          $mac = $ocsSnmp['META']['MACADDR'];
-         $np    = new NetworkPort();
-         $np->getFromDBByQuery("WHERE `mac` = '$mac' ");
-         if(count($np->fields) < 1) {
          
-            $newinput = array(
-               "itemtype"                 => $itemtype,
-               "items_id"                 => $id_item,
-               //TODOSNMP entities_id
-               "entities_id"              => $_SESSION["glpiactive_entity"],
-               "name"                     => $ocsSnmp['META']['NAME'],
-               "instantiation_type"       => "NetworkPortEthernet",
-               "mac"                      => $mac,
-               "NetworkName__ipaddresses" => array("-100" => $ip),
-               "speed"                    => "0",
-               "speed_other_value"        => "",
-               "add"                      => __("Add"),
-            );
+         $np    = new NetworkPort();
+         $np->getFromDBByQuery("WHERE `mac` LIKE '$mac' AND `items_id` = '$id_item' AND `itemtype` LIKE '$itemtype' ");
+         if(count($np->fields) < 1) {
+            
+            $item = new $itemtype();
+            $entity = $_SESSION["glpiactive_entity"];
+            if($item ->getFromDB($id_item)) {
+               $entity = $item->fields['entities_id'];
+            }
+            $port_input = array('name'               => $ocsSnmp['META']['NAME'],
+                                'mac'                => $mac,
+                                'items_id'           => $id_item,
+                                'itemtype'           => $itemtype,
+                                '_no_history'        => !$cfg_ocs['history_network'],
+                                'instantiation_type' => "NetworkPortEthernet",
+                                "entities_id"        => $entity,
+                                "NetworkName__ipaddresses" => array("-100" => $ip),
+                                //'is_dynamic'         => 1,
+                                'is_deleted'         => 0);
 
-            $np    = new NetworkPort();
-            $np->splitInputForElements($newinput);
-            $newID = $np->add($newinput);
-            $np->updateDependencies(1);
+            $networkports_id = $np->add($port_input, array(), $cfg_ocs['history_network']);
          }
       }
 

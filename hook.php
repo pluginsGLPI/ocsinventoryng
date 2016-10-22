@@ -789,6 +789,12 @@ function plugin_ocsinventoryng_install() {
                ADD `use_locks` tinyint(1) NOT NULL DEFAULT '1';";
       $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_ocsservers add use_locks");
    }
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+         && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','importsnmp_printermemory')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `importsnmp_printermemory` tinyint(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_ocsservers add importsnmp_printermemory");
+   }
    /**/
    
    $cron = new CronTask();

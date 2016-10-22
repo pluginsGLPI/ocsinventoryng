@@ -91,7 +91,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                if (count($data)) {
                   $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
-                  echo "<tr class='tab_bg_1'><th colspan='4'>".__('OCS Inventory NG Import informations')."</th>";
+                  echo "<tr class='tab_bg_1'><th colspan='4'>".__('OCS Inventory NG Import informations', 'ocsinventoryng')."</th>";
                   
                   echo "<tr class='tab_bg_1'><td>".__('Last OCSNG inventory date', 'ocsinventoryng');
                   echo "</td><td>".Html::convDateTime($data["last_ocs_update"])."</td>";
