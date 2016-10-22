@@ -198,10 +198,13 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                if (count($data)) {
                   $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
                   echo "<table class='tab_cadre_fixe'>";
-                  echo "<tr class='tab_bg_1'><th colspan='2'>".__('SNMP informations OCS NG')."</th>";
-                  
+                  echo "<tr class='tab_bg_1'><th colspan='2'>".__('OCS Inventory NG SNMP Import informations', 'ocsinventoryng')."</th>";
+                  $linked = __('Imported object', 'ocsinventoryng');
+                  if ($data["linked"]) {
+                     $linked = __('Linked object', 'ocsinventoryng');
+                  }
                   echo "<tr class='tab_bg_1'><td>".__('Import date in GLPI', 'ocsinventoryng');
-                  echo "</td><td>".Html::convDateTime($data["last_update"])."</td></tr>";
+                  echo "</td><td>".Html::convDateTime($data["last_update"])." (".$linked.")</td></tr>";
                   
                   $linked_ids [] = $data['ocs_id'];
                   $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($data['plugin_ocsinventoryng_ocsservers_id']);
