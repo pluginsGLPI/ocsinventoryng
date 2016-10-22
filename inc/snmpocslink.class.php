@@ -575,14 +575,14 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       }
       if (($cfg_ocs['importsnmp_contact'] && $action == "add") 
             || ($cfg_ocs['linksnmp_contact'] && $linked)
-               || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
-                  || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)) {
+               || ($action == "update" && $cfg_ocs['importsnmp_contact'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_contact'] && $linked)) {
          $input["contact"] = $ocsSnmp['META']['CONTACT'];
       }
       if (($cfg_ocs['importsnmp_comment'] && $action == "add") 
             || ($cfg_ocs['linksnmp_comment'] && $linked)
-               || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
-                  || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)) {
+               || ($action == "update" && $cfg_ocs['importsnmp_comment'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_contact'] && $linked)) {
          $input["comment"] = $ocsSnmp['META']['DESCRIPTION'];
       }
       if (($cfg_ocs['importsnmp_serial'] && $action == "add") 
@@ -753,14 +753,14 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       }
       if (($cfg_ocs['importsnmp_contact'] && $action == "add") 
             || ($cfg_ocs['linksnmp_contact'] && $linked)
-               || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
-                  || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)) {
+               || ($action == "update" && $cfg_ocs['importsnmp_contact'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_contact'] && $linked)) {
          $input["contact"] = $ocsSnmp['META']['CONTACT'];
       }
       if (($cfg_ocs['importsnmp_comment'] && $action == "add") 
             || ($cfg_ocs['linksnmp_comment'] && $linked)
-               || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
-                  || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)) {
+               || ($action == "update" && $cfg_ocs['importsnmp_comment'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_comment'] && $linked)) {
          $input["comment"] = $ocsSnmp['META']['DESCRIPTION'];
       }
 
@@ -995,8 +995,8 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
       if ($id_item > 0 
             && (($cfg_ocs['importsnmp_createport'] && $action == "add") 
             || ($cfg_ocs['linksnmp_createport'] && $linked)
-               || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
-                  || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked))) {
+               || ($action == "update" && $cfg_ocs['importsnmp_createport'] && !$linked)
+                  || ($action == "update" && $cfg_ocs['linksnmp_createport'] && $linked))) {
 
          //Add network port
          $ip  = $ocsSnmp['META']['IPADDR'];
