@@ -730,7 +730,7 @@ function plugin_ocsinventoryng_install() {
                ADD `importsnmp_last_pages_counter` tinyint(1) NOT NULL DEFAULT '0',
                ADD `importsnmp_firmware` tinyint(1) NOT NULL DEFAULT '0',
                ADD `importsnmp_power` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `importsnmp_fan` tinyint(1) NOT NULL DEFAULT '0';z";
+               ADD `importsnmp_fan` tinyint(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.2.2 update table glpi_plugin_ocsinventoryng_ocsservers add use_cleancron");
    }
    
