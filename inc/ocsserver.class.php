@@ -111,24 +111,17 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          switch ($item->getType()) {
             case __CLASS__ :
                //If connection to the OCS DB  is ok, and all rights are ok too
-               
                $ong[1] = __('Test');
               
-               
-               if (self::checkOCSconnection($item->getID()) && self::checkVersion($item->getID()) && self::checkTraceDeleted($item->getID())) {
-                  $ong[2] = __('Import options', 'ocsinventoryng');
-                  $ong[3] = __('Datas to import', 'ocsinventoryng');
+               if (self::checkOCSconnection($item->getID()) 
+                     && self::checkVersion($item->getID()) 
+                        && self::checkTraceDeleted($item->getID())) {
+                  $ong[2] = __('Datas to import', 'ocsinventoryng');
+                  $ong[3] = __('Import options', 'ocsinventoryng');
                   $ong[4] = __('General history', 'ocsinventoryng');
-                  $client  = self::getDBocs($item->getID());
-                  $version = $client->getTextConfig('GUI_VERSION');
-                  $snmp    = $client->getIntConfig('SNMP');
-
-                  if ($version > self::OCS2_1_VERSION_LIMIT && $snmp) {
-                  $ong[5] = __('SNMP Import', 'ocsinventoryng');
-                  }
                }
                if ($item->getField('ocs_url')) {
-                  $ong[6] = __('OCSNG console', 'ocsinventoryng');
+                  $ong[5] = __('OCSNG console', 'ocsinventoryng');
                }
                
                 return $ong;
@@ -148,11 +141,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                break;
 
             case 2 :
-               $item->ocsFormImportOptions($item->getID());
+               $item->ocsFormConfig($item->getID());
                break;
 
             case 3 :
-               $item->ocsFormConfig($item->getID());
+               $item->ocsFormImportOptions($item->getID());
                break;
 
             case 4 :
@@ -160,10 +153,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                break;
 
             case 5 :
-               $item->ocsFormSNMPImportOptions($item->getID());
-               break;
-            
-            case 6 :
                self::showOcsReportsConsole($item->getID());
                break;
          }
@@ -176,11 +165,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $ong = array();
       $this->addDefaultFormTab($ong);
       $this->addStandardTab(__CLASS__, $ong, $options);
-      $this->addStandardTab('PluginOcsinventoryngConfig', $ong, $options);
-      $this->addStandardTab('PluginOcsinventoryngOcsServer', $ong, $options);
-      $this->addStandardTab('OCS Server', $ong, $options);
-      $this->addStandardTab('PluginOcsinventoryngOcslink', $ong, $options);
-      $this->addStandardTab('PluginOcsinventoryngRegistryKey', $ong, $options);
+      $this->addStandardTab('PluginOcsinventoryngSnmpOcslink', $ong, $options);
       $this->addStandardTab('Log', $ong, $options);
       return $ong;
       
@@ -422,7 +407,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<tr><th colspan='" . ($usemassimport ? 4 : 2) . "'>";
       printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
       echo "<br>";
-         echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.form.php?id=".$plugin_ocsinventoryng_ocsservers_id."&forcetab=PluginOcsinventoryngOcsServer\$3'>";
+         echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.form.php?id=".$plugin_ocsinventoryng_ocsservers_id."&forcetab=PluginOcsinventoryngOcsServer\$2'>";
          _e('See Setup : Datas to import before', 'ocsinventoryng');
          echo "</a>";
       echo "</th></tr>";
@@ -432,7 +417,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          if ($isactive) {
             //manual import
             echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-                  <a href='ocsng.import.php'>
+                  <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.import.php'>
                    <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' " .
             "alt='" . __s('Import new computers', 'ocsinventoryng') . "' " .
             "title=\"" . __s('Import new computers', 'ocsinventoryng') . "\">
@@ -441,7 +426,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             if ($usemassimport) {
                //threads
                echo "<td class='center b' colspan='2'>
-                     <a href='thread.php?plugin_ocsinventoryng_ocsservers_id=" . $plugin_ocsinventoryng_ocsservers_id . "'>
+                     <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/thread.php?plugin_ocsinventoryng_ocsservers_id=" . $plugin_ocsinventoryng_ocsservers_id . "'>
                       <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/thread.png' " .
                "alt='" . __s('Scripts execution of automatic actions', 'ocsinventoryng') . "' " .
                "title=\"" . __s('Scripts execution of automatic actions', 'ocsinventoryng') . "\">
@@ -452,7 +437,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
             //manual synchro
             echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-                  <a href='ocsng.sync.php'>
+                  <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.sync.php'>
                    <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro1.png' " .
             "alt='" . __s('Synchronize computers already imported', 'ocsinventoryng') . "' " .
             "title=\"" . __s('Synchronize computers already imported', 'ocsinventoryng') . "\">
@@ -461,7 +446,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             if ($usemassimport) {
                //host imported by thread
                echo "<td class='center b' colspan='2'>
-                     <a href='detail.php'>
+                     <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/detail.php'>
                       <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/detail.png' " .
                "alt='" . __s('Computers imported by automatic actions', 'ocsinventoryng') . "' " .
                "title=\"" . __s('Computers imported by automatic actions', 'ocsinventoryng') . "\">
@@ -472,7 +457,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
             //link
             echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-                  <a href='ocsng.link.php'>
+                  <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.link.php'>
                    <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' " .
             "alt='" . __s('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng') . "' " .
             "title=\"" . __s('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng') . "\">
@@ -483,7 +468,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             if ($usemassimport) {
                //host not imported by thread
                echo "<td class='center b' colspan='2'>
-                     <a href='notimportedcomputer.php'>
+                     <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/notimportedcomputer.php'>
                       <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/notimported.png' " .
                "alt='" . __s('Computers not imported by automatic actions', 'ocsinventoryng') . "' " .
                "title=\"" . __s('Computers not imported by automatic actions', 'ocsinventoryng') . "\" >
@@ -499,14 +484,14 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       if (Session::haveRight("plugin_ocsinventoryng_clean", READ) && $isactive) {
          echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 4 : 2) . "'>
-            <a href='deleted_equiv.php'>
+            <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/deleted_equiv.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/trash.png' " .
          "alt='" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "' " .
          "title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\" >
                   <br>" . __('Clean OCSNG deleted computers', 'ocsinventoryng') . "
                </a></td>";
          echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 4 : 2) . "'>
-               <a href='ocsng.clean.php'>
+               <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.clean.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/clean.png' " .
          "alt='" . __s('Clean links between GLPI and OCSNG', 'ocsinventoryng') . "' " .
          "title=\"" . __s('Clean links between GLPI and OCSNG', 'ocsinventoryng') . "\" >
@@ -532,7 +517,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<div class='center'>";
       echo "<form name='formconfig' id='formconfig' action='" . Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer") . "' method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
-      echo "<tr><th colspan ='2'>";
+      echo "<tr><th>";
       _e('All');
 
       echo $JS = <<<JAVASCRIPT
@@ -557,31 +542,54 @@ JAVASCRIPT;
          'width'     => '10%',
          'on_change' => "form_init_all(this.form, this.selectedIndex);"
       ));
-      echo "</th><th></th></tr>";
-      echo "<tr>
-      <th><input type='hidden' name='id' value='$ID'>" . __('General information', 'ocsinventoryng') .
-      "<br><span style='color:red;'>" . __('Warning : the import entity rules depends on selected fields', 'ocsinventoryng') . "</span></th>\n";
-      echo "<th>" . _n('Component', 'Components', 2) . "</th>\n";
-      echo "<th>" . __('OCSNG administrative information', 'ocsinventoryng') . "</th></tr>\n";
+      echo "</th></tr>";
 
       echo "<tr class='tab_bg_2'>\n";
       echo "<td class='top'>\n";
+      
+      
+      echo $JS = <<<JAVASCRIPT
+         <script type='text/javascript'>
+         function accordion(id, openall) {
+             if(id == undefined){
+                 id  = 'accordion';
+             }
+             jQuery(document).ready(function () {
+                 $("#"+id).accordion({
+                     collapsible: true,
+                     //active:[0, 1, 2, 3],
+                     //heightStyle: "content"
+                 });
+                 //if (openall) {
+                     //$('#'+id +' .ui-accordion-content').show();
+                 //}
+             });
+         };
+         </script>
+JAVASCRIPT;
 
-      echo "<table width='100%'>";
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Name') . "</td>\n<td width='25%'>";
+      echo "<div id='accordion'>";
+      
+      echo "<h2><a href='#'>".__('General information', 'ocsinventoryng')."</a></h2>";
+      
+      echo "<div>";
+      echo "<table class='tab_cadre' width='100%'>";
+      echo "<tr class='tab_bg_2'>";
+      echo "<th colspan='4'><input type='hidden' name='id' value='$ID'>".__('General information', 'ocsinventoryng')."<br><span style='color:red;'>" . __('Warning : the import entity rules depends on selected fields', 'ocsinventoryng') . "</span>\n";
+      echo "</th></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Name') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_name", $this->fields["import_general_name"]);
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Operating system') . "</td>\n<td>";
+      echo "</td>\n";
+      echo "<td class='center'>" . __('Operating system') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_os", $this->fields["import_general_os"]);
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'>";
       echo "<td class='center'>" . __('Serial of the operating system') . "</td>\n<td>";
       Dropdown::showYesNo("import_os_serial", $this->fields["import_os_serial"]);
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Serial number') . "</td>\n<td>";
+      echo "</td>\n";
+      echo "<td class='center'>" . __('Serial number') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_serial", $this->fields["import_general_serial"]);
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Depends on Bios import', 'ocsinventoryng')));
@@ -591,9 +599,7 @@ JAVASCRIPT;
       Dropdown::showYesNo("import_general_model", $this->fields["import_general_model"]);
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Depends on Bios import', 'ocsinventoryng')));
-      echo "&nbsp;</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'>";
+      echo "&nbsp;</td>\n";
       echo "<td class='center'>" . _n('Manufacturer', 'Manufacturers', 1) . "</td>\n<td>";
       Dropdown::showYesNo("import_general_manufacturer", $this->fields["import_general_manufacturer"]);
       echo "&nbsp;";
@@ -604,77 +610,73 @@ JAVASCRIPT;
       Dropdown::showYesNo("import_general_type", $this->fields["import_general_type"]);
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Depends on Bios import', 'ocsinventoryng')));
-      echo "&nbsp;</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Domain') . "</td>\n<td>";
+      echo "&nbsp;</td>\n";
+      echo "<td class='center'>" . __('Domain') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_domain", $this->fields["import_general_domain"]);
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Alternate username') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_contact", $this->fields["import_general_contact"]);
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Comments') . "</td>\n<td>";
+      echo "</td>\n";
+      echo "<td class='center'>" . __('Comments') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_comment", $this->fields["import_general_comment"]);
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('IP') . "</td>\n<td>";
       Dropdown::showYesNo("import_ip", $this->fields["import_ip"]);
-      echo "</td></tr>\n";
-      if (self::checkOCSconnection($ID) && self::checkVersion($ID)) {
-         echo "<tr class='tab_bg_2'><td class='center'>" . __('UUID') . "</td>\n<td>";
-         Dropdown::showYesNo("import_general_uuid", $this->fields["import_general_uuid"]);
-         echo "</td></tr>\n";
-      } else {
-         echo "<tr class='tab_bg_2'><td class='center'>";
-         echo "<input type='hidden' name='import_general_uuid' value='0'>";
-         echo "</td></tr>\n";
-      }
-
-      echo "</table>";
-
       echo "</td>\n";
-
-      echo "<td class='tab_bg_2 top'>\n";
-
-      echo "<table width='100%'>";
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Processor') . "</td>\n<td width='55%'>";
-      Dropdown::showYesNo("import_device_processor", $this->fields["import_device_processor"]);
+      if (self::checkOCSconnection($ID) && self::checkVersion($ID)) {
+         echo "<td class='center'>" . __('UUID') . "</td>\n<td>";
+         Dropdown::showYesNo("import_general_uuid", $this->fields["import_general_uuid"]);
+      } else {
+         echo "<td class='center'>";
+         echo "<input type='hidden' name='import_general_uuid' value='0'>";
+      }
       echo "</td></tr>\n";
+      echo "</table>";
+      echo "</div>";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Memory') . "</td>\n<td>";
+      //Components
+
+      echo "<h2><a href='#'>"._n('Component', 'Components', 2)."</a></h2>";
+      
+      echo "<div>";
+      echo "<table class='tab_cadre' width='100%'>";
+      echo "<th colspan='4'>" . _n('Component', 'Components', 2);
+      echo "</th></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Processor') . "</td>\n<td>";
+      Dropdown::showYesNo("import_device_processor", $this->fields["import_device_processor"]);
+      echo "</td>\n";
+      echo "<td class='center'>" . __('Memory') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_memory", $this->fields["import_device_memory"]);
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Hard drive') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_hdd", $this->fields["import_device_hdd"]);
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Network card') . "</td>\n<td>";
+      echo "</td>\n";
+      echo "<td class='center'>" . __('Network card') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_iface", $this->fields["import_device_iface"]);
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Graphics card') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_gfxcard", $this->fields["import_device_gfxcard"]);
-      echo "&nbsp;&nbsp;</td></tr>";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Soundcard') . "</td>\n<td>";
+      echo "&nbsp;&nbsp;</td>";
+      echo "<td class='center'>" . __('Soundcard') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_sound", $this->fields["import_device_sound"]);
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . _n('Drive', 'Drives', 2) . "</td>\n<td>";
       Dropdown::showYesNo("import_device_drive", $this->fields["import_device_drive"]);
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Modems') . "</td>\n<td>";
+      echo "</td>\n";
+      echo "<td class='center'>" . __('Modems') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_modem", $this->fields["import_device_modem"]);
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . _n('Port', 'Ports', 2) . "</td>\n<td>";
       Dropdown::showYesNo("import_device_port", $this->fields["import_device_port"]);
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Bios') . "</td>\n<td>";
+      echo "</td>\n";
+      echo "<td class='center'>" . __('Bios') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_bios", $this->fields["import_device_bios"]);
       echo "</td></tr>\n";
 
@@ -682,25 +684,110 @@ JAVASCRIPT;
       Dropdown::showYesNo("import_device_motherboard", $this->fields["import_device_motherboard"]);
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('After 7009 version of OCS Inventory NG && Depends on Bios import', 'ocsinventoryng')));
-      echo "&nbsp;</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . _n('Controller', 'Controllers', 2) . "</td>\n<td>";
+      echo "&nbsp;</td>\n";
+      echo "<td class='center'>" . _n('Controller', 'Controllers', 2) . "</td>\n<td>";
       Dropdown::showYesNo("import_device_controller", $this->fields["import_device_controller"]);
       echo "</td></tr>\n";
       
       echo "<tr class='tab_bg_2'><td class='center'>" . _n('Other component', 'Other components', 2) . "</td>\n<td>";
       Dropdown::showYesNo("import_device_slot", $this->fields["import_device_slot"]);
-      echo "</td></tr>\n";
+      echo "</td><td colspan='2'></td></tr>\n";
       
       echo "</table>";
+      echo "</div>";
+      
+      //Linked objects
 
+      echo "<h2><a href='#'>".__('Linked objects', 'ocsinventoryng')."</a></h2>";
+      
+      echo "<div>";
+      echo "<table class='tab_cadre' width='100%'>";
+      
+      echo "<tr><th colspan='4'>" . __('Linked objects', 'ocsinventoryng') . "</th>\n";
+      
+      $import_array = array("0" => __('No import'),
+         "1" => __('Global import', 'ocsinventoryng'),
+         "2" => __('Unit import', 'ocsinventoryng'));
+
+      $import_array2 = array("0" => __('No import'),
+         "1" => __('Global import', 'ocsinventoryng'),
+         "2" => __('Unit import', 'ocsinventoryng'),
+         "3" => __('Unit import on serial number', 'ocsinventoryng'),
+         "4" => __('Unit import serial number only', 'ocsinventoryng'));
+
+      $periph   = $this->fields["import_periph"];
+      $monitor  = $this->fields["import_monitor"];
+      $printer  = $this->fields["import_printer"];
+      $software = $this->fields["import_software"];
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . _n('Device', 'Devices', 2) . " </td>\n<td>";
+      Dropdown::showFromArray("import_periph", $import_array, array('value' => $periph));
       echo "</td>\n";
-      echo "<td class='tab_bg_2 top'>\n";
+      echo "<td class='center'>" . _n('Monitor', 'Monitors', 2) . "</td>\n<td>";
+      Dropdown::showFromArray("import_monitor", $import_array2, array('value' => $monitor));
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Comments') . " "._n('Monitor', 'Monitors', 2)." </td>\n<td>";
+      Dropdown::showYesNo("import_monitor_comment", $this->fields["import_monitor_comment"]);
+      echo "</td>\n";
+      echo "<td class='center'>" . _n('Printer', 'Printers', 2) . "</td>\n<td>";
+      Dropdown::showFromArray("import_printer", $import_array, array('value' => $printer));
+      echo "</td></tr>\n";
 
+      echo "<tr class='tab_bg_2'><td class='center'>" . _n('Software', 'Software', 2) . "</td>\n<td>";
+      $import_array = array("0" => __('No import'),
+         "1" => __('Unit import', 'ocsinventoryng'));
+      Dropdown::showFromArray("import_software", $import_array, array('value' => $software));
+      echo "</td>\n";
+      echo "<td class='center'>" . _n('Volume', 'Volumes', 2) . "</td>\n<td>";
+      Dropdown::showYesNo("import_disk", $this->fields["import_disk"]);
+      echo "</td></tr>\n";
+
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Registry', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_registry", $this->fields["import_registry"]);
+      echo "</td>\n";
+      echo "<td class='center'>" . __('Antivirus', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_antivirus", $this->fields["import_antivirus"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Security Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td></tr>\n";
+      
+      //check version
+      if ($this->fields['ocs_version'] > self::OCS1_3_VERSION_LIMIT) {
+         echo "<tr class='tab_bg_2'><td class='center'>" .
+         _n('Virtual machine', 'Virtual machines', 2) . "</td>\n<td>";
+         Dropdown::showYesNo("import_vms", $this->fields["import_vms"]);
+         echo "</td>\n";
+      } else {
+         echo "<tr class='tab_bg_2'><td class='center'>";
+         echo "<input type='hidden' name='import_vms' value='0'>";
+         echo "</td>\n";
+      }
+      echo "<td colspan='2'></td></tr>";
+      
+      echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
+      echo __('No import: the plugin will not import these elements', 'ocsinventoryng');
+      echo "<br>" . __('Global import: everything is imported but the material is globally managed (without duplicate)', 'ocsinventoryng');
+      echo "<br>" . __("Unit import: everything is imported as it is", 'ocsinventoryng');
+      echo "</td></tr>";
+      
+      echo "</table>";
+      echo "</div>";
+      
+      //Administrative information
+
+      echo "<h2><a href='#'>".__('OCSNG administrative information', 'ocsinventoryng')."</a></h2>";
+      
+      echo "<div>";
+      echo "<table class='tab_cadre' width='100%'>";
+      echo "<th colspan='4'>" . __('OCSNG administrative information', 'ocsinventoryng');
+      echo "</th></tr>\n";
+      
       $opt = self::getColumnListFromAccountInfoTable($ID, 'accountinfo');
       $oserial = $opt;
       $oserial['ASSETTAG']= "ASSETTAG";
-      echo "<table width='100%'>";
+      echo "<table class='tab_cadre' width='100%'>";
+      
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Inventory number') . " </td>\n";
       echo "<td>";
       $link = new PluginOcsinventoryngOcsAdminInfosLink();
@@ -709,9 +796,8 @@ JAVASCRIPT;
       $value = (isset($link->fields["ocs_column"]) ? $link->fields["ocs_column"] : "");
       Dropdown::showFromArray("import_otherserial", $oserial, array('value' => $value,
          'width' => '100%'));
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Location') . " </td>\n";
+      echo "</td>\n";
+      echo "<td class='center'>" . __('Location') . " </td>\n";
       echo "<td>";
       $link = new PluginOcsinventoryngOcsAdminInfosLink();
       $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "locations_id");
@@ -719,7 +805,6 @@ JAVASCRIPT;
       $value = (isset($link->fields["ocs_column"]) ? $link->fields["ocs_column"] : "");
       Dropdown::showFromArray("import_location", $opt, array('value' => $value,
          'width' => '100%'));
-
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Group') . " </td>\n";
@@ -731,10 +816,8 @@ JAVASCRIPT;
       Dropdown::showFromArray("import_group", $opt, array('value' => $value,
          'width' => '100%'));
 
-      echo "</td></tr>\n";
-
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Alternate username number') . " </td>\n";
+      echo "</td>\n";
+      echo "<td class='center'>" . __('Alternate username number') . " </td>\n";
       echo "<td>";
       $link = new PluginOcsinventoryngOcsAdminInfosLink();
       $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "contact_num");
@@ -754,11 +837,9 @@ JAVASCRIPT;
       Dropdown::showFromArray("import_network", $opt, array('value' => $value,
          'width' => '100%'));
 
-      echo "</td></tr>\n";
-      
+      echo "</td>\n";
       $opt_date = self::getColumnListFromAccountInfoTable($ID, 'hardware');
-      
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Startup date') . " </td>\n";
+      echo "<td class='center'>" . __('Startup date') . " </td>\n";
       echo "<td>";
       $link = new PluginOcsinventoryngOcsAdminInfosLink();
       $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "use_date");
@@ -766,28 +847,18 @@ JAVASCRIPT;
       $value = (isset($link->fields["ocs_column"]) ? $link->fields["ocs_column"] : "");
       Dropdown::showFromArray("import_use_date", $opt_date, array('value' => $value,
          'width' => '100%'));
-
       echo "</td></tr>\n";
 
       echo "</table>";
+      echo "</div>";
+
+      echo "</div>";
+      
+      echo "<script>accordion();</script>";
 
       echo "</td></tr>\n";
 
-      echo "<tr><th>" . _n('Monitor', 'Monitors', 2) . "</th>\n";
-      echo "<th colspan='2'>&nbsp;</th></tr>\n";
-
-      echo "<tr class='tab_bg_2'>\n";
-      echo "<td class='top'>\n";
-
-      echo "<table width='100%'>";
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Comments') . " </td>\n<td>";
-      Dropdown::showYesNo("import_monitor_comment", $this->fields["import_monitor_comment"]);
-      echo "</td></tr>\n";
-      echo "</table>";
-
-      echo "</td>\n";
-      echo "<td colspan='2'>&nbsp;</td></tr>\n";
-      echo "<tr class='tab_bg_2 center'><td colspan='3'>";
+      echo "<tr class='tab_bg_2 center'><td colspan='4'>";
       echo "<input type='submit' name='update' class='submit' value=\"" .
       _sx('button', 'Save') . "\">";
       echo "</td></tr>\n";
@@ -812,7 +883,7 @@ JAVASCRIPT;
       echo "<div class='center'>";
       echo "<form name='historyconfig' id='historyconfig' action='" . Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer") . "' method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
-      echo "<tr><th colspan ='2'>";
+      echo "<tr><th colspan ='4'>";
       _e('All');
 
       echo $JS = <<<JAVASCRIPT
@@ -832,15 +903,15 @@ JAVASCRIPT;
       ));
       echo "</th></tr>";
       echo "<tr>
-      <th colspan='2'><input type='hidden' name='id' value='$ID'>" . __('General history', 'ocsinventoryng') .
+      <th colspan='4'><input type='hidden' name='id' value='$ID'>" . __('General history', 'ocsinventoryng') .
       "</th>\n";
       echo "</tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Do history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Do history', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("dohistory", $this->fields["dohistory"]);
-      echo "</td></tr>\n";
+      echo "</td>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('System history', 'ocsinventoryng') . "</td>\n<td>";
+      echo "<td class='center'>" . __('System history', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("history_hardware", $this->fields["history_hardware"]);
       echo "&nbsp;";
       $fields = __('Operating system');
@@ -871,46 +942,45 @@ JAVASCRIPT;
          $fields .= __('UUID');
       }
       Html::showToolTip(nl2br($fields));
-      echo "&nbsp;</td></tr>\n";
+      echo "&nbsp;</td>\n";
       
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Devices history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      echo "<td class='center'>" . __('Devices history', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("history_devices", $this->fields["history_devices"]);
       echo "</td></tr>\n";
       
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Volumes history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Volumes history', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("history_drives", $this->fields["history_drives"]);
-      echo "</td></tr>\n";
+      echo "</td>\n";
       
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Network history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      echo "<td class='center'>" . __('Network history', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("history_network", $this->fields["history_network"]);
       echo "</td></tr>\n";
       
-      
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Monitor connection history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Monitor connection history', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("history_monitor", $this->fields["history_monitor"]);
-      echo "</td></tr>\n";
+      echo "</td>\n";
       
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Printer connection history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      echo "<td class='center'>" . __('Printer connection history', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("history_printer", $this->fields["history_printer"]);
       echo "</td></tr>\n";
       
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Peripheral connection history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Peripheral connection history', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("history_peripheral", $this->fields["history_peripheral"]);
-      echo "</td></tr>\n";
+      echo "</td>\n";
       
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Software connection history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      echo "<td class='center'>" . __('Software connection history', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("history_sofware", $this->fields["history_sofware"]);
       echo "</td></tr>\n";
       
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Virtual machines history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Virtual machines history', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("history_vm", $this->fields["history_vm"]);
-      echo "</td></tr>\n";
+      echo "</td>\n";
       
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Administrative infos history', 'ocsinventoryng') . "</td>\n<td width='25%'>";
+      echo "<td class='center'>" . __('Administrative infos history', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("history_admininfos", $this->fields["history_admininfos"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2 center'><td colspan='2'>";
+      echo "<tr class='tab_bg_2 center'><td colspan='4'>";
       echo "<input type='submit' name='update' class='submit' value=\"" .
       _sx('button', 'Save') . "\">";
       echo "</td></tr>\n";
@@ -958,68 +1028,14 @@ JAVASCRIPT;
          "trash"  => _x('button', 'Put in dustbin'),
          "delete" => _x('button', 'Delete permanently')), array('value' => $this->fields["deconnection_behavior"]));
       echo "</td></tr>\n";
-
-      $import_array = array("0" => __('No import'),
-         "1" => __('Global import', 'ocsinventoryng'),
-         "2" => __('Unit import', 'ocsinventoryng'));
-
-      $import_array2 = array("0" => __('No import'),
-         "1" => __('Global import', 'ocsinventoryng'),
-         "2" => __('Unit import', 'ocsinventoryng'),
-         "3" => __('Unit import on serial number', 'ocsinventoryng'),
-         "4" => __('Unit import serial number only', 'ocsinventoryng'));
-
-      $periph   = $this->fields["import_periph"];
-      $monitor  = $this->fields["import_monitor"];
-      $printer  = $this->fields["import_printer"];
-      $software = $this->fields["import_software"];
-      echo "<tr class='tab_bg_2'><td class='center'>" . _n('Device', 'Devices', 2) . " </td>\n<td>";
-      Dropdown::showFromArray("import_periph", $import_array, array('value' => $periph));
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . _n('Monitor', 'Monitors', 2) . "</td>\n<td>";
-      Dropdown::showFromArray("import_monitor", $import_array2, array('value' => $monitor));
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . _n('Printer', 'Printers', 2) . "</td>\n<td>";
-      Dropdown::showFromArray("import_printer", $import_array, array('value' => $printer));
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . _n('Software', 'Software', 2) . "</td>\n<td>";
-      $import_array = array("0" => __('No import'),
-         "1" => __('Unit import', 'ocsinventoryng'));
-      Dropdown::showFromArray("import_software", $import_array, array('value' => $software));
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . _n('Volume', 'Volumes', 2) . "</td>\n<td>";
-      Dropdown::showYesNo("import_disk", $this->fields["import_disk"]);
-      echo "</td></tr>\n";
-
+      
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Use the OCSNG software dictionary', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("use_soft_dict", $this->fields["use_soft_dict"]);
       echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Registry', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("import_registry", $this->fields["import_registry"]);
-      echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
+      echo __("If Use the OCSNG software dictionary parameter is checked, no software will be imported before you setup them into OCS", 'ocsinventoryng');
+      echo "</td></tr>";
       
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Antivirus', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("import_antivirus", $this->fields["import_antivirus"]);
-      echo "&nbsp;";
-      Html::showToolTip(nl2br(__('Security Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG) must be installed', 'ocsinventoryng')));
-      echo "&nbsp;</td></tr>\n";
-      
-      //check version
-      if ($this->fields['ocs_version'] > self::OCS1_3_VERSION_LIMIT) {
-         echo "<tr class='tab_bg_2'><td class='center'>" .
-         _n('Virtual machine', 'Virtual machines', 2) . "</td>\n<td>";
-         Dropdown::showYesNo("import_vms", $this->fields["import_vms"]);
-         echo "</td></tr>\n";
-      } else {
-         echo "<tr class='tab_bg_2'><td class='center'>";
-         echo "<input type='hidden' name='import_vms' value='0'>";
-         echo "</td></tr>\n";
-      }
       echo "<tr class='tab_bg_2'><td class='center'>" .
       __('Number of items to synchronize via the automatic OCSNG action', 'ocsinventoryng') .
       "</td>\n<td>";
@@ -1027,7 +1043,13 @@ JAVASCRIPT;
          'min'   => 1,
          'toadd' => array(0 => __('None'))));
       echo "</td></tr>";
-
+      
+      echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
+      echo __("The automatic task ocsng is launched only if server is not in expert mode", 'ocsinventoryng');
+      echo "<br>" . __("The automatic task ocsng only synchronize existant computers, it doesn't import new computers", 'ocsinventoryng');
+      echo "<br>" . __("If you want to import new computers, disable this parameter, change to expert mode and use script from system", 'ocsinventoryng');
+      echo "</td></tr>";
+      
       echo "<tr class='tab_bg_2'><td class='center'>" .
       __('Behavior to the deletion of a computer in OCSNG', 'ocsinventoryng') . "</td>";
       echo "<td>";
@@ -1037,12 +1059,6 @@ JAVASCRIPT;
          $actions['STATE_' . $state['id']] = sprintf(__('Change to state %s', 'ocsinventoryng'), $state['name']);
       }
       Dropdown::showFromArray('deleted_behavior', $actions, array('value' => $this->fields['deleted_behavior']));
-      echo "</td></tr>";
-
-      echo "<tr class='tab_bg_2'><td class='center b red' colspan='2'>";
-      echo __('No import: the plugin will not import these elements', 'ocsinventoryng');
-      echo "<br>" . __('Global import: everything is imported but the material is globally managed (without duplicate)', 'ocsinventoryng');
-      echo "<br>" . __("Unit import: everything is imported as it is", 'ocsinventoryng');
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
@@ -1863,7 +1879,8 @@ JAVASCRIPT;
    static function manageDeleted($plugin_ocsinventoryng_ocsservers_id, $redirect = true) {
       global $DB, $CFG_GLPI, $PLUGIN_HOOKS;
 
-      if (!(self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id) && self::checkVersion($plugin_ocsinventoryng_ocsservers_id))) {
+      if (!(self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id) 
+            && self::checkVersion($plugin_ocsinventoryng_ocsservers_id))) {
          return false;
       }
 
@@ -7009,165 +7026,5 @@ JAVASCRIPT;
          }
       }
    }
-
-   /**
-    * @param $ID
-    * @param $withtemplate    (default '')
-    * @param $templateid      (default '')
-    * */
-   function ocsFormSNMPImportOptions($ID, $withtemplate = '', $templateid = '') {
-
-      $this->getFromDB($ID);
-      echo "<div class='center'>";
-      echo "<form name='formsnmpconfig' id='formsnmpconfig' action='" . Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer") . "' method='post'>";
-      echo "<table class='tab_cadre_fixe'>\n";
-      
-      echo "<tr><th colspan ='4'>";
-      _e('All');
-
-      echo $JS = <<<JAVASCRIPT
-         <script type='text/javascript'>
-            function form_init_all(form, value) {
-                  var selects = $("form[id='formsnmpconfig'] select");
-                  $.each(selects, function(index, select){
-                  $(select).select2('val', value);
-               });
-            }
-         </script>
-JAVASCRIPT;
-      Dropdown::showYesNo('init_all', 0, -1, array(
-         'width'     => '10%',
-         'on_change' => "form_init_all(this.form, this.selectedIndex);"
-      ));
-      echo "</th></tr>";
-      
-      echo "<tr><th colspan='4'>" . __('General SNMP import options', 'ocsinventoryng'). "</th></tr>\n";
-      
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP name', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("importsnmp_name", $this->fields["importsnmp_name"]);
-      echo "</td>\n";
-      
-      echo "<td class='center'>".__('Import SNMP serial', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("importsnmp_serial", $this->fields["importsnmp_serial"]);
-      echo "</td></tr>\n";
-      
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP comment', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("importsnmp_comment", $this->fields["importsnmp_comment"]);
-      echo "</td>\n";
-      
-      echo "<td class='center'>".__('Import SNMP contact', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("importsnmp_contact", $this->fields["importsnmp_contact"]);
-      echo "</td></tr>\n";
-      
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP location', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("importsnmp_location", $this->fields["importsnmp_location"]);
-      echo "</td>\n";
-      
-      echo "<td class='center'>".__('Import SNMP domain', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("importsnmp_domain", $this->fields["importsnmp_domain"]);
-      echo "</td></tr>\n";
-      
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP manufacturer', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("importsnmp_manufacturer", $this->fields["importsnmp_manufacturer"]);
-      echo "</td>\n";
-      
-      echo "<td class='center'>".__('Create network port', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("importsnmp_createport", $this->fields["importsnmp_createport"]);
-      echo "</td></tr>\n";
-      
-      echo "<tr><th colspan='4'>" . __('Printer SNMP import options', 'ocsinventoryng'). "</th></tr>\n";
-      
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP last pages counter', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("importsnmp_last_pages_counter", $this->fields["importsnmp_last_pages_counter"]);
-      
-      echo "</td><td class='center'>".__('Import SNMP printer memory', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("importsnmp_printermemory", $this->fields["importsnmp_printermemory"]);
-      echo "</td></tr>\n";
-      
-      echo "<tr><th colspan='4'>" . __('Networking SNMP import options', 'ocsinventoryng'). "</th></tr>\n";
-      
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP firmware', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("importsnmp_firmware", $this->fields["importsnmp_firmware"]);
-      echo "</td>\n";
-
-      echo "<td class='center'>".__('Import SNMP Power supplies', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("importsnmp_power", $this->fields["importsnmp_power"]);
-      echo "</td></tr>\n";
-      
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP Fans', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("importsnmp_fan", $this->fields["importsnmp_fan"]);
-      echo "</td><td colspan='2'></td></tr>\n";
-      echo "</table><br>";
-      
-      /******Link ***/
-      echo "<table class='tab_cadre_fixe'>\n";
-      echo "<tr><th colspan='4'>" . __('General SNMP link options', 'ocsinventoryng'). "</th></tr>\n";
-      
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP name', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("linksnmp_name", $this->fields["linksnmp_name"]);
-      echo "</td>\n";
-      
-      echo "<td class='center'>".__('Link SNMP serial', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("linksnmp_serial", $this->fields["linksnmp_serial"]);
-      echo "</td></tr>\n";
-      
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP comment', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("linksnmp_comment", $this->fields["linksnmp_comment"]);
-      echo "</td>\n";
-      
-      echo "<td class='center'>".__('Link SNMP contact', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("linksnmp_contact", $this->fields["linksnmp_contact"]);
-      echo "</td></tr>\n";
-      
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP location', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("linksnmp_location", $this->fields["linksnmp_location"]);
-      echo "</td>\n";
-      
-      echo "<td class='center'>".__('Link SNMP domain', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("linksnmp_domain", $this->fields["linksnmp_domain"]);
-      echo "</td></tr>\n";
-      
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP manufacturer', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("linksnmp_manufacturer", $this->fields["linksnmp_manufacturer"]);
-      echo "</td>\n";
-      
-      echo "<td class='center'>".__('Create network port', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("linksnmp_createport", $this->fields["linksnmp_createport"]);
-      echo "</td></tr>\n";
-      
-      echo "<tr><th colspan='4'>" . __('Printer SNMP link options', 'ocsinventoryng'). "</th></tr>\n";
-      
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP last pages counter', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("linksnmp_last_pages_counter", $this->fields["linksnmp_last_pages_counter"]);
-      
-      echo "</td><td class='center'>".__('Link SNMP printer memory', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("linksnmp_printermemory", $this->fields["linksnmp_printermemory"]);
-      echo "</td></tr>\n";
-      
-      echo "<tr><th colspan='4'>" . __('Networking SNMP link options', 'ocsinventoryng'). "</th></tr>\n";
-      
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP firmware', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("linksnmp_firmware", $this->fields["linksnmp_firmware"]);
-      echo "</td>\n";
-
-      echo "<td class='center'>".__('Link SNMP Power supplies', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("linksnmp_power", $this->fields["linksnmp_power"]);
-      echo "</td></tr>\n";
-      
-      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP Fans', 'ocsinventoryng')."</td>\n<td>";
-      Dropdown::showYesNo("linksnmp_fan", $this->fields["linksnmp_fan"]);
-      echo "</td><td colspan='2'></td></tr>\n";
-      
-      echo "<tr class='tab_bg_2'><td class='center' colspan='4'>";
-      echo "<input type='hidden' name='id' value='$ID'>";
-      echo "<input type='submit' name='updateSNMP' class='submit' value='" .
-      _sx('button', 'Save') . "'>";
-      echo "</td></tr>";
-
-      echo "</table>\n";
-      Html::closeForm();
-      echo "</div>";
-   }
-   
 
 }

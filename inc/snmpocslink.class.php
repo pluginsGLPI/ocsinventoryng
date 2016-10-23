@@ -55,6 +55,20 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
                                        AND `itemtype` = '".$item->getType()."'")) {
             return __('OCSNG SNMP', 'ocsinventoryng');
          }
+      } else if ($item->getType() == "PluginOcsinventoryngOcsServer") {
+         
+         if (PluginOcsinventoryngOcsServer::checkOCSconnection($item->getID()) 
+                     && PluginOcsinventoryngOcsServer::checkVersion($item->getID()) 
+                        && PluginOcsinventoryngOcsServer::checkTraceDeleted($item->getID())) {
+            $client  = PluginOcsinventoryngOcsServer::getDBocs($item->getID());
+            $version = $client->getTextConfig('GUI_VERSION');
+            $snmp    = $client->getIntConfig('SNMP');
+
+            if ($version > PluginOcsinventoryngOcsServer::OCS2_1_VERSION_LIMIT && $snmp) {
+               return  __('SNMP Import', 'ocsinventoryng');
+            }
+         }
+         
       }
       return '';
    }
@@ -68,9 +82,175 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
 
       if (in_array($item->getType(), self::$snmptypes)) {
+      
          self::showForItem($item, $withtemplate);
+         
+      } else if ($item->getType() == "PluginOcsinventoryngOcsServer") {
+         
+         $conf = new self();
+         $conf->ocsFormSNMPImportOptions($item->getID());
       }
       return true;
+   }
+   
+   /**
+    * @param $ID
+    * @param $withtemplate    (default '')
+    * @param $templateid      (default '')
+    * */
+   function ocsFormSNMPImportOptions($ID, $withtemplate = '', $templateid = '') {
+      
+      $conf = new PluginOcsinventoryngOcsServer();
+      $conf->getFromDB($ID);
+      echo "<div class='center'>";
+      echo "<form name='formsnmpconfig' id='formsnmpconfig' action='" . Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer") . "' method='post'>";
+      echo "<table class='tab_cadre_fixe'>\n";
+      
+      echo "<tr><th colspan ='4'>";
+      _e('All');
+
+      echo $JS = <<<JAVASCRIPT
+         <script type='text/javascript'>
+            function form_init_all(form, value) {
+                  var selects = $("form[id='formsnmpconfig'] select");
+                  $.each(selects, function(index, select){
+                  $(select).select2('val', value);
+               });
+            }
+         </script>
+JAVASCRIPT;
+      Dropdown::showYesNo('init_all', 0, -1, array(
+         'width'     => '10%',
+         'on_change' => "form_init_all(this.form, this.selectedIndex);"
+      ));
+      echo "</th></tr>";
+      
+      echo "<tr><th colspan='4'>" . __('General SNMP import options', 'ocsinventoryng'). "</th></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP name', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_name", $conf->fields["importsnmp_name"]);
+      echo "</td>\n";
+      
+      echo "<td class='center'>".__('Import SNMP serial', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_serial", $conf->fields["importsnmp_serial"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP comment', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_comment", $conf->fields["importsnmp_comment"]);
+      echo "</td>\n";
+      
+      echo "<td class='center'>".__('Import SNMP contact', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_contact", $conf->fields["importsnmp_contact"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP location', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_location", $conf->fields["importsnmp_location"]);
+      echo "</td>\n";
+      
+      echo "<td class='center'>".__('Import SNMP domain', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_domain", $conf->fields["importsnmp_domain"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP manufacturer', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_manufacturer", $conf->fields["importsnmp_manufacturer"]);
+      echo "</td>\n";
+      
+      echo "<td class='center'>".__('Create network port', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_createport", $conf->fields["importsnmp_createport"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr><th colspan='4'>" . __('Printer SNMP import options', 'ocsinventoryng'). "</th></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP last pages counter', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_last_pages_counter", $conf->fields["importsnmp_last_pages_counter"]);
+      
+      echo "</td><td class='center'>".__('Import SNMP printer memory', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_printermemory", $conf->fields["importsnmp_printermemory"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr><th colspan='4'>" . __('Networking SNMP import options', 'ocsinventoryng'). "</th></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP firmware', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_firmware", $conf->fields["importsnmp_firmware"]);
+      echo "</td>\n";
+
+      echo "<td class='center'>".__('Import SNMP Power supplies', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_power", $conf->fields["importsnmp_power"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP Fans', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_fan", $conf->fields["importsnmp_fan"]);
+      echo "</td><td colspan='2'></td></tr>\n";
+      echo "</table><br>";
+      
+      /******Link ***/
+      echo "<table class='tab_cadre_fixe'>\n";
+      echo "<tr><th colspan='4'>" . __('General SNMP link options', 'ocsinventoryng'). "</th></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP name', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_name", $conf->fields["linksnmp_name"]);
+      echo "</td>\n";
+      
+      echo "<td class='center'>".__('Link SNMP serial', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_serial", $conf->fields["linksnmp_serial"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP comment', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_comment", $conf->fields["linksnmp_comment"]);
+      echo "</td>\n";
+      
+      echo "<td class='center'>".__('Link SNMP contact', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_contact", $conf->fields["linksnmp_contact"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP location', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_location", $conf->fields["linksnmp_location"]);
+      echo "</td>\n";
+      
+      echo "<td class='center'>".__('Link SNMP domain', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_domain", $conf->fields["linksnmp_domain"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP manufacturer', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_manufacturer", $conf->fields["linksnmp_manufacturer"]);
+      echo "</td>\n";
+      
+      echo "<td class='center'>".__('Create network port', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_createport", $conf->fields["linksnmp_createport"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr><th colspan='4'>" . __('Printer SNMP link options', 'ocsinventoryng'). "</th></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP last pages counter', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_last_pages_counter", $conf->fields["linksnmp_last_pages_counter"]);
+      
+      echo "</td><td class='center'>".__('Link SNMP printer memory', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_printermemory", $conf->fields["linksnmp_printermemory"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr><th colspan='4'>" . __('Networking SNMP link options', 'ocsinventoryng'). "</th></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP firmware', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_firmware", $conf->fields["linksnmp_firmware"]);
+      echo "</td>\n";
+
+      echo "<td class='center'>".__('Link SNMP Power supplies', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_power", $conf->fields["linksnmp_power"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP Fans', 'ocsinventoryng')."</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_fan", $conf->fields["linksnmp_fan"]);
+      echo "</td><td colspan='2'></td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center' colspan='4'>";
+      echo "<input type='hidden' name='id' value='$ID'>";
+      echo "<input type='submit' name='updateSNMP' class='submit' value='" .
+      _sx('button', 'Save') . "'>";
+      echo "</td></tr>";
+
+      echo "</table>\n";
+      Html::closeForm();
+      echo "</div>";
    }
    
      static function snmpMenu($plugin_ocsinventoryng_ocsservers_id) {
@@ -135,7 +315,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
             echo "<tr><th colspan='4'>";
             _e('OCSNG SNMP import', 'ocsinventoryng');
             echo "<br>";
-            echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.form.php?id=".$plugin_ocsinventoryng_ocsservers_id."&forcetab=PluginOcsinventoryngOcsServer\$5'>";
+            echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.form.php?id=".$plugin_ocsinventoryng_ocsservers_id."&forcetab=PluginOcsinventoryngSnmpOcslink\$1'>";
             _e('See Setup : SNMP Import before', 'ocsinventoryng');
             echo "</a>";
             echo "</th></tr>";
