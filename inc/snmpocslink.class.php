@@ -125,6 +125,34 @@ JAVASCRIPT;
       ));
       echo "</th></tr>";
       
+      echo "<tr class='tab_bg_2'>\n";
+      echo "<td class='top'>\n";
+      
+      echo $JS = <<<JAVASCRIPT
+         <script type='text/javascript'>
+         function accordion(id, openall) {
+             if(id == undefined){
+                 id  = 'accordion';
+             }
+             jQuery(document).ready(function () {
+                 $("#"+id).accordion({
+                     collapsible: true,
+                     //active:[0, 1, 2, 3],
+                     //heightStyle: "content"
+                 });
+                 //if (openall) {
+                     //$('#'+id +' .ui-accordion-content').show();
+                 //}
+             });
+         };
+         </script>
+JAVASCRIPT;
+
+      echo "<div id='accordion'>";
+      
+      echo "<h2><a href='#'>".__('General SNMP import options', 'ocsinventoryng')."</a></h2>";
+      echo "<div>";
+      echo "<table class='tab_cadre' width='100%'>";
       echo "<tr><th colspan='4'>" . __('General SNMP import options', 'ocsinventoryng'). "</th></tr>\n";
       
       echo "<tr class='tab_bg_2'><td class='center'>".__('Import SNMP name', 'ocsinventoryng')."</td>\n<td>";
@@ -182,9 +210,15 @@ JAVASCRIPT;
       Dropdown::showYesNo("importsnmp_fan", $conf->fields["importsnmp_fan"]);
       echo "</td><td colspan='2'></td></tr>\n";
       echo "</table><br>";
+      echo "</div>";
+
+      //Components
+
+      echo "<h2><a href='#'>".__('General SNMP link options', 'ocsinventoryng')."</a></h2>";
       
       /******Link ***/
-      echo "<table class='tab_cadre_fixe'>\n";
+      echo "<div>";
+      echo "<table class='tab_cadre' width='100%'>";
       echo "<tr><th colspan='4'>" . __('General SNMP link options', 'ocsinventoryng'). "</th></tr>\n";
       
       echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP name', 'ocsinventoryng')."</td>\n<td>";
@@ -241,6 +275,14 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_2'><td class='center'>".__('Link SNMP Fans', 'ocsinventoryng')."</td>\n<td>";
       Dropdown::showYesNo("linksnmp_fan", $conf->fields["linksnmp_fan"]);
       echo "</td><td colspan='2'></td></tr>\n";
+      echo "</table>\n";
+      echo "</div>";
+
+      echo "</div>";
+      
+      echo "<script>accordion();</script>";
+      
+      echo "</td></tr>\n";
       
       echo "<tr class='tab_bg_2'><td class='center' colspan='4'>";
       echo "<input type='hidden' name='id' value='$ID'>";
