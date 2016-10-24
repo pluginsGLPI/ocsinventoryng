@@ -142,12 +142,25 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
                
                $ong[2] = __('IPDiscover Import', 'ocsinventoryng');
                
-               $ocsClient = new PluginOcsinventoryngOcsServer();
-               $client    = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-               $version   = $client->getTextConfig('GUI_VERSION');
-               $snmp      = $client->getIntConfig('SNMP');
-               if ($version > $ocsClient::OCS2_1_VERSION_LIMIT && $snmp) {
-                  $ong[3] = __('SNMP Import', 'ocsinventoryng');
+               
+               if (isset($_POST["plugin_ocsinventoryng_ocsservers_id"])) {
+                  $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = $_POST["plugin_ocsinventoryng_ocsservers_id"];
+               } else {
+                  $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = PluginOcsinventoryngOcsServer::getFirstServer();
+               }
+
+               if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"]) 
+                  && $_SESSION["plugin_ocsinventoryng_ocsservers_id"]>0) {
+                  if (PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
+      
+                     $ocsClient = new PluginOcsinventoryngOcsServer();
+                     $client    = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+                     $version   = $client->getTextConfig('GUI_VERSION');
+                     $snmp      = $client->getIntConfig('SNMP');
+                     if ($version > $ocsClient::OCS2_1_VERSION_LIMIT && $snmp) {
+                        $ong[3] = __('SNMP Import', 'ocsinventoryng');
+                     }
+                  }
                }
             } else {
                $ong = array();
@@ -201,7 +214,9 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
    function defineTabs($options = array()) {
 
       $ong = array();
-      $this->addStandardTab(__CLASS__, $ong, $options);
+      
+         $this->addStandardTab(__CLASS__, $ong, $options);
+
       return $ong;
    }
 }
