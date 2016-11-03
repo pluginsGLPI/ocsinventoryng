@@ -2482,8 +2482,8 @@ JAVASCRIPT;
                   }
                }
                if ($mixed_checksum & pow(2, self::CPUS_FL)) {
-
-                  if ($cfg_ocs["import_device_processor"]) {
+                  if ($cfg_ocs["import_device_processor"] 
+                        && !($cfg_ocs['ocs_version'] < self::OCS2_1_VERSION_LIMIT)) {
                      $cpus   = true;
                      $ocsCheck[] = PluginOcsinventoryngOcsClient::CHECKSUM_CPUS;
                   }
