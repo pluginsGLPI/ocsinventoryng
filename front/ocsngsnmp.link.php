@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
@@ -50,34 +50,34 @@ if (isset($_POST["change_import_mode"])) {
 if (isset($_SESSION["ocs_linksnmp"]["id"])) {
    if ($count = count($_SESSION["ocs_linksnmp"]["id"])) {
       $percent = min(100,
-                     round(100*($_SESSION["ocs_linksnmp_count"]-$count)/$_SESSION["ocs_linksnmp_count"], 0));
+         round(100 * ($_SESSION["ocs_linksnmp_count"] - $count) / $_SESSION["ocs_linksnmp_count"], 0));
 
-      Html::displayProgressBar(400,$percent);
+      Html::displayProgressBar(400, $percent);
 
       $key = array_pop($_SESSION["ocs_linksnmp"]["id"]);
-      
+
       if (isset($_SESSION["ocs_linksnmp"]["items"][$key])) {
          $params['items_id'] = $_SESSION["ocs_linksnmp"]["items"][$key];
       } else {
          $params['items_id'] = -1;
       }
-      
+
       if (isset($_SESSION["ocs_linksnmp"]["itemtype"][$key])) {
          $params['itemtype'] = $_SESSION["ocs_linksnmp"]["itemtype"][$key];
       } else {
          $params['itemtype'] = -1;
       }
-      
+
       PluginOcsinventoryngSnmpOcslink::linkSnmpDevice($key,
-                                                  $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                                                  $params);
+         $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+         $params);
       Html::redirect($_SERVER['PHP_SELF']);
    } else {
-      Html::displayProgressBar(400,100);
+      Html::displayProgressBar(400, 100);
 
       unset($_SESSION["ocs_link"]);
-      echo "<div class='center b'>".__('Successful link', 'ocsinventoryng')."<br>";
-      echo "<a href='".$_SERVER['PHP_SELF']."'>".__('Back')."</a></div>";
+      echo "<div class='center b'>" . __('Successful link', 'ocsinventoryng') . "<br>";
+      echo "<a href='" . $_SERVER['PHP_SELF'] . "'>" . __('Back') . "</a></div>";
    }
 }
 
@@ -89,9 +89,9 @@ if (!isset($_POST["import_ok"])) {
       $_GET['start'] = 0;
    }
    if (isset($_SESSION["ocs_linksnmp"])) {
-        unset($_SESSION["ocs_linksnmp"]);
+      unset($_SESSION["ocs_linksnmp"]);
    }
-   
+
    $values = $_GET;
    if (isset($_POST["search"])) {
       $values = $_POST;
@@ -105,13 +105,13 @@ if (!isset($_POST["import_ok"])) {
 
 
 } else {
-   
+
 
    if (isset($_POST['tolink_items']) && count($_POST['tolink_items']) > 0) {
       $_SESSION["ocs_linksnmp_count"] = 0;
 
       foreach ($_POST['tolink_items'] as $key => $val) {
-         
+
          if ($val) {
             $_SESSION["ocs_linksnmp"]["id"][] = $key;
             $_SESSION["ocs_linksnmp"]["items"][$key] = $_POST['tolink_items'][$key];
@@ -119,7 +119,7 @@ if (!isset($_POST["import_ok"])) {
          $_SESSION["ocs_linksnmp_count"]++;
       }
       foreach ($_POST['tolink_itemtype'] as $key => $val) {
-         
+
          if ($val) {
             $_SESSION["ocs_linksnmp"]["itemtype"][$key] = $_POST['tolink_itemtype'][$key];
          }

@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 if (isset($_POST["force_ocssnmp_resynch"])) {
    $item = new $_POST['itemtype']();

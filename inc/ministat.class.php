@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -27,38 +28,46 @@
  --------------------------------------------------------------------------
  */
 
-class PluginOcsinventoryngMiniStat {
+class PluginOcsinventoryngMiniStat
+{
 
    public $Min = 0;
    public $Max = 0;
    public $Tot = 0;
-   public $Nb  = 0;
+   public $Nb = 0;
 
-   function Reset() {
+   function Reset()
+   {
       $this->Min = $this->Max = $this->Tot = $this->Nb = 0;
    }
 
-   function GetMinimum () {
+   function GetMinimum()
+   {
       return $this->Min;
    }
 
-   function GetMaximum () {
+   function GetMaximum()
+   {
       return $this->Max;
    }
 
-   function GetTotal () {
+   function GetTotal()
+   {
       return $this->Tot;
    }
 
-   function GetCount () {
+   function GetCount()
+   {
       return $this->Nb;
    }
 
-   function GetAverage () {
-      return $this->Nb>0 ? $this->Tot / $this->Nb : 0;
+   function GetAverage()
+   {
+      return $this->Nb > 0 ? $this->Tot / $this->Nb : 0;
    }
 
-   function AddValue($Value) {
+   function AddValue($Value)
+   {
 
       if ($this->Nb > 0) {
          if ($Value < $this->Min) {
@@ -76,4 +85,5 @@ class PluginOcsinventoryngMiniStat {
    }
 
 }
+
 ?>

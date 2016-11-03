@@ -27,8 +27,8 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 $item_device = new PluginOcsinventoryngItem_DeviceBiosdata();
-include (GLPI_ROOT . "/front/item_device.common.form.php");
+include(GLPI_ROOT . "/front/item_device.common.form.php");
 ?>

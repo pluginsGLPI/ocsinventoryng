@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 $dropdown = new PluginOcsinventoryngNotimportedcomputer();
 
@@ -40,8 +40,8 @@ if (isset($_POST['action'])) {
          if (PluginOcsinventoryngNotimportedcomputer::computerImport($_POST)) {
             $dropdown->redirectToList();
          } else {
-            Html::redirect(Html::getItemTypeFormURL('PluginOcsinventoryngNotimportedcomputer').
-                           '?id='.$_POST['id']);
+            Html::redirect(Html::getItemTypeFormURL('PluginOcsinventoryngNotimportedcomputer') .
+               '?id=' . $_POST['id']);
          }
          break;
 
@@ -52,5 +52,5 @@ if (isset($_POST['action'])) {
    }
 }
 
-include (GLPI_ROOT . "/front/dropdown.common.form.php");
+include(GLPI_ROOT . "/front/dropdown.common.form.php");
 ?>

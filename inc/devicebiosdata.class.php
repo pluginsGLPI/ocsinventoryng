@@ -32,34 +32,38 @@ if (!defined('GLPI_ROOT')) {
 }
 
 /// Class DeviceBios
-class PluginOcsinventoryngDeviceBiosdata extends CommonDevice {
+class PluginOcsinventoryngDeviceBiosdata extends CommonDevice
+{
 
    static protected $forward_entity_to = array('PluginOcsinventoryngItem_DeviceBiosdata', 'Infocom');
 
-   static function getTypeName($nb=0) {
+   static function getTypeName($nb = 0)
+   {
       return __('Bios');
    }
 
 
-   function getAdditionalFields() {
+   function getAdditionalFields()
+   {
 
       return array_merge(parent::getAdditionalFields(),
-                         array(array('name'  => 'assettag',
-                                     'label' => __('Asset Tag', 'ocsinventoryng'),
-                                     'type'  => 'text'),
-                               array('name'  => 'date',
-                                     'label' => __('Date'),
-                                     'type'  => 'text')));
+         array(array('name' => 'assettag',
+            'label' => __('Asset Tag', 'ocsinventoryng'),
+            'type' => 'text'),
+            array('name' => 'date',
+               'label' => __('Date'),
+               'type' => 'text')));
    }
-   
+
    /**
     * @since version 0.84
     *
     * @see CommonDevice::getHTMLTableHeader()
-   **/
+    **/
    static function getHTMLTableHeader($itemtype, HTMLTableBase $base,
-                                      HTMLTableSuperHeader $super=NULL,
-                                      HTMLTableHeader $father=NULL, array $options=array()) {
+                                      HTMLTableSuperHeader $super = NULL,
+                                      HTMLTableHeader $father = NULL, array $options = array())
+   {
 
       $column = parent::getHTMLTableHeader($itemtype, $base, $super, $father, $options);
 
@@ -82,9 +86,10 @@ class PluginOcsinventoryngDeviceBiosdata extends CommonDevice {
     * @since version 0.84
     *
     * @see CommonDevice::getHTMLTableCellForItem()
-   **/
-   function getHTMLTableCellForItem(HTMLTableRow $row=NULL, CommonDBTM $item=NULL,
-                                    HTMLTableCell $father=NULL, array $options=array()) {
+    **/
+   function getHTMLTableCellForItem(HTMLTableRow $row = NULL, CommonDBTM $item = NULL,
+                                    HTMLTableCell $father = NULL, array $options = array())
+   {
 
       $column = parent::getHTMLTableCellForItem($row, $item, $father, $options);
 
@@ -97,14 +102,15 @@ class PluginOcsinventoryngDeviceBiosdata extends CommonDevice {
             Manufacturer::getHTMLTableCellsForItem($row, $this, NULL, $options);
             if ($this->fields["assettag"]) {
                $row->addCell($row->getHeaderByName('devicebiosdata_tag'),
-                             Dropdown::getYesNo($this->fields["assettag"]), $father);
+                  Dropdown::getYesNo($this->fields["assettag"]), $father);
             }
 
             if ($this->fields["date"]) {
                $row->addCell($row->getHeaderByName('devicebiosdata_date'),
-                             $this->fields["date"], $father);
+                  $this->fields["date"], $father);
             }
       }
    }
 }
+
 ?>

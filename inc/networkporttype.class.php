@@ -32,48 +32,56 @@ if (!defined('GLPI_ROOT')) {
 }
 
 /// Location class
-class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
-   
+class PluginOcsinventoryngNetworkPortType extends CommonDropdown
+{
+
    public $refresh_page = true;
-   
-   static function getTypeName($nb=0) {
-      return _n('Network port type','Network port types',$nb, 'ocsinventoryng');
+
+   static function getTypeName($nb = 0)
+   {
+      return _n('Network port type', 'Network port types', $nb, 'ocsinventoryng');
    }
 
 
-   function canUpdateItem() {
+   function canUpdateItem()
+   {
       if ((isset($this->fields['OCS_TYPE'])) && ($this->fields['OCS_TYPE'] == '*')
-          && (isset($this->fields['OCS_TYPEMIB'])) && ($this->fields['OCS_TYPEMIB'] == '*')) {
+         && (isset($this->fields['OCS_TYPEMIB'])) && ($this->fields['OCS_TYPEMIB'] == '*')
+      ) {
          return false;
       }
       return parent::canUpdateItem();
    }
 
 
-   function canDeleteItem() {
+   function canDeleteItem()
+   {
       if ((isset($this->fields['OCS_TYPE'])) && ($this->fields['OCS_TYPE'] == '*')
-          && (isset($this->fields['OCS_TYPEMIB'])) && ($this->fields['OCS_TYPEMIB'] == '*')) {
+         && (isset($this->fields['OCS_TYPEMIB'])) && ($this->fields['OCS_TYPEMIB'] == '*')
+      ) {
          return false;
       }
       return parent::canDeleteItem();
    }
 
-   
+
    // If we add it, then, we may have to update all cards with the same MIB, shouldn't we ?
-   function post_addItem() {
+   function post_addItem()
+   {
       global $DB;
- 
+
       if (isset($this->input['transform_unknown_ports_that_match']) &&
-          $this->input['transform_unknown_ports_that_match']) {
+         $this->input['transform_unknown_ports_that_match']
+      ) {
          $networkport = new PluginOcsinventoryngNetworkPort();
          $query = "SELECT `id`
-                     FROM `".$networkport->getTable()."`
-                    WHERE `TYPE` = '".$this->fields['OCS_TYPE']."'";
+                     FROM `" . $networkport->getTable() . "`
+                    WHERE `TYPE` = '" . $this->fields['OCS_TYPE'] . "'";
          if ($this->fields['OCS_TYPEMIB'] != '*') {
-            $query .= " AND `TYPEMIB` = '".$this->fields['OCS_TYPEMIB']."'";
+            $query .= " AND `TYPEMIB` = '" . $this->fields['OCS_TYPEMIB'] . "'";
          }
          foreach ($DB->request($query) as $line) {
-            if ($networkport->getFromDBByQuery("WHERE `id`='".$line['id']."'")) {
+            if ($networkport->getFromDBByQuery("WHERE `id`='" . $line['id'] . "'")) {
                $networkport->transformAccordingTypes();
             }
          }
@@ -81,83 +89,85 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
    }
 
 
-
-   function displaySpecificTypeField($ID, $field=array()) {
+   function displaySpecificTypeField($ID, $field = array())
+   {
 
       switch ($field['type']) {
          case 'instantiation_type' :
             Dropdown::showFromArray($field['name'],
-                                    NetworkPort::getNetworkPortInstantiationsWithNames(),
-                                    array('value' => $this->fields[$field['name']]));
+               NetworkPort::getNetworkPortInstantiationsWithNames(),
+               array('value' => $this->fields[$field['name']]));
             break;
 
          case 'type' :
             Dropdown::showFromArray('type', NetworkPortEthernet::getPortTypeName(),
-                                    array('value' => $this->fields[$field['name']]));
+               array('value' => $this->fields[$field['name']]));
             break;
          case 'readonly_text' :
             $value = $this->fields[$field['name']];
-            echo "<input type='hidden' name='".$field['name']."' value='$value'>$value";
+            echo "<input type='hidden' name='" . $field['name'] . "' value='$value'>$value";
             break;
 
          case 'MIB or wildcard':
-            $name   = $field['name'];
-            $value  = $this->fields[$name];
+            $name = $field['name'];
+            $value = $this->fields[$name];
             $values = array($value => $value,
-                            '*'    => __('Any kind', 'ocsinventoryng'));
+               '*' => __('Any kind', 'ocsinventoryng'));
             Dropdown::showFromArray($name, $values, array('value' => $value));
             break;
          case 'speed' :
             $standard_speeds = NetworkPortEthernet::getPortSpeed();
             if (!isset($standard_speeds[$this->fields['speed']])
-                && !empty($this->fields['speed'])) {
+               && !empty($this->fields['speed'])
+            ) {
                $speed = NetworkPortEthernet::transformPortSpeed($this->fields['speed'], true);
             } else {
                $speed = true;
             }
             Dropdown::showFromArray('speed', $standard_speeds,
-                                    array('value' => $this->fields['speed'],
-                                          'other' => $speed));
+               array('value' => $this->fields['speed'],
+                  'other' => $speed));
             break;
 
          case 'version' :
             Dropdown::showFromArray('version', WifiNetwork::getWifiCardVersion(),
-                                    array('value' => $this->fields['version']));
+               array('value' => $this->fields['version']));
             break;
 
       }
    }
 
 
-   function getAdditionalFields() {
+   function getAdditionalFields()
+   {
 
-      $result = array('TYPE'    => array('name'  => 'OCS_TYPE',
-                                         'label' => __('OCS TYPE', 'ocsinventoryng'),
-                                         'type'  => 'text'),
-                      'TYPEMIB' => array('name'  => 'OCS_TYPEMIB',
-                                         'label' => __('OCS TYPE MIB', 'ocsinventoryng'),
-                                         'type'  => 'text'),
-                      array('name'  => 'instantiation_type',
-                            'label' => __('Corresponding Network Port type', 'ocsinventoryng'),
-                            'type'  => 'instantiation_type'),
-                      array('name'  => 'type',
-                            'label' => __('Ethernet medium type', 'ocsinventoryng'),
-                            'type'  => 'type'),
-                      array('name'  => 'speed',
-                            'label' => __('Ethernet medium speed', 'ocsinventoryng'),
-                            'type'  => 'speed'),
-                      array('name'  => 'version',
-                            'label' => __('Wifi card Version', 'ocsinventoryng'),
-                            'type'  => 'version'));
+      $result = array('TYPE' => array('name' => 'OCS_TYPE',
+         'label' => __('OCS TYPE', 'ocsinventoryng'),
+         'type' => 'text'),
+         'TYPEMIB' => array('name' => 'OCS_TYPEMIB',
+            'label' => __('OCS TYPE MIB', 'ocsinventoryng'),
+            'type' => 'text'),
+         array('name' => 'instantiation_type',
+            'label' => __('Corresponding Network Port type', 'ocsinventoryng'),
+            'type' => 'instantiation_type'),
+         array('name' => 'type',
+            'label' => __('Ethernet medium type', 'ocsinventoryng'),
+            'type' => 'type'),
+         array('name' => 'speed',
+            'label' => __('Ethernet medium speed', 'ocsinventoryng'),
+            'type' => 'speed'),
+         array('name' => 'version',
+            'label' => __('Wifi card Version', 'ocsinventoryng'),
+            'type' => 'version'));
 
       if ($this->isNewItem()) {
          $this->fields['transform_unknown_ports_that_match'] = 1;
-         $result[] = array('name'  => 'transform_unknown_ports_that_match',
-                           'label' => __('Transform unknown ports that match', 'ocsinventoryng'),
-                           'type'  => 'bool');
+         $result[] = array('name' => 'transform_unknown_ports_that_match',
+            'label' => __('Transform unknown ports that match', 'ocsinventoryng'),
+            'type' => 'bool');
 
          if (isset($_GET['TYPE']) && isset($_GET['TYPEMIB'])) {
-            $this->fields['OCS_TYPE']    = $_GET['TYPE'];
+            $this->fields['OCS_TYPE'] = $_GET['TYPE'];
             $this->fields['OCS_TYPEMIB'] = $_GET['TYPEMIB'];
             if (!empty($_GET['SPEED'])) {
                $this->fields['speed'] = $_GET['SPEED'];
@@ -170,29 +180,31 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
             }
          }
       }
-      
+
       return $result;
    }
 
-   static function getLinkToCreateFromTypeAndTypeMIB(array $fields = array()) {
-      $link = static::getFormURL().'?TYPE='.$fields['TYPE'].'&TYPEMIB='.$fields['TYPEMIB'];
+   static function getLinkToCreateFromTypeAndTypeMIB(array $fields = array())
+   {
+      $link = static::getFormURL() . '?TYPE=' . $fields['TYPE'] . '&TYPEMIB=' . $fields['TYPEMIB'];
       if (!empty($fields['speed'])) {
          $speed = NetworkPortEthernet::transformPortSpeed($fields['speed'], false);
          if (!empty($speed)) {
-            $link .= '&SPEED='.$speed;
+            $link .= '&SPEED=' . $speed;
          }
       }
       $link .= '&rand=1'; // To reload main window
-      
+
       Ajax::createIframeModalWindow('create_network', $link, array('title' => __('Create', 'ocsinventoryng')));
-      
+
       return "<a href='#' onClick=\"$('#create_network').dialog('open');\">" . __('Create', 'ocsinventoryng') . "</a>";
    }
 
 
-   function getFromTypeAndTypeMIB(array $fields = array()) {
+   function getFromTypeAndTypeMIB(array $fields = array())
+   {
       $TYPEMIB = (empty($fields['TYPEMIB']) ? '' : $fields['TYPEMIB']);
-      $TYPE    = (empty($fields['TYPE']) ? '' : $fields['TYPE']);
+      $TYPE = (empty($fields['TYPE']) ? '' : $fields['TYPE']);
 
       // First, try with TYPE AND TYPE MIB
       if ($this->getFromDBByQuery("WHERE `OCS_TYPE`='$TYPE' AND `OCS_TYPEMIB`='$TYPEMIB'")) {
@@ -208,4 +220,5 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
       return $this->getFromDBByQuery("WHERE `OCS_TYPE`='*' AND `OCS_TYPEMIB`='*'");
    }
 }
+
 ?>

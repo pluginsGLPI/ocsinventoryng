@@ -32,16 +32,18 @@ if (!defined('GLPI_ROOT')) {
 }
 
 // CLASSES PluginOcsinventoryngOcslink
-class PluginOcsinventoryngOcslink extends CommonDBTM {
-   const HISTORY_OCS_IMPORT         = 8;
-   const HISTORY_OCS_DELETE         = 9;
-   const HISTORY_OCS_IDCHANGED      = 10;
-   const HISTORY_OCS_LINK           = 11;
-   const HISTORY_OCS_TAGCHANGED     = 12;
+class PluginOcsinventoryngOcslink extends CommonDBTM
+{
+   const HISTORY_OCS_IMPORT = 8;
+   const HISTORY_OCS_DELETE = 9;
+   const HISTORY_OCS_IDCHANGED = 10;
+   const HISTORY_OCS_LINK = 11;
+   const HISTORY_OCS_TAGCHANGED = 12;
 
    static $rightname = "plugin_ocsinventoryng";
-   
-   static function getTypeName($nb=0) {
+
+   static function getTypeName($nb = 0)
+   {
       return _n('OCSNG link', 'OCSNG links', $nb, 'ocsinventoryng');
    }
 
@@ -51,25 +53,28 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * @param $item                   CommonDBTM object
     *
     * @return nothing
-   **/
-   static function showSimpleForChild(CommonDBTM $item) {
+    **/
+   static function showSimpleForChild(CommonDBTM $item)
+   {
 
       if ($item->isDynamic()
-          && $item->isField('computers_id')
-          && countElementsInTable('glpi_plugin_ocsinventoryng_ocslinks',
-                                  "`computers_id`='".$item->getField('computers_id')."'")>0) {
+         && $item->isField('computers_id')
+         && countElementsInTable('glpi_plugin_ocsinventoryng_ocslinks',
+            "`computers_id`='" . $item->getField('computers_id') . "'") > 0
+      ) {
          _e('OCS Inventory NG');
       }
    }
 
    /**
-   * Show simple inventory information of an item
-   *
-   * @param $item                   CommonDBTM object
-   *
-   * @return nothing
-   **/
-   static function showSimpleForItem(CommonDBTM $item) {
+    * Show simple inventory information of an item
+    *
+    * @param $item                   CommonDBTM object
+    *
+    * @return nothing
+    **/
+   static function showSimpleForItem(CommonDBTM $item)
+   {
       global $DB, $CFG_GLPI;
 
       $target = Toolbox::getItemTypeFormURL(__CLASS__);
@@ -78,12 +83,13 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          $items_id = $item->getField('id');
 
          if (!empty($items_id)
-             && $item->fields["is_dynamic"]
-             && Session::haveRight("plugin_ocsinventoryng_view", READ)) {
+            && $item->fields["is_dynamic"]
+            && Session::haveRight("plugin_ocsinventoryng_view", READ)
+         ) {
             $query = "SELECT *
                       FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                      WHERE `computers_id` = '$items_id' ".
-                            getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
+                      WHERE `computers_id` = '$items_id' " .
+               getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
 
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
@@ -91,51 +97,52 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                if (count($data)) {
                   $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
-                  echo "<tr class='tab_bg_1'><th colspan='4'>".__('OCS Inventory NG Import informations', 'ocsinventoryng')."</th>";
-                  
-                  echo "<tr class='tab_bg_1'><td>".__('Last OCSNG inventory date', 'ocsinventoryng');
-                  echo "</td><td>".Html::convDateTime($data["last_ocs_update"])."</td>";
-                  echo "<td>".__('Inventory agent',  'ocsinventoryng');
-                  echo "</td><td>".$data["ocs_agent_version"]."</td></tr>";
-                  
-                  echo "<tr class='tab_bg_1'><td>".__('GLPI import date',  'ocsinventoryng');
-                  echo "</td><td>".Html::convDateTime($data["last_update"])."</td>";
-                  echo "<td>".__('Server');
+                  echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG Import informations', 'ocsinventoryng') . "</th>";
+
+                  echo "<tr class='tab_bg_1'><td>" . __('Last OCSNG inventory date', 'ocsinventoryng');
+                  echo "</td><td>" . Html::convDateTime($data["last_ocs_update"]) . "</td>";
+                  echo "<td>" . __('Inventory agent', 'ocsinventoryng');
+                  echo "</td><td>" . $data["ocs_agent_version"] . "</td></tr>";
+
+                  echo "<tr class='tab_bg_1'><td>" . __('GLPI import date', 'ocsinventoryng');
+                  echo "</td><td>" . Html::convDateTime($data["last_update"]) . "</td>";
+                  echo "<td>" . __('Server');
                   echo "</td><td>";
                   if (Session::haveRight("plugin_ocsinventoryng", READ)) {
-                     echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsserver.form.php?id="
-                           .$ocs_config['id']."'>".$ocs_config['name']."</a>";
+                     echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php?id="
+                        . $ocs_config['id'] . "'>" . $ocs_config['name'] . "</a>";
                   } else {
                      echo $ocs_config['name'];
                   }
                   echo "</td></tr>";
                   echo "<tr class='tab_bg_1'>";
                   if (isset($data["last_ocs_conn"])) {
-                     echo "<td>".__('Last OCSNG connection date', 'ocsinventoryng');
-                     echo "</td><td>".Html::convDateTime($data["last_ocs_conn"])."</td>";
+                     echo "<td>" . __('Last OCSNG connection date', 'ocsinventoryng');
+                     echo "</td><td>" . Html::convDateTime($data["last_ocs_conn"]) . "</td>";
                   } else {
                      echo "<td colspan='2'></td>";
                   }
-                  
+
                   if (isset($data["ip_src"])) {
-                     echo "<td>".__('IP Source',  'ocsinventoryng');
-                     echo "</td><td>".$data["ip_src"]."</td>";
+                     echo "<td>" . __('IP Source', 'ocsinventoryng');
+                     echo "</td><td>" . $data["ip_src"] . "</td>";
                   } else {
                      echo "<td colspan='2'></td>";
                   }
-                  
-                  
+
+
                   echo "<tr class='tab_bg_1'>";
-                  echo "<td>".__('OCSNG TAG', 'ocsinventoryng').
-                       "</td>";
+                  echo "<td>" . __('OCSNG TAG', 'ocsinventoryng') .
+                     "</td>";
                   echo "<td>";
                   echo $data["tag"];
                   echo "</td>";
-                  
+
                   if (Session::haveRight("plugin_ocsinventoryng_view", READ)
-                      && Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
-                     echo "<td>".__('Automatic update OCSNG', 'ocsinventoryng').
-                          "</td>";
+                     && Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)
+                  ) {
+                     echo "<td>" . __('Automatic update OCSNG', 'ocsinventoryng') .
+                        "</td>";
                      echo "<td>";
                      echo Dropdown::getYesNo($data["use_auto_update"]);
                      echo "</td>";
@@ -143,39 +150,40 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                      echo "<td colspan='2'></td>";
                   }
                   echo "</tr>";
-                  
+
                   echo "<tr class='tab_bg_1'>";
                   //If have write right on OCS and ocsreports url is not empty in OCS config
                   if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
-                      && ($ocs_config["ocs_url"] != '')) {
+                     && ($ocs_config["ocs_url"] != '')
+                  ) {
                      echo "<td colspan='2' class='center'>";
                      echo PluginOcsinventoryngOcsServer::getComputerLinkToOcsConsole($ocs_config['id'],
-                                                                                    $data["ocsid"],
-                                                                                    __('OCS NG Interface','ocsinventoryng'));
+                        $data["ocsid"],
+                        __('OCS NG Interface', 'ocsinventoryng'));
                      echo "</td>";
                   } else {
                      echo "<td colspan='2'></td>";
                   }
-                  
+
                   if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
                      echo "<td class='center' colspan='2'>";
                      Html::showSimpleForm($target, 'force_ocs_resynch',
-                                          _sx('button', 'Force synchronization', 'ocsinventoryng'),
-                                          array('id' => $items_id,
-                                                  'resynch_id' => $data["id"]));
+                        _sx('button', 'Force synchronization', 'ocsinventoryng'),
+                        array('id' => $items_id,
+                           'resynch_id' => $data["id"]));
                      echo "</td>";
-                     
+
                   } else {
                      echo "<td colspan='2'></td>";
                   }
                   echo "</tr>";
                }
             }
-            
+
             //SNMP Link
             $query = "SELECT *
                       FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
-                      WHERE `items_id` = '".$items_id."' AND  `itemtype` = '".$item->getType()."'";
+                      WHERE `items_id` = '" . $items_id . "' AND  `itemtype` = '" . $item->getType() . "'";
 
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
@@ -184,45 +192,45 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                if (count($data)) {
                   $target = Toolbox::getItemTypeFormURL("PluginOcsinventoryngSnmpOcslink");
                   $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
-                  echo "<tr class='tab_bg_1'><th colspan='4'>".__('OCS Inventory NG SNMP Import informations', 'ocsinventoryng')."</th>";
+                  echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG SNMP Import informations', 'ocsinventoryng') . "</th>";
                   $linked = __('Imported object', 'ocsinventoryng');
                   if ($data["linked"]) {
                      $linked = __('Linked object', 'ocsinventoryng');
                   }
-                  echo "<tr class='tab_bg_1'><td>".__('Import date in GLPI', 'ocsinventoryng');
-                  echo "</td><td>".Html::convDateTime($data["last_update"])." (".$linked.")</td>";
+                  echo "<tr class='tab_bg_1'><td>" . __('Import date in GLPI', 'ocsinventoryng');
+                  echo "</td><td>" . Html::convDateTime($data["last_update"]) . " (" . $linked . ")</td>";
                   if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
                      echo "<td class='center' colspan='2'>";
                      Html::showSimpleForm($target, 'force_ocssnmp_resynch',
-                                          _sx('button', 'Force SNMP synchronization', 'ocsinventoryng'),
-                                          array('items_id' => $items_id,
-                                                 'itemtype' => $item->getType(),
-                                                 'id' => $data["id"],
-                                                  'plugin_ocsinventoryng_ocsservers_id' => $data["plugin_ocsinventoryng_ocsservers_id"]));
+                        _sx('button', 'Force SNMP synchronization', 'ocsinventoryng'),
+                        array('items_id' => $items_id,
+                           'itemtype' => $item->getType(),
+                           'id' => $data["id"],
+                           'plugin_ocsinventoryng_ocsservers_id' => $data["plugin_ocsinventoryng_ocsservers_id"]));
                      echo "</td>";
-                     
+
                   }
                   echo "</tr>";
-                  
+
                   $linked_ids [] = $data['ocs_id'];
                   $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($data['plugin_ocsinventoryng_ocsservers_id']);
                   $ocsResult = $ocsClient->getSnmp(array(
                      'MAX_RECORDS' => 1,
-                     'FILTER'      => array(
+                     'FILTER' => array(
                         'IDS' => $linked_ids,
                      )
                   ));
                   if (isset($ocsResult['SNMP'])) {
                      if (count($ocsResult['SNMP']) > 0) {
                         foreach ($ocsResult['SNMP'] as $snmp) {
-                           $LASTDATE   = $snmp['META']['LASTDATE'];
-                           $UPTIME     = $snmp['META']['UPTIME'];
-                  
-                           echo "<tr class='tab_bg_1'><td>".__('Last OCSNG SNMP inventory date', 'ocsinventoryng');
-                           echo "</td><td>".Html::convDateTime($LASTDATE)."</td>";
-                           
-                           echo "<td>".__('Uptime', 'ocsinventoryng');
-                           echo "</td><td>".$UPTIME."</td></tr>";
+                           $LASTDATE = $snmp['META']['LASTDATE'];
+                           $UPTIME = $snmp['META']['UPTIME'];
+
+                           echo "<tr class='tab_bg_1'><td>" . __('Last OCSNG SNMP inventory date', 'ocsinventoryng');
+                           echo "</td><td>" . Html::convDateTime($LASTDATE) . "</td>";
+
+                           echo "<td>" . __('Uptime', 'ocsinventoryng');
+                           echo "</td><td>" . $UPTIME . "</td></tr>";
                         }
                      }
                   }
@@ -232,11 +240,12 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                $items_id = $item->getField('id');
 
                if (!empty($items_id)
-                   //&& $item->fields["is_dynamic"]
-                   && Session::haveRight("plugin_ocsinventoryng_view", READ)) {
+                  //&& $item->fields["is_dynamic"]
+                  && Session::haveRight("plugin_ocsinventoryng_view", READ)
+               ) {
                   $query = "SELECT *
                             FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
-                            WHERE `items_id` = '".$items_id."' AND  `itemtype` = '".$item->getType()."'";
+                            WHERE `items_id` = '" . $items_id . "' AND  `itemtype` = '" . $item->getType() . "'";
 
                   $result = $DB->query($query);
                   if ($DB->numrows($result) > 0) {
@@ -244,10 +253,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                      if (count($data)) {
                         $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
-                        echo "<tr class='tab_bg_1'><th colspan='4'>".__('OCS Inventory NG IPDiscover Import informations', 'ocsinventoryng')."</th>";
-                        
-                        echo "<tr class='tab_bg_1'><td>".__('Import date in GLPI', 'ocsinventoryng');
-                        echo "</td><td>".Html::convDateTime($data["last_update"])."</td><td colspan='2'>&nbsp;</td></tr>";
+                        echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG IPDiscover Import informations', 'ocsinventoryng') . "</th>";
+
+                        echo "<tr class='tab_bg_1'><td>" . __('Import date in GLPI', 'ocsinventoryng');
+                        echo "</td><td>" . Html::convDateTime($data["last_update"]) . "</td><td colspan='2'>&nbsp;</td></tr>";
                      }
                   }
                }
@@ -263,25 +272,27 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * @param $ID   Integer   ID of the computer
     *
     * @return boolean
-   **/
-   function getFromDBforComputer ($ID) {
+    **/
+   function getFromDBforComputer($ID)
+   {
 
-      if ($this->getFromDBByQuery("WHERE `".$this->getTable()."`.`computers_id` = '$ID'")) {
-            return true;
+      if ($this->getFromDBByQuery("WHERE `" . $this->getTable() . "`.`computers_id` = '$ID'")) {
+         return true;
       }
       return false;
    }
 
 
    /**
-   * Show OcsLink of an item
-   *
-   * @param $item                   CommonDBTM object
-   * @param $withtemplate  integer  withtemplate param (default '')
-   *
-   * @return nothing
-   **/
-   static function showForItem(CommonDBTM $item, $withtemplate='') {
+    * Show OcsLink of an item
+    *
+    * @param $item                   CommonDBTM object
+    * @param $withtemplate  integer  withtemplate param (default '')
+    *
+    * @return nothing
+    **/
+   static function showForItem(CommonDBTM $item, $withtemplate = '')
+   {
       global $DB, $CFG_GLPI;
 
       $target = Toolbox::getItemTypeFormURL(__CLASS__);
@@ -289,14 +300,15 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       if (in_array($item->getType(), array('Computer'))) {
          $items_id = $item->getField('id');
 
-         if (!empty($items_id )
-             && $item->fields["is_dynamic"]
-             && Session::haveRight("plugin_ocsinventoryng_view", READ)) {
+         if (!empty($items_id)
+            && $item->fields["is_dynamic"]
+            && Session::haveRight("plugin_ocsinventoryng_view", READ)
+         ) {
 
             $query = "SELECT *
                       FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                      WHERE `computers_id` = '$items_id' ".
-                            getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
+                      WHERE `computers_id` = '$items_id' " .
+               getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
 
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
@@ -309,30 +321,30 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "<form method='post' action=\"$target\">";
                   echo "<input type='hidden' name='id' value='$items_id'>";
                   echo "<table class='tab_cadre_fixe'>";
-                  echo "<tr><th colspan = '4'>".__('OCSNG link', 'ocsinventoryng')."</th>";
-                  
+                  echo "<tr><th colspan = '4'>" . __('OCSNG link', 'ocsinventoryng') . "</th>";
+
                   echo "<tr class='tab_bg_1'>";
                   echo "<td class='left'>";
-                   _e('OCSNG DEVICE ID', 'ocsinventoryng');
+                  _e('OCSNG DEVICE ID', 'ocsinventoryng');
                   echo "</td>";
                   echo "<td class='left'>";
                   echo $data['ocs_deviceid'];
                   echo "</td>";
-                  
+
                   echo "<td class='left'>";
                   _e('OCSNG TAG', 'ocsinventoryng');
                   echo "</td>";
                   echo "<td class='left'>";
                   echo $data['tag'];
                   echo "</td>";
-                  
+
                   echo "<tr class='tab_bg_1'>";
-                  echo "<td class='left'>".__('Automatic update OCSNG', 'ocsinventoryng').
-                       "</td>";
+                  echo "<td class='left'>" . __('Automatic update OCSNG', 'ocsinventoryng') .
+                     "</td>";
                   echo "<td class='left'>";
                   Dropdown::showYesNo("use_auto_update", $data["use_auto_update"]);
                   echo "</td><td colspan='2'></td>";
-                     
+
                   echo "</tr>";
 
                   if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
@@ -340,24 +352,24 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                      echo "<td class='center'>";
                      echo "<input type='hidden' name='link_id' value='" . $data["id"] . "'>";
                      echo "<input class=submit type='submit' name='update' value=\"" .
-                            _sx('button', 'Save')."\">";
+                        _sx('button', 'Save') . "\">";
                      echo "</td>";
-                     
+
                      echo "<td class='center'>";
                      echo "<input type='hidden' name='resynch_id' value='" . $data["id"] . "'>";
                      echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
-                           _sx('button', 'Force synchronization', 'ocsinventoryng'). "\">";
+                        _sx('button', 'Force synchronization', 'ocsinventoryng') . "\">";
                      echo "</td>";
-                     
+
                      echo "<td class='center'>";
                      echo "<input type='hidden' name='items_id' value='" . $items_id . "'>";
                      echo "<input class=submit type='submit' name='delete_link' value=\"" .
-                           _sx('button', 'Delete link', 'ocsinventoryng'). "\">";
+                        _sx('button', 'Delete link', 'ocsinventoryng') . "\">";
                      echo "</td>";
-                     
+
                      echo "<td>";
                      echo "</td>";
-                     
+
                      echo "</tr>";
                   }
 
@@ -367,26 +379,26 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
                      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($data["plugin_ocsinventoryng_ocsservers_id"]);
 
-                     $options   = array(
+                     $options = array(
                         'DISPLAY' => array(
                            'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
                         )
                      );
-                     $computer  = array();
+                     $computer = array();
                      $checksum_client = 0;
-                     $computer  = $ocsClient->getComputer($data["ocsid"], $options);
+                     $computer = $ocsClient->getComputer($data["ocsid"], $options);
                      echo "<br><table class='tab_cadre_fixe'>";
                      echo "<tr>";
-                     echo "<th colspan='2'>".__('DEBUG')." ".__('OCSNG', "ocsinventoryng")."</th>";
+                     echo "<th colspan='2'>" . __('DEBUG') . " " . __('OCSNG', "ocsinventoryng") . "</th>";
                      echo "</tr>";
                      if (count($computer) > 0) {
-                        foreach($computer as $key => $val) {
+                        foreach ($computer as $key => $val) {
                            echo "<tr class='tab_bg_1'>";
                            echo "<td>";
                            print_r($key);
                            echo "</td>";
                            echo "<td>";
-                           foreach($val as $name => $value) {
+                           foreach ($val as $name => $value) {
                               printf(__('%1$s: %2$s'), $name,
                                  $value);
                               if ($name == "CHECKSUM") {
@@ -405,16 +417,17 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                         echo "</tr>";
                      }
                      $server = new PluginOcsinventoryngOcsServer();
-                     if ($server->getFromDB($data["plugin_ocsinventoryng_ocsservers_id"]) 
-                           && $checksum_client > 0) {
+                     if ($server->getFromDB($data["plugin_ocsinventoryng_ocsservers_id"])
+                        && $checksum_client > 0
+                     ) {
                         echo "<tr class='tab_bg_1'>";
                         echo "<td>";
                         _e('Checksum test', 'ocsinventoryng');
                         echo "</td>";
                         echo "<td>";
                         $format = '(%1$2d = %1$04b) = (%2$2d = %2$04b)'
-           . ' %3$s (%4$2d = %4$04b)' . "\n";
-                        
+                           . ' %3$s (%4$2d = %4$04b)' . "\n";
+
                         $checksum_server = intval($server->fields["checksum"]);
                         $result = $checksum_server & $checksum_client;
                         printf($format, $result, $checksum_server, '&', $checksum_client);
@@ -422,13 +435,13 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                         echo "</tr>";
                      }
                      echo "</table>";
-                     
+
                   }
                } else {
-                  
+
                   echo "<div class='center'>";
                   echo "<table class='tab_cadre_fixe'>";
-                  echo "<tr><th colspan = '2'>".__('OCSNG link', 'ocsinventoryng')."</th>";
+                  echo "<tr><th colspan = '2'>" . __('OCSNG link', 'ocsinventoryng') . "</th>";
                   echo "<tr class='tab_bg_1'>";
                   echo "<td colspan='2' >";
                   _e('No computer found into OCSNG Database', 'ocsinventoryng');
@@ -438,10 +451,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "</div>";
                }
             } else {
-                  
+
                echo "<div class='center'>";
                echo "<table class='tab_cadre_fixe'>";
-               echo "<tr><th colspan = '2'>".__('OCSNG link', 'ocsinventoryng')."</th>";
+               echo "<tr><th colspan = '2'>" . __('OCSNG link', 'ocsinventoryng') . "</th>";
                echo "<tr class='tab_bg_1'>";
                echo "<td colspan='2' '>";
                _e('No computer found into OCSNG Database', 'ocsinventoryng');
@@ -451,10 +464,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                echo "</div>";
             }
          } else {
-                  
+
             echo "<div class='center'>";
             echo "<table class='tab_cadre_fixe'>";
-            echo "<tr><th colspan = '2'>".__('OCSNG link', 'ocsinventoryng')."</th>";
+            echo "<tr><th colspan = '2'>" . __('OCSNG link', 'ocsinventoryng') . "</th>";
             echo "<tr class='tab_bg_1'>";
             echo "<td colspan='2' '>";
             _e('No computer found into OCSNG Database', 'ocsinventoryng');
@@ -474,30 +487,32 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * @param $withtemplate    integer  withtemplate param (default '')
     *
     * @return nothing
-   **/
-   static function updateComputer(CommonDBTM $item, $withtemplate='') {
+    **/
+   static function updateComputer(CommonDBTM $item, $withtemplate = '')
+   {
       global $DB;
       // Manage changes for OCS if more than 1 element (date_mod)
       // Need dohistory==1 if dohistory==2 no locking fields
-      
+
       $ocslink = new self();
       if ($item->fields["is_dynamic"]
-            && $ocslink->getFromDBforComputer($item->getID())
-               && ($item->dohistory == 1)
-                  && (count($item->updates) > 1)
-                     && (!isset($item->input["_nolock"]))) {
-         
+         && $ocslink->getFromDBforComputer($item->getID())
+         && ($item->dohistory == 1)
+         && (count($item->updates) > 1)
+         && (!isset($item->input["_nolock"]))
+      ) {
+
          $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
          if ($cfg_ocs["use_locks"]) {
-            
+
             PluginOcsinventoryngOcsServer::mergeOcsArray($item->fields["id"], $item->updates,
-                                                                        "computer_update");
+               "computer_update");
          }
       }
       if (isset($item->input["_auto_update_ocs"])) {
          $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                   SET `use_auto_update` = '".$item->input["_auto_update_ocs"]."'
-                   WHERE `computers_id` = '".$item->input["id"]."'";
+                   SET `use_auto_update` = '" . $item->input["_auto_update_ocs"] . "'
+                   WHERE `computers_id` = '" . $item->input["id"] . "'";
          $DB->query($query);
       }
    }
@@ -510,20 +525,21 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * @param $withtemplate    integer  withtemplate param (default '')
     *
     * @return nothing
-   **/
-   static function addComputer_Item(CommonDBTM $item, $withtemplate='') {
+    **/
+   static function addComputer_Item(CommonDBTM $item, $withtemplate = '')
+   {
       global $DB;
 
       $link = new $item->input['itemtype'];
       if (!$link->getFromDB($item->input['items_id'])) {
          return false;
       }
-      if (!$link->getField('is_global') ) {
+      if (!$link->getField('is_global')) {
          // Handle case where already used, should never happen (except from OCS sync)
          $query = "SELECT `id`, `computers_id`
                    FROM `glpi_computers_items`
-                   WHERE `glpi_computers_items`.`items_id` = '".$item->input['items_id']."'
-                         AND `glpi_computers_items`.`itemtype` = '".$item->input['itemtype']."'";
+                   WHERE `glpi_computers_items`.`items_id` = '" . $item->input['items_id'] . "'
+                         AND `glpi_computers_items`.`itemtype` = '" . $item->input['itemtype'] . "'";
          $result = $DB->query($query);
 
          while ($data = $DB->fetch_assoc($result)) {
@@ -538,8 +554,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * if Computer deleted
     *
     * @param $comp   Computer object
-   **/
-   static function purgeComputer(Computer $comp) {
+    **/
+   static function purgeComputer(Computer $comp)
+   {
       $link = new self();
       $link->deleteByCriteria(array('computers_id' => $comp->getField("id")));
 
@@ -552,9 +569,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * if Computer_Item deleted
     *
     * @param $comp   Computer_Item object
-   **/
-   static function purgeComputer_Item(Computer_Item $comp) {
-     Global $DB;
+    **/
+   static function purgeComputer_Item(Computer_Item $comp)
+   {
+      Global $DB;
       if ($device = getItemForItemtype($comp->fields['itemtype'])) {
          if ($device->getFromDB($comp->fields['items_id'])) {
 
@@ -570,43 +588,44 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                //Get the management mode for this device
                $mode = PluginOcsinventoryngOcsServer::getDevicesManagementMode($ocs_config,
-                                                                              $comp->fields['itemtype']);
+                  $comp->fields['itemtype']);
                $decoConf = $ocs_config["deconnection_behavior"];
 
                //Change status if :
                // 1 : the management mode IS NOT global
                // 2 : a deconnection's status have been defined
                // 3 : unique with serial
-            
+
 
                if (($mode >= 2)
-               && (strlen($decoConf) > 0)) {
+                  && (strlen($decoConf) > 0)
+               ) {
 
                   //Delete periph from glpi
                   // if ($decoConf == "delete") {
-                     // $tmp["id"] = $comp->fields['items_id'];
-                     // $device->delete(array('id'  => $tmp['id']), 1);
+                  // $tmp["id"] = $comp->fields['items_id'];
+                  // $device->delete(array('id'  => $tmp['id']), 1);
 
                   // Put periph in dustbin
                   // } else if ($decoConf == "trash") {
-                     // $tmp["id"] = $comp->fields['items_id'];
-                     // $device->delete(array('id'  => $tmp['id']), 0);
+                  // $tmp["id"] = $comp->fields['items_id'];
+                  // $device->delete(array('id'  => $tmp['id']), 0);
                   // }
-              
-              if ($decoConf == "delete") {
-               $tmp["id"] = $comp->getID();
+
+                  if ($decoConf == "delete") {
+                     $tmp["id"] = $comp->getID();
                      $query = "DELETE
                          FROM `glpi_computers_items`
-                         WHERE `id`='".$tmp['id']."'";
-              $result = $DB->query($query);
-                  //Put periph in dustbin
+                         WHERE `id`='" . $tmp['id'] . "'";
+                     $result = $DB->query($query);
+                     //Put periph in dustbin
                   } else if ($decoConf == "trash") {
-               $tmp["id"] = $comp->getID();
+                     $tmp["id"] = $comp->getID();
                      $query = "UPDATE
                          `glpi_computers_items`
                    SET `is_deleted` = 1
-                         WHERE `id`='".$tmp['id']."'";
-               $result = $DB->query($query);
+                         WHERE `id`='" . $tmp['id'] . "'";
+                     $result = $DB->query($query);
                   }
                }
             } // $ocsservers_id>0
@@ -618,12 +637,14 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * @see inc/CommonGLPI::getTabNameForItem()
     *
     * @param $item               CommonGLPI object
-    * @param$withtemplate        (default 0)
-   **/
-   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+    * @param$withtemplate (default 0)
+    **/
+   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+   {
 
       if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))
-          && Session::haveRight("plugin_ocsinventoryng_view", READ)) {
+         && Session::haveRight("plugin_ocsinventoryng_view", READ)
+      ) {
 
          switch ($item->getType()) {
             case 'Computer' :
@@ -638,10 +659,11 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
    /**
     * @param $item            CommonGLPI object
-    * @param $tabnum          (default 1)
-    * @param $withtemplate    (default 0)
-   **/
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+    * @param $tabnum (default 1)
+    * @param $withtemplate (default 0)
+    **/
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+   {
 
       if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))) {
          switch ($item->getType()) {
@@ -662,11 +684,12 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * @param $action       Integer in PluginOcsinventoryngOcslink::HISTORY_OCS_*
     *
     * @return Integer id of the inserted entry
-   **/
-   static function history($computers_id, $changes, $action) {
+    **/
+   static function history($computers_id, $changes, $action)
+   {
 
       return Log::history($computers_id, 'Computer', $changes, __CLASS__,
-                          Log::HISTORY_PLUGIN+$action);
+         Log::HISTORY_PLUGIN + $action);
    }
 
    /**
@@ -675,36 +698,38 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * @param $data Array from glpi_logs table
     *
     * @return string
-   **/
-   static function getHistoryEntry($data) {
+    **/
+   static function getHistoryEntry($data)
+   {
 
       if (Session::haveRight("plugin_ocsinventoryng", READ)) {
-         switch($data['linked_action'] - Log::HISTORY_PLUGIN) {
+         switch ($data['linked_action'] - Log::HISTORY_PLUGIN) {
             case self::HISTORY_OCS_IMPORT :
                return sprintf(__('%1$s: %2$s'), __('Imported from OCSNG', 'ocsinventoryng'),
-                              $data['new_value']);
+                  $data['new_value']);
 
             case self::HISTORY_OCS_DELETE :
                return sprintf(__('%1$s: %2$s'), __('Deleted in OCSNG', 'ocsinventoryng'),
-                              $data['old_value']);
+                  $data['old_value']);
 
             case self::HISTORY_OCS_LINK :
                return sprintf(__('%1$s: %2$s'), __('Linked with an OCSNG computer', 'ocsinventoryng'),
-                              $data['new_value']);
+                  $data['new_value']);
 
             case self::HISTORY_OCS_IDCHANGED :
-               return  sprintf(__('The OCSNG ID of the computer changed from %1$s to %2$s',
-                                  'ocsinventoryng'),
-                               $data['old_value'], $data['new_value']);
+               return sprintf(__('The OCSNG ID of the computer changed from %1$s to %2$s',
+                  'ocsinventoryng'),
+                  $data['old_value'], $data['new_value']);
 
             case self::HISTORY_OCS_TAGCHANGED :
-               return  sprintf(__('The OCSNG TAG of the computer changed from %1$s to %2$s',
-                                  'ocsinventoryng'),
-                               $data['old_value'], $data['new_value']);
+               return sprintf(__('The OCSNG TAG of the computer changed from %1$s to %2$s',
+                  'ocsinventoryng'),
+                  $data['old_value'], $data['new_value']);
          }
       }
       return '';
    }
 
 }
+
 ?>

@@ -1,38 +1,39 @@
 /* Percent bar */
-div.percent_bar { 
-    height:14px; 
-    width:102px; 
-    text-align:center; 
-    border:1px solid #808080; 
-    border-radius:3px;
-    margin-left: 30%; 
-}
-div.percent_status { 
-    height:12px; 
-    position:absolute; 
-    z-index:1; 
-    background-color:#4CC417;
-    font-size:1px; 
-    border:1px solid #FFFFFF; 
-    border-radius:3px; 
+div.percent_bar {
+    height: 14px;
+    width: 102px;
+    text-align: center;
+    border: 1px solid #808080;
+    border-radius: 3px;
+    margin-left: 30%;
 }
 
-div.percent_text { 
-    height:12px; 
-    position:absolute; 
-    z-index:2; 
-    width:100px; 
-    font-size:11px;
-    text-align:center; 
-    font-family:arial; 
-    color:#000000;
-    font-weight:bold; 
+div.percent_status {
+    height: 12px;
+    position: absolute;
+    z-index: 1;
+    background-color: #4CC417;
+    font-size: 1px;
+    border: 1px solid #FFFFFF;
+    border-radius: 3px;
+}
+
+div.percent_text {
+    height: 12px;
+    position: absolute;
+    z-index: 2;
+    width: 100px;
+    font-size: 11px;
+    text-align: center;
+    font-family: arial;
+    color: #000000;
+    font-weight: bold;
 }
 
 tr.ipdisc_tab_row {
     background-color: #FFF;
     /*border-collapse:collapse;*/
-     border-collapse:separate;
+    border-collapse: separate;
     padding: 5px;
     font-size: 12px;
     font-weight: normal;
@@ -40,13 +41,13 @@ tr.ipdisc_tab_row {
     border-radius: 0;
     border-spacing: 0;
     border-style: hidden;
-    
+
 }
 
 div.ipdisc_tab, tr.ipdisc_tab_row {
     background-color: #FFF;
     /*border-collapse:collapse;*/
-     border-collapse:separate;
+    border-collapse: separate;
     padding: 5px;
     font-size: 12px;
     font-weight: normal;
@@ -54,11 +55,10 @@ div.ipdisc_tab, tr.ipdisc_tab_row {
     border-radius: 0;
     border-spacing: 0;
     border-style: hidden;
-    
+
 }
 
-
-div.ipdisc_tab{
+div.ipdisc_tab {
     margin: 0px auto 5px auto;
     background: #FFF;
     z-index: 1;
@@ -66,73 +66,69 @@ div.ipdisc_tab{
     font-size: 12px;
     width: 95%;
     max-width: 100%;
-    border-spacing:0 ;
+    border-spacing: 0;
     border: none;
     /*border-collapse: collapse;*/
-     border-collapse:separate;
+    border-collapse: separate;
     padding: 0;
     border-radius: 0;
     border-spacing: 0;
     border-style: hidden;
 }
 
-div.ipdisc_tab_header{
+div.ipdisc_tab_header {
     font-size: 14px;
     font-weight: bold;
     text-align: center;
     -moz-border-radius: 0;
     -webkit-border-radius: 0;
-    -o-border-radius: 0;
     /*padding: 10px;*/
     background-color: #e7e7e2;
     /*border-collapse:collapse; */
-    border-collapse:separate;
-    border-spacing:0;
+    border-collapse: separate;
+    border-spacing: 0;
     border-radius: 0;
     border-style: hidden;
 }
 
 div.ipdisc_tab, div.ipdisc_tab_header {
-font-size: 14px;
+    font-size: 14px;
     font-weight: bold;
     text-align: center;
     -moz-border-radius: 0;
     -webkit-border-radius: 0;
-    -o-border-radius: 0;
     /*padding: 10px;*/
     background-color: #e7e7e2;
     /*border-collapse:collapse; */
-    border-collapse:separate;
-    border-spacing:0;
+    border-collapse: separate;
+    border-spacing: 0;
     border-radius: 0;
     border-style: hidden;
 }
 
-
 th.ipdisc_tab_header {
-   font-size: 14px;
+    font-size: 14px;
     font-weight: bold;
     text-align: center;
     -moz-border-radius: 0;
     -webkit-border-radius: 0;
-    -o-border-radius: 0;
     padding: 10px;
     background-color: #e7e7e2;
     /*border-collapse:collapse; */
-     border-collapse:separate;
-    border-spacing:0;
+    border-collapse: separate;
+    border-spacing: 0;
     border-radius: 0;
 }
 
-
-table.ipdisc_tab , table.ipdisc_tab_header , ipdisc_tab_row{
+table.ipdisc_tab, table.ipdisc_tab_header {
     border-spacing: 0;
 }
+
 /*table{
   border-spacing: 0;   
 }*/
 
-td.ipdisc_tab , td.ipdisc_tab_row, table.ipdisc_tab_header {
+td.ipdisc_tab, td.ipdisc_tab_row, table.ipdisc_tab_header {
     padding: 10px;
 }
 
@@ -140,37 +136,37 @@ td {
     padding: 5px;
 }
 
-.ocsinventoryng_toner_level{
-   height:15px;
-   width:300px;
-   border:solid 1px #CCCCCC;
+.ocsinventoryng_toner_level {
+    height: 15px;
+    width: 300px;
+    border: solid 1px #CCCCCC;
 
-   -moz-border-radius: 5px;
-   -webkit-border-radius: 5px;
-   border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
 }
 
-.ocsinventoryng_toner_level_cyan{
-   border:0px;
-   background-color:cyan;
+.ocsinventoryng_toner_level_cyan {
+    border: 0px;
+    background-color: cyan;
 }
 
-.ocsinventoryng_toner_level_yellow{
-   border:0px;
-   background-color:yellow;
+.ocsinventoryng_toner_level_yellow {
+    border: 0px;
+    background-color: yellow;
 }
 
-.ocsinventoryng_toner_level_black{
-   border:0px;
-   background-color:black;
+.ocsinventoryng_toner_level_black {
+    border: 0px;
+    background-color: black;
 }
 
-.ocsinventoryng_toner_level_magenta{
-   border:0px;
-   background-color:magenta;
+.ocsinventoryng_toner_level_magenta {
+    border: 0px;
+    background-color: magenta;
 }
 
-.ocsinventoryng_toner_level_other{
-   border:0px;
-   background-color: #0464BB;
+.ocsinventoryng_toner_level_other {
+    border: 0px;
+    background-color: #0464BB;
 }

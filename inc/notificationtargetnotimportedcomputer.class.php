@@ -27,40 +27,43 @@
  --------------------------------------------------------------------------
  */
 
-if (!defined('GLPI_ROOT')){
+if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
 // Class NotificationTarget
-class PluginOcsinventoryngNotificationTargetNotImportedcomputer extends NotificationTarget {
+class PluginOcsinventoryngNotificationTargetNotImportedcomputer extends NotificationTarget
+{
 
-   function getEvents() {
-      return array ('not_imported' => __('Computers not imported by automatic actions',
-                                         'ocsinventoryng'));
+   function getEvents()
+   {
+      return array('not_imported' => __('Computers not imported by automatic actions',
+         'ocsinventoryng'));
    }
 
 
-   function getDatasForTemplate($event,$options=array()) {
+   function getDatasForTemplate($event, $options = array())
+   {
       global $CFG_GLPI, $DB;
 
       $this->datas['##notimported.entity##'] = Dropdown::getDropdownName('glpi_entities',
-                                                                         $options['entities_id']);
+         $options['entities_id']);
 
-      foreach($options['notimported'] as $id => $item) {
+      foreach ($options['notimported'] as $id => $item) {
          $tmp = array();
 
-         $tmp['##notimported.name##']      = $item['name'];
-         $tmp['##notimported.serial##']    = $item['serial'];
-         $tmp['##notimported.entity##']    = Dropdown::getDropdownName('glpi_entities',
-                                                                       $options['entities_id']);
-         $tmp['##notimported.ocsid##']     = $item['ocsid'];
-         $tmp['##notimported.deviceid##']  = $item['ocs_deviceid'];
-         $tmp['##notimported.tag##']       = $item['tag'];
+         $tmp['##notimported.name##'] = $item['name'];
+         $tmp['##notimported.serial##'] = $item['serial'];
+         $tmp['##notimported.entity##'] = Dropdown::getDropdownName('glpi_entities',
+            $options['entities_id']);
+         $tmp['##notimported.ocsid##'] = $item['ocsid'];
+         $tmp['##notimported.deviceid##'] = $item['ocs_deviceid'];
+         $tmp['##notimported.tag##'] = $item['tag'];
          $tmp['##notimported.ocsserver##'] = Dropdown::getDropdownName('glpi_plugin_ocsinventoryng_ocsservers',
-                                                                       $item['ocsid']);
+            $item['ocsid']);
          $tmp['##notimported.reason##'] = PluginOcsinventoryngNotimportedcomputer::getReason($item['reason']);
 
-         $url = $CFG_GLPI["url_base"]."/index.php?redirect=plugin_ocsinventoryng_".$item['id'];
+         $url = $CFG_GLPI["url_base"] . "/index.php?redirect=plugin_ocsinventoryng_" . $item['id'];
          $tmp['##notimported.url##'] = urldecode($url);
 
          $this->datas['notimported'][] = $tmp;
@@ -73,24 +76,26 @@ class PluginOcsinventoryngNotificationTargetNotImportedcomputer extends Notifica
       }
    }
 
-   function getTags() {
+   function getTags()
+   {
 
-      $tags = array('notimported.id'           => __('ID'),
-                    'notimported.url'          => __('Web link'),
-                    'notimported.tag'          => __('OCSNG TAG', 'ocsinventoryng'),
-                    'notimported.name'         => __('Name'),
-                    'notimported.action'       => __('Computers not imported by automatic actions',
-                                                     'ocsinventoryng'),
-                    'notimported.ocsid'        => __('OCSNG ID', 'ocsinventoryng'),
-                    'notimported.deviceid'     => __('Device ID', 'ocsinventoryng'),
-                    'notimported.reason'       => __('Reason of rejection'),
-                    'notimported.serial'       => __('Serial number'));
+      $tags = array('notimported.id' => __('ID'),
+         'notimported.url' => __('Web link'),
+         'notimported.tag' => __('OCSNG TAG', 'ocsinventoryng'),
+         'notimported.name' => __('Name'),
+         'notimported.action' => __('Computers not imported by automatic actions',
+            'ocsinventoryng'),
+         'notimported.ocsid' => __('OCSNG ID', 'ocsinventoryng'),
+         'notimported.deviceid' => __('Device ID', 'ocsinventoryng'),
+         'notimported.reason' => __('Reason of rejection'),
+         'notimported.serial' => __('Serial number'));
 
       foreach ($tags as $tag => $label) {
-         $this->addTagToList(array('tag'=>$tag,'label'=>$label,
-                                   'value'=>true));
+         $this->addTagToList(array('tag' => $tag, 'label' => $label,
+            'value' => true));
       }
       asort($this->tag_descriptions);
    }
 }
+
 ?>

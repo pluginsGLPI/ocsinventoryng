@@ -27,11 +27,11 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
-Session::checkSeveralRightsOr(array("plugin_ocsinventoryng"  => READ,
-                                    "plugin_ocsinventoryng_clean"  => READ));
-                                                      
+Session::checkSeveralRightsOr(array("plugin_ocsinventoryng" => READ,
+   "plugin_ocsinventoryng_clean" => READ));
+
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsinventoryng");
 
 if (isset ($_SESSION["ocs_import"])) {
@@ -53,11 +53,11 @@ if (isset($_POST["plugin_ocsinventoryng_ocsservers_id"])) {
 $menu = new PluginOcsinventoryngMenu();
 $menu->show();
 //load mac constructors in sessionMemory
-$_SESSION["OCS"]["count"]=0;
-if (!isset($_SESSION["OCS"]["IpdiscoverMacConstructors"])){
+$_SESSION["OCS"]["count"] = 0;
+if (!isset($_SESSION["OCS"]["IpdiscoverMacConstructors"])) {
    $ip = new PluginOcsinventoryngIpdiscoverOcslink();
    $ip->loadMacConstructor();
-   $_SESSION["OCS"]["count"]=$_SESSION["OCS"]["count"]+1;
+   $_SESSION["OCS"]["count"] = $_SESSION["OCS"]["count"] + 1;
 }
 //PluginOcsinventoryngOcsServer::ocsMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
 

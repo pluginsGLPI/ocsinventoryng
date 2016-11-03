@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -35,7 +35,7 @@ Session::checkLoginUser();
 
 // Make a select box
 if (isset($_POST["itemtype"])
-    ) {
+) {
    $table = getTableForItemType($_POST["itemtype"]);
 
    $rand = mt_rand();
@@ -44,13 +44,13 @@ if (isset($_POST["itemtype"])
    }
    echo "<input type='hidden' name='tolink_itemtype[" . $_POST["id"] . "]' value='" . $_POST["itemtype"] . "'>";
    echo "<br>";
-   $field_id = Html::cleanId("dropdown_".$_POST['myname'].$rand);
-   $p = array('itemtype'            => $_POST["itemtype"],
-              //'entity_restrict'     => $_POST['entity_restrict'],
-              'table'               => $table,
-              //'multiple'            => $_POST["multiple"],
-              'myname'              => $_POST["myname"],
-              'rand'                => $_POST["rand"]);
+   $field_id = Html::cleanId("dropdown_" . $_POST['myname'] . $rand);
+   $p = array('itemtype' => $_POST["itemtype"],
+      //'entity_restrict'     => $_POST['entity_restrict'],
+      'table' => $table,
+      //'multiple'            => $_POST["multiple"],
+      'myname' => $_POST["myname"],
+      'rand' => $_POST["rand"]);
 
    if (isset($_POST["used"]) && !empty($_POST["used"])) {
       if (isset($_POST["used"][$_POST["itemtype"]])) {
@@ -59,8 +59,8 @@ if (isset($_POST["itemtype"])
    }
 
    echo Html::jsAjaxDropdown($_POST['myname'], $field_id,
-                             $CFG_GLPI['root_doc']."/plugins/ocsinventoryng/ajax/getDropdownFindItem.php",
-                             $p);
+      $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/ajax/getDropdownFindItem.php",
+      $p);
 
 }
 ?>

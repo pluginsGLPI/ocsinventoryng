@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -27,29 +28,33 @@
  --------------------------------------------------------------------------
  */
 
-class PluginOcsinventoryngOcsSoapRequest {
+class PluginOcsinventoryngOcsSoapRequest
+{
    /**
     * @var mixed
     */
    private $params;
-   
+
    /**
     * @param mixed $params
     */
-   public function __construct($params) {
+   public function __construct($params)
+   {
       $this->params = $params;
    }
-   
+
    /**
     * @return string
     */
-   public function toXml() {
+   public function toXml()
+   {
       return $this->_toXml('REQUEST', $this->params);
    }
-   
-   private function _toXml($tagName, $value) {
+
+   private function _toXml($tagName, $value)
+   {
       $xml = '';
-      
+
       if (is_array($value)) {
          if ($this->isIndexed($value)) {
             foreach ($value as $val) {
@@ -65,12 +70,13 @@ class PluginOcsinventoryngOcsSoapRequest {
       } else {
          $xml .= "<$tagName>$value</$tagName>";
       }
-      
+
       return $xml;
    }
-   
-   private function isIndexed($array) {
-      return (bool) count(array_filter(array_keys($array), 'is_numeric'));
+
+   private function isIndexed($array)
+   {
+      return (bool)count(array_filter(array_keys($array), 'is_numeric'));
    }
 }
 

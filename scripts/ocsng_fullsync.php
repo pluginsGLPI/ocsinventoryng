@@ -35,7 +35,7 @@ if (isset ($_SERVER["argv"]) && !isset ($argv)) {
    $argv = $_SERVER["argv"];
 }
 if ($argv) {
-   for ($i = 1 ; $i < count($argv) ; $i++) {
+   for ($i = 1; $i < count($argv); $i++) {
       $it = explode("=", $argv[$i], 2);
       $it[0] = preg_replace('/^--/', '', $it[0]);
       $_GET[$it[0]] = $it[1];
@@ -43,21 +43,21 @@ if ($argv) {
 }
 
 // Can't run on MySQL replicate
-$USEDBREPLICATE        = 0;
+$USEDBREPLICATE = 0;
 $DBCONNECTION_REQUIRED = 1;
 
 // MASS IMPORT for OCSNG
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
-$_SESSION["glpicronuserrunning"] = $_SESSION["glpiname"]= 'ocsinventoryng';
+$_SESSION["glpicronuserrunning"] = $_SESSION["glpiname"] = 'ocsinventoryng';
 // Check PHP Version - sometime (debian) cli version != module version
 if (phpversion() < "5") {
-   die("PHP version:".phpversion()." - "."You must install at least PHP5.\n\n");
+   die("PHP version:" . phpversion() . " - " . "You must install at least PHP5.\n\n");
 }
 // Chech Memory_limit - sometine cli limit (php-cli.ini) != module limit (php.ini)
 $mem = Toolbox::getMemoryLimit();
 if (($mem > 0) && ($mem < (64 * 1024 * 1024))) {
-   die("PHP memory_limit = ".$mem." - "."A minimum of 64Mio is commonly required for GLPI.'\n\n");
+   die("PHP memory_limit = " . $mem . " - " . "A minimum of 64Mio is commonly required for GLPI.'\n\n");
 }
 
 //Check if plugin is installed
@@ -72,14 +72,14 @@ if (!$plugin->isActivated("ocsinventoryng")) {
    exit (1);
 }
 
-$thread_nbr    = '';
-$threadid      = '';
+$thread_nbr = '';
+$threadid = '';
 $ocsservers_id = -1;
-$fields        = array ();
+$fields = array();
 
 //Get script configuration
-$config     = new PluginOcsinventoryngConfig();
-$notimport  = new PluginOcsinventoryngNotimportedcomputer();
+$config = new PluginOcsinventoryngConfig();
+$notimport = new PluginOcsinventoryngNotimportedcomputer();
 $config->getFromDB(1);
 
 if (!isset ($_GET["ocs_server_id"]) || ($_GET["ocs_server_id"] == '')) {
@@ -114,20 +114,21 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
 } else { // not managedeleted
    if (isset($_GET["thread_nbr"]) || isset ($_GET["thread_id"])) {
       if (!isset($_GET["thread_id"])
-                 || ($_GET["thread_id"] > $_GET["thread_nbr"])
-                 || ($_GET["thread_id"] <= 0)) {
-         echo ("Threadid invalid: threadid must be between 1 and thread_nbr\n\n");
+         || ($_GET["thread_id"] > $_GET["thread_nbr"])
+         || ($_GET["thread_id"] <= 0)
+      ) {
+         echo("Threadid invalid: threadid must be between 1 and thread_nbr\n\n");
          exit (1);
       }
 
       $thread_nbr = $_GET["thread_nbr"];
-      $threadid   = $_GET["thread_id"];
+      $threadid = $_GET["thread_id"];
 
       echo "=====================================================\n";
       echo "\tThread #$threadid: starting ($threadid/$thread_nbr)\n";
    } else {
       $thread_nbr = -1;
-      $threadid   = -1;
+      $threadid = -1;
    }
 
    //Get the script's process identifier
@@ -137,26 +138,26 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
    $thread = new PluginOcsinventoryngThread();
 
    //Prepare datas to log in db
-   $fields["start_time"]                           = date("Y-m-d H:i:s");
-   $fields["threadid"]                             = $threadid;
-   $fields["status"]                               = PLUGIN_OCSINVENTORYNG_STATE_STARTED;
-   $fields["plugin_ocsinventoryng_ocsservers_id"]  = $ocsservers_id;
-   $fields["imported_machines_number"]             = 0;
-   $fields["synchronized_machines_number"]         = 0;
-   $fields["not_unique_machines_number"]           = 0;
-   $fields["failed_rules_machines_number"]         = 0;
-   $fields["notupdated_machines_number"]           = 0;
-   $fields["not_unique_machines_number"]           = 0;
-   $fields["linked_machines_number"]               = 0;
-   $fields["link_refused_machines_number"]         = 0;
-   $fields["total_number_machines"]                = 0;
-   $fields["error_msg"]                            = '';
+   $fields["start_time"] = date("Y-m-d H:i:s");
+   $fields["threadid"] = $threadid;
+   $fields["status"] = PLUGIN_OCSINVENTORYNG_STATE_STARTED;
+   $fields["plugin_ocsinventoryng_ocsservers_id"] = $ocsservers_id;
+   $fields["imported_machines_number"] = 0;
+   $fields["synchronized_machines_number"] = 0;
+   $fields["not_unique_machines_number"] = 0;
+   $fields["failed_rules_machines_number"] = 0;
+   $fields["notupdated_machines_number"] = 0;
+   $fields["not_unique_machines_number"] = 0;
+   $fields["linked_machines_number"] = 0;
+   $fields["link_refused_machines_number"] = 0;
+   $fields["total_number_machines"] = 0;
+   $fields["error_msg"] = '';
 
-   $tid           = $thread->add($fields);
-   $fields["id"]  = $tid;
+   $tid = $thread->add($fields);
+   $fields["id"] = $tid;
 
    if ($ocsservers_id != -1) {
-      $result = SecondPass($tid,$ocsservers_id, $thread_nbr, $threadid, $fields, $config);
+      $result = SecondPass($tid, $ocsservers_id, $thread_nbr, $threadid, $fields, $config);
       if ($result) {
          $fields = $result;
       }
@@ -169,7 +170,7 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
       $res = $DB->query($query);
 
       while ($ocsservers = $DB->fetch_array($res)) {
-         $result = SecondPass($tid,$ocsservers["id"], $thread_nbr, $threadid, $fields, $config);
+         $result = SecondPass($tid, $ocsservers["id"], $thread_nbr, $threadid, $fields, $config);
          if ($result) {
             $fields = $result;
          }
@@ -178,14 +179,14 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
 
    //Write in db all the informations about this thread
    $fields["total_number_machines"] = $fields["imported_machines_number"]
-                                      + $fields["synchronized_machines_number"]
-                                      + $fields["failed_rules_machines_number"]
-                                      + $fields["linked_machines_number"]
-                                      + $fields["notupdated_machines_number"]
-                                      + $fields["not_unique_machines_number"]
-                                      + $fields["link_refused_machines_number"];
-   $fields["end_time"]  = date("Y-m-d H:i:s");
-   $fields["status"]    = PLUGIN_OCSINVENTORYNG_STATE_FINISHED;
+      + $fields["synchronized_machines_number"]
+      + $fields["failed_rules_machines_number"]
+      + $fields["linked_machines_number"]
+      + $fields["notupdated_machines_number"]
+      + $fields["not_unique_machines_number"]
+      + $fields["link_refused_machines_number"];
+   $fields["end_time"] = date("Y-m-d H:i:s");
+   $fields["status"] = PLUGIN_OCSINVENTORYNG_STATE_FINISHED;
    $fields["error_msg"] = "";
    $thread->update($fields);
 
@@ -195,19 +196,20 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
 
 /**
  * @param $ocsservers_id   integer  the OCS server id
-**/
-function FirstPass($ocsservers_id) {
+ **/
+function FirstPass($ocsservers_id)
+{
    global $DB;
 
    if (PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id)) {
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
-      
+
       // Compute lastest new computer
       $ocsResult = $ocsClient->getComputers(array(
-            'MAX_RECORDS' => 1,
-            'ORDER' => 'ID DESC',
+         'MAX_RECORDS' => 1,
+         'ORDER' => 'ID DESC',
       ));
-      
+
       if (count($ocsResult['COMPUTERS'])) {
          $max_id = key($ocsResult['COMPUTERS']);
       } else {
@@ -228,10 +230,10 @@ function FirstPass($ocsservers_id) {
       }
 
       // Store result for second pass (multi-thread)
-      $server                                         = new PluginOcsinventoryngServer();
-      $fields["max_ocsid"]                            = $max_id;
-      $fields["max_glpidate"]                         = $max_date;
-      $fields["plugin_ocsinventoryng_ocsservers_id"]  = $ocsservers_id;
+      $server = new PluginOcsinventoryngServer();
+      $fields["max_ocsid"] = $max_id;
+      $fields["max_glpidate"] = $max_date;
+      $fields["plugin_ocsinventoryng_ocsservers_id"] = $ocsservers_id;
 
       if ($server->getFromDBbyOcsServer($ocsservers_id)) {
          $fields["id"] = $server->fields["id"];
@@ -257,11 +259,12 @@ function FirstPass($ocsservers_id) {
  * @param $threadid
  * @param $fields
  * @param $config
-**/
-function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields, $config) {
+ **/
+function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields, $config)
+{
 
-   $server  = new PluginOcsinventoryngServer();
-   $ocsserver  = new PluginOcsinventoryngOcsServer();
+   $server = new PluginOcsinventoryngServer();
+   $ocsserver = new PluginOcsinventoryngOcsServer();
 
    if (!PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id)) {
       echo "\tThread #" . $threadid . ": cannot contact server\n\n";
@@ -269,19 +272,19 @@ function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields
    }
 
    if (!$ocsserver->getFromDB($ocsservers_id)) {
-      echo "\tThread #" . $threadid .": cannot get OCS server information\n\n";
+      echo "\tThread #" . $threadid . ": cannot get OCS server information\n\n";
       return false;
    }
 
    if (!$server->getFromDBbyOcsServer($ocsservers_id)) {
-      echo "\tThread #" . $threadid .": cannot get server information\n\n";
+      echo "\tThread #" . $threadid . ": cannot get server information\n\n";
       return false;
    }
 
    $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
 
    return plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
-                                                    $threadid, $fields, $config);
+      $threadid, $fields, $config);
 }
 
 
@@ -293,29 +296,30 @@ function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields
  * @param $threadid
  * @param $fields
  * @param $config
-**/
+ **/
 function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
-                                                  $threadid, $fields, $config) {
+                                                   $threadid, $fields, $config)
+{
    echo "\tThread #" . $threadid . ": import computers from server: '" . $cfg_ocs["name"] . "'\n";
 
    $multiThread = false;
    if ($threadid != -1 && $thread_nbr > 1) {
       $multiThread = true;
    }
-   
+
    $ocsServerId = $cfg_ocs['id'];
    $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($ocsServerId);
    $ocsComputers = array();
-   
+
    // Build common options
    //$inventoriedBefore = new DateTime('@'.(time() - 180));
 
    $computerOptions = array(
-         'FILTER' => array(
+      'FILTER' => array(
          'INVENTORIED_BEFORE' => "NOW()",
-         )
+      )
    );
-   
+
    // Limit the number of imported records according to config
    if ($config->fields["import_limit"] > 0) {
       $computerOptions['MAX_RECORDS'] = $config->fields["import_limit"];
@@ -325,56 +329,56 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
    if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
       $computerOptions['FILTER']['TAGS'] = $tag_limit;
    }
-   
+
    if ($cfg_ocs["tag_limit"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
       $computerOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
    }
-   
+
    // Get newly inventoried computers
    $firstQueryOptions = $computerOptions;
    if ($server->fields["max_glpidate"] != '0000-00-00 00:00:00') {
       $firstQueryOptions['FILTER']['INVENTORIED_SINCE'] = $server->fields["max_glpidate"];
    }
-   
+
    $ocsResult = $ocsClient->getComputers($firstQueryOptions);
-   
+
    // Get computers for which checksum has changed
    $secondQueryOptions = $computerOptions;
-   
+
    // Filter only useful computers
    // Some conditions can't be sent to OCS, so we have to do this in a loop
    // Maybe add this to SOAP ?
    if (isset($ocsResult['COMPUTERS'])) {
       $excludeIds = array();
       foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
-        if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
-          $ocsComputers[$ID] = $computer;
-        }
-        $excludeIds []= $ID;
+         if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
+            $ocsComputers[$ID] = $computer;
+         }
+         $excludeIds [] = $ID;
       }
-      
+
       $secondQueryOptions['FILTER']['EXCLUDE_IDS'] = $excludeIds;
    }
-   
-   
+
+
    $secondQueryOptions['FILTER']['CHECKSUM'] = intval($cfg_ocs["checksum"]);
-   
+
    $ocsResult = $ocsClient->getComputers($secondQueryOptions);
-   
+
    // Filter only useful computers
    // Some conditions can't be sent to OCS, so we have to do this in a loop
    // Maybe add this to SOAP ?
    if (isset($ocsResult['COMPUTERS'])) {
       if (isset($ocsResult['COMPUTERS'])) {
-        foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
-          if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
-            $ocsComputers[$ID] = $computer;
-          }
-        }
+         foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
+            if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
+               $ocsComputers[$ID] = $computer;
+            }
+         }
       }
       // Limit the number of imported records according to config
       if ($config->fields["import_limit"] > 0 and count($ocsComputers) > $config->fields["import_limit"]) {
-        $ocsComputers = array_splice($ocsComputers, $config->fields["import_limit"]);
+         $ocsComputers = array_splice($ocsComputers, $config->fields["import_limit"]);
       }
    }
    $nb = count($ocsComputers);
@@ -382,9 +386,9 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
 
    $fields["total_number_machines"] += $nb;
 
-   $thread     = new PluginOcsinventoryngThread();
-   $notimport  = new PluginOcsinventoryngNotimportedcomputer();
-   
+   $thread = new PluginOcsinventoryngThread();
+   $notimport = new PluginOcsinventoryngNotimportedcomputer();
+
    $i = 0;
    foreach ($ocsComputers as $ID => $ocsComputer) {
       if ($i == $config->fields["thread_log_frequency"]) {
@@ -418,4 +422,5 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
    }
    return $fields;
 }
+
 ?>

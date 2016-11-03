@@ -27,22 +27,23 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 $plugin = new Plugin();
 if ($plugin->isActivated("ocsinventoryng")
-      && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+   && Session::haveRight("plugin_ocsinventoryng", UPDATE)
+) {
 
    Html::header('OCSInventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsinventoryng");
-   
+
    // choose config server or config synchro
    PluginOcsinventoryngConfig::showMenu();
 
 } else {
    Html::header(__('Setup'), '', "tools", "pluginocsinventoryngmenu", "config");
    echo "<div class='center'><br><br>";
-   echo "<img src=\"".$CFG_GLPI["root_doc"]."/pics/warning.png\" alt='".__s('Warning')."'><br><br>";
-   echo "<b>".__('Please activate the plugin', 'ocsinventoryng')."</b></div>";
+   echo "<img src=\"" . $CFG_GLPI["root_doc"] . "/pics/warning.png\" alt='" . __s('Warning') . "'><br><br>";
+   echo "<b>" . __('Please activate the plugin', 'ocsinventoryng') . "</b></div>";
 }
 
 Html::footer();

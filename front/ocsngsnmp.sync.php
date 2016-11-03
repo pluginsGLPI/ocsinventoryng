@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
@@ -36,11 +36,11 @@ Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "syncs
 
 $display_list = true;
 
-if (isset($_POST["delete"]) 
-      && isset($_POST["toupdate"])
-      ) {
+if (isset($_POST["delete"])
+   && isset($_POST["toupdate"])
+) {
    if ($count = count($_POST["toupdate"])) {
-      
+
       foreach ($_POST['toupdate'] as $key => $val) {
          if ($val == "on") {
             $link = new PluginOcsinventoryngSnmpOcslink();
@@ -50,21 +50,21 @@ if (isset($_POST["delete"])
       Html::redirect($_SERVER['PHP_SELF']);
 
    }
-   
+
 }
 
 if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
    if ($count = count($_SESSION["ocs_updatesnmp"]['id'])) {
       $percent = min(100,
-                     round(100*($_SESSION["ocs_updatesnmp_count"]-$count)/$_SESSION["ocs_updatesnmp_count"],
-                           0));
+         round(100 * ($_SESSION["ocs_updatesnmp_count"] - $count) / $_SESSION["ocs_updatesnmp_count"],
+            0));
 
 
-      $key    = array_pop($_SESSION["ocs_updatesnmp"]['id']);
+      $key = array_pop($_SESSION["ocs_updatesnmp"]['id']);
       $action = PluginOcsinventoryngSnmpOcslink::updateSnmp($key,
-                                                              $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+         $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
       PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_updatesnmp"]['statistics'],
-                                                            $action['status'], true);
+         $action['status'], true);
       PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false, true);
       Html::displayProgressBar(400, $percent);
 
@@ -73,7 +73,7 @@ if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
    } else {
 
       if (isset($_SESSION["ocs_updatesnmp"]['statistics'])) {
-         PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false,true);
+         PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false, true);
       } else {
          echo "<div class='center b red'>";
          _e('No synchronization: the plugin will not synchronize these elements', 'ocsinventoryng');
@@ -82,7 +82,7 @@ if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
       unset($_SESSION["ocs_updatesnmp"]);
       $display_list = false;
       echo "<div class='center b'><br>";
-      echo "<a href='".$_SERVER['PHP_SELF']."'>".__('Back')."</a></div>";
+      echo "<a href='" . $_SERVER['PHP_SELF'] . "'>" . __('Back') . "</a></div>";
    }
 }
 
@@ -96,11 +96,11 @@ if (!isset($_POST["update_ok"])) {
    //PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($display_list) {
       PluginOcsinventoryngSnmpOcslink::showSnmpDeviceToUpdate($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                                                           $_GET['check'], $_GET['start']);
+         $_GET['check'], $_GET['start']);
    }
 
 } else {
-   if (count($_POST['toupdate']) >0) {
+   if (count($_POST['toupdate']) > 0) {
       $_SESSION["ocs_updatesnmp_count"] = 0;
 
       foreach ($_POST['toupdate'] as $key => $val) {

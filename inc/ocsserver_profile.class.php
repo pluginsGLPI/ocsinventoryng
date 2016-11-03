@@ -31,7 +31,8 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-class PluginOcsinventoryngOcsserver_Profile extends CommonDBTM {
+class PluginOcsinventoryngOcsserver_Profile extends CommonDBTM
+{
 
 
    static $rightname = "profile";

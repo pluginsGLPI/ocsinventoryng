@@ -33,20 +33,23 @@ if (!defined('GLPI_ROOT')) {
 
 /**
  * Relation between item and devices
-**/
-class PluginOcsinventoryngItem_DeviceBiosdata extends Item_Devices {
+ **/
+class PluginOcsinventoryngItem_DeviceBiosdata extends Item_Devices
+{
 
    static public $itemtype_2 = 'PluginOcsinventoryngDeviceBiosdata';
    static public $items_id_2 = 'plugin_ocsinventoryng_devicebiosdatas_id';
 
    static protected $notable = false;
-   
+
    /**
     * @since version 0.85
-   **/
-   static function itemAffinity() {
+    **/
+   static function itemAffinity()
+   {
       return array('Computer');
    }
 
 }
+
 ?>

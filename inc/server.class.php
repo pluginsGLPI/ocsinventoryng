@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -27,14 +28,16 @@
  --------------------------------------------------------------------------
  */
 
-class PluginOcsinventoryngServer extends CommonDBTM {
+class PluginOcsinventoryngServer extends CommonDBTM
+{
 
-   
-   function getFromDBbyOcsServer($id) {
+
+   function getFromDBbyOcsServer($id)
+   {
       global $DB;
 
       $query = "SELECT *
-                FROM `".$this->getTable()."`
+                FROM `" . $this->getTable() . "`
                 WHERE `plugin_ocsinventoryng_ocsservers_id` = '$id'";
 
       if ($result = $DB->query($query)) {
@@ -49,4 +52,5 @@ class PluginOcsinventoryngServer extends CommonDBTM {
       return false;
    }
 }
+
 ?>

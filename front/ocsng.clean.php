@@ -27,12 +27,12 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "clean");
 
 if (!isset($_POST["clean_ok"])) {
-   
+
    Session::checkRight("plugin_ocsinventoryng_clean", READ);
 
    if (!isset($_GET['check'])) {
@@ -43,15 +43,15 @@ if (!isset($_POST["clean_ok"])) {
    }
    PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    PluginOcsinventoryngOcsServer::showComputersToClean($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                                                       $_GET['check'], $_GET['start']);
+      $_GET['check'], $_GET['start']);
 
 } else {
    Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);
    if (count($_POST['toclean']) > 0) {
       PluginOcsinventoryngOcsServer::cleanLinksFromList($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                                                        $_POST['toclean']);
-      echo "<div class='center b'>".__('Clean links between GLPI and OCSNG', 'ocsinventoryng').
-            "<br>". __('Operation successful')."<br>";
+         $_POST['toclean']);
+      echo "<div class='center b'>" . __('Clean links between GLPI and OCSNG', 'ocsinventoryng') .
+         "<br>" . __('Operation successful') . "<br>";
       Html::displayBackLink();
       echo "</div>";
    }

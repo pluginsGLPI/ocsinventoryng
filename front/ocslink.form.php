@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 Session::checkRight("computer", READ);
 
@@ -39,12 +39,12 @@ if (isset($_POST["force_ocs_resynch"])) {
    $ocsservers_id = PluginOcsinventoryngOcsServer::getByMachineID($_POST["id"]);
    //Update the computer
    $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
-   $dohistory = (isset($cfg_ocs['dohistory'])?$cfg_ocs['dohistory']:false);
+   $dohistory = (isset($cfg_ocs['dohistory']) ? $cfg_ocs['dohistory'] : false);
    PluginOcsinventoryngOcsServer::updateComputer($_POST["resynch_id"], $ocsservers_id, $dohistory, 1);
    Html::back();
 } else if (isset ($_POST["update"])) {
-   $link                      = new PluginOcsinventoryngOcslink();
-   $values["id"]              = $_POST["link_id"];
+   $link = new PluginOcsinventoryngOcslink();
+   $values["id"] = $_POST["link_id"];
    $values["use_auto_update"] = $_POST["use_auto_update"];
    $link->update($values);
    Html::back();

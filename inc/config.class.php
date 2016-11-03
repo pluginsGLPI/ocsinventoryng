@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -27,16 +28,19 @@
  --------------------------------------------------------------------------
  */
 
-class PluginOcsinventoryngConfig extends CommonDBTM {
+class PluginOcsinventoryngConfig extends CommonDBTM
+{
 
    static $rightname = "plugin_ocsinventoryng";
-   
-   static function getTypeName($nb=0) {
+
+   static function getTypeName($nb = 0)
+   {
       return __("Automatic synchronization's configuration", 'ocsinventoryng');
    }
 
 
-   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+   {
 
       if (!$withtemplate) {
          switch ($item->getType()) {
@@ -50,7 +54,8 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
    }
 
 
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+   {
 
       switch ($item->getType()) {
          case __CLASS__ :
@@ -62,7 +67,8 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
    }
 
 
-   function defineTabs($options=array()) {
+   function defineTabs($options = array())
+   {
 
       $ong = array();
       $this->addDefaultFormTab($ong);
@@ -70,81 +76,84 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       return $ong;
    }
 
-   static function showMenu() {
+   static function showMenu()
+   {
       global $CFG_GLPI;
 
       echo "<table class='tab_cadre_fixe'>";
-      echo "<tr><th>".__('Configuration')."</th></tr>";
+      echo "<tr><th>" . __('Configuration') . "</th></tr>";
       echo "<tr class='tab_bg_1'><td class='center b'>";
-      echo "<a href='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/ocsserver.php'>".
-             _n('OCSNG server', 'OCSNG servers', 2,'ocsinventoryng')."</a>";
+      echo "<a href='" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsserver.php'>" .
+         _n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng') . "</a>";
       echo "</td></tr>";
 
       if (PluginOcsinventoryngOcsServer::useMassImport()) {
          echo "<tr class='tab_bg_1'><td class='center b'>";
-         echo "<a href='".$CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/config.form.php'>".
-                __("Automatic synchronization's configuration", 'ocsinventoryng')."</a>";
+         echo "<a href='" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/config.form.php'>" .
+            __("Automatic synchronization's configuration", 'ocsinventoryng') . "</a>";
          echo "</td></tr>";
       }
       echo "</table>";
    }
 
-   function showForm($target) {
+   function showForm($target)
+   {
 
       $this->getFromDB(1);
       $this->showFormHeader();
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td> " .__('Show processes where nothing was changed', 'ocsinventoryng') . " </td><td>";
+      echo "<td> " . __('Show processes where nothing was changed', 'ocsinventoryng') . " </td><td>";
       Dropdown::showYesNo("is_displayempty", $this->fields["is_displayempty"]);
       echo "</td>";
-      echo "<td rowspan='3' class='middle right'> " .__('Comments')."</td>";
+      echo "<td rowspan='3' class='middle right'> " . __('Comments') . "</td>";
       echo "<td class='center middle' rowspan='3'>";
-      echo "<textarea cols='40' rows='5' name='comment' >".$this->fields["comment"]."</textarea>";
+      echo "<textarea cols='40' rows='5' name='comment' >" . $this->fields["comment"] . "</textarea>";
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td> " .__('Authorize the OCSNG update', 'ocsinventoryng') . " </td><td>";
-      Dropdown::showYesNo('allow_ocs_update',$this->fields['allow_ocs_update']);
+      echo "<td> " . __('Authorize the OCSNG update', 'ocsinventoryng') . " </td><td>";
+      Dropdown::showYesNo('allow_ocs_update', $this->fields['allow_ocs_update']);
       echo "</td>";
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td> " .__('Refresh information of a process every', 'ocsinventoryng') . " </td><td>";
-      Html::autocompletionTextField($this,"delay_refresh", array('size' => 5));
-      echo "&nbsp;"._n('second', 'seconds', 2, 'ocsinventoryng')."</td>";
+      echo "<td> " . __('Refresh information of a process every', 'ocsinventoryng') . " </td><td>";
+      Html::autocompletionTextField($this, "delay_refresh", array('size' => 5));
+      echo "&nbsp;" . _n('second', 'seconds', 2, 'ocsinventoryng') . "</td>";
       echo "</tr>";
 
       $this->showFormButtons(array('canedit' => true,
-                                   'candel'  => false));
+         'candel' => false));
 
       return true;
    }
 
 
-   function showScriptLock() {
+   function showScriptLock()
+   {
 
       echo "<div class='center'>";
-      echo "<form name='lock' action=\"".$_SERVER['HTTP_REFERER']."\" method='post'>";
+      echo "<form name='lock' action=\"" . $_SERVER['HTTP_REFERER'] . "\" method='post'>";
       echo "<input type='hidden' name='id' value='1'>";
       echo "<table class='tab_cadre'>";
       echo "<tr class='tab_bg_2'>";
-      echo "<th>&nbsp;" . __('Check OCSNG import script', 'ocsinventoryng')."&nbsp;</th></tr>";
+      echo "<th>&nbsp;" . __('Check OCSNG import script', 'ocsinventoryng') . "&nbsp;</th></tr>";
 
       echo "<tr class='tab_bg_2'>";
       echo "<td class='center'>";
       $status = $this->isScriptLocked();
       if (!$status) {
-         echo __('Lock not activated', 'ocsinventoryng')."&nbsp;<img src='../pics/export.png'>";
+         echo __('Lock not activated', 'ocsinventoryng') . "&nbsp;<img src='../pics/export.png'>";
       } else {
-         echo __('Lock activated', 'ocsinventoryng')."&nbsp;<img src='../pics/ok2.png'>";
+         echo __('Lock activated', 'ocsinventoryng') . "&nbsp;<img src='../pics/ok2.png'>";
       }
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td colspan='2' class='center'>";
-      echo "<input type='submit' name='".(!$status?"soft_lock":"soft_unlock")."' class='submit' ".
-            "value='".(!$status?_sx('button', 'Lock', 'ocsinventoryng')
-                               :_sx('button', 'Unlock', 'ocsinventoryng'))."'>";
+      echo "<input type='submit' name='" . (!$status ? "soft_lock" : "soft_unlock") . "' class='submit' " .
+         "value='" . (!$status ? _sx('button', 'Lock', 'ocsinventoryng')
+            : _sx('button', 'Unlock', 'ocsinventoryng')) . "'>";
       echo "</td/></tr/></table><br>";
       Html::closeForm();
       echo "</div>";
@@ -152,19 +161,22 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
    }
 
 
-   static function isScriptLocked() {
+   static function isScriptLocked()
+   {
       return file_exists(PLUGIN_OCSINVENTORYNG_LOCKFILE);
    }
 
 
-   function setScriptLock() {
+   function setScriptLock()
+   {
 
       $fp = fopen(PLUGIN_OCSINVENTORYNG_LOCKFILE, "w+");
       fclose($fp);
    }
 
 
-   function removeScriptLock() {
+   function removeScriptLock()
+   {
 
       if (file_exists(PLUGIN_OCSINVENTORYNG_LOCKFILE)) {
          unlink(PLUGIN_OCSINVENTORYNG_LOCKFILE);
@@ -172,14 +184,15 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
    }
 
 
-   function getAllOcsServers() {
+   function getAllOcsServers()
+   {
       global $DB;
 
       $servers[-1] = __('All servers', 'ocsinventoryng');
 
-      $sql     = "SELECT `id`, `name`
+      $sql = "SELECT `id`, `name`
                   FROM `glpi_plugin_ocsinventoryng_ocsservers`";
-      $result  = $DB->query($sql);
+      $result = $DB->query($sql);
 
       while ($conf = $DB->fetch_array($result)) {
          $servers[$conf["id"]] = $conf["name"];
@@ -189,7 +202,8 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
    }
 
 
-   static function canUpdateOCS() {
+   static function canUpdateOCS()
+   {
 
       $config = new PluginOcsinventoryngConfig();
       $config->getFromDB(1);
@@ -199,13 +213,15 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
    /**
     * Display debug information for current object
-   **/
-   function showDebug() {
+    **/
+   function showDebug()
+   {
 
       NotificationEvent::debugEvent(new PluginOcsinventoryngNotimportedcomputer(),
-                                    array('entities_id' => 0 ,
-                                          'notimported' => array()));
+         array('entities_id' => 0,
+            'notimported' => array()));
    }
 
 }
+
 ?>

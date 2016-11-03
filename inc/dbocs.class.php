@@ -30,20 +30,23 @@
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
+
 /// DB class to connect to a OCS server
-class PluginOcsinventoryngDBocs extends DBmysql {
+class PluginOcsinventoryngDBocs extends DBmysql
+{
    /**
     * Constructor
     *
     * @param $ID ID of the ocs server ID
-   **/
-   function __construct($dbhost, $dbuser ,$dbpassword, $dbdefault) {
+    **/
+   function __construct($dbhost, $dbuser, $dbpassword, $dbdefault)
+   {
 
-      $this->dbhost     = $dbhost;
-      $this->dbuser     = $dbuser;
+      $this->dbhost = $dbhost;
+      $this->dbuser = $dbuser;
       $this->dbpassword = $dbpassword;
-      $this->dbdefault  = $dbdefault;
- 
+      $this->dbdefault = $dbdefault;
+
       parent::__construct();
    }
 
@@ -52,8 +55,9 @@ class PluginOcsinventoryngDBocs extends DBmysql {
     *
     * Get current ocs server ID
     * @return ID of the ocs server ID
-   **/
-   function getServerID() {
+    **/
+   function getServerID()
+   {
       return $this->ocsservers_id;
    }
 }

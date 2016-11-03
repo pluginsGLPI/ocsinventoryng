@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
@@ -54,14 +54,14 @@ if ($item->isEntityAssign()) {
 
    // allow opening ticket on recursive object (printer, software, ...)
    $recursive = $item->maybeRecursive();
-   $where     = getEntitiesRestrictRequest("WHERE", $_POST['table'], '', $entity, $recursive);
+   $where = getEntitiesRestrictRequest("WHERE", $_POST['table'], '', $entity, $recursive);
 
 } else {
    $where = "WHERE 1";
 }
 
-if(isset($_POST['used']) && !empty($_POST['used'])){
-   $where .= " AND `id` NOT IN ('".implode("','" ,$_POST['used'])."') ";
+if (isset($_POST['used']) && !empty($_POST['used'])) {
+   $where .= " AND `id` NOT IN ('" . implode("','", $_POST['used']) . "') ";
 }
 
 if ($item->maybeDeleted()) {
@@ -75,33 +75,33 @@ if ($item->maybeTemplate()) {
 if ((strlen($_POST['searchText']) > 0)) {
    $search = Search::makeTextSearch($_POST['searchText']);
 
-   $where .= " AND (`name` ".$search."
-                    OR `id` = '".$_POST['searchText']."'";
+   $where .= " AND (`name` " . $search . "
+                    OR `id` = '" . $_POST['searchText'] . "'";
 
-   if (FieldExists($_POST['table'],"contact")) {
-      $where .= " OR `contact` ".$search;
+   if (FieldExists($_POST['table'], "contact")) {
+      $where .= " OR `contact` " . $search;
    }
-   if (FieldExists($_POST['table'],"serial")) {
-      $where .= " OR `serial` ".$search;
+   if (FieldExists($_POST['table'], "serial")) {
+      $where .= " OR `serial` " . $search;
    }
-   if (FieldExists($_POST['table'],"otherserial")) {
-      $where .= " OR `otherserial` ".$search;
+   if (FieldExists($_POST['table'], "otherserial")) {
+      $where .= " OR `otherserial` " . $search;
    }
    $where .= ")";
 }
 
 
 if (!isset($_POST['page'])) {
-   $_POST['page']       = 1;
+   $_POST['page'] = 1;
    $_POST['page_limit'] = $CFG_GLPI['dropdown_max'];
 }
 
-$start = ($_POST['page']-1)*$_POST['page_limit'];
+$start = ($_POST['page'] - 1) * $_POST['page_limit'];
 $limit = $_POST['page_limit'];
 $LIMIT = "LIMIT $start,$limit";
 
 $query = "SELECT *
-          FROM `".$_POST['table']."`
+          FROM `" . $_POST['table'] . "`
           $where
           ORDER BY `name`
           $LIMIT";
@@ -111,8 +111,8 @@ $datas = array();
 
 // Display first if no search
 if ($_POST['page'] == 1 && empty($_POST['searchText'])) {
-   array_push($datas, array('id'   => 0,
-                            'text' => Dropdown::EMPTY_VALUE));
+   array_push($datas, array('id' => 0,
+      'text' => Dropdown::EMPTY_VALUE));
 }
 $count = 0;
 if ($DB->numrows($result)) {
@@ -130,17 +130,18 @@ if ($DB->numrows($result)) {
       }
 
       if (empty($output)
-          || $_SESSION['glpiis_ids_visible']) {
+         || $_SESSION['glpiis_ids_visible']
+      ) {
          $output = sprintf(__('%1$s (%2$s)'), $output, $data['id']);
       }
 
-      array_push($datas, array('id'   => $data['id'],
-                               'text' => $output));
+      array_push($datas, array('id' => $data['id'],
+         'text' => $output));
       $count++;
    }
 }
 
-$ret['count']   = $count;
+$ret['count'] = $count;
 $ret['results'] = $datas;
 echo json_encode($ret);
 ?>

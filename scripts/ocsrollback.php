@@ -28,28 +28,28 @@
  */
 
 /** @file
-* @brief Rollback OCS events (after a resto)
-*/
+ * @brief Rollback OCS events (after a resto)
+ */
 
 
-ini_set("memory_limit","-1");
+ini_set("memory_limit", "-1");
 ini_set("max_execution_time", "0");
 
 if ($argv) {
-   for ($i=1 ; $i<count($argv) ; $i++) {
+   for ($i = 1; $i < count($argv); $i++) {
       //To be able to use = in search filters, enter \= instead in command line
       //Replace the \= by ° not to match the split function
-      $arg = str_replace('\=','°',$argv[$i]);
-      $it  = explode("=",$arg);
-      $it[0] = preg_replace('/^--/','',$it[0]);
+      $arg = str_replace('\=', '°', $argv[$i]);
+      $it = explode("=", $arg);
+      $it[0] = preg_replace('/^--/', '', $it[0]);
 
       //Replace the ° by = the find the good filter
-      $it           = str_replace('°','=',$it);
+      $it = str_replace('°', '=', $it);
       $_GET[$it[0]] = $it[1];
    }
 }
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 $CFG_GLPI["debug"] = 0;
 
@@ -64,13 +64,13 @@ if (!isset($_GET["server"])) {
 
 }
 $DBocs = new DBocs($_GET["server"]);
-echo "Connecting to ".$DBocs->dbhost."\n";
+echo "Connecting to " . $DBocs->dbhost . "\n";
 
 if (!PluginOcsinventoryngOcsServer::checkOCSconnection($_GET["server"])) {
    die("Failed connexion to OCS\n");
 }
-$run   = (isset($_GET["run"]) && $_GET["run"]>0);
-$debug = (isset($_GET["debug"]) && $_GET["debug"]>0);
+$run = (isset($_GET["run"]) && $_GET["run"] > 0);
+$debug = (isset($_GET["debug"]) && $_GET["debug"] > 0);
 
 // Find Last Machine ID + time
 $sql = "SELECT *
@@ -79,15 +79,15 @@ $sql = "SELECT *
         LIMIT 0,1";
 $res = $DBocs->query($sql);
 
-if (!($res && $DBocs->numrows($res)>0)){
+if (!($res && $DBocs->numrows($res) > 0)) {
    die("No data from OCS\n");
 }
 
-$data  = $DBocs->fetch_array($res);
+$data = $DBocs->fetch_array($res);
 $maxid = $data["ID"];
 $maxti = $data["LASTCOME"];
 
-echo "Last new computer : ".$data["DEVICEID"]." ($maxid, $maxti)\n";
+echo "Last new computer : " . $data["DEVICEID"] . " ($maxid, $maxti)\n";
 if (!$maxid) {
    die("Bad value\n");
 }
@@ -107,31 +107,32 @@ $comp = new Computer();
 
 echo "Start\n";
 $tabres = array();
-$nb     = $nbupd = 0;
+$nb = $nbupd = 0;
 
-while ($event=$DB->fetch_array($res)) {
+while ($event = $DB->fetch_array($res)) {
 
    if ($event["new_value"] > $maxid
-       && PluginOcsinventoryngOcsServer::getByMachineID($event["items_id"]) == $_GET["server"]
-       && $comp->getFromDB($event["items_id"])) {
+      && PluginOcsinventoryngOcsServer::getByMachineID($event["items_id"]) == $_GET["server"]
+      && $comp->getFromDB($event["items_id"])
+   ) {
 
       $nb++;
       printf("+ %5d : %s : %s (%s > %s)\n", $nb, $event["date_mod"], $comp->fields["name"],
-             $event["old_value"], $event["new_value"]);
+         $event["old_value"], $event["new_value"]);
 
       if (!isset($tabres[$comp->fields["entities_id"]])) {
          $tabres[$comp->fields["entities_id"]] = array();
       }
 
-      if ($event["linked_action"]==10) {// ID Changed
-         $tabres[$comp->fields["entities_id"]][] = "ID:".$comp->fields["id"]." - ".
-                                                   $comp->fields["name"].
-                                                   " (".$comp->fields["serial"].") => rollback lien";
+      if ($event["linked_action"] == 10) {// ID Changed
+         $tabres[$comp->fields["entities_id"]][] = "ID:" . $comp->fields["id"] . " - " .
+            $comp->fields["name"] .
+            " (" . $comp->fields["serial"] . ") => rollback lien";
 
          // Search the old Device_ID in OCS
          $sql = "SELECT `DEVICEID`
                  FROM `hardware`
-                 WHERE `ID` = '".$event["old_value"]."'";
+                 WHERE `ID` = '" . $event["old_value"] . "'";
          $resocs = $DBocs->query($sql);
 
          $olddevid = "";
@@ -141,13 +142,13 @@ while ($event=$DB->fetch_array($res)) {
 
          // Rollback the change in ocs_link
          $sql = "UPDATE `glpi_ocslinks`
-                 SET `ocsid` = '" . $event["old_value"]."'";
+                 SET `ocsid` = '" . $event["old_value"] . "'";
 
          if (!empty($olddevid)) {
             $sql .= ", `ocs_deviceid` = '$olddevid'";
          }
 
-         $sql .= " WHERE `computers_id` = '" . $event["items_id"]."'";
+         $sql .= " WHERE `computers_id` = '" . $event["items_id"] . "'";
 
          if ($debug) {
             echo "DEBUG: $sql \n";
@@ -162,27 +163,27 @@ while ($event=$DB->fetch_array($res)) {
                $changes[2] = "Rollback: restauration lien du $maxti";
                $changes[1] = "";
                Log::history($event["items_id"], 'Computer', $changes, 0,
-                            Log::HISTORY_LOG_SIMPLE_MESSAGE);
+                  Log::HISTORY_LOG_SIMPLE_MESSAGE);
             } else {
                echo "*** MySQL : $sql\n*** Error : " . $DB->error() . "\n";
             }
          }
 
       } else { // $event["linked_action"]==8 (New) or 11 (linked)
-         $tabres[$comp->fields["entities_id"]][] = "ID:".$comp->fields["id"]." - ".
-                                                   $comp->fields["name"].
-                                                   " (".$comp->fields["serial"].") => retour stock";
+         $tabres[$comp->fields["entities_id"]][] = "ID:" . $comp->fields["id"] . " - " .
+            $comp->fields["name"] .
+            " (" . $comp->fields["serial"] . ") => retour stock";
 
          // TODO: to be done according to automatic link configuration
-         $input["id"]            = $event["items_id"];
-         $input["name"]          = NULL;  // No name
-         $input["is_dynamic"]    = 0;     // No Ocs link
-         $input["state"]         = 5;     // Available
+         $input["id"] = $event["items_id"];
+         $input["name"] = NULL;  // No name
+         $input["is_dynamic"] = 0;     // No Ocs link
+         $input["state"] = 5;     // Available
 
          // Unlink the computer
          $sql = "DELETE
                  FROM `glpi_ocslinks`
-                 WHERE `computers_id` = '" . $event["items_id"]."'";
+                 WHERE `computers_id` = '" . $event["items_id"] . "'";
 
          if ($debug) {
             echo "DEBUG: $sql \n";
@@ -201,7 +202,7 @@ while ($event=$DB->fetch_array($res)) {
                $changes[2] = "Rollback: restauration statut au $maxti";
                $changes[1] = "";
                Log::history($event["items_id"], 'Computer', $changes, 0,
-                            Log::HISTORY_LOG_SIMPLE_MESSAGE);
+                  Log::HISTORY_LOG_SIMPLE_MESSAGE);
             } else {
                echo "*** MySQL : $sql\n*** Error : " . $DB->error() . "\n";
             }
@@ -212,13 +213,13 @@ while ($event=$DB->fetch_array($res)) {
 
 printf("=> %d computers, %d updates\n", $nb, $nbupd);
 
-echo "Saving reports in ". GLPI_LOG_DIR ."\n";
+echo "Saving reports in " . GLPI_LOG_DIR . "\n";
 $nbc = 0;
 foreach ($tabres as $ent => $comps) {
    $name = Dropdown::getDropdownName("glpi_entities", $ent);
    printf("+ %4d : %s\n", $ent, $name);
-   file_put_contents(GLPI_LOG_DIR."/rollback-$ent.log",
-                     "Rollbak for $name\n\n".implode("\n",$comps)."\n\n");
+   file_put_contents(GLPI_LOG_DIR . "/rollback-$ent.log",
+      "Rollbak for $name\n\n" . implode("\n", $comps) . "\n\n");
    $nbc += count($comps);
 }
 printf("=> %d reports for %d computers\n", count($tabres), $nbc);

@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
@@ -35,59 +35,58 @@ Html::header('OCSInventory NG', '', "tools", "pluginocsinventoryngmenu", "delete
 
 echo "<div class='center'>";
 $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient"){
+if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
    PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-   if ($_SESSION["ocs_deleted_equiv"]['computers_to_del']){
-      echo "<div class='center b'>".$_SESSION["ocs_deleted_equiv"]['computers_deleted']." ".__('Pc deleted', 'ocsinventoryng');
+   if ($_SESSION["ocs_deleted_equiv"]['computers_to_del']) {
+      echo "<div class='center b'>" . $_SESSION["ocs_deleted_equiv"]['computers_deleted'] . " " . __('Pc deleted', 'ocsinventoryng');
       Html::redirect($_SERVER['PHP_SELF']);
-   }else{
-      if($_SESSION["ocs_deleted_equiv"]['computers_deleted'] === 0){
-         echo "<div class='center b'>". __('No new computers to delete', 'ocsinventoryng') .".</div>";
-      }else{
+   } else {
+      if ($_SESSION["ocs_deleted_equiv"]['computers_deleted'] === 0) {
+         echo "<div class='center b'>" . __('No new computers to delete', 'ocsinventoryng') . ".</div>";
+      } else {
          echo "<div class='center b'>";
          echo "<table class='tab_cadre_fixe'>";
-         echo "<th colspan='2'>".__('Clean OCSNG deleted computers', 'ocsinventoryng');
+         echo "<th colspan='2'>" . __('Clean OCSNG deleted computers', 'ocsinventoryng');
          echo "</th>";
-         echo "<tr class='tab_bg_1'><td>".__('Pc deleted', 'ocsinventoryng')."</td><td>".$_SESSION["ocs_deleted_equiv"]['computers_deleted']."</td></tr>";
+         echo "<tr class='tab_bg_1'><td>" . __('Pc deleted', 'ocsinventoryng') . "</td><td>" . $_SESSION["ocs_deleted_equiv"]['computers_deleted'] . "</td></tr>";
          echo "</table></div>";
-         
+
       }
-      echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsng.php'>";
+      echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
       _e('Back');
       echo "</a>";
    }
-}
-else{
-   if (empty($_SESSION["ocs_deleted_equiv"]["total"])){
+} else {
+   if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
       PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    }
-   if ( $_SESSION["ocs_deleted_equiv"]["total"] != $_SESSION["ocs_deleted_equiv"]["deleted"] && $_SESSION["ocs_deleted_equiv"]["last_req"]) {
-      
-      echo $_SESSION["ocs_deleted_equiv"]["deleted"]."/".$_SESSION["ocs_deleted_equiv"]["total"];
+   if ($_SESSION["ocs_deleted_equiv"]["total"] != $_SESSION["ocs_deleted_equiv"]["deleted"] && $_SESSION["ocs_deleted_equiv"]["last_req"]) {
+
+      echo $_SESSION["ocs_deleted_equiv"]["deleted"] . "/" . $_SESSION["ocs_deleted_equiv"]["total"];
       $count = $_SESSION["ocs_deleted_equiv"]["deleted"];
       $percent = min(100,
-                  round(100*($count)/$_SESSION["ocs_deleted_equiv"]["total"],
-                        0));
+         round(100 * ($count) / $_SESSION["ocs_deleted_equiv"]["total"],
+            0));
       PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-      Html::displayProgressBar(400, $percent,$param['forcepadding']=true);
+      Html::displayProgressBar(400, $percent, $param['forcepadding'] = true);
       Html::redirect($_SERVER['PHP_SELF']);
    } else {
-      
-      if($_SESSION["ocs_deleted_equiv"]["total"] === 0){
-         echo "<div class='center b'>". __('No new computers to delete', 'ocsinventoryng') .".</div>";
-      }else{
+
+      if ($_SESSION["ocs_deleted_equiv"]["total"] === 0) {
+         echo "<div class='center b'>" . __('No new computers to delete', 'ocsinventoryng') . ".</div>";
+      } else {
          $total = $_SESSION["ocs_deleted_equiv"]["total"];
          $_SESSION["ocs_deleted_equiv"]["total"] = 0;
-         $count = $_SESSION["ocs_deleted_equiv"]["deleted"] ;
-         $_SESSION["ocs_deleted_equiv"]["deleted"]  = 0;
+         $count = $_SESSION["ocs_deleted_equiv"]["deleted"];
+         $_SESSION["ocs_deleted_equiv"]["deleted"] = 0;
          echo "<div class='center b'>";
          echo "<table class='tab_cadre_fixe'>";
-         echo "<th colspan='2'>".__('Clean OCSNG deleted computers', 'ocsinventoryng');
+         echo "<th colspan='2'>" . __('Clean OCSNG deleted computers', 'ocsinventoryng');
          echo "</th>";
-         echo "<tr class='tab_bg_1'><td>".__('Pc deleted', 'ocsinventoryng')."</td><td>".$count."/".$total."</td></tr>";
+         echo "<tr class='tab_bg_1'><td>" . __('Pc deleted', 'ocsinventoryng') . "</td><td>" . $count . "/" . $total . "</td></tr>";
          echo "</table></div>";
       }
-      echo "<a href='".$CFG_GLPI["root_doc"]."/plugins/ocsinventoryng/front/ocsng.php'>";
+      echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
       _e('Back');
       echo "</a>";
    }

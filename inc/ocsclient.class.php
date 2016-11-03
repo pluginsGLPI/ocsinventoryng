@@ -26,10 +26,12 @@
  along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
+
 /**
  * Use an abstract class because GLPI is unable to autoload interfaces
  */
-abstract class PluginOcsinventoryngOcsClient {
+abstract class PluginOcsinventoryngOcsClient
+{
 
    const CHECKSUM_NONE = 0x00000;
    const CHECKSUM_HARDWARE = 0x00001;
@@ -58,10 +60,11 @@ abstract class PluginOcsinventoryngOcsClient {
    const WANTED_DICO_SOFT = 0x00002;
    const WANTED_ALL = 0x00003;
    const CHECKSUM_SECURITY = 0x00004;
-   
+
    private $id;
 
-   public function __construct($id) {
+   public function __construct($id)
+   {
       $this->id = $id;
    }
 
@@ -82,18 +85,18 @@ abstract class PluginOcsinventoryngOcsClient {
     * @param string $field The field to filter computers
     * @param mixed $value The value to filter computers
     * @return array List of computers :
-    * 		array (
-    * 			array (
-    * 				'ID' => ...
-    * 				'CHECKSUM' => ...
-    * 				'DEVICEID' => ...
-    * 				'LASTCOME' => ...
-    * 				'LASTDATE' => ...
-    * 				'NAME' => ...
-    * 				'TAG' => ...
-    * 			),
-    * 			...
-    * 		)
+    *      array (
+    *         array (
+    *            'ID' => ...
+    *            'CHECKSUM' => ...
+    *            'DEVICEID' => ...
+    *            'LASTCOME' => ...
+    *            'LASTDATE' => ...
+    *            'NAME' => ...
+    *            'TAG' => ...
+    *         ),
+    *         ...
+    *      )
     */
    abstract public function searchComputers($field, $value);
 
@@ -101,107 +104,107 @@ abstract class PluginOcsinventoryngOcsClient {
     * Returns a list of computers
     *
     * @param array $options Possible options :
-    * 		array(
-    * 			'OFFSET' => int,
-    * 			'MAX_RECORDS' => int,
-    * 			'FILTER' => array(						// filter the computers to return
-    * 				'IDS' => array(int),				// list of computer ids to select
-    * 				'EXCLUDE_IDS' => array(int),		// list of computer ids to exclude
-    * 				'TAGS' => array(string),			// list of computer tags to select
-    * 				'EXCLUDE_TAGS' => array(string),	// list of computer tags to exclude
-    * 				'CHECKSUM' => int					// filter which sections have been modified (see CHECKSUM_* constants)
-    * 			),
-    * 			'DISPLAY' => array(		// select which sections of the computers to return
-    * 				'CHECKSUM' => int,	// inventory sections to return (see CHECKSUM_* constants)
-    * 				'WANTED' => int		// special sections to return (see WANTED_* constants)
-    * 			)
-    * 		)
-    * 
+    *      array(
+    *         'OFFSET' => int,
+    *         'MAX_RECORDS' => int,
+    *         'FILTER' => array(                  // filter the computers to return
+    *            'IDS' => array(int),            // list of computer ids to select
+    *            'EXCLUDE_IDS' => array(int),      // list of computer ids to exclude
+    *            'TAGS' => array(string),         // list of computer tags to select
+    *            'EXCLUDE_TAGS' => array(string),   // list of computer tags to exclude
+    *            'CHECKSUM' => int               // filter which sections have been modified (see CHECKSUM_* constants)
+    *         ),
+    *         'DISPLAY' => array(      // select which sections of the computers to return
+    *            'CHECKSUM' => int,   // inventory sections to return (see CHECKSUM_* constants)
+    *            'WANTED' => int      // special sections to return (see WANTED_* constants)
+    *         )
+    *      )
+    *
     * @return array List of computers :
-    * 		array (
-    * 			'TOTAL_COUNT' => int, // the total number of computers for this query (without taking OFFSET and MAX_RECORDS into account)
-    * 			'COMPUTERS' => array (
-    * 				array (
-    * 					'META' => array(
-    * 						'ID' => ...
-    * 						'CHECKSUM' => ...
-    * 						'DEVICEID' => ...
-    * 						'LASTCOME' => ...
-    * 						'LASTDATE' => ...
-    * 						'NAME' => ...
-    * 						'TAG' => ...
-    * 					),
-    * 					'SECTION1' => array(
-    * 						array(...),   // Section element 1
-    * 						array(...),   // Section element 2
-    * 						...
-    * 					),
-    * 					'SECTION2' => array(...),
-    * 					...
-    * 				),
-    * 				...
-    * 			)
-    * 		)
+    *      array (
+    *         'TOTAL_COUNT' => int, // the total number of computers for this query (without taking OFFSET and MAX_RECORDS into account)
+    *         'COMPUTERS' => array (
+    *            array (
+    *               'META' => array(
+    *                  'ID' => ...
+    *                  'CHECKSUM' => ...
+    *                  'DEVICEID' => ...
+    *                  'LASTCOME' => ...
+    *                  'LASTDATE' => ...
+    *                  'NAME' => ...
+    *                  'TAG' => ...
+    *               ),
+    *               'SECTION1' => array(
+    *                  array(...),   // Section element 1
+    *                  array(...),   // Section element 2
+    *                  ...
+    *               ),
+    *               'SECTION2' => array(...),
+    *               ...
+    *            ),
+    *            ...
+    *         )
+    *      )
     */
    abstract public function getComputers($options);
 
-    /**
-     * Returns a list of snmp devices
-     *
-     * @param array $options Possible options :
-     * 		array(
-     * 			'OFFSET' => int,
-     * 			'MAX_RECORDS' => int,
-     * 			'FILTER' => array(						// filter the computers to return
-     * 				'IDS' => array(int),				// list of computer ids to select
-     * 				'EXCLUDE_IDS' => array(int),		// list of computer ids to exclude
-     * 				'TAGS' => array(string),			// list of computer tags to select
-     * 				'EXCLUDE_TAGS' => array(string),	// list of computer tags to exclude
-     * 				'CHECKSUM' => int					// filter which sections have been modified (see CHECKSUM_* constants)
-     * 			),
-     * 			'DISPLAY' => array(		// select which sections of the computers to return
-     * 				'CHECKSUM' => int,	// inventory sections to return (see CHECKSUM_* constants)
-     * 				'WANTED' => int		// special sections to return (see WANTED_* constants)
-     * 			)
-     * 		)
-     *
-     * @return array List of snmp devices :
-     * 		array (
-     * 			'TOTAL_COUNT' => int, // the total number of computers for this query (without taking OFFSET and MAX_RECORDS into account)
-     * 			'SNMP' => array (
-     * 				array (
-     * 					'META' => array(
-     * 						'ID' => ...
-     * 						'CHECKSUM' => ...
-     * 						'DEVICEID' => ...
-     * 						'LASTCOME' => ...
-     * 						'LASTDATE' => ...
-     * 						'NAME' => ...
-     * 						'TAG' => ...
-     * 					),
-     * 					'SECTION1' => array(
-     * 						array(...),   // Section element 1
-     * 						array(...),   // Section element 2
-     * 						...
-     * 					),
-     * 					'SECTION2' => array(...),
-     * 					...
-     * 				),
-     * 				...
-     * 			)
-     * 		)
-     */
-    abstract public function getSnmp($options);
+   /**
+    * Returns a list of snmp devices
+    *
+    * @param array $options Possible options :
+    *      array(
+    *         'OFFSET' => int,
+    *         'MAX_RECORDS' => int,
+    *         'FILTER' => array(                  // filter the computers to return
+    *            'IDS' => array(int),            // list of computer ids to select
+    *            'EXCLUDE_IDS' => array(int),      // list of computer ids to exclude
+    *            'TAGS' => array(string),         // list of computer tags to select
+    *            'EXCLUDE_TAGS' => array(string),   // list of computer tags to exclude
+    *            'CHECKSUM' => int               // filter which sections have been modified (see CHECKSUM_* constants)
+    *         ),
+    *         'DISPLAY' => array(      // select which sections of the computers to return
+    *            'CHECKSUM' => int,   // inventory sections to return (see CHECKSUM_* constants)
+    *            'WANTED' => int      // special sections to return (see WANTED_* constants)
+    *         )
+    *      )
+    *
+    * @return array List of snmp devices :
+    *      array (
+    *         'TOTAL_COUNT' => int, // the total number of computers for this query (without taking OFFSET and MAX_RECORDS into account)
+    *         'SNMP' => array (
+    *            array (
+    *               'META' => array(
+    *                  'ID' => ...
+    *                  'CHECKSUM' => ...
+    *                  'DEVICEID' => ...
+    *                  'LASTCOME' => ...
+    *                  'LASTDATE' => ...
+    *                  'NAME' => ...
+    *                  'TAG' => ...
+    *               ),
+    *               'SECTION1' => array(
+    *                  array(...),   // Section element 1
+    *                  array(...),   // Section element 2
+    *                  ...
+    *               ),
+    *               'SECTION2' => array(...),
+    *               ...
+    *            ),
+    *            ...
+    *         )
+    *      )
+    */
+   abstract public function getSnmp($options);
 
    /**
     * Returns the config for the given key
     *
     * @param string $key The name of the config item to return
     * @return mixed The config value :
-    * 		array (
-    * 			'IVALUE' => integer value,
-    * 			'TVALUE' => text value
-    * 		)
+    *      array (
+    *         'IVALUE' => integer value,
+    *         'TVALUE' => text value
+    *      )
     */
    abstract public function getConfig($key);
 
@@ -217,8 +220,8 @@ abstract class PluginOcsinventoryngOcsClient {
 
    /**
     * Sets the checksum for the given computer
-    * 
-    * @param int $checksum The checksum value 
+    *
+    * @param int $checksum The checksum value
     * @param int $id The computer id
     * @return void
     */
@@ -226,7 +229,7 @@ abstract class PluginOcsinventoryngOcsClient {
 
    /**
     * Gets the checksum for the given computer
-    * 
+    *
     * @param int $id The computer id
     * @return int The checksum
     */
@@ -234,7 +237,7 @@ abstract class PluginOcsinventoryngOcsClient {
 
    /**
     * Gets the array of computers to update with cron
-    * 
+    *
     * @param array $cfg_ocs Server confifguration
     * @param date $max_date MAX(`last_ocs_update`)
     * @return array $data the computers to update
@@ -243,50 +246,50 @@ abstract class PluginOcsinventoryngOcsClient {
 
    /**
     * Gets the array of computers for script checkocslinks.php
-    * 
+    *
     * @return array $data the list of computers
     */
    abstract public function getOCSComputers();
 
    /**
     * Get the computer that were deleted (or merged) in ocsinventory
-    * 
+    *
     * @return array The list of deleted computers : (DELETED contains the id or deviceid of the computer and equivalent and EQUIV contains the new id if the computer was marged)
-    * 		array (
-    * 			'DELETED' => 'EQUIV'
-    * 		)
+    *      array (
+    *         'DELETED' => 'EQUIV'
+    *      )
     */
    abstract public function getDeletedComputers();
 
    abstract public function removeDeletedComputers($deleted, $equivclean = null);
-   
-   
+
+
    /**
     * Get the old agents without inventory in ocsinventory
-    * 
+    *
     * @return array The list of deleted computers : (DELETED contains the id or deviceid of the computer and equivalent and EQUIV contains the new id if the computer was marged)
-    * 		array (
-    * 			'DELETED' => 'EQUIV'
-    * 		)
+    *      array (
+    *         'DELETED' => 'EQUIV'
+    *      )
     */
    abstract public function getOldAgents();
-   
+
    /**
     * Get the account info columns
-    * 
-    * @return array 
-    * 		array (
-    * 			'0' => 'HARDWARE_ID',
-    * 			'1' => 'TAG',	
-    * 			'2' => ...
-    * 		)
+    *
+    * @return array
+    *      array (
+    *         '0' => 'HARDWARE_ID',
+    *         '1' => 'TAG',
+    *         '2' => ...
+    *      )
     */
    abstract public function getAccountInfoColumns($table);
 
    /**
     * Sets the ssn for the given computer
-    * 
-    * @param int $ssn The new SSN value 
+    *
+    * @param int $ssn The new SSN value
     * @param int $id The computer id
     * @return void
     */
@@ -294,8 +297,8 @@ abstract class PluginOcsinventoryngOcsClient {
 
    /**
     * Sets the tag for the given computer
-    * 
-    * @param int $tag The new TAG value 
+    *
+    * @param int $tag The new TAG value
     * @param int $id The computer id
     * @return void
     */
@@ -305,11 +308,13 @@ abstract class PluginOcsinventoryngOcsClient {
    /* IMPLEMENTED FUNCTIONS */
    /*    * ********************** */
 
-   public function getId() {
+   public function getId()
+   {
       return $this->id;
    }
 
-   public function getComputer($id, $options = array()) {
+   public function getComputer($id, $options = array())
+   {
       if (!isset($options['FILTER'])) {
          $options['FILTER'] = array();
       }
@@ -324,20 +329,21 @@ abstract class PluginOcsinventoryngOcsClient {
       return current($result['COMPUTERS']);
    }
 
-    public function getSnmpDevice($id, $options = array()) {
-        if (!isset($options['FILTER'])) {
-            $options['FILTER'] = array();
-        }
+   public function getSnmpDevice($id, $options = array())
+   {
+      if (!isset($options['FILTER'])) {
+         $options['FILTER'] = array();
+      }
 
-        $options['FILTER']['IDS'] = array($id);
-        $result = $this->getSnmp($options);
+      $options['FILTER']['IDS'] = array($id);
+      $result = $this->getSnmp($options);
 
 
-        if (!isset($result['TOTAL_COUNT']) || $result['TOTAL_COUNT'] < 1 || empty($result['SNMP'])) {
-            return null;
-        }
-        return current($result['SNMP']);
-    }
+      if (!isset($result['TOTAL_COUNT']) || $result['TOTAL_COUNT'] < 1 || empty($result['SNMP'])) {
+         return null;
+      }
+      return current($result['SNMP']);
+   }
 
    /**
     * Returns the integer config for the given key
@@ -346,7 +352,8 @@ abstract class PluginOcsinventoryngOcsClient {
     * @param string $key The name of the config item to return
     * @return integer
     */
-   public function getIntConfig($key) {
+   public function getIntConfig($key)
+   {
       $config = $this->getConfig($key);
       return $config['IVALUE'];
    }
@@ -358,111 +365,114 @@ abstract class PluginOcsinventoryngOcsClient {
     * @param string $key The name of the config item to return
     * @return string
     */
-   public function getTextConfig($key) {
+   public function getTextConfig($key)
+   {
       $config = $this->getConfig($key);
       return $config['TVALUE'];
    }
 
-   public function getOcsMap() {
+   public function getOcsMap()
+   {
       $DATA_MAP = array(
-          'hardware' => array(
-              'checksum' => self::CHECKSUM_HARDWARE,
-              'multi' => 0,
-          ),
-          'bios' => array(
-              'checksum' => self::CHECKSUM_BIOS,
-              'multi' => 0,
-          ),
-          'memories' => array(
-              'checksum' => self::CHECKSUM_MEMORY_SLOTS,
-              'multi' => 1,
-          ),
-          'slots' => array(
-              'checksum' => self::CHECKSUM_SYSTEM_SLOTS,
-              'multi' => 1,
-          ),
-          'registry' => array(
-              'checksum' => self::CHECKSUM_REGISTRY,
-              'multi' => 1,
-          ),
-          'securitycenter' => array(
-              'checksum' => self::CHECKSUM_SECURITY,
-              'multi' => 1,
-          ),
-          'controllers' => array(
-              'checksum' => self::CHECKSUM_SYSTEM_CONTROLLERS,
-              'multi' => 1,
-          ),
-          'monitors' => array(
-              'checksum' => self::CHECKSUM_MONITORS,
-              'multi' => 1,
-          ),
-          'ports' => array(
-              'checksum' => self::CHECKSUM_SYSTEM_PORTS,
-              'multi' => 1,
-          ),
-          'storages' => array(
-              'checksum' => self::CHECKSUM_STORAGE_PERIPHERALS,
-              'multi' => 1,
-          ),
-          'drives' => array(
-              'checksum' => self::CHECKSUM_LOGICAL_DRIVES,
-              'multi' => 1,
-          ),
-          'inputs' => array(
-              'checksum' => self::CHECKSUM_INPUT_DEVICES,
-              'multi' => 1,
-          ),
-          'modems' => array(
-              'checksum' => self::CHECKSUM_MODEMS,
-              'multi' => 1,
-          ),
-          'networks' => array(
-              'checksum' => self::CHECKSUM_NETWORK_ADAPTERS,
-              'multi' => 1,
-          ),
-          'printers' => array(
-              'checksum' => self::CHECKSUM_PRINTERS,
-              'multi' => 1,
-          ),
-          'sounds' => array(
-              'checksum' => self::CHECKSUM_SOUND_ADAPTERS,
-              'multi' => 1,
-          ),
-          'videos' => array(
-              'checksum' => self::CHECKSUM_VIDEO_ADAPTERS,
-              'multi' => 1,
-          ),
-          'softwares' => array(
-              'checksum' => self::CHECKSUM_SOFTWARE,
-              'multi' => 1,
-          ),
-          'virtualmachines' => array(
-              'checksum' => self::CHECKSUM_VIRTUAL_MACHINES,
-              'multi' => 1,
-          ),
-          'cpus' => array(
-              'checksum' => self::CHECKSUM_CPUS,
-              'multi' => 1,
-          ),
-          'sim' => array(
-              'checksum' => self::CHECKSUM_SIM,
-              'multi' => 1,
-          ),
-          'accountinfo' => array(
-              'wanted' => self::WANTED_ACCOUNTINFO,
-              'multi' => 1,
-          ),
-          'dico_soft' => array(
-              'wanted' => self::WANTED_DICO_SOFT,
-              'multi' => 0,
-          ),
+         'hardware' => array(
+            'checksum' => self::CHECKSUM_HARDWARE,
+            'multi' => 0,
+         ),
+         'bios' => array(
+            'checksum' => self::CHECKSUM_BIOS,
+            'multi' => 0,
+         ),
+         'memories' => array(
+            'checksum' => self::CHECKSUM_MEMORY_SLOTS,
+            'multi' => 1,
+         ),
+         'slots' => array(
+            'checksum' => self::CHECKSUM_SYSTEM_SLOTS,
+            'multi' => 1,
+         ),
+         'registry' => array(
+            'checksum' => self::CHECKSUM_REGISTRY,
+            'multi' => 1,
+         ),
+         'securitycenter' => array(
+            'checksum' => self::CHECKSUM_SECURITY,
+            'multi' => 1,
+         ),
+         'controllers' => array(
+            'checksum' => self::CHECKSUM_SYSTEM_CONTROLLERS,
+            'multi' => 1,
+         ),
+         'monitors' => array(
+            'checksum' => self::CHECKSUM_MONITORS,
+            'multi' => 1,
+         ),
+         'ports' => array(
+            'checksum' => self::CHECKSUM_SYSTEM_PORTS,
+            'multi' => 1,
+         ),
+         'storages' => array(
+            'checksum' => self::CHECKSUM_STORAGE_PERIPHERALS,
+            'multi' => 1,
+         ),
+         'drives' => array(
+            'checksum' => self::CHECKSUM_LOGICAL_DRIVES,
+            'multi' => 1,
+         ),
+         'inputs' => array(
+            'checksum' => self::CHECKSUM_INPUT_DEVICES,
+            'multi' => 1,
+         ),
+         'modems' => array(
+            'checksum' => self::CHECKSUM_MODEMS,
+            'multi' => 1,
+         ),
+         'networks' => array(
+            'checksum' => self::CHECKSUM_NETWORK_ADAPTERS,
+            'multi' => 1,
+         ),
+         'printers' => array(
+            'checksum' => self::CHECKSUM_PRINTERS,
+            'multi' => 1,
+         ),
+         'sounds' => array(
+            'checksum' => self::CHECKSUM_SOUND_ADAPTERS,
+            'multi' => 1,
+         ),
+         'videos' => array(
+            'checksum' => self::CHECKSUM_VIDEO_ADAPTERS,
+            'multi' => 1,
+         ),
+         'softwares' => array(
+            'checksum' => self::CHECKSUM_SOFTWARE,
+            'multi' => 1,
+         ),
+         'virtualmachines' => array(
+            'checksum' => self::CHECKSUM_VIRTUAL_MACHINES,
+            'multi' => 1,
+         ),
+         'cpus' => array(
+            'checksum' => self::CHECKSUM_CPUS,
+            'multi' => 1,
+         ),
+         'sim' => array(
+            'checksum' => self::CHECKSUM_SIM,
+            'multi' => 1,
+         ),
+         'accountinfo' => array(
+            'wanted' => self::WANTED_ACCOUNTINFO,
+            'multi' => 1,
+         ),
+         'dico_soft' => array(
+            'wanted' => self::WANTED_DICO_SOFT,
+            'multi' => 0,
+         ),
       );
 
       return $DATA_MAP;
    }
 
-   public function getChecksumForTables($tables) {
+   public function getChecksumForTables($tables)
+   {
       $ocsMap = $this->getOcsMap();
       $checksum = self::CHECKSUM_NONE;
 
@@ -475,7 +485,8 @@ abstract class PluginOcsinventoryngOcsClient {
       return $checksum;
    }
 
-   public function getWantedForTables($tables) {
+   public function getWantedForTables($tables)
+   {
       $ocsMap = $this->getOcsMap();
       $wanted = self::WANTED_NONE;
 
@@ -488,7 +499,8 @@ abstract class PluginOcsinventoryngOcsClient {
       return $wanted;
    }
 
-   public function getConnectionType() {
+   public function getConnectionType()
+   {
       return get_class($this);
    }
 

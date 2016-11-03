@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
@@ -52,8 +52,8 @@ if ($plugin->isActivated("ocsinventoryng")) {
 } else {
    Html::header(__('Setup'), '', "tools", "pluginocsinventoryngmenu", "config");
    echo "<div class='center'><br><br>";
-   echo "<img src=\"" . $CFG_GLPI["root_doc"] . "/pics/warning.png\" alt='".__s('Warning')."'><br><br>";
-   echo "<b>".__('Please activate the plugin', 'ocsinventoryng')."</b></div>";
+   echo "<img src=\"" . $CFG_GLPI["root_doc"] . "/pics/warning.png\" alt='" . __s('Warning') . "'><br><br>";
+   echo "<b>" . __('Please activate the plugin', 'ocsinventoryng') . "</b></div>";
 }
 
 Html::footer();

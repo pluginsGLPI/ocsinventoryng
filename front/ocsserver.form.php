@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
@@ -41,29 +41,30 @@ Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsse
 
 //Delete template or server
 if (isset ($_POST["purge"])) {
-   $ocs->check($_POST['id'],PURGE);
+   $ocs->check($_POST['id'], PURGE);
    $ocs->delete($_POST);
    $ocs->redirectToList();
 
 //Update server
-} else if (isset ($_POST["update"]) 
-      || isset ($_POST["updateSNMP"])) {
-   $ocs->check($_POST['id'],UPDATE);
+} else if (isset ($_POST["update"])
+   || isset ($_POST["updateSNMP"])
+) {
+   $ocs->check($_POST['id'], UPDATE);
    $ocs->update($_POST);
    Html::back();
 
 //Add new server
 } else if (isset ($_POST["add"])) {
    $ocs->check(-1, CREATE, $_POST);
-   $newID= $ocs->add($_POST);
+   $newID = $ocs->add($_POST);
    if ($_SESSION['glpibackcreated']) {
-      Html::redirect($ocs->getFormURL()."?id=".$newID);
+      Html::redirect($ocs->getFormURL() . "?id=" . $newID);
    }
    Html::back();
 
 //Other
 } else if (isset ($_POST["force_checksum"])) {
-   $ocs->check($_POST['id'],UPDATE);
+   $ocs->check($_POST['id'], UPDATE);
    $_POST['checksum'] = 0;
    $ocs->update($_POST);
    Html::back();

@@ -30,17 +30,17 @@
 // Ensure current directory when run from crontab
 chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
-ini_set('display_errors',1);
+ini_set('display_errors', 1);
 restore_error_handler();
 
 $_GET = array();
 if (isset($_SERVER['argv'])) {
-   for ($i=1 ; $i<$_SERVER['argc'] ; $i++) {
-      $it            = explode("=",$_SERVER['argv'][$i],2);
-      $it[0]         = preg_replace('/^--/','',$it[0]);
-      $_GET[$it[0]]  = (isset($it[1]) ? $it[1] : true);
+   for ($i = 1; $i < $_SERVER['argc']; $i++) {
+      $it = explode("=", $_SERVER['argv'][$i], 2);
+      $it[0] = preg_replace('/^--/', '', $it[0]);
+      $_GET[$it[0]] = (isset($it[1]) ? $it[1] : true);
    }
 }
 
@@ -54,15 +54,15 @@ if (isset($_GET['help']) || !count($_GET)) {
    exit (0);
 }
 
-$tps    = microtime(true);
-$nbchk  = 0;
-$nbdel  = 0;
+$tps = microtime(true);
+$nbchk = 0;
+$nbdel = 0;
 $nbtodo = 0;
 
 $crit = array('is_active' => 1);
 foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) {
    $ocsservers_id = $serv ['id'];
-   echo "\nServeur: ".$serv['name']."\n";
+   echo "\nServeur: " . $serv['name'] . "\n";
 
    if (!PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id)) {
       echo "** no connexion\n";
@@ -104,17 +104,17 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
    }
 
    if (isset($_GET['ocs'])) {
-      
+
       $DBocs = PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
       $res[] = $DBocs->getOCSComputers();
 
-      $hardware = array ();
+      $hardware = array();
       $nb = 0;
       $i = 0;
-      if (count($res) > 0){
+      if (count($res) > 0) {
          foreach ($res as $k => $data) {
-            if (count($data) > 0){
-               $i ++;
+            if (count($data) > 0) {
+               $i++;
                $nb = count($data);
                $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
                $hardware[$data["ID"]] = $data["DEVICEID"];
@@ -132,7 +132,7 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
       $result = $DB->query($query);
       $nb = $DB->numrows($result);
       if ($nb > 0) {
-         for ($i=1 ; $data = $DB->fetch_array($result) ; $i++) {
+         for ($i = 1; $data = $DB->fetch_array($result); $i++) {
             $nbchk++;
             $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
             if (isset ($hardware[$data["ocsid"]])) {
@@ -170,14 +170,14 @@ if (isset($_GET['dup'])) {
       $query2 = "SELECT `id`, `plugin_ocsinventoryng_ocsservers_id`,
                         `ocsid`, `ocs_deviceid`, `computers_id`, `last_update`
                  FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                 WHERE `computers_id` = '".$data['computers_id']."'
+                 WHERE `computers_id` = '" . $data['computers_id'] . "'
                  ORDER BY `last_update`";
       $i = 1;
       foreach ($DB->request($query2) as $data2) {
-         $del =  ($i < $data['cpt']); // Keep the more recent
+         $del = ($i < $data['cpt']); // Keep the more recent
          printf("%12d : %s (%d-%d, last=%s) : %s\n", $data2['id'], $data2['ocs_deviceid'],
-                                       $data2['plugin_ocsinventoryng_ocsservers_id'], $data2['ocsid'],
-                                       $data2['last_update'], ($del ? 'delete' : 'keep'));
+            $data2['plugin_ocsinventoryng_ocsservers_id'], $data2['ocsid'],
+            $data2['last_update'], ($del ? 'delete' : 'keep'));
          if ($del) {
             if (isset($_GET['clean'])) {
                $query_del = "DELETE
@@ -195,13 +195,13 @@ if (isset($_GET['dup'])) {
    }
 }
 
-$tps = microtime(true)-$tps;
+$tps = microtime(true) - $tps;
 printf("\nChecked links : %d\n", $nbchk);
 if (isset($_GET['clean'])) {
    printf("Deleted links : %d\n", $nbdel);
 } else {
    printf("Corrupt links : %d\n", $nbtodo);
 }
-printf("Done in %s\n", Html::timestampToString(round($tps,0),true));
+printf("Done in %s\n", Html::timestampToString(round($tps, 0), true));
 
 ?>

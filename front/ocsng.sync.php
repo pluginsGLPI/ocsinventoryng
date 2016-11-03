@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
@@ -39,18 +39,18 @@ $display_list = true;
 if (isset($_SESSION["ocs_update"]['computers'])) {
    if ($count = count($_SESSION["ocs_update"]['computers'])) {
       $percent = min(100,
-                     round(100*($_SESSION["ocs_update_count"]-$count)/$_SESSION["ocs_update_count"],
-                           0));
+         round(100 * ($_SESSION["ocs_update_count"] - $count) / $_SESSION["ocs_update_count"],
+            0));
 
 
-      $key    = array_pop($_SESSION["ocs_update"]['computers']);
+      $key = array_pop($_SESSION["ocs_update"]['computers']);
       $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-      $dohistory = (isset($cfg_ocs['dohistory'])?$cfg_ocs['dohistory']:false);
+      $dohistory = (isset($cfg_ocs['dohistory']) ? $cfg_ocs['dohistory'] : false);
       $action = PluginOcsinventoryngOcsServer::updateComputer($key,
-                                                              $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                                                              $dohistory);
+         $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+         $dohistory);
       PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_update"]['statistics'],
-                                                            $action['status']);
+         $action['status']);
       PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_update"]['statistics']);
       Html::displayProgressBar(400, $percent);
 
@@ -65,11 +65,11 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
          _e('No synchronization: the plugin will not synchronize these elements', 'ocsinventoryng');
          echo "</div>";
       }
-      
+
       unset($_SESSION["ocs_update"]);
       $display_list = false;
       echo "<div class='center b'><br>";
-      echo "<a href='".$_SERVER['PHP_SELF']."'>".__('Back')."</a></div>";
+      echo "<a href='" . $_SERVER['PHP_SELF'] . "'>" . __('Back') . "</a></div>";
    }
 }
 
@@ -83,11 +83,11 @@ if (!isset($_POST["update_ok"])) {
    PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($display_list) {
       PluginOcsinventoryngOcsServer::showComputersToUpdate($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                                                           $_GET['check'], $_GET['start']);
+         $_GET['check'], $_GET['start']);
    }
 
 } else {
-   if (count($_POST['toupdate']) >0) {
+   if (count($_POST['toupdate']) > 0) {
       $_SESSION["ocs_update_count"] = 0;
 
       foreach ($_POST['toupdate'] as $key => $val) {

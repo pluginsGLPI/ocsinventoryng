@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
@@ -52,21 +52,21 @@ if (isset($_POST["change_import_mode"])) {
 if (isset($_SESSION["ocs_link"])) {
    if ($count = count($_SESSION["ocs_link"])) {
       $percent = min(100,
-                     round(100*($_SESSION["ocs_link_count"]-$count)/$_SESSION["ocs_link_count"], 0));
+         round(100 * ($_SESSION["ocs_link_count"] - $count) / $_SESSION["ocs_link_count"], 0));
 
-      Html::displayProgressBar(400,$percent);
+      Html::displayProgressBar(400, $percent);
 
       $key = array_pop($_SESSION["ocs_link"]);
       PluginOcsinventoryngOcsServer::linkComputer($key["ocsid"],
-                                                  $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                                                  $key["computers_id"]);
+         $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+         $key["computers_id"]);
       Html::redirect($_SERVER['PHP_SELF']);
    } else {
-      Html::displayProgressBar(400,100);
+      Html::displayProgressBar(400, 100);
 
       unset($_SESSION["ocs_link"]);
-      echo "<div class='center b'>".__('Successful importation')."<br>";
-      echo "<a href='".$_SERVER['PHP_SELF']."'>".__('Back')."</a></div>";
+      echo "<div class='center b'>" . __('Successful importation') . "<br>";
+      echo "<a href='" . $_SERVER['PHP_SELF'] . "'>" . __('Back') . "</a></div>";
    }
 }
 
@@ -79,18 +79,18 @@ if (!isset($_POST["import_ok"])) {
    }
    PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    PluginOcsinventoryngOcsServer::showComputersToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                                                     $_SESSION["change_import_mode"], $_GET['check'],
-                                                     $_GET['start'], $_SESSION['glpiactiveentities'],
-                                                     1);
+      $_SESSION["change_import_mode"], $_GET['check'],
+      $_GET['start'], $_SESSION['glpiactiveentities'],
+      1);
 
 } else {
-   if (isset($_POST['tolink']) && count($_POST['tolink']) >0) {
+   if (isset($_POST['tolink']) && count($_POST['tolink']) > 0) {
       $_SESSION["ocs_link_count"] = 0;
 
       foreach ($_POST['tolink'] as $ocsid => $computers_id) {
-         if ($computers_id >0) {
-            $_SESSION["ocs_link"][] = array('ocsid'        => $ocsid,
-                                            'computers_id' => $computers_id);
+         if ($computers_id > 0) {
+            $_SESSION["ocs_link"][] = array('ocsid' => $ocsid,
+               'computers_id' => $computers_id);
             $_SESSION["ocs_link_count"]++;
          }
       }

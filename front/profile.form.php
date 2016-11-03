@@ -27,9 +27,9 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
-Session::checkRight("profile",READ);
+Session::checkRight("profile", READ);
 
 $profservers = new PluginOcsinventoryngOcsserver_Profile();
 

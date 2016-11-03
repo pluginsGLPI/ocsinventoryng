@@ -30,9 +30,9 @@
 // Ensure current directory when run from crontab
 chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
-ini_set('display_errors',1);
+ini_set('display_errors', 1);
 restore_error_handler();
 
 if (!isset($_SERVER['argv'][1])) {

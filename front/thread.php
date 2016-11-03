@@ -27,15 +27,14 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
 if (!isset($_GET["plugin_ocsinventoryng_ocsservers_id"]))
    $_GET["plugin_ocsinventoryng_ocsservers_id"] = "0";
-   
-$thread = new PluginOcsinventoryngThread();
 
+$thread = new PluginOcsinventoryngThread();
 
 
 Html::header(__('Processes execution of automatic actions', 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "thread");

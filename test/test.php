@@ -27,13 +27,13 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "import");
 
 //$soapclient = new PluginOcsinventoryngOcsSoapClient('http://localhost', 'admin', 'factorfx');
-$dbclient = new PluginOcsinventoryngOcsDbClient(1,'ocstest','ocsuser','ocspass','ocsweb');
+$dbclient = new PluginOcsinventoryngOcsDbClient(1, 'ocstest', 'ocsuser', 'ocspass', 'ocsweb');
 
 var_dump($dbclient->getAccountInfoColumns());
 

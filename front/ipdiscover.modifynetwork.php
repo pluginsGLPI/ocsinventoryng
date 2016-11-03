@@ -28,7 +28,7 @@
   --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
@@ -42,7 +42,7 @@ if (isset($_GET["ip"])) {
 if (isset($_POST["ip"])) {
 
    $ipAdress = $_POST["ip"];
-   $values   = array();
+   $values = array();
    if (isset($_POST["subnetName"]) && isset($_POST["subnetChoice"]) && isset($_POST["SubnetMask"])) {
       $values = array("subnetName" => $_POST["subnetName"], "subnetChoice" => $_POST["subnetChoice"], "subnetMask" => $_POST["SubnetMask"]);
    }
