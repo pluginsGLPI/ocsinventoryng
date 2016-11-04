@@ -53,4 +53,3 @@ if (isset($_POST['action'])) {
 }
 
 include(GLPI_ROOT . "/front/dropdown.common.form.php");
-?>

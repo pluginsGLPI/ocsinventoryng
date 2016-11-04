@@ -209,5 +209,3 @@ if (function_exists("pcntl_fork")) {
 
 cleanup($pidfile);
 fwrite($log, date("r") . " " . $_SERVER["argv"][0] . " ended\n\n");
-
-?>

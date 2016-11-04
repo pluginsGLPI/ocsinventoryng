@@ -57,4 +57,3 @@ if ($plugin->isActivated("ocsinventoryng")) {
 }
 
 Html::footer();
-?>

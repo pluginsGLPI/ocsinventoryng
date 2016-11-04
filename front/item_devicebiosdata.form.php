@@ -31,4 +31,3 @@ include('../../../inc/includes.php');
 
 $item_device = new PluginOcsinventoryngItem_DeviceBiosdata();
 include(GLPI_ROOT . "/front/item_device.common.form.php");
-?>

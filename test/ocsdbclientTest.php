@@ -65,6 +65,8 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends  testConnection
+    * @param array $conditions
+    * @param null $sort
     */
    public function testGetComputers($conditions = array(), $sort = NULL)
    {
@@ -116,6 +118,7 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends  testConnection
+    * @param $id
     */
    public function testGetAccountInfo($id)
    {
@@ -128,6 +131,7 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends  testConnection
+    * @param $key
     */
    public function testGetConfig($key)
    {
@@ -140,6 +144,9 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends  testConnection
+    * @param $table
+    * @param int $condition
+    * @param $sort
     */
    public function testGetCategorie($table, $condition = 1, $sort)
    {
@@ -158,6 +165,10 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends  testConnection
+    * @param $columns
+    * @param $table
+    * @param $conditions
+    * @param $sort
     */
    public function testGetUnique($columns, $table, $conditions, $sort)
    {
@@ -168,6 +179,8 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends  testConnection
+    * @param $checksum
+    * @param $id
     */
    public function testSetChecksum($checksum, $id)
    {
@@ -179,6 +192,7 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends  testConnection
+    * @param $id
     */
    public function testGetChecksum($id)
    {
@@ -189,6 +203,8 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends testConnection
+    * @param $deleted
+    * @param null $equivclean
     */
    public function testDelEquiv($deleted, $equivclean = null)
    {
@@ -210,6 +226,8 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends testGetComputers
+    * @param array $conditions
+    * @param null $sort
     */
    public function testFalseGetComputers($conditions = array(), $sort = NULL)
    {
@@ -262,6 +280,7 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends testGetAccountInfo
+    * @param $id
     */
    public function testFalseGetAccountInfo($id)
    {
@@ -273,6 +292,7 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends testGetConfig
+    * @param $key
     */
    public function testFalseGetConfig($key)
    {
@@ -283,6 +303,9 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends testGetCategorie
+    * @param $table
+    * @param int $condition
+    * @param $sort
     */
    public function testFalseGetCategorie($table, $condition = 1, $sort)
    {
@@ -293,6 +316,10 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends testGetUnique
+    * @param $columns
+    * @param $table
+    * @param $conditions
+    * @param $sort
     */
    public function testFalseGetUnique($columns, $table, $conditions, $sort)
    {
@@ -303,6 +330,8 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends testSetChecksum
+    * @param $checksum
+    * @param $id
     */
    public function testFalseSetChecksum($checksum, $id)
    {
@@ -313,6 +342,8 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends testGetChecksum
+    * @param $checksum
+    * @param $id
     */
    public function testFalseGetChecksum($checksum, $id)
    {
@@ -323,6 +354,8 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
 
    /**
     * @depends testDelEquiv
+    * @param $deleted
+    * @param null $equivclean
     */
    public function testFalseDelEquiv($deleted, $equivclean = null)
    {

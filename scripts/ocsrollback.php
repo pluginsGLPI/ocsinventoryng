@@ -224,4 +224,3 @@ foreach ($tabres as $ent => $comps) {
 }
 printf("=> %d reports for %d computers\n", count($tabres), $nbc);
 echo "End\n";
-?>

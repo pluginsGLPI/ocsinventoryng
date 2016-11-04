@@ -79,5 +79,3 @@ class PluginOcsinventoryngOcsSoapRequest
       return (bool)count(array_filter(array_keys($array), 'is_numeric'));
    }
 }
-
-?>

@@ -134,4 +134,3 @@ if (!isset($_POST["import_ok"])) {
 }
 
 Html::footer();
-?>

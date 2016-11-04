@@ -85,6 +85,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::getComputers()
+    * @param array $options
+    * @return array
     */
    public function getComputers($options)
    {
@@ -213,6 +215,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::getConfig()
+    * @param string $key
+    * @return array|bool|mixed
     */
    public function getConfig($key)
    {
@@ -230,6 +234,9 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::setConfig()
+    * @param string $key
+    * @param int $ivalue
+    * @param string $tvalue
     */
    public function setConfig($key, $ivalue, $tvalue)
    {
@@ -297,8 +304,10 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::getAccountInfoColumns()
+    * @param $table
+    * @return array
     */
-   public function getAccountInfoColumns()
+   public function getAccountInfoColumns($table)
    {
       $xml = $this->callSoap('_get_account_fields_V1', new PluginOcsinventoryngOcsSoapRequest());
       $res = array(
@@ -318,6 +327,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::updateBios()
+    * @param int $ssn
+    * @param int $id
     */
    public function updateBios($ssn, $id)
    {
@@ -327,6 +338,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::updateTag()
+    * @param int $tag
+    * @param int $id
     */
    public function updateTag($tag, $id)
    {
@@ -444,5 +457,3 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
       return is_string($res) ? trim($res) : $res;
    }
 }
-
-?>

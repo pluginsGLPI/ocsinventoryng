@@ -178,5 +178,3 @@ function plugin_ocsinventoryng_check_config()
 {
    return true;
 }
-
-?>

@@ -95,5 +95,3 @@ if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
 echo "</div>";
 
 Html::footer();
-
-?>

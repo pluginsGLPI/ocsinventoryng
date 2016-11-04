@@ -101,4 +101,3 @@ if (!isset($_POST["update_ok"])) {
 }
 
 Html::footer();
-?>

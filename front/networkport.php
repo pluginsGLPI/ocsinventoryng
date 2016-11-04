@@ -36,4 +36,3 @@ Html::header(_n('Unknown imported network port type', 'Unknown imported network 
 PluginOcsinventoryngNetworkPort::displayInvalidList();
 
 Html::footer();
-?>

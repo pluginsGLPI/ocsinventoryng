@@ -137,5 +137,3 @@ class ocssoapclientTest extends PHPUnit_Framework_TestCase
       $this->assertEquals($expected, $newchecksum);
    }
 }
-
-?>

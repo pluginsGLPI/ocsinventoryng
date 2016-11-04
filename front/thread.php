@@ -53,6 +53,3 @@ if (isset ($_POST["delete_processes"])) {
 }
 
 Html::footer();
-
-
-?>

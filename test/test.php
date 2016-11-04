@@ -166,4 +166,3 @@ print_r($delete);
 <?php 
 $checksum = $dbclient->getChecksum(37);
 var_dump($checksum);*/
-?>

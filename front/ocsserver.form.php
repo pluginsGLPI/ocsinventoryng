@@ -73,4 +73,3 @@ if (isset ($_POST["purge"])) {
    $ocs->display($_GET);
 }
 Html::footer();
-?>

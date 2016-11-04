@@ -50,4 +50,3 @@ if (isset($_POST["ip"])) {
 }
 
 Html::footer();
-?>

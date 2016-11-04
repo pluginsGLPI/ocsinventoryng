@@ -28,44 +28,80 @@
  --------------------------------------------------------------------------
  */
 
+/**
+ * Class PluginOcsinventoryngMiniStat
+ */
 class PluginOcsinventoryngMiniStat
 {
 
+   /**
+    * @var int
+    */
    public $Min = 0;
+   /**
+    * @var int
+    */
    public $Max = 0;
+   /**
+    * @var int
+    */
    public $Tot = 0;
+   /**
+    * @var int
+    */
    public $Nb = 0;
 
+   /**
+    *
+    */
    function Reset()
    {
       $this->Min = $this->Max = $this->Tot = $this->Nb = 0;
    }
 
+   /**
+    * @return int
+    */
    function GetMinimum()
    {
       return $this->Min;
    }
 
+   /**
+    * @return int
+    */
    function GetMaximum()
    {
       return $this->Max;
    }
 
+   /**
+    * @return int
+    */
    function GetTotal()
    {
       return $this->Tot;
    }
 
+   /**
+    * @return int
+    */
    function GetCount()
    {
       return $this->Nb;
    }
 
+   /**
+    * @return float|int
+    */
    function GetAverage()
    {
       return $this->Nb > 0 ? $this->Tot / $this->Nb : 0;
    }
 
+   /**
+    * @param $Value
+    */
    function AddValue($Value)
    {
 
@@ -85,5 +121,3 @@ class PluginOcsinventoryngMiniStat
    }
 
 }
-
-?>

@@ -50,5 +50,3 @@ if (isset ($_POST['delete'])) {
    }
    Html::back();
 }
-
-?>

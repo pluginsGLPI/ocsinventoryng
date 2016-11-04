@@ -192,5 +192,3 @@ class PluginOcsinventoryngDetail extends CommonDBTM
    }
 
 }
-
-?>

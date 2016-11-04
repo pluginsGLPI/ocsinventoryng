@@ -31,4 +31,3 @@ include('../../../inc/includes.php');
 
 $dropdown = new PluginOcsinventoryngDeviceBiosdata();
 include(GLPI_ROOT . "/front/dropdown.common.php");
-?>

@@ -59,4 +59,3 @@ if (isset($_POST["force_ocs_resynch"])) {
 } else {
    Html::displayErrorAndDie("lost");
 }
-?>

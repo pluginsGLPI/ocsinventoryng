@@ -56,6 +56,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM
     *
     * @param $ID integer : computer ID
     *
+    * @return bool
     */
    static function showForComputer($ID)
    {
@@ -152,5 +153,3 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM
       return true;
    }
 }
-
-?>

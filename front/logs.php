@@ -37,4 +37,3 @@ $thread = new PluginOcsinventoryngThread();
 $thread->showErrorLog();
 
 Html::footer();
-?>

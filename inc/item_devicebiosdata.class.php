@@ -37,19 +37,28 @@ if (!defined('GLPI_ROOT')) {
 class PluginOcsinventoryngItem_DeviceBiosdata extends Item_Devices
 {
 
+   /**
+    * @var string
+    */
    static public $itemtype_2 = 'PluginOcsinventoryngDeviceBiosdata';
+   /**
+    * @var string
+    */
    static public $items_id_2 = 'plugin_ocsinventoryng_devicebiosdatas_id';
 
+   /**
+    * @var bool
+    */
    static protected $notable = false;
+
 
    /**
     * @since version 0.85
-    **/
+    * @return array
+    */
    static function itemAffinity()
    {
       return array('Computer');
    }
 
 }
-
-?>

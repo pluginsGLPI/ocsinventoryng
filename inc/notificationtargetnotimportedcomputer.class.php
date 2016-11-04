@@ -44,7 +44,7 @@ class PluginOcsinventoryngNotificationTargetNotImportedcomputer extends Notifica
 
    function getDatasForTemplate($event, $options = array())
    {
-      global $CFG_GLPI, $DB;
+      global $CFG_GLPI;
 
       $this->datas['##notimported.entity##'] = Dropdown::getDropdownName('glpi_entities',
          $options['entities_id']);
@@ -97,5 +97,3 @@ class PluginOcsinventoryngNotificationTargetNotImportedcomputer extends Notifica
       asort($this->tag_descriptions);
    }
 }
-
-?>

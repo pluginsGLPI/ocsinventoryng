@@ -85,4 +85,3 @@ if (isset($_POST["subnetsChoice"])
 }
 
 Html::footer();
-?>

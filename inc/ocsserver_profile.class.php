@@ -38,5 +38,3 @@ class PluginOcsinventoryngOcsserver_Profile extends CommonDBTM
    static $rightname = "profile";
 
 }
-
-?>

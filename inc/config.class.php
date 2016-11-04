@@ -28,17 +28,32 @@
  --------------------------------------------------------------------------
  */
 
+/**
+ * Class PluginOcsinventoryngConfig
+ */
 class PluginOcsinventoryngConfig extends CommonDBTM
 {
 
+   /**
+    * @var string
+    */
    static $rightname = "plugin_ocsinventoryng";
 
+   /**
+    * @param int $nb
+    * @return string|translated
+    */
    static function getTypeName($nb = 0)
    {
       return __("Automatic synchronization's configuration", 'ocsinventoryng');
    }
 
 
+   /**
+    * @param CommonGLPI $item
+    * @param int $withtemplate
+    * @return array|string
+    */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
    {
 
@@ -54,6 +69,12 @@ class PluginOcsinventoryngConfig extends CommonDBTM
    }
 
 
+   /**
+    * @param CommonGLPI $item
+    * @param int $tabnum
+    * @param int $withtemplate
+    * @return bool
+    */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
    {
 
@@ -67,6 +88,10 @@ class PluginOcsinventoryngConfig extends CommonDBTM
    }
 
 
+   /**
+    * @param array $options
+    * @return array
+    */
    function defineTabs($options = array())
    {
 
@@ -76,6 +101,9 @@ class PluginOcsinventoryngConfig extends CommonDBTM
       return $ong;
    }
 
+   /**
+    *
+    */
    static function showMenu()
    {
       global $CFG_GLPI;
@@ -96,7 +124,11 @@ class PluginOcsinventoryngConfig extends CommonDBTM
       echo "</table>";
    }
 
-   function showForm($target)
+   /**
+    * @return bool
+    * @internal param $target
+    */
+   function showForm()
    {
 
       $this->getFromDB(1);
@@ -130,6 +162,9 @@ class PluginOcsinventoryngConfig extends CommonDBTM
    }
 
 
+   /**
+    *
+    */
    function showScriptLock()
    {
 
@@ -161,12 +196,18 @@ class PluginOcsinventoryngConfig extends CommonDBTM
    }
 
 
+   /**
+    * @return bool
+    */
    static function isScriptLocked()
    {
       return file_exists(PLUGIN_OCSINVENTORYNG_LOCKFILE);
    }
 
 
+   /**
+    *
+    */
    function setScriptLock()
    {
 
@@ -175,6 +216,9 @@ class PluginOcsinventoryngConfig extends CommonDBTM
    }
 
 
+   /**
+    *
+    */
    function removeScriptLock()
    {
 
@@ -184,6 +228,9 @@ class PluginOcsinventoryngConfig extends CommonDBTM
    }
 
 
+   /**
+    * @return mixed
+    */
    function getAllOcsServers()
    {
       global $DB;
@@ -202,6 +249,9 @@ class PluginOcsinventoryngConfig extends CommonDBTM
    }
 
 
+   /**
+    * @return mixed
+    */
    static function canUpdateOCS()
    {
 
@@ -223,5 +273,3 @@ class PluginOcsinventoryngConfig extends CommonDBTM
    }
 
 }
-
-?>

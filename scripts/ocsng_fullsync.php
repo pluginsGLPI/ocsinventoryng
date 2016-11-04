@@ -259,7 +259,9 @@ function FirstPass($ocsservers_id)
  * @param $threadid
  * @param $fields
  * @param $config
- **/
+ *
+ * @return bool|mixed
+ */
 function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields, $config)
 {
 
@@ -296,7 +298,9 @@ function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields
  * @param $threadid
  * @param $fields
  * @param $config
- **/
+ *
+ * @return mixed
+ */
 function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
                                                    $threadid, $fields, $config)
 {
@@ -422,5 +426,3 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
    }
    return $fields;
 }
-
-?>

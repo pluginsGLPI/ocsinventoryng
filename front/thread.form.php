@@ -38,4 +38,3 @@ $thread->title();
 $thread->showForm($_GET["pid"]);
 
 Html::footer();
-?>

@@ -59,7 +59,13 @@ class PluginOcsinventoryngDeviceBiosdata extends CommonDevice
     * @since version 0.84
     *
     * @see CommonDevice::getHTMLTableHeader()
-    **/
+    * @param string $itemtype
+    * @param HTMLTableBase $base
+    * @param HTMLTableSuperHeader $super
+    * @param HTMLTableHeader $father
+    * @param array $options
+    * @return HTMLTableHeader|nothing
+    */
    static function getHTMLTableHeader($itemtype, HTMLTableBase $base,
                                       HTMLTableSuperHeader $super = NULL,
                                       HTMLTableHeader $father = NULL, array $options = array())
@@ -86,7 +92,12 @@ class PluginOcsinventoryngDeviceBiosdata extends CommonDevice
     * @since version 0.84
     *
     * @see CommonDevice::getHTMLTableCellForItem()
-    **/
+    * @param HTMLTableRow $row
+    * @param CommonDBTM $item
+    * @param HTMLTableCell $father
+    * @param array $options
+    * @return HTMLTableCell
+    */
    function getHTMLTableCellForItem(HTMLTableRow $row = NULL, CommonDBTM $item = NULL,
                                     HTMLTableCell $father = NULL, array $options = array())
    {
@@ -112,5 +123,3 @@ class PluginOcsinventoryngDeviceBiosdata extends CommonDevice
       }
    }
 }
-
-?>

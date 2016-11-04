@@ -52,5 +52,3 @@ class PluginOcsinventoryngServer extends CommonDBTM
       return false;
    }
 }
-
-?>

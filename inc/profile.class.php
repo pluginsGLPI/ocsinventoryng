@@ -39,7 +39,10 @@ class PluginOcsinventoryngProfile extends CommonDBTM
 
    /**
     * @see inc/CommonGLPI::getTabNameForItem()
-    **/
+    * @param CommonGLPI $item
+    * @param int $withtemplate
+    * @return string|translated
+    */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
    {
 
@@ -54,10 +57,13 @@ class PluginOcsinventoryngProfile extends CommonDBTM
 
    /**
     * @see inc/CommonGLPI::displayTabContentForItem()
-    **/
+    * @param CommonGLPI $item
+    * @param int $tabnum
+    * @param int $withtemplate
+    * @return bool|true
+    */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
    {
-      global $CFG_GLPI;
 
       if ($item->getType() == 'Profile') {
          $ID = $item->getID();
@@ -89,11 +95,13 @@ class PluginOcsinventoryngProfile extends CommonDBTM
 
 
    /**
-    * @param $profile
-    **/
+    * @param $profiles_id
+    * @param $rights
+    * @param bool $drop_existing
+    * @internal param $profile
+    */
    static function addDefaultProfileInfos($profiles_id, $rights, $drop_existing = false)
    {
-      global $DB;
 
       $profileRight = new ProfileRight();
       foreach ($rights as $right => $value) {
@@ -166,11 +174,13 @@ class PluginOcsinventoryngProfile extends CommonDBTM
    /**
     * Show profile form
     *
-    * @param $items_id integer id of the profile
-    * @param $target value url of target
-    *
+    * @param int $profiles_id
+    * @param bool $openform
+    * @param bool $closeform
     * @return nothing
-    **/
+    * @internal param int $items_id id of the profile
+    * @internal param value $target url of target
+    */
    function showForm($profiles_id = 0, $openform = TRUE, $closeform = TRUE)
    {
       global $DB, $CFG_GLPI;
@@ -186,7 +196,6 @@ class PluginOcsinventoryngProfile extends CommonDBTM
          echo "<form action='" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/profile.form.php' method='post'>";
       }
       //Delegating
-      $effective_rights = ProfileRight::getProfileRights($profiles_id, array('plugin_ocsinventoryng'));
       echo "<table class='tab_cadre_fixehov'>";
       echo "<tr><th colspan='4' class='center b'>" . sprintf(__('%1$s - %2$s'), 'OcsinventoryNG',
             $profile->fields["name"]) . "</th>";
@@ -318,7 +327,9 @@ class PluginOcsinventoryngProfile extends CommonDBTM
    /**
     * Init profiles
     *
-    **/
+    * @param $old_right
+    * @return int
+    */
 
    static function translateARight($old_right)
    {
@@ -342,6 +353,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM
     * @since 0.85
     * Migration rights from old system to the new one for one profile
     * @param $profiles_id the profile ID
+    * @return bool
     */
    static function migrateOneProfile($profiles_id)
    {
@@ -380,7 +392,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM
       $profile = new self();
 
       //Add new rights in glpi_profilerights table
-      foreach ($profile->getAllRights(true) as $data) {
+      foreach ($profile->getAllRights() as $data) {
          if (countElementsInTable("glpi_profilerights",
                "`name` = '" . $data['field'] . "'") == 0
          ) {
@@ -403,7 +415,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM
 
    static function removeRightsFromSession()
    {
-      foreach (self::getAllRights(true) as $right) {
+      foreach (self::getAllRights() as $right) {
          if (isset($_SESSION['glpiactiveprofile'][$right['field']])) {
             unset($_SESSION['glpiactiveprofile'][$right['field']]);
          }
@@ -411,5 +423,3 @@ class PluginOcsinventoryngProfile extends CommonDBTM
    }
 
 }
-
-?>

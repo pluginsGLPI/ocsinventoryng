@@ -220,5 +220,3 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown
       return $this->getFromDBByQuery("WHERE `OCS_TYPE`='*' AND `OCS_TYPEMIB`='*'");
    }
 }
-
-?>

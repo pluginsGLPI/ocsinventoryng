@@ -87,5 +87,3 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM
 
    }
 }
-
-?>

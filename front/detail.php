@@ -36,4 +36,3 @@ Html::header(__('Computers imported by automatic actions', 'ocsinventoryng'), ''
 Search::show('PluginOcsinventoryngDetail');
 
 Html::footer();
-?>

@@ -36,4 +36,3 @@ Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsse
 Search::show('PluginOcsinventoryngOcsServer');
 
 Html::footer();
-?>

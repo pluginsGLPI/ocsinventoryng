@@ -58,4 +58,3 @@ if (!isset($_POST["clean_ok"])) {
 }
 
 Html::footer();
-?>

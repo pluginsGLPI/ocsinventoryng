@@ -62,5 +62,3 @@ if (!isset($_SESSION["OCS"]["IpdiscoverMacConstructors"])) {
 //PluginOcsinventoryngOcsServer::ocsMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
 
 Html::footer();
-
-?>

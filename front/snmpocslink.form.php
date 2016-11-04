@@ -39,4 +39,3 @@ if (isset($_POST["force_ocssnmp_resynch"])) {
 } else {
    Html::displayErrorAndDie("lost");
 }
-?>
