@@ -970,7 +970,7 @@ JAVASCRIPT;
       $id_printer = 0;
 
       if ($action == "add") {
-         $id_printer = $snmpDevice->add($input, array('unicity_error_message' => false));
+         $id_printer = $snmpDevice->add($input, array('unicity_error_message' => true));
       } else {
          $id_printer = $ID;
          $input["id"] = $ID;
@@ -1204,7 +1204,7 @@ JAVASCRIPT;
       }
       $id_network = 0;
       if ($action == "add") {
-         $id_network = $snmpDevice->add($input, array('unicity_error_message' => false));
+         $id_network = $snmpDevice->add($input, array('unicity_error_message' => true));
       } else {
          $input["id"] = $ID;
          $id_network = $ID;
@@ -1384,8 +1384,7 @@ JAVASCRIPT;
       $id_item = 0;
 
       if ($action == "add") {
-
-         $id_item = $snmpDevice->add($input, array('unicity_error_message' => false));
+         $id_item = $snmpDevice->add($input, array('unicity_error_message' => true));
       } else {
          $input["id"] = $ID;
          $id_item = $ID;
@@ -1447,6 +1446,7 @@ JAVASCRIPT;
          $ocsid = $data['ocs_id'];
          $itemtype = $data['itemtype'];
          $items_id = $data['items_id'];
+         $linked = $data['linked'];
       }
 
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
@@ -1520,7 +1520,8 @@ JAVASCRIPT;
     */
    static function searchForm($params)
    {
-
+      global $CFG_GLPI;
+      
       // Default values of parameters
       $p['itemtype'] = '';
       $p['ip'] = '';
@@ -1877,7 +1878,7 @@ JAVASCRIPT;
                         $mynamei = "itemtype";
                         $myname = "tolink_items[" . $tab["id"] . "]";
 
-                        $rand = Dropdown::showItemTypes($mynamei, $CFG_GLPI["asset_types"], array('rand' => $mtrand));
+                        $rand = Dropdown::showItemTypes($mynamei, self::$snmptypes, array('rand' => $mtrand));
 
 
                         $p = array('itemtype' => '__VALUE__',
