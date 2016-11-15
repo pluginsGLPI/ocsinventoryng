@@ -28,6 +28,9 @@
  --------------------------------------------------------------------------
  */
 
+/**
+ * Class PluginOcsinventoryngNotimportedcomputer
+ */
 class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
 {
 
@@ -38,12 +41,19 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
    public $second_level_menu = "ocsinventoryng";
 
 
+   /**
+    * @param int $nb
+    * @return translated
+    */
    static function getTypeName($nb = 0)
    {
       return _n('Computer not imported', 'Computers not imported', $nb, 'ocsinventoryng');
    }
 
 
+   /**
+    * @return array
+    */
    function getAdditionalFields()
    {
 
@@ -87,10 +97,11 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
 
    /**
     * Add more tabs to display
+    * @return array
+    * @internal param array $options
     *
-    * @param $options   array
-    **/
-   function defineMoreTabs($options = array())
+    */
+   function defineMoreTabs()
    {
 
       $ong = array();
@@ -108,11 +119,13 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
    /**
     * Display fields that are specific to this itemtype
     *
-    * @param ID               the item's ID
-    * @param field   array    the item's fields
-    *
+    * @param the $ID
+    * @param array $field
     * @return nothing
-    **/
+    * @internal param the $ID item's ID
+    * @internal param array $field the item's fields
+    *
+    */
    function displaySpecificTypeField($ID, $field = array())
    {
 
@@ -147,7 +160,10 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
 
    /**
     * @param $rule_list
-    **/
+    *
+    * @return string
+    * @return string
+    */
    static function getRuleMatchedMessage($rule_list)
    {
 
@@ -212,6 +228,9 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
    }
 
 
+   /**
+    * @return array
+    */
    function getSearchOptions()
    {
 
@@ -346,7 +365,10 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
    /**
     * @param $ocsservers_id (default -1)
     * @param $ocsid (default -1)
-    **/
+    *
+    * @return int|number
+    * @return int|number
+    */
    function cleanNotImported($ocsservers_id = -1, $ocsid = -1)
    {
       global $DB;
@@ -377,10 +399,11 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
    /**
     * Delete a row in the notimported table
     *
-    * @param not_imported_id if of the computer that is not imported in GLPI
-    *
+    * @param if $not_imported_id
     * @return nothing
-    **/
+    * @internal param if $not_imported_id of the computer that is not imported in GLPI
+    *
+    */
    function deleteNotImportedComputer($not_imported_id)
    {
 
@@ -395,7 +418,10 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
 
    /**
     * @param $reason
-    *-*/
+    *-
+    * @return string|translated
+    * @return string|translated
+    */
    static function getReason($reason)
    {
 
@@ -422,7 +448,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
    {
 
       echo "<div class='spaced'>";
-      echo "<form name='actions' id='actions' method='post' value='" . getItemTypeFormURL(__CLASS__) . "'>";
+      echo "<form name='actions' id='actions' method='post' value='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
       echo "<table class='tab_cadre_fixe'>";
       echo "<tr class='tab_bg_2'>";
       echo "<th class='center'>" . __('Actions to be made on the computer', 'ocsinventoryng') .
@@ -442,7 +468,10 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
 
    /**
     * @param $params array
-    **/
+    *
+    * @return bool
+    * @return bool
+    */
    static function computerImport($params = array())
    {
 
@@ -521,7 +550,10 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
 
    /**
     * @param $params array
-    **/
+    *
+    * @return array
+    * @return array
+    */
    static function getOcsComputerInfos($params = array())
    {
       PluginOcsinventoryngOcsServer::checkOCSconnection($params['plugin_ocsinventoryng_ocsservers_id']);
@@ -551,6 +583,9 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
    }
 
 
+   /**
+    * @return int
+    */
    static function sendAlert()
    {
       global $DB, $CFG_GLPI;
@@ -559,7 +594,6 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
          return 0;
       }
 
-      $message = array();
       $items_infos = array();
 
       $query = "SELECT `glpi_plugin_ocsinventoryng_notimportedcomputers`.*
@@ -588,13 +622,16 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
                unset($alert->fields['id']);
             }
          } else {
-            logDebug(__('%1$s: %2$s') . "\n", Dropdown::getDropdownName("glpi_entities", $entity),
+            Toolbox::logDebug(__('%1$s: %2$s') . "\n", Dropdown::getDropdownName("glpi_entities", $entity),
                __('Send OCSNG not imported computers alert failed', 'ocsinventoryng'));
          }
       }
    }
 
 
+   /**
+    *
+    */
    function cleanDBonPurge()
    {
       global $DB;
@@ -607,6 +644,10 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
    }
 
 
+   /**
+    * @param $name
+    * @return array
+    */
    static function cronInfo($name)
    {
 
@@ -616,6 +657,9 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
       }
    }
 
+   /**
+    * @param $task
+    */
    static function cronSendAlerts($task)
    {
       self::sendAlert();
@@ -626,7 +670,9 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
     * @since version 0.85
     *
     * @see CommonDBTM::getSpecificMassiveActions()
-    **/
+    * @param null $checkitem
+    * @return an
+    */
    function getSpecificMassiveActions($checkitem = NULL)
    {
 
@@ -635,6 +681,9 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
       return $actions;
    }
 
+   /**
+    * @return an|array
+    */
    function getForbiddenStandardMassiveAction()
    {
 
@@ -647,7 +696,9 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
     * @since version 0.85
     *
     * @see CommonDBTM::showMassiveActionsSubForm()
-    **/
+    * @param MassiveAction $ma
+    * @return bool|false
+    */
    static function showMassiveActionsSubForm(MassiveAction $ma)
    {
 
@@ -676,11 +727,14 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
     * @since version 0.85
     *
     * @see CommonDBTM::processMassiveActionsForOneItemtype()
-    **/
+    * @param MassiveAction $ma
+    * @param CommonDBTM $item
+    * @param array $ids
+    * @return nothing|void
+    */
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
                                                        array $ids)
    {
-      global $DB;
 
       $notimport = new PluginOcsinventoryngNotimportedcomputer();
 
@@ -702,7 +756,6 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
             return;
 
          case "plugin_ocsinventoryng_replayrules" :
-            $input = $ma->getInput();
             foreach ($ids as $id) {
                if (PluginOcsinventoryngNotimportedcomputer::computerImport(array('id' => $id))) {
                   $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
@@ -713,7 +766,6 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
             return;
 
          case "plugin_ocsinventoryng_delete" :
-            $input = $ma->getInput();
             foreach ($ids as $id) {
                if ($notimport->deleteNotImportedComputer($id)) {
                   $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
@@ -726,5 +778,3 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
       parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
    }
 }
-
-?>

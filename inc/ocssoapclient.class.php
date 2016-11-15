@@ -28,6 +28,9 @@
  --------------------------------------------------------------------------
  */
 
+/**
+ * Class PluginOcsinventoryngOcsSoapClient
+ */
 class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 {
    /**
@@ -35,6 +38,13 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     */
    private $soapClient;
 
+   /**
+    * PluginOcsinventoryngOcsSoapClient constructor.
+    * @param $id
+    * @param $url
+    * @param $user
+    * @param $pass
+    */
    public function __construct($id, $url, $user, $pass)
    {
       parent::__construct($id);
@@ -60,6 +70,11 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
       return !is_soap_fault($this->soapClient->ocs_config_V2('LOGLEVEL'));
    }
 
+   /**
+    * @param string $field
+    * @param mixed $value
+    * @return array
+    */
    public function searchComputers($field, $value)
    {
       $xml = $this->callSoap('search_computers_V1', array($field, $value));
@@ -185,6 +200,12 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
       );
    }
 
+   /**
+    * @param $ids
+    * @param int $checksum
+    * @param int $wanted
+    * @return array
+    */
    public function getComputerSections($ids, $checksum = self::CHECKSUM_ALL, $wanted = self::WANTED_ALL)
    {
       $xml = $this->callSoap('get_computer_sections_V1', array($ids, $checksum, $wanted));
@@ -209,10 +230,64 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
       return $computers;
    }
 
+   /**
+    * @param $id
+    */
    public function getAccountInfo($id)
    {
    }
 
+
+   /**
+    * Returns a list of snmp devices
+    *
+    * @param array $options Possible options :
+    *      array(
+    *         'OFFSET' => int,
+    *         'MAX_RECORDS' => int,
+    *         'FILTER' => array(                  // filter the computers to return
+    *            'IDS' => array(int),            // list of computer ids to select
+    *            'EXCLUDE_IDS' => array(int),      // list of computer ids to exclude
+    *            'TAGS' => array(string),         // list of computer tags to select
+    *            'EXCLUDE_TAGS' => array(string),   // list of computer tags to exclude
+    *            'CHECKSUM' => int               // filter which sections have been modified (see CHECKSUM_* constants)
+    *         ),
+    *         'DISPLAY' => array(      // select which sections of the computers to return
+    *            'CHECKSUM' => int,   // inventory sections to return (see CHECKSUM_* constants)
+    *            'WANTED' => int      // special sections to return (see WANTED_* constants)
+    *         )
+    *      )
+    *
+    * @return array List of snmp devices :
+    *      array (
+    *         'TOTAL_COUNT' => int, // the total number of computers for this query (without taking OFFSET and MAX_RECORDS into account)
+    *         'SNMP' => array (
+    *            array (
+    *               'META' => array(
+    *                  'ID' => ...
+    *                  'CHECKSUM' => ...
+    *                  'DEVICEID' => ...
+    *                  'LASTCOME' => ...
+    *                  'LASTDATE' => ...
+    *                  'NAME' => ...
+    *                  'TAG' => ...
+    *               ),
+    *               'SECTION1' => array(
+    *                  array(...),   // Section element 1
+    *                  array(...),   // Section element 2
+    *                  ...
+    *               ),
+    *               'SECTION2' => array(...),
+    *               ...
+    *            ),
+    *            ...
+    *         )
+    *      )
+    */
+   public function getSnmp($options)
+   {
+   }
+   
    /**
     * @see PluginOcsinventoryngOcsClient::getConfig()
     * @param string $key
@@ -247,6 +322,29 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
       ));
    }
 
+   /**
+    * Gets the array of computers to update with cron
+    *
+    * @param array $cfg_ocs Server confifguration
+    * @param $max_date
+    * @return array $data the computers to update
+    */
+   public function getComputersToUpdate($cfg_ocs, $max_date)
+   {
+   }
+
+   /**
+    * Gets the array of computers for script checkocslinks.php
+    *
+    * @return array $data the list of computers
+    */
+   public function getOCSComputers()
+   {
+   }
+   
+   /**
+    *
+    */
    public function getDeletedComputers()
    {
       $deletedObjs = array();
@@ -265,6 +363,11 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
        return $res;*/
    }
 
+   /**
+    * @param $deleted
+    * @param null $equiv
+    * @return mixed|void
+    */
    public function removeDeletedComputers($deleted, $equiv = null)
    {
       $count = 0;
@@ -286,15 +389,41 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
    }
 
 
+   /**
+    * Get the old agents without inventory in ocsinventory
+    *
+    * @return array The list of deleted computers : (DELETED contains the id or deviceid of the computer and equivalent and EQUIV contains the new id if the computer was marged)
+    *      array (
+    *         'DELETED' => 'EQUIV'
+    *      )
+    */
+   public function getOldAgents()
+   {
+   }
+   
+   /**
+    * @param $columns
+    * @param $table
+    * @param $conditions
+    * @param $sort
+    */
    public function getUnique($columns, $table, $conditions, $sort)
    {
    }
 
+   /**
+    * @param int $checksum
+    * @param int $id
+    */
    public function setChecksum($checksum, $id)
    {
       $this->callSoap('reset_checksum_V1', array($checksum, $id));
    }
 
+   /**
+    * @param int $id
+    * @return int
+    */
    public function getChecksum($id)
    {
       $xml = $this->callSoap('get_checksum_V1', $id);

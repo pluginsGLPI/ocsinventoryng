@@ -32,6 +32,9 @@ if (!defined('GLPI_ROOT')) {
 }
 
 /// OCS config class
+/**
+ * Class PluginOcsinventoryngOcsServer
+ */
 class PluginOcsinventoryngOcsServer extends CommonDBTM
 {
 
@@ -103,11 +106,20 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
    const IPDISCOVER_SYNCHRONIZED = 18; //IPDISCOVER is synchronized
 
 
+   /**
+    * @param int $nb
+    * @return translated
+    */
    static function getTypeName($nb = 0)
    {
       return _n('OCSNG server', 'OCSNG servers', $nb, 'ocsinventoryng');
    }
 
+   /**
+    * @param CommonGLPI $item
+    * @param int $withtemplate
+    * @return string
+    */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
    {
       if (!$withtemplate) {
@@ -136,6 +148,12 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
       return '';
    }
 
+   /**
+    * @param CommonGLPI $item
+    * @param int $tabnum
+    * @param int $withtemplate
+    * @return bool
+    */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
    {
 
@@ -165,6 +183,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
       return true;
    }
 
+   /**
+    * @param array $options
+    * @return array
+    */
    function defineTabs($options = array())
    {
 
@@ -177,6 +199,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
 
    }
 
+   /**
+    * @return array
+    */
    function getSearchOptions()
    {
 
@@ -238,7 +263,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
     * */
    static function setupMenu($plugin_ocsinventoryng_ocsservers_id)
    {
-      global $CFG_GLPI, $DB, $conf;
+      global $CFG_GLPI, $DB;
       $name = "";
       $ocsservers = array();
       //echo "<div class='center'>";
@@ -279,7 +304,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
               FROM `glpi_plugin_ocsinventoryng_ocsservers`
               LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers_profiles`
                   ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
-              WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`id` = '" . $plugin_ocsinventoryng_ocsservers_id . "' AND `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . "";
+              WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`id` = '" . $plugin_ocsinventoryng_ocsservers_id . "' 
+              AND `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`profiles_id`= '" . $_SESSION["glpiactiveprofile"]['id'] . "'";
       $result = $DB->query($sql);
       $isactive = 0;
       if ($DB->numrows($result) > 0) {
@@ -302,7 +328,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
 
          if ($isactive) {
             echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 2 : 4) . "'>
-                  <a href='ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
+                  <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
                    <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsserver.png' " .
                "alt='" . __s("Configuration of OCSNG server", 'ocsinventoryng') . "' " .
                "title=\"" . __s("Configuration of OCSNG server", 'ocsinventoryng') . "\">
@@ -312,7 +338,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
             if ($usemassimport) {
                //config massimport
                echo "<td class='center b' colspan='2'>
-                     <a href='config.form.php'>
+                     <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/config.form.php'>
                       <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro.png' " .
                   "alt='" . __s("Automatic synchronization's configuration", 'ocsinventoryng') . "' " .
                   "title=\"" . __s("Automatic synchronization's configuration", 'ocsinventoryng') . "\">
@@ -358,7 +384,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
     * */
    static function importMenu($plugin_ocsinventoryng_ocsservers_id)
    {
-      global $CFG_GLPI, $DB, $conf;
+      global $CFG_GLPI, $DB;
       $name = "";
       $ocsservers = array();
       //echo "<div class='center'>";
@@ -399,7 +425,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
               FROM `glpi_plugin_ocsinventoryng_ocsservers`
               LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers_profiles`
                   ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
-              WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`id` = '" . $plugin_ocsinventoryng_ocsservers_id . "' AND `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . "";
+              WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`id` = '" . $plugin_ocsinventoryng_ocsservers_id . "' 
+              AND `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`profiles_id`= '" . $_SESSION["glpiactiveprofile"]['id'] . "'";
       $result = $DB->query($sql);
       $isactive = 0;
       if ($DB->numrows($result) > 0) {
@@ -511,11 +538,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
    /**
     * Print ocs config form
     *
-    * @param $target form target
     * @param $ID Integer : Id of the ocs config
-    *
-    * @return Nothing (display)
-    * */
+    * @return bool
+    * @internal param form $target target
+    */
    function ocsFormConfig($ID)
    {
 
@@ -883,8 +909,9 @@ JAVASCRIPT;
     *
     * @param $ID Integer : Id of the ocs config
     *
-    * @return Nothing (display)
-    * */
+    *
+    * @return bool
+    */
    function ocsHistoryConfig($ID)
    {
 
@@ -1003,10 +1030,10 @@ JAVASCRIPT;
 
    /**
     * @param $ID
-    * @param $withtemplate (default '')
-    * @param $templateid (default '')
-    * */
-   function ocsFormImportOptions($ID, $withtemplate = '', $templateid = '')
+    * @internal param $withtemplate (default '')
+    * @internal param $templateid (default '')
+    */
+   function ocsFormImportOptions($ID)
    {
 
       $this->getFromDB($ID);
@@ -1112,24 +1139,6 @@ JAVASCRIPT;
 
       echo "<tr class='tab_bg_1'>";
       echo "<td class='center'>" . __('Connection type', 'ocsinventoryng') . "</td>";
-
-      echo "<script type='text/javascript'>
-            function form_init_all(form, value) {
-               var hideIfSoapElems = document.getElementsByClassName('hide_if_soap');
-               for (var i = 0; i < hideIfSoapElems.length; i++) {
-                  if (value == '0') {
-                     // if DB
-                     hideIfSoapElems[i].style.display = '';
-                  } else {
-                     // if SOAP
-                     hideIfSoapElems[i].style.display = 'none';
-                  }
-               }
-            }
-   
-         </script>";
-
-
       echo "<td id='conn_type_container'>";
       Dropdown::showFromArray('conn_type', $conn_type_values, array('value' => $this->fields['conn_type'],
          'on_change' => "form_init_all(this.form, this.selectedIndex);"));
@@ -1261,6 +1270,10 @@ JAVASCRIPT;
       echo $out;
    }
 
+   /**
+    * @param datas $input
+    * @return datas
+    */
    function prepareInputForUpdate($input)
    {
 
@@ -1278,6 +1291,9 @@ JAVASCRIPT;
       return $input;
    }
 
+   /**
+    *
+    */
    function pre_updateInDB()
    {
 
@@ -1354,6 +1370,10 @@ JAVASCRIPT;
       $this->fields["checksum"] = $checksum;
    }
 
+   /**
+    * @param datas $input
+    * @return bool|datas
+    */
    function prepareInputForAdd($input)
    {
       global $DB;
@@ -1376,15 +1396,21 @@ JAVASCRIPT;
       return $input;
    }
 
+   /**
+    *
+    */
    function post_addItem()
    {
       global $DB;
 
       $query = "INSERT INTO  `glpi_plugin_ocsinventoryng_ocsservers_profiles` (`id` ,`plugin_ocsinventoryng_ocsservers_id` , `profiles_id`)
                                     VALUES (NULL ,  '" . $this->fields['id'] . "',  '" . $_SESSION["glpiactiveprofile"]['id'] . "');";
-      $result = $DB->query($query);
+      $DB->query($query);
    }
 
+   /**
+    *
+    */
    function cleanDBonPurge()
    {
 
@@ -1428,7 +1454,7 @@ JAVASCRIPT;
                $adm->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
                $adm->fields["glpi_column"] = "locations_id";
                $adm->fields["ocs_column"] = $tab["import_location"];
-               $isNewAdm = $adm->addToDB();
+               $adm->addToDB();
             }
          }
 
@@ -1438,7 +1464,7 @@ JAVASCRIPT;
                $adm->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
                $adm->fields["glpi_column"] = "otherserial";
                $adm->fields["ocs_column"] = $tab["import_otherserial"];
-               $isNewAdm = $adm->addToDB();
+               $adm->addToDB();
             }
          }
 
@@ -1448,7 +1474,7 @@ JAVASCRIPT;
                $adm->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
                $adm->fields["glpi_column"] = "groups_id";
                $adm->fields["ocs_column"] = $tab["import_group"];
-               $isNewAdm = $adm->addToDB();
+               $adm->addToDB();
             }
          }
 
@@ -1458,7 +1484,7 @@ JAVASCRIPT;
                $adm->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
                $adm->fields["glpi_column"] = "networks_id";
                $adm->fields["ocs_column"] = $tab["import_network"];
-               $isNewAdm = $adm->addToDB();
+               $adm->addToDB();
             }
          }
 
@@ -1468,7 +1494,7 @@ JAVASCRIPT;
                $adm->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
                $adm->fields["glpi_column"] = "contact_num";
                $adm->fields["ocs_column"] = $tab["import_contact_num"];
-               $isNewAdm = $adm->addToDB();
+               $adm->addToDB();
             }
          }
 
@@ -1478,7 +1504,7 @@ JAVASCRIPT;
                $adm->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
                $adm->fields["glpi_column"] = "use_date";
                $adm->fields["ocs_column"] = $tab["import_use_date"];
-               $isNewAdm = $adm->addToDB();
+               $adm->addToDB();
             }
          }
       }
@@ -1506,8 +1532,10 @@ JAVASCRIPT;
     *
     * @param $ID the machine ID
     *
-    * @return the ocs server id of the machine
-    * */
+    * return the ocs server id of the machine
+    *
+    * @return int
+    */
    static function getByMachineID($ID)
    {
       global $DB;
@@ -1541,7 +1569,7 @@ JAVASCRIPT;
     * Get a random plugin_ocsinventoryng_ocsservers_id
     * use for standard sync server selection
     *
-    * @return an ocs server id
+    * return an ocs server id
     * */
    static function getRandomServerID()
    {
@@ -1589,6 +1617,10 @@ JAVASCRIPT;
       return $data;
    }
 
+   /**
+    * @param $cfg_ocs
+    * @return string
+    */
    static function getTagLimit($cfg_ocs)
    {
 
@@ -1628,8 +1660,10 @@ JAVASCRIPT;
     * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
     * @param $glpi_computers_id integer : glpi computer id
     *
-    * @return integer : link id.
-    * */
+    * return integer : link id.
+    *
+    * @return bool|item
+    */
    static function ocsLink($ocsid, $plugin_ocsinventoryng_ocsservers_id, $glpi_computers_id)
    {
       global $DB;
@@ -1677,7 +1711,9 @@ JAVASCRIPT;
     * @param $ocsid
     * @param $plugin_ocsinventoryng_ocsservers_id
     * @param $computers_id
-    * */
+    *
+    * @return bool
+    */
    static function linkComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $computers_id)
    {
       global $DB, $CFG_GLPI;
@@ -1763,7 +1799,7 @@ JAVASCRIPT;
 
                   if (!is_null($ocsComputer)) {
                      $ocsComputer = Toolbox::addslashes_deep($ocsComputer);
-                     self::transferComputer($ocsLink->fields, $ocsComputer);
+                     self::transferComputer($ocsLink->fields);
                   }
                }
             }
@@ -1862,6 +1898,14 @@ JAVASCRIPT;
       return false;
    }
 
+   /**
+    * @param $ocsid
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param int $lock
+    * @param int $defaultentity
+    * @param int $defaultlocation
+    * @return array
+    */
    static function processComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock = 0, $defaultentity = -1, $defaultlocation = -1)
    {
       global $DB;
@@ -1888,6 +1932,10 @@ JAVASCRIPT;
 
    }
 
+   /**
+    * @param $ID
+    * @return bool
+    */
    public static function checkVersion($ID)
    {
       $client = self::getDBocs($ID);
@@ -1909,15 +1957,24 @@ JAVASCRIPT;
    }
 
 
+   /**
+    * @param $ID
+    * @return int
+    */
    public static function checkTraceDeleted($ID)
    {
       $client = self::getDBocs($ID);
       return $client->getIntConfig('TRACE_DELETED');
    }
 
+   /**
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param bool $redirect
+    * @return bool
+    */
    static function manageDeleted($plugin_ocsinventoryng_ocsservers_id, $redirect = true)
    {
-      global $DB, $CFG_GLPI, $PLUGIN_HOOKS;
+      global $DB;
 
       if (!(self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)
          && self::checkVersion($plugin_ocsinventoryng_ocsservers_id))
@@ -2085,6 +2142,13 @@ JAVASCRIPT;
       );
    }
 
+   /**
+    * @param array $ocs_fields
+    * @param $cfg_ocs
+    * @param $entities_id
+    * @param int $locations_id
+    * @return array
+    */
    static function getComputerInformations($ocs_fields = array(), $cfg_ocs, $entities_id, $locations_id = 0)
    {
       $input = array();
@@ -2123,7 +2187,7 @@ JAVASCRIPT;
                if (!($item = getItemForItemtype($table))) {
                   continue;
                }
-               $item = new $itemtype();
+               $itemtype = getItemTypeForTable($table);
                $external_params = array();
 
                foreach ($item->additional_fields_for_dictionnary as $field) {
@@ -2212,6 +2276,14 @@ JAVASCRIPT;
       return $input;
    }
 
+   /**
+    * @param $ocsid
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param int $lock
+    * @param int $defaultentity
+    * @param int $defaultlocation
+    * @return array
+    */
    static function importComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock = 0, $defaultentity = -1, $defaultlocation = -1)
    {
       global $DB;
@@ -2362,10 +2434,10 @@ JAVASCRIPT;
     * @param $ID integer : ID of ocslinks row
     * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server ID
     * @param $dohistory bool : do history ?
-    * @param $force bool : force update ?
-    *
-    * @return action done
-    * */
+    * @param bool|int $force bool : force update ?
+    * return action done
+    * @return array
+    */
    static function updateComputer($ID, $plugin_ocsinventoryng_ocsservers_id, $dohistory, $force = 0)
    {
       global $DB, $CFG_GLPI;
@@ -2404,7 +2476,7 @@ JAVASCRIPT;
             if ($CFG_GLPI['transfers_id_auto'] > 0
                && Session::isMultiEntitiesMode()
             ) {
-               self::transferComputer($line, $data_ocs);
+               self::transferComputer($line);
                $comp->getFromDB($line["computers_id"]);
 
             } else {
@@ -2660,10 +2732,10 @@ JAVASCRIPT;
                      'dohistory' => $cfg_ocs['history_hardware'],
                      'check_history' => true,
                      'entities_id' => $comp->fields['entities_id']);
-                  $loghistory = self::updateHardware($p);
+                  self::updateHardware($p);
                }
                if ($bios) {
-                  self::updateBios($line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $comp->fields['entities_id']);
+                  self::updateBios($line['computers_id'], $ocsComputer, $cfg_ocs, $computer_updates, $comp->fields['entities_id']);
                }
                // Get import devices
                $import_device = array();
@@ -2742,7 +2814,7 @@ JAVASCRIPT;
                }
                if ($softwares && isset($ocsComputer["SOFTWARES"])) {
                   // Get import software
-                  self::updateSoftware($cfg_ocs, $line['computers_id'], $plugin_ocsinventoryng_ocsservers_id, $ocsComputer["SOFTWARES"], $comp->fields["entities_id"]);
+                  self::updateSoftware($cfg_ocs, $line['computers_id'], $ocsComputer["SOFTWARES"], $comp->fields["entities_id"]);
                }
                if ($drives && isset($ocsComputer["DRIVES"])) {
                   // Get import drives
@@ -2750,12 +2822,12 @@ JAVASCRIPT;
                }
                if ($registry && isset($ocsComputer["REGISTRY"])) {
                   //import registry entries not needed
-                  self::updateRegistry($line['computers_id'], $ocsComputer["REGISTRY"], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs);
+                  self::updateRegistry($line['computers_id'], $ocsComputer["REGISTRY"]);
                }
 
                if ($antivirus && isset($ocsComputer["SECURITYCENTER"])) {
                   //import registry entries not needed
-                  self::updateAntivirus($line['computers_id'], $ocsComputer["SECURITYCENTER"], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs);
+                  self::updateAntivirus($line['computers_id'], $ocsComputer["SECURITYCENTER"], $cfg_ocs);
                }
 
                if ($virtualmachines && isset($ocsComputer["VIRTUALMACHINES"])) {
@@ -2764,7 +2836,7 @@ JAVASCRIPT;
                }
             }
             //Update TAG
-            self::updateTag($line, $data_ocs);
+            self::updateTag($line);
             // Update OCS Cheksum
             $oldChecksum = $ocsClient->getChecksum($line['ocsid']);
             $newchecksum = $oldChecksum - $mixed_checksum;
@@ -2783,6 +2855,10 @@ JAVASCRIPT;
       }
    }
 
+   /**
+    * @param array $params
+    * @return array
+    */
    static function getComputerHardware($params = array())
    {
       global $DB;
@@ -2943,11 +3019,11 @@ JAVASCRIPT;
     *
     * @param $params array
     *
-    * @return nothing.
-    * */
+    *
+    * @return array
+    */
    static function updateHardware($params = array())
    {
-      global $DB;
 
       $p = array('computers_id' => 0,
          'ocs_id' => 0,
@@ -2981,15 +3057,16 @@ JAVASCRIPT;
     *
     *
     * @param $computers_id integer : ocs computer id.
-    * @param $ocsid integer : glpi computer id
-    * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
+    * @param $ocsComputer
     * @param $cfg_ocs array : ocs config
     * @param $computer_updates array : already updated fields of the computer
-    * @param entities_id the entity in which the computer is imported
-    *
-    * @return nothing.
-    * */
-   static function updateBios($computers_id, $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $entities_id = 0)
+    * @param int|the $entities_id
+    * @return nothing .
+    * @internal param int $plugin_ocsinventoryng_ocsservers_id : ocs server id
+    * @internal param int $ocsid : glpi computer id
+    * @internal param the $entities_id entity in which the computer is imported
+    */
+   static function updateBios($computers_id, $ocsComputer, $cfg_ocs, $computer_updates, $entities_id = 0)
    {
 
       $compupdate = array();
@@ -3088,8 +3165,9 @@ JAVASCRIPT;
     * @param $check string : parameter for HTML input checkbox
     * @param $start int : parameter for Html::printPager method
     *
-    * @return nothing
-    * */
+    *
+    * @return bool
+    */
    static function showComputersToClean($plugin_ocsinventoryng_ocsservers_id, $check, $start)
    {
       global $DB, $CFG_GLPI;
@@ -3157,11 +3235,7 @@ JAVASCRIPT;
             $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
 
             $already_linked[$data["ocsid"]]["entities_id"] = $data["entities_id"];
-            if (Toolbox::strlen($data["ocs_deviceid"]) > 20) { // Strip datetime tag
-               $already_linked[$data["ocsid"]]["ocs_deviceid"] = substr($data["ocs_deviceid"], 0, -20);
-            } else {
-               $already_linked[$data["ocsid"]]["ocs_deviceid"] = $data["ocs_deviceid"];
-            }
+            $already_linked[$data["ocsid"]]["ocs_deviceid"] = $data["ocs_deviceid"];
             $already_linked[$data["ocsid"]]["date"] = $data["last_update"];
             $already_linked[$data["ocsid"]]["id"] = $data["id"];
             $already_linked[$data["ocsid"]]["in_ocs"] = isset($hardware[$data["ocsid"]]);
@@ -3303,6 +3377,12 @@ JAVASCRIPT;
       }
    }
 
+   /**
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param $check
+    * @param $start
+    * @return bool|void
+    */
    static function showComputersToUpdate($plugin_ocsinventoryng_ocsservers_id, $check, $start)
    {
       global $DB, $CFG_GLPI;
@@ -3498,6 +3578,12 @@ JAVASCRIPT;
       }
    }
 
+   /**
+    * @param $computers_id
+    * @param $tomerge
+    * @param $field
+    * @return bool
+    */
    static function mergeOcsArray($computers_id, $tomerge, $field)
    {
       global $DB;
@@ -3523,6 +3609,13 @@ JAVASCRIPT;
       return false;
    }
 
+   /**
+    * @param $computers_id
+    * @param $todel
+    * @param $field
+    * @param bool $is_value_to_del
+    * @return bool
+    */
    static function deleteInOcsArray($computers_id, $todel, $field, $is_value_to_del = false)
    {
       global $DB;
@@ -3557,6 +3650,13 @@ JAVASCRIPT;
       return false;
    }
 
+   /**
+    * @param $computers_id
+    * @param $newArray
+    * @param $field
+    * @param bool $lock
+    * @return bool
+    */
    static function replaceOcsArray($computers_id, $newArray, $field, $lock = true)
    {
       global $DB;
@@ -3586,6 +3686,12 @@ JAVASCRIPT;
    }
 
 
+   /**
+    * @param $computers_id
+    * @param $toadd
+    * @param $field
+    * @return bool
+    */
    static function addToOcsArray($computers_id, $toadd, $field)
    {
       global $DB;
@@ -3622,15 +3728,21 @@ JAVASCRIPT;
    /**
     * Display a list of computers to add or to link
     *
-    * @param plugin_ocsinventoryng_ocsservers_id the ID of the ocs server
-    * @param advanced display detail about the computer import or not (target entity, matched rules, etc.)
-    * @param check indicates if checkboxes are checked or not
-    * @param start display a list of computers starting at rowX
-    * @param entity a list of entities in which computers can be added or linked
-    * @param tolinked false for an import, true for a link
+    * @param $serverId
+    * @param display $advanced
+    * @param indicates $check
+    * @param display $start
+    * @param a|int $entity
+    * @param bool|false $tolinked
+    * @internal param the $plugin_ocsinventoryng_ocsservers_id ID of the ocs server
+    * @internal param display $advanced detail about the computer import or not (target entity, matched rules, etc.)
+    * @internal param indicates $check if checkboxes are checked or not
+    * @internal param display $start a list of computers starting at rowX
+    * @internal param a $entity list of entities in which computers can be added or linked
+    * @internal param false $tolinked for an import, true for a link
     *
-    * @return nothing
-    * */
+    * @return bool
+    */
    static function showComputersToAdd($serverId, $advanced, $check, $start, $entity = 0, $tolinked = false)
    {
       global $DB, $CFG_GLPI;
@@ -3985,7 +4097,11 @@ JAVASCRIPT;
       }
    }
 
-   static function migrateImportDevice($computers_id, $import_device)
+   /**
+    * @param $import_device
+    * @return array
+    */
+   static function migrateImportDevice($import_device)
    {
 
       $new_import_device = array(self::IMPORT_TAG_078);
@@ -4008,6 +4124,11 @@ JAVASCRIPT;
       return $new_import_device;
    }
 
+   /**
+    * @param $computers_id
+    * @param $computer_update
+    * @return array
+    */
    static function migrateComputerUpdates($computers_id, $computer_update)
    {
 
@@ -4132,18 +4253,18 @@ JAVASCRIPT;
     *
     * @param $devicetype integer : device type
     * @param $computers_id integer : glpi computer id.
-    * @param $ocsid integer : ocs computer id (ID).
+    * @param $ocsComputer
     * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
     * @param $cfg_ocs array : ocs config
     * @param $import_device array : already imported devices
     * @param $import_ip array : already imported ip
-    * @param $dohistory boolean : log changes?
+    * @return Nothing .
+    * @internal param int $ocsid : ocs computer id (ID).
+    * @internal param bool $dohistory : log changes?
     *
-    * @return Nothing (void).
-    * */
+    */
    static function updateDevices($devicetype, $computers_id, $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, $import_ip)
    {
-      global $DB;
       $prevalue = $devicetype . self::FIELD_SEPARATOR;
       $do_clean = false;
       $comp = new Computer();
@@ -4167,7 +4288,7 @@ JAVASCRIPT;
                $DeviceBios = new PluginOcsinventoryngDeviceBiosdata();
                $bios_id = $DeviceBios->import($bios);
                if ($bios_id) {
-                  $devID = $CompDevice->add(array('items_id' => $computers_id,
+                  $CompDevice->add(array('items_id' => $computers_id,
                      'itemtype' => 'Computer',
                      'plugin_ocsinventoryng_devicebiosdatas_id' => $bios_id,
                      'is_dynamic' => 1,
@@ -4210,7 +4331,7 @@ JAVASCRIPT;
                      $DeviceMemory = new DeviceMemory();
                      $ram_id = $DeviceMemory->import($ram);
                      if ($ram_id) {
-                        $devID = $CompDevice->add(array('items_id' => $computers_id,
+                        $CompDevice->add(array('items_id' => $computers_id,
                            'itemtype' => 'Computer',
                            'entities_id' => $entities_id,
                            'devicememories_id' => $ram_id,
@@ -4256,7 +4377,7 @@ JAVASCRIPT;
                      $DeviceHardDrive = new DeviceHardDrive();
                      $dd_id = $DeviceHardDrive->import($dd);
                      if ($dd_id) {
-                        $devID = $CompDevice->add(array('items_id' => $computers_id,
+                        $CompDevice->add(array('items_id' => $computers_id,
                            'itemtype' => 'Computer',
                            'entities_id' => $entities_id,
                            'deviceharddrives_id' => $dd_id,
@@ -4299,7 +4420,7 @@ JAVASCRIPT;
                      $DeviceDrive = new DeviceDrive();
                      $stor_id = $DeviceDrive->import($stor);
                      if ($stor_id) {
-                        $devID = $CompDevice->add(array('items_id' => $computers_id,
+                        $CompDevice->add(array('items_id' => $computers_id,
                            'itemtype' => 'Computer',
                            'entities_id' => $entities_id,
                            'devicedrives_id' => $stor_id,
@@ -4331,7 +4452,7 @@ JAVASCRIPT;
                      $DevicePci = new DevicePci();
                      $mdm_id = $DevicePci->import($mdm);
                      if ($mdm_id) {
-                        $devID = $CompDevice->add(array('items_id' => $computers_id,
+                        $CompDevice->add(array('items_id' => $computers_id,
                            'itemtype' => 'Computer',
                            'entities_id' => $entities_id,
                            'devicepcis_id' => $mdm_id,
@@ -4367,7 +4488,7 @@ JAVASCRIPT;
                         $DevicePci = new DevicePci();
                         $port_id = $DevicePci->import($port);
                         if ($port_id) {
-                           $devID = $CompDevice->add(array('items_id' => $computers_id,
+                           $CompDevice->add(array('items_id' => $computers_id,
                               'itemtype' => 'Computer',
                               'entities_id' => $entities_id,
                               'devicepcis_id' => $port_id,
@@ -4402,7 +4523,7 @@ JAVASCRIPT;
                         $DevicePci = new DevicePci();
                         $pci_id = $DevicePci->import($pci);
                         if ($pci_id) {
-                           $devID = $CompDevice->add(array('items_id' => $computers_id,
+                           $CompDevice->add(array('items_id' => $computers_id,
                               'itemtype' => 'Computer',
                               'entities_id' => $entities_id,
                               'devicepcis_id' => $pci_id,
@@ -4438,7 +4559,7 @@ JAVASCRIPT;
                   $DeviceProcessor = new DeviceProcessor();
                   $proc_id = $DeviceProcessor->import($processor);
                   if ($proc_id) {
-                     $devID = $CompDevice->add(array('items_id' => $computers_id,
+                     $CompDevice->add(array('items_id' => $computers_id,
                         'itemtype' => 'Computer',
                         'entities_id' => $entities_id,
                         'deviceprocessors_id' => $proc_id,
@@ -4459,7 +4580,7 @@ JAVASCRIPT;
 
          case "Item_DeviceNetworkCard":
             //Carte reseau
-            PluginOcsinventoryngNetworkPort::importNetwork($plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $ocsComputer, $computers_id, $entities_id);
+            PluginOcsinventoryngNetworkPort::importNetwork($cfg_ocs, $ocsComputer, $computers_id, $entities_id);
             break;
 
          case "Item_DeviceGraphicCard":
@@ -4479,7 +4600,7 @@ JAVASCRIPT;
                      $DeviceGraphicCard = new DeviceGraphicCard();
                      $video_id = $DeviceGraphicCard->import($video);
                      if ($video_id) {
-                        $devID = $CompDevice->add(array('items_id' => $computers_id,
+                        $CompDevice->add(array('items_id' => $computers_id,
                            'itemtype' => 'Computer',
                            'entities_id' => $entities_id,
                            'devicegraphiccards_id' => $video_id,
@@ -4518,7 +4639,7 @@ JAVASCRIPT;
                      $DeviceSoundCard = new DeviceSoundCard();
                      $snd_id = $DeviceSoundCard->import($snd);
                      if ($snd_id) {
-                        $devID = $CompDevice->add(array('items_id' => $computers_id,
+                        $CompDevice->add(array('items_id' => $computers_id,
                            'itemtype' => 'Computer',
                            'entities_id' => $entities_id,
                            'devicesoundcards_id' => $snd_id,
@@ -4547,7 +4668,7 @@ JAVASCRIPT;
                $devicemotherboards_id = $DeviceMB->import($mb);
                if ($devicemotherboards_id) {
                   $serial = $ocsComputer["MSN"];
-                  $devID = $CompDevice->add(array('items_id' => $computers_id,
+                  $CompDevice->add(array('items_id' => $computers_id,
                      'itemtype' => 'Computer',
                      'devicemotherboards_id' => $devicemotherboards_id,
                      'is_dynamic' => 1,
@@ -4583,7 +4704,7 @@ JAVASCRIPT;
                      $DeviceControl = new DeviceControl();
                      $ctrl_id = $DeviceControl->import($ctrl);
                      if ($ctrl_id) {
-                        $devID = $CompDevice->add(array('items_id' => $computers_id,
+                        $CompDevice->add(array('items_id' => $computers_id,
                            'itemtype' => 'Computer',
                            'entities_id' => $entities_id,
                            'devicecontrols_id' => $ctrl_id,
@@ -4604,6 +4725,7 @@ JAVASCRIPT;
          foreach ($import_device as $key => $val) {
             if (!(strpos($key, $devicetype . '$$') === false)) {
                list($type, $id) = explode(self::FIELD_SEPARATOR, $key);
+               $CompDevice = new $devicetype();
                $CompDevice->delete(array('id' => $id,
                   '_no_history' => !$cfg_ocs['history_devices']), true, $cfg_ocs['history_devices']);
             }
@@ -4632,8 +4754,11 @@ JAVASCRIPT;
     * @param $todisplay the link's label to display
     * @param $only_url
     *
-    * @return the html link to the computer in ocs console
-    * */
+    *
+    * return the html link to the computer in ocs console
+    *
+    * @return string
+    */
    static function getComputerLinkToOcsConsole($plugin_ocsinventoryng_ocsservers_id, $ocsid, $todisplay, $only_url = false)
    {
 
@@ -4663,11 +4788,14 @@ JAVASCRIPT;
    /**
     * Get IP address from OCS hardware table
     *
-    * @param plugin_ocsinventoryng_ocsservers_id the ID of the OCS server
-    * @param computers_id ID of the computer in OCS hardware table
+    * @param the $plugin_ocsinventoryng_ocsservers_id
+    * @param ID $computers_id
+    * return the ip address or ''
+    * @internal param the $plugin_ocsinventoryng_ocsservers_id ID of the OCS server
+    * @internal param ID $computers_id of the computer in OCS hardware table
     *
-    * @return the ip address or ''
-    * */
+    * @return string
+    */
    static function getGeneralIpAddress($plugin_ocsinventoryng_ocsservers_id, $computers_id)
    {
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
@@ -4687,6 +4815,11 @@ JAVASCRIPT;
       return '';
    }
 
+   /**
+    * @param $ocs_config
+    * @param $itemtype
+    * @return mixed
+    */
    static function getDevicesManagementMode($ocs_config, $itemtype)
    {
 
@@ -4702,6 +4835,10 @@ JAVASCRIPT;
       }
    }
 
+   /**
+    * @param $entity
+    * @return bool|resource
+    */
    static function setEntityLock($entity)
    {
 
@@ -4713,6 +4850,10 @@ JAVASCRIPT;
       return false;
    }
 
+   /**
+    * @param $entity
+    * @param $fp
+    */
    static function removeEntityLock($entity, $fp)
    {
 
@@ -4727,6 +4868,11 @@ JAVASCRIPT;
       }
    }
 
+   /**
+    * @param $ID
+    * @param $templateid
+    * @return string
+    */
    static function getFormServerAction($ID, $templateid)
    {
 
@@ -4752,9 +4898,13 @@ JAVASCRIPT;
       return $action;
    }
 
+   /**
+    * @param $ID
+    * @param $table
+    * @return array
+    */
    static function getColumnListFromAccountInfoTable($ID, $table)
    {
-      global $DB;
 
       $listColumn = array("0" => __('No import'));
       if ($ID != -1) {
@@ -4775,9 +4925,10 @@ JAVASCRIPT;
     * Check if OCS connection is still valid
     * If not, then establish a new connection on the good server
     *
-    * @param $plugin_ocsinventoryng_ocsservers_id the ocs server id
+    * @param $serverId
+    * @return bool
+    * @internal param the $plugin_ocsinventoryng_ocsservers_id ocs server id
     *
-    * @return boolean
     */
    static function checkOCSconnection($serverId)
    {
@@ -5121,8 +5272,10 @@ JAVASCRIPT;
     * @param $software : id of a software.
     * @param $version : version of the software
     *
-    * @return integer : inserted version id.
-    * */
+    * @param $comments
+    * @param $dohistory
+    * return int : inserted version id.
+    */
    static function updateVersion($software, $version, $comments, $dohistory)
    {
       global $DB;
@@ -5152,8 +5305,9 @@ JAVASCRIPT;
     * @param $software : id of a software.
     * @param $version : version of the software
     *
-    * @return integer : inserted version id.
-    * */
+    * @param $comments
+    * @return int : inserted version id.
+    */
    static function importVersion($software, $version, $comments)
    {
       global $DB;
@@ -5188,11 +5342,12 @@ JAVASCRIPT;
     * Synchronize virtual machines
     *
     * @param unknown $computers_id
-    * @param unknown $ocsid
+    * @param $ocsComputer
     * @param unknown $ocsservers_id
     * @param unknown $cfg_ocs
-    * @param unknown $dohistory
-    * @return boolean
+    * @return bool
+    * @internal param unknown $ocsid
+    * @internal param unknown $dohistory
     */
    static function updateVirtualMachines($computers_id, $ocsComputer, $ocsservers_id, $cfg_ocs)
    {
@@ -5274,19 +5429,17 @@ JAVASCRIPT;
     * This function create a new disk in GLPI with some general datas.
     *
     * @param $computers_id integer : glpi computer id.
-    * @param $ocsid integer : ocs computer id (ID).
+    * @param $ocsComputer
     * @param $ocsservers_id integer : ocs server id
     * @param $cfg_ocs array : ocs config
-    *
-    * @return Nothing (void).
-    * */
+    * @return Nothing .
+    * @internal param int $ocsid : ocs computer id (ID).
+    */
    static function updateDisk($computers_id, $ocsComputer, $ocsservers_id, $cfg_ocs)
    {
       global $DB;
 
       $already_processed = array();
-      $drives = array();
-
       $logical_drives = $ocsComputer;
 
       $d = new ComputerDisk();
@@ -5407,10 +5560,9 @@ JAVASCRIPT;
     *
     * @param $computers_id ID of the computer where to install a software
     * @param $softwareversions_id ID of the version to install
-    * @param $dohistory Do history?
-    *
-    * @return nothing
-    * */
+    * @param Do|int $dohistory Do history?
+    * @return int|Value
+    */
    static function installSoftwareVersion($computers_id, $softwareversions_id, $dohistory = 1)
    {
       global $DB;
@@ -5442,17 +5594,16 @@ JAVASCRIPT;
     *
     * @param $cfg_ocs OCSNG mode configuration
     * @param $computers_id computer's id in GLPI
-    * @param $ocsid computer's id in OCS
-    * @param $ocsservers_id OCS server id
+    * @param $ocsComputer
     * @param $entity the entity in which the peripheral will be created
-    *
-    * @return Nothing (void).
-    * */
-   static function updateSoftware($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity)
+    * @return Nothing .
+    * @internal param OCS $ocsservers_id server id
+    * @internal param computer $ocsid 's id in OCS
+    */
+   static function updateSoftware($cfg_ocs, $computers_id, $ocsComputer, $entity)
    {
       global $DB;
 
-      $alread_processed = array();
       $is_utf8 = $cfg_ocs["ocs_db_utf8"];
       $computer_softwareversion = new Computer_SoftwareVersion();
       $softwares = array();
@@ -5612,15 +5763,13 @@ JAVASCRIPT;
     * This function erase old data and import the new ones about registry (Microsoft OS after Windows 95)
     *
     * @param $computers_id integer : glpi computer id.
-    * @param $ocsid integer : ocs computer id (ID).
-    * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
-    * @param $cfg_ocs array : ocs config
-    *
-    * @return Nothing (void).
-    * */
-   static function updateRegistry($computers_id, $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs)
+    * @param $ocsComputer
+    * @internal param int $plugin_ocsinventoryng_ocsservers_id : ocs server id
+    * @internal param array $cfg_ocs : ocs config
+    * @internal param int $ocsid : ocs computer id (ID).
+    */
+   static function updateRegistry($computers_id, $ocsComputer)
    {
-      global $DB;
       //before update, delete all entries about $computers_id
       self::resetRegistry($computers_id);
 
@@ -5634,7 +5783,7 @@ JAVASCRIPT;
          $input["value"] = $registry["regvalue"];
          $input["path"] = $registry["regkey"];
          $input["ocs_name"] = $registry["name"];
-         $isNewReg = $reg->add($input, array('disable_unicity_check' => true));
+         $reg->add($input, array('disable_unicity_check' => true));
          unset($reg->fields);
       }
 
@@ -5647,15 +5796,13 @@ JAVASCRIPT;
     * This function erase old data and import the new ones about antivirus
     *
     * @param $computers_id integer : glpi computer id.
-    * @param $ocsid integer : ocs computer id (ID).
-    * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
+    * @param $ocsComputer
     * @param $cfg_ocs array : ocs config
-    *
-    * @return Nothing (void).
-    * */
-   static function updateAntivirus($computers_id, $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs)
+    * @internal param int $plugin_ocsinventoryng_ocsservers_id : ocs server id
+    * @internal param int $ocsid : ocs computer id (ID).
+    */
+   static function updateAntivirus($computers_id, $ocsComputer, $cfg_ocs)
    {
-      global $DB;
 
       self::resetAntivirus($computers_id);
 
@@ -5674,7 +5821,7 @@ JAVASCRIPT;
             $input["is_active"] = $antivirus["enabled"];
             $input["is_uptodate"] = $antivirus["uptodate"];
             $input["is_dynamic"] = 1;
-            $isNewAV = $av->add($input, array('disable_unicity_check' => true));
+            $av->add($input, array('disable_unicity_check' => true));
             unset($anti->fields);
          }
       }
@@ -5692,11 +5839,12 @@ JAVASCRIPT;
     * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
     * @param $cfg_ocs array : configuration ocs of the server
     * @param $computer_updates array : already updated fields of the computer
-    * @param $entity integer : entity of the computer
-    * @param $dohistory boolean : log changes?
+    * @param $entities_id
+    * @return Nothing .
+    * @internal param int $entity : entity of the computer
+    * @internal param bool $dohistory : log changes?
     *
-    * @return Nothing (void).
-    * */
+    */
    static function updateAdministrativeInfo($computers_id, $ocsid, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $entities_id)
    {
       global $DB;
@@ -5788,22 +5936,23 @@ JAVASCRIPT;
     * This function erase old data and import the new ones about administrative informations
     *
     * @param $computers_id integer : glpi computer id.
-    * @param $ocsid integer : ocs computer id (ID).
     * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
-    * @param $cfg_ocs array : configuration ocs of the server
     * @param $computer_updates array : already updated fields of the computer
-    * @param $entity integer : entity of the computer
-    * @param $dohistory boolean : log changes?
+    * @param $ocsComputer
+    * @return Nothing .
+    * @internal param int $ocsid : ocs computer id (ID).
+    * @internal param array $cfg_ocs : configuration ocs of the server
+    * @internal param int $entity : entity of the computer
+    * @internal param bool $dohistory : log changes?
     *
-    * @return Nothing (void).
-    * */
+    */
    static function updateAdministrativeInfoUseDate($computers_id, $plugin_ocsinventoryng_ocsservers_id, $computer_updates, $ocsComputer)
    {
       global $DB;
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
-      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+
       //check link between ocs and glpi column
-      $queryListUpdate = "SELECT*
+      $queryListUpdate = "SELECT *
                           FROM `glpi_plugin_ocsinventoryng_ocsadmininfoslinks`
                           WHERE `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id' ";
       $result = $DB->query($queryListUpdate);
@@ -5845,6 +5994,10 @@ JAVASCRIPT;
       return $computer_updates;
    }
 
+   /**
+    * @param $name
+    * @return array
+    */
    static function cronInfo($name)
    {
       // no translation for the name of the project
@@ -5858,9 +6011,13 @@ JAVASCRIPT;
       }
    }
 
+   /**
+    * @param $task
+    * @return int
+    */
    static function cronCleanOldAgents($task)
    {
-      global $DB, $CFG_GLPI;
+      global $DB;
 
       $CronTask = new CronTask();
       if ($CronTask->getFromDBbyName("PluginOcsinventoryngOcsServer", "CleanOldAgents")) {
@@ -5901,9 +6058,13 @@ JAVASCRIPT;
       return $cron_status;
    }
 
+   /**
+    * @param $task
+    * @return int
+    */
    static function cronocsng($task)
    {
-      global $DB, $CFG_GLPI;
+      global $DB;
 
       //Get a randon server id
       $plugin_ocsinventoryng_ocsservers_id = self::getRandomServerID();
@@ -5962,6 +6123,10 @@ JAVASCRIPT;
       return 1;
    }
 
+   /**
+    * @param $printer_infos
+    * @param string $port
+    */
    static function analizePrinterPorts(&$printer_infos, $port = '')
    {
 
@@ -5974,6 +6139,11 @@ JAVASCRIPT;
       }
    }
 
+   /**
+    * @param bool $snmp
+    * @param bool $ipdiscover
+    * @return array
+    */
    static function getAvailableStatistics($snmp = false, $ipdiscover = false)
    {
 
@@ -6001,6 +6171,12 @@ JAVASCRIPT;
       return $stats;
    }
 
+   /**
+    * @param array $statistics
+    * @param bool $action
+    * @param bool $snmp
+    * @param bool $ipdiscover
+    */
    static function manageImportStatistics(&$statistics = array(), $action = false, $snmp = false, $ipdiscover = false)
    {
 
@@ -6077,6 +6253,12 @@ JAVASCRIPT;
       }
    }
 
+   /**
+    * @param array $statistics
+    * @param bool $finished
+    * @param bool $snmp
+    * @param bool $ipdiscover
+    */
    static function showStatistics($statistics = array(), $finished = false, $snmp = false, $ipdiscover = false)
    {
 
@@ -6106,11 +6288,11 @@ JAVASCRIPT;
     * Do automatic transfer if option is enable
     *
     * @param $line_links array : data from glpi_plugin_ocsinventoryng_ocslinks table
-    * @param $line_ocs array : data from ocs tables
-    *
     * @return nothing
-    * */
-   static function transferComputer($line_links, $line_ocs)
+    * @internal param array $line_ocs : data from ocs tables
+    *
+    */
+   static function transferComputer($line_links)
    {
       global $DB, $CFG_GLPI;
 
@@ -6173,10 +6355,13 @@ JAVASCRIPT;
    /**
     * Update location for a computer if needed after rule processing
     *
-    * @param line_links
-    * @param data
-    *
+    * @param $line_links
+    * @param $data
+    * @param $cfg_ocs
     * @return nothing
+    * @internal param $line_links
+    * @internal param $data
+    *
     */
    static function updateLocation($line_links, $data, $cfg_ocs)
    {
@@ -6212,6 +6397,10 @@ JAVASCRIPT;
       }
    }
 
+   /**
+    * @param $ID
+    * @return array|null
+    */
    static function getLocksForComputer($ID)
    {
       global $DB;
@@ -6260,11 +6449,11 @@ JAVASCRIPT;
     * Update TAG information in glpi_plugin_ocsinventoryng_ocslinks table
     *
     * @param $line_links array : data from glpi_plugin_ocsinventoryng_ocslinks table
-    * @param $line_ocs array : data from ocs tables
-    *
     * @return string : current tag of computer on update
-    * */
-   static function updateTag($line_links, $line_ocs)
+    * @internal param array $line_ocs : data from ocs tables
+    *
+    */
+   static function updateTag($line_links)
    {
       global $DB;
       $ocsClient = self::getDBocs($line_links["plugin_ocsinventoryng_ocsservers_id"]);
@@ -6274,7 +6463,9 @@ JAVASCRIPT;
       if ($computer) {
          $data_ocs = Toolbox::addslashes_deep($computer["META"]);
 
-         if (isset($data_ocs["TAG"]) && isset($line_links["tag"]) && $data_ocs["TAG"] != $line_links["tag"]) {
+         if (isset($data_ocs["TAG"]) 
+               && isset($line_links["tag"]) 
+                  && $data_ocs["TAG"] != $line_links["tag"]) {
             $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                       SET `tag` = '" . $data_ocs["TAG"] . "'
                       WHERE `id` = '" . $line_links["id"] . "'";
@@ -6333,6 +6524,9 @@ JAVASCRIPT;
       return $types;
    }
 
+   /**
+    * @return array
+    */
    static function getLockableFields()
    {
 
@@ -6359,6 +6553,9 @@ JAVASCRIPT;
          "groups_id" => __('Group'));
    }
 
+   /**
+    * @param $id
+    */
    static function showOcsReportsConsole($id)
    {
 
@@ -6387,6 +6584,9 @@ JAVASCRIPT;
          __('Uncheck all') . "</a>\n";
    }
 
+   /**
+    * @return int|Value
+    */
    static function getFirstServer()
    {
       global $DB;
@@ -6411,8 +6611,10 @@ JAVASCRIPT;
     * @param $cfg_ocs OCSNG mode configuration
     * @param $computers_id computer's id in GLPI
     * @param $ocsservers_id OCS server id
-    * @param $ocsid computer's id in OCS
-    * @param entity the entity in which the monitor will be created
+    * @param $ocsComputer
+    * @param the $entity
+    * @internal param computer $ocsid 's id in OCS
+    * @internal param the $entity entity in which the monitor will be created
     */
    static function importMonitor($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity)
    {
@@ -6670,9 +6872,10 @@ JAVASCRIPT;
     * @since 1.0
     * @param $cfg_ocs OCSNG mode configuration
     * @param $computers_id computer's id in GLPI
-    * @param $ocsid computer's id in OCS
     * @param $ocsservers_id OCS server id
+    * @param $ocsComputer
     * @param $entity the entity in which the printer will be created
+    * @internal param computer $ocsid 's id in OCS
     */
    static function importPrinter($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity)
    {
@@ -6687,7 +6890,7 @@ JAVASCRIPT;
          $printer = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($printer));
          $print = array();
          // TO TEST : PARSE NAME to have real name.
-         $print['name'] = self::encodeOcsDataInutf8($cfg_ocs["ocs_db_utf8"], $printer['NAME']);
+         $print['name'] = self::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"], $printer['NAME']);
 
          if (empty($print["name"])) {
             $print["name"] = $printer["DRIVER"];
@@ -6842,14 +7045,14 @@ JAVASCRIPT;
                $query = "DELETE
                 FROM `glpi_computers_items`
                 WHERE `id`='" . $data['id'] . "'";
-               $result = $DB->query($query);
+               $DB->query($query);
                //Put periph in dustbin
             } else if ($decoConf == "trash") {
                $query = "UPDATE
                 `glpi_computers_items`
                 SET `is_deleted` = 1
                 WHERE `id`='" . $data['id'] . "'";
-               $result = $DB->query($query);
+               $DB->query($query);
             }
          }
          // foreach ($DB->request($query) as $data){
@@ -6865,9 +7068,10 @@ JAVASCRIPT;
     * @since 1.0
     * @param $cfg_ocs OCSNG mode configuration
     * @param $computers_id computer's id in GLPI
-    * @param $ocsid computer's id in OCS
     * @param $ocsservers_id OCS server id
+    * @param $ocsComputer
     * @param $entity the entity in which the peripheral will be created
+    * @internal param computer $ocsid 's id in OCS
     */
    static function importPeripheral($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity)
    {
@@ -7006,14 +7210,14 @@ JAVASCRIPT;
                $query = "DELETE
              FROM `glpi_computers_items`
              WHERE `id`='" . $data['id'] . "'";
-               $result = $DB->query($query);
+               $DB->query($query);
                //Put periph in dustbin
             } else if ($decoConf == "trash") {
                $query = "UPDATE
              `glpi_computers_items`
              SET `is_deleted` = 1
              WHERE `id`='" . $data['id'] . "'";
-               $result = $DB->query($query);
+               $DB->query($query);
             }
          }
          // foreach ($DB->request($query) as $data){
@@ -7027,7 +7231,9 @@ JAVASCRIPT;
     * @since version 0.85
     *
     * @see CommonDBTM::getSpecificMassiveActions()
-    * */
+    * @param null $checkitem
+    * @return an
+    */
    function getSpecificMassiveActions($checkitem = NULL)
    {
 
@@ -7040,7 +7246,9 @@ JAVASCRIPT;
     * @since version 0.85
     *
     * @see CommonDBTM::showMassiveActionsSubForm()
-    * */
+    * @param MassiveAction $ma
+    * @return bool|false
+    */
    static function showMassiveActionsSubForm(MassiveAction $ma)
    {
 
@@ -7071,10 +7279,14 @@ JAVASCRIPT;
     * @since version 0.85
     *
     * @see CommonDBTM::processMassiveActionsForOneItemtype()
-    * */
+    * @param MassiveAction $ma
+    * @param CommonDBTM $item
+    * @param array $ids
+    * @return nothing|void
+    */
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item, array $ids)
    {
-      global $DB, $REDIRECT;
+      global $DB;
 
       switch ($ma->getAction()) {
          case "plugin_ocsinventoryng_force_ocsng_update":
@@ -7157,9 +7369,9 @@ JAVASCRIPT;
    }
 
    /**
-    * @param $width
-    * */
-   function showSystemInformations($width)
+    * @internal param $width
+    */
+   function showSystemInformations()
    {
 
       $ocsServers = getAllDatasFromTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");

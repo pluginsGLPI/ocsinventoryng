@@ -27,6 +27,9 @@
  --------------------------------------------------------------------------
  */
 
+/**
+ * @return bool
+ */
 function plugin_ocsinventoryng_install()
 {
    global $DB;
@@ -257,7 +260,7 @@ function plugin_ocsinventoryng_install()
             $query = "INSERT INTO `glpi_plugin_ocsinventoryng_ocsservers_profiles`
                        SET `profiles_id` = '" . $rights['profiles_id'] . "',
                            `plugin_ocsinventoryng_ocsservers_id` = '" . $server['id'] . "'";
-            $DB->queryOrDie($query, "insert into glpi_plugin_ocsinventoryng_ocsservers_profiles");
+            $DB->queryOrDie($query, "insert glpi_plugin_ocsinventoryng_ocsservers_profiles");
          }
       }
    }
@@ -882,6 +885,9 @@ function plugin_ocsinventoryng_install()
 }
 
 
+/**
+ * @return bool
+ */
 function plugin_ocsinventoryng_uninstall()
 {
    global $DB;
@@ -997,6 +1003,9 @@ function plugin_ocsinventoryng_uninstall()
 }
 
 
+/**
+ * @return array
+ */
 function plugin_ocsinventoryng_getDropdown()
 {
    // Table => Name
@@ -1045,7 +1054,7 @@ function plugin_ocsinventoryng_getDatabaseRelations()
 
 function plugin_ocsinventoryng_postinit()
 {
-   global $CFG_GLPI, $PLUGIN_HOOKS;
+   global $PLUGIN_HOOKS;
 
    $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng'] = array();
    $PLUGIN_HOOKS['item_update']['ocsinventoryng'] = array();
@@ -1085,7 +1094,9 @@ function plugin_ocsinventoryng_postinit()
 
 /**
  * @param $type
- **/
+ *
+ * @return array
+ */
 //TODO && use right for rules
 function plugin_ocsinventoryng_MassiveActions($type)
 {
@@ -1137,7 +1148,9 @@ function plugin_ocsinventoryng_MassiveActions($type)
 
 /**
  * @param $itemtype
- **/
+ *
+ * @return array
+ */
 function plugin_ocsinventoryng_getAddSearchOptions($itemtype)
 {
 
@@ -1232,7 +1245,9 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype)
  * @param $ID
  * @param $data
  * @param $num
- **/
+ *
+ * @return string
+ */
 function plugin_ocsinventoryng_displayConfigItem($type, $ID, $data, $num)
 {
 
@@ -1253,7 +1268,9 @@ function plugin_ocsinventoryng_displayConfigItem($type, $ID, $data, $num)
  * @param $type
  * @param $id
  * @param $num
- **/
+ *
+ * @return string
+ */
 function plugin_ocsinventoryng_addSelect($type, $id, $num)
 {
 
@@ -1277,6 +1294,7 @@ function plugin_ocsinventoryng_addSelect($type, $id, $num)
       }
       return "";
    }
+   return "";
 }
 
 
@@ -1286,7 +1304,9 @@ function plugin_ocsinventoryng_addSelect($type, $id, $num)
  * @param $type
  * @param $ID
  * @param $val
- **/
+ *
+ * @return string
+ */
 function plugin_ocsinventoryng_addWhere($link, $nott, $type, $ID, $val)
 {
 
@@ -1294,7 +1314,7 @@ function plugin_ocsinventoryng_addWhere($link, $nott, $type, $ID, $val)
    $table = $searchopt[$ID]["table"];
    $field = $searchopt[$ID]["field"];
 
-   $SEARCH = Search::makeTextSearch($val, $nott);
+   Search::makeTextSearch($val, $nott);
    switch ($table . "." . $field) {
       case "glpi_plugin_ocsinventoryng_details.action" :
          return $link . " `$table`.`$field` = '$val' ";
@@ -1308,10 +1328,11 @@ function plugin_ocsinventoryng_addWhere($link, $nott, $type, $ID, $val)
  * @param $id
  * @param $data
  * @param $num
- **/
+ *
+ * @return string|translated
+ */
 function plugin_ocsinventoryng_giveItem($type, $id, $data, $num)
 {
-   global $CFG_GLPI, $DB;
 
    $searchopt = &Search::getOptions($type);
    $table = $searchopt[$id]["table"];
@@ -1348,7 +1369,9 @@ function plugin_ocsinventoryng_giveItem($type, $id, $data, $num)
 
 /**
  * @param $params array
- **/
+ *
+ * @return bool
+ */
 function plugin_ocsinventoryng_searchOptionsValues($params = array())
 {
 
@@ -1709,10 +1732,9 @@ function plugin_ocsinventoryng_getTablesForQuery()
 /**
  *  * Get fields needed to process criterias
  *
- * @param $withouttable fields without tablename ? (default 0)
- *
+ * @param fields|int $withouttable fields without tablename ? (default 0)
  * @return an array of needed fields
- **/
+ */
 function plugin_ocsinventoryng_getFieldsForQuery($withouttable = 0)
 {
 
@@ -1787,8 +1809,9 @@ function plugin_ocsinventoryng_ruleImportComputer_addGlobalCriteria($global_crit
 /**
  *
  * Get SQL restriction for ruleImportComputer
- * @param params necessary parameters to build SQL restrict requests
+ * @param array|necessary $params
  * @return an array with SQL restrict resquests
+ * @internal param necessary $params parameters to build SQL restrict requests
  * @since 1.0
  */
 function plugin_ocsinventoryng_ruleImportComputer_getSqlRestriction($params = array())
@@ -1863,13 +1886,11 @@ function plugin_ocsinventoryng_ruleImportComputer_getSqlRestriction($params = ar
  *
  * Display plugin's entries in unlock fields form
  * @since 1.0
- * @param $params an array which contains the item and the header boolean
+ * @param an|array $params an array which contains the item and the header boolean
  * @return an array
  */
 function plugin_ocsinventoryng_showLocksForItem($params = array())
 {
-   global $DB;
-
    $comp = $params['item'];
    $header = $params['header'];
    $ID = $comp->getID();
@@ -1906,7 +1927,8 @@ function plugin_ocsinventoryng_showLocksForItem($params = array())
  *
  * Unlock fields managed by the plugin
  * @since 1.0
- * @param $_POST array
+ * @param array $params
+ * @internal param array $_POST
  */
 function plugin_ocsinventoryng_unlockFields($params = array())
 {
@@ -1927,7 +1949,9 @@ function plugin_ocsinventoryng_unlockFields($params = array())
  * - ID            old ID
  * - newID         new ID
  * - entities_id   new entities_id
- **/
+ *
+ * @return bool
+ */
 function plugin_ocsinventoryng_item_transfer($options = array())
 {
    global $DB;
@@ -1944,9 +1968,8 @@ function plugin_ocsinventoryng_item_transfer($options = array())
       Session::addMessageAfterRedirect("Transfer Computer Hook " . $options['type'] . " " .
          $options['id'] . "->" . $options['newID']);
 
-      return false;
-
    }
+   return false;
 }
 
 
@@ -2125,6 +2148,9 @@ function plugin_ocsinventoryng_pre_item_update($item)
    }
 }
 
+/**
+ * @param $item
+ */
 function plugin_ocsinventoryng_item_update($item)
 {
    global $DB;
@@ -2252,7 +2278,6 @@ function plugin_ocsinventoryng_upgrademassocsimport121to13()
 
 function plugin_ocsinventoryng_upgrademassocsimport13to14()
 {
-   global $DB;
 
    $migration = new Migration(14);
 
@@ -2402,6 +2427,3 @@ function plugin_ocsinventoryng_upgrademassocsimport14to15()
    }
    $migration->executeMigration();
 }
-
-
-?>

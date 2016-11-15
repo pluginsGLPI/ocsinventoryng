@@ -31,6 +31,9 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
+/**
+ * Class PluginOcsinventoryngProfile
+ */
 class PluginOcsinventoryngProfile extends CommonDBTM
 {
 
@@ -82,6 +85,9 @@ class PluginOcsinventoryngProfile extends CommonDBTM
    }
 
 
+   /**
+    * @param $ID
+    */
    static function createFirstAccess($ID)
    {
       //85
@@ -294,6 +300,9 @@ class PluginOcsinventoryngProfile extends CommonDBTM
       echo "</div>";
    }
 
+   /**
+    * @return array
+    */
    static function getAllRights()
    {
 

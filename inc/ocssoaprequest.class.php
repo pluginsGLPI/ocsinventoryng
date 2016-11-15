@@ -28,6 +28,9 @@
  --------------------------------------------------------------------------
  */
 
+/**
+ * Class PluginOcsinventoryngOcsSoapRequest
+ */
 class PluginOcsinventoryngOcsSoapRequest
 {
    /**
@@ -51,6 +54,11 @@ class PluginOcsinventoryngOcsSoapRequest
       return $this->_toXml('REQUEST', $this->params);
    }
 
+   /**
+    * @param $tagName
+    * @param $value
+    * @return string
+    */
    private function _toXml($tagName, $value)
    {
       $xml = '';
@@ -74,6 +82,10 @@ class PluginOcsinventoryngOcsSoapRequest
       return $xml;
    }
 
+   /**
+    * @param $array
+    * @return bool
+    */
    private function isIndexed($array)
    {
       return (bool)count(array_filter(array_keys($array), 'is_numeric'));

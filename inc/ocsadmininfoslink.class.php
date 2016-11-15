@@ -37,6 +37,9 @@ if (!defined('GLPI_ROOT')) {
 class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM
 {
 
+   /**
+    * @param $ID
+    */
    function cleanForOcsServer($ID)
    {
 
@@ -45,6 +48,11 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM
 
    }
 
+   /**
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param $glpi_column
+    * @return true
+    */
    function getFromDBbyOcsServerIDAndGlpiColumn($plugin_ocsinventoryng_ocsservers_id, $glpi_column)
    {
 
@@ -52,6 +60,12 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM
 
    }
 
+   /**
+    * @param $computers_id
+    * @param $date
+    * @param $computer_updates
+    * @return array
+    */
    static function addInfocomsForComputer($computers_id, $date, $computer_updates)
    {
       global $DB;

@@ -28,11 +28,18 @@
  --------------------------------------------------------------------------
  */
 
+/**
+ * Class PluginOcsinventoryngThread
+ */
 class PluginOcsinventoryngThread extends CommonDBTM
 {
 
    static $rightname = "plugin_ocsinventoryng";
 
+   /**
+    * @param int $nb
+    * @return translated
+    */
    static function getTypeName($nb = 0)
    {
       return _n('OCSNG server', 'OCSNG servers', $nb, 'ocsinventoryng');
@@ -52,6 +59,9 @@ class PluginOcsinventoryngThread extends CommonDBTM
    }
 
 
+   /**
+    *
+    */
    function cleanDBonPurge()
    {
       PluginOcsinventoryngDetail::deleteThreadDetailsByProcessID($this->fields['id']);
@@ -71,9 +81,9 @@ class PluginOcsinventoryngThread extends CommonDBTM
 
    /**
     * @param $pid
-    * @param $options   array
-    **/
-   function showForm($pid, $options = array())
+    * @internal param array $options
+    */
+   function showForm($pid)
    {
       global $DB;
 
@@ -190,7 +200,9 @@ class PluginOcsinventoryngThread extends CommonDBTM
 
    /**
     * @param $pid
-    **/
+    *
+    * @return int
+    */
    function getProcessStatus($pid)
    {
       global $DB;
@@ -217,7 +229,9 @@ class PluginOcsinventoryngThread extends CommonDBTM
 
    /**
     * @param $delete_frequency
-    **/
+    *
+    * @return bool
+    */
    function deleteOldProcesses($delete_frequency)
    {
       global $DB;
@@ -242,7 +256,8 @@ class PluginOcsinventoryngThread extends CommonDBTM
 
    /**
     * @param $target
-    **/
+    * @param int $plugin_ocsinventoryng_ocsservers_id
+    */
    function showProcesses($target, $plugin_ocsinventoryng_ocsservers_id = 0)
    {
       global $DB, $CFG_GLPI;
@@ -489,6 +504,9 @@ class PluginOcsinventoryngThread extends CommonDBTM
    }
 
 
+   /**
+    * @return bool
+    */
    function showErrorLog()
    {
 
@@ -512,7 +530,6 @@ class PluginOcsinventoryngThread extends CommonDBTM
       // Remove last empty event
       array_pop($events);
       $number = count($events);
-      $SEARCH_OPTION = getSearchOptions();
 
       if (isset($_REQUEST["start"])) {
          $start = $_REQUEST["start"];
@@ -543,6 +560,9 @@ class PluginOcsinventoryngThread extends CommonDBTM
    }
 
 
+   /**
+    * @return bool
+    */
    function lognothing()
    {
 
@@ -570,12 +590,10 @@ class PluginOcsinventoryngThread extends CommonDBTM
 
          case PLUGIN_OCSINVENTORYNG_STATE_RUNNING :
             echo "<img src='" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/pics/wait.png'>";
-            $finished = false;
             break;
 
          case PLUGIN_OCSINVENTORYNG_STATE_STARTED :
             echo "<img src='" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/pics/ok2.png'>";
-            $finished = false;
             break;
       }
    }
@@ -583,7 +601,9 @@ class PluginOcsinventoryngThread extends CommonDBTM
 
    /**
     * @param $name
-    **/
+    *
+    * @return array
+    */
    static function cronInfo($name)
    {
 
@@ -644,5 +664,3 @@ class PluginOcsinventoryngThread extends CommonDBTM
    }
 
 }
-
-?>

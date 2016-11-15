@@ -32,9 +32,15 @@ if (!defined('GLPI_ROOT')) {
 }
 
 // Class NotificationTarget
+/**
+ * Class PluginOcsinventoryngNotificationTargetNotImportedcomputer
+ */
 class PluginOcsinventoryngNotificationTargetNotImportedcomputer extends NotificationTarget
 {
 
+   /**
+    * @return array
+    */
    function getEvents()
    {
       return array('not_imported' => __('Computers not imported by automatic actions',
@@ -42,6 +48,10 @@ class PluginOcsinventoryngNotificationTargetNotImportedcomputer extends Notifica
    }
 
 
+   /**
+    * @param $event
+    * @param array $options
+    */
    function getDatasForTemplate($event, $options = array())
    {
       global $CFG_GLPI;
@@ -76,6 +86,9 @@ class PluginOcsinventoryngNotificationTargetNotImportedcomputer extends Notifica
       }
    }
 
+   /**
+    *
+    */
    function getTags()
    {
 

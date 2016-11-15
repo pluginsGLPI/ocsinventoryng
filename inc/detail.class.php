@@ -28,10 +28,16 @@
  --------------------------------------------------------------------------
  */
 
+/**
+ * Class PluginOcsinventoryngDetail
+ */
 class PluginOcsinventoryngDetail extends CommonDBTM
 {
 
 
+   /**
+    * @return array
+    */
    function getSearchOptions()
    {
 
@@ -153,6 +159,9 @@ class PluginOcsinventoryngDetail extends CommonDBTM
    }
 
 
+   /**
+    * @return array
+    */
    static function getActions()
    {
 

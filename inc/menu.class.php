@@ -28,26 +28,38 @@
  --------------------------------------------------------------------------
  */
 
+/**
+ * Class PluginOcsinventoryngMenu
+ */
 class PluginOcsinventoryngMenu extends CommonGLPI
 {
 
+   /**
+    * @var string
+    */
    static $rightname = 'plugin_ocsinventoryng';
 
+   /**
+    * @return string
+    */
    static function getMenuName()
    {
       return 'OCS Inventory NG';
    }
 
+   /**
+    * @return array
+    */
    static function getMenuContent()
    {
-      global $CFG_GLPI;
 
       $menu = array();
       $menu['title'] = self::getMenuName();
       $menu['page'] = "/plugins/ocsinventoryng/front/ocsng.php";
       $menu['links']['search'] = "/plugins/ocsinventoryng/front/ocsng.php";
 
-      if (Session::haveRight(static::$rightname, UPDATE) || Session::haveRight("config", UPDATE)) {
+      if (Session::haveRight(static::$rightname, UPDATE)
+            || Session::haveRight("config", UPDATE)) {
          //Entry icon in breadcrumb
          $menu['links']['config'] = PluginOcsinventoryngConfig::getSearchURL(false);
          //Link to config page in admin plugins list
@@ -122,6 +134,9 @@ class PluginOcsinventoryngMenu extends CommonGLPI
       return $menu;
    }
 
+   /**
+    *
+    */
    static function removeRightsFromSession()
    {
       if (isset($_SESSION['glpimenu']['tools']['types']['PluginOcsinventoryngMenu'])) {
@@ -132,6 +147,11 @@ class PluginOcsinventoryngMenu extends CommonGLPI
       }
    }
 
+   /**
+    * @param CommonGLPI $item
+    * @param int $withtemplate
+    * @return array|string
+    */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
    {
       global $CFG_GLPI;
@@ -190,6 +210,12 @@ class PluginOcsinventoryngMenu extends CommonGLPI
       }
    }
 
+   /**
+    * @param CommonGLPI $item
+    * @param int $tabnum
+    * @param int $withtemplate
+    * @return bool
+    */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 0, $withtemplate = 0)
    {
 
@@ -207,7 +233,7 @@ class PluginOcsinventoryngMenu extends CommonGLPI
                break;
 
             case 2 :
-               $ipdisc->ipDiscoverMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+               $ipdisc->ipDiscoverMenu();
                break;
 
             case 3 :
@@ -219,6 +245,10 @@ class PluginOcsinventoryngMenu extends CommonGLPI
       return true;
    }
 
+   /**
+    * @param array $options
+    * @return array
+    */
    function defineTabs($options = array())
    {
 

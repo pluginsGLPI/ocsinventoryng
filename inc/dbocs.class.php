@@ -32,13 +32,20 @@ if (!defined('GLPI_ROOT')) {
 }
 
 /// DB class to connect to a OCS server
+/**
+ * Class PluginOcsinventoryngDBocs
+ */
 class PluginOcsinventoryngDBocs extends DBmysql
 {
    /**
     * Constructor
     *
-    * @param $ID ID of the ocs server ID
-    **/
+    * @param int|null $dbhost
+    * @param $dbuser
+    * @param $dbpassword
+    * @param $dbdefault
+    * @internal param ID $ID of the ocs server ID
+    */
    function __construct($dbhost, $dbuser, $dbpassword, $dbdefault)
    {
 
@@ -49,17 +56,4 @@ class PluginOcsinventoryngDBocs extends DBmysql
 
       parent::__construct();
    }
-
-
-   /**
-    *
-    * Get current ocs server ID
-    * @return ID of the ocs server ID
-    **/
-   function getServerID()
-   {
-      return $this->ocsservers_id;
-   }
 }
-
-?>

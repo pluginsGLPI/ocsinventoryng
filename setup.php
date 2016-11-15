@@ -174,6 +174,9 @@ function plugin_ocsinventoryng_check_prerequisites()
 
 
 // Uninstall process for plugin : need to return true if succeeded : may display messages or add to message after redirect
+/**
+ * @return bool
+ */
 function plugin_ocsinventoryng_check_config()
 {
    return true;

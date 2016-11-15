@@ -28,10 +28,17 @@
  --------------------------------------------------------------------------
  */
 
+/**
+ * Class PluginOcsinventoryngServer
+ */
 class PluginOcsinventoryngServer extends CommonDBTM
 {
 
 
+   /**
+    * @param $id
+    * @return bool
+    */
    function getFromDBbyOcsServer($id)
    {
       global $DB;

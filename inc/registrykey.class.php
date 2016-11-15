@@ -31,11 +31,18 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
+/**
+ * Class PluginOcsinventoryngRegistryKey
+ */
 class PluginOcsinventoryngRegistryKey extends CommonDBTM
 {
 
    static $rightname = "plugin_ocsinventoryng";
 
+   /**
+    * @param int $nb
+    * @return string|translated
+    */
    static function getTypeName($nb = 0)
    {
       // No plural
@@ -43,6 +50,9 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM
    }
 
 
+   /**
+    *
+    */
    function cleanDBonPurge()
    {
 
@@ -113,6 +123,11 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM
    }
 
 
+   /**
+    * @param CommonGLPI $item
+    * @param int $withtemplate
+    * @return array|string|translated
+    */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
    {
 
@@ -133,6 +148,10 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM
       return '';
    }
 
+   /**
+    * @param CommonDBTM $item
+    * @return int
+    */
    static function countForItem(CommonDBTM $item)
    {
 
@@ -140,6 +159,12 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM
          "`computers_id` = '" . $item->getID() . "'");
    }
 
+   /**
+    * @param CommonGLPI $item
+    * @param int $tabnum
+    * @param int $withtemplate
+    * @return bool
+    */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
    {
 

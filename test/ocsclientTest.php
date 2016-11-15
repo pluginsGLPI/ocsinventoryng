@@ -51,6 +51,9 @@ class ocsclientTest extends PHPUnit_Framework_TestCase
    }
 
 
+   /**
+    * @param $options
+    */
    public function testGetComputer($options)
    {
       $options = array(
@@ -70,6 +73,9 @@ class ocsclientTest extends PHPUnit_Framework_TestCase
    }
 
 
+   /**
+    * @param $options
+    */
    public function testGetComputers($options)
    {
       $options = array(

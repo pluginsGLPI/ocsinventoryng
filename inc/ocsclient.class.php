@@ -63,6 +63,10 @@ abstract class PluginOcsinventoryngOcsClient
 
    private $id;
 
+   /**
+    * PluginOcsinventoryngOcsClient constructor.
+    * @param $id
+    */
    public function __construct($id)
    {
       $this->id = $id;
@@ -239,7 +243,7 @@ abstract class PluginOcsinventoryngOcsClient
     * Gets the array of computers to update with cron
     *
     * @param array $cfg_ocs Server confifguration
-    * @param date $max_date MAX(`last_ocs_update`)
+    * @param $max_date
     * @return array $data the computers to update
     */
    abstract public function getComputersToUpdate($cfg_ocs, $max_date);
@@ -261,6 +265,11 @@ abstract class PluginOcsinventoryngOcsClient
     */
    abstract public function getDeletedComputers();
 
+   /**
+    * @param $deleted
+    * @param null $equivclean
+    * @return mixed
+    */
    abstract public function removeDeletedComputers($deleted, $equivclean = null);
 
 
@@ -277,12 +286,13 @@ abstract class PluginOcsinventoryngOcsClient
    /**
     * Get the account info columns
     *
-    * @return array
-    *      array (
-    *         '0' => 'HARDWARE_ID',
-    *         '1' => 'TAG',
-    *         '2' => ...
-    *      )
+    * @param $table
+    * @return array array (
+    * array (
+    * '0' => 'HARDWARE_ID',
+    * '1' => 'TAG',
+    * '2' => ...
+    * )
     */
    abstract public function getAccountInfoColumns($table);
 
@@ -313,6 +323,11 @@ abstract class PluginOcsinventoryngOcsClient
       return $this->id;
    }
 
+   /**
+    * @param $id
+    * @param array $options
+    * @return mixed|null
+    */
    public function getComputer($id, $options = array())
    {
       if (!isset($options['FILTER'])) {
@@ -329,6 +344,11 @@ abstract class PluginOcsinventoryngOcsClient
       return current($result['COMPUTERS']);
    }
 
+   /**
+    * @param $id
+    * @param array $options
+    * @return mixed|null
+    */
    public function getSnmpDevice($id, $options = array())
    {
       if (!isset($options['FILTER'])) {
@@ -371,6 +391,9 @@ abstract class PluginOcsinventoryngOcsClient
       return $config['TVALUE'];
    }
 
+   /**
+    * @return array
+    */
    public function getOcsMap()
    {
       $DATA_MAP = array(
@@ -471,6 +494,10 @@ abstract class PluginOcsinventoryngOcsClient
       return $DATA_MAP;
    }
 
+   /**
+    * @param $tables
+    * @return int
+    */
    public function getChecksumForTables($tables)
    {
       $ocsMap = $this->getOcsMap();
@@ -485,6 +512,10 @@ abstract class PluginOcsinventoryngOcsClient
       return $checksum;
    }
 
+   /**
+    * @param $tables
+    * @return int
+    */
    public function getWantedForTables($tables)
    {
       $ocsMap = $this->getOcsMap();
@@ -499,11 +530,12 @@ abstract class PluginOcsinventoryngOcsClient
       return $wanted;
    }
 
+   /**
+    * @return string
+    */
    public function getConnectionType()
    {
       return get_class($this);
    }
 
 }
-
-?>

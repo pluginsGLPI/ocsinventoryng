@@ -33,22 +33,36 @@ if (!defined('GLPI_ROOT')) {
 
 
 /// OCS NetworkPort class
+/**
+ * Class PluginOcsinventoryngNetworkPort
+ */
 class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
 {
 
    static $rightname = "plugin_ocsinventoryng";
 
+   /**
+    * @param int $nb
+    * @return translated
+    */
    static function getTypeName($nb = 0)
    {
       return _n('Unknown imported network port type', 'Unknown imported network ports types', $nb, 'ocsinventoryng');
    }
 
-   static private function getInvalidIPString($ip)
-   {
-      return __('Invalid', 'ocsinventoryng') . ': ' . $ip;
-   }
 
-
+   /**
+    * @param $mac
+    * @param $name
+    * @param $computers_id
+    * @param $instantiation_type
+    * @param $inst_input
+    * @param $ips
+    * @param $check_name
+    * @param $dohistory
+    * @param $already_known_ports
+    * @return ID
+    */
    static private function updateNetworkPort($mac, $name, $computers_id, $instantiation_type,
                                              $inst_input, $ips, $check_name, $dohistory,
                                              $already_known_ports)
@@ -194,7 +208,13 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
    }
 
    // importNetwork
-   static function importNetwork($ocsServerId, $cfg_ocs, $ocsComputer, $computers_id, $entities_id)
+   /**
+    * @param $cfg_ocs
+    * @param $ocsComputer
+    * @param $computers_id
+    * @param $entities_id
+    */
+   static function importNetwork($cfg_ocs, $ocsComputer, $computers_id, $entities_id)
    {
       global $DB;
 
@@ -361,6 +381,11 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
    }
 
 
+   /**
+    * @param NetworkPort $netport
+    * @param array $options
+    * @param list $recursiveItems
+    */
    function showInstantiationForm(NetworkPort $netport, $options = array(), $recursiveItems)
    {
 
@@ -388,7 +413,13 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
 
    /**
     * @see NetworkPortInstantiation::getInstantiationHTMLTableHeaders
-    **/
+    * @param HTMLTableGroup $group
+    * @param HTMLTableSuperHeader $super
+    * @param HTMLTableSuperHeader $internet_super
+    * @param HTMLTableHeader $father
+    * @param array $options
+    * @return null|the
+    */
    function getInstantiationHTMLTableHeaders(HTMLTableGroup $group, HTMLTableSuperHeader $super,
                                              HTMLTableSuperHeader $internet_super = NULL,
                                              HTMLTableHeader $father = NULL,
@@ -409,7 +440,12 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
 
    /**
     * @see NetworkPortInstantiation::getInstantiationHTMLTable()
-    **/
+    * @param NetworkPort $netport
+    * @param HTMLTableRow $row
+    * @param HTMLTableCell $father
+    * @param array $options
+    * @return null|the
+    */
    function getInstantiationHTMLTable(NetworkPort $netport, HTMLTableRow $row,
                                       HTMLTableCell $father = NULL, array $options = array())
    {
@@ -427,9 +463,11 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
    }
 
 
+   /**
+    * @return bool
+    */
    function transformAccordingTypes()
    {
-      global $DB;
 
       $networkport_type = new PluginOcsinventoryngNetworkPortType();
       if ($networkport_type->getFromTypeAndTypeMIB($this->fields)) {
@@ -462,6 +500,10 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
       return false;
    }
 
+   /**
+    * @param $type
+    * @return string
+    */
    static private function getTextualType($type)
    {
       if (empty($type)) {
@@ -534,7 +576,9 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
     * @since version 0.85
     *
     * @see CommonDBTM::getSpecificMassiveActions()
-    **/
+    * @param null $checkitem
+    * @return an
+    */
    function getSpecificMassiveActions($checkitem = NULL)
    {
 
@@ -543,6 +587,9 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
       return $actions;
    }
 
+   /**
+    * @return an|array
+    */
    function getForbiddenStandardMassiveAction()
    {
 
@@ -555,7 +602,9 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
     * @since version 0.85
     *
     * @see CommonDBTM::showMassiveActionsSubForm()
-    **/
+    * @param MassiveAction $ma
+    * @return bool|false
+    */
    static function showMassiveActionsSubForm(MassiveAction $ma)
    {
 
@@ -573,11 +622,14 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
     * @since version 0.85
     *
     * @see CommonDBTM::processMassiveActionsForOneItemtype()
-    **/
+    * @param MassiveAction $ma
+    * @param CommonDBTM $item
+    * @param array $ids
+    * @return nothing|void
+    */
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
                                                        array $ids)
    {
-      global $DB;
 
       switch ($ma->getAction()) {
          case "plugin_ocsinventoryng_update_networkport_type":
@@ -600,5 +652,3 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
       parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
    }
 }
-
-?>

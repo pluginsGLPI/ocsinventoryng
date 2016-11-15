@@ -280,7 +280,7 @@ if (isset($_POST["Import"])
       && sizeof($_POST["mactoimport"]) > 0
    ) {
       $ids = $_POST["mactoimport"];
-      $ip->deleteLink($_SESSION["plugin_ocsinventoryng_ocsservers_id"], $ids);
+      $ip->deleteLink($ids);
 
    }
    Html::back();
@@ -288,5 +288,3 @@ if (isset($_POST["Import"])
 }
 
 Html::footer();
-
-?>

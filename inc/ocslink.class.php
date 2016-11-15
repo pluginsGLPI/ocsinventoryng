@@ -32,6 +32,9 @@ if (!defined('GLPI_ROOT')) {
 }
 
 // CLASSES PluginOcsinventoryngOcslink
+/**
+ * Class PluginOcsinventoryngOcslink
+ */
 class PluginOcsinventoryngOcslink extends CommonDBTM
 {
    const HISTORY_OCS_IMPORT = 8;
@@ -42,6 +45,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
 
    static $rightname = "plugin_ocsinventoryng";
 
+   /**
+    * @param int $nb
+    * @return translated
+    */
    static function getTypeName($nb = 0)
    {
       return _n('OCSNG link', 'OCSNG links', $nb, 'ocsinventoryng');
@@ -191,7 +198,6 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
 
                if (count($data)) {
                   $target = Toolbox::getItemTypeFormURL("PluginOcsinventoryngSnmpOcslink");
-                  $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
                   echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG SNMP Import informations', 'ocsinventoryng') . "</th>";
                   $linked = __('Imported object', 'ocsinventoryng');
                   if ($data["linked"]) {
@@ -252,7 +258,6 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                      $data = $DB->fetch_assoc($result);
 
                      if (count($data)) {
-                        $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
                         echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG IPDiscover Import informations', 'ocsinventoryng') . "</th>";
 
                         echo "<tr class='tab_bg_1'><td>" . __('Import date in GLPI', 'ocsinventoryng');
@@ -287,13 +292,12 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
     * Show OcsLink of an item
     *
     * @param $item                   CommonDBTM object
-    * @param $withtemplate  integer  withtemplate param (default '')
-    *
     * @return nothing
-    **/
-   static function showForItem(CommonDBTM $item, $withtemplate = '')
+    * @internal param int|string $withtemplate integer  withtemplate param (default '')
+    */
+   static function showForItem(CommonDBTM $item)
    {
-      global $DB, $CFG_GLPI;
+      global $DB;
 
       $target = Toolbox::getItemTypeFormURL(__CLASS__);
 
@@ -484,11 +488,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
     * Update lockable fields of an item
     *
     * @param $item                     CommonDBTM object
-    * @param $withtemplate    integer  withtemplate param (default '')
-    *
     * @return nothing
-    **/
-   static function updateComputer(CommonDBTM $item, $withtemplate = '')
+    * @internal param int|string $withtemplate integer  withtemplate param (default '')
+    */
+   static function updateComputer(CommonDBTM $item)
    {
       global $DB;
       // Manage changes for OCS if more than 1 element (date_mod)
@@ -522,11 +525,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
     * Update linked items of an item
     *
     * @param $item                     CommonDBTM object
-    * @param $withtemplate    integer  withtemplate param (default '')
-    *
-    * @return nothing
-    **/
-   static function addComputer_Item(CommonDBTM $item, $withtemplate = '')
+    * @internal param int|string $withtemplate integer  withtemplate param (default '')
+    * @return bool
+    */
+   static function addComputer_Item(CommonDBTM $item)
    {
       global $DB;
 
@@ -617,7 +619,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                      $query = "DELETE
                          FROM `glpi_computers_items`
                          WHERE `id`='" . $tmp['id'] . "'";
-                     $result = $DB->query($query);
+                     $DB->query($query);
                      //Put periph in dustbin
                   } else if ($decoConf == "trash") {
                      $tmp["id"] = $comp->getID();
@@ -625,7 +627,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                          `glpi_computers_items`
                    SET `is_deleted` = 1
                          WHERE `id`='" . $tmp['id'] . "'";
-                     $result = $DB->query($query);
+                     $DB->query($query);
                   }
                }
             } // $ocsservers_id>0
@@ -638,7 +640,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
     *
     * @param $item               CommonGLPI object
     * @param$withtemplate (default 0)
-    **/
+    *
+    * @return array|string
+    * @return array|string
+    */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
    {
 
@@ -661,14 +666,17 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
     * @param $item            CommonGLPI object
     * @param $tabnum (default 1)
     * @param $withtemplate (default 0)
-    **/
+    *
+    * @return bool|true
+    * @return bool|true
+    */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
    {
 
       if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))) {
          switch ($item->getType()) {
             case 'Computer' :
-               self::showForItem($item, $withtemplate);
+               self::showForItem($item);
                break;
          }
       }
@@ -731,5 +739,3 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
    }
 
 }
-
-?>

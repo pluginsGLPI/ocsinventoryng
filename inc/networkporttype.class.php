@@ -32,17 +32,27 @@ if (!defined('GLPI_ROOT')) {
 }
 
 /// Location class
+/**
+ * Class PluginOcsinventoryngNetworkPortType
+ */
 class PluginOcsinventoryngNetworkPortType extends CommonDropdown
 {
 
    public $refresh_page = true;
 
+   /**
+    * @param int $nb
+    * @return translated
+    */
    static function getTypeName($nb = 0)
    {
       return _n('Network port type', 'Network port types', $nb, 'ocsinventoryng');
    }
 
 
+   /**
+    * @return bool|booleen
+    */
    function canUpdateItem()
    {
       if ((isset($this->fields['OCS_TYPE'])) && ($this->fields['OCS_TYPE'] == '*')
@@ -54,6 +64,9 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown
    }
 
 
+   /**
+    * @return bool|booleen
+    */
    function canDeleteItem()
    {
       if ((isset($this->fields['OCS_TYPE'])) && ($this->fields['OCS_TYPE'] == '*')
@@ -66,6 +79,9 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown
 
 
    // If we add it, then, we may have to update all cards with the same MIB, shouldn't we ?
+   /**
+    *
+    */
    function post_addItem()
    {
       global $DB;
@@ -89,6 +105,10 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown
    }
 
 
+   /**
+    * @param $ID
+    * @param array $field
+    */
    function displaySpecificTypeField($ID, $field = array())
    {
 
@@ -138,6 +158,9 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown
    }
 
 
+   /**
+    * @return array
+    */
    function getAdditionalFields()
    {
 
@@ -184,6 +207,10 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown
       return $result;
    }
 
+   /**
+    * @param array $fields
+    * @return string
+    */
    static function getLinkToCreateFromTypeAndTypeMIB(array $fields = array())
    {
       $link = static::getFormURL() . '?TYPE=' . $fields['TYPE'] . '&TYPEMIB=' . $fields['TYPEMIB'];
@@ -201,6 +228,10 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown
    }
 
 
+   /**
+    * @param array $fields
+    * @return bool|true
+    */
    function getFromTypeAndTypeMIB(array $fields = array())
    {
       $TYPEMIB = (empty($fields['TYPEMIB']) ? '' : $fields['TYPEMIB']);

@@ -28,6 +28,9 @@
  --------------------------------------------------------------------------
  */
 
+/**
+ * Class PluginOcsinventoryngOcsDbClient
+ */
 class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 {
 
@@ -36,12 +39,23 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     */
    private $db;
 
+   /**
+    * PluginOcsinventoryngOcsDbClient constructor.
+    * @param $id
+    * @param $dbhost
+    * @param $dbuser
+    * @param $dbpassword
+    * @param $dbdefault
+    */
    public function __construct($id, $dbhost, $dbuser, $dbpassword, $dbdefault)
    {
       parent::__construct($id);
       $this->db = new PluginOcsinventoryngDBocs($dbhost, $dbuser, $dbpassword, $dbdefault);
    }
 
+   /**
+    * @return DBmysql|PluginOcsinventoryngDBocs
+    */
    public function getDB()
    {
       return $this->db;
@@ -51,30 +65,12 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
    /* PRIVATE  FUNCTIONS */
    /*    * ******************* */
 
-   private function parseArguments($conditions, $sort = null)
-   {
-      $params = "";
-      if ($conditions === 1) {
-         $params = " WHERE '1' ";
-      } else {
-         foreach ($conditions as $key => $value) {
-            if (count($value) > 0) {
-               $comparateur = ($key) ? " != " : " = ";
-               foreach ($value as $id => $equals) {
-                  if (!empty($params)) {
-                     $params .= " AND `$id` $comparateur '" . $this->db->escape($equals) . "' ";
-                  } else {
-                     $params = " WHERE `$id` $comparateur '" . $this->db->escape($equals) . "' ";
-                  }
-               }
-            }
-         }
-      }
-      if (!empty($sort))
-         $params .= "ORDER BY '" . $this->db->escape($sort) . "'";
-      return $params;
-   }
-
+   /**
+    * @param $ids
+    * @param $checksum
+    * @param $wanted
+    * @return mixed
+    */
    private function getComputerSections($ids, $checksum, $wanted)
    {
 
@@ -102,7 +98,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                         $colnumb = explode("fields_", $matches['0']);
 
                         if (TableExists("accountinfo_config")) {
-                           $query = "SELECT ID,NAME FROM accountinfo_config WHERE ID = '" . $colnumb['1'] . "'";
+                           $col = $colnumb['1'];
+                           $query = "SELECT ID,NAME FROM accountinfo_config WHERE ID = '".$col."'";
                            $requestcolname = $this->db->query($query);
                            $colname = $this->db->fetch_assoc($requestcolname);
                            if ($colname['NAME'] != "") {
@@ -271,6 +268,10 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
       return $computers;
    }
 
+   /**
+    * @param $ids
+    * @return array
+    */
    private function getSnmpSections($ids)
    {
 
@@ -371,6 +372,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::searchComputers()
+    * @param string $field
+    * @param mixed $value
+    * @return array
     */
    public function searchComputers($field, $value)
    {
@@ -408,24 +412,30 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::updateBios()
+    * @param int $ssn
+    * @param int $id
     */
    public function updateBios($ssn, $id)
    {
       $query = "UPDATE `bios` SET `SSN` = '" . $ssn . "'" . " WHERE `HARDWARE_ID` = '" . $id . "'";
-      $request = $this->db->query($query);
+      $this->db->query($query);
    }
 
    /**
     * @see PluginOcsinventoryngOcsClient::updateTag()
+    * @param int $tag
+    * @param int $id
     */
    public function updateTag($tag, $id)
    {
       $query = "UPDATE `accountinfo` SET `TAG` = '" . $tag . "' WHERE `HARDWARE_ID` = '" . $id . "'";
-      $request = $this->db->query($query);
+      $this->db->query($query);
    }
 
    /**
     * @see PluginOcsinventoryngOcsClient::getComputers()
+    * @param array $options
+    * @return array
     */
    public function getComputers($options)
    {
@@ -569,7 +579,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                            $max_records  $offset";
          
          $request = $this->db->query($query);*/
-         $accountinfomap = $this->getAccountInfoColumns();
+         $this->getAccountInfoColumns();
          while ($hardwareid = $this->db->fetch_assoc($request)) {
             $hardwareids[] = $hardwareid['ID'];
          }
@@ -596,6 +606,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::getConfig()
+    * @param string $key
+    * @return bool|mixed|result
     */
    public function getConfig($key)
    {
@@ -612,6 +624,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::setConfig()
+    * @param string $key
+    * @param int $ivalue
+    * @param string $tvalue
     */
    public function setConfig($key, $ivalue, $tvalue)
    {
@@ -621,15 +636,19 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::setChecksum()
+    * @param int $checksum
+    * @param int $id
     */
    public function setChecksum($checksum, $id)
    {
       $query = "UPDATE `hardware` SET `CHECKSUM` = '" . $checksum . "' WHERE `ID` = '" . $id . "'";
-      $checksum = $this->db->query($query);
+      $this->db->query($query);
    }
 
    /**
     * @see PluginOcsinventoryngOcsClient::getChecksum()
+    * @param int $id
+    * @return int
     */
    public function getChecksum($id)
    {
@@ -641,6 +660,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::getComputersToUpdate()
+    * @param array $cfg_ocs
+    * @param date $max_date
+    * @return array
     */
    public function getComputersToUpdate($cfg_ocs, $max_date)
    {
@@ -713,6 +735,10 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
       return $data;
    }
 
+   /**
+    * @param $agents
+    * @return int
+    */
    public function deleteOldAgents($agents)
    {
 
@@ -826,6 +852,11 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
       return $res;
    }
 
+   /**
+    * @param $deleted
+    * @param null $equivclean
+    * @return Query
+    */
    public function removeDeletedComputers($deleted, $equivclean = null)
    {
       if (is_array($deleted)) {
@@ -851,6 +882,10 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     * @see PluginOcsinventoryngOcsClient::getAccountInfoColumns()
     */
 
+   /**
+    * @param string $table
+    * @return mixed
+    */
    public function getAccountInfoColumns($table = 'accountinfo')
    {
       if ($table == 'accountinfo') {
@@ -884,6 +919,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::getSnmp()
+    * @param array $options
+    * @return array
     */
    public function getSnmp($options)
    {
@@ -992,21 +1029,21 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                            ORDER BY $order
                            $max_records  $offset";
          $request = $this->db->query($query);
-         $accountinfomap = $this->getAccountInfoColumns();
+         $this->getAccountInfoColumns();
          while ($snmpid = $this->db->fetch_assoc($request)) {
             $snmpids[] = $snmpid['ID'];
          }
          $res["TOTAL_COUNT"] = $count;
-         if (isset($options['DISPLAY']['CHECKSUM'])) {
-            $checksum = $options['DISPLAY']['CHECKSUM'];
-         } else {
-            $checksum = self::CHECKSUM_NONE;
-         }
-         if (isset($options['DISPLAY']['WANTED'])) {
-            $wanted = $options['DISPLAY']['WANTED'];
-         } else {
-            $wanted = self::WANTED_NONE;
-         }
+//         if (isset($options['DISPLAY']['CHECKSUM'])) {
+//            $checksum = $options['DISPLAY']['CHECKSUM'];
+//         } else {
+//            $checksum = self::CHECKSUM_NONE;
+//         }
+//         if (isset($options['DISPLAY']['WANTED'])) {
+//            $wanted = $options['DISPLAY']['WANTED'];
+//         } else {
+//            $wanted = self::WANTED_NONE;
+//         }
          $res["SNMP"] = $this->getSnmpSections($snmpids);
       } else {
 
@@ -1018,5 +1055,3 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
    }
 
 }
-
-?>

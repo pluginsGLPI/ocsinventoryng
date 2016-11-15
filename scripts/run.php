@@ -81,6 +81,10 @@ function exit_if_soft_lock()
 }
 
 
+/**
+ * @param $pidfile
+ * @return int
+ */
 function exit_if_already_running($pidfile)
 {
 
@@ -98,6 +102,9 @@ function exit_if_already_running($pidfile)
 }
 
 
+/**
+ * @param $pidfile
+ */
 function cleanup($pidfile)
 {
 

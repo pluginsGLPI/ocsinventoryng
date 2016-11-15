@@ -28,13 +28,20 @@
  --------------------------------------------------------------------------
  */
 
+/**
+ * Class PluginOcsinventoryngDashboard
+ */
 class PluginOcsinventoryngDashboard extends CommonGLPI
 {
 
    public $widgets = array();
    private $options;
-   private $datas, $form;
+   private $form;
 
+   /**
+    * PluginOcsinventoryngDashboard constructor.
+    * @param array $options
+    */
    function __construct($options = array())
    {
       $this->options = $options;
@@ -46,6 +53,9 @@ class PluginOcsinventoryngDashboard extends CommonGLPI
 
    }
 
+   /**
+    * @return array
+    */
    function getWidgetsForItem()
    {
       return array(
@@ -54,9 +64,13 @@ class PluginOcsinventoryngDashboard extends CommonGLPI
       );
    }
 
+   /**
+    * @param $widgetId
+    * @return PluginMydashboardDatatable|PluginMydashboardHBarChart|PluginMydashboardHtml|PluginMydashboardLineChart|PluginMydashboardPieChart|PluginMydashboardVBarChart
+    */
    function getWidgetContentForItem($widgetId)
    {
-      global $CFG_GLPI, $DB;
+      global $DB;
 
       if (empty($this->form))
          $this->init();
@@ -77,7 +91,7 @@ class PluginOcsinventoryngDashboard extends CommonGLPI
                //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
                $query .= " GROUP BY period_name ORDER BY period ASC";
 
-               $widget = PluginMydashboardHelper::getWidgetsFromDBQuery('vbarchart', $query, __("Last synchronization of computers by month", "ocsinventoryng"));
+               $widget = PluginMydashboardHelper::getWidgetsFromDBQuery('vbarchart', $query);
 
                $datas = $widget->getTabDatas();
 
@@ -153,10 +167,10 @@ class PluginOcsinventoryngDashboard extends CommonGLPI
                   }
                }
 
-               $widget = PluginMydashboardHelper::getWidgetsFromDBQuery('piechart', $query, __("Detail of imported computers", "ocsinventoryng"));
+               $widget = PluginMydashboardHelper::getWidgetsFromDBQuery('piechart', $query);
                $datas = $widget->getTabDatas();
                $widget->setWidgetTitle(__("Detail of imported computers", "ocsinventoryng"));
-               $widget->setOption("spreadsheet", array("tickFormatter" => PluginMydashboardPieChart::getTickFormatter($widget->getWidgetTitle())));
+               //$widget->setOption("spreadsheet", array("tickFormatter" => PluginMydashboardPieChart::getTickFormatter($widget->getWidgetTitle())));
 
                $widget->setTabDatas($counts);
                $widget->toggleWidgetRefresh();

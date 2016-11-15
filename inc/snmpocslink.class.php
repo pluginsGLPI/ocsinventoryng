@@ -31,6 +31,9 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
+/**
+ * Class PluginOcsinventoryngSnmpOcslink
+ */
 class PluginOcsinventoryngSnmpOcslink extends CommonDBTM
 {
 
@@ -48,7 +51,9 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM
     *
     * @param $item               CommonGLPI object
     * @param$withtemplate (default 0)
-    **/
+    *
+    * @return string|translated
+    */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
    {
 
@@ -84,13 +89,15 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM
     * @param $item            CommonGLPI object
     * @param $tabnum (default 1)
     * @param $withtemplate (default 0)
-    **/
+    *
+    * @return bool|true
+    */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
    {
 
       if (in_array($item->getType(), self::$snmptypes)) {
 
-         self::showForItem($item, $withtemplate);
+         self::showForItem($item);
 
       } else if ($item->getType() == "PluginOcsinventoryngOcsServer") {
 
@@ -102,10 +109,10 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM
 
    /**
     * @param $ID
-    * @param $withtemplate (default '')
-    * @param $templateid (default '')
-    * */
-   function ocsFormSNMPImportOptions($ID, $withtemplate = '', $templateid = '')
+    * @internal param $withtemplate (default '')
+    * @internal param $templateid (default '')
+    */
+   function ocsFormSNMPImportOptions($ID)
    {
 
       $conf = new PluginOcsinventoryngOcsServer();
@@ -303,6 +310,9 @@ JAVASCRIPT;
       echo "</div>";
    }
 
+   /**
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    */
    static function snmpMenu($plugin_ocsinventoryng_ocsservers_id)
    {
       global $CFG_GLPI, $DB;
@@ -346,7 +356,8 @@ JAVASCRIPT;
               FROM `glpi_plugin_ocsinventoryng_ocsservers`
               LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers_profiles`
                   ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
-              WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`id` = '" . $plugin_ocsinventoryng_ocsservers_id . "' AND `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . "";
+              WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`id` = '" . $plugin_ocsinventoryng_ocsservers_id . "' 
+              AND `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`profiles_id`= '" . $_SESSION["glpiactiveprofile"]['id'] . "'";
       $result = $DB->query($sql);
       $isactive = 0;
       if ($DB->numrows($result) > 0) {
@@ -356,12 +367,9 @@ JAVASCRIPT;
       }
       if ($isactive) {
          $client = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-         $version = $client->getTextConfig('GUI_VERSION');
-         $snmp = $client->getIntConfig('SNMP');
 
          //if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $version > self::OCS2_1_VERSION_LIMIT && $snmp) {
          //host not imported by thread
-         $usemassimport = PluginOcsinventoryngOcsServer::useMassImport();
          echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
          echo "<tr><th colspan='4'>";
          _e('OCSNG SNMP import', 'ocsinventoryng');
@@ -373,7 +381,7 @@ JAVASCRIPT;
 
          // SNMP device link feature
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-                  <a href='ocsngsnmp.link.php'>
+                  <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsngsnmp.link.php'>
                    <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' " .
             "alt='" . __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "' " .
             "title=\"" . __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "\">
@@ -381,7 +389,7 @@ JAVASCRIPT;
                   </a></td>";
 
          echo "<td class='center b' colspan='2'>
-               <a href='ocsngsnmp.sync.php'>
+               <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsngsnmp.sync.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro1.png' " .
             "alt='" . __s('Synchronize snmp devices already imported', 'ocsinventoryng') . "' " .
             "title=\"" . __s('Synchronize snmp devices already imported', 'ocsinventoryng') . "\" >
@@ -391,7 +399,7 @@ JAVASCRIPT;
 
          //SNMP device import feature
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-             <a href='ocsngsnmp.import.php'>
+             <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsngsnmp.import.php'>
               <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' " .
             "alt='" . __s('Import new SNMP devices', 'ocsinventoryng') . "' " .
             "title=\"" . __s('Import new SNMP devices', 'ocsinventoryng') . "\">
@@ -408,13 +416,12 @@ JAVASCRIPT;
     * Show OcsLink of an item
     *
     * @param $item                   CommonDBTM object
-    * @param $withtemplate  integer  withtemplate param (default '')
-    *
     * @return nothing
-    **/
-   static function showForItem(CommonDBTM $item, $withtemplate = '')
+    * @internal param int|string $withtemplate integer  withtemplate param (default '')
+    */
+   static function showForItem(CommonDBTM $item)
    {
-      global $DB, $CFG_GLPI;
+      global $DB;
 
       //$target = Toolbox::getItemTypeFormURL(__CLASS__);
 
@@ -436,7 +443,6 @@ JAVASCRIPT;
                $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
 
                if (count($data)) {
-                  $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
                   echo "<table class='tab_cadre_fixe'>";
                   echo "<tr class='tab_bg_1'><th colspan='2'>" . __('OCS Inventory NG SNMP Import informations', 'ocsinventoryng') . "</th>";
                   $linked = __('Imported object', 'ocsinventoryng');
@@ -524,8 +530,9 @@ JAVASCRIPT;
    /**
     * if NetworkEquipment purged
     *
-    * @param $comp   NetworkEquipment object
-    **/
+    * @param NetworkEquipment $net
+    * @internal param NetworkEquipment $comp object
+    */
    static function purgeNetworkEquipment(NetworkEquipment $net)
    {
       $snmp = new self();
@@ -577,7 +584,7 @@ JAVASCRIPT;
     **/
    static function showSimpleForItem(CommonDBTM $item)
    {
-      global $DB, $CFG_GLPI;
+      global $DB;
 
       $target = Toolbox::getItemTypeFormURL(__CLASS__);
 
@@ -597,7 +604,6 @@ JAVASCRIPT;
                $data = $DB->fetch_assoc($result);
 
                if (count($data)) {
-                  $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
                   echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG SNMP Import informations', 'ocsinventoryng') . "</th>";
 
                   echo "<tr class='tab_bg_1'><td>" . __('Import date in GLPI', 'ocsinventoryng');
@@ -736,7 +742,6 @@ JAVASCRIPT;
                $data = $DB->fetch_assoc($result);
 
                if (count($data)) {
-                  $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
                   echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG IPDiscover Import informations', 'ocsinventoryng') . "</th>";
 
                   echo "<tr class='tab_bg_1'><td>" . __('Import date in GLPI', 'ocsinventoryng');
@@ -749,6 +754,13 @@ JAVASCRIPT;
 
    // SNMP PART HERE
 
+   /**
+    * @param $ocsid
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param int $lock
+    * @param $params
+    * @return array
+    */
    static function processSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock = 0, $params)
    {
       global $DB;
@@ -768,10 +780,16 @@ JAVASCRIPT;
          //or only last inventory date changed
          return self::updateSnmp($datas["id"], $plugin_ocsinventoryng_ocsservers_id);
       }
-      return self::importSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock, $params);
+      return self::importSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $params);
    }
 
-   static function importSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock = 0, $params)
+   /**
+    * @param $ocsid
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param $params
+    * @return array
+    */
+   static function importSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $params)
    {
       global $DB;
 
@@ -869,6 +887,17 @@ JAVASCRIPT;
      return "";
      } */
 
+   /**
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param $itemtype
+    * @param int $ID
+    * @param $ocsSnmp
+    * @param $loc_id
+    * @param $dom_id
+    * @param $action
+    * @param bool $linked
+    * @return int
+    */
    static function addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action, $linked = false)
    {
 
@@ -1018,7 +1047,7 @@ JAVASCRIPT;
                //'is_dynamic'                => 1,
                'is_deleted' => 0);
 
-            $networkports_id = $np->add($port_input, array(), $cfg_ocs['history_network']);
+            $np->add($port_input, array(), $cfg_ocs['history_network']);
          }
 
          //TODOSNMP TO TEST:
@@ -1063,6 +1092,17 @@ JAVASCRIPT;
       return $id_printer;
    }
 
+   /**
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param $itemtype
+    * @param int $ID
+    * @param $ocsSnmp
+    * @param $loc_id
+    * @param $dom_id
+    * @param $action
+    * @param bool $linked
+    * @return int
+    */
    static function addOrUpdateNetworkEquipment($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action, $linked = false)
    {
 
@@ -1282,13 +1322,24 @@ JAVASCRIPT;
                //'is_dynamic'         => 1,
                'is_deleted' => 0);
 
-            $networkports_id = $np->add($port_input, array(), $cfg_ocs['history_network']);
+            $np->add($port_input, array(), $cfg_ocs['history_network']);
          }
       }
 
       return $id_network;
    }
 
+   /**
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param $itemtype
+    * @param int $ID
+    * @param $ocsSnmp
+    * @param $loc_id
+    * @param $dom_id
+    * @param $action
+    * @param bool $linked
+    * @return int
+    */
    static function addOrUpdateOther($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action, $linked = false)
    {
 
@@ -1372,13 +1423,18 @@ JAVASCRIPT;
                //'is_dynamic'         => 1,
                'is_deleted' => 0);
 
-            $networkports_id = $np->add($port_input, array(), $cfg_ocs['history_network']);
+            $np->add($port_input, array(), $cfg_ocs['history_network']);
          }
       }
 
       return $id_item;
    }
 
+   /**
+    * @param $ID
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @return array
+    */
    static function updateSnmp($ID, $plugin_ocsinventoryng_ocsservers_id)
    {
       global $DB;
@@ -1391,8 +1447,6 @@ JAVASCRIPT;
          $ocsid = $data['ocs_id'];
          $itemtype = $data['itemtype'];
          $items_id = $data['items_id'];
-         $snmplink_id = $data['id'];
-         $linked = $data['linked'];
       }
 
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
@@ -1459,15 +1513,13 @@ JAVASCRIPT;
    /**
     * Prints search form
     *
-    * @param $manufacturer the supplier choice
-    * @param $type the device type
-    * @return nothing (print out a table)
-    *
+    * @param $params
+    * @return nothing
+    * @internal param the $manufacturer supplier choice
+    * @internal param the $type device type
     */
    static function searchForm($params)
    {
-      global $DB, $CFG_GLPI;
-
 
       // Default values of parameters
       $p['itemtype'] = '';
@@ -1516,6 +1568,9 @@ JAVASCRIPT;
    }
 
    // Show snmp devices to add :)
+   /**
+    * @param $params
+    */
    static function showSnmpDeviceToAdd($params)
    {
       global $DB, $CFG_GLPI;
@@ -1572,8 +1627,6 @@ JAVASCRIPT;
             $already_linked [] = $data["ocs_id"];
          }
       }
-
-      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
       $snmpOptions = array(
          'ORDER' => 'LASTDATE',
@@ -1891,6 +1944,11 @@ JAVASCRIPT;
       }
    }
 
+   /**
+    * @param $itemtype
+    * @param $name
+    * @return itemtype
+    */
    function getFromDBbyName($itemtype, $name)
    {
       $item = getItemForItemtype($itemtype);
@@ -1898,6 +1956,12 @@ JAVASCRIPT;
       return $item;
    }
 
+   /**
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param $check
+    * @param $start
+    * @return bool|void
+    */
    static function showSnmpDeviceToUpdate($plugin_ocsinventoryng_ocsservers_id, $check, $start)
    {
       global $DB, $CFG_GLPI;
@@ -1906,8 +1970,6 @@ JAVASCRIPT;
       if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
          return false;
       }
-
-      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
       // Get linked computer ids in GLPI
       $already_linked_query = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`ocs_id` AS ocsid
@@ -1970,8 +2032,8 @@ JAVASCRIPT;
                   $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
 
                   $format = 'Y-m-d H:i:s';
-                  $last_glpi_update = DateTime::createFromFormat($format, $data['last_update']);
-                  $last_ocs_inventory = DateTime::createFromFormat($format, $ocs_snmp_inv[$data['ocs_id']]);
+//                  $last_glpi_update = DateTime::createFromFormat($format, $data['last_update']);
+//                  $last_ocs_inventory = DateTime::createFromFormat($format, $ocs_snmp_inv[$data['ocs_id']]);
                   //TODOSNMP comment for test
                   //if ($last_ocs_inventory > $last_glpi_update) {
                   $already_linked[$data['id']] = $data;
@@ -2052,10 +2114,12 @@ JAVASCRIPT;
     *
     * @param $ocsid integer : ocs item unique id.
     * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
-    * @param $glpi_computers_id integer : glpi computer id
-    *
-    * @return integer : link id.
-    * */
+    * @param $items_id
+    * @param $itemtype
+    * return int : link id.
+    * @internal param int $glpi_computers_id : glpi computer id
+    * @return bool|item
+    */
    static function ocsSnmpLink($ocsid, $plugin_ocsinventoryng_ocsservers_id, $items_id, $itemtype)
    {
       global $DB;
@@ -2086,18 +2150,18 @@ JAVASCRIPT;
    /**
     * @param $ocsid
     * @param $plugin_ocsinventoryng_ocsservers_id
-    * @param $computers_id
-    * */
+    * @param $params
+    * @return array|bool
+    * @internal param $computers_id
+    *
+    */
    static function linkSnmpDevice($ocsid, $plugin_ocsinventoryng_ocsservers_id, $params)
    {
-      global $DB, $CFG_GLPI;
 
       PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
       //TODOSNMP entites_id ?
 
-      $ocsSnmp = $ocsClient->getSnmpDevice($ocsid);
       $p['itemtype'] = -1;
       $p['items_id'] = -1;
       foreach ($params as $key => $val) {
@@ -2252,7 +2316,7 @@ JAVASCRIPT;
            PluginOcsinventoryngOcslink::HISTORY_OCS_LINK);
            }
           */
-         self::updateSnmp($idlink, $plugin_ocsinventoryng_ocsservers_id, true);
+         self::updateSnmp($idlink, $plugin_ocsinventoryng_ocsservers_id);
          return array('status' => PluginOcsinventoryngOcsServer::SNMP_LINKED,
             //'entities_id'  => $data['entities_id'],
          );
@@ -2267,5 +2331,3 @@ JAVASCRIPT;
       return false;
    }
 }
-
-?>

@@ -32,17 +32,27 @@ if (!defined('GLPI_ROOT')) {
 }
 
 /// Class DeviceBios
+/**
+ * Class PluginOcsinventoryngDeviceBiosdata
+ */
 class PluginOcsinventoryngDeviceBiosdata extends CommonDevice
 {
 
    static protected $forward_entity_to = array('PluginOcsinventoryngItem_DeviceBiosdata', 'Infocom');
 
+   /**
+    * @param int $nb
+    * @return string|translated
+    */
    static function getTypeName($nb = 0)
    {
       return __('Bios');
    }
 
 
+   /**
+    * @return array
+    */
    function getAdditionalFields()
    {
 
