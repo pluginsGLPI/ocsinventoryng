@@ -1008,6 +1008,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             'instantiation_type' => "NetworkPortEthernet",
             "entities_id" => $ipDiscoveryObject["entity"],
             "NetworkName__ipaddresses" => array("-100" => $ip),
+            '_create_children' => 1,
             //'is_dynamic'                => 1,
             'is_deleted' => 0);
 

@@ -98,6 +98,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
             'itemtype' => 'Computer',
             '_no_history' => !$dohistory,
             'instantiation_type' => $instantiation_type,
+            '_create_children' => 1,
             'is_dynamic' => 1,
             'is_deleted' => 0);
 

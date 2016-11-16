@@ -1088,6 +1088,7 @@ JAVASCRIPT;
                'instantiation_type' => "NetworkPortEthernet",
                "entities_id" => $entity,
                "NetworkName__ipaddresses" => array("-100" => $ip),
+               '_create_children' => 1,
                //'is_dynamic'                => 1,
                'is_deleted' => 0);
 
@@ -1363,6 +1364,7 @@ JAVASCRIPT;
                'instantiation_type' => "NetworkPortEthernet",
                "entities_id" => $entity,
                "NetworkName__ipaddresses" => array("-100" => $ip),
+               '_create_children' => 1,
                //'is_dynamic'         => 1,
                'is_deleted' => 0);
 
@@ -1691,6 +1693,7 @@ JAVASCRIPT;
                'instantiation_type' => "NetworkPortEthernet",
                "entities_id" => $entity,
                "NetworkName__ipaddresses" => array("-100" => $ip),
+               '_create_children' => 1,
                //'is_dynamic'         => 1,
                'is_deleted' => 0);
 
@@ -1791,6 +1794,7 @@ JAVASCRIPT;
                'instantiation_type' => "NetworkPortEthernet",
                "entities_id" => $entity,
                "NetworkName__ipaddresses" => array("-100" => $ip),
+               '_create_children' => 1,
                //'is_dynamic'         => 1,
                'is_deleted' => 0);
 
@@ -2080,7 +2084,7 @@ JAVASCRIPT;
             // Search case
             $begin_display = $start;
             $end_display = $start + $_SESSION["glpilist_limit"];
-
+            $numrows = $ocsResult['TOTAL_COUNT'];
             // Export All case
             if (isset($_GET['export_all'])) {
                $begin_display = 0;
@@ -2096,7 +2100,7 @@ JAVASCRIPT;
                   __('Caution! The imported data (see your configuration) will overwrite the existing one', 'ocsinventoryng') . "</div>";
             }
 
-            if ($numrows = $ocsResult['TOTAL_COUNT']) {
+            if ($numrows) {
                $parameters = "";
                Html::printPager($start, $numrows, $target, $parameters);
 

@@ -154,7 +154,7 @@ function plugin_version_ocsinventoryng()
       'author' => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
       'license' => 'GPLv2+',
       'homepage' => 'https://github.com/pluginsGLPI/ocsinventoryng',
-      'minGlpiVersion' => '9.1');
+      'minGlpiVersion' => '9.1.1');
 
 }
 
@@ -165,8 +165,8 @@ function plugin_version_ocsinventoryng()
 function plugin_ocsinventoryng_check_prerequisites()
 {
 
-   if (version_compare(GLPI_VERSION, '9.1', 'lt') || version_compare(GLPI_VERSION, '9.2', 'ge')) {
-      echo "This plugin requires GLPI = 9.1";
+   if (version_compare(GLPI_VERSION, '9.1.1', 'lt') || version_compare(GLPI_VERSION, '9.2', 'ge')) {
+      echo "This plugin requires GLPI = 9.1.1";
       return false;
    }
    return true;
