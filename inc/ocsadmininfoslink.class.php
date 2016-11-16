@@ -88,7 +88,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM
       //Add lock
       $ocslink = new PluginOcsinventoryngOcslink();
       if ($ocslink->getFromDBforComputer($computers_id)) {
-         $cfg_ocs = self::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
+         $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
          if ($cfg_ocs["use_locks"]) {
             $computer_updates[] = "use_date";
             $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`

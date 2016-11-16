@@ -201,7 +201,27 @@ JAVASCRIPT;
       echo "<td class='center'>" . __('Create network port', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("importsnmp_createport", $conf->fields["importsnmp_createport"]);
       echo "</td></tr>\n";
+      
+      echo "<tr><th colspan='4'>" . __('Computer SNMP import options', 'ocsinventoryng') . "</th></tr>\n";
 
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Import SNMP network cards', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_computernetworkcards", $conf->fields["importsnmp_computernetworkcards"]);
+
+      echo "</td><td class='center'>" . __('Import SNMP memory', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_computermemory", $conf->fields["importsnmp_computermemory"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Import SNMP processors', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_computerprocessors", $conf->fields["importsnmp_computerprocessors"]);
+
+      echo "</td><td class='center'>" . __('Import SNMP softwares', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_computersoftwares", $conf->fields["importsnmp_computersoftwares"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Import SNMP virtual machines', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_computervm", $conf->fields["importsnmp_computervm"]);
+      echo "</td><td colspan='2'</td></tr>\n";
+      
       echo "<tr><th colspan='4'>" . __('Printer SNMP import options', 'ocsinventoryng') . "</th></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Import SNMP last pages counter', 'ocsinventoryng') . "</td>\n<td>";
@@ -267,7 +287,27 @@ JAVASCRIPT;
       echo "<td class='center'>" . __('Create network port', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("linksnmp_createport", $conf->fields["linksnmp_createport"]);
       echo "</td></tr>\n";
+      
+      echo "<tr><th colspan='4'>" . __('Computer SNMP link options', 'ocsinventoryng') . "</th></tr>\n";
 
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Link SNMP network cards', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_computernetworkcards", $conf->fields["linksnmp_computernetworkcards"]);
+
+      echo "</td><td class='center'>" . __('Link SNMP memory', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_computermemory", $conf->fields["linksnmp_computermemory"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Link SNMP processors', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_computerprocessors", $conf->fields["linksnmp_computerprocessors"]);
+
+      echo "</td><td class='center'>" . __('Link SNMP softwares', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_computersoftwares", $conf->fields["linksnmp_computersoftwares"]);
+      echo "</td></tr>\n";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Link SNMP virtual machines', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_computervm", $conf->fields["linksnmp_computervm"]);
+      echo "</td><td colspan='2'></td></tr>\n";
+      
       echo "<tr><th colspan='4'>" . __('Printer SNMP link options', 'ocsinventoryng') . "</th></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Link SNMP last pages counter', 'ocsinventoryng') . "</td>\n<td>";
@@ -826,7 +866,11 @@ JAVASCRIPT;
 
             $id = self::addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add");
 
-         } else if ($itemtype == "Peripheral" || $itemtype == "Computer" || $itemtype == "Phone") {
+         } else if ($itemtype == "Computer") {
+
+            $id = self::addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add");
+
+         } else if ($itemtype == "Peripheral" || $itemtype == "Phone") {
 
             $id = self::addOrUpdateOther($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add");
 
@@ -1328,7 +1372,335 @@ JAVASCRIPT;
 
       return $id_network;
    }
+   
+   
+   /**
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param $itemtype
+    * @param int $ID
+    * @param $ocsSnmp
+    * @param $loc_id
+    * @param $dom_id
+    * @param $action
+    * @param bool $linked
+    * @return int
+    */
+   static function addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action, $linked = false)
+   {
+      global $DB;
+      
+      $snmpDevice = new $itemtype();
 
+      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+
+      $input = array(
+         "is_dynamic" => 1,
+         "entities_id" => $_SESSION['glpiactive_entity']
+      );
+
+      if (($cfg_ocs['importsnmp_name'] && $action == "add")
+         || ($cfg_ocs['linksnmp_name'] && $linked)
+         || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
+         || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)
+      ) {
+         $input["name"] = $ocsSnmp['META']['NAME'];
+      }
+      if (($cfg_ocs['importsnmp_contact'] && $action == "add")
+         || ($cfg_ocs['linksnmp_contact'] && $linked)
+         || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
+         || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)
+      ) {
+         $input["contact"] = $ocsSnmp['META']['CONTACT'];
+      }
+      if (($cfg_ocs['importsnmp_comment'] && $action == "add")
+         || ($cfg_ocs['linksnmp_comment'] && $linked)
+         || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
+         || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)
+      ) {
+         $input["comment"] = $ocsSnmp['META']['DESCRIPTION'];
+      }
+
+      if ($loc_id > 0) {
+         $input["locations_id"] = $loc_id;
+      }
+      if ($dom_id > 0 && $itemtype != "Phone") {
+         $input["domains_id"] = $dom_id;
+      }
+
+      $id_item = 0;
+
+      if ($action == "add") {
+         $id_item = $snmpDevice->add($input, array('unicity_error_message' => true));
+      } else {
+         $input["id"] = $ID;
+         $id_item = $ID;
+         $snmpDevice->update($input, array('unicity_error_message' => false));
+      }
+      
+      if ($id_item > 0
+         && isset($ocsSnmp['MEMORIES'])
+         && (($cfg_ocs['importsnmp_computermemory'] && $action == "add")
+            || ($cfg_ocs['linksnmp_computermemory'] && $linked)
+            || ($action == "update" && $cfg_ocs['importsnmp_computermemory'] && !$linked)
+            || ($action == "update" && $cfg_ocs['linksnmp_computermemory'] && $linked))
+         && count($ocsSnmp['MEMORIES']) > 0
+         && $ocsSnmp['MEMORIES'][0]['CAPACITY'] > 0
+      ) {
+
+         $dev['designation'] = __('Computer Memory', 'ocsinventoryng');
+
+         $item = new $itemtype();
+         $entity = $_SESSION["glpiactive_entity"];
+         if ($item->getFromDB($id_item)) {
+            $entity = $item->fields['entities_id'];
+         }
+
+         $dev['entities_id'] = $entity;
+
+         $device = new DeviceMemory();
+         $device_id = $device->import($dev);
+         if ($device_id) {
+            $CompDevice = new Item_DeviceMemory();
+            $CompDevice->deleteByCriteria(array('items_id' => $id_item,
+               'itemtype' => $itemtype), 1);
+            $CompDevice->add(array('items_id' => $id_item,
+               'itemtype' => $itemtype,
+               'size' => $ocsSnmp['MEMORIES'][0]['CAPACITY'],
+               'entities_id' => $entity,
+               'devicememories_id' => $device_id,
+               'is_dynamic' => 1,
+               '_no_history' => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+         }
+      }
+      
+      if ($id_item > 0
+         && isset($ocsSnmp['NETWORKS'])
+         && (($cfg_ocs['importsnmp_computernetworkcards'] && $action == "add")
+            || ($cfg_ocs['linksnmp_computernetworkcards'] && $linked)
+            || ($action == "update" && $cfg_ocs['importsnmp_computernetworkcards'] && !$linked)
+            || ($action == "update" && $cfg_ocs['linksnmp_computernetworkcards'] && $linked))
+         && count($ocsSnmp['NETWORKS']) > 0
+      ) {
+         $CompDevice = new Item_DeviceNetworkCard();
+         $CompDevice->deleteByCriteria(array('items_id' => $id_item,
+                                             'itemtype' => $itemtype), 1);
+                  
+         foreach ($ocsSnmp['NETWORKS'] as $k => $net) {
+            $dev["designation"] = $net['SLOT'];
+            $dev["comment"] = $net['TYPE'];
+            $mac = $net['MACADDR'];
+            /*$speed = 0;
+            if (strstr($processor['SPEED'], "GHz")) {
+               $speed = str_replace("GHz", "", $processor['SPEED']);
+               $speed = $speed * 1000;
+            }
+            if (strstr($processor['SPEED'], "MHz")) {
+               $speed = str_replace("MHz", "", $processor['SPEED']);
+            }*/
+
+            $item = new $itemtype();
+            $entity = $_SESSION["glpiactive_entity"];
+            if ($item->getFromDB($id_item)) {
+               $entity = $item->fields['entities_id'];
+            }
+
+            $dev['entities_id'] = $entity;
+
+            $device = new DeviceNetworkCard();
+            $device_id = $device->import($dev);
+
+            if ($device_id) {
+               
+               $CompDevice->add(array('items_id' => $id_item,
+                  'itemtype' => $itemtype,
+                  'mac' => $mac,
+                  'entities_id' => $entity,
+                  'devicenetworkcards_id' => $device_id,
+                  'is_dynamic' => 1,
+                  '_no_history' => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+            }
+         }
+      }
+      
+      if ($id_item > 0
+         && isset($ocsSnmp['SOFTWARES'])
+         && (($cfg_ocs['importsnmp_computersoftwares'] && $action == "add")
+            || ($cfg_ocs['linksnmp_computersoftwares'] && $linked)
+            || ($action == "update" && $cfg_ocs['importsnmp_computersoftwares'] && !$linked)
+            || ($action == "update" && $cfg_ocs['linksnmp_computersoftwares'] && $linked))
+         && count($ocsSnmp['SOFTWARES']) > 0
+      ) {
+         
+         $entity = $_SESSION["glpiactive_entity"];
+         if ($item->getFromDB($id_item)) {
+            $entity = $item->fields['entities_id'];
+         }
+         PluginOcsinventoryngOcsServer::updateSoftware($cfg_ocs, $id_item, $ocsSnmp["SOFTWARES"], $entity);
+         
+         }
+      if ($id_item > 0
+         && isset($ocsSnmp['CPU'])
+         && (($cfg_ocs['importsnmp_computerprocessors'] && $action == "add")
+            || ($cfg_ocs['linksnmp_computerprocessors'] && $linked)
+            || ($action == "update" && $cfg_ocs['importsnmp_computerprocessors'] && !$linked)
+            || ($action == "update" && $cfg_ocs['linksnmp_computerprocessors'] && $linked))
+         && count($ocsSnmp['CPU']) > 0
+      ) {
+         $CompDevice = new Item_DeviceProcessor();
+         $CompDevice->deleteByCriteria(array('items_id' => $id_item,
+                                             'itemtype' => $itemtype), 1);
+                  
+         foreach ($ocsSnmp['CPU'] as $k => $processor) {
+            $dev["designation"] = $processor['TYPE'];
+            $dev["manufacturers_id"] = Dropdown::importExternal('Manufacturer', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $processor['MANUFACTURER']));
+            $speed = 0;
+            if (strstr($processor['SPEED'], "GHz")) {
+               $speed = str_replace("GHz", "", $processor['SPEED']);
+               $speed = $speed * 1000;
+            }
+            if (strstr($processor['SPEED'], "MHz")) {
+               $speed = str_replace("MHz", "", $processor['SPEED']);
+            }
+
+            $item = new $itemtype();
+            $entity = $_SESSION["glpiactive_entity"];
+            if ($item->getFromDB($id_item)) {
+               $entity = $item->fields['entities_id'];
+            }
+
+            $dev['entities_id'] = $entity;
+
+            $device = new DeviceProcessor();
+            $device_id = $device->import($dev);
+
+            if ($device_id) {
+               
+               $CompDevice->add(array('items_id' => $id_item,
+                  'itemtype' => $itemtype,
+                  'frequency' => $speed,
+                  'entities_id' => $entity,
+                  'deviceprocessors_id' => $device_id,
+                  'is_dynamic' => 1,
+                  '_no_history' => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+            }
+         }
+      }
+      
+      
+      if ($id_item > 0
+         && isset($ocsSnmp['VIRTUALMACHINES'])
+         //&& (($cfg_ocs['importsnmp_computervm'] && $action == "add")
+         //   || ($cfg_ocs['linksnmp_computervm'] && $linked)
+         //   || ($action == "update" && $cfg_ocs['importsnmp_computervm'] && !$linked)
+         //   || ($action == "update" && $cfg_ocs['linksnmp_computervm'] && $linked))
+         && count($ocsSnmp['VIRTUALMACHINES']) > 0
+      ) {
+         $already_processed = array();
+
+         $virtualmachine = new ComputerVirtualMachine();
+         foreach ($ocsSnmp['VIRTUALMACHINES'] as $k => $ocsVirtualmachine) {
+         
+            $ocsVirtualmachine = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsVirtualmachine));
+            $vm = array();
+            $vm['name'] = $ocsVirtualmachine['NAME'];
+            $vm['vcpu'] = $ocsVirtualmachine['CPU'];
+            $vm['ram'] = $ocsVirtualmachine['MEMORY'];
+            $vm['uuid'] = $ocsVirtualmachine['UUID'];
+            $vm['computers_id'] = $id_item;
+            $vm['is_dynamic'] = 1;
+
+            $vm['virtualmachinestates_id'] = Dropdown::importExternal('VirtualMachineState', $ocsVirtualmachine['POWER']);
+            //$vm['virtualmachinetypes_id'] = Dropdown::importExternal('VirtualMachineType', $ocsVirtualmachine['VMTYPE']);
+            //$vm['virtualmachinesystems_id'] = Dropdown::importExternal('VirtualMachineType', $ocsVirtualmachine['SUBSYSTEM']);
+
+            $query = "SELECT `id`
+                         FROM `glpi_computervirtualmachines`
+                         WHERE `computers_id`='$id_item'
+                            AND `is_dynamic`";
+            if ($ocsVirtualmachine['UUID']) {
+               $query .= " AND `uuid`='" . $ocsVirtualmachine['UUID'] . "'";
+            } else {
+               // Failback on name
+               $query .= " AND `name`='" . $ocsVirtualmachine['NAME'] . "'";
+            }
+
+            $results = $DB->query($query);
+            if ($DB->numrows($results) > 0) {
+               $id = $DB->result($results, 0, 'id');
+            } else {
+               $id = 0;
+            }
+            if (!$id) {
+               $virtualmachine->reset();
+               if (!$cfg_ocs['history_vm']) {
+                  $vm['_no_history'] = true;
+               }
+               $id_vm = $virtualmachine->add($vm, array(), $cfg_ocs['history_vm']);
+               if ($id_vm) {
+                  $already_processed[] = $id_vm;
+               }
+            } else {
+               if ($virtualmachine->getFromDB($id)) {
+                  $vm['id'] = $id;
+                  $virtualmachine->update($vm, $cfg_ocs['history_vm']);
+               }
+               $already_processed[] = $id;
+            }
+            // Delete Unexisting Items not found in OCS
+            //Look for all ununsed virtual machines
+            $query = "SELECT `id`
+                      FROM `glpi_computervirtualmachines`
+                      WHERE `computers_id`='$id_item'
+                         AND `is_dynamic`";
+            if (!empty($already_processed)) {
+               $query .= "AND `id` NOT IN (" . implode(',', $already_processed) . ")";
+            }
+            foreach ($DB->request($query) as $data) {
+               //Delete all connexions
+               $virtualmachine->delete(array('id' => $data['id'],
+                  '_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id), true);
+            }
+         }
+      }
+      
+      if ($id_item > 0
+         && (($cfg_ocs['importsnmp_createport'] && $action == "add")
+            || ($cfg_ocs['linksnmp_createport'] && $linked)
+            || ($action == "update" && $cfg_ocs['importsnmp_createport'] && !$linked)
+            || ($action == "update" && $cfg_ocs['linksnmp_createport'] && $linked))
+      ) {
+
+         //Add network port
+         $ip = $ocsSnmp['META']['IPADDR'];
+         $mac = $ocsSnmp['META']['MACADDR'];
+
+         $np = new NetworkPort();
+         $np->getFromDBByQuery("WHERE `mac` LIKE '$mac' AND `items_id` = '$id_item' AND `itemtype` LIKE '$itemtype' ");
+         if (count($np->fields) < 1) {
+
+            $item = new $itemtype();
+            $entity = $_SESSION["glpiactive_entity"];
+            if ($item->getFromDB($id_item)) {
+               $entity = $item->fields['entities_id'];
+            }
+            $port_input = array('name' => $ocsSnmp['META']['NAME'],
+               'mac' => $mac,
+               'items_id' => $id_item,
+               'itemtype' => $itemtype,
+               '_no_history' => !$cfg_ocs['history_network'],
+               'instantiation_type' => "NetworkPortEthernet",
+               "entities_id" => $entity,
+               "NetworkName__ipaddresses" => array("-100" => $ip),
+               //'is_dynamic'         => 1,
+               'is_deleted' => 0);
+
+            $np->add($port_input, array(), $cfg_ocs['history_network']);
+         }
+      }
+
+      return $id_item;
+   }
+   
    /**
     * @param $plugin_ocsinventoryng_ocsservers_id
     * @param $itemtype
@@ -1488,8 +1860,18 @@ JAVASCRIPT;
          return array('status' => PluginOcsinventoryngOcsServer::SNMP_SYNCHRONIZED,
             //'entities_id'  => $data['entities_id'],
          );
-      } else if ($itemtype == "Computer"
-         || $itemtype == "Peripheral"
+      } else if ($itemtype == "Computer") {
+
+         self::addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, $items_id, $ocsSnmp, $loc_id, $dom_id, "update", $linked);
+
+         $now = date("Y-m-d H:i:s");
+         $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks` SET `last_update` = '" . $now . "' WHERE `id` = " . $ID . ";";
+         $DB->query($sql);
+
+         return array('status' => PluginOcsinventoryngOcsServer::SNMP_SYNCHRONIZED,
+            //'entities_id'  => $data['entities_id'],
+         );
+      } else if ($itemtype == "Peripheral"
          || $itemtype == "Phone"
       ) {
 

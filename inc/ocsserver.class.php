@@ -5636,11 +5636,15 @@ JAVASCRIPT;
             //As we cannot be sure that data coming from OCS are in utf8, let's try to encode them
             //if possible
             foreach (array('NAME', 'PUBLISHER', 'VERSION') as $field) {
-               $software[$field] = self::encodeOcsDataInUtf8($is_utf8, $software[$field]);
+               if (isset($software[$field])) {
+                  $software[$field] = self::encodeOcsDataInUtf8($is_utf8, $software[$field]);
+               }
             }
-
+            $manufacturer ="";
             //Replay dictionnary on manufacturer
-            $manufacturer = Manufacturer::processName($software["PUBLISHER"]);
+            if (isset($software["PUBLISHER"])) {
+               $manufacturer = Manufacturer::processName($software["PUBLISHER"]);
+            }
             $version = $software['VERSION'];
             $name = $software['NAME'];
 

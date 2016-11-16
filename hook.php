@@ -146,7 +146,7 @@ function plugin_ocsinventoryng_install()
    ) {
 
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_networkports` 
-               ADD `speed` varchar(255) COLLATE utf8_unicode_ci DEFAULT '10mb/s';";
+               ADD `speed` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT '10mb/s';";
       $DB->queryOrDie($query, "1.0.3 update table glpi_plugin_ocsinventoryng_networkports");
    }
 
@@ -156,16 +156,16 @@ function plugin_ocsinventoryng_install()
    ) {
 
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `conn_type` tinyint(1) NOT NULL DEFAULT '0';";
+               ADD `conn_type` TINYINT(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.0.4 update table glpi_plugin_ocsinventoryng_ocsservers");
    }
 
    //Update 1.1.0
    if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers_profiles")) {
       $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers_profiles` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL default '0',
-                  `profiles_id` int(11) NOT NULL default '0',
+                  `id` INT(11) NOT NULL AUTO_INCREMENT,
+                  `plugin_ocsinventoryng_ocsservers_id` INT(11) NOT NULL DEFAULT '0',
+                  `profiles_id` INT(11) NOT NULL DEFAULT '0',
                 PRIMARY KEY (`id`),
                 KEY `plugin_ocsinventoryng_ocsservers_id` (`plugin_ocsinventoryng_ocsservers_id`),
                 KEY `profiles_id` (`profiles_id`)
@@ -180,7 +180,7 @@ function plugin_ocsinventoryng_install()
    ) {
 
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocslinks` 
-               ADD `last_ocs_conn` datetime default NULL;";
+               ADD `last_ocs_conn` DATETIME DEFAULT NULL;";
       $DB->queryOrDie($query, "1.1.0 update table glpi_plugin_ocsinventoryng_ocslinks");
    }
 
@@ -189,7 +189,7 @@ function plugin_ocsinventoryng_install()
    ) {
 
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocslinks` 
-               ADD `ip_src` varchar(255) collate utf8_unicode_ci default NULL;";
+               ADD `ip_src` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL;";
       $DB->queryOrDie($query, "1.1.0 update table glpi_plugin_ocsinventoryng_ocslinks");
    }
 
@@ -198,21 +198,21 @@ function plugin_ocsinventoryng_install()
    ) {
 
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-                     ADD `import_device_bios` tinyint(1) NOT NULL DEFAULT '1';";
+                     ADD `import_device_bios` TINYINT(1) NOT NULL DEFAULT '1';";
       $DB->queryOrDie($query, "1.1.0 update table glpi_plugin_ocsinventoryng_ocsservers");
    }
 
    if (!TableExists("glpi_plugin_ocsinventoryng_devicebiosdatas")) {
 
       $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_devicebiosdatas` (
-                    `id` int(11) NOT NULL AUTO_INCREMENT,
-                    `designation` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                    `comment` text COLLATE utf8_unicode_ci,
-                    `date` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                    `assettag` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                    `manufacturers_id` int(11) NOT NULL DEFAULT '0',
-                    `entities_id` int(11) NOT NULL DEFAULT '0',
-                    `is_recursive` tinyint(1) NOT NULL DEFAULT '0',
+                    `id` INT(11) NOT NULL AUTO_INCREMENT,
+                    `designation` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                    `comment` TEXT COLLATE utf8_unicode_ci,
+                    `date` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                    `assettag` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                    `manufacturers_id` INT(11) NOT NULL DEFAULT '0',
+                    `entities_id` INT(11) NOT NULL DEFAULT '0',
+                    `is_recursive` TINYINT(1) NOT NULL DEFAULT '0',
                     PRIMARY KEY (`id`),
                     KEY `manufacturers_id` (`manufacturers_id`),
                     KEY `entities_id` (`entities_id`),
@@ -224,14 +224,14 @@ function plugin_ocsinventoryng_install()
    if (!TableExists("glpi_plugin_ocsinventoryng_items_devicebiosdatas")) {
 
       $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_items_devicebiosdatas` (
-                    `id` int(11) NOT NULL AUTO_INCREMENT,
-                    `items_id` int(11) NOT NULL DEFAULT '0',
-                    `itemtype` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                    `plugin_ocsinventoryng_devicebiosdatas_id` int(11) NOT NULL DEFAULT '0',
-                    `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
-                    `is_dynamic` tinyint(1) NOT NULL DEFAULT '0',
-                    `entities_id` int(11) NOT NULL DEFAULT '0',
-                    `is_recursive` tinyint(1) NOT NULL DEFAULT '0',
+                    `id` INT(11) NOT NULL AUTO_INCREMENT,
+                    `items_id` INT(11) NOT NULL DEFAULT '0',
+                    `itemtype` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                    `plugin_ocsinventoryng_devicebiosdatas_id` INT(11) NOT NULL DEFAULT '0',
+                    `is_deleted` TINYINT(1) NOT NULL DEFAULT '0',
+                    `is_dynamic` TINYINT(1) NOT NULL DEFAULT '0',
+                    `entities_id` INT(11) NOT NULL DEFAULT '0',
+                    `is_recursive` TINYINT(1) NOT NULL DEFAULT '0',
                     PRIMARY KEY (`id`),
                     KEY `computers_id` (`items_id`),
                     KEY `plugin_ocsinventoryng_devicebiosdatas_id` (`plugin_ocsinventoryng_devicebiosdatas_id`),
@@ -273,7 +273,7 @@ function plugin_ocsinventoryng_install()
    ) {
 
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `import_device_motherboard` tinyint(1) NOT NULL DEFAULT '0';";
+               ADD `import_device_motherboard` TINYINT(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.2.2 update table glpi_plugin_ocsinventoryng_ocsservers");
    }
 
@@ -281,13 +281,13 @@ function plugin_ocsinventoryng_install()
    If (!TableExists("glpi_plugin_ocsinventoryng_ipdiscoverocslinks")) {
 
       $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
-                `items_id` int(11) NOT NULL,
-                `itemtype` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                `macaddress` varchar(255) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
+                `id` INT(11) NOT NULL AUTO_INCREMENT,
+                `items_id` INT(11) NOT NULL,
+                `itemtype` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                `macaddress` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
                 `last_update` DATETIME COLLATE utf8_unicode_ci DEFAULT NULL,
-                `address` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL,
-                `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
+                `address` VARCHAR(40) COLLATE utf8_unicode_ci DEFAULT NULL,
+                `plugin_ocsinventoryng_ocsservers_id` INT(11) NOT NULL DEFAULT '0',
                  PRIMARY KEY (`id`)
                  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
       $DB->queryOrDie($query, "1.2.3 add table glpi_plugin_ocsinventoryng_ipdiscoverocslinks");
@@ -315,24 +315,24 @@ function plugin_ocsinventoryng_install()
    ) { //not installed
 
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_threads` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `threadid` int(11) NOT NULL default '0',
-                  `start_time` datetime default NULL,
-                  `end_time` datetime default NULL,
-                  `status` int(11) NOT NULL default '0',
-                  `error_msg` text NOT NULL,
-                  `imported_machines_number` int(11) NOT NULL default '0',
-                  `synchronized_machines_number` int(11) NOT NULL default '0',
-                  `failed_rules_machines_number` int(11) NOT NULL default '0',
-                  `linked_machines_number` int(11) NOT NULL default '0',
-                  `notupdated_machines_number` int(11) NOT NULL default '0',
-                  `not_unique_machines_number` int(11) NOT NULL default '0',
-                  `link_refused_machines_number` int(11) NOT NULL default '0',
-                  `total_number_machines` int(11) NOT NULL default '0',
-                  `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL default '1',
-                  `processid` int(11) NOT NULL default '0',
-                  `entities_id` int(11) NOT NULL DEFAULT 0,
-                  `rules_id` int(11) NOT NULL DEFAULT 0,
+                  `id` INT(11) NOT NULL AUTO_INCREMENT,
+                  `threadid` INT(11) NOT NULL DEFAULT '0',
+                  `start_time` DATETIME DEFAULT NULL,
+                  `end_time` DATETIME DEFAULT NULL,
+                  `status` INT(11) NOT NULL DEFAULT '0',
+                  `error_msg` TEXT NOT NULL,
+                  `imported_machines_number` INT(11) NOT NULL DEFAULT '0',
+                  `synchronized_machines_number` INT(11) NOT NULL DEFAULT '0',
+                  `failed_rules_machines_number` INT(11) NOT NULL DEFAULT '0',
+                  `linked_machines_number` INT(11) NOT NULL DEFAULT '0',
+                  `notupdated_machines_number` INT(11) NOT NULL DEFAULT '0',
+                  `not_unique_machines_number` INT(11) NOT NULL DEFAULT '0',
+                  `link_refused_machines_number` INT(11) NOT NULL DEFAULT '0',
+                  `total_number_machines` INT(11) NOT NULL DEFAULT '0',
+                  `plugin_ocsinventoryng_ocsservers_id` INT(11) NOT NULL DEFAULT '1',
+                  `processid` INT(11) NOT NULL DEFAULT '0',
+                  `entities_id` INT(11) NOT NULL DEFAULT 0,
+                  `rules_id` INT(11) NOT NULL DEFAULT 0,
                   PRIMARY KEY  (`id`),
                   KEY `end_time` (`end_time`),
                   KEY `process_thread` (`processid`,`threadid`)
@@ -342,13 +342,13 @@ function plugin_ocsinventoryng_install()
 
 
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_configs` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `thread_log_frequency` int(11) NOT NULL default '10',
-                  `is_displayempty` int(1) NOT NULL default '1',
-                  `import_limit` int(11) NOT NULL default '0',
-                  `delay_refresh` int(11) NOT NULL default '0',
-                  `allow_ocs_update` tinyint(1) NOT NULL default '0',
-                  `comment` text,
+                  `id` INT(11) NOT NULL AUTO_INCREMENT,
+                  `thread_log_frequency` INT(11) NOT NULL DEFAULT '10',
+                  `is_displayempty` INT(1) NOT NULL DEFAULT '1',
+                  `import_limit` INT(11) NOT NULL DEFAULT '0',
+                  `delay_refresh` INT(11) NOT NULL DEFAULT '0',
+                  `allow_ocs_update` TINYINT(1) NOT NULL DEFAULT '0',
+                  `comment` TEXT,
                   PRIMARY KEY (`id`)
                 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ";
 
@@ -361,16 +361,16 @@ function plugin_ocsinventoryng_install()
 
 
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_details` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `entities_id` int(11) NOT NULL default '0',
-                  `plugin_ocsinventoryng_threads_id` int(11) NOT NULL default '0',
+                  `id` INT(11) NOT NULL AUTO_INCREMENT,
+                  `entities_id` INT(11) NOT NULL DEFAULT '0',
+                  `plugin_ocsinventoryng_threads_id` INT(11) NOT NULL DEFAULT '0',
                   `rules_id` TEXT,
-                  `threadid` int(11) NOT NULL default '0',
-                  `ocsid` int(11) NOT NULL default '0',
-                  `computers_id` int(11) NOT NULL default '0',
-                  `action` int(11) NOT NULL default '0',
-                  `process_time` datetime DEFAULT NULL,
-                  `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL default '1',
+                  `threadid` INT(11) NOT NULL DEFAULT '0',
+                  `ocsid` INT(11) NOT NULL DEFAULT '0',
+                  `computers_id` INT(11) NOT NULL DEFAULT '0',
+                  `action` INT(11) NOT NULL DEFAULT '0',
+                  `process_time` DATETIME DEFAULT NULL,
+                  `plugin_ocsinventoryng_ocsservers_id` INT(11) NOT NULL DEFAULT '1',
                   PRIMARY KEY (`id`),
                   KEY `end_time` (`process_time`),
                   KEY `process_thread` (`plugin_ocsinventoryng_threads_id`,`threadid`)
@@ -398,10 +398,10 @@ function plugin_ocsinventoryng_install()
 
 
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_notimportedcomputers` (
-                  `id` INT( 11 ) NOT NULL  auto_increment,
-                  `entities_id` int(11) NOT NULL default '0',
+                  `id` INT( 11 ) NOT NULL  AUTO_INCREMENT,
+                  `entities_id` INT(11) NOT NULL DEFAULT '0',
                   `rules_id` TEXT,
-                  `comment` text NULL,
+                  `comment` TEXT NULL,
                   `ocsid` INT( 11 ) NOT NULL DEFAULT '0',
                   `plugin_ocsinventoryng_ocsservers_id` INT( 11 ) NOT NULL ,
                   `ocs_deviceid` VARCHAR( 255 ) NOT NULL ,
@@ -421,10 +421,10 @@ function plugin_ocsinventoryng_install()
 
 
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_servers` (
-                  `id` int(11) NOT NULL AUTO_INCREMENT,
-                  `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
-                  `max_ocsid` int(11) DEFAULT NULL,
-                  `max_glpidate` datetime DEFAULT NULL,
+                  `id` INT(11) NOT NULL AUTO_INCREMENT,
+                  `plugin_ocsinventoryng_ocsservers_id` INT(11) NOT NULL DEFAULT '0',
+                  `max_ocsid` INT(11) DEFAULT NULL,
+                  `max_glpidate` DATETIME DEFAULT NULL,
                   PRIMARY KEY (`id`),
                   UNIQUE KEY `plugin_ocsinventoryng_ocsservers_id` (`plugin_ocsinventoryng_ocsservers_id`)
                 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ";
@@ -441,24 +441,24 @@ function plugin_ocsinventoryng_install()
          plugin_ocsinventoryng_upgrademassocsimport14to15();
       }
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_threads` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `threadid` int(11) NOT NULL default '0',
-                  `start_time` datetime default NULL,
-                  `end_time` datetime default NULL,
-                  `status` int(11) NOT NULL default '0',
-                  `error_msg` text NOT NULL,
-                  `imported_machines_number` int(11) NOT NULL default '0',
-                  `synchronized_machines_number` int(11) NOT NULL default '0',
-                  `failed_rules_machines_number` int(11) NOT NULL default '0',
-                  `linked_machines_number` int(11) NOT NULL default '0',
-                  `notupdated_machines_number` int(11) NOT NULL default '0',
-                  `not_unique_machines_number` int(11) NOT NULL default '0',
-                  `link_refused_machines_number` int(11) NOT NULL default '0',
-                  `total_number_machines` int(11) NOT NULL default '0',
-                  `ocsservers_id` int(11) NOT NULL default '1',
-                  `processid` int(11) NOT NULL default '0',
-                  `entities_id` int(11) NOT NULL DEFAULT 0,
-                  `rules_id` int(11) NOT NULL DEFAULT 0,
+                  `id` INT(11) NOT NULL AUTO_INCREMENT,
+                  `threadid` INT(11) NOT NULL DEFAULT '0',
+                  `start_time` DATETIME DEFAULT NULL,
+                  `end_time` DATETIME DEFAULT NULL,
+                  `status` INT(11) NOT NULL DEFAULT '0',
+                  `error_msg` TEXT NOT NULL,
+                  `imported_machines_number` INT(11) NOT NULL DEFAULT '0',
+                  `synchronized_machines_number` INT(11) NOT NULL DEFAULT '0',
+                  `failed_rules_machines_number` INT(11) NOT NULL DEFAULT '0',
+                  `linked_machines_number` INT(11) NOT NULL DEFAULT '0',
+                  `notupdated_machines_number` INT(11) NOT NULL DEFAULT '0',
+                  `not_unique_machines_number` INT(11) NOT NULL DEFAULT '0',
+                  `link_refused_machines_number` INT(11) NOT NULL DEFAULT '0',
+                  `total_number_machines` INT(11) NOT NULL DEFAULT '0',
+                  `ocsservers_id` INT(11) NOT NULL DEFAULT '1',
+                  `processid` INT(11) NOT NULL DEFAULT '0',
+                  `entities_id` INT(11) NOT NULL DEFAULT 0,
+                  `rules_id` INT(11) NOT NULL DEFAULT 0,
                   PRIMARY KEY  (`id`),
                   KEY `end_time` (`end_time`),
                   KEY `process_thread` (`processid`,`threadid`)
@@ -505,14 +505,14 @@ function plugin_ocsinventoryng_install()
          "plugin_ocsinventoryng_ocsservers_id", 'integer');
 
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_configs` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `thread_log_frequency` int(11) NOT NULL default '10',
-                  `is_displayempty` int(1) NOT NULL default '1',
-                  `import_limit` int(11) NOT NULL default '0',
-                  `ocsservers_id` int(11) NOT NULL default '-1',
-                  `delay_refresh` int(11) NOT NULL default '0',
-                  `allow_ocs_update` tinyint(1) NOT NULL default '0',
-                  `comment` text,
+                  `id` INT(11) NOT NULL AUTO_INCREMENT,
+                  `thread_log_frequency` INT(11) NOT NULL DEFAULT '10',
+                  `is_displayempty` INT(1) NOT NULL DEFAULT '1',
+                  `import_limit` INT(11) NOT NULL DEFAULT '0',
+                  `ocsservers_id` INT(11) NOT NULL DEFAULT '-1',
+                  `delay_refresh` INT(11) NOT NULL DEFAULT '0',
+                  `allow_ocs_update` TINYINT(1) NOT NULL DEFAULT '0',
+                  `comment` TEXT,
                   PRIMARY KEY (`id`)
                 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ";
 
@@ -539,16 +539,16 @@ function plugin_ocsinventoryng_install()
 
 
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_details` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `entities_id` int(11) NOT NULL default '0',
-                  `plugin_massocsimport_threads_id` int(11) NOT NULL default '0',
+                  `id` INT(11) NOT NULL AUTO_INCREMENT,
+                  `entities_id` INT(11) NOT NULL DEFAULT '0',
+                  `plugin_massocsimport_threads_id` INT(11) NOT NULL DEFAULT '0',
                   `rules_id` TEXT,
-                  `threadid` int(11) NOT NULL default '0',
-                  `ocsid` int(11) NOT NULL default '0',
-                  `computers_id` int(11) NOT NULL default '0',
-                  `action` int(11) NOT NULL default '0',
-                  `process_time` datetime DEFAULT NULL,
-                  `ocsservers_id` int(11) NOT NULL default '1',
+                  `threadid` INT(11) NOT NULL DEFAULT '0',
+                  `ocsid` INT(11) NOT NULL DEFAULT '0',
+                  `computers_id` INT(11) NOT NULL DEFAULT '0',
+                  `action` INT(11) NOT NULL DEFAULT '0',
+                  `process_time` DATETIME DEFAULT NULL,
+                  `ocsservers_id` INT(11) NOT NULL DEFAULT '1',
                   PRIMARY KEY (`id`),
                   KEY `end_time` (`process_time`),
                   KEY `process_thread` (`ocsservers_id`,`threadid`)
@@ -597,10 +597,10 @@ function plugin_ocsinventoryng_install()
 
 
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_notimportedcomputers` (
-                  `id` INT( 11 ) NOT NULL  auto_increment,
-                  `entities_id` int(11) NOT NULL default '0',
+                  `id` INT( 11 ) NOT NULL  AUTO_INCREMENT,
+                  `entities_id` INT(11) NOT NULL DEFAULT '0',
                   `rules_id` TEXT,
-                  `comment` text NULL,
+                  `comment` TEXT NULL,
                   `ocsid` INT( 11 ) NOT NULL DEFAULT '0',
                   `ocsservers_id` INT( 11 ) NOT NULL ,
                   `ocs_deviceid` VARCHAR( 255 ) NOT NULL ,
@@ -640,10 +640,10 @@ function plugin_ocsinventoryng_install()
          "plugin_ocsinventoryng_ocsservers_id", 'integer');
 
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_servers` (
-                  `id` int(11) NOT NULL AUTO_INCREMENT,
-                  `ocsservers_id` int(11) NOT NULL DEFAULT '0',
-                  `max_ocsid` int(11) DEFAULT NULL,
-                  `max_glpidate` datetime DEFAULT NULL,
+                  `id` INT(11) NOT NULL AUTO_INCREMENT,
+                  `ocsservers_id` INT(11) NOT NULL DEFAULT '0',
+                  `max_ocsid` INT(11) DEFAULT NULL,
+                  `max_glpidate` DATETIME DEFAULT NULL,
                   PRIMARY KEY (`id`),
                   UNIQUE KEY `ocsservers_id` (`ocsservers_id`)
                 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ";
@@ -736,31 +736,31 @@ function plugin_ocsinventoryng_install()
       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'use_cleancron')
    ) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `use_cleancron` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `importsnmp_name` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `importsnmp_serial` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `importsnmp_comment` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `importsnmp_contact` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `importsnmp_location` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `importsnmp_domain` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `importsnmp_manufacturer` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `importsnmp_createport` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `importsnmp_last_pages_counter` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `importsnmp_firmware` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `importsnmp_power` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `importsnmp_fan` tinyint(1) NOT NULL DEFAULT '0';";
+               ADD `use_cleancron` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_name` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_serial` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_comment` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_contact` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_location` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_domain` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_manufacturer` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_createport` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_last_pages_counter` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_firmware` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_power` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_fan` TINYINT(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.2.2 update table glpi_plugin_ocsinventoryng_ocsservers add use_cleancron");
    }
 
    if (!TableExists("glpi_plugin_ocsinventoryng_snmpocslinks")) {
 
       $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_snmpocslinks` (
-                  `id` int(11) NOT NULL AUTO_INCREMENT,
-                  `items_id` int(11) NOT NULL DEFAULT '0',
-                  `ocs_id` int(11) NOT NULL DEFAULT '0',
-                  `itemtype` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `id` INT(11) NOT NULL AUTO_INCREMENT,
+                  `items_id` INT(11) NOT NULL DEFAULT '0',
+                  `ocs_id` INT(11) NOT NULL DEFAULT '0',
+                  `itemtype` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
                   `last_update` DATETIME COLLATE utf8_unicode_ci DEFAULT NULL,
-                  `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
+                  `plugin_ocsinventoryng_ocsservers_id` INT(11) NOT NULL DEFAULT '0',
                   PRIMARY KEY (`id`)
                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
       $DB->queryOrDie($query, "add table for snmp");
@@ -771,18 +771,18 @@ function plugin_ocsinventoryng_install()
       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'dohistory')
    ) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `dohistory` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `history_hardware` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `history_bios` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `history_drives` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `history_network` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `history_devices` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `history_monitor` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `history_printer` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `history_peripheral` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `history_sofware` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `history_vm` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `history_admininfos` tinyint(1) NOT NULL DEFAULT '0';";
+               ADD `dohistory` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `history_hardware` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `history_bios` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `history_drives` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `history_network` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `history_devices` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `history_monitor` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `history_printer` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `history_peripheral` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `history_sofware` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `history_vm` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `history_admininfos` TINYINT(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.2.3 update table glpi_plugin_ocsinventoryng_ocsservers add history");
    }
 
@@ -790,8 +790,8 @@ function plugin_ocsinventoryng_install()
       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_device_controller')
    ) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `import_device_controller` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `import_device_slot` tinyint(1) NOT NULL DEFAULT '0';";
+               ADD `import_device_controller` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `import_device_slot` TINYINT(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.2.3 update table glpi_plugin_ocsinventoryng_ocsservers add import_device_controller & slot");
    }
    /**/
@@ -801,21 +801,21 @@ function plugin_ocsinventoryng_install()
       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_antivirus')
    ) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `import_antivirus` tinyint(1) NOT NULL DEFAULT '0';";
+               ADD `import_antivirus` TINYINT(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_ocsservers add import_antivirus");
    }
    if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'use_locks')
    ) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `use_locks` tinyint(1) NOT NULL DEFAULT '1';";
+               ADD `use_locks` TINYINT(1) NOT NULL DEFAULT '1';";
       $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_ocsservers add use_locks");
    }
    if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'importsnmp_printermemory')
    ) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `importsnmp_printermemory` tinyint(1) NOT NULL DEFAULT '0';";
+               ADD `importsnmp_printermemory` TINYINT(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_ocsservers add importsnmp_printermemory");
    }
 
@@ -823,7 +823,7 @@ function plugin_ocsinventoryng_install()
       && !FieldExists('glpi_plugin_ocsinventoryng_snmpocslinks', 'linked')
    ) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_snmpocslinks` 
-               ADD `linked` tinyint(1) NOT NULL DEFAULT '0';";
+               ADD `linked` TINYINT(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_snmpocslinks add linked");
    }
 
@@ -831,20 +831,31 @@ function plugin_ocsinventoryng_install()
       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'linksnmp_name')
    ) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `linksnmp_name` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `linksnmp_serial` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `linksnmp_comment` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `linksnmp_contact` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `linksnmp_location` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `linksnmp_domain` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `linksnmp_manufacturer` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `linksnmp_createport` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `linksnmp_last_pages_counter` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `linksnmp_firmware` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `linksnmp_power` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `linksnmp_fan` tinyint(1) NOT NULL DEFAULT '0',
-               ADD `linksnmp_printermemory` tinyint(1) NOT NULL DEFAULT '0'";
-      $DB->queryOrDie($query, "1.2.2 update table glpi_plugin_ocsinventoryng_ocsservers add linksnmp fields");
+               ADD `linksnmp_name` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_serial` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_comment` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_contact` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_location` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_domain` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_manufacturer` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_createport` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_last_pages_counter` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_firmware` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_power` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_fan` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_printermemory` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_computernetworkcards` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_computermemory` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_computerprocessors` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_computersoftwares` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `importsnmp_computervm` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_computernetworkcards` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_computermemory` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_computerprocessors` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_computersoftwares` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `linksnmp_computervm` TINYINT(1) NOT NULL DEFAULT '0';";
+
+      $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_ocsservers add linksnmp fields");
    }
    /**/
 
@@ -2191,15 +2202,15 @@ function plugin_ocsinventoryng_upgrademassocsimport11to12()
 
    if (!TableExists("glpi_plugin_mass_ocs_import_config")) {
       $query = "CREATE TABLE `glpi_plugin_mass_ocs_import_config` (
-                  `ID` int(11) NOT NULL,
-                  `enable_logging` int(1) NOT NULL default '1',
-                  `thread_log_frequency` int(4) NOT NULL default '10',
-                  `display_empty` int(1) NOT NULL default '1',
-                  `delete_frequency` int(4) NOT NULL default '0',
-                  `import_limit` int(11) NOT NULL default '0',
-                  `default_ocs_server` int(11) NOT NULL default '-1',
-                  `delay_refresh` varchar(4) NOT NULL default '0',
-                  `delete_empty_frequency` int(4) NOT NULL default '0',
+                  `ID` INT(11) NOT NULL,
+                  `enable_logging` INT(1) NOT NULL DEFAULT '1',
+                  `thread_log_frequency` INT(4) NOT NULL DEFAULT '10',
+                  `display_empty` INT(1) NOT NULL DEFAULT '1',
+                  `delete_frequency` INT(4) NOT NULL DEFAULT '0',
+                  `import_limit` INT(11) NOT NULL DEFAULT '0',
+                  `default_ocs_server` INT(11) NOT NULL DEFAULT '-1',
+                  `delay_refresh` VARCHAR(4) NOT NULL DEFAULT '0',
+                  `delete_empty_frequency` INT(4) NOT NULL DEFAULT '0',
                   PRIMARY KEY  (`ID`)
                 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ";
 
@@ -2247,14 +2258,14 @@ function plugin_ocsinventoryng_upgrademassocsimport121to13()
 
       if (!TableExists("glpi_plugin_massocsimport_details")) {
          $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_massocsimport_details` (
-                     `ID` int(11) NOT NULL auto_increment,
-                     `process_id` bigint(10) NOT NULL default '0',
-                     `thread_id` int(4) NOT NULL default '0',
-                     `ocs_id` int(11) NOT NULL default '0',
-                     `glpi_id` int(11) NOT NULL default '0',
-                     `action` int(11) NOT NULL default '0',
-                     `process_time` datetime DEFAULT NULL,
-                     `ocs_server_id` int(4) NOT NULL default '1',
+                     `ID` INT(11) NOT NULL AUTO_INCREMENT,
+                     `process_id` BIGINT(10) NOT NULL DEFAULT '0',
+                     `thread_id` INT(4) NOT NULL DEFAULT '0',
+                     `ocs_id` INT(11) NOT NULL DEFAULT '0',
+                     `glpi_id` INT(11) NOT NULL DEFAULT '0',
+                     `action` INT(11) NOT NULL DEFAULT '0',
+                     `process_time` DATETIME DEFAULT NULL,
+                     `ocs_server_id` INT(4) NOT NULL DEFAULT '1',
                      PRIMARY KEY  (`ID`),
                      KEY `end_time` (`process_time`)
                    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
