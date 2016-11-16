@@ -146,7 +146,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `history_monitor` tinyint(1) NOT NULL DEFAULT '1',
   `history_printer` tinyint(1) NOT NULL DEFAULT '1',
   `history_peripheral` tinyint(1) NOT NULL DEFAULT '1',
-  `history_sofware` tinyint(1) NOT NULL DEFAULT '1',
+  `history_software` tinyint(1) NOT NULL DEFAULT '1',
   `history_vm` tinyint(1) NOT NULL DEFAULT '1',
   `history_admininfos` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),

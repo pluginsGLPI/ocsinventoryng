@@ -780,7 +780,7 @@ function plugin_ocsinventoryng_install()
                ADD `history_monitor` TINYINT(1) NOT NULL DEFAULT '0',
                ADD `history_printer` TINYINT(1) NOT NULL DEFAULT '0',
                ADD `history_peripheral` TINYINT(1) NOT NULL DEFAULT '0',
-               ADD `history_sofware` TINYINT(1) NOT NULL DEFAULT '0',
+               ADD `history_software` TINYINT(1) NOT NULL DEFAULT '0',
                ADD `history_vm` TINYINT(1) NOT NULL DEFAULT '0',
                ADD `history_admininfos` TINYINT(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.2.3 update table glpi_plugin_ocsinventoryng_ocsservers add history");
@@ -856,6 +856,14 @@ function plugin_ocsinventoryng_install()
                ADD `linksnmp_computervm` TINYINT(1) NOT NULL DEFAULT '0';";
 
       $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_ocsservers add linksnmp fields");
+   }
+
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+      && FieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'history_sofware')
+   ) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+                CHANGE `history_sofware` `history_software` TINYINT(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_ocsservers change history_software");
    }
    /**/
 

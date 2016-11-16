@@ -944,6 +944,7 @@ JAVASCRIPT;
     */
    static function addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action, $linked = false)
    {
+      global $DB;
 
       $snmpDevice = new $itemtype();
 
@@ -1046,8 +1047,18 @@ JAVASCRIPT;
          $device_id = $device->import($dev);
          if ($device_id) {
             $CompDevice = new Item_DeviceMemory();
-            $CompDevice->deleteByCriteria(array('items_id' => $id_printer,
-               'itemtype' => $itemtype));
+
+            if ($cfg_ocs['history_devices']) {
+               $table = getTableForItemType("Item_DeviceMemory");
+               $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `items_id` = '" . $id_printer . "'
+                            AND `itemtype` = '" . $itemtype . "'";
+               $DB->query($query);
+            }
+//            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//            $CompDevice->deleteByCriteria(array('items_id' => $id_printer,
+//               'itemtype' => $itemtype), 1);
             $CompDevice->add(array('items_id' => $id_printer,
                'itemtype' => $itemtype,
                'size' => $ocsSnmp['MEMORIES'][0]['CAPACITY'],
@@ -1150,6 +1161,7 @@ JAVASCRIPT;
     */
    static function addOrUpdateNetworkEquipment($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action, $linked = false)
    {
+      global $DB;
 
       $snmpDevice = new $itemtype();
 
@@ -1287,8 +1299,18 @@ JAVASCRIPT;
             if ($power_id) {
                $serial = $ocsSnmp['POWERSUPPLIES'][0]['SERIALNUMBER'];
                $CompDevice = new Item_DevicePowerSupply();
-               $CompDevice->deleteByCriteria(array('items_id' => $id_network,
-                  'itemtype' => $itemtype));
+
+               if ($cfg_ocs['history_devices']) {
+                  $table = getTableForItemType("Item_DevicePowerSupply");
+                  $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `items_id` = '" . $id_network . "'
+                            AND `itemtype` = '" . $itemtype . "'";
+                  $DB->query($query);
+               }
+//            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//               $CompDevice->deleteByCriteria(array('items_id' => $id_network,
+//                  'itemtype' => $itemtype), 1);
                $CompDevice->add(array('items_id' => $id_network,
                   'itemtype' => $itemtype,
                   'entities_id' => $entity,
@@ -1325,8 +1347,17 @@ JAVASCRIPT;
             $device_id = $device->import($dev);
             if ($device_id) {
                $CompDevice = new Item_DevicePci();
-               $CompDevice->deleteByCriteria(array('items_id' => $id_network,
-                  'itemtype' => $itemtype));
+               if ($cfg_ocs['history_devices']) {
+                  $table = getTableForItemType("Item_DevicePci");
+                  $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `items_id` = '" . $id_network . "'
+                            AND `itemtype` = '" . $itemtype . "'";
+                  $DB->query($query);
+               }
+//            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//               $CompDevice->deleteByCriteria(array('items_id' => $id_network,
+//                  'itemtype' => $itemtype), 1);
                $CompDevice->add(array('items_id' => $id_network,
                   'itemtype' => $itemtype,
                   'entities_id' => $entity,
@@ -1463,8 +1494,17 @@ JAVASCRIPT;
          $device_id = $device->import($dev);
          if ($device_id) {
             $CompDevice = new Item_DeviceMemory();
-            $CompDevice->deleteByCriteria(array('items_id' => $id_item,
-               'itemtype' => $itemtype), 1);
+            if ($cfg_ocs['history_devices']) {
+               $table = getTableForItemType("Item_DeviceMemory");
+               $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `items_id` = '" . $id_item . "'
+                            AND `itemtype` = '" . $itemtype . "'";
+               $DB->query($query);
+            }
+//            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//            $CompDevice->deleteByCriteria(array('items_id' => $id_item,
+//               'itemtype' => $itemtype), 1);
             $CompDevice->add(array('items_id' => $id_item,
                'itemtype' => $itemtype,
                'size' => $ocsSnmp['MEMORIES'][0]['CAPACITY'],
@@ -1484,8 +1524,17 @@ JAVASCRIPT;
          && count($ocsSnmp['NETWORKS']) > 0
       ) {
          $CompDevice = new Item_DeviceNetworkCard();
-         $CompDevice->deleteByCriteria(array('items_id' => $id_item,
-                                             'itemtype' => $itemtype), 1);
+         if ($cfg_ocs['history_devices']) {
+            $table = getTableForItemType("Item_DeviceNetworkCard");
+            $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `items_id` = '" . $id_item . "'
+                            AND `itemtype` = '" . $itemtype . "'";
+            $DB->query($query);
+         }
+//            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//         $CompDevice->deleteByCriteria(array('items_id' => $id_item,
+//                                             'itemtype' => $itemtype), 1);
                   
          foreach ($ocsSnmp['NETWORKS'] as $k => $net) {
             $dev["designation"] = $net['SLOT'];
@@ -1549,8 +1598,17 @@ JAVASCRIPT;
          && count($ocsSnmp['CPU']) > 0
       ) {
          $CompDevice = new Item_DeviceProcessor();
-         $CompDevice->deleteByCriteria(array('items_id' => $id_item,
-                                             'itemtype' => $itemtype), 1);
+         if ($cfg_ocs['history_devices']) {
+            $table = getTableForItemType("Item_DeviceProcessor");
+            $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `items_id` = '" . $id_item . "'
+                            AND `itemtype` = '" . $itemtype . "'";
+            $DB->query($query);
+         }
+//            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//         $CompDevice->deleteByCriteria(array('items_id' => $id_item,
+//                                             'itemtype' => $itemtype), 1);
                   
          foreach ($ocsSnmp['CPU'] as $k => $processor) {
             $dev["designation"] = $processor['TYPE'];
@@ -1591,10 +1649,10 @@ JAVASCRIPT;
       
       if ($id_item > 0
          && isset($ocsSnmp['VIRTUALMACHINES'])
-         //&& (($cfg_ocs['importsnmp_computervm'] && $action == "add")
-         //   || ($cfg_ocs['linksnmp_computervm'] && $linked)
-         //   || ($action == "update" && $cfg_ocs['importsnmp_computervm'] && !$linked)
-         //   || ($action == "update" && $cfg_ocs['linksnmp_computervm'] && $linked))
+         && (($cfg_ocs['importsnmp_computervm'] && $action == "add")
+            || ($cfg_ocs['linksnmp_computervm'] && $linked)
+            || ($action == "update" && $cfg_ocs['importsnmp_computervm'] && !$linked)
+            || ($action == "update" && $cfg_ocs['linksnmp_computervm'] && $linked))
          && count($ocsSnmp['VIRTUALMACHINES']) > 0
       ) {
          $already_processed = array();
@@ -1660,7 +1718,8 @@ JAVASCRIPT;
             foreach ($DB->request($query) as $data) {
                //Delete all connexions
                $virtualmachine->delete(array('id' => $data['id'],
-                  '_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id), true);
+                  '_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                  '_no_history' => !$cfg_ocs['history_vm']), true, $cfg_ocs['history_vm']);
             }
          }
       }

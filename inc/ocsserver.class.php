@@ -1008,7 +1008,7 @@ JAVASCRIPT;
       echo "</td>\n";
 
       echo "<td class='center'>" . __('Software connection history', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("history_sofware", $this->fields["history_sofware"]);
+      Dropdown::showYesNo("history_software", $this->fields["history_software"]);
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Virtual machines history', 'ocsinventoryng') . "</td>\n<td>";
@@ -1826,61 +1826,61 @@ JAVASCRIPT;
                   self::resetDropdown($computers_id, "operatingsystems_id", "glpi_operatingsystems");
                }
                if ($ocsConfig["import_device_processor"]) {
-                  self::resetDevices($computers_id, 'DeviceProcessor');
+                  self::resetDevices($computers_id, 'DeviceProcessor', $cfg_ocs);
                }
                if ($ocsConfig["import_device_iface"]) {
-                  self::resetDevices($computers_id, 'DeviceNetworkCard');
+                  self::resetDevices($computers_id, 'DeviceNetworkCard', $cfg_ocs);
                }
                if ($ocsConfig["import_device_memory"]) {
-                  self::resetDevices($computers_id, 'DeviceMemory');
+                  self::resetDevices($computers_id, 'DeviceMemory', $cfg_ocs);
                }
                if ($ocsConfig["import_device_hdd"]) {
-                  self::resetDevices($computers_id, 'DeviceHardDrive');
+                  self::resetDevices($computers_id, 'DeviceHardDrive', $cfg_ocs);
                }
                if ($ocsConfig["import_device_sound"]) {
-                  self::resetDevices($computers_id, 'DeviceSoundCard');
+                  self::resetDevices($computers_id, 'DeviceSoundCard', $cfg_ocs);
                }
                if ($ocsConfig["import_device_gfxcard"]) {
-                  self::resetDevices($computers_id, 'DeviceGraphicCard');
+                  self::resetDevices($computers_id, 'DeviceGraphicCard', $cfg_ocs);
                }
                if ($ocsConfig["import_device_drive"]) {
-                  self::resetDevices($computers_id, 'DeviceDrive');
+                  self::resetDevices($computers_id, 'DeviceDrive', $cfg_ocs);
                }
                if ($ocsConfig["import_device_modem"]
                   || $ocsConfig["import_device_port"]
                   || $ocsConfig["import_device_slot"]
                ) {
-                  self::resetDevices($computers_id, 'DevicePci');
+                  self::resetDevices($computers_id, 'DevicePci', $cfg_ocs);
                }
                if ($ocsConfig["import_device_bios"]) {
-                  self::resetDevices($computers_id, 'PluginOcsinventoryngDeviceBiosdata');
+                  self::resetDevices($computers_id, 'PluginOcsinventoryngDeviceBiosdata', $cfg_ocs);
                }
                if ($ocsConfig["import_device_motherboard"]) {
-                  self::resetDevices($computers_id, 'DeviceMotherboard');
+                  self::resetDevices($computers_id, 'DeviceMotherboard', $cfg_ocs);
                }
                if ($ocsConfig["import_device_controller"]) {
-                  self::resetDevices($computers_id, 'DeviceControl');
+                  self::resetDevices($computers_id, 'DeviceControl', $cfg_ocs);
                }
                if ($ocsConfig["import_software"]) {
-                  self::resetSoftwares($computers_id);
+                  self::resetSoftwares($computers_id, $cfg_ocs);
                }
                if ($ocsConfig["import_disk"]) {
-                  self::resetDisks($computers_id);
+                  self::resetDisks($computers_id, $cfg_ocs);
                }
                if ($ocsConfig["import_periph"]) {
-                  self::resetPeripherals($computers_id);
+                  self::resetPeripherals($computers_id, $cfg_ocs);
                }
                if ($ocsConfig["import_monitor"] == 1) { // Only reset monitor as global in unit management
-                  self::resetMonitors($computers_id);    // try to link monitor with existing
+                  self::resetMonitors($computers_id, $cfg_ocs);    // try to link monitor with existing
                }
                if ($ocsConfig["import_printer"]) {
-                  self::resetPrinters($computers_id);
+                  self::resetPrinters($computers_id, $cfg_ocs);
                }
                if ($ocsConfig["import_registry"]) {
                   self::resetRegistry($computers_id);
                }
                if ($ocsConfig["import_antivirus"]) {
-                  self::resetAntivirus($computers_id);
+                  self::resetAntivirus($computers_id, $cfg_ocs);
                }
                $changes[0] = '0';
                $changes[1] = "";
@@ -2955,7 +2955,8 @@ JAVASCRIPT;
                $compupdate["operatingsystemservicepacks_id"] = Dropdown::importExternal('OperatingSystemServicePack', self::encodeOcsDataInUtf8($is_utf8, $hardware["OSCOMMENTS"]));
             }
             //Enable For GLPI 9.1
-            if (!in_array("operatingsystemarchitectures_id", $options['computers_updates'])) {
+            if ((!in_array("operatingsystemarchitectures_id", $options['computers_updates']))
+                     && FieldExists("glpi_computers", "operatingsystemarchitectures_id")) {
                $compupdate["operatingsystemarchitectures_id"] = Dropdown::importExternal('OperatingSystemArchitecture', self::encodeOcsDataInUtf8($is_utf8, $hardware["ARCH"]));
             }
          }
@@ -3337,7 +3338,7 @@ JAVASCRIPT;
 
       foreach ($ocslinks_id as $key => $val) {
 
-         $query = "SELECT*
+         $query = "SELECT *
                    FROM `glpi_plugin_ocsinventoryng_ocslinks`
                    WHERE `id` = '$key'
                          AND `plugin_ocsinventoryng_ocsservers_id`
@@ -5015,13 +5016,24 @@ JAVASCRIPT;
     *
     * @return nothing.
     * */
-   static function resetDevices($glpi_computers_id, $itemtype)
+   static function resetDevices($glpi_computers_id, $itemtype, $cfg_ocs)
    {
+      global $DB;
 
-      $item = new $itemtype();
-      $item->deleteByCriteria(array('computers_id' => $glpi_computers_id,
-         'itemtype' => 'Computer',
-         'is_dynamic' => 1));
+      if ($cfg_ocs['history_devices']) {
+         $table = getTableForItemType($itemtype);
+         $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `computers_id` = '" . $glpi_computers_id . "'
+                            AND `itemtype` = 'Computer'
+                            AND `is_dynamic` = '1'";
+         $DB->query($query);
+      }
+//            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//      $item = new $itemtype();
+//      $item->deleteByCriteria(array('computers_id' => $glpi_computers_id,
+//         'itemtype' => 'Computer',
+//         'is_dynamic' => 1));
    }
 
    /**
@@ -5069,9 +5081,17 @@ JAVASCRIPT;
     * */
    static function resetRegistry($glpi_computers_id)
    {
+      global $DB;
 
-      $registry = new PluginOcsinventoryngRegistryKey();
-      $registry->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+       $table = getTableForItemType('PluginOcsinventoryngRegistryKey');
+      $query = "DELETE
+                  FROM `" . $table . "`
+                     WHERE `computers_id` = '" . $glpi_computers_id . "' ";
+      $DB->query($query);
+
+      //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//      $registry = new PluginOcsinventoryngRegistryKey();
+//      $registry->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
    }
 
    /**
@@ -5081,12 +5101,22 @@ JAVASCRIPT;
     *
     * @return nothing.
     * */
-   static function resetAntivirus($glpi_computers_id)
+   static function resetAntivirus($glpi_computers_id, $cfg_ocs)
    {
-
-      $av = new ComputerAntivirus();
-      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
-         'is_dynamic' => 1));
+      global $DB;
+//      TODO add history for antivirus
+//      if ($cfg_ocs['history_antivirus']) {
+         $table = getTableForItemType('ComputerAntivirus');
+         $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `computers_id` = '" . $glpi_computers_id . "'
+                            AND `is_dynamic` = '1'";
+         $DB->query($query);
+//      }
+      //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//      $av = new ComputerAntivirus();
+//      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
+//         'is_dynamic' => 1));
    }
 
    /**
@@ -5096,7 +5126,7 @@ JAVASCRIPT;
     *
     * @return nothing.
     * */
-   static function resetPrinters($glpi_computers_id)
+   static function resetPrinters($glpi_computers_id, $cfg_ocs)
    {
       global $DB;
 
@@ -5111,7 +5141,7 @@ JAVASCRIPT;
          $conn = new Computer_Item();
 
          while ($data = $DB->fetch_assoc($result)) {
-            $conn->delete(array('id' => $data['id']));
+            $conn->delete(array('id' => $data['id'],'_no_history' => !$cfg_ocs['history_printer']), true, $cfg_ocs['history_printer']);
 
             $query2 = "SELECT COUNT(*)
                        FROM `glpi_computers_items`
@@ -5121,7 +5151,7 @@ JAVASCRIPT;
 
             $printer = new Printer();
             if ($DB->result($result2, 0, 0) == 1) {
-               $printer->delete(array('id' => $data['items_id']), 1);
+               $printer->delete(array('id' => $data['items_id'],'_no_history' => !$cfg_ocs['history_printer']), true, $cfg_ocs['history_printer']);
             }
          }
       }
@@ -5134,7 +5164,7 @@ JAVASCRIPT;
     *
     * @return nothing.
     * */
-   static function resetMonitors($glpi_computers_id)
+   static function resetMonitors($glpi_computers_id, $cfg_ocs)
    {
       global $DB;
 
@@ -5151,7 +5181,7 @@ JAVASCRIPT;
 
          while ($data = $DB->fetch_assoc($result)) {
 
-            $conn->delete(array('id' => $data['id']));
+            $conn->delete(array('id' => $data['id'],'_no_history' => !$cfg_ocs['history_monitor']), true, $cfg_ocs['history_monitor']);
 
             $query2 = "SELECT COUNT(*)
                        FROM `glpi_computers_items`
@@ -5160,7 +5190,7 @@ JAVASCRIPT;
             $result2 = $DB->query($query2);
 
             if ($DB->result($result2, 0, 0) == 1) {
-               $mon->delete(array('id' => $data['items_id']), 1);
+               $mon->delete(array('id' => $data['items_id'],'_no_history' => !$cfg_ocs['history_monitor']), true, $cfg_ocs['history_monitor']);
             }
          }
       }
@@ -5173,7 +5203,7 @@ JAVASCRIPT;
     *
     * @return nothing.
     * */
-   static function resetPeripherals($glpi_computers_id)
+   static function resetPeripherals($glpi_computers_id, $cfg_ocs)
    {
       global $DB;
 
@@ -5188,7 +5218,7 @@ JAVASCRIPT;
       if ($DB->numrows($result) > 0) {
          $conn = new Computer_Item();
          while ($data = $DB->fetch_assoc($result)) {
-            $conn->delete(array('id' => $data['id']));
+            $conn->delete(array('id' => $data['id'],'_no_history' => !$cfg_ocs['history_peripheral']), true, $cfg_ocs['history_peripheral']);
 
             $query2 = "SELECT COUNT(*)
                        FROM `glpi_computers_items`
@@ -5197,7 +5227,7 @@ JAVASCRIPT;
             $result2 = $DB->query($query2);
 
             if ($DB->result($result2, 0, 0) == 1) {
-               $per->delete(array('id' => $data['items_id']), 1);
+               $per->delete(array('id' => $data['items_id'],'_no_history' => !$cfg_ocs['history_peripheral']), true, $cfg_ocs['history_peripheral']);
             }
          }
       }
@@ -5210,7 +5240,7 @@ JAVASCRIPT;
     *
     * @return nothing.
     * */
-   static function resetSoftwares($glpi_computers_id)
+   static function resetSoftwares($glpi_computers_id, $cfg_ocs)
    {
       global $DB;
 
@@ -5237,15 +5267,24 @@ JAVASCRIPT;
 
                if ($DB->result($result3, 0, 0) == 1) {
                   $soft = new Software();
-                  $soft->delete(array('id' => $vers->fields['softwares_id']), 1);
+                  $soft->delete(array('id' => $vers->fields['softwares_id'],'_no_history' => !$cfg_ocs['history_software']), true, $cfg_ocs['history_software']);
                }
-               $vers->delete(array("id" => $data['softwareversions_id']));
+               $vers->delete(array("id" => $data['softwareversions_id'],'_no_history' => !$cfg_ocs['history_software']), true, $cfg_ocs['history_software']);
             }
          }
 
-         $csv = new Computer_SoftwareVersion();
-         $csv->deleteByCriteria(array('computers_id' => $glpi_computers_id,
-            'is_dynamic' => 1));
+         if ($cfg_ocs['history_software']) {
+            $table = getTableForItemType('Computer_SoftwareVersion');
+            $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `computers_id` = '" . $glpi_computers_id . "'
+                            AND `is_dynamic` = '1'";
+            $DB->query($query);
+         }
+         //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//         $csv = new Computer_SoftwareVersion();
+//         $csv->deleteByCriteria(array('computers_id' => $glpi_computers_id,
+//            'is_dynamic' => 1));
       }
    }
 
@@ -5256,12 +5295,22 @@ JAVASCRIPT;
     *
     * @return nothing.
     * */
-   static function resetDisks($glpi_computers_id)
+   static function resetDisks($glpi_computers_id, $cfg_ocs)
    {
+      global $DB;
 
-      $dd = new ComputerDisk();
-      $dd->deleteByCriteria(array('computers_id' => $glpi_computers_id,
-         'is_dynamic' => 1));
+      if ($cfg_ocs['history_drives']) {
+         $table = getTableForItemType('ComputerDisk');
+         $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `computers_id` = '" . $glpi_computers_id . "'
+                            AND `is_dynamic` = '1'";
+         $DB->query($query);
+      }
+      //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//      $dd = new ComputerDisk();
+//      $dd->deleteByCriteria(array('computers_id' => $glpi_computers_id,
+//         'is_dynamic' => 1));
    }
 
    /**
@@ -5419,7 +5468,7 @@ JAVASCRIPT;
       foreach ($DB->request($query) as $data) {
          //Delete all connexions
          $virtualmachine->delete(array('id' => $data['id'],
-            '_ocsservers_id' => $ocsservers_id), true);
+            '_ocsservers_id' => $ocsservers_id,'_no_history' => !$cfg_ocs['history_vm']), true, $cfg_ocs['history_vm']);
       }
    }
 
@@ -5551,7 +5600,7 @@ JAVASCRIPT;
       foreach ($DB->request($query) as $data) {
          //Delete all connexions
          $d->delete(array('id' => $data['id'],
-            '_ocsservers_id' => $ocsservers_id), true);
+            '_ocsservers_id' => $ocsservers_id,'_no_history' => !$cfg_ocs['history_drives']), true, $cfg_ocs['history_drives']);
       }
    }
 
@@ -5722,7 +5771,7 @@ JAVASCRIPT;
                   //---- The software exists in this version for this computer - Update comments --------------//
                   //---------------------------------------------------- --------------------//
                   $isNewSoft = $soft->addOrRestoreFromTrash($modified_name, $manufacturer, $target_entity, '', ($entity != $target_entity), $is_helpdesk_visible);
-                  self::updateVersion($isNewSoft, $modified_version, $version_comments, $cfg_ocs['history_sofware']);
+                  self::updateVersion($isNewSoft, $modified_version, $version_comments, $cfg_ocs['history_software']);
                   unset($isNewSoft);
                   unset($imported[$id]);
                } else {
@@ -5733,14 +5782,14 @@ JAVASCRIPT;
                   //Import version for this software
                   $versionID = self::importVersion($isNewSoft, $modified_version, $version_comments);
                   //Install license for this machine
-                  $instID = self::installSoftwareVersion($computers_id, $versionID, $cfg_ocs['history_sofware']);
+                  $instID = self::installSoftwareVersion($computers_id, $versionID, $cfg_ocs['history_software']);
                }
             }
          }
       }
 
       foreach ($imported as $id => $unused) {
-         $computer_softwareversion->delete(array('id' => $id), true, $cfg_ocs['history_sofware']);
+         $computer_softwareversion->delete(array('id' => $id,'_no_history' => !$cfg_ocs['history_software']), true, $cfg_ocs['history_software']);
          // delete cause a getFromDB, so fields contains values
          $verid = $computer_softwareversion->getField('softwareversions_id');
 
@@ -5756,7 +5805,7 @@ JAVASCRIPT;
                // 1 is the current to be removed
                $soft->putInTrash($vers->fields['softwares_id'], __('Software deleted by OCSNG synchronization', 'ocsinventoryng'));
             }
-            $vers->delete(array("id" => $verid));
+            $vers->delete(array("id" => $verid,'_no_history' => !$cfg_ocs['history_software']), true, $cfg_ocs['history_software']);
          }
       }
    }
@@ -5808,7 +5857,7 @@ JAVASCRIPT;
    static function updateAntivirus($computers_id, $ocsComputer, $cfg_ocs)
    {
 
-      self::resetAntivirus($computers_id);
+      self::resetAntivirus($computers_id, $cfg_ocs);
 
       $av = new ComputerAntivirus();
       //update data
