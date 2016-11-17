@@ -950,7 +950,7 @@ JAVASCRIPT;
 
       $input = array(
          "is_dynamic" => 1,
-         "entities_id" => $_SESSION['glpiactive_entity'],
+         "entities_id" => (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0),
          "have_ethernet" => 1,
       );
 
@@ -1036,7 +1036,7 @@ JAVASCRIPT;
          $dev['designation'] = __('Printer Memory', 'ocsinventoryng');
 
          $item = new $itemtype();
-         $entity = $_SESSION["glpiactive_entity"];
+         $entity = (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0);
          if ($item->getFromDB($id_printer)) {
             $entity = $item->fields['entities_id'];
          }
@@ -1086,7 +1086,7 @@ JAVASCRIPT;
          if (count($np->fields) < 1) {
 
             $item = new $itemtype();
-            $entity = $_SESSION["glpiactive_entity"];
+            $entity = (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0);
             if ($item->getFromDB($id_printer)) {
                $entity = $item->fields['entities_id'];
             }
@@ -1169,7 +1169,7 @@ JAVASCRIPT;
 
       $input = array(
          "is_dynamic" => 1,
-         "entities_id" => $_SESSION['glpiactive_entity'],
+         "entities_id" => (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0),
          "is_recursive" => 0,
       );
 
@@ -1287,7 +1287,7 @@ JAVASCRIPT;
             $pow['comment'] = $ocsSnmp['POWERSUPPLIES'][0]['DESCRIPTION'];
 
             $item = new $itemtype();
-            $entity = $_SESSION["glpiactive_entity"];
+            $entity = (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0);
             if ($item->getFromDB($id_network)) {
                $entity = $item->fields['entities_id'];
             }
@@ -1336,7 +1336,7 @@ JAVASCRIPT;
             $dev['comment'] = $ocsSnmp['FANS'][0]['DESCRIPTION'];
 
             $item = new $itemtype();
-            $entity = $_SESSION["glpiactive_entity"];
+            $entity = (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0);
             if ($item->getFromDB($id_network)) {
                $entity = $item->fields['entities_id'];
             }
@@ -1382,7 +1382,7 @@ JAVASCRIPT;
          if (count($np->fields) < 1) {
 
             $item = new $itemtype();
-            $entity = $_SESSION["glpiactive_entity"];
+            $entity = (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0);
             if ($item->getFromDB($id_network)) {
                $entity = $item->fields['entities_id'];
             }
@@ -1428,7 +1428,7 @@ JAVASCRIPT;
 
       $input = array(
          "is_dynamic" => 1,
-         "entities_id" => $_SESSION['glpiactive_entity']
+         "entities_id" => (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0)
       );
 
       if (($cfg_ocs['importsnmp_name'] && $action == "add")
@@ -1483,7 +1483,7 @@ JAVASCRIPT;
          $dev['designation'] = __('Computer Memory', 'ocsinventoryng');
 
          $item = new $itemtype();
-         $entity = $_SESSION["glpiactive_entity"];
+         $entity = (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0);
          if ($item->getFromDB($id_item)) {
             $entity = $item->fields['entities_id'];
          }
@@ -1550,7 +1550,7 @@ JAVASCRIPT;
             }*/
 
             $item = new $itemtype();
-            $entity = $_SESSION["glpiactive_entity"];
+            $entity = (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0);
             if ($item->getFromDB($id_item)) {
                $entity = $item->fields['entities_id'];
             }
@@ -1581,8 +1581,8 @@ JAVASCRIPT;
             || ($action == "update" && $cfg_ocs['linksnmp_computersoftwares'] && $linked))
          && count($ocsSnmp['SOFTWARES']) > 0
       ) {
-         
-         $entity = $_SESSION["glpiactive_entity"];
+
+         $entity = (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0);
          if ($item->getFromDB($id_item)) {
             $entity = $item->fields['entities_id'];
          }
@@ -1623,7 +1623,7 @@ JAVASCRIPT;
             }
 
             $item = new $itemtype();
-            $entity = $_SESSION["glpiactive_entity"];
+            $entity = (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0);
             if ($item->getFromDB($id_item)) {
                $entity = $item->fields['entities_id'];
             }
@@ -1740,7 +1740,7 @@ JAVASCRIPT;
          if (count($np->fields) < 1) {
 
             $item = new $itemtype();
-            $entity = $_SESSION["glpiactive_entity"];
+            $entity = (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0);
             if ($item->getFromDB($id_item)) {
                $entity = $item->fields['entities_id'];
             }
@@ -1783,7 +1783,7 @@ JAVASCRIPT;
 
       $input = array(
          "is_dynamic" => 1,
-         "entities_id" => $_SESSION['glpiactive_entity']
+         "entities_id" => (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0)
       );
 
       if (($cfg_ocs['importsnmp_name'] && $action == "add")
@@ -1841,7 +1841,7 @@ JAVASCRIPT;
          if (count($np->fields) < 1) {
 
             $item = new $itemtype();
-            $entity = $_SESSION["glpiactive_entity"];
+            $entity = (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0);
             if ($item->getFromDB($id_item)) {
                $entity = $item->fields['entities_id'];
             }

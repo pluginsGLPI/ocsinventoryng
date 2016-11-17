@@ -9,17 +9,17 @@ echo Definition du path
 PATH = %PATH%;%path_php%
 
 
-IF EXIST %plugin_glpi%\run.php GOTO RUN
+IF EXIST %plugin_glpi%\runsnmp.php GOTO RUN
 
-IF NOT EXIST %plugin_glpi%\run.php GOTO EXIT
+IF NOT EXIST %plugin_glpi%\runsnmp.php GOTO EXIT
 
 :RUN
 echo Lancement du script
-php %plugin_glpi%\run.php
+php %plugin_glpi%\runsnmp.php
 GOTO FIN
 
 :EXIT
-echo Le chemin vers run.php est incorrect
+echo Le chemin vers runsnmp.php est incorrect
 pause
 
 :FIN

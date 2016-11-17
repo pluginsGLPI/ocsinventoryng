@@ -206,6 +206,7 @@ function FirstPass($ocsservers_id)
 
       // Compute lastest new computer
       $ocsResult = $ocsClient->getComputers(array(
+         'COMPLETE' => '0',
          'MAX_RECORDS' => 1,
          'ORDER' => 'ID DESC',
       ));
@@ -319,6 +320,7 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
    //$inventoriedBefore = new DateTime('@'.(time() - 180));
 
    $computerOptions = array(
+      'COMPLETE' => '0',
       'FILTER' => array(
          'INVENTORIED_BEFORE' => "NOW()",
       )

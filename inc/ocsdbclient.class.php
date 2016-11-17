@@ -71,7 +71,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     * @param $wanted
     * @return mixed
     */
-   private function getComputerSections($ids, $checksum, $wanted)
+   private function getComputerSections($ids, $checksum, $wanted, $complete = 1)
    {
 
       $OCS_MAP = self::getOcsMap();
@@ -88,7 +88,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $check = $value['wanted'];
          }
          $multi = $value['multi'];
-         if ($table == "accountinfo") {
+         if ($complete && $table == "accountinfo") {
             if (self::WANTED_ACCOUNTINFO & $wanted) {
                $query = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                $request = $this->db->query($query);
@@ -128,7 +128,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                   }
                }
             }
-         } elseif ($table == "softwares") {
+         } elseif ($complete && $table == "softwares") {
             if ($check & $checksum) {
 
                if (self::WANTED_DICO_SOFT & $wanted) {
@@ -177,7 +177,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                   $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
                }
             }
-         } elseif ($table == "registry") {
+         } elseif ($complete && $table == "registry") {
 
             if ($check & $checksum) {
                $query = "SELECT `registry`.`NAME` AS name,
@@ -197,7 +197,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                   }
                }
             }
-         } elseif ($table == "securitycenter") {
+         } elseif ($complete && $table == "securitycenter") {
 
             if ($check & $checksum && TableExists("securitycenter")) {
                $query = "SELECT `securitycenter`.`SCV` AS scv,
@@ -270,7 +270,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     * @param $ids
     * @return array
     */
-   private function getSnmpSections($ids)
+   private function getSnmpSections($ids, $complete = 1)
    {
 
       $snmp = array();
@@ -281,98 +281,98 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
       while ($snmp_request = $this->db->fetch_assoc($request)) {
          $snmp[$snmp_request['ID']]['META'] = $snmp_request;
       }
+      if ($complete) {
+         // Printers infos
+         $query = "SELECT * FROM `snmp_printers` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $request = $this->db->query($query);
+         while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['PRINTER'][] = $snmp_request;
+         }
 
-      // Printers infos
-      $query = "SELECT * FROM `snmp_printers` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-      $request = $this->db->query($query);
-      while ($snmp_request = $this->db->fetch_assoc($request)) {
-         $snmp[$snmp_request['SNMP_ID']]['PRINTER'][] = $snmp_request;
-      }
+         // Cartridges
+         $query = "SELECT * FROM `snmp_cartridges` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $request = $this->db->query($query);
+         while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['CARTRIDGES'][] = $snmp_request;
+         }
 
-      // Cartridges
-      $query = "SELECT * FROM `snmp_cartridges` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-      $request = $this->db->query($query);
-      while ($snmp_request = $this->db->fetch_assoc($request)) {
-         $snmp[$snmp_request['SNMP_ID']]['CARTRIDGES'][] = $snmp_request;
-      }
+         // Switches
+         $query = "SELECT * FROM `snmp_switchs` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $request = $this->db->query($query);
+         while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['SWITCH'][] = $snmp_request;
+         }
 
-      // Switches
-      $query = "SELECT * FROM `snmp_switchs` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-      $request = $this->db->query($query);
-      while ($snmp_request = $this->db->fetch_assoc($request)) {
-         $snmp[$snmp_request['SNMP_ID']]['SWITCH'][] = $snmp_request;
-      }
+         // cards
+         $query = "SELECT * FROM `snmp_cards` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $request = $this->db->query($query);
+         while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['CARDS'][] = $snmp_request;
+         }
 
-      // cards
-      $query = "SELECT * FROM `snmp_cards` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-      $request = $this->db->query($query);
-      while ($snmp_request = $this->db->fetch_assoc($request)) {
-         $snmp[$snmp_request['SNMP_ID']]['CARDS'][] = $snmp_request;
-      }
+         // Powersupplies
+         $query = "SELECT * FROM `snmp_powersupplies` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $request = $this->db->query($query);
+         while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['POWERSUPPLIES'][] = $snmp_request;
+         }
 
-      // Powersupplies
-      $query = "SELECT * FROM `snmp_powersupplies` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-      $request = $this->db->query($query);
-      while ($snmp_request = $this->db->fetch_assoc($request)) {
-         $snmp[$snmp_request['SNMP_ID']]['POWERSUPPLIES'][] = $snmp_request;
-      }
+         // Firewall
+         $query = "SELECT * FROM `snmp_firewalls` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $request = $this->db->query($query);
+         while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['FIREWALLS'][] = $snmp_request;
+         }
 
-      // Firewall
-      $query = "SELECT * FROM `snmp_firewalls` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-      $request = $this->db->query($query);
-      while ($snmp_request = $this->db->fetch_assoc($request)) {
-         $snmp[$snmp_request['SNMP_ID']]['FIREWALLS'][] = $snmp_request;
-      }
+         // Fans
+         $query = "SELECT * FROM `snmp_fans` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $request = $this->db->query($query);
+         while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['FANS'][] = $snmp_request;
+         }
 
-      // Fans
-      $query = "SELECT * FROM `snmp_fans` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-      $request = $this->db->query($query);
-      while ($snmp_request = $this->db->fetch_assoc($request)) {
-         $snmp[$snmp_request['SNMP_ID']]['FANS'][] = $snmp_request;
-      }
+         // Trays
+         $query = "SELECT * FROM `snmp_trays` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $request = $this->db->query($query);
+         while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['TRAYS'][] = $snmp_request;
+         }
 
-      // Trays
-      $query = "SELECT * FROM `snmp_trays` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-      $request = $this->db->query($query);
-      while ($snmp_request = $this->db->fetch_assoc($request)) {
-         $snmp[$snmp_request['SNMP_ID']]['TRAYS'][] = $snmp_request;
-      }
+         //memories
+         $query = "SELECT * FROM `snmp_memories` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $request = $this->db->query($query);
+         while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['MEMORIES'][] = $snmp_request;
+         }
 
-      //memories
-      $query = "SELECT * FROM `snmp_memories` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-      $request = $this->db->query($query);
-      while ($snmp_request = $this->db->fetch_assoc($request)) {
-         $snmp[$snmp_request['SNMP_ID']]['MEMORIES'][] = $snmp_request;
-      }
+         //cpus
+         $query = "SELECT * FROM `snmp_cpus` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $request = $this->db->query($query);
+         while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['CPU'][] = $snmp_request;
+         }
 
-      //cpus
-      $query = "SELECT * FROM `snmp_cpus` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-      $request = $this->db->query($query);
-      while ($snmp_request = $this->db->fetch_assoc($request)) {
-         $snmp[$snmp_request['SNMP_ID']]['CPU'][] = $snmp_request;
-      }
-      
-      //networks
-      $query = "SELECT * FROM `snmp_networks` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-      $request = $this->db->query($query);
-      while ($snmp_request = $this->db->fetch_assoc($request)) {
-         $snmp[$snmp_request['SNMP_ID']]['NETWORKS'][] = $snmp_request;
-      }
-      
-      //virtualmachines
-      $query = "SELECT * FROM `snmp_virtualmachines` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-      $request = $this->db->query($query);
-      while ($snmp_request = $this->db->fetch_assoc($request)) {
-         $snmp[$snmp_request['SNMP_ID']]['VIRTUALMACHINES'][] = $snmp_request;
-      }
-      
-      //softwares
-      $query = "SELECT * FROM `snmp_softwares` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-      $request = $this->db->query($query);
-      while ($snmp_request = $this->db->fetch_assoc($request)) {
-         $snmp[$snmp_request['SNMP_ID']]['SOFTWARES'][] = $snmp_request;
-      }
+         //networks
+         $query = "SELECT * FROM `snmp_networks` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $request = $this->db->query($query);
+         while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['NETWORKS'][] = $snmp_request;
+         }
 
+         //virtualmachines
+         $query = "SELECT * FROM `snmp_virtualmachines` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $request = $this->db->query($query);
+         while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['VIRTUALMACHINES'][] = $snmp_request;
+         }
+
+         //softwares
+         $query = "SELECT * FROM `snmp_softwares` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $request = $this->db->query($query);
+         while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['SOFTWARES'][] = $snmp_request;
+         }
+      }
       return $snmp;
 
    }
@@ -613,7 +613,13 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
          } else {
             $wanted = self::WANTED_NONE;
          }
-         $res["COMPUTERS"] = $this->getComputerSections($hardwareids, $checksum, $wanted);
+
+         $complete = 1;
+         if (isset($options['COMPLETE'])) {
+            $complete = $options['COMPLETE'];
+         }
+
+         $res["COMPUTERS"] = $this->getComputerSections($hardwareids, $checksum, $wanted, $complete);
       } else {
 
 
@@ -741,7 +747,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
       $config = $this->getConfig("GUI_REPORT_AGIN_MACH");
       $delay = $config['IVALUE'];
       $query = "SELECT id from hardware 
-                     WHERE ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) AND ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) 
+                     WHERE ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) 
+                     AND ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) 
                      AND deviceid <> '_SYSTEMGROUP_' AND deviceid <> '_DOWNLOADGROUP_'";
       $res = $this->db->query($query);
       $data = array();
@@ -1063,7 +1070,11 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 //         } else {
 //            $wanted = self::WANTED_NONE;
 //         }
-         $res["SNMP"] = $this->getSnmpSections($snmpids);
+         $complete = 1;
+         if (isset($options['COMPLETE'])) {
+            $complete = $options['COMPLETE'];
+         }
+         $res["SNMP"] = $this->getSnmpSections($snmpids, $complete);
       } else {
 
 
