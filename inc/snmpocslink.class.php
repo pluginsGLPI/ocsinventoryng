@@ -1015,14 +1015,16 @@ JAVASCRIPT;
       $id_printer = 0;
 
       if ($action == "add") {
-         $id_printer = $snmpDevice->add($input, array('unicity_error_message' => true));
+         $id_printer = $snmpDevice->add($input, array('unicity_error_message' => true,
+               '_no_history' => !$cfg_ocs['history_hardware']), $cfg_ocs['history_hardware']);
       } else {
          $id_printer = $ID;
          $input["id"] = $ID;
          if ($snmpDevice->getFromDB($id_printer)) {
             $input["entities_id"] = $snmpDevice->fields['entities_id'];
          }
-         $snmpDevice->update($input, array('unicity_error_message' => false));
+         $snmpDevice->update($input, $cfg_ocs['history_hardware'], array('unicity_error_message' => false,
+               '_no_history' => !$cfg_ocs['history_hardware']));
       }
 
 
@@ -1264,14 +1266,16 @@ JAVASCRIPT;
       }
       $id_network = 0;
       if ($action == "add") {
-         $id_network = $snmpDevice->add($input, array('unicity_error_message' => true));
+         $id_network = $snmpDevice->add($input, array('unicity_error_message' => true,
+               '_no_history' => !$cfg_ocs['history_hardware']), $cfg_ocs['history_hardware']);
       } else {
          $input["id"] = $ID;
          $id_network = $ID;
          if ($snmpDevice->getFromDB($id_network)) {
             $input["entities_id"] = $snmpDevice->fields['entities_id'];
          }
-         $snmpDevice->update($input, array('unicity_error_message' => false));
+         $snmpDevice->update($input, $cfg_ocs['history_hardware'], array('unicity_error_message' => false,
+               '_no_history' => !$cfg_ocs['history_hardware']));
       }
 
       if ($id_network > 0
@@ -1469,14 +1473,16 @@ JAVASCRIPT;
       $id_item = 0;
 
       if ($action == "add") {
-         $id_item = $snmpDevice->add($input, array('unicity_error_message' => true));
+         $id_item = $snmpDevice->add($input, array('unicity_error_message' => true,
+               '_no_history' => !$cfg_ocs['history_hardware']), $cfg_ocs['history_hardware']);
       } else {
          $input["id"] = $ID;
          $id_item = $ID;
          if ($snmpDevice->getFromDB($id_item)) {
             $input["entities_id"] = $snmpDevice->fields['entities_id'];
          }
-         $snmpDevice->update($input, array('unicity_error_message' => false));
+         $snmpDevice->update($input, $cfg_ocs['history_hardware'], array('unicity_error_message' => false,
+               '_no_history' => !$cfg_ocs['history_hardware']));
       }
       
       if ($id_item > 0
@@ -1827,7 +1833,8 @@ JAVASCRIPT;
       $id_item = 0;
 
       if ($action == "add") {
-         $id_item = $snmpDevice->add($input, array('unicity_error_message' => true));
+         $id_item = $snmpDevice->add($input, array('unicity_error_message' => true,
+               '_no_history' => !$cfg_ocs['history_hardware']), $cfg_ocs['history_hardware']);
       } else {
          $input["id"] = $ID;
          $id_item = $ID;
@@ -1835,7 +1842,8 @@ JAVASCRIPT;
             $input["entities_id"] = $snmpDevice->fields['entities_id'];
          }
             
-         $snmpDevice->update($input, array('unicity_error_message' => false));
+         $snmpDevice->update($input, $cfg_ocs['history_hardware'], array('unicity_error_message' => false,
+               '_no_history' => !$cfg_ocs['history_hardware']));
       }
 
       if ($id_item > 0
