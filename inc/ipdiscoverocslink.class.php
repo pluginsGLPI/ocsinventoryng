@@ -987,7 +987,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
 
          $device = new $ipDiscoveryObject["glpiItemType"]();
 
-         $id = $device->add($input);
+         $id = $device->add($input, array(), $cfg_ocs['history_devices']);
 
          //ipdiscover link
          $date = date("Y-m-d H:i:s");
@@ -1004,7 +1004,6 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             'mac' => $mac,
             'items_id' => $id,
             'itemtype' => $glpiType,
-            '_no_history' => !$cfg_ocs['history_network'],
             'instantiation_type' => "NetworkPortEthernet",
             "entities_id" => $ipDiscoveryObject["entity"],
             "NetworkName__ipaddresses" => array("-100" => $ip),

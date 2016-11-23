@@ -286,7 +286,7 @@ function plugin_ocsinventoryng_install()
                 `itemtype` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
                 `macaddress` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
                 `last_update` DATETIME COLLATE utf8_unicode_ci DEFAULT NULL,
-                `address` VARCHAR(40) COLLATE utf8_unicode_ci DEFAULT NULL,
+                `subnet` VARCHAR(40) COLLATE utf8_unicode_ci DEFAULT NULL,
                 `plugin_ocsinventoryng_ocsservers_id` INT(11) NOT NULL DEFAULT '0',
                  PRIMARY KEY (`id`)
                  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";

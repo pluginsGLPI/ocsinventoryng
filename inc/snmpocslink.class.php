@@ -1015,8 +1015,7 @@ JAVASCRIPT;
       $id_printer = 0;
 
       if ($action == "add") {
-         $id_printer = $snmpDevice->add($input, array('unicity_error_message' => true,
-               '_no_history' => !$cfg_ocs['history_hardware']), $cfg_ocs['history_hardware']);
+         $id_printer = $snmpDevice->add($input, array('unicity_error_message' => true), $cfg_ocs['history_hardware']);
       } else {
          $id_printer = $ID;
          $input["id"] = $ID;
@@ -1069,8 +1068,7 @@ JAVASCRIPT;
                'size' => $ocsSnmp['MEMORIES'][0]['CAPACITY'],
                'entities_id' => $entity,
                'devicememories_id' => $device_id,
-               'is_dynamic' => 1,
-               '_no_history' => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+               'is_dynamic' => 1), array(), $cfg_ocs['history_devices']);
          }
       }
 
@@ -1100,7 +1098,6 @@ JAVASCRIPT;
                'mac' => $mac,
                'items_id' => $id_printer,
                'itemtype' => $itemtype,
-               '_no_history' => !$cfg_ocs['history_network'],
                'instantiation_type' => "NetworkPortEthernet",
                "entities_id" => $entity,
                "NetworkName__ipaddresses" => array("-100" => $ip),
@@ -1266,8 +1263,7 @@ JAVASCRIPT;
       }
       $id_network = 0;
       if ($action == "add") {
-         $id_network = $snmpDevice->add($input, array('unicity_error_message' => true,
-               '_no_history' => !$cfg_ocs['history_hardware']), $cfg_ocs['history_hardware']);
+         $id_network = $snmpDevice->add($input, array('unicity_error_message' => true), $cfg_ocs['history_hardware']);
       } else {
          $input["id"] = $ID;
          $id_network = $ID;
@@ -1326,8 +1322,7 @@ JAVASCRIPT;
                   'entities_id' => $entity,
                   'serial' => $serial,
                   'devicepowersupplies_id' => $power_id,
-                  'is_dynamic' => 1,
-                  '_no_history' => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                  'is_dynamic' => 1), array(), $cfg_ocs['history_devices']);
             }
          }
 
@@ -1372,8 +1367,7 @@ JAVASCRIPT;
                   'itemtype' => $itemtype,
                   'entities_id' => $entity,
                   'devicepcis_id' => $device_id,
-                  'is_dynamic' => 1,
-                  '_no_history' => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                  'is_dynamic' => 1), array(), $cfg_ocs['history_devices']);
             }
          }
       }
@@ -1401,7 +1395,6 @@ JAVASCRIPT;
                'mac' => $mac,
                'items_id' => $id_network,
                'itemtype' => $itemtype,
-               '_no_history' => !$cfg_ocs['history_network'],
                'instantiation_type' => "NetworkPortEthernet",
                "entities_id" => $entity,
                "NetworkName__ipaddresses" => array("-100" => $ip),
@@ -1473,8 +1466,7 @@ JAVASCRIPT;
       $id_item = 0;
 
       if ($action == "add") {
-         $id_item = $snmpDevice->add($input, array('unicity_error_message' => true,
-               '_no_history' => !$cfg_ocs['history_hardware']), $cfg_ocs['history_hardware']);
+         $id_item = $snmpDevice->add($input, array('unicity_error_message' => true), $cfg_ocs['history_hardware']);
       } else {
          $input["id"] = $ID;
          $id_item = $ID;
@@ -1525,8 +1517,7 @@ JAVASCRIPT;
                'size' => $ocsSnmp['MEMORIES'][0]['CAPACITY'],
                'entities_id' => $entity,
                'devicememories_id' => $device_id,
-               'is_dynamic' => 1,
-               '_no_history' => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+               'is_dynamic' => 1), array(), $cfg_ocs['history_devices']);
          }
       }
       
@@ -1582,8 +1573,7 @@ JAVASCRIPT;
                   'mac' => $mac,
                   'entities_id' => $entity,
                   'devicenetworkcards_id' => $device_id,
-                  'is_dynamic' => 1,
-                  '_no_history' => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                  'is_dynamic' => 1), array(), $cfg_ocs['history_devices']);
             }
          }
       }
@@ -1655,8 +1645,7 @@ JAVASCRIPT;
                   'frequency' => $speed,
                   'entities_id' => $entity,
                   'deviceprocessors_id' => $device_id,
-                  'is_dynamic' => 1,
-                  '_no_history' => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                  'is_dynamic' => 1), array(), $cfg_ocs['history_devices']);
             }
          }
       }
@@ -1707,9 +1696,6 @@ JAVASCRIPT;
             }
             if (!$id) {
                $virtualmachine->reset();
-               if (!$cfg_ocs['history_vm']) {
-                  $vm['_no_history'] = true;
-               }
                $id_vm = $virtualmachine->add($vm, array(), $cfg_ocs['history_vm']);
                if ($id_vm) {
                   $already_processed[] = $id_vm;
@@ -1763,7 +1749,6 @@ JAVASCRIPT;
                'mac' => $mac,
                'items_id' => $id_item,
                'itemtype' => $itemtype,
-               '_no_history' => !$cfg_ocs['history_network'],
                'instantiation_type' => "NetworkPortEthernet",
                "entities_id" => $entity,
                "NetworkName__ipaddresses" => array("-100" => $ip),
@@ -1833,8 +1818,7 @@ JAVASCRIPT;
       $id_item = 0;
 
       if ($action == "add") {
-         $id_item = $snmpDevice->add($input, array('unicity_error_message' => true,
-               '_no_history' => !$cfg_ocs['history_hardware']), $cfg_ocs['history_hardware']);
+         $id_item = $snmpDevice->add($input, array('unicity_error_message' => true), $cfg_ocs['history_hardware']);
       } else {
          $input["id"] = $ID;
          $id_item = $ID;
@@ -1870,7 +1854,6 @@ JAVASCRIPT;
                'mac' => $mac,
                'items_id' => $id_item,
                'itemtype' => $itemtype,
-               '_no_history' => !$cfg_ocs['history_network'],
                'instantiation_type' => "NetworkPortEthernet",
                "entities_id" => $entity,
                "NetworkName__ipaddresses" => array("-100" => $ip),

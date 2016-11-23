@@ -4304,8 +4304,7 @@ JAVASCRIPT;
                                          'itemtype'                                 => 'Computer',
                                          'plugin_ocsinventoryng_devicebiosdatas_id' => $bios_id,
                                          'is_dynamic'                               => 1,
-                                         'entities_id'                              => $entities_id,
-                                         '_no_history'                              => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                                         'entities_id'                              => $entities_id), array(), $cfg_ocs['history_devices']);
                }
             } else {
                $tmp = array_search(stripslashes($prevalue . $bios["designation"]), $import_device);
@@ -4348,16 +4347,14 @@ JAVASCRIPT;
                                                'entities_id'       => $entities_id,
                                                'devicememories_id' => $ram_id,
                                                'size'              => $line2["CAPACITY"],
-                                               'is_dynamic'        => 1,
-                                               '_no_history'       => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                                               'is_dynamic'        => 1), array(), $cfg_ocs['history_devices']);
                      }
                   } else {
                      $tmp = array_search(stripslashes($prevalue . $ram["designation"]), $import_device);
                      list($type, $id) = explode(self::FIELD_SEPARATOR, $tmp);
 
                      $CompDevice->update(array('id'          => $id,
-                                               'size'        => $line2["CAPACITY"],
-                                               '_no_history' => !$cfg_ocs['history_devices']), $cfg_ocs['history_devices']);
+                                               'size'        => $line2["CAPACITY"]), $cfg_ocs['history_devices']);
                      unset($import_device[$tmp]);
                   }
                }
@@ -4395,16 +4392,14 @@ JAVASCRIPT;
                                                'deviceharddrives_id' => $dd_id,
                                                'serial'              => $line2["SERIALNUMBER"],
                                                'capacity'            => $line2["DISKSIZE"],
-                                               'is_dynamic'          => 1,
-                                               '_no_history'         => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                                               'is_dynamic'          => 1), array(), $cfg_ocs['history_devices']);
                      }
                   } else {
                      $tmp = array_search(stripslashes($prevalue . $dd["designation"]), $import_device);
                      list($type, $id) = explode(self::FIELD_SEPARATOR, $tmp);
                      $CompDevice->update(array('id'          => $id,
                                                'capacity'    => $line2["DISKSIZE"],
-                                               'serial'      => $line2["SERIALNUMBER"],
-                                               '_no_history' => !$cfg_ocs['history_devices']), $cfg_ocs['history_devices']);
+                                               'serial'      => $line2["SERIALNUMBER"]), $cfg_ocs['history_devices']);
                      unset($import_device[$tmp]);
                   }
                }
@@ -4436,8 +4431,7 @@ JAVASCRIPT;
                                                'itemtype'        => 'Computer',
                                                'entities_id'     => $entities_id,
                                                'devicedrives_id' => $stor_id,
-                                               'is_dynamic'      => 1,
-                                               '_no_history'     => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                                               'is_dynamic'      => 1), array(), $cfg_ocs['history_devices']);
                      }
                   } else {
                      $tmp = array_search(stripslashes($prevalue . $stor["designation"]), $import_device);
@@ -4468,8 +4462,7 @@ JAVASCRIPT;
                                                'itemtype'      => 'Computer',
                                                'entities_id'   => $entities_id,
                                                'devicepcis_id' => $mdm_id,
-                                               'is_dynamic'    => 1,
-                                               '_no_history'   => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                                               'is_dynamic'    => 1), array(), $cfg_ocs['history_devices']);
                      }
                   } else {
                      $tmp = array_search(stripslashes($prevalue . $mdm["designation"]), $import_device);
@@ -4504,8 +4497,7 @@ JAVASCRIPT;
                                                   'itemtype'      => 'Computer',
                                                   'entities_id'   => $entities_id,
                                                   'devicepcis_id' => $port_id,
-                                                  'is_dynamic'    => 1,
-                                                  '_no_history'   => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                                                  'is_dynamic'    => 1), array(), $cfg_ocs['history_devices']);
                         }
                      } else {
                         $tmp = array_search(stripslashes($prevalue . $port["designation"]), $import_device);
@@ -4539,8 +4531,7 @@ JAVASCRIPT;
                                                   'itemtype'      => 'Computer',
                                                   'entities_id'   => $entities_id,
                                                   'devicepcis_id' => $pci_id,
-                                                  'is_dynamic'    => 1,
-                                                  '_no_history'   => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                                                  'is_dynamic'    => 1), array(), $cfg_ocs['history_devices']);
                         }
                      } else {
                         $id = array_search(stripslashes($prevalue . $pci["designation"]), $import_device);
@@ -4576,15 +4567,13 @@ JAVASCRIPT;
                                             'entities_id'         => $entities_id,
                                             'deviceprocessors_id' => $proc_id,
                                             'frequency'           => $line2["SPEED"],
-                                            'is_dynamic'          => 1,
-                                            '_no_history'         => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                                            'is_dynamic'          => 1), array(), $cfg_ocs['history_devices']);
                   }
                } else {
                   $tmp = array_search(stripslashes($prevalue . $processor["designation"]), $import_device);
                   list($type, $id) = explode(self::FIELD_SEPARATOR, $tmp);
                   $CompDevice->update(array('id'          => $id,
-                                            'frequency'   => $line2["SPEED"],
-                                            '_no_history' => !$cfg_ocs['history_devices']), $cfg_ocs['history_devices']);
+                                            'frequency'   => $line2["SPEED"]), $cfg_ocs['history_devices']);
                   unset($import_device[$tmp]);
                }
             }
@@ -4617,15 +4606,13 @@ JAVASCRIPT;
                                                'entities_id'           => $entities_id,
                                                'devicegraphiccards_id' => $video_id,
                                                'memory'                => $line2["MEMORY"],
-                                               'is_dynamic'            => 1,
-                                               '_no_history'           => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                                               'is_dynamic'            => 1), array(), $cfg_ocs['history_devices']);
                      }
                   } else {
                      $tmp = array_search(stripslashes($prevalue . $video["designation"]), $import_device);
                      list($type, $id) = explode(self::FIELD_SEPARATOR, $tmp);
                      $CompDevice->update(array('id'          => $id,
-                                               'memory'      => $line2["MEMORY"],
-                                               '_no_history' => !$cfg_ocs['history_devices']), $cfg_ocs['history_devices']);
+                                               'memory'      => $line2["MEMORY"]), $cfg_ocs['history_devices']);
                      unset($import_device[$tmp]);
                   }
                }
@@ -4655,8 +4642,7 @@ JAVASCRIPT;
                                                'itemtype'            => 'Computer',
                                                'entities_id'         => $entities_id,
                                                'devicesoundcards_id' => $snd_id,
-                                               'is_dynamic'          => 1,
-                                               '_no_history'         => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                                               'is_dynamic'          => 1), array(), $cfg_ocs['history_devices']);
                      }
                   } else {
                      $id = array_search(stripslashes($prevalue . $snd["designation"]), $import_device);
@@ -4685,8 +4671,7 @@ JAVASCRIPT;
                                          'devicemotherboards_id' => $devicemotherboards_id,
                                          'is_dynamic'            => 1,
                                          'serial'                => $serial,
-                                         'entities_id'           => $entities_id,
-                                         '_no_history'           => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                                         'entities_id'           => $entities_id), array(), $cfg_ocs['history_devices']);
                }
             } else {
                $tmp = array_search(stripslashes($prevalue . $mb["designation"]), $import_device);
@@ -4720,8 +4705,7 @@ JAVASCRIPT;
                                                'itemtype'          => 'Computer',
                                                'entities_id'       => $entities_id,
                                                'devicecontrols_id' => $ctrl_id,
-                                               'is_dynamic'        => 1,
-                                               '_no_history'       => !$cfg_ocs['history_devices']), array(), $cfg_ocs['history_devices']);
+                                               'is_dynamic'        => 1), array(), $cfg_ocs['history_devices']);
                      }
                   } else {
                      $id = array_search(stripslashes($prevalue . $ctrl["designation"]), $import_device);
@@ -5375,7 +5359,7 @@ JAVASCRIPT;
     * @param $comments
     * @return int : inserted version id.
     */
-   static function importVersion($software, $version, $comments)
+   static function importVersion($cfg_ocs, $software, $version, $comments)
    {
       global $DB;
 
@@ -5398,7 +5382,7 @@ JAVASCRIPT;
          $input["softwares_id"] = $software;
          $input["name"] = $version;
          $input["comment"] = $comments;
-         $isNewVers = $vers->add($input);
+         $isNewVers = $vers->add($input, array(), $cfg_ocs['history_software']);
       }
 
       return ($isNewVers);
@@ -5458,9 +5442,6 @@ JAVASCRIPT;
             }
             if (!$id) {
                $virtualmachine->reset();
-               if (!$cfg_ocs['history_vm']) {
-                  $vm['_no_history'] = true;
-               }
                $id_vm = $virtualmachine->add($vm, array(), $cfg_ocs['history_vm']);
                if ($id_vm) {
                   $already_processed[] = $id_vm;
@@ -5576,9 +5557,6 @@ JAVASCRIPT;
 
                   if (!$id) {
                      $d->reset();
-                     if (!$cfg_ocs['history_drives']) {
-                        $disk['_no_history'] = true;
-                     }
                      $disk['is_dynamic'] = 1;
                      $id_disk = $d->add($disk, array(), $cfg_ocs['history_drives']);
                      $already_processed[] = $id_disk;
@@ -5596,7 +5574,6 @@ JAVASCRIPT;
                            $toupdate['totalsize'] = $disk['totalsize'];
                            $toupdate['freesize'] = $disk['freesize'];
                            $toupdate['filesystems_id'] = $disk['filesystems_id'];
-                           $toupdate['_no_history'] = !$cfg_ocs['history_drives'];
                            $d->update($toupdate, $cfg_ocs['history_drives']);
                         }
                         $already_processed[] = $id;
@@ -5647,7 +5624,6 @@ JAVASCRIPT;
          $tmp = new Computer_SoftwareVersion();
          return $tmp->add(array('computers_id'        => $computers_id,
                                 'softwareversions_id' => $softwareversions_id,
-                                '_no_history'         => !$dohistory,
                                 'is_dynamic'          => 1,
                                 'is_deleted'          => 0), array(), $dohistory);
       }
@@ -5798,7 +5774,7 @@ JAVASCRIPT;
                   //------------------------------------------------------------------------//
                   $isNewSoft = $soft->addOrRestoreFromTrash($modified_name, $manufacturer, $target_entity, '', ($entity != $target_entity), $is_helpdesk_visible);
                   //Import version for this software
-                  $versionID = self::importVersion($isNewSoft, $modified_version, $version_comments);
+                  $versionID = self::importVersion($cfg_ocs, $isNewSoft, $modified_version, $version_comments);
                   //Install license for this machine
                   $instID = self::installSoftwareVersion($computers_id, $versionID, $cfg_ocs['history_software']);
                }
@@ -6788,7 +6764,7 @@ JAVASCRIPT;
                         $input["states_id"] = $cfg_ocs["states_id_default"];
                      }
                      $input["entities_id"] = $entity;
-                     $id_monitor = $m->add($input);
+                     $id_monitor = $m->add($input, array(), $cfg_ocs['history_monitor']);
                   }
                } else if ($cfg_ocs["import_monitor"] >= 2) {
                   //Config says : manage monitors as single units
@@ -6844,7 +6820,7 @@ JAVASCRIPT;
                         $input["states_id"] = $cfg_ocs["states_id_default"];
                      }
                      $input["entities_id"] = $entity;
-                     $id_monitor = $m->add($input);
+                     $id_monitor = $m->add($input, array(), $cfg_ocs['history_monitor']);
                   }
                } // ($cfg_ocs["import_monitor"] >= 2)
 
@@ -6853,7 +6829,6 @@ JAVASCRIPT;
                   $connID = $conn->add(array('computers_id' => $computers_id,
                                              'itemtype'     => 'Monitor',
                                              'items_id'     => $id_monitor,
-                                             '_no_history'  => !$cfg_ocs['history_monitor'],
                                              'is_dynamic'   => 1,
                                              'is_deleted'   => 0), array(), $cfg_ocs['history_monitor']);
                   $already_processed[] = $id_monitor;
@@ -7045,7 +7020,7 @@ JAVASCRIPT;
                            $input["states_id"] = $cfg_ocs["states_id_default"];
                         }
                         $input["entities_id"] = $entity;
-                        $id_printer = $p->add($input);
+                        $id_printer = $p->add($input, array(), $cfg_ocs['history_printer']);
                      }
                   } else if ($management_process == 2) {
                      //Config says : manage printers as single units
@@ -7058,7 +7033,7 @@ JAVASCRIPT;
                      }
                      $input["entities_id"] = $entity;
                      $input['is_dynamic'] = 1;
-                     $id_printer = $p->add($input);
+                     $id_printer = $p->add($input, array(), $cfg_ocs['history_printer']);
                   }
 
                   if ($id_printer) {
@@ -7067,8 +7042,7 @@ JAVASCRIPT;
                      $connID = $conn->add(array('computers_id' => $computers_id,
                                                 'itemtype'     => 'Printer',
                                                 'items_id'     => $id_printer,
-                                                'is_dynamic'   => 1,
-                                                '_no_history'  => !$cfg_ocs['history_printer'],), array(), $cfg_ocs['history_printer']);
+                                                'is_dynamic'   => 1), array(), $cfg_ocs['history_printer']);
                      //Update column "is_deleted" set value to 0 and set status to default
                      $input = array();
                      $input["id"] = $id_printer;
@@ -7212,7 +7186,7 @@ JAVASCRIPT;
                         $input["states_id"] = $cfg_ocs["states_id_default"];
                      }
                      $input["entities_id"] = $entity;
-                     $id_periph = $p->add($input);
+                     $id_periph = $p->add($input, array(), $cfg_ocs['history_peripheral']);
                   }
                } else if ($cfg_ocs["import_periph"] == 2) {
                   //Config says : manage peripherals as single units
@@ -7223,7 +7197,7 @@ JAVASCRIPT;
                      $input["states_id"] = $cfg_ocs["states_id_default"];
                   }
                   $input["entities_id"] = $entity;
-                  $id_periph = $p->add($input);
+                  $id_periph = $p->add($input, array(), $cfg_ocs['history_peripheral']);
                }
 
                if ($id_periph) {
@@ -7232,7 +7206,6 @@ JAVASCRIPT;
                   if ($connID = $conn->add(array('computers_id' => $computers_id,
                                                  'itemtype'     => 'Peripheral',
                                                  'items_id'     => $id_periph,
-                                                 '_no_history'  => !$cfg_ocs['history_peripheral'],
                                                  'is_dynamic'   => 1), array(), $cfg_ocs['history_peripheral'])
                   ) {
                      //Update column "is_deleted" set value to 0 and set status to default
