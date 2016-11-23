@@ -973,7 +973,7 @@ JAVASCRIPT;
          || ($action == "update" && $cfg_ocs['importsnmp_name'] && !$linked)
          || ($action == "update" && $cfg_ocs['linksnmp_name'] && $linked)
       ) {
-         $input["name"] = $ocsSnmp['PRINTER'][0]['NAME'];
+         $input["name"] = $ocsSnmp['META']['NAME'];
       }
       if (($cfg_ocs['importsnmp_contact'] && $action == "add")
          || ($cfg_ocs['linksnmp_contact'] && $linked)
@@ -1035,8 +1035,8 @@ JAVASCRIPT;
          && count($ocsSnmp['MEMORIES']) > 0
          && $ocsSnmp['MEMORIES'][0]['CAPACITY'] > 0
       ) {
-
-         $dev['designation'] = __('Printer Memory', 'ocsinventoryng');
+         
+         $dev['designation'] = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep(__("Printer Memory", 'ocsinventoryng')));
 
          $item = new $itemtype();
          $entity = (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0);
