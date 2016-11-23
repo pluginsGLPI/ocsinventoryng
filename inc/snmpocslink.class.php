@@ -1019,6 +1019,9 @@ JAVASCRIPT;
       } else {
          $id_printer = $ID;
          $input["id"] = $ID;
+         if ($snmpDevice->getFromDB($id_printer)) {
+            $input["entities_id"] = $snmpDevice->fields['entities_id'];
+         }
          $snmpDevice->update($input, array('unicity_error_message' => false));
       }
 
@@ -1265,6 +1268,9 @@ JAVASCRIPT;
       } else {
          $input["id"] = $ID;
          $id_network = $ID;
+         if ($snmpDevice->getFromDB($id_network)) {
+            $input["entities_id"] = $snmpDevice->fields['entities_id'];
+         }
          $snmpDevice->update($input, array('unicity_error_message' => false));
       }
 
@@ -1467,6 +1473,9 @@ JAVASCRIPT;
       } else {
          $input["id"] = $ID;
          $id_item = $ID;
+         if ($snmpDevice->getFromDB($id_item)) {
+            $input["entities_id"] = $snmpDevice->fields['entities_id'];
+         }
          $snmpDevice->update($input, array('unicity_error_message' => false));
       }
       
@@ -1822,6 +1831,10 @@ JAVASCRIPT;
       } else {
          $input["id"] = $ID;
          $id_item = $ID;
+         if ($snmpDevice->getFromDB($id_item)) {
+            $input["entities_id"] = $snmpDevice->fields['entities_id'];
+         }
+            
          $snmpDevice->update($input, array('unicity_error_message' => false));
       }
 

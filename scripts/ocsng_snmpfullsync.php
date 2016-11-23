@@ -246,9 +246,26 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
          'IDS' => $already_linked_ocs_ids,
       )
    ));
+
    //Unset SNMP objects not updated by OCS
    foreach ($ocsResult['SNMP'] as $ID => $snmpids) {
-      if ($snmpids['META']['LASTDATE'] < date('Y-m-d H:m:s')) {
+      
+      
+      $last_update = date('Y-m-d H:m:s');
+      //Compute lastest synchronization date
+      $query = "SELECT `last_update`
+                FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
+                WHERE `ocs_id` = '$ID'";
+
+      if ($result = $DB->query($query)) {
+         if ($DB->numrows($result) > 0) {
+            if ($DB->result($result, 0, 0) != '') {
+               $last_update = $DB->result($result, 0, 0);
+            }
+         }
+      }
+   
+      if ($snmpids['META']['LASTDATE'] < $last_update) {
          if (($key = array_search($ID, $already_linked_ocs_ids)) !== false) {
             unset($already_linked_ocs_ids[$key]);
          }
@@ -280,6 +297,7 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
 //   $notimport = new PluginOcsinventoryngNotimportedcomputer();
 
 //   $i = 0;
+
    foreach ($already_linked_ids as $ID) {
 
       /* TODO create thread & update it ?
