@@ -1111,7 +1111,16 @@ JAVASCRIPT;
       Html::closeForm();
       echo "</div>";
    }
+   
+   /**
+    *
+    */
+   function post_getEmpty()
+   {
 
+      $this->fields['use_locks'] = 1;
+   }
+   
    /**
     * Print simple ocs config form (database part)
     *
@@ -1224,7 +1233,7 @@ JAVASCRIPT;
 
       $this->showFormButtons($options);
    }
-
+   
    /**
     * check is one of the servers use_mass_import sync mode
     *
