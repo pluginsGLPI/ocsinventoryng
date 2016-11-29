@@ -871,7 +871,7 @@ function plugin_ocsinventoryng_install()
       && FieldExists('glpi_plugin_ocsinventoryng_ipdiscoverocslinks', 'address')
    ) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks` 
-               ADD CHANGE `address` `subnet` VARCHAR(40) COLLATE utf8_unicode_ci DEFAULT NULL;";
+               CHANGE `address` `subnet` VARCHAR(40) COLLATE utf8_unicode_ci DEFAULT NULL;";
       $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_ipdiscoverocslinks change subnet");
    }
    
