@@ -39,11 +39,11 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM
 
    static $snmptypes = array('Computer', 'NetworkEquipment', 'Peripheral', 'Phone', 'Printer');
    static $rightname = "plugin_ocsinventoryng";
-
-   const CARTRIDGE_COLOR_CYAN = array('cyan');
-   const CARTRIDGE_COLOR_MAGENTA = array('magenta');
-   const CARTRIDGE_COLOR_YELLOW = array('yellow', 'jaune');
-   const CARTRIDGE_COLOR_BLACK = array('black', 'noir');
+   /** @const */
+   private static $CARTRIDGE_COLOR_CYAN = array('cyan');
+   private static $CARTRIDGE_COLOR_MAGENTA = array('magenta');
+   private static $CARTRIDGE_COLOR_YELLOW = array('yellow', 'jaune');
+   private static $CARTRIDGE_COLOR_BLACK = array('black', 'noir');
    const OTHER_DATA = 'other';
 
    /**
@@ -702,10 +702,10 @@ JAVASCRIPT;
                      }
                      if (count($cartridges) > 0) {
 
-                        $colors = array(self::CARTRIDGE_COLOR_BLACK,
-                           self::CARTRIDGE_COLOR_CYAN,
-                           self::CARTRIDGE_COLOR_MAGENTA,
-                           self::CARTRIDGE_COLOR_YELLOW);
+                        $colors = array(self::$CARTRIDGE_COLOR_BLACK,
+                           self::$CARTRIDGE_COLOR_CYAN,
+                           self::$CARTRIDGE_COLOR_MAGENTA,
+                           self::$CARTRIDGE_COLOR_YELLOW);
 
                         echo "<tr class='tab_bg_1'><th colspan='4'>" . __('Cartridges informations', 'ocsinventoryng') . "</th>";
                         foreach ($cartridges as $cartridge) {
