@@ -150,7 +150,7 @@ function plugin_version_ocsinventoryng()
 {
 
    return array('name' => "OCS Inventory NG",
-      'version' => '1.3.1',
+      'version' => '1.3.2',
       'author' => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
       'license' => 'GPLv2+',
       'homepage' => 'https://github.com/pluginsGLPI/ocsinventoryng',

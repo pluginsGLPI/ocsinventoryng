@@ -59,8 +59,11 @@ abstract class PluginOcsinventoryngOcsClient
    const WANTED_ACCOUNTINFO = 0x00001;
    const WANTED_DICO_SOFT = 0x00002;
    const WANTED_ALL = 0x00003;
-   const CHECKSUM_SECURITY = 0x00004;
-
+   const PLUGINS_NONE = 0x00000;
+   const PLUGINS_SECURITY = 0x00001;
+   const PLUGINS_UPTIME = 0x00002;
+   const PLUGINS_ALL = 0x00010;
+   
    private $id;
 
    /**
@@ -418,7 +421,11 @@ abstract class PluginOcsinventoryngOcsClient
             'multi' => 1,
          ),
          'securitycenter' => array(
-            'checksum' => self::CHECKSUM_SECURITY,
+            'plugins' => self::PLUGINS_SECURITY,
+            'multi' => 1,
+         ),
+         'uptime' => array(
+            'plugins' => self::PLUGINS_UPTIME,
             'multi' => 1,
          ),
          'controllers' => array(
@@ -528,6 +535,20 @@ abstract class PluginOcsinventoryngOcsClient
       }
 
       return $wanted;
+   }
+   
+   public function getPluginsForTables($tables)
+   {
+      $ocsMap = $this->getOcsMap();
+      $plugins = self::PLUGINS_NONE;
+
+      foreach ($tables as $tableName) {
+         if (isset($ocsMap[$tableName]['plugins'])) {
+            $plugins |= $ocsMap[$tableName]['plugins'];
+         }
+      }
+
+      return $plugins;
    }
 
    /**

@@ -36,7 +36,7 @@ function plugin_ocsinventoryng_install()
 
    include_once(GLPI_ROOT . "/plugins/ocsinventoryng/inc/profile.class.php");
 
-   $migration = new Migration(130);
+   $migration = new Migration(132);
 
    if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers_profiles")
       && !TableExists("glpi_plugin_ocsinventoryng_ocsservers")
@@ -44,7 +44,7 @@ function plugin_ocsinventoryng_install()
    ) {
 
       $install = true;
-      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.3.0-empty.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.3.2-empty.sql");
 
       $migration->createRule(array('sub_type' => 'RuleImportEntity',
          'entities_id' => 0,
@@ -873,6 +873,17 @@ function plugin_ocsinventoryng_install()
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks` 
                CHANGE `address` `subnet` VARCHAR(40) COLLATE utf8_unicode_ci DEFAULT NULL;";
       $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_ipdiscoverocslinks change subnet");
+   }
+   
+   /**/
+   
+   /*1.3.2*/
+   if (TableExists('glpi_plugin_ocsinventoryng_ocslinks')
+      && !FieldExists('glpi_plugin_ocsinventoryng_ocslinks', 'uptime')
+   ) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocslinks` 
+               ADD `uptime` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL;";
+      $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_ocslinks add uptime");
    }
    
    /**/

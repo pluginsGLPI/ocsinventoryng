@@ -71,7 +71,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     * @param $wanted
     * @return mixed
     */
-   private function getComputerSections($ids, $checksum, $wanted, $complete = 1)
+   private function getComputerSections($ids, $checksum, $wanted, $plugins, $complete = 1)
    {
 
       $OCS_MAP = self::getOcsMap();
@@ -84,12 +84,14 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
          }
          if (isset($value['checksum'])) {
             $check = $value['checksum'];
-         } else {
+         } elseif (isset($value['wanted'])) {
             $check = $value['wanted'];
+         } elseif (isset($value['plugins'])) {
+            $check = $value['plugins'];
          }
          $multi = $value['multi'];
-         if ($complete && $table == "accountinfo") {
-            if (self::WANTED_ACCOUNTINFO & $wanted) {
+         if ($table == "accountinfo") {
+            if ($wanted && (self::WANTED_ACCOUNTINFO  == $check || $complete > 0)) {
                $query = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                $request = $this->db->query($query);
                while ($accountinfo = $this->db->fetch_assoc($request)) {
@@ -128,8 +130,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                   }
                }
             }
-         } elseif ($complete && $table == "softwares") {
-            if ($check & $checksum) {
+         } elseif ($table == "softwares") {
+            if ($check && ($checksum  == $check || $complete > 0)) {
 
                if (self::WANTED_DICO_SOFT & $wanted) {
                   $query = "SELECT
@@ -177,9 +179,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                   $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
                }
             }
-         } elseif ($complete && $table == "registry") {
+         } elseif ($table == "registry") {
 
-            if ($check & $checksum) {
+            if ($check && ($checksum  == $check || $complete > 0)) {
                $query = "SELECT `registry`.`NAME` AS name,
                           `registry`.`REGVALUE` AS regvalue,
                           `registry`.`HARDWARE_ID` AS HARDWARE_ID,
@@ -197,9 +199,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                   }
                }
             }
-         } elseif ($complete && $table == "securitycenter") {
-
-            if ($check & $checksum && TableExists("securitycenter")) {
+         } elseif ($table == "securitycenter") {
+               
+            if ($check && ($plugins == $check || $plugins == self::PLUGINS_ALL || $complete > 0)) {
                $query = "SELECT `securitycenter`.`SCV` AS scv,
                           `securitycenter`.`CATEGORY` AS category,
                           `securitycenter`.`HARDWARE_ID` AS HARDWARE_ID,
@@ -216,6 +218,22 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                      $computers[$av['HARDWARE_ID']][strtoupper($table)][] = $av;
                   } else {
                      $computers[$av['HARDWARE_ID']][strtoupper($table)] = $av;
+                  }
+               }
+            }
+         } elseif ($table == "uptime") {
+               
+            if ($check && ($plugins == $check || $plugins == self::PLUGINS_ALL || $complete > 0)) {
+               $query = "SELECT `uptime`.`TIME` AS time,
+                          `uptime`.`HARDWARE_ID` AS HARDWARE_ID
+                   FROM `uptime`
+                   WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+               $request = $this->db->query($query);
+               while ($up = $this->db->fetch_assoc($request)) {
+                  if ($multi) {
+                     $computers[$up['HARDWARE_ID']][strtoupper($table)][] = $up;
+                  } else {
+                     $computers[$up['HARDWARE_ID']][strtoupper($table)] = $up;
                   }
                }
             }
@@ -237,7 +255,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                $computers[$meta['ID']]["META"]["UUID"] = $meta["UUID"];
             }
 
-            if ($check & $checksum) {
+            if ($check && $checksum) {
                $query = "SELECT * FROM `" . $table . "` WHERE `ID` IN (" . implode(',', $ids) . ")";
                $request = $this->db->query($query);
                while ($hardware = $this->db->fetch_assoc($request)) {
@@ -249,7 +267,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                }
             }
          } else {
-            if ($check & $checksum) {
+            if ($check && ($checksum  == $check || $complete > 0)) {
                $query = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                $request = $this->db->query($query);
                while ($computer = $this->db->fetch_assoc($request)) {
@@ -613,13 +631,19 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
          } else {
             $wanted = self::WANTED_NONE;
          }
+         
+         if (isset($options['DISPLAY']['PLUGINS'])) {
+            $plugins = $options['DISPLAY']['PLUGINS'];
+         } else {
+            $plugins = self::PLUGINS_NONE;
+         }
 
          $complete = 1;
          if (isset($options['COMPLETE'])) {
             $complete = $options['COMPLETE'];
          }
 
-         $res["COMPUTERS"] = $this->getComputerSections($hardwareids, $checksum, $wanted, $complete);
+         $res["COMPUTERS"] = $this->getComputerSections($hardwareids, $checksum, $wanted, $plugins, $complete);
       } else {
 
 
@@ -806,6 +830,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                         "printers",
                         "registry",
                         "securitycenter",
+                        "uptime",
                         "slots",
                         "softwares",
                         "sounds",

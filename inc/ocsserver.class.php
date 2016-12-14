@@ -2552,6 +2552,7 @@ JAVASCRIPT;
             $drives = false;
             $registry = false;
             $antivirus = false;
+            $uptime = false;
             $virtualmachines = false;
             $mb = false;
             $controllers = false;
@@ -2566,6 +2567,7 @@ JAVASCRIPT;
                }
 
                $ocsCheck = array();
+               $ocsPlugins = array();
                if ($mixed_checksum & pow(2, self::HARDWARE_FL)) {
                   $hardware = true;
                   $ocsCheck[] = PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE;
@@ -2698,8 +2700,12 @@ JAVASCRIPT;
                }
                if ($cfg_ocs["import_antivirus"]) {
                   $antivirus = true;
-                  $ocsCheck[] = PluginOcsinventoryngOcsClient::CHECKSUM_SECURITY;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_SECURITY;
                }
+               //if ($cfg_ocs["import_uptime"]) {
+                  $uptime = true;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_UPTIME;
+               //}
                if ($mixed_checksum & pow(2, self::VIRTUALMACHINES_FL)) {
                   //no vm in ocs before 1.3
                   if (!($cfg_ocs['ocs_version'] < self::OCS1_3_VERSION_LIMIT)) {
@@ -2719,13 +2725,26 @@ JAVASCRIPT;
                if (!isset($ocsWanted)) {
                   $ocsWanted = 0;
                }
-               $options = array(
+               if ($ocsPlugins) {
+                  $ocsPluginsResult = $ocsPlugins[0];
+                  foreach ($ocsPlugins as $plug) {
+                     $ocsPluginsResult = $ocsPluginsResult | $plug;
+                  }
+               } else {
+                  $ocsCheckResult = 0;
+               }
+               
+               $import_options = array(
                   'DISPLAY' => array(
                      'CHECKSUM' => $ocsCheckResult,
-                     'WANTED'   => $ocsWanted
+                     'WANTED'   => $ocsWanted,
+                     'PLUGINS'   => $ocsPluginsResult
                   ),
                );
-               $ocsComputer = $ocsClient->getComputer($line['ocsid'], $options);
+               
+              
+               $ocsComputer = $ocsClient->getComputer($line['ocsid'], $import_options);
+
                // Update Administrative informations
                self::updateAdministrativeInfo($line['computers_id'], $line['ocsid'], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $computer_updates, $comp->fields['entities_id']);
                $computer_updates = self::updateAdministrativeInfoUseDate($line['computers_id'], $plugin_ocsinventoryng_ocsservers_id, $computer_updates, $ocsComputer);
@@ -2838,6 +2857,11 @@ JAVASCRIPT;
                if ($antivirus && isset($ocsComputer["SECURITYCENTER"])) {
                   //import registry entries not needed
                   self::updateAntivirus($line['computers_id'], $ocsComputer["SECURITYCENTER"], $cfg_ocs);
+               }
+               
+               if ($uptime && isset($ocsComputer["UPTIME"])) {
+                  //import uptime
+                  self::updateUptime($line['id'], $ocsComputer["UPTIME"], $cfg_ocs);
                }
 
                if ($virtualmachines && isset($ocsComputer["VIRTUALMACHINES"])) {
@@ -5026,9 +5050,14 @@ JAVASCRIPT;
       global $DB;
 
       if ($cfg_ocs['history_devices']) {
-         $table = getTableForItemType($itemtype);
+         
+         $linktable = getTableForItemType('Item_' . $itemtype);
+         if ($itemtype == "PluginOcsinventoryngDeviceBiosdata") {
+            $linktable = getTableForItemType('PluginOcsinventoryngItem_DeviceBiosdata');
+         }
+      
          $query = "DELETE
-                            FROM `" . $table . "`
+                            FROM `" . $linktable . "`
                             WHERE `items_id` = '" . $glpi_computers_id . "'
                             AND `itemtype` = 'Computer'
                             AND `is_dynamic` = '1'";
@@ -5883,6 +5912,22 @@ JAVASCRIPT;
       }
 
       return;
+   }
+   
+   static function updateUptime($id, $ocsComputer, $cfg_ocs)
+   {
+      global $DB;
+
+      if ($id) {
+
+         if (isset($ocsComputer[0]["time"])) {
+            $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                      SET `uptime` = '" . $ocsComputer[0]["time"] . "'
+                      WHERE `id` = '" . $id . "'";
+
+            $DB->query($query);
+         }
+      }
    }
 
    /**

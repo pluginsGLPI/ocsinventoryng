@@ -157,7 +157,18 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                      echo "<td colspan='2'></td>";
                   }
                   echo "</tr>";
-
+                  
+                  if ($data['uptime'] != null) {
+                     echo "<tr class='tab_bg_1'>";
+                     echo "<td class='left'>";
+                     _e('Uptime', 'ocsinventoryng');
+                     echo "</td>";
+                     echo "<td class='left'>";
+                     echo $data['uptime'];
+                     echo "</td>";
+                     echo "<td colspan='2'></td>";
+                     echo "</tr>";
+                  }
                   echo "<tr class='tab_bg_1'>";
                   //If have write right on OCS and ocsreports url is not empty in OCS config
                   if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
@@ -347,7 +358,14 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                      "</td>";
                   echo "<td class='left'>";
                   Dropdown::showYesNo("use_auto_update", $data["use_auto_update"]);
-                  echo "</td><td colspan='2'></td>";
+                  echo "</td>";
+                  
+                  echo "<td class='left'>";
+                  _e('Uptime', 'ocsinventoryng');
+                  echo "</td>";
+                  echo "<td class='left'>";
+                  echo $data['uptime'];
+                  echo "</td>";
 
                   echo "</tr>";
 
@@ -385,8 +403,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
 
                      $options = array(
                         'DISPLAY' => array(
-                           'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
-                        )
+                           'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE,
+                           'PLUGINS' => PluginOcsinventoryngOcsClient::PLUGINS_NONE
+                        ),
+                        'COMPLETE' => 0
                      );
                      $computer = array();
                      $checksum_client = 0;
@@ -403,8 +423,21 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                            echo "</td>";
                            echo "<td>";
                            foreach ($val as $name => $value) {
-                              printf(__('%1$s: %2$s'), $name,
-                                 $value);
+                              if (is_array($value)) {
+                                 echo "<table class='tab_cadre' width='100%' border='0'>";
+                                 foreach ($value as $k => $v) {
+                                    echo "<tr class='tab_bg_1'>";
+                                    echo "<td>";
+                                    printf(__('%1$s: %2$s'), $k,
+                                    $v);
+                                    echo "</td>";
+                                    echo "</tr>";
+                                 }
+                                 echo "</table>";
+                              } else {
+                                 printf(__('%1$s: %2$s'), $name,
+                                    $value);
+                              }
                               if ($name == "CHECKSUM") {
                                  $checksum_client = intval($value);
                               }
