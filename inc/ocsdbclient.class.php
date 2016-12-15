@@ -61,6 +61,31 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
       return $this->db;
    }
 
+   /**
+    * Verify if a DB table exists
+    *
+    *@param $tablename string : Name of the table we want to verify.
+    *
+    *@return bool : true if exists, false elseway.
+    **/
+   function OcsTableExists($tablename) {
+
+
+      // Get a list of tables contained within the database.
+      $result = $this->db->list_tables("%".$tablename."%");
+
+      if ($rcount = $this->db->numrows($result)) {
+         while ($data = $this->db->fetch_row($result)) {
+            if ($data[0] === $tablename) {
+               return true;
+            }
+         }
+      }
+
+      $this->db->free_result($result);
+      return false;
+   }
+
    /*    * ******************* */
    /* PRIVATE  FUNCTIONS */
    /*    * ******************* */
@@ -199,7 +224,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                   }
                }
             }
-         } elseif ($table == "securitycenter") {
+         } elseif (self::OcsTableExists("securitycenter") && $table == "securitycenter") {
                
             if ($check && ($plugins == $check || $plugins == self::PLUGINS_ALL || $complete > 0)) {
                $query = "SELECT `securitycenter`.`SCV` AS scv,
@@ -221,7 +246,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                   }
                }
             }
-         } elseif ($table == "uptime") {
+         } elseif (self::OcsTableExists("uptime") && $table == "uptime") {
                
             if ($check && ($plugins == $check || $plugins == self::PLUGINS_ALL || $complete > 0)) {
                $query = "SELECT `uptime`.`TIME` AS time,
@@ -267,14 +292,16 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                }
             }
          } else {
-            if ($check && ($checksum  == $check || $complete > 0)) {
-               $query = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-               $request = $this->db->query($query);
-               while ($computer = $this->db->fetch_assoc($request)) {
-                  if ($multi) {
-                     $computers[$computer['HARDWARE_ID']][strtoupper($table)][] = $computer;
-                  } else {
-                     $computers[$computer['HARDWARE_ID']][strtoupper($table)] = $computer;
+            if(self::OcsTableExists($table)) {
+               if ($check && ($checksum == $check || $complete > 0)) {
+                  $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                  $request = $this->db->query($query);
+                  while ($computer = $this->db->fetch_assoc($request)) {
+                     if ($multi) {
+                        $computers[$computer['HARDWARE_ID']][strtoupper($table)][] = $computer;
+                     } else {
+                        $computers[$computer['HARDWARE_ID']][strtoupper($table)] = $computer;
+                     }
                   }
                }
             }
