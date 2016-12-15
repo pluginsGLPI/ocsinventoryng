@@ -94,6 +94,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     * @param $ids
     * @param $checksum
     * @param $wanted
+    * @param $plugins
+    * @param int $complete
     * @return mixed
     */
    private function getComputerSections($ids, $checksum, $wanted, $plugins, $complete = 1)
@@ -293,7 +295,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             }
          } else {
             if(self::OcsTableExists($table)) {
-               if ($check && ($checksum == $check || $complete > 0)) {
+               if ($check && ($checksum || $complete > 0)) {
                   $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                   $request = $this->db->query($query);
                   while ($computer = $this->db->fetch_assoc($request)) {
@@ -313,6 +315,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @param $ids
+    * @param int $complete
     * @return array
     */
    private function getSnmpSections($ids, $complete = 1)
