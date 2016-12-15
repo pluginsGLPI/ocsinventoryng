@@ -5646,10 +5646,11 @@ JAVASCRIPT;
     *
     * @param $computers_id ID of the computer where to install a software
     * @param $softwareversions_id ID of the version to install
+    * @param $installdate
     * @param Do|int $dohistory Do history?
     * @return int|Value
     */
-   static function installSoftwareVersion($computers_id, $softwareversions_id, $dohistory = 1)
+   static function installSoftwareVersion($computers_id, $softwareversions_id, $installdate, $dohistory = 1)
    {
       global $DB;
       if (!empty($softwareversions_id) && $softwareversions_id > 0) {
@@ -5666,8 +5667,42 @@ JAVASCRIPT;
          $tmp = new Computer_SoftwareVersion();
          return $tmp->add(array('computers_id'        => $computers_id,
                                 'softwareversions_id' => $softwareversions_id,
+                                'date_install'         => $installdate,
                                 'is_dynamic'          => 1,
                                 'is_deleted'          => 0), array(), $dohistory);
+      }
+      return 0;
+   }
+
+   /**
+    * Update a software on a computer - check if not already installed
+    *
+    * @param $computers_id ID of the computer where to install a software
+    * @param $softwareversions_id ID of the version to install
+    *
+    * @return nothing
+    * */
+   static function updateSoftwareVersion($computers_id, $softwareversions_id, $installdate, $dohistory = 1) {
+      global $DB;
+
+      if (!empty($softwareversions_id) && $softwareversions_id > 0) {
+         $query_exists = "SELECT `id`
+                          FROM `glpi_computers_softwareversions`
+                          WHERE (`computers_id` = '$computers_id'
+                                 AND `softwareversions_id` = '$softwareversions_id')";
+         $result       = $DB->query($query_exists);
+
+         if ($DB->numrows($result) > 0) {
+            $data = $DB->fetch_array($result);
+            $tmp  = new Computer_SoftwareVersion();
+
+
+            $input = array('id'           => $data['id'],
+                           '_no_history'  => !$dohistory,
+                           'date_install' => $installdate);
+            return $tmp->update($input);
+
+         }
       }
       return 0;
    }
@@ -5730,8 +5765,9 @@ JAVASCRIPT;
             if (isset($software["PUBLISHER"])) {
                $manufacturer = Manufacturer::processName($software["PUBLISHER"]);
             }
-            $version = $software['VERSION'];
-            $name = $software['NAME'];
+            $version     = $software['VERSION'];
+            $name        = $software['NAME'];
+            $installdate = $software['INSTALLDATE'];
 
             //Software might be created in another entity, depending on the entity's configuration
             $target_entity = Entity::getUsedConfig('entities_id_software', $entity);
@@ -5805,9 +5841,14 @@ JAVASCRIPT;
                if ($id) {
                   //-------------------------------------------------------------------------//
                   //---- The software exists in this version for this computer - Update comments --------------//
+                  //----  Update date install --------------//
                   //---------------------------------------------------- --------------------//
                   $isNewSoft = $soft->addOrRestoreFromTrash($modified_name, $manufacturer, $target_entity, '', ($entity != $target_entity), $is_helpdesk_visible);
-                  self::updateVersion($isNewSoft, $modified_version, $version_comments, $cfg_ocs['history_software']);
+                  //Update version for this software
+                  $versionID = self::updateVersion($isNewSoft, $modified_version, $version_comments, $cfg_ocs['history_software']);
+                  //Update version for this machine
+                  self::updateSoftwareVersion($computers_id, $versionID, $installdate, $cfg_ocs['history_software']);
+
                   unset($isNewSoft);
                   unset($imported[$id]);
                } else {
@@ -5817,8 +5858,8 @@ JAVASCRIPT;
                   $isNewSoft = $soft->addOrRestoreFromTrash($modified_name, $manufacturer, $target_entity, '', ($entity != $target_entity), $is_helpdesk_visible);
                   //Import version for this software
                   $versionID = self::importVersion($cfg_ocs, $isNewSoft, $modified_version, $version_comments);
-                  //Install license for this machine
-                  $instID = self::installSoftwareVersion($computers_id, $versionID, $cfg_ocs['history_software']);
+                  //Install version for this machine
+                  $instID = self::installSoftwareVersion($computers_id, $versionID, $installdate,  $cfg_ocs['history_software']);
                }
             }
          }
