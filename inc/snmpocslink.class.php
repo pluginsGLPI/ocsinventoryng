@@ -145,9 +145,9 @@ JAVASCRIPT;
 
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
-         function accordion(id, openall) {
+         function accordions(id, openall) {
              if(id == undefined){
-                 id  = 'accordion';
+                 id  = 'accordions';
              }
              jQuery(document).ready(function () {
                  $("#"+id).accordion({
@@ -163,7 +163,7 @@ JAVASCRIPT;
          </script>
 JAVASCRIPT;
 
-      echo "<div id='accordion'>";
+      echo "<div id='accordions'>";
 
       echo "<h2><a href='#'>" . __('General SNMP import options', 'ocsinventoryng') . "</a></h2>";
       echo "<div>";
@@ -335,7 +335,7 @@ JAVASCRIPT;
 
       echo "</div>";
 
-      echo "<script>accordion();</script>";
+      echo "<script>accordions();</script>";
 
       echo "</td></tr>\n";
 

@@ -1117,7 +1117,11 @@ JAVASCRIPT;
     */
    function post_getEmpty()
    {
-
+      $this->fields['ocs_db_host'] = "localhost";
+      $this->fields['ocs_db_name'] = "ocsweb";
+      $this->fields['ocs_db_user'] = "ocsuser";
+      $this->fields['ocs_db_utf8'] = 1;
+      $this->fields['is_active'] = 1;
       $this->fields['use_locks'] = 1;
    }
    
