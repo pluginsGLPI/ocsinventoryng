@@ -3823,9 +3823,9 @@ JAVASCRIPT;
       $cfg_ocs = self::getConfig($serverId);
       $computerOptions = array('ORDER'    => 'LASTDATE',
                                'COMPLETE' => '0',
-                               'FILTER'   => array(
-                                  'EXCLUDE_IDS' => $already_linked
-                               ),
+                               //'FILTER'   => array(
+                               //   'EXCLUDE_IDS' => $already_linked
+                               //),
                                'DISPLAY'  => array(
                                   'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS
                                ),
@@ -3842,13 +3842,24 @@ JAVASCRIPT;
       $ocsClient = self::getDBocs($serverId);
       $ocsResult = $ocsClient->getComputers($computerOptions);
 
-
+      $computerlink = array();
       if (isset($ocsResult['COMPUTERS'])) {
          if (count($ocsResult['COMPUTERS'])) {
+            foreach ($ocsResult['COMPUTERS'] as $comp) {
+            
+            if (!in_array($comp['META']['ID'], $already_linked)){
+                  $computerlink[] = $comp;
+               }
+            }
+            $computers = array_slice($computerlink, $start, $_SESSION['glpilist_limit']);
+         }
+      }
+
+      $hardware = array();
+      if (isset($computers)) {
+         if (count($computers)) {
             // Get all hardware from OCS DB
 
-            $hardware = array();
-            $computers = array_slice($ocsResult['COMPUTERS'], $start, $_SESSION['glpilist_limit']);
             foreach ($computers as $data) {
 
                $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
@@ -3896,7 +3907,7 @@ JAVASCRIPT;
             }
             echo "<div class='center'>";
 
-            if ($numrows = $ocsResult['TOTAL_COUNT']) {
+            if ($numrows = count($computerlink)) {
                $parameters = "check=$check";
                Html::printPager($start, $numrows, $target, $parameters);
 
@@ -5395,6 +5406,7 @@ JAVASCRIPT;
     *
     * This function create a new software in GLPI with some general datas.
     *
+    * @param $cfg_ocs
     * @param $software : id of a software.
     * @param $version : version of the software
     *
@@ -5680,8 +5692,10 @@ JAVASCRIPT;
     * @param $computers_id ID of the computer where to install a software
     * @param $softwareversions_id ID of the version to install
     *
+    * @param $installdate
+    * @param int $dohistory
     * @return nothing
-    * */
+    */
    static function updateSoftwareVersion($computers_id, $softwareversions_id, $installdate, $dohistory = 1) {
       global $DB;
 
@@ -5958,7 +5972,12 @@ JAVASCRIPT;
 
       return;
    }
-   
+
+   /**
+    * @param $id
+    * @param $ocsComputer
+    * @param $cfg_ocs
+    */
    static function updateUptime($id, $ocsComputer, $cfg_ocs)
    {
       global $DB;

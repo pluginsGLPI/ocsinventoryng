@@ -153,7 +153,7 @@ abstract class PluginOcsinventoryngOcsClient
     *         )
     *      )
     */
-   abstract public function getComputers($options);
+   abstract public function getComputers($options, $id = 0);
 
    /**
     * Returns a list of snmp devices
@@ -266,6 +266,20 @@ abstract class PluginOcsinventoryngOcsClient
     *         'DELETED' => 'EQUIV'
     *      )
     */
+   /**
+    * @param $id
+    * @param array $options
+    * @return mixed|null
+    */
+   public function getOcsComputer($id, $tables = array())
+   {
+
+      $result = $this->getComputerRule($id, $tables);
+
+      return $result;
+
+   }
+
    abstract public function getDeletedComputers();
 
    /**
@@ -333,12 +347,17 @@ abstract class PluginOcsinventoryngOcsClient
     */
    public function getComputer($id, $options = array())
    {
-      if (!isset($options['FILTER'])) {
-         $options['FILTER'] = array();
-      }
+      
+      //if (!isset($options['COMPLETE'])) {
+      //   $options['COMPLETE'] = 0;
+      //}
+      
+      //if (!isset($options['FILTER'])) {
+      //   $options['FILTER'] = array();
+      //}
 
-      $options['FILTER']['IDS'] = array($id);
-      $result = $this->getComputers($options);
+      //$options['FILTER']['IDS'] = array($id);
+      $result = $this->getComputers($options, $id);
 
 
       if (!isset($result['TOTAL_COUNT']) || $result['TOTAL_COUNT'] < 1 || empty($result['COMPUTERS'])) {
@@ -536,7 +555,11 @@ abstract class PluginOcsinventoryngOcsClient
 
       return $wanted;
    }
-   
+
+   /**
+    * @param $tables
+    * @return int
+    */
    public function getPluginsForTables($tables)
    {
       $ocsMap = $this->getOcsMap();

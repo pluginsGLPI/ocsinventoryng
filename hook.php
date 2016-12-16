@@ -883,7 +883,7 @@ function plugin_ocsinventoryng_install()
    ) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocslinks` 
                ADD `uptime` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL;";
-      $DB->queryOrDie($query, "1.3.0 update table glpi_plugin_ocsinventoryng_ocslinks add uptime");
+      $DB->queryOrDie($query, "1.3.2 update table glpi_plugin_ocsinventoryng_ocslinks add uptime");
    }
    
    /**/
@@ -1489,7 +1489,11 @@ function plugin_ocsinventoryng_getRuleCriteria($params)
          $criteria['ocsservers_id']['linkfield'] = '';
          $criteria['ocsservers_id']['type'] = 'dropdown';
 
+         $criteria['TAG']['table'] = 'accountinfo';
+         $criteria['TAG']['field'] = 'TAG';
          $criteria['TAG']['name'] = __('OCSNG TAG', 'ocsinventoryng');
+         $criteria['TAG']['linkfield'] = 'HARDWARE_ID';
+         
          break;
    }
 
@@ -1559,21 +1563,17 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
          }
 
          $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
-         $tables = array_keys(plugin_ocsinventoryng_getTablesForQuery());
-         $fields = plugin_ocsinventoryng_getFieldsForQuery();
 
-         $ocsComputer = $ocsClient->getComputer($ocsid, array(
-            'DISPLAY' => array(
-               'CHECKSUM' => $ocsClient->getChecksumForTables($tables) | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS,
-               'WANTED' => $ocsClient->getWantedForTables($tables),
-            )
-         ));
+         $tables = array_keys(plugin_ocsinventoryng_getTablesForQuery($params['rule_itemtype']));
+         $fields = plugin_ocsinventoryng_getFieldsForQuery($params['rule_itemtype']);
+
+         $ocsComputer = $ocsClient->getOcsComputer($ocsid, $tables);
 
          if (!is_null($ocsComputer)) {
-            if (isset($ocsComputer['NETWORKS'])) {
+            if(isset($ocsComputer['NETWORKS'])) {
                $networks = $ocsComputer['NETWORKS'];
 
-               $ipblacklist = Blacklist::getIPs();
+               $ipblacklist  = Blacklist::getIPs();
                $macblacklist = Blacklist::getMACs();
 
                foreach ($networks as $data) {
@@ -1587,45 +1587,45 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
                      $rule_parameters['IPADDRESS'][] = $data['IPADDRESS'];
                   }
                }
-
-               $ocs_data = array();
-
-               foreach ($fields as $field) {
-                  // TODO cleaner way of getting fields
-                  $field = explode('.', $field);
-                  if (count($field) < 2) {
-                     continue;
-                  }
-
-                  $table = strtoupper($field[0]);
-
-                  $fieldSql = explode(' ', $field[1]);
-                  $ocsField = $fieldSql[0];
-                  $glpiField = $fieldSql[count($fieldSql) - 1];
-
-                  $section = array();
-                  if (isset($ocsComputer[$table])) {
-                     $section = $ocsComputer[$table];
-                  }
-                  if (array_key_exists($ocsField, $section)) {
-                     // Not multi
-                     $ocs_data[$glpiField][] = $section[$ocsField];
-                  } else {
-                     foreach ($section as $sectionLine) {
-                        $ocs_data[$glpiField][] = $sectionLine[$ocsField];
-                     }
-                  }
-               }
-
-               //This case should never happend but...
-               //Sometimes OCS can't find network ports but fill the right ip in hardware table...
-               //So let's use the ip to proceed rules (if IP is a criteria of course)
-               if (in_array("IPADDRESS", $fields) && !isset($ocs_data['IPADDRESS'])) {
-                  $ocs_data['IPADDRESS']
-                     = PluginOcsinventoryngOcsServer::getGeneralIpAddress($ocsservers_id, $ocsid);
-               }
-               return array_merge($rule_parameters, $ocs_data);
             }
+            $ocs_data = array();
+
+            foreach ($fields as $field) {
+               // TODO cleaner way of getting fields
+               $field = explode('.', $field);
+               if (count($field) < 2) {
+                  continue;
+               }
+
+               $table = strtoupper($field[0]);
+
+               $fieldSql = explode(' ', $field[1]);
+               $ocsField = $fieldSql[0];
+               $glpiField = $fieldSql[count($fieldSql) - 1];
+
+               $section = array();
+               if (isset($ocsComputer[$table])) {
+                  $section = $ocsComputer[$table];
+               }
+               if (array_key_exists($ocsField, $section)) {
+                  // Not multi
+                  $ocs_data[$glpiField][] = $section[$ocsField];
+               } else {
+                  foreach ($section as $sectionLine) {
+                     $ocs_data[$glpiField][] = $sectionLine[$ocsField];
+                  }
+               }
+            }
+
+            //This case should never happend but...
+            //Sometimes OCS can't find network ports but fill the right ip in hardware table...
+            //So let's use the ip to proceed rules (if IP is a criteria of course)
+            if (in_array("IPADDRESS", $fields) && !isset($ocs_data['IPADDRESS'])) {
+               $ocs_data['IPADDRESS']
+                  = PluginOcsinventoryngOcsServer::getGeneralIpAddress($ocsservers_id, $ocsid);
+            }
+            return array_merge($rule_parameters, $ocs_data);
+            
          }
    }
    return array();
@@ -1750,11 +1750,12 @@ function plugin_ocsinventoryng_preProcessRuleCollectionPreviewResults($params)
  *
  * @return an array of table names
  **/
-function plugin_ocsinventoryng_getTablesForQuery()
+function plugin_ocsinventoryng_getTablesForQuery($rule_itemtype)
 {
 
    $tables = array();
-   $crits = plugin_ocsinventoryng_getRuleCriteria(array('rule_itemtype' => 'RuleImportEntity'));
+   $crits = plugin_ocsinventoryng_getRuleCriteria(array('rule_itemtype' => $rule_itemtype));
+
    foreach ($crits as $criteria) {
       if ((!isset($criteria['virtual'])
             || !$criteria['virtual'])
@@ -1775,11 +1776,11 @@ function plugin_ocsinventoryng_getTablesForQuery()
  * @param fields|int $withouttable fields without tablename ? (default 0)
  * @return an array of needed fields
  */
-function plugin_ocsinventoryng_getFieldsForQuery($withouttable = 0)
+function plugin_ocsinventoryng_getFieldsForQuery($rule_itemtype, $withouttable = 0)
 {
 
    $fields = array();
-   foreach (plugin_ocsinventoryng_getRuleCriteria(array('rule_itemtype' => 'RuleImportEntity')) as $key => $criteria) {
+   foreach (plugin_ocsinventoryng_getRuleCriteria(array('rule_itemtype' => $rule_itemtype)) as $key => $criteria) {
       if ($withouttable) {
          if (strcasecmp($key, $criteria['field']) != 0) {
             $fields[] = $key;

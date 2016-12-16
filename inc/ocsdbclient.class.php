@@ -61,18 +61,102 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
       return $this->db;
    }
 
+   public function getComputerRule($id, $tables = array())
+   {
+
+      $query = "SELECT `hardware`.*,`accountinfo`.`TAG` FROM `hardware`
+            INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
+            WHERE `hardware`.`ID` = $id";
+
+      $request = $this->db->query($query);
+      while ($meta = $this->db->fetch_assoc($request)) {
+         $computers["META"]["ID"]       = $meta["ID"];
+         $computers["META"]["CHECKSUM"] = $meta["CHECKSUM"];
+         $computers["META"]["DEVICEID"] = $meta["DEVICEID"];
+         $computers["META"]["LASTCOME"] = $meta["LASTCOME"];
+         $computers["META"]["LASTDATE"] = $meta["LASTDATE"];
+         $computers["META"]["NAME"]     = $meta["NAME"];
+         $computers["META"]["TAG"]      = $meta["TAG"];
+         $computers["META"]["USERID"]   = $meta["USERID"];
+         $computers["META"]["UUID"]     = $meta["UUID"];
+      }
+
+      $query   = "SELECT * FROM `hardware` WHERE `ID` = $id";
+      $request = $this->db->query($query);
+      while ($hardware = $this->db->fetch_assoc($request)) {
+
+         $computers[strtoupper('hardware')] = $hardware;
+
+      }
+
+
+      foreach ($tables as $table) {
+
+         if ($table == "accountinfo") {
+            $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` = $id";
+            $request = $this->db->query($query);
+            while ($accountinfo = $this->db->fetch_assoc($request)) {
+               foreach ($accountinfo as $column => $value) {
+                  if (preg_match('/fields_\d+/', $column, $matches)) {
+                     $colnumb = explode("fields_", $matches['0']);
+
+                     if (TableExists("accountinfo_config")) {
+                        $col            = $colnumb['1'];
+                        $query          = "SELECT ID,NAME FROM accountinfo_config WHERE ID = '" . $col . "'";
+                        $requestcolname = $this->db->query($query);
+                        $colname        = $this->db->fetch_assoc($requestcolname);
+                        if ($colname['NAME'] != "") {
+                           if (!is_null($value)) {
+                              $name         = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" . $value;
+                              $query        = "SELECT TVALUE,NAME FROM config WHERE NAME = '" . $name . "'";
+                              $requestvalue = $this->db->query($query);
+                              $custom_value = $this->db->fetch_assoc($requestvalue);
+                              if (isset($custom_value['TVALUE'])) {
+                                 $accountinfo[$column] = $custom_value['TVALUE'];
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+               $accountinfomap = $this->getAccountInfoColumns();
+               foreach ($accountinfo as $key => $value) {
+                  unset($accountinfo[$key]);
+                  $accountinfo[$accountinfomap[$key]] = $value;
+               }
+               $computers[strtoupper($table)][] = $accountinfo;
+
+            }
+         } else if ($table != "hardware") {
+            if (self::OcsTableExists($table)) {
+               $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` = $id";
+               $request = $this->db->query($query);
+               while ($computer = $this->db->fetch_assoc($request)) {
+                  if ($table == 'networks') {
+                     $computers[strtoupper($table)][] = $computer;
+                  } else {
+                     $computers[strtoupper($table)] = $computer;
+                  }
+               }
+            }
+         }
+      }
+      return $computers;
+   }
+
    /**
     * Verify if a DB table exists
     *
-    *@param $tablename string : Name of the table we want to verify.
+    * @param $tablename string : Name of the table we want to verify.
     *
-    *@return bool : true if exists, false elseway.
+    * @return bool : true if exists, false elseway.
     **/
-   function OcsTableExists($tablename) {
+   function OcsTableExists($tablename)
+   {
 
 
       // Get a list of tables contained within the database.
-      $result = $this->db->list_tables("%".$tablename."%");
+      $result = $this->db->list_tables("%" . $tablename . "%");
 
       if ($rcount = $this->db->numrows($result)) {
          while ($data = $this->db->fetch_row($result)) {
@@ -98,14 +182,45 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     * @param int $complete
     * @return mixed
     */
-   private function getComputerSections($ids, $checksum, $wanted, $plugins, $complete = 1)
+   private function getComputerSections($ids, $checksum, $wanted, $plugins, $complete = 0)
    {
 
       $OCS_MAP = self::getOcsMap();
+      $DATA_MAP = array();
+      foreach ($OCS_MAP as $table => $value) {
+
+         if ($table == "dico_soft") {
+            continue;
+         }
+         if ($table == "hardware") {
+            $DATA_MAP[$table] = $value;
+         }
+         if (isset($value['checksum'])) {
+            $check = $value['checksum'];
+            if ($check & $checksum) {
+               $DATA_MAP[$table] = $value;
+            }
+         } elseif (isset($value['wanted'])) {
+            $check = $value['wanted'];
+            if ($wanted & self::WANTED_ACCOUNTINFO) {
+               $DATA_MAP[$table] = $value;
+            }
+         } elseif (isset($value['plugins'])) {
+            $check = $value['plugins'];
+            if (self::OcsTableExists($table) && (($check & $plugins) || $plugins == self::PLUGINS_ALL)) {
+               $DATA_MAP[$table] = $value;
+            }
+         }
+      }
+
+      if ($complete > 0) {
+         $DATA_MAP = $OCS_MAP;
+      }
 
       $version = $this->getConfig("GUI_VERSION");
 
-      foreach ($OCS_MAP as $table => $value) {
+      foreach ($DATA_MAP as $table => $value) {
+
          if ($table == "dico_soft") {
             continue;
          }
@@ -118,7 +233,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
          }
          $multi = $value['multi'];
          if ($table == "accountinfo") {
-            if ($wanted && (self::WANTED_ACCOUNTINFO  == $check || $complete > 0)) {
+            if (($wanted & self::WANTED_ACCOUNTINFO) || $complete > 0) {
                $query = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                $request = $this->db->query($query);
                while ($accountinfo = $this->db->fetch_assoc($request)) {
@@ -128,7 +243,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 
                         if (TableExists("accountinfo_config")) {
                            $col = $colnumb['1'];
-                           $query = "SELECT ID,NAME FROM accountinfo_config WHERE ID = '".$col."'";
+                           $query = "SELECT ID,NAME FROM accountinfo_config WHERE ID = '" . $col . "'";
                            $requestcolname = $this->db->query($query);
                            $colname = $this->db->fetch_assoc($requestcolname);
                            if ($colname['NAME'] != "") {
@@ -158,7 +273,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                }
             }
          } elseif ($table == "softwares") {
-            if ($check && ($checksum  == $check || $complete > 0)) {
+            if (($check & $checksum) || $complete > 0) {
 
                if (self::WANTED_DICO_SOFT & $wanted) {
                   $query = "SELECT
@@ -208,7 +323,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             }
          } elseif ($table == "registry") {
 
-            if ($check && ($checksum  == $check || $complete > 0)) {
+            if (($check & $checksum) || $complete > 0) {
                $query = "SELECT `registry`.`NAME` AS name,
                           `registry`.`REGVALUE` AS regvalue,
                           `registry`.`HARDWARE_ID` AS HARDWARE_ID,
@@ -227,8 +342,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                }
             }
          } elseif (self::OcsTableExists("securitycenter") && $table == "securitycenter") {
-               
-            if ($check && ($plugins == $check || $plugins == self::PLUGINS_ALL || $complete > 0)) {
+
+            if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
                $query = "SELECT `securitycenter`.`SCV` AS scv,
                           `securitycenter`.`CATEGORY` AS category,
                           `securitycenter`.`HARDWARE_ID` AS HARDWARE_ID,
@@ -249,8 +364,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                }
             }
          } elseif (self::OcsTableExists("uptime") && $table == "uptime") {
-               
-            if ($check && ($plugins == $check || $plugins == self::PLUGINS_ALL || $complete > 0)) {
+
+            if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
                $query = "SELECT `uptime`.`TIME` AS time,
                           `uptime`.`HARDWARE_ID` AS HARDWARE_ID
                    FROM `uptime`
@@ -282,7 +397,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                $computers[$meta['ID']]["META"]["UUID"] = $meta["UUID"];
             }
 
-            if ($check && $checksum) {
+            if (($check & $checksum) || $complete > 0) {
                $query = "SELECT * FROM `" . $table . "` WHERE `ID` IN (" . implode(',', $ids) . ")";
                $request = $this->db->query($query);
                while ($hardware = $this->db->fetch_assoc($request)) {
@@ -294,9 +409,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                }
             }
          } else {
-            if(self::OcsTableExists($table)) {
-               if ($check && ($checksum || $complete > 0)) {
-                  $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+            if (self::OcsTableExists($table)) {
+               if (($check & $checksum) || $complete > 0) {
+                  $query = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                   $request = $this->db->query($query);
                   while ($computer = $this->db->fetch_assoc($request)) {
                      if ($multi) {
@@ -504,7 +619,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     * @param array $options
     * @return array
     */
-   public function getComputers($options)
+   public function getComputers($options, $id = 0)
    {
 
 
@@ -627,12 +742,18 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                         WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
                         AND `hardware`.`ID` = `accountinfo`.`HARDWARE_ID`
                         $where_condition";*/
-      $query = "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` FROM `hardware`, `accountinfo`
+      if ($id > 0) {
+         $query = "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` FROM `hardware`
+                           WHERE `hardware`.`ID` = $id
+                           $where_condition";
+      } else {
+         $query = "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` FROM `hardware`, `accountinfo`
                            WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
                            AND `hardware`.`ID` = `accountinfo`.`HARDWARE_ID`
                            $where_condition
                            ORDER BY $order
                            $max_records $offset";
+      }
       $request = $this->db->query($query);
 
       if ($this->db->numrows($request)) {
@@ -668,14 +789,14 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $plugins = self::PLUGINS_NONE;
          }
 
-         $complete = 1;
+         $complete = 0;
          if (isset($options['COMPLETE'])) {
             $complete = $options['COMPLETE'];
          }
 
          $res["COMPUTERS"] = $this->getComputerSections($hardwareids, $checksum, $wanted, $plugins, $complete);
-      } else {
 
+      } else {
 
          $res = array();
       }
@@ -982,8 +1103,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                $key = "fields_" . $conf["ID"];
                if (array_key_exists($key, $res)) {
                   if ($conf["TYPE"]) {
-                     $res[$key] = array("NOM" => $conf['COMMENT'],
-                        "PREFIX" => "ACCOUNT_INFO_" . $conf["NAME"] . "_",
+                     $res[$key] = array("NOM"    => $conf['COMMENT'],
+                                        "PREFIX" => "ACCOUNT_INFO_" . $conf["NAME"] . "_",
                      );
                   } else {
                      $res[$key] = $conf['COMMENT'];
