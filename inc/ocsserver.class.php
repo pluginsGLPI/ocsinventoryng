@@ -1750,7 +1750,7 @@ JAVASCRIPT;
          $ocs_link_exists = true;
          $data = $DB->fetch_assoc($result);
 
-         $ocsComputer = $ocsClient->getComputer($data['ocsid']);
+         $ocsComputer = $ocsClient->getIfOCSComputersExists($data['ocsid']);
 
          // Not found
          if (is_null($ocsComputer)) {
@@ -2917,12 +2917,13 @@ JAVASCRIPT;
       $ocsServerId = $options['plugin_ocsinventoryng_ocsservers_id'];
       self::checkOCSconnection($ocsServerId);
       $ocsClient = self::getDBocs($ocsServerId);
-
-      $ocsComputer = $ocsClient->getComputer($options['ocs_id'], array(
+      
+      $opts = array(
          'DISPLAY' => array(
             'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
          )
-      ));
+      );
+      $ocsComputer = $ocsClient->getComputer($options['ocs_id'], $opts);
 
       $logHistory = $options['cfg_ocs']["history_hardware"];
 
@@ -6463,12 +6464,7 @@ JAVASCRIPT;
 
       $ocsClient = self::getDBocs($line_links["plugin_ocsinventoryng_ocsservers_id"]);
       $cfg_ocs = self::getConfig($line_links["plugin_ocsinventoryng_ocsservers_id"]);
-      $ocsComputer = $ocsClient->getComputer($line_links["ocsid"], array(
-         'DISPLAY' => array(
-            'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE | PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
-            'WANTED'   => PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO
-         )
-      ));
+      $ocsComputer = $ocsClient->getComputer($line_links["ocsid"]);
 
       $locations_id = 0;
       $contact = (isset($ocsComputer['META']["USERID"])) ? $ocsComputer['META']["USERID"] : "";
@@ -6622,8 +6618,8 @@ JAVASCRIPT;
    {
       global $DB;
       $ocsClient = self::getDBocs($line_links["plugin_ocsinventoryng_ocsservers_id"]);
-      $options = array();
-      $computer = $ocsClient->getComputer($line_links["ocsid"], $options);
+
+      $computer = $ocsClient->getComputer($line_links["ocsid"]);
 
       if ($computer) {
          $data_ocs = Toolbox::addslashes_deep($computer["META"]);

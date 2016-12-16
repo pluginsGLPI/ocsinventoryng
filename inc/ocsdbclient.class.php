@@ -913,6 +913,19 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
       return $data;
    }
 
+   public function getIfOCSComputersExists($id)
+   {
+      $query = "SELECT `ID`
+                    FROM `hardware`
+                    WHERE `ID` = $id";
+      $res = $this->db->query($query);
+
+      if ($res->num_rows > 0) {
+         return true;
+      }
+      return false;
+   }
+
    /**
     * @see PluginOcsinventoryngOcsClient::getOldAgents()
     */
