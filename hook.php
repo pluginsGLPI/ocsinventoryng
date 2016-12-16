@@ -885,6 +885,12 @@ function plugin_ocsinventoryng_install()
                ADD `uptime` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL;";
       $DB->queryOrDie($query, "1.3.2 update table glpi_plugin_ocsinventoryng_ocslinks add uptime");
    }
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','import_officepack')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `import_officepack` tinyint(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.3.2 update table glpi_plugin_ocsinventoryng_ocsservers add import_officepack");
+   }
    
    /**/
 
