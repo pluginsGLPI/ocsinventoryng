@@ -5397,6 +5397,7 @@ JAVASCRIPT;
          $input["comment"] = $comments;
          $vers = new SoftwareVersion();
          $vers->update($input, $dohistory);
+         return $data["id"];
       }
 
       return;
