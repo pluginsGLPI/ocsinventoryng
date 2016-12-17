@@ -379,6 +379,21 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                   }
                }
             }
+         } elseif (self::OcsTableExists("officepack") && $table == "officepack") {
+
+            $query = "SELECT `officepack`.* FROM `hardware`
+            INNER JOIN `officepack` ON (`hardware`.`id` = `officepack`.`HARDWARE_ID`)
+            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ")
+            AND `INSTALL`" ;
+            $request = $this->db->query($query);
+            while ($meta = $this->db->fetch_assoc($request)) {
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["OFFICEVERSION"] = $meta["OFFICEVERSION"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PRODUCT"] = $meta["PRODUCT"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["OFFICEKEY"] = $meta["OFFICEKEY"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["NOTE"] = $meta["NOTE"];
+
+            }
+
          } elseif ($table == "hardware") {
 
             $query = "SELECT `hardware`.*,`accountinfo`.`TAG` FROM `hardware`
@@ -995,6 +1010,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                         "registry",
                         "securitycenter",
                         "uptime",
+                        "officepack",
                         "slots",
                         "softwares",
                         "sounds",

@@ -62,6 +62,7 @@ abstract class PluginOcsinventoryngOcsClient
    const PLUGINS_NONE = 0x00000;
    const PLUGINS_SECURITY = 0x00001;
    const PLUGINS_UPTIME = 0x00002;
+   const PLUGINS_OFFICE = 0x00003;
    const PLUGINS_ALL = 0x00010;
    
    private $id;
@@ -445,6 +446,10 @@ abstract class PluginOcsinventoryngOcsClient
          ),
          'uptime' => array(
             'plugins' => self::PLUGINS_UPTIME,
+            'multi' => 1,
+         ),
+         'officepack' => array(
+            'plugins' => self::PLUGINS_OFFICE,
             'multi' => 1,
          ),
          'controllers' => array(
