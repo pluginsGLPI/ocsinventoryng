@@ -404,7 +404,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                      $options = array(
                         'DISPLAY' => array(
                            'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE,
-                           'PLUGINS' => PluginOcsinventoryngOcsClient::PLUGINS_NONE
+                           'PLUGINS' => PluginOcsinventoryngOcsClient::PLUGINS_ALL
                         ),
                         'COMPLETE' => 0
                      );

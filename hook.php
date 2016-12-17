@@ -907,6 +907,11 @@ function plugin_ocsinventoryng_install()
    if (TableExists('glpi_plugin_ocsinventoryng_ocslinks')
       && !FieldExists('glpi_plugin_ocsinventoryng_ocslinks', 'uptime')
    ) {
+      
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `import_uptime` tinyint(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.3.2 update table glpi_plugin_ocsinventoryng_ocsservers add import_uptime");
+      
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocslinks` 
                ADD `uptime` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL;";
       $DB->queryOrDie($query, "1.3.2 update table glpi_plugin_ocsinventoryng_ocslinks add uptime");

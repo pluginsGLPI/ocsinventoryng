@@ -786,13 +786,13 @@ JAVASCRIPT;
       echo "<td class='center'>" . __('Antivirus', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("import_antivirus", $this->fields["import_antivirus"]);
       echo "&nbsp;";
-      Html::showToolTip(nl2br(__('Security Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG) must be installed', 'ocsinventoryng')));
+      Html::showToolTip(nl2br(__('Security Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/security) must be installed', 'ocsinventoryng')));
       echo "&nbsp;</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Microsoft Office license import', 'ocsinventoryng') . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Microsoft Office licenses', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("import_officepack", $this->fields["import_officepack"]);
       echo "&nbsp;";
-      Html::showToolTip(nl2br(__('Depends on software import and OfficePack Plugin for OCSNG must be installed', 'ocsinventoryng')));
+      Html::showToolTip(nl2br(__('Depends on software import and OfficePack Plugin for (https://github.com/PluginsOCSInventory-NG/officepack) OCSNG must be installed', 'ocsinventoryng')));
       echo "</td>\n";
 
       //check version
@@ -807,6 +807,12 @@ JAVASCRIPT;
          echo "</td>\n";
       }
       echo "</tr>";
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Uptime', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_uptime", $this->fields["import_uptime"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Uptime Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/uptime) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td><td colspan='2'></td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
       echo __('No import: the plugin will not import these elements', 'ocsinventoryng');
@@ -2725,10 +2731,10 @@ JAVASCRIPT;
                   $officepack   = true;
                   $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_OFFICE;
                }
-               //if ($cfg_ocs["import_uptime"]) {
+               if ($cfg_ocs["import_uptime"]) {
                   $uptime = true;
                   $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_UPTIME;
-               //}
+               }
                if ($mixed_checksum & pow(2, self::VIRTUALMACHINES_FL)) {
                   //no vm in ocs before 1.3
                   if (!($cfg_ocs['ocs_version'] < self::OCS1_3_VERSION_LIMIT)) {
@@ -5683,6 +5689,9 @@ JAVASCRIPT;
                         $computer_soft_l['softwarelicenses_id'] = $software_licenses->getID();
                         $computer_soft_l['is_dynamic']          = -1;
                         $computer_softwarelicenses->add($computer_soft_l);
+                        //Update for validity
+                        $software_licenses->update(array('id'      => $software_licenses->getID(),
+                                                      'is_valid' => 1));
                      }
                   }
 
@@ -5707,6 +5716,9 @@ JAVASCRIPT;
                      $computer_soft_l['number']              = -1;
 
                      $computer_softwarelicenses->add($computer_soft_l);
+                     //Update for validity
+                        $software_licenses->update(array('id'      => $id_software_licenses,
+                                                      'is_valid' => 1));
                   }
                }
             }
