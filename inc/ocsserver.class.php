@@ -1750,10 +1750,8 @@ JAVASCRIPT;
          $ocs_link_exists = true;
          $data = $DB->fetch_assoc($result);
 
-         $ocsComputer = $ocsClient->getIfOCSComputersExists($data['ocsid']);
-
          // Not found
-         if (is_null($ocsComputer)) {
+         if (!$ocsClient->getIfOCSComputersExists($data['ocsid'])) {
             $idlink = $data["id"];
             $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                        SET `ocsid` = '$ocsid'
@@ -1836,6 +1834,12 @@ JAVASCRIPT;
 
             // Reset only if not in ocs id change case
             if (!$ocs_id_change) {
+            
+               $changes[0] = '0';
+               $changes[1] = "";
+               $changes[2] = $ocsid;
+               PluginOcsinventoryngOcslink::history($computers_id, $changes, PluginOcsinventoryngOcslink::HISTORY_OCS_LINK);
+               
                if ($ocsConfig["import_general_os"]) {
                   self::resetDropdown($computers_id, "operatingsystems_id", "glpi_operatingsystems");
                }
@@ -1896,10 +1900,7 @@ JAVASCRIPT;
                if ($ocsConfig["import_antivirus"]) {
                   self::resetAntivirus($computers_id, $cfg_ocs);
                }
-               $changes[0] = '0';
-               $changes[1] = "";
-               $changes[2] = $ocsid;
-               PluginOcsinventoryngOcslink::history($computers_id, $changes, PluginOcsinventoryngOcslink::HISTORY_OCS_LINK);
+               
             }
 
             self::updateComputer($idlink, $plugin_ocsinventoryng_ocsservers_id, 0);
@@ -2409,6 +2410,7 @@ JAVASCRIPT;
                      }
                }
             }
+            //ADD IF NOT LINKED
             $computers_id = $comp->add($input, array('unicity_error_message' => false));
             if ($computers_id) {
                $ocsid = $computer['META']['ID'];

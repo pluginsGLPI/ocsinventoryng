@@ -45,13 +45,26 @@ function plugin_ocsinventoryng_install()
 
       $install = true;
       $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.3.2-empty.sql");
-
+      
+      $migration->createRule(array('sub_type' => 'RuleImportComputer',
+         'entities_id' => 0,
+         'is_recursive' => 0,
+         'is_active' => 1,
+         'match' => 'AND',
+         'name' => 'RootComputerOcs'),
+         array(array('criteria' => 'serial',
+            'condition' => Rule::PATTERN_FIND,
+            'pattern' => '1')),
+         array(array('field' => '_fusion',
+            'action_type' => 'assign',
+            'value' => 0)));
+            
       $migration->createRule(array('sub_type' => 'RuleImportEntity',
          'entities_id' => 0,
          'is_recursive' => 1,
          'is_active' => 1,
          'match' => 'AND',
-         'name' => 'RootOcs'),
+         'name' => 'RootEntityOcs'),
          array(array('criteria' => 'TAG',
             'condition' => Rule::PATTERN_IS,
             'pattern' => '*'),
@@ -68,12 +81,25 @@ function plugin_ocsinventoryng_install()
 
       CronTask::Register('PluginOcsinventoryngOcsServer', 'ocsng', MINUTE_TIMESTAMP * 5);
 
+      $migration->createRule(array('sub_type' => 'RuleImportComputer',
+         'entities_id' => 0,
+         'is_recursive' => 0,
+         'is_active' => 1,
+         'match' => 'AND',
+         'name' => 'RootComputerOcs'),
+         array(array('criteria' => 'serial',
+            'condition' => Rule::PATTERN_FIND,
+            'pattern' => '1')),
+         array(array('field' => '_fusion',
+            'action_type' => 'assign',
+            'value' => 0)));
+            
       $migration->createRule(array('sub_type' => 'RuleImportEntity',
          'entities_id' => 0,
          'is_recursive' => 1,
          'is_active' => 1,
          'match' => 'AND',
-         'name' => 'RootOcs'),
+         'name' => 'RootEntityOcs'),
          array(array('criteria' => 'TAG',
             'condition' => Rule::PATTERN_IS,
             'pattern' => '*'),
@@ -83,7 +109,7 @@ function plugin_ocsinventoryng_install()
          array(array('field' => 'entities_id',
             'action_type' => 'assign',
             'value' => 0)));
-
+            
    } else if (!TableExists("glpi_plugin_ocsinventoryng_ocsservers")
       && TableExists("ocs_glpi_ocsservers")
    ) {

@@ -198,7 +198,7 @@ class PluginOcsinventoryngMenu extends CommonGLPI
                _e('No OCSNG server defined', 'ocsinventoryng');
                echo "<br>";
                _e('You must to configure a OCSNG server', 'ocsinventoryng');
-               echo " : <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.php'>";
+               echo " : <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php'>";
                _e('Add a OCSNG server', 'ocsinventoryng');
                echo "</a>";
                echo "</div></div>";
