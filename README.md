@@ -1,4 +1,5 @@
 # Plugin ocsinventoryng for GLPI
+![Logo ocsinventoryng](https://raw.githubusercontent.com/pluginsGLPI/ocsinventoryng/master/ocsinventoryng.png "Logo ocsinventoryng")
 
 ![Menu ocsinventoryng](https://raw.githubusercontent.com/pluginsGLPI/ocsinventoryng/master/wiki/menu.png "Menu ocsinventoryng")
 
