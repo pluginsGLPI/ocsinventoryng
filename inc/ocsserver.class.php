@@ -2754,13 +2754,14 @@ JAVASCRIPT;
                if (!isset($ocsWanted)) {
                   $ocsWanted = 0;
                }
+               $ocsPluginsResult = array();
                if ($ocsPlugins) {
                   $ocsPluginsResult = $ocsPlugins[0];
                   foreach ($ocsPlugins as $plug) {
                      $ocsPluginsResult = $ocsPluginsResult | $plug;
                   }
                } else {
-                  $ocsCheckResult = 0;
+                  $ocsPluginsResult = 0;
                }
                
                $import_options = array(
