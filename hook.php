@@ -922,6 +922,14 @@ function plugin_ocsinventoryng_install()
                ADD `import_officepack` tinyint(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.3.2 update table glpi_plugin_ocsinventoryng_ocsservers add import_officepack");
    }
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','action_cleancron')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `action_cleancron` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `use_restorationcron` tinyint(1) NOT NULL DEFAULT '0',
+               ADD `delay_restorationcron` int(11) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.3.2 update table glpi_plugin_ocsinventoryng_ocsservers add action_cleancron & use_restorationcron & delay_restorationcron");
+   }
    
    /**/
 
@@ -940,6 +948,10 @@ function plugin_ocsinventoryng_install()
    }
    if (!$cron->getFromDBbyName('PluginOcsinventoryngOcsServer', 'CleanOldAgents')) {
       CronTask::Register('PluginOcsinventoryngOcsServer', 'CleanOldAgents', DAY_TIMESTAMP, array('state' => CronTask::STATE_DISABLE));
+   }
+   /*1.3.2*/
+   if (!$cron->getFromDBbyName('PluginOcsinventoryngOcsServer','RestoreOldAgents')) {
+      CronTask::Register('PluginOcsinventoryngOcsServer', 'RestoreOldAgents', DAY_TIMESTAMP,array('state' => CronTask::STATE_DISABLE));
    }
 
    /*Now delete old tables*/

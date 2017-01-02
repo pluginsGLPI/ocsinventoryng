@@ -105,6 +105,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
    const IPDISCOVER_FAILED_IMPORT = 17; //IPDISCOVER cannot be imported - no itemtype
    const IPDISCOVER_SYNCHRONIZED = 18; //IPDISCOVER is synchronized
 
+   const ACTION_PURGE_COMPUTER = 0; // Action cronCleanOldAgents : Purge computer
+   const ACTION_DELETE_COMPUTER = 1; // Action cronCleanOldAgents : delete computer
 
    /**
     * @param int $nb
@@ -1235,9 +1237,53 @@ JAVASCRIPT;
 
       echo "<tr class='tab_bg_1'>";
       echo "<td class='center'>" . __('Use automatic action for clean old agents & drop from OCSNG software', 'ocsinventoryng') . "</td>";
-      echo "<td colspan='3'>";
-      Dropdown::showYesNo("use_cleancron", $this->fields["use_cleancron"]);
+      echo "<td>";
+      Dropdown::showYesNo("use_cleancron", $this->fields["use_cleancron"], -1 , array('on_change' => 'hide_show_cleancron(this.value);'));
       echo "</td>";
+      echo Html::scriptBlock("
+         function hide_show_cleancron(val) {
+            var display = (val == 0) ? 'none' : '';
+            var notdisplay = (val == 0) ? '' : 'none';
+            document.getElementById('show_cleancron_td1').style.display = display;
+            document.getElementById('show_cleancron_td2').style.display = display;
+            document.getElementById('show_cleancron_td3').style.display = notdisplay;
+            document.getElementById('show_cleancron_tr1').style.display = display;
+         }");
+      $style = ($this->fields["use_cleancron"]) ? "" : "style='display: none '";
+      $notstyle = ($this->fields["use_cleancron"]) ? "style='display: none '" : "";
+
+      echo "<td class='center' id='show_cleancron_td1' $style>" . __("Action") . "</td>";
+      $actions = self::getValuesActionCron();
+      echo "<td id='show_cleancron_td2' $style>";
+      Dropdown::showFromArray("action_cleancron", $actions, array('value' => $this->fields["action_cleancron"]));
+      echo "</td>";
+
+      echo "<td colspan ='2' id='show_cleancron_td3' $notstyle></td>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1' id='show_cleancron_tr1' $style>";
+      echo "<td class='center'>" . __('Use automatic action restore deleted computer', 'ocsinventoryng') . "</td>";
+      echo "<td>";
+      Dropdown::showYesNo("use_restorationcron", $this->fields["use_restorationcron"], -1, array('on_change' => 'hide_show_restorecron(this.value);'));
+      echo "</td>";
+
+      echo Html::scriptBlock("
+         function hide_show_restorecron(val) {
+            var display = (val == 0) ? 'none' : '';
+            var notdisplay = (val == 0) ? '' : 'none';
+            document.getElementById('show_restorecron_td1').style.display = display;
+            document.getElementById('show_restorecron_td2').style.display = display;
+            document.getElementById('show_restorecron_td3').style.display = notdisplay;
+         }");
+      $style = ($this->fields["use_restorationcron"]) ? "" : "style='display: none '";
+      $notstyle = ($this->fields["use_restorationcron"]) ? "style='display: none '" : "";
+
+      echo "<td class='center' id='show_restorecron_td1' $style>" . __("Number of days for the restoration of computers from the date of last inventory", "ocsinventoryng") . "</td>";
+      echo "<td id='show_restorecron_td2' $style>";
+      Dropdown::showNumber("delay_restorationcron", array('value' => $this->fields["delay_restorationcron"]));
+      echo "</td>";
+
+      echo "<td colspan ='2' id='show_restorecron_td3' $notstyle></td>";
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
@@ -1248,6 +1294,36 @@ JAVASCRIPT;
       echo "</tr>";
 
       $this->showFormButtons($options);
+   }
+
+   /**
+    *
+    * @return type
+    */
+   static function getValuesActionCron(){
+      $values = array();
+      $values[self::ACTION_PURGE_COMPUTER] = self::getActionCronName(self::ACTION_PURGE_COMPUTER);
+      $values[self::ACTION_DELETE_COMPUTER] = self::getActionCronName(self::ACTION_DELETE_COMPUTER);
+
+      return $values;
+   }
+
+   /**
+    *
+    * @param type $value
+    * @return type
+    */
+   static function getActionCronName($value) {
+      switch ($value) {
+         case self::ACTION_PURGE_COMPUTER :
+            return __('Purge a computers in OCSNG', 'ocsinventoryng');
+
+         case self::ACTION_DELETE_COMPUTER :
+            return __('Delete a computers', 'ocsinventoryng');
+         default :
+            // Return $value if not define
+            return $value;
+      }
    }
    
    /**
@@ -2145,6 +2221,46 @@ JAVASCRIPT;
       //   Html::displayTitle($CFG_GLPI['root_doc']."/pics/warning.png", $message, $message);
       //   echo "</th></tr>";
       //}
+   }
+
+   /**
+    * Delete computers
+    *
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param type $agents
+    *
+    * @return int
+    */
+   static function deleteComputers($plugin_ocsinventoryng_ocsservers_id, $agents){
+
+      $ocslink = new PluginOcsinventoryngOcslink();
+      $computer = new Computer();
+
+      $nb = 0;
+      foreach ($agents as $key => $val) {
+         foreach ($val as $k => $agent) {
+            //search for OCS links
+            if ($ocslink->getFromDBByQuery("WHERE `ocsid` = '$agent' AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'")) {
+               //search computer
+               if ($computer->getFromDB($ocslink->fields['computers_id'])) {
+                  if(!$computer->fields['is_deleted']) {
+                     $computer->fields['is_deleted'] = 1;
+                     $computer->updateInDB(array('is_deleted'));
+                     //add history
+                     $changes[0] = 0;
+                     $changes[2] = "";
+                     $changes[1] = "";
+                     Log::history($ocslink->fields['computers_id'], 'Computer', $changes, 0,
+                                  Log::HISTORY_DELETE_ITEM);
+
+                     $nb += 1;
+                  }
+               }
+            }
+         }
+      }
+
+      return $nb;
    }
 
    /**
@@ -6391,6 +6507,9 @@ JAVASCRIPT;
          case 'CleanOldAgents':
             return array('description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Clean old agents & drop from OCSNG software', 'ocsinventoryng'));
             break;
+         case 'RestoreOldAgents':
+            return array('description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Restore computers from the date of last inventory', 'ocsinventoryng'));
+            break;
       }
    }
 
@@ -6420,19 +6539,38 @@ JAVASCRIPT;
             $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
             $agents = $ocsClient->getOldAgents();
 
-            $computers = array();
-            if (count($agents) > 0) {
+            if ($config['action_cleancron'] == self::ACTION_PURGE_COMPUTER) {
+               //action purge agents OCSNG
 
-               $nb = $ocsClient->deleteOldAgents($agents);
-               if ($nb) {
-                  self::manageDeleted($plugin_ocsinventoryng_ocsservers_id, false);
-                  $cron_status = 1;
-                  if ($task) {
-                     $task->addVolume($nb);
-                     $task->log(__('Clean old agents OK', 'ocsinventoryng'));
+               $computers = array();
+               if (count($agents) > 0) {
+
+                  $nb = $ocsClient->deleteOldAgents($agents);
+                  if ($nb) {
+                     self::manageDeleted($plugin_ocsinventoryng_ocsservers_id, false);
+                     $cron_status = 1;
+                     if ($task) {
+                        $task->addVolume($nb);
+                        $task->log(__('Clean old agents OK', 'ocsinventoryng'));
+                     }
+                  } else {
+                     $task->log(__('Clean old agents failed', 'ocsinventoryng'));
                   }
-               } else {
-                  $task->log(__('Clean old agents failed', 'ocsinventoryng'));
+               }
+            } else {
+               //action delete computers
+
+               if (count($agents) > 0) {
+                  $nb = self::deleteComputers($plugin_ocsinventoryng_ocsservers_id, $agents);
+                  if ($nb) {
+                     $cron_status = 1;
+                     if ($task) {
+                        $task->addVolume($nb);
+                        $task->log(__('Delete computers OK', 'ocsinventoryng'));
+                     }
+                  } else {
+                     $task->log(__('Delete computers failed', 'ocsinventoryng'));
+                  }
                }
             }
          }
@@ -6440,6 +6578,69 @@ JAVASCRIPT;
 
       return $cron_status;
    }
+
+   /**
+    *
+    * @global type $DB
+    * @global type $CFG_GLPI
+    * @param type $task
+    * @return int
+    */
+   static function cronRestoreOldAgents($task) {
+      global $DB, $CFG_GLPI;
+
+      $CronTask = new CronTask();
+      if ($CronTask->getFromDBbyName("PluginOcsinventoryngOcsServer", "RestoreOldAgents")) {
+         if ($CronTask->fields["state"] == CronTask::STATE_DISABLE) {
+            return 0;
+         }
+      } else {
+         return 0;
+      }
+
+      $cron_status                         = 0;
+      $plugin_ocsinventoryng_ocsservers_id = 0;
+      foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1 AND `use_cleancron` = 1 AND `use_restorationcron` = 1") as $config) {
+         $plugin_ocsinventoryng_ocsservers_id = $config["id"];
+         if ($plugin_ocsinventoryng_ocsservers_id > 0) {
+            $delay = $config['delay_restorationcron'];
+
+            $query = "SELECT `glpi_computers`.`id`
+                     FROM `glpi_computers` 
+                     INNER JOIN `glpi_plugin_ocsinventoryng_ocslinks` AS ocslink ON ocslink.`computers_id` = `glpi_computers`.`id`
+                     WHERE `glpi_computers`.`is_deleted` = 1 
+                     AND ( unix_timestamp(ocslink.`last_ocs_update`) >= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY))";
+
+
+            $result = $DB->query($query);
+            if ($DB->numrows($result) > 0) {
+               $computer = new Computer();
+               while ($data = $DB->fetch_assoc($result)) {
+                  $computer->fields['id']         = $data['id'];
+                  $computer->fields['is_deleted'] = 0;
+                  $computer->updateInDB(array('is_deleted'));
+                  //add history
+                  $changes[0] = 0;
+                  $changes[2] = "";
+                  $changes[1] = "";
+                  Log::history($data['id'], 'Computer', $changes, 0,
+                               Log::HISTORY_RESTORE_ITEM);
+//                  $computer->update(array('id' => $data['id'], 'is_deleted' => 0));
+               }
+               $cron_status = 1;
+               if ($task) {
+                  $task->addVolume($DB->numrows($result));
+                  $task->log(__('Restore computers OK', 'ocsinventoryng'));
+               }
+            } else {
+               $task->log(__('Restore computers failed', 'ocsinventoryng'));
+            }
+         }
+      }
+
+      return $cron_status;
+   }
+
 
    /**
     * @param $task
