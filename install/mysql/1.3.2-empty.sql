@@ -124,6 +124,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `importsnmp_computerprocessors` tinyint(1) NOT NULL DEFAULT '0',
   `importsnmp_computersoftwares` tinyint(1) NOT NULL DEFAULT '0',
   `importsnmp_computervm` tinyint(1) NOT NULL DEFAULT '0',
+  `import_uptime` tinyint(1) NOT NULL DEFAULT '0',
   `linksnmp_name` tinyint(1) NOT NULL DEFAULT '0',
   `linksnmp_serial` tinyint(1) NOT NULL DEFAULT '0',
   `linksnmp_comment` tinyint(1) NOT NULL DEFAULT '0',
