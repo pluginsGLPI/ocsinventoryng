@@ -814,7 +814,11 @@ JAVASCRIPT;
       Dropdown::showYesNo("import_uptime", $this->fields["import_uptime"]);
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Uptime Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/uptime) must be installed', 'ocsinventoryng')));
-      echo "&nbsp;</td><td colspan='2'></td></tr>\n";
+      echo "&nbsp;</td><td class='center'>" . __('Windows Update State', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_winupdatestate", $this->fields["import_winupdatestate"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Winupdate Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/winupdate) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
       echo __('No import: the plugin will not import these elements', 'ocsinventoryng');
@@ -1988,6 +1992,9 @@ JAVASCRIPT;
                if ($ocsConfig["import_antivirus"]) {
                   self::resetAntivirus($computers_id, $cfg_ocs);
                }
+               if ($ocsConfig["import_winupdatestate"]) {
+                  self::resetWinupdatestate($computers_id, $cfg_ocs);
+               }
                if ($ocsConfig["import_officepack"]) {
                   self::resetOfficePack($computers_id);
                }
@@ -2693,7 +2700,8 @@ JAVASCRIPT;
             $registry = false;
             $antivirus = false;
             $uptime = false;
-            $officepack      = false;
+            $officepack = false;
+            $winupdatestate = true;
             $virtualmachines = false;
             $mb = false;
             $controllers = false;
@@ -2851,6 +2859,10 @@ JAVASCRIPT;
                   $uptime = true;
                   $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_UPTIME;
                }
+               if ($cfg_ocs["import_winupdatestate"]) {
+                  $winupdatestate = true;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_WUPDATE;
+               }
                if ($mixed_checksum & pow(2, self::VIRTUALMACHINES_FL)) {
                   //no vm in ocs before 1.3
                   if (!($cfg_ocs['ocs_version'] < self::OCS1_3_VERSION_LIMIT)) {
@@ -2859,14 +2871,15 @@ JAVASCRIPT;
                   }
                }
 
-               if ($ocsCheck) {
+               if (count($ocsCheck) > 0) {
                   $ocsCheckResult = $ocsCheck[0];
-                  foreach ($ocsCheck as $ocsChecksum) {
+                  foreach ($ocsCheck as $k => $ocsChecksum) {
                      $ocsCheckResult = $ocsCheckResult | $ocsChecksum;
                   }
                } else {
                   $ocsCheckResult = 0;
                }
+               
                if (!isset($ocsWanted)) {
                   $ocsWanted = 0;
                }
@@ -2887,7 +2900,6 @@ JAVASCRIPT;
                      'PLUGINS'   => $ocsPluginsResult
                   ),
                );
-               
               
                $ocsComputer = $ocsClient->getComputer($line['ocsid'], $import_options);
 
@@ -3003,6 +3015,11 @@ JAVASCRIPT;
                if ($antivirus && isset($ocsComputer["SECURITYCENTER"])) {
                   //import registry entries not needed
                   self::updateAntivirus($line['computers_id'], $ocsComputer["SECURITYCENTER"], $cfg_ocs);
+               }
+               
+               if ($winupdatestate && isset($ocsComputer["WINUPDATESTATE"])) {
+                  //import registry entries not needed
+                  self::updateWinupdatestate($line['computers_id'], $ocsComputer["WINUPDATESTATE"], $cfg_ocs);
                }
                
                if ($uptime && isset($ocsComputer["UPTIME"])) {
@@ -5315,6 +5332,31 @@ JAVASCRIPT;
 //      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
 //         'is_dynamic' => 1));
    }
+   
+   /**
+    * Delete old Winupdatestate entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    *
+    * @param $cfg_ocs
+    * @return nothing .
+    */
+   static function resetWinupdatestate($glpi_computers_id, $cfg_ocs)
+   {
+      global $DB;
+//      TODO add history for antivirus
+//      if ($cfg_ocs['history_antivirus']) {
+      $table = getTableForItemType('PluginOcsinventoryngWinupdate');
+      $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `computers_id` = '" . $glpi_computers_id . "'";
+      $DB->query($query);
+//      }
+      //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//      $av = new ComputerAntivirus();
+//      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
+//         'is_dynamic' => 1));
+   }
 
    /**
     * Delete old licenses software entries
@@ -6306,7 +6348,45 @@ JAVASCRIPT;
 
       return;
    }
+   
+   
+   /**
+    * Update config of the Winupdatestate
+    *
+    * This function erase old data and import the new ones about Winupdate
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $cfg_ocs array : ocs config
+    * @internal param int $plugin_ocsinventoryng_ocsservers_id : ocs server id
+    * @internal param int $ocsid : ocs computer id (ID).
+    */
+   static function updateWinupdatestate($computers_id, $ocsComputer, $cfg_ocs)
+   {
 
+      self::resetWinupdatestate($computers_id, $cfg_ocs);
+
+      $CompWupdate = new PluginOcsinventoryngWinupdate();
+      //update data
+      foreach ($ocsComputer as $wup) {
+
+         $wupdate = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($wup));
+         $input = array();
+
+         $input["computers_id"] = $computers_id;
+         $input["auoptions"] = $wupdate["AUOPTIONS"];
+         $input["scheduleinstalldate"] = $wupdate["SCHEDULEDINSTALLDATE"];
+         $input["lastsuccesstime"] = $wupdate["LASTSUCCESSTIME"];
+         $input["detectsuccesstime"] = $wupdate["DETECTSUCCESSTIME"];
+         $input["downloadsuccesstime"] = $wupdate["DOWNLOADSUCCESSTIME"];
+
+         $CompWupdate->add($input, array('disable_unicity_check' => true));
+         unset($wup->fields);
+      }
+
+      return;
+   }
+   
    /**
     * @param $id
     * @param $ocsComputer
@@ -6318,9 +6398,9 @@ JAVASCRIPT;
 
       if ($id) {
 
-         if (isset($ocsComputer[0]["time"])) {
+         if (isset($ocsComputer["time"])) {
             $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                      SET `uptime` = '" . $ocsComputer[0]["time"] . "'
+                      SET `uptime` = '" . $ocsComputer["time"] . "'
                       WHERE `id` = '" . $id . "'";
 
             $DB->query($query);

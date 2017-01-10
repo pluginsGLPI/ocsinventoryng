@@ -372,11 +372,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                    WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                $request = $this->db->query($query);
                while ($up = $this->db->fetch_assoc($request)) {
-                  if ($multi) {
-                     $computers[$up['HARDWARE_ID']][strtoupper($table)][] = $up;
-                  } else {
-                     $computers[$up['HARDWARE_ID']][strtoupper($table)] = $up;
-                  }
+                  $computers[$up['HARDWARE_ID']][strtoupper($table)] = $up;
                }
             }
          } elseif (self::OcsTableExists("officepack") && $table == "officepack") {
@@ -391,6 +387,21 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PRODUCT"] = $meta["PRODUCT"];
                $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["OFFICEKEY"] = $meta["OFFICEKEY"];
                $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["NOTE"] = $meta["NOTE"];
+
+            }
+
+         } elseif (self::OcsTableExists("winupdatestate") && $table == "winupdatestate") {
+            
+            $query = "SELECT `winupdatestate`.* FROM `hardware`
+            INNER JOIN `winupdatestate` ON (`hardware`.`id` = `winupdatestate`.`HARDWARE_ID`)
+            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") " ;
+            $request = $this->db->query($query);
+            while ($meta = $this->db->fetch_assoc($request)) {
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["AUOPTIONS"] = $meta["AUOPTIONS"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SCHEDULEDINSTALLDATE"] = $meta["SCHEDULEDINSTALLDATE"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["LASTSUCCESSTIME"] = $meta["LASTSUCCESSTIME"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DETECTSUCCESSTIME"] = $meta["DETECTSUCCESSTIME"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DOWNLOADSUCCESSTIME"] = $meta["DOWNLOADSUCCESSTIME"];
 
             }
 
@@ -1011,6 +1022,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                         "securitycenter",
                         "uptime",
                         "officepack",
+                        "winupdatestate",
                         "slots",
                         "softwares",
                         "sounds",

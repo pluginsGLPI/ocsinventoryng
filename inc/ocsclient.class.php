@@ -63,6 +63,7 @@ abstract class PluginOcsinventoryngOcsClient
    const PLUGINS_SECURITY = 0x00001;
    const PLUGINS_UPTIME = 0x00002;
    const PLUGINS_OFFICE = 0x00003;
+   const PLUGINS_WUPDATE = 0x00004;
    const PLUGINS_ALL = 0x00010;
    
    private $id;
@@ -446,7 +447,11 @@ abstract class PluginOcsinventoryngOcsClient
          ),
          'uptime' => array(
             'plugins' => self::PLUGINS_UPTIME,
-            'multi' => 1,
+            'multi' => 0,
+         ),
+         'winupdatestate' => array(
+            'plugins' => self::PLUGINS_WUPDATE,
+            'multi' => 0,
          ),
          'officepack' => array(
             'plugins' => self::PLUGINS_OFFICE,

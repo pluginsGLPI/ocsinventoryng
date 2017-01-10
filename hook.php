@@ -931,6 +931,25 @@ function plugin_ocsinventoryng_install()
       $DB->queryOrDie($query, "1.3.2 update table glpi_plugin_ocsinventoryng_ocsservers add action_cleancron & use_restorationcron & delay_restorationcron");
    }
    
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','import_winupdatestate')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `import_winupdatestate` tinyint(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.3.2 update table glpi_plugin_ocsinventoryng_ocsservers add import_winupdatestate");
+      
+      $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_winupdates` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `computers_id` int(11) NOT NULL DEFAULT '0',
+              `auoptions` int(11) NOT NULL DEFAULT '0',
+              `scheduleinstalldate` datetime DEFAULT NULL,
+              `lastsuccesstime` datetime DEFAULT NULL,
+              `detectsuccesstime` datetime DEFAULT NULL,
+              `downloadsuccesstime` datetime DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              KEY `computers_id` (`computers_id`)
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+      $DB->queryOrDie($query, "1.3.2 create table glpi_plugin_ocsinventoryng_winupdates");
+   }
    /**/
 
    $cron = new CronTask();
@@ -996,6 +1015,7 @@ function plugin_ocsinventoryng_uninstall()
       "glpi_plugin_ocsinventoryng_notimportedcomputers",
       "glpi_plugin_ocsinventoryng_details",
       "glpi_plugin_ocsinventoryng_registrykeys",
+      "glpi_plugin_ocsinventoryng_winupdates",
       "glpi_plugin_ocsinventoryng_networkports",
       "glpi_plugin_ocsinventoryng_networkporttypes",
       "glpi_plugin_ocsinventoryng_ocsservers_profiles",
@@ -1129,6 +1149,8 @@ function plugin_ocsinventoryng_getDatabaseRelations()
          "glpi_computers"
          => array("glpi_plugin_ocsinventoryng_ocslinks" => "computers_id",
             "glpi_plugin_ocsinventoryng_registrykeys" => "computers_id"),
+            "glpi_plugin_ocsinventoryng_winupdates" => "computers_id"),
+
 
          "glpi_states"
          => array("glpi_plugin_ocsinventoryng_ocsservers" => "states_id_default"),

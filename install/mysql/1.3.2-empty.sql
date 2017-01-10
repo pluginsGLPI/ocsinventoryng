@@ -79,6 +79,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `import_registry` tinyint(1) NOT NULL DEFAULT '1',
   `import_antivirus` tinyint(1) NOT NULL DEFAULT '0',
   `import_officepack` tinyint(1) NOT NULL DEFAULT '0',
+  `import_winupdatestate` tinyint(1) NOT NULL DEFAULT '0',
   `import_os_serial` tinyint(1) NOT NULL DEFAULT '1',
   `import_ip` tinyint(1) NOT NULL DEFAULT '1',
   `import_disk` tinyint(1) NOT NULL DEFAULT '1',
@@ -161,7 +162,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   KEY `use_massimport` (`use_massimport`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-### Dump table glpi_registrykeys
+### Dump table glpi_plugin_ocsinventoryng_registrykeys
 
 DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_registrykeys`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_registrykeys` (
@@ -171,6 +172,21 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_registrykeys` (
   `path` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `value` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ocs_name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `computers_id` (`computers_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+### Dump table glpi_plugin_ocsinventoryng_computerwinupdates
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_winupdates`;
+CREATE TABLE `glpi_plugin_ocsinventoryng_winupdates` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `computers_id` int(11) NOT NULL DEFAULT '0',
+  `auoptions` int(11) NOT NULL DEFAULT '0',
+  `scheduleinstalldate` datetime DEFAULT NULL,
+  `lastsuccesstime` datetime DEFAULT NULL,
+  `detectsuccesstime` datetime DEFAULT NULL,
+  `downloadsuccesstime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `computers_id` (`computers_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

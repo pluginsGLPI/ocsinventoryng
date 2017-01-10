@@ -406,7 +406,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                            'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE,
                            'PLUGINS' => PluginOcsinventoryngOcsClient::PLUGINS_ALL
                         ),
-                        'COMPLETE' => 0
+                        'COMPLETE' => 1
                      );
                      $computer = array();
                      $checksum_client = 0;

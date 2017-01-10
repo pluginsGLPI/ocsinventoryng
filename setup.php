@@ -67,7 +67,11 @@ function plugin_init_ocsinventoryng()
 
    Plugin::registerClass('PluginOcsinventoryngRegistryKey',
       array('addtabon' => 'Computer'));
-
+   
+   if (TableExists('glpi_plugin_ocsinventoryng_winupdates')) {
+      Plugin::registerClass('PluginOcsinventoryngWinupdate',
+         array('addtabon' => 'Computer'));
+   } 
    Plugin::registerClass('PluginOcsinventoryngOcsServer',
       array('massiveaction_noupdate_types' => true,
          'systeminformations_types' => true));
