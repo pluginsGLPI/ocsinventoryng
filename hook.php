@@ -1148,7 +1148,7 @@ function plugin_ocsinventoryng_getDatabaseRelations()
 
          "glpi_computers"
          => array("glpi_plugin_ocsinventoryng_ocslinks" => "computers_id",
-            "glpi_plugin_ocsinventoryng_registrykeys" => "computers_id"),
+            "glpi_plugin_ocsinventoryng_registrykeys" => "computers_id",
             "glpi_plugin_ocsinventoryng_winupdates" => "computers_id"),
 
 
