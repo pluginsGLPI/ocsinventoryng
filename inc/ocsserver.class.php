@@ -2252,7 +2252,8 @@ JAVASCRIPT;
                if ($computer->getFromDB($ocslink->fields['computers_id'])) {
                   if(!$computer->fields['is_deleted']) {
                      $computer->fields['is_deleted'] = 1;
-                     $computer->updateInDB(array('is_deleted'));
+                     $computer->fields['date_mod'] = $_SESSION['glpi_currenttime'];
+                     $computer->updateInDB(array('is_deleted', 'date_mod'));
                      //add history
                      $changes[0] = 0;
                      $changes[2] = "";
@@ -6594,6 +6595,8 @@ JAVASCRIPT;
    }
 
    /**
+    * cron Clean Old Agents
+    * 
     * @param $task
     * @return int
     */
@@ -6660,7 +6663,8 @@ JAVASCRIPT;
    }
 
    /**
-    *
+    * cron Restore Old Agents
+    * 
     * @global type $DB
     * @global type $CFG_GLPI
     * @param type $task
@@ -6680,14 +6684,16 @@ JAVASCRIPT;
 
       $cron_status                         = 0;
       $plugin_ocsinventoryng_ocsservers_id = 0;
-      foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1 AND `use_cleancron` = 1 AND `use_restorationcron` = 1") as $config) {
+      foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers", 
+                           "`is_active` = 1 AND `use_cleancron` = 1 AND `use_restorationcron` = 1") as $config) {
          $plugin_ocsinventoryng_ocsservers_id = $config["id"];
          if ($plugin_ocsinventoryng_ocsservers_id > 0) {
             $delay = $config['delay_restorationcron'];
 
             $query = "SELECT `glpi_computers`.`id`
                      FROM `glpi_computers` 
-                     INNER JOIN `glpi_plugin_ocsinventoryng_ocslinks` AS ocslink ON ocslink.`computers_id` = `glpi_computers`.`id`
+                     INNER JOIN `glpi_plugin_ocsinventoryng_ocslinks` AS ocslink 
+                        ON ocslink.`computers_id` = `glpi_computers`.`id`
                      WHERE `glpi_computers`.`is_deleted` = 1 
                      AND ( unix_timestamp(ocslink.`last_ocs_update`) >= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY))";
 
@@ -6698,7 +6704,8 @@ JAVASCRIPT;
                while ($data = $DB->fetch_assoc($result)) {
                   $computer->fields['id']         = $data['id'];
                   $computer->fields['is_deleted'] = 0;
-                  $computer->updateInDB(array('is_deleted'));
+                  $computer->fields['date_mod'] = $_SESSION['glpi_currenttime'];
+                  $computer->updateInDB(array('is_deleted', 'date_mod'));
                   //add history
                   $changes[0] = 0;
                   $changes[2] = "";
