@@ -1320,10 +1320,10 @@ JAVASCRIPT;
    static function getActionCronName($value) {
       switch ($value) {
          case self::ACTION_PURGE_COMPUTER :
-            return __('Purge a computers in OCSNG', 'ocsinventoryng');
+            return __('Purge computers in OCSNG', 'ocsinventoryng');
 
          case self::ACTION_DELETE_COMPUTER :
-            return __('Delete a computers', 'ocsinventoryng');
+            return __('Delete computers', 'ocsinventoryng');
          default :
             // Return $value if not define
             return $value;
