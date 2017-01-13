@@ -1034,9 +1034,10 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                      );
                      if (isset($tables) and is_array($tables)) {
                         foreach ($tables as $table) {
-
-                           $sql = "DELETE FROM $table WHERE HARDWARE_ID='" . $agent . "'";
-                           $this->db->query($sql);
+                           if(self::OcsTableExists($table)){
+                              $sql = "DELETE FROM $table WHERE HARDWARE_ID='" . $agent . "'";
+                              $this->db->query($sql);
+                           }
                         }
                      }
                      $sql = "DELETE FROM download_enable WHERE SERVER_ID='" . $agent . "'";
