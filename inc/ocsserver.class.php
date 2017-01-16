@@ -5836,22 +5836,24 @@ JAVASCRIPT;
                   //---- The software exists in this license for this computer --------------//
                   //---------------------------- Update comments ----------------------------//
                   //---------------------------------------------------- --------------------//
-                  if ($software_licenses->getFromDBByQuery("WHERE `softwares_id` = " . $softwares_id . " 
-                                                         AND `serial` = '" . $ocsOfficePack['OFFICEKEY'] . "'
-                                                         AND `softwareversions_id_use` = " . $softwareversions_id)) {
+                  if(!empty($ocsOfficePack['OFFICEKEY'])){
+                     if ($software_licenses->getFromDBByQuery("WHERE `softwares_id` = " . $softwares_id . " 
+                                                            AND `serial` = '" . $ocsOfficePack['OFFICEKEY'] . "'
+                                                            AND `softwareversions_id_use` = " . $softwareversions_id)) {
 
-                     $software_licenses->update(array('id'      => $software_licenses->getID(),
-                                                      'comment' => $ocsOfficePack['NOTE']));
-                     if (!$computer_softwarelicenses->getFromDBByQuery("WHERE `computers_id` = " . $computers_id . "
-                           AND `softwarelicenses_id` = " . $software_licenses->getID())) {
-
-                        $computer_soft_l['computers_id']        = $computers_id;
-                        $computer_soft_l['softwarelicenses_id'] = $software_licenses->getID();
-                        $computer_soft_l['is_dynamic']          = -1;
-                        $computer_softwarelicenses->add($computer_soft_l);
-                        //Update for validity
                         $software_licenses->update(array('id'      => $software_licenses->getID(),
-                                                      'is_valid' => 1));
+                                                         'comment' => $ocsOfficePack['NOTE']));
+                        if (!$computer_softwarelicenses->getFromDBByQuery("WHERE `computers_id` = " . $computers_id . "
+                              AND `softwarelicenses_id` = " . $software_licenses->getID())) {
+
+                           $computer_soft_l['computers_id']        = $computers_id;
+                           $computer_soft_l['softwarelicenses_id'] = $software_licenses->getID();
+                           $computer_soft_l['is_dynamic']          = -1;
+                           $computer_softwarelicenses->add($computer_soft_l);
+                           //Update for validity
+                           $software_licenses->update(array('id'      => $software_licenses->getID(),
+                                                         'is_valid' => 1));
+                        }
                      }
                   }
 
@@ -5860,25 +5862,27 @@ JAVASCRIPT;
                   //------------------------------------------------------------------------//
                   //---- The software doesn't exists in this license for this computer -----//
                   //------------------------------------------------------------------------//
-                   if ($software_licenses->getFromDBByQuery("WHERE `softwares_id` = " . $softwares_id . " 
-                                                         AND `serial` = '" . $ocsOfficePack['OFFICEKEY'] . "'
-                                                         AND `softwareversions_id_use` = " . $softwareversions_id)) {
-                     $id_software_licenses = $software_licenses->getID();
-                   } else {
-                      $software_licenses->fields['softwares_id'] = $softwares_id;
-                      $id_software_licenses                      = $software_licenses->add($soft_l, array(), $cfg_ocs['history_software']);
-                   }
+                  if(!empty($ocsOfficePack['OFFICEKEY'])){
+                     if ($software_licenses->getFromDBByQuery("WHERE `softwares_id` = " . $softwares_id . " 
+                                                           AND `serial` = '" . $ocsOfficePack['OFFICEKEY'] . "'
+                                                           AND `softwareversions_id_use` = " . $softwareversions_id)) {
+                       $id_software_licenses = $software_licenses->getID();
+                     } else {
+                        $software_licenses->fields['softwares_id'] = $softwares_id;
+                        $id_software_licenses                      = $software_licenses->add($soft_l, array(), $cfg_ocs['history_software']);
+                     }
 
-                  if ($id_software_licenses) {
-                     $computer_soft_l['computers_id']        = $computers_id;
-                     $computer_soft_l['softwarelicenses_id'] = $id_software_licenses;
-                     $computer_soft_l['is_dynamic']          = 1;
-                     $computer_soft_l['number']              = -1;
+                    if ($id_software_licenses) {
+                       $computer_soft_l['computers_id']        = $computers_id;
+                       $computer_soft_l['softwarelicenses_id'] = $id_software_licenses;
+                       $computer_soft_l['is_dynamic']          = 1;
+                       $computer_soft_l['number']              = -1;
 
-                     $computer_softwarelicenses->add($computer_soft_l);
-                     //Update for validity
-                        $software_licenses->update(array('id'      => $id_software_licenses,
-                                                      'is_valid' => 1));
+                       $computer_softwarelicenses->add($computer_soft_l);
+                       //Update for validity
+                          $software_licenses->update(array('id'      => $id_software_licenses,
+                                                        'is_valid' => 1));
+                    }
                   }
                }
             }

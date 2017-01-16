@@ -1284,7 +1284,6 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype)
          $sopt[10003]['massiveaction'] = false;
          $sopt[10003]['joinparams'] = array('jointype' => 'child');
 
-
          $sopt[10001]['table'] = 'glpi_plugin_ocsinventoryng_ocslinks';
          $sopt[10001]['field'] = 'use_auto_update';
          $sopt[10001]['linkfield'] = '_auto_update_ocs'; // update through compter update process
@@ -1325,7 +1324,14 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype)
          $sopt[10008]['datatype'] = 'string';
          $sopt[10008]['massiveaction'] = false;
          $sopt[10008]['joinparams'] = array('jointype' => 'child');
-
+         
+         $sopt[10009]['table'] = 'glpi_plugin_ocsinventoryng_ocslinks';
+         $sopt[10009]['field'] = 'uptime';
+         $sopt[10009]['name'] = __('Uptime', 'ocsinventoryng');
+         $sopt[10009]['datatype'] = 'string';
+         $sopt[10009]['massiveaction'] = false;
+         $sopt[10009]['joinparams'] = array('jointype' => 'child');
+         
          //$sopt['registry']           = __('Registry', 'ocsinventoryng');
 
          $sopt[10010]['table'] = 'glpi_plugin_ocsinventoryng_registrykeys';
