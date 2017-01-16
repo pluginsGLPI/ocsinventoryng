@@ -3160,6 +3160,7 @@ JAVASCRIPT;
             //Enable For GLPI 9.1
             if ((!in_array("operatingsystemarchitectures_id", $options['computers_updates']))
                && FieldExists("glpi_computers", "operatingsystemarchitectures_id")
+                  && isset($hardware["ARCH"])
             ) {
                $compupdate["operatingsystemarchitectures_id"] = Dropdown::importExternal('OperatingSystemArchitecture', self::encodeOcsDataInUtf8($is_utf8, $hardware["ARCH"]));
             }
