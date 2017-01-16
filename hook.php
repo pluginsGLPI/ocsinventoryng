@@ -1098,6 +1098,9 @@ function plugin_ocsinventoryng_uninstall()
    if ($cron->getFromDBbyName('PluginOcsinventoryngOcsServer', 'CleanOldAgents')) {
       CronTask::Unregister('CleanOldAgents');
    }
+   if ($cron->getFromDBbyName('PluginOcsinventoryngOcsServer', 'RestoreOldAgents')) {
+      CronTask::Unregister('RestoreOldAgents');
+   }
 
    //Delete rights associated with the plugin
    $profileRight = new ProfileRight();

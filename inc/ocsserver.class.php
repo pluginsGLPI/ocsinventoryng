@@ -2332,7 +2332,8 @@ JAVASCRIPT;
          $ocs_val = null;
          if (array_key_exists($ocs_field, $ocs_fields[$ocs_section])) {
             $ocs_val = $ocs_fields[$ocs_section][$ocs_field];
-         } else if (array_key_exists($ocs_field, $ocs_fields[$ocs_section][0])) {
+         } else if (isset($ocs_fields[$ocs_section][0]) 
+            && array_key_exists($ocs_field, $ocs_fields[$ocs_section][0])) {
             $ocs_val = $ocs_fields[$ocs_section][0][$ocs_field];
          }
 
