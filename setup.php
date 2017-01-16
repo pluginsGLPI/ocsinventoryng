@@ -83,6 +83,11 @@ function plugin_init_ocsinventoryng()
       array('massiveaction_noupdate_types' => true,
          'massiveaction_nodelete_types' => true,
          'notificationtemplates_types' => true));
+   
+   Plugin::registerClass('PluginOcsinventoryngRuleImportEntity',
+      array('massiveaction_noupdate_types' => true,
+            'massiveaction_nodelete_types' => true,
+            'notificationtemplates_types' => true));
 
    Plugin::registerClass('PluginOcsinventoryngDetail',
       array('massiveaction_noupdate_types' => true,

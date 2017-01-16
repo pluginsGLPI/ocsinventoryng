@@ -1291,6 +1291,16 @@ JAVASCRIPT;
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
+      echo "<td class='center'>" . __('Use automatic action to check entity assignment rules', 'ocsinventoryng');
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Use automatic action to check and send a notification for machines that no longer respond the entity and location assignment rules', 'ocsinventoryng')));
+      echo "</td>";
+      echo "<td colspan='3'>";
+      Dropdown::showYesNo("use_checkruleimportentity", $this->fields["use_checkruleimportentity"]);
+      echo "</td>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1'>";
       echo "<td class='center'>" . __('Use automatic locks', 'ocsinventoryng') . "</td>";
       echo "<td colspan='3'>";
       Dropdown::showYesNo("use_locks", $this->fields["use_locks"]);
@@ -5805,7 +5815,7 @@ JAVASCRIPT;
       if (count($ocsOfficePacks) > 0) {
          foreach ($ocsOfficePacks as $ocsOfficePack) {
             $ocsOfficePack = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsOfficePack));
-
+            
             $query1 = "SELECT `glpi_softwares`.`id` AS softwares_id,
                               `glpi_softwareversions`.`id` AS softwareversions_id,
                               `glpi_softwareversions`.`name` AS softwareversions_name

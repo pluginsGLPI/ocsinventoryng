@@ -63,6 +63,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 
    public function getComputerRule($id, $tables = array())
    {
+      $computers = array();
 
       $query = "SELECT `hardware`.*,`accountinfo`.`TAG` FROM `hardware`
             INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)

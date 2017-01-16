@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-12 14:52+0100\n"
-"PO-Revision-Date: 2017-01-12 15:18+0100\n"
+"POT-Creation-Date: 2017-01-16 18:17+0100\n"
+"PO-Revision-Date: 2017-01-16 18:28+0100\n"
 "Last-Translator: Amandine Manceau <amandine.manceau@infotel.com>\n"
 "Language-Team: English (http://www.transifex.com/yllen/GLPI_ocsinventoryng/language/en/)\n"
 "MIME-Version: 1.0\n"
@@ -18,128 +18,133 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.8.5\n"
 
-#: hook.php:1123 front/notimportedcomputer.php:34 inc/menu.class.php:97 inc/notificationtargetnotimportedcomputer.class.php:46
+#: hook.php:1206 front/notimportedcomputer.php:34 inc/menu.class.php:97 inc/notificationtargetnotimportedcomputer.class.php:46
 #: inc/notificationtargetnotimportedcomputer.class.php:99 inc/ocsserver.class.php:509 inc/ocsserver.class.php:510
 #: inc/ocsserver.class.php:511 inc/thread.class.php:123 inc/thread.class.php:329
 msgid "Computers not imported by automatic actions"
 msgstr "Computers not imported by automatic actions"
 
-#: hook.php:1218
+#: hook.php:1301
 msgid "Restart import"
 msgstr "Restart import"
 
-#: hook.php:1219
+#: hook.php:1302
 msgid "Import in the entity"
 msgstr "Import in the entity"
 
-#: hook.php:1224
+#: hook.php:1307
 msgid "Delete computer in OCSNG"
 msgstr "Delete computer in OCSNG"
 
-#: hook.php:1236
+#: hook.php:1319
 msgid "Force synchronization OCSNG"
 msgstr "Force synchronization OCSNG"
 
-#: hook.php:1238
+#: hook.php:1321
 msgid "Lock fields"
 msgstr "Lock fields"
 
-#: hook.php:1240
+#: hook.php:1323
 msgid "Unlock fields"
 msgstr "Unlock fields"
 
-#: hook.php:1251
+#: hook.php:1334
 msgid "Update networkport types"
 msgstr "Update networkport types"
 
-#: hook.php:1275 inc/ocslink.class.php:114
+#: hook.php:1358 inc/ocslink.class.php:114
 msgid "GLPI import date"
 msgstr "GLPI import date"
 
-#: hook.php:1282 inc/ipdiscoverocslink.class.php:1390 inc/notimportedcomputer.class.php:93 inc/notimportedcomputer.class.php:288
-#: inc/ocslink.class.php:109 inc/ocsserver.class.php:3728
+#: hook.php:1365 inc/ipdiscoverocslink.class.php:1390 inc/notimportedcomputer.class.php:93 inc/notimportedcomputer.class.php:288
+#: inc/ocslink.class.php:109 inc/ocsserver.class.php:3740
 msgid "Last OCSNG inventory date"
 msgstr "Last OCSNG inventory date"
 
-#: hook.php:1291 inc/ocslink.class.php:151 inc/ocslink.class.php:357
+#: hook.php:1373 inc/ocslink.class.php:151 inc/ocslink.class.php:357
 msgid "Automatic update OCSNG"
 msgstr "Automatic update OCSNG"
 
-#: hook.php:1297 inc/notimportedcomputer.class.php:84 inc/notimportedcomputer.class.php:258 inc/ocslink.class.php:111
+#: hook.php:1379 inc/notimportedcomputer.class.php:84 inc/notimportedcomputer.class.php:258 inc/ocslink.class.php:111
 msgid "Inventory agent"
 msgstr "Inventory agent"
 
-#: hook.php:1303 hook.php:1512 hook.php:1565 inc/notificationtargetnotimportedcomputer.class.php:97 inc/notimportedcomputer.class.php:81
-#: inc/notimportedcomputer.class.php:273 inc/ocslink.class.php:142 inc/ocslink.class.php:350 inc/ocsserver.class.php:4116
+#: hook.php:1385 hook.php:1601 hook.php:1654 inc/notificationtargetnotimportedcomputer.class.php:97 inc/notimportedcomputer.class.php:81
+#: inc/notimportedcomputer.class.php:273 inc/ocslink.class.php:142 inc/ocslink.class.php:350 inc/ocsserver.class.php:4128
 msgid "OCSNG TAG"
 msgstr "OCSNG TAG"
 
-#: hook.php:1310 inc/notificationtargetnotimportedcomputer.class.php:101 inc/notimportedcomputer.class.php:68
+#: hook.php:1392 inc/notificationtargetnotimportedcomputer.class.php:101 inc/notimportedcomputer.class.php:68
 #: inc/notimportedcomputer.class.php:245
 msgid "OCSNG ID"
 msgstr "OCSNG ID"
 
-#: hook.php:1317 inc/ocslink.class.php:127
+#: hook.php:1399 inc/ocslink.class.php:127
 msgid "Last OCSNG connection date"
 msgstr "Last OCSNG connection date"
 
-#: hook.php:1324 inc/ocslink.class.php:134
+#: hook.php:1406 inc/ocslink.class.php:134
 msgid "IP Source"
 msgstr "IP Source"
 
-#: hook.php:1333 hook.php:1342 inc/ocsserver.class.php:785 inc/registrykey.class.php:49 inc/registrykey.class.php:117
+#: hook.php:1413 inc/ocslink.class.php:164 inc/ocslink.class.php:249 inc/ocslink.class.php:364 inc/ocsserver.class.php:813
+#: inc/snmpocslink.class.php:512 inc/snmpocslink.class.php:687
+msgid "Uptime"
+msgstr "Uptime"
+
+#: hook.php:1422 hook.php:1431 inc/ocsserver.class.php:785 inc/registrykey.class.php:49 inc/registrykey.class.php:117
 msgid "Registry"
 msgstr "Registry"
 
-#: hook.php:1334 inc/registrykey.class.php:101
+#: hook.php:1423 inc/registrykey.class.php:101
 msgid "Key/Value"
 msgstr "Key/Value"
 
-#: hook.php:1343 inc/notimportedcomputer.class.php:250
+#: hook.php:1432 inc/notimportedcomputer.class.php:250
 msgid "OCSNG name"
 msgstr "OCSNG name"
 
-#: hook.php:1522 hook.php:1558 inc/config.class.php:115 inc/ocsserver.class.php:117 inc/ocsserver.class.php:323 inc/ocsserver.class.php:444
+#: hook.php:1611 hook.php:1647 inc/config.class.php:115 inc/ocsserver.class.php:117 inc/ocsserver.class.php:323 inc/ocsserver.class.php:444
 #: inc/profile.class.php:312 inc/thread.class.php:45
 msgid "OCSNG server"
 msgid_plural "OCSNG servers"
 msgstr[0] "OCSNG server"
 msgstr[1] "OCSNG servers"
 
-#: hook.php:1599 inc/ocslink.class.php:54 inc/ocslink.class.php:339 inc/ocslink.class.php:481 inc/ocslink.class.php:494
+#: hook.php:1688 inc/ocslink.class.php:54 inc/ocslink.class.php:339 inc/ocslink.class.php:481 inc/ocslink.class.php:494
 #: inc/ocslink.class.php:507 inc/ocslink.class.php:690
 msgid "OCSNG link"
 msgid_plural "OCSNG links"
 msgstr[0] "OCSNG link"
 msgstr[1] "OCSNG links"
 
-#: hook.php:1776
+#: hook.php:1865
 msgid "Link possible"
 msgstr "Link possible"
 
-#: hook.php:1780
+#: hook.php:1869
 msgid "Import refused"
 msgstr "Import refused"
 
-#: hook.php:1784
+#: hook.php:1873
 msgid "New computer created in GLPI"
 msgstr "New computer created in GLPI"
 
-#: hook.php:1796
+#: hook.php:1885
 msgid "Link with computer"
 msgstr "Link with computer"
 
-#: hook.php:2018
+#: hook.php:2107
 msgid "Locked field"
 msgid_plural "Locked fields"
 msgstr[0] "Locked field"
 msgstr[1] "Locked fields"
 
-#: hook.php:2031
+#: hook.php:2120
 msgid "You don't use locks - See setup for activate them"
 msgstr "You don't use locks - See setup for activate them"
 
-#: hook.php:2256
+#: hook.php:2345
 msgid "The startup date field is locked by ocsinventoryng please unlock it before update."
 msgstr "The startup date field is locked by ocsinventoryng please unlock it before update."
 
@@ -177,7 +182,7 @@ msgstr[0] "Unknown imported network port type"
 msgstr[1] "Unknown imported network ports types"
 
 #: front/ocsng.clean.php:53 inc/menu.class.php:110 inc/ocsserver.class.php:532 inc/ocsserver.class.php:533 inc/ocsserver.class.php:534
-#: inc/ocsserver.class.php:3462 inc/profile.class.php:323
+#: inc/ocsserver.class.php:3474 inc/profile.class.php:323
 msgid "Clean links between GLPI and OCSNG"
 msgstr "Clean links between GLPI and OCSNG"
 
@@ -287,19 +292,19 @@ msgstr "Thread"
 msgid "Rules checked"
 msgstr "Rules checked"
 
-#: inc/detail.class.php:173 inc/ocsserver.class.php:6814
+#: inc/detail.class.php:173 inc/ocsserver.class.php:6836
 msgid "Computers imported"
 msgstr "Computers imported"
 
-#: inc/detail.class.php:176 inc/ocsserver.class.php:6816 inc/thread.class.php:122 inc/thread.class.php:328
+#: inc/detail.class.php:176 inc/ocsserver.class.php:6838 inc/thread.class.php:122 inc/thread.class.php:328
 msgid "Computers linked"
 msgstr "Computers linked"
 
-#: inc/detail.class.php:179 inc/ocsserver.class.php:6817 inc/thread.class.php:125 inc/thread.class.php:330
+#: inc/detail.class.php:179 inc/ocsserver.class.php:6839 inc/thread.class.php:125 inc/thread.class.php:330
 msgid "Computers not updated"
 msgstr "Computers not updated"
 
-#: inc/detail.class.php:182 inc/ocsserver.class.php:6815 inc/thread.class.php:121 inc/thread.class.php:327
+#: inc/detail.class.php:182 inc/ocsserver.class.php:6837 inc/thread.class.php:121 inc/thread.class.php:327
 msgid "Computers synchronized"
 msgstr "Computers synchronized"
 
@@ -315,8 +320,8 @@ msgstr "Asset Tag"
 msgid "IPDiscover Import"
 msgstr "IPDiscover Import"
 
-#: inc/ipdiscoverocslink.class.php:350 inc/ocsserver.class.php:280 inc/ocsserver.class.php:401 inc/ocsserver.class.php:5187
-#: inc/ocsserver.class.php:5208 inc/snmpocslink.class.php:369
+#: inc/ipdiscoverocslink.class.php:350 inc/ocsserver.class.php:280 inc/ocsserver.class.php:401 inc/ocsserver.class.php:5199
+#: inc/ocsserver.class.php:5220 inc/snmpocslink.class.php:369
 msgid "Choice of an OCSNG server"
 msgstr "Choice of an OCSNG server"
 
@@ -390,8 +395,8 @@ msgctxt "button"
 msgid "Delete link"
 msgstr "Delete link"
 
-#: inc/ipdiscoverocslink.class.php:1424 inc/ocslink.class.php:217 inc/ocslink.class.php:274 inc/ocsserver.class.php:3482
-#: inc/ocsserver.class.php:3727 inc/snmpocslink.class.php:492 inc/snmpocslink.class.php:649 inc/snmpocslink.class.php:787
+#: inc/ipdiscoverocslink.class.php:1424 inc/ocslink.class.php:217 inc/ocslink.class.php:274 inc/ocsserver.class.php:3494
+#: inc/ocsserver.class.php:3739 inc/snmpocslink.class.php:492 inc/snmpocslink.class.php:649 inc/snmpocslink.class.php:787
 #: inc/snmpocslink.class.php:2510
 msgid "Import date in GLPI"
 msgstr "Import date in GLPI"
@@ -428,7 +433,7 @@ msgstr "Item to link"
 msgid "Configuration of OCSNG server"
 msgstr "Configuration of OCSNG server"
 
-#: inc/menu.class.php:77 inc/ocsserver.class.php:458 inc/ocsserver.class.php:459 inc/ocsserver.class.php:460 inc/ocsserver.class.php:3966
+#: inc/menu.class.php:77 inc/ocsserver.class.php:458 inc/ocsserver.class.php:459 inc/ocsserver.class.php:460 inc/ocsserver.class.php:3978
 msgid "Import new computers"
 msgstr "Import new computers"
 
@@ -436,7 +441,7 @@ msgstr "Import new computers"
 msgid "Synchronize computers already imported"
 msgstr "Synchronize computers already imported"
 
-#: inc/menu.class.php:85 inc/ocsserver.class.php:498 inc/ocsserver.class.php:499 inc/ocsserver.class.php:500 inc/ocsserver.class.php:3968
+#: inc/menu.class.php:85 inc/ocsserver.class.php:498 inc/ocsserver.class.php:499 inc/ocsserver.class.php:500 inc/ocsserver.class.php:3980
 msgid "Link new OCSNG computers to existing GLPI computers"
 msgstr "Link new OCSNG computers to existing GLPI computers"
 
@@ -468,7 +473,7 @@ msgstr "Inventory Import"
 msgid "SNMP Import"
 msgstr "SNMP Import"
 
-#: inc/menu.class.php:198 inc/ocsserver.class.php:5211
+#: inc/menu.class.php:198 inc/ocsserver.class.php:5223
 msgid "No OCSNG server defined"
 msgstr "No OCSNG server defined"
 
@@ -546,6 +551,26 @@ msgstr "Create"
 msgid "Device ID"
 msgstr "Device ID"
 
+#: inc/notificationtargetruleimportentity.class.php:45 inc/ruleimportentity.class.php:49
+msgid "Elements not match with the rule"
+msgstr "Elements not match with the rule"
+
+#: inc/notificationtargetruleimportentity.class.php:53
+msgid "Elements not match with the rule by automatic actions"
+msgstr "Elements not match with the rule by automatic actions"
+
+#: inc/notificationtargetruleimportentity.class.php:64
+msgid "Verification of assignment rules for entities and locations"
+msgstr "Verification of assignment rules for entities and locations"
+
+#: inc/notificationtargetruleimportentity.class.php:85
+msgid "No rules match"
+msgstr "No rules match"
+
+#: inc/notificationtargetruleimportentity.class.php:126
+msgid "Data error"
+msgstr "Data error"
+
 #: inc/notimportedcomputer.class.php:65
 msgid "Verified rules"
 msgstr "Verified rules"
@@ -570,8 +595,8 @@ msgstr "Actions to be made on the computer"
 msgid "Send OCSNG not imported computers alert failed"
 msgstr "Send OCSNG not imported computers alert failed"
 
-#: inc/notimportedcomputer.class.php:656 inc/ocslink.class.php:416 inc/ocsserver.class.php:6585 inc/ocsserver.class.php:6588
-#: inc/ocsserver.class.php:6591 inc/profile.class.php:55 inc/thread.class.php:612
+#: inc/notimportedcomputer.class.php:656 inc/ocslink.class.php:416 inc/ocsserver.class.php:6601 inc/ocsserver.class.php:6604
+#: inc/ocsserver.class.php:6607 inc/profile.class.php:55 inc/ruleimportentity.class.php:61 inc/thread.class.php:612
 msgid "OCSNG"
 msgstr "OCSNG"
 
@@ -582,11 +607,6 @@ msgstr "Not imported computers alert"
 #: inc/ocslink.class.php:107
 msgid "OCS Inventory NG Import informations"
 msgstr "OCS Inventory NG Import informations"
-
-#: inc/ocslink.class.php:164 inc/ocslink.class.php:249 inc/ocslink.class.php:364 inc/ocsserver.class.php:813 inc/snmpocslink.class.php:512
-#: inc/snmpocslink.class.php:687
-msgid "Uptime"
-msgstr "Uptime"
 
 #: inc/ocslink.class.php:180
 msgid "OCS NG Interface"
@@ -853,7 +873,7 @@ msgstr "Default status"
 msgid "Behavior when disconnecting"
 msgstr "Behavior when disconnecting"
 
-#: inc/ocsserver.class.php:1091 inc/ocsserver.class.php:8044
+#: inc/ocsserver.class.php:1091 inc/ocsserver.class.php:8066
 msgid "Use the OCSNG software dictionary"
 msgstr "Use the OCSNG software dictionary"
 
@@ -907,7 +927,7 @@ msgctxt "button"
 msgid "Reload Checksum"
 msgstr "Reload Checksum"
 
-#: inc/ocsserver.class.php:1203 inc/ocsserver.class.php:8042
+#: inc/ocsserver.class.php:1203 inc/ocsserver.class.php:8064
 msgid "Host"
 msgstr "Host"
 
@@ -932,252 +952,260 @@ msgid "Number of days for the restoration of computers from the date of last inv
 msgstr "Number of days for the restoration of computers from the date of last inventory"
 
 #: inc/ocsserver.class.php:1294
+msgid "Use automatic action to check entity assignment rules"
+msgstr "Use automatic action to check entity assignment rules"
+
+#: inc/ocsserver.class.php:1296
+msgid "Use automatic action to check and send a notification for machines that no longer respond the entity and location assignment rules"
+msgstr "Use automatic action to check and send a notification for machines that no longer respond the entity and location assignment rules"
+
+#: inc/ocsserver.class.php:1304
 msgid "Use automatic locks"
 msgstr "Use automatic locks"
 
-#: inc/ocsserver.class.php:1323
+#: inc/ocsserver.class.php:1333
 msgid "Purge computers in OCSNG"
 msgstr "Purge computers in OCSNG"
 
-#: inc/ocsserver.class.php:1326
+#: inc/ocsserver.class.php:1336
 msgid "Delete computers"
 msgstr "Delete computers"
 
-#: inc/ocsserver.class.php:1351
+#: inc/ocsserver.class.php:1361
 msgid "Connecting to the database"
 msgstr "Connecting to the database"
 
-#: inc/ocsserver.class.php:1355
+#: inc/ocsserver.class.php:1365
 msgid "Connection to the database failed"
 msgstr "Connection to the database failed"
 
-#: inc/ocsserver.class.php:1357
+#: inc/ocsserver.class.php:1367
 msgid "Invalid OCSNG Version: RC3 is required"
 msgstr "Invalid OCSNG Version: RC3 is required"
 
-#: inc/ocsserver.class.php:1359
+#: inc/ocsserver.class.php:1369
 msgid "Invalid OCSNG configuration (TRACE_DELETED must be active)"
 msgstr "Invalid OCSNG configuration (TRACE_DELETED must be active)"
 
-#: inc/ocsserver.class.php:1368
+#: inc/ocsserver.class.php:1378
 msgid "Connection to database successful"
 msgstr "Connection to database successful"
 
-#: inc/ocsserver.class.php:1370
+#: inc/ocsserver.class.php:1380
 msgid "Valid OCSNG configuration and version"
 msgstr "Valid OCSNG configuration and version"
 
-#: inc/ocsserver.class.php:1493
+#: inc/ocsserver.class.php:1503
 msgid "Unable to add. The OCSNG server already exists."
 msgstr "Unable to add. The OCSNG server already exists."
 
-#: inc/ocsserver.class.php:1874
+#: inc/ocsserver.class.php:1884
 #, php-format
 msgid "Unable to link this computer, Serial number is blacklisted (%d)"
 msgstr "Unable to link this computer, Serial number is blacklisted (%d)"
 
-#: inc/ocsserver.class.php:1881
+#: inc/ocsserver.class.php:1891
 #, php-format
 msgid "Unable to link this computer, UUID is blacklisted (%d)"
 msgstr "Unable to link this computer, UUID is blacklisted (%d)"
 
 #. TRANS: %s is the OCS id
-#: inc/ocsserver.class.php:2012
+#: inc/ocsserver.class.php:2022
 #, php-format
 msgid "Unable to import, GLPI computer is already related to an element of OCSNG (%d)"
 msgstr "Unable to import, GLPI computer is already related to an element of OCSNG (%d)"
 
-#: inc/ocsserver.class.php:2376 inc/ocsserver.class.php:3207
+#: inc/ocsserver.class.php:2387 inc/ocsserver.class.php:3219
 msgid "Swap"
 msgstr "Swap"
 
-#: inc/ocsserver.class.php:3483
+#: inc/ocsserver.class.php:3495
 msgid "Existing in GLPI"
 msgstr "Existing in GLPI"
 
-#: inc/ocsserver.class.php:3484
+#: inc/ocsserver.class.php:3496
 msgid "Existing in OCSNG"
 msgstr "Existing in OCSNG"
 
-#: inc/ocsserver.class.php:3526
+#: inc/ocsserver.class.php:3538
 msgid "No item to clean"
 msgstr "No item to clean"
 
-#: inc/ocsserver.class.php:3615 inc/ocsserver.class.php:3778 inc/ocsserver.class.php:3785
+#: inc/ocsserver.class.php:3627 inc/ocsserver.class.php:3790 inc/ocsserver.class.php:3797
 msgid "No new computer to be updated"
 msgstr "No new computer to be updated"
 
-#: inc/ocsserver.class.php:3705
+#: inc/ocsserver.class.php:3717
 msgid "Computers updated in OCSNG"
 msgstr "Computers updated in OCSNG"
 
-#: inc/ocsserver.class.php:3722 inc/ocsserver.class.php:3763 inc/snmpocslink.class.php:2501 inc/snmpocslink.class.php:2530
+#: inc/ocsserver.class.php:3734 inc/ocsserver.class.php:3775 inc/snmpocslink.class.php:2501 inc/snmpocslink.class.php:2530
 msgctxt "button"
 msgid "Synchronize"
 msgstr "Synchronize"
 
-#: inc/ocsserver.class.php:3725 inc/ocsserver.class.php:3774
+#: inc/ocsserver.class.php:3737 inc/ocsserver.class.php:3786
 msgid "Update computers"
 msgstr "Update computers"
 
-#: inc/ocsserver.class.php:3729
+#: inc/ocsserver.class.php:3741
 msgid "Auto update"
 msgstr "Auto update"
 
-#: inc/ocsserver.class.php:4070 inc/snmpocslink.class.php:2157
+#: inc/ocsserver.class.php:4082 inc/snmpocslink.class.php:2157
 msgid "Caution! The imported data (see your configuration) will overwrite the existing one"
 msgstr "Caution! The imported data (see your configuration) will overwrite the existing one"
 
-#: inc/ocsserver.class.php:4085
+#: inc/ocsserver.class.php:4097
 msgid "Manual import mode"
 msgstr "Manual import mode"
 
-#: inc/ocsserver.class.php:4088
+#: inc/ocsserver.class.php:4100
 msgid "Disable preview"
 msgstr "Disable preview"
 
-#: inc/ocsserver.class.php:4090
+#: inc/ocsserver.class.php:4102
 msgid "Enable preview"
 msgstr "Enable preview"
 
-#: inc/ocsserver.class.php:4094
+#: inc/ocsserver.class.php:4106
 msgid "Check first that duplicates have been correctly managed in OCSNG"
 msgstr "Check first that duplicates have been correctly managed in OCSNG"
 
-#: inc/ocsserver.class.php:4108 inc/ocsserver.class.php:4268 inc/snmpocslink.class.php:2193 inc/snmpocslink.class.php:2344
+#: inc/ocsserver.class.php:4120 inc/ocsserver.class.php:4280 inc/snmpocslink.class.php:2193 inc/snmpocslink.class.php:2344
 msgctxt "button"
 msgid "Import"
 msgstr "Import"
 
-#: inc/ocsserver.class.php:4118
+#: inc/ocsserver.class.php:4130
 msgid "Match the rule ?"
 msgstr "Match the rule ?"
 
-#: inc/ocsserver.class.php:4120
+#: inc/ocsserver.class.php:4132
 msgid "Target location"
 msgstr "Target location"
 
-#: inc/ocsserver.class.php:4147
+#: inc/ocsserver.class.php:4159
 msgid "Blacklisted serial number"
 msgstr "Blacklisted serial number"
 
-#: inc/ocsserver.class.php:4159
+#: inc/ocsserver.class.php:4171
 msgid "Blacklisted UUID"
 msgstr "Blacklisted UUID"
 
-#: inc/ocsserver.class.php:4178
+#: inc/ocsserver.class.php:4190
 msgid "Blacklisted MAC"
 msgstr "Blacklisted MAC"
 
-#: inc/ocsserver.class.php:4188
+#: inc/ocsserver.class.php:4200
 msgid "Blacklisted IP"
 msgstr "Blacklisted IP"
 
-#: inc/ocsserver.class.php:4284 inc/ocsserver.class.php:4299 inc/ocsserver.class.php:4313
+#: inc/ocsserver.class.php:4296 inc/ocsserver.class.php:4311 inc/ocsserver.class.php:4325
 msgid "No new computer to be imported"
 msgstr "No new computer to be imported"
 
-#: inc/ocsserver.class.php:6273
+#: inc/ocsserver.class.php:6289
 msgid "Software deleted by OCSNG synchronization"
 msgstr "Software deleted by OCSNG synchronization"
 
-#: inc/ocsserver.class.php:6585
+#: inc/ocsserver.class.php:6601
 msgid "Launch OCSNG synchronization script"
 msgstr "Launch OCSNG synchronization script"
 
-#: inc/ocsserver.class.php:6588
+#: inc/ocsserver.class.php:6604
 msgid "Clean old agents & drop from OCSNG software"
 msgstr "Clean old agents & drop from OCSNG software"
 
-#: inc/ocsserver.class.php:6591
+#: inc/ocsserver.class.php:6607
 msgid "Restore computers from the date of last inventory"
 msgstr "Restore computers from the date of last inventory"
 
-#: inc/ocsserver.class.php:6634
+#: inc/ocsserver.class.php:6652
 msgid "Clean old agents OK"
 msgstr "Clean old agents OK"
 
-#: inc/ocsserver.class.php:6637
+#: inc/ocsserver.class.php:6655
 msgid "Clean old agents failed"
 msgstr "Clean old agents failed"
 
-#: inc/ocsserver.class.php:6649
+#: inc/ocsserver.class.php:6667
 msgid "Delete computers OK"
 msgstr "Delete computers OK"
 
-#: inc/ocsserver.class.php:6652
+#: inc/ocsserver.class.php:6670
 msgid "Delete computers failed"
 msgstr "Delete computers failed"
 
-#: inc/ocsserver.class.php:6713
+#: inc/ocsserver.class.php:6735
 msgid "Restore computers OK"
 msgstr "Restore computers OK"
 
-#: inc/ocsserver.class.php:6716
+#: inc/ocsserver.class.php:6738
 msgid "Restore computers failed"
 msgstr "Restore computers failed"
 
-#: inc/ocsserver.class.php:6740
+#: inc/ocsserver.class.php:6762
 msgid "Launch OCSNG synchronization script from server"
 msgstr "Launch OCSNG synchronization script from server"
 
-#: inc/ocsserver.class.php:6818
+#: inc/ocsserver.class.php:6840
 msgid "Computers don't check any rule"
 msgstr "Computers don't check any rule"
 
-#: inc/ocsserver.class.php:6819
+#: inc/ocsserver.class.php:6841
 msgid "Duplicate computers"
 msgstr "Duplicate computers"
 
-#: inc/ocsserver.class.php:6820
+#: inc/ocsserver.class.php:6842
 msgid "Computers whose import is refused by a rule"
 msgstr "Computers whose import is refused by a rule"
 
-#: inc/ocsserver.class.php:6822
+#: inc/ocsserver.class.php:6844
 msgid "SNMP objects imported"
 msgstr "SNMP objects imported"
 
-#: inc/ocsserver.class.php:6823
+#: inc/ocsserver.class.php:6845
 msgid "SNMP objects synchronized"
 msgstr "SNMP objects synchronized"
 
-#: inc/ocsserver.class.php:6824
+#: inc/ocsserver.class.php:6846
 msgid "SNMP objects linked"
 msgstr "SNMP objects linked"
 
-#: inc/ocsserver.class.php:6825
+#: inc/ocsserver.class.php:6847
 msgid "SNMP objects not updated"
 msgstr "SNMP objects not updated"
 
-#: inc/ocsserver.class.php:6826
+#: inc/ocsserver.class.php:6848
 msgid "SNMP objects not imported"
 msgstr "SNMP objects not imported"
 
-#: inc/ocsserver.class.php:6829
+#: inc/ocsserver.class.php:6851
 msgid "IPDISCOVER objects imported"
 msgstr "IPDISCOVER objects imported"
 
-#: inc/ocsserver.class.php:6830
+#: inc/ocsserver.class.php:6852
 msgid "IPDISCOVER objects synchronized"
 msgstr "IPDISCOVER objects synchronized"
 
-#: inc/ocsserver.class.php:6831
+#: inc/ocsserver.class.php:6853
 msgid "IPDISCOVER objects not updated"
 msgstr "IPDISCOVER objects not updated"
 
-#: inc/ocsserver.class.php:6832
+#: inc/ocsserver.class.php:6854
 msgid "IPDISCOVER objects not imported"
 msgstr "IPDISCOVER objects not imported"
 
-#: inc/ocsserver.class.php:6932
+#: inc/ocsserver.class.php:6954
 msgid "Statistics of the OCSNG SNMP import"
 msgstr "Statistics of the OCSNG SNMP import"
 
-#: inc/ocsserver.class.php:6934
+#: inc/ocsserver.class.php:6956
 msgid "Statistics of the OCSNG IPDISCOVER import"
 msgstr "Statistics of the OCSNG IPDISCOVER import"
 
-#: inc/ocsserver.class.php:6936
+#: inc/ocsserver.class.php:6958
 msgid "Statistics of the OCSNG link"
 msgstr "Statistics of the OCSNG link"
 
@@ -1213,6 +1241,15 @@ msgstr "Path"
 #: inc/registrykey.class.php:119
 msgid "No key found in registry"
 msgstr "No key found in registry"
+
+#: inc/ruleimportentity.class.php:61
+msgid "Alerts on computers that no longer respond the rules for assigning an item to an entity"
+msgstr "Alerts on computers that no longer respond the rules for assigning an item to an entity"
+
+#: inc/ruleimportentity.class.php:101
+#, php-format
+msgid "Items that do not meet the allocation rules for the entity %s: %s"
+msgstr "Items that do not meet the allocation rules for the entity %s: %s"
 
 #: inc/snmpocslink.class.php:66
 msgid "OCSNG SNMP"

@@ -950,7 +950,76 @@ function plugin_ocsinventoryng_install()
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
       $DB->queryOrDie($query, "1.3.2 create table glpi_plugin_ocsinventoryng_winupdates");
    }
-   /**/
+   /*1.3.3*/
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','use_checkruleimportentity')) {
+      $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_ruleimportentities` (
+                 `id` int(11) NOT NULL AUTO_INCREMENT,
+                 PRIMARY KEY (`id`)
+               ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+      $DB->queryOrDie($query, "1.3.3 add table glpi_plugin_ocsinventoryng_ruleimportentities");
+
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `use_checkruleimportentity` tinyint(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.3.3 update table glpi_plugin_ocsinventoryng_ocsservers add use_checkruleimportentity");
+   }
+       
+   //add notification
+   $query  = "SELECT `id`
+             FROM `glpi_notificationtemplates`
+             WHERE `itemtype` = 'PluginOcsinventoryngRuleImportEntity'";
+   $result = $DB->query($query);
+
+   if (!$DB->numrows($result)) {
+      //Add template
+      $query = "INSERT INTO `glpi_notificationtemplates`
+             (`name`, `itemtype`)
+             VALUES ('Check rule import entity', 'PluginOcsinventoryngRuleImportEntity');";
+      $DB->queryOrDie($query, $DB->error());
+      $templates_id = $DB->insert_id();
+      //Add translations
+      $query = "INSERT INTO `glpi_notificationtemplatetranslations`
+               (`notificationtemplates_id`, `subject`, `content_text`, `content_html`)
+               VALUES ($templates_id,
+         '[##checkruleimportentity.date##] ##checkruleimportentity.title## : ##checkruleimportentity.entity##',
+         '##FOREACHcheckruleimportentityitems##
+##lang.checkruleimportentity.entity## : ##checkruleimportentity.entity##
+##lang.checkruleimportentity.computer## : ##checkruleimportentity.computer##
+##lang.checkruleimportentity.location## : ##checkruleimportentity.location##
+##lang.checkruleimportentity.error## : ##checkruleimportentity.error##
+##lang.checkruleimportentity.dataerror## : ##checkruleimportentity.dataerror##
+##lang.checkruleimportentity.name_rule## ##checkruleimportentity.name_rule##
+##ENDFOREACHcheckruleimportentityitems##',
+'&lt;table class=\"tab_cadre\" border=\"1\" cellspacing=\"2\" cellpadding=\"3\"&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.entity##&lt;/span&gt;&lt;/td&gt;
+&lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.computer##&lt;/span&gt;&lt;/td&gt;
+&lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.location##&lt;/span&gt;&lt;/td&gt;
+&lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.error##&lt;/span&gt;&lt;/td&gt;
+&lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.dataerror##&lt;/span&gt;&lt;/td&gt;
+&lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.name_rule##&lt;/span&gt;&lt;/td&gt;
+&lt;/tr&gt;
+##FOREACHcheckruleimportentityitems##
+&lt;tr&gt;
+&lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.entity##&lt;/span&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=\"##checkruleimportentity.url##\" target=\"_blank\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.computer##&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.location##&lt;/span&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.error##&lt;/span&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.dataerror##&lt;/span&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=\"##checkruleimportentity.url_rule##\" target=\"_blank\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.name_rule##&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+##ENDFOREACHcheckruleimportentityitems##
+&lt;/tbody&gt;
+&lt;/table&gt;');";
+      $DB->queryOrDie($query, $DB->error());
+      //Add notification
+      $query = "INSERT INTO `glpi_notifications`
+             (`name`, `entities_id`, `itemtype`, `event`, `mode`, `notificationtemplates_id`, `is_recursive`, `is_active`, `date_mod`, `date_creation`)
+             VALUES ('Check rule import entity', 0, 'PluginOcsinventoryngRuleImportEntity',
+                     'checkruleimportentity', 'mail'," . $templates_id . ", 1, 1, NOW(), NOW());";
+      $DB->queryOrDie($query, $DB->error());
+   }
 
    $cron = new CronTask();
    if (!$cron->getFromDBbyName('PluginOcsinventoryngThread', 'CleanOldThreads')) {
@@ -971,6 +1040,9 @@ function plugin_ocsinventoryng_install()
    /*1.3.2*/
    if (!$cron->getFromDBbyName('PluginOcsinventoryngOcsServer','RestoreOldAgents')) {
       CronTask::Register('PluginOcsinventoryngOcsServer', 'RestoreOldAgents', DAY_TIMESTAMP,array('state' => CronTask::STATE_DISABLE));
+   }
+   if (!$cron->getFromDBbyName('PluginOcsinventoryngRuleImportEntity', 'CheckRuleImportEntity')) {
+      CronTask::Register('PluginOcsinventoryngRuleImportEntity', 'CheckRuleImportEntity', DAY_TIMESTAMP, array('state' => CronTask::STATE_DISABLE));
    }
 
    /*Now delete old tables*/
@@ -1020,6 +1092,7 @@ function plugin_ocsinventoryng_uninstall()
       "glpi_plugin_ocsinventoryng_networkporttypes",
       "glpi_plugin_ocsinventoryng_ocsservers_profiles",
       "glpi_plugin_ocsinventoryng_devicebiosdatas",
+      "glpi_plugin_ocsinventoryng_ruleimportentities",
       "glpi_plugin_ocsinventoryng_items_devicebiosdatas");
 
    foreach ($tables as $table) {
@@ -1035,7 +1108,8 @@ function plugin_ocsinventoryng_uninstall()
                                        'PluginMassocsimportDetail',
                                        'PluginOcsinventoryngOcsServer',
                                        'PluginOcsinventoryngNotimportedcomputer',
-                                       'PluginOcsinventoryngDetail')");
+                                       'PluginOcsinventoryngDetail',
+                                       'PluginOcsinventoryngRuleImportEntity')");
    }
 
    $tables_ocs = array("ocs_glpi_crontasks", "ocs_glpi_displaypreferences",
@@ -1056,7 +1130,8 @@ function plugin_ocsinventoryng_uninstall()
    $query = "DELETE
              FROM `glpi_alerts`
              WHERE `itemtype` IN ('PluginMassocsimportNotimported',
-                                  'PluginOcsinventoryngNotimportedcomputer')";
+                                  'PluginOcsinventoryngNotimportedcomputer',
+                                  'PluginOcsinventoryngRuleImportEntity')";
    $DB->queryOrDie($query, $DB->error());
 
    // clean rules
@@ -1073,13 +1148,15 @@ function plugin_ocsinventoryng_uninstall()
    $notification = new Notification();
    foreach (getAllDatasFromTable($notification->getTable(),
       "`itemtype` IN ('PluginMassocsimportNotimported',
-                                                 'PluginOcsinventoryngNotimportedcomputer')") as $data) {
+                      'PluginOcsinventoryngNotimportedcomputer',
+                      'PluginOcsinventoryngRuleImportEntity')") as $data) {
       $notification->delete($data);
    }
    $template = new NotificationTemplate();
    foreach (getAllDatasFromTable($template->getTable(),
       "`itemtype` IN ('PluginMassocsimportNotimported',
-                                                 'PluginOcsinventoryngNotimportedcomputer')") as $data) {
+                      'PluginOcsinventoryngNotimportedcomputer',
+                      'PluginOcsinventoryngRuleImportEntity')") as $data) {
       $template->delete($data);
    }
 
@@ -1100,6 +1177,9 @@ function plugin_ocsinventoryng_uninstall()
    }
    if ($cron->getFromDBbyName('PluginOcsinventoryngOcsServer', 'RestoreOldAgents')) {
       CronTask::Unregister('RestoreOldAgents');
+   }
+   if ($cron->getFromDBbyName('PluginOcsinventoryngRuleImportEntity', 'CheckRuleImportEntity')) {
+      CronTask::Unregister('CheckRuleImportEntity');
    }
 
    //Delete rights associated with the plugin
@@ -1650,7 +1730,7 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
          $ocsComputer = $ocsClient->getOcsComputer($ocsid, $tables);
 
          if (!is_null($ocsComputer)) {
-            if(isset($ocsComputer['NETWORKS'])) {
+            if (isset($ocsComputer['NETWORKS'])) {
                $networks = $ocsComputer['NETWORKS'];
 
                $ipblacklist  = Blacklist::getIPs();
