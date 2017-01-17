@@ -1434,6 +1434,15 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype)
          $sopt[10011]['forcegroupby'] = true;
          $sopt[10011]['massiveaction'] = false;
          $sopt[10011]['joinparams'] = array('jointype' => 'child');
+         
+         $sopt[10012]['table']         = 'glpi_plugin_ocsinventoryng_ocsservers';
+         $sopt[10012]['field']         = 'name';
+         $sopt[10012]['name']          = __('OCSNG server', 'ocsinventoryng');
+         $sopt[10012]['forcegroupby']  = true;
+         $sopt[10012]['massiveaction'] = false;
+         $sopt[10012]['datatype']      = 'dropdown';
+         $sopt[10012]['joinparams']    = array('beforejoin'
+                                       => array('table' => 'glpi_plugin_ocsinventoryng_ocslinks'));
       }
    }
    return $sopt;

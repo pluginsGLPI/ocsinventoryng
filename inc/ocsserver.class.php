@@ -3674,6 +3674,7 @@ JAVASCRIPT;
 
                $hardware[$ID]["date"] = $computer['META']["LASTDATE"];
                $hardware[$ID]["checksum"] = $computer['META']["CHECKSUM"];
+               $hardware[$ID]["tag"] = $computer['META']["TAG"];
                $hardware[$ID]["name"] = addslashes($computer['META']["NAME"]);
             }
 
@@ -3739,7 +3740,7 @@ JAVASCRIPT;
                echo "<th>" . __('Serial number') . "</th>";
                echo "<th>" . __('Import date in GLPI', 'ocsinventoryng') . "</th>";
                echo "<th>" . __('Last OCSNG inventory date', 'ocsinventoryng') . "</th>";
-               echo "<th>" . __('Auto update', 'ocsinventoryng') . "</th>";
+               echo "<th>" . __('OCSNG TAG', 'ocsinventoryng') . "</th>";
                if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
                   echo "<th>" . __('DEBUG') . "</th>";
                }
@@ -3752,7 +3753,7 @@ JAVASCRIPT;
                   echo "<td>" . $tab["serial"] . "</td>\n";
                   echo "<td>" . Html::convDateTime($tab["date"]) . "</td>\n";
                   echo "<td>" . Html::convDateTime($hardware[$tab["ocsid"]]["date"]) . "</td>\n";
-                  echo "<td>" . Dropdown::getYesNo($tab["use_auto_update"]) . "</td>\n";
+                  echo "<td>" . $hardware[$tab["ocsid"]]["tag"] . "</td>\n";
 
                   if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
                      echo "<td>";
