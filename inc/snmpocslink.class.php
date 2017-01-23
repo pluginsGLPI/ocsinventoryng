@@ -860,19 +860,19 @@ JAVASCRIPT;
 
          if ($itemtype == "NetworkEquipment") {
 
-            $id = self::addOrUpdateNetworkEquipment($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add",$cfg_ocs);
+            $id = self::addOrUpdateNetworkEquipment($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add",false,$cfg_ocs);
 
          } else if ($itemtype == "Printer") {
 
-            $id = self::addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add",$cfg_ocs);
+            $id = self::addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add",false,$cfg_ocs);
 
          } else if ($itemtype == "Computer") {
 
-            $id = self::addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add",$cfg_ocs);
+            $id = self::addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add",false,$cfg_ocs);
 
          } else if ($itemtype == "Peripheral" || $itemtype == "Phone") {
 
-            $id = self::addOrUpdateOther($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add",$cfg_ocs);
+            $id = self::addOrUpdateOther($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add",false,$cfg_ocs);
 
          }
          //TODOSNMP 
@@ -2105,6 +2105,7 @@ JAVASCRIPT;
                $hardware[$id]["date"] = $data['META']["LASTDATE"];
                $hardware[$id]["name"] = $data['META']["NAME"];
                $hardware[$id]["ipaddr"] = $data['META']["IPADDR"];
+               $hardware[$id]["mac"] = $data['META']["MACADDR"];
                $hardware[$id]["snmpdeviceid"] = $data['META']["SNMPDEVICEID"];
                $hardware[$id]["description"] = $data['META']["DESCRIPTION"];
                $hardware[$id]["type"] = $data['META']["TYPE"];
@@ -2205,6 +2206,7 @@ JAVASCRIPT;
                echo Search::showHeaderItem($output_type, __('Name'), $header_num);//, $linkto, $p['sort']==$val, $p['order']
                echo Search::showHeaderItem($output_type, __('Description'), $header_num);
                echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
+               echo Search::showHeaderItem($output_type, __('MAC address'), $header_num);
                echo Search::showHeaderItem($output_type, __('Date'), $header_num);
                echo Search::showHeaderItem($output_type, __('Contact SNMP', 'ocsinventoryng'), $header_num);
                echo Search::showHeaderItem($output_type, __('Location SNMP', 'ocsinventoryng'), $header_num);
@@ -2232,6 +2234,7 @@ JAVASCRIPT;
                   echo Search::showItem($output_type, $tab["name"], $item_num, $row_num);
                   echo Search::showItem($output_type, $tab["description"], $item_num, $row_num, 'width=15%');
                   echo Search::showItem($output_type, $tab["ipaddr"], $item_num, $row_num, 'width=5%');
+                  echo Search::showItem($output_type, $tab["mac"], $item_num, $row_num, 'width=5%');
                   echo Search::showItem($output_type, Html::convDateTime($tab["date"]), $item_num, $row_num, 'width=15%');
                   echo Search::showItem($output_type, $tab["contact"], $item_num, $row_num, 'width=5%');
                   echo Search::showItem($output_type, $tab["location"], $item_num, $row_num, 'width=15%');
