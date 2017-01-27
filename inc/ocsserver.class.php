@@ -5034,7 +5034,7 @@ JAVASCRIPT;
          if ($only_url) {
             return $url;
          }
-         return "<a class='vsubmit' href='$url'>" . $todisplay . "</a>";
+         return "<a class='vsubmit' target='_blank' href='$url'>" . $todisplay . "</a>";
       }
       return $url;
    }
