@@ -4112,17 +4112,21 @@ JAVASCRIPT;
                }
 
                echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
-               if (!$tolinked) {
-                  self::checkBox($target);
-               }
-               echo "<table class='tab_cadre_fixe'>";
-
+               //if (!$tolinked) {
+               //   self::checkBox($target);
+               //   echo "<table class='tab_cadrehov'>";
+               //} else {
+                  echo "<table class='tab_cadrehov'>";
+               //}
                echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
                echo "<input class='submit' type='submit' name='import_ok' value=\"" .
                   _sx('button', 'Import', 'ocsinventoryng') . "\">";
                echo "</td></tr>\n";
-
-               echo "<tr><th>" . __('Name') . "</th>\n";
+               echo "<tr>";
+               //if (!$tolinked) {
+                  echo "<th width='5%'>&nbsp;</th>";
+               //}
+               echo "<th>" . __('Name') . "</th>\n";
                echo "<th>" . __('Manufacturer') . "</th>\n";
                echo "<th>" . __('Model') . "</th>\n";
                echo "<th>" . _n('Information', 'Informations', 2) . "</th>\n";
@@ -4133,13 +4137,24 @@ JAVASCRIPT;
                   echo "<th>" . __('Destination entity') . "</th>\n";
                   echo "<th>" . __('Target location', 'ocsinventoryng') . "</th>\n";
                }
-               echo "<th width='20%'>&nbsp;</th></tr>\n";
-
+               if ($tolinked) {
+                  echo "<th width='30%'>&nbsp;</th>";
+               }
+               echo "</tr>\n";
+               
                $rule = new RuleImportEntityCollection();
                foreach ($hardware as $ID => $tab) {
                   $comp = new Computer();
                   $comp->fields["id"] = $tab["id"];
                   $data = array();
+                  
+                  echo "<tr class='tab_bg_2'>";
+                  //if (!$tolinked) {
+                     echo "<td>";
+                     echo "<input type='checkbox' name='toimport[" . $tab["id"] . "]' " .
+                        ($check == "all" ? "checked" : "") . ">";
+                     echo "</td>";
+                  //}
                   if ($advanced && !$tolinked) {
                      $location = isset($tab["locations_id"]) ? $tab["locations_id"] : 0;
                      $data = $rule->processAllRules(array('ocsservers_id' => $serverId,
@@ -4147,7 +4162,7 @@ JAVASCRIPT;
                                                           'locations_id'  => $location
                      ), array('locations_id' => $location), array('ocsid' => $tab["id"]));
                   }
-                  echo "<tr class='tab_bg_2'><td>" . $tab["name"] . "</td>\n";
+                  echo "<td>" . $tab["name"] . "</td>\n";
                   echo "<td>" . $tab["manufacturer"] . "</td>";
                   echo "<td>" . $tab["model"] . "</td>";
 
@@ -4215,7 +4230,7 @@ JAVASCRIPT;
                         echo "<td class='center'><img src=\"" . $CFG_GLPI['root_doc'] . "/pics/redbutton.png\"></td>\n";
                         $data['entities_id'] = -1;
                      } else {
-                        echo "<td class='center'>";
+                        echo "<td  width='15%' class='center'>";
                         $tmprule = new RuleImportEntity();
                         if ($tmprule->can($data['_ruleid'], READ)) {
                            echo "<a href='" . $tmprule->getLinkURL() . "'>" . $tmprule->getName() . "</a>";
@@ -4224,13 +4239,13 @@ JAVASCRIPT;
                         }
                         echo "</td>\n";
                      }
-                     echo "<td width='30%'>";
+                     echo "<td width='20%'>";
                      $ent = "toimport_entities[" . $tab["id"] . "]";
                      Entity::dropdown(array('name'     => $ent,
                                             'value'    => $data['entities_id'],
                                             'comments' => 0));
                      echo "</td>\n";
-                     echo "<td width='30%'>";
+                     echo "<td width='20%'>";
                      if (!isset($data['locations_id'])) {
                         $data['locations_id'] = 0;
                      }
@@ -4240,13 +4255,9 @@ JAVASCRIPT;
                                               'comments' => 0));
                      echo "</td>\n";
                   }
-                  echo "<td>";
 
-                  if (!$tolinked) {
-                     echo "<input type='checkbox' name='toimport[" . $tab["id"] . "]' " .
-                        ($check == "all" ? "checked" : "") . ">";
-                  } else {
-
+                  if ($tolinked) {
+                     echo "<td  width='30%'>";
                      $tab['entities_id'] = $entity;
                      $rulelink = new RuleImportComputerCollection();
                      $rulelink_results = array();
@@ -4269,12 +4280,33 @@ JAVASCRIPT;
                            $options['entity'] = $entity;
                         }
                         $options['width'] = "100%";
+                        $ko = 0;
+                        if (isset($options['value']) && $options['value'] > 0) {
+                           
+                           $query = "SELECT *
+                                     FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                                     WHERE `computers_id` = '".$options['value']."' ";
+
+                           $result = $DB->query($query);
+                           if ($DB->numrows($result) > 0) {
+                              $ko = 1;
+                           }
+                        }
+                        $options['comments'] = false;
                         Computer::dropdown($options);
+                        if ($ko > 0) {
+                           echo "<div class='red'>";
+                           _e('Warning ! This computer is already linked with another OCS computer', 'ocsinventoryng');
+                           echo "</br>";
+                           _e('Check first that duplicates have been correctly managed in OCSNG', 'ocsinventoryng');
+                           echo "</div>";
+                        }
                      } else {
                         echo "<img src='" . $CFG_GLPI['root_doc'] . "/pics/redbutton.png'>";
                      }
+                     echo "</td>";
                   }
-                  echo "</td></tr>\n";
+                  echo "</tr>\n";
                }
 
                echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
@@ -4286,9 +4318,9 @@ JAVASCRIPT;
                echo "</table>\n";
                Html::closeForm();
 
-               if (!$tolinked) {
+               //if (!$tolinked) {
                   self::checkBox($target);
-               }
+               //}
 
                Html::printPager($start, $numrows, $target, $parameters);
             } else {
