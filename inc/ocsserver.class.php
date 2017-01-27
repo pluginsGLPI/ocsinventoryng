@@ -4296,7 +4296,7 @@ JAVASCRIPT;
                         Computer::dropdown($options);
                         if ($ko > 0) {
                            echo "<div class='red'>";
-                           _e('Warning ! This computer is already linked with another OCS computer', 'ocsinventoryng');
+                           _e('Warning ! This computer is already linked with another OCS computer.', 'ocsinventoryng');
                            echo "</br>";
                            _e('Check first that duplicates have been correctly managed in OCSNG', 'ocsinventoryng');
                            echo "</div>";

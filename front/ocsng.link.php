@@ -84,14 +84,23 @@ if (!isset($_POST["import_ok"])) {
       1);
 
 } else {
-   if (isset($_POST['tolink']) && count($_POST['tolink']) > 0) {
+   
+   if (isset($_POST["toimport"]) && (count($_POST['toimport']) > 0)) {
       $_SESSION["ocs_link_count"] = 0;
 
-      foreach ($_POST['tolink'] as $ocsid => $computers_id) {
-         if ($computers_id > 0) {
-            $_SESSION["ocs_link"][] = array('ocsid' => $ocsid,
-               'computers_id' => $computers_id);
-            $_SESSION["ocs_link_count"]++;
+      foreach ($_POST['toimport'] as $key => $val) {
+         if ($val == "on") {
+            if (isset($_POST['tolink']) && count($_POST['tolink']) > 0) {
+               $_SESSION["ocs_link_count"] = 0;
+
+               foreach ($_POST['tolink'] as $ocsid => $computers_id) {
+                  if ($computers_id > 0 && $key == $ocsid) {
+                     $_SESSION["ocs_link"][] = array('ocsid' => $ocsid,
+                        'computers_id' => $computers_id);
+                     $_SESSION["ocs_link_count"]++;
+                  }
+               }
+            }
          }
       }
    }
