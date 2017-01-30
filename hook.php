@@ -44,7 +44,7 @@ function plugin_ocsinventoryng_install()
    ) {
 
       $install = true;
-      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.3.2-empty.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.3.3-empty.sql");
       
       $migration->createRule(array('sub_type' => 'RuleImportComputer',
          'entities_id' => 0,
@@ -963,7 +963,16 @@ function plugin_ocsinventoryng_install()
                ADD `use_checkruleimportentity` tinyint(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.3.3 update table glpi_plugin_ocsinventoryng_ocsservers add use_checkruleimportentity");
    }
-       
+   
+   if (TableExists('glpi_plugin_ocsinventoryng_winupdates')
+      && !FieldExists('glpi_plugin_ocsinventoryng_winupdates', 'entities_id')
+   ) {
+      
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_winupdates` 
+               ADD `entities_id` int(11) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.3.3 update table glpi_plugin_ocsinventoryng_winupdates add entities_id");
+    }
+   
    //add notification
    $query  = "SELECT `id`
              FROM `glpi_notificationtemplates`

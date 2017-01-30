@@ -183,6 +183,7 @@ DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_winupdates`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_winupdates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `computers_id` int(11) NOT NULL DEFAULT '0',
+  `entities_id` int(11) NOT NULL DEFAULT '0',
   `auoptions` int(11) NOT NULL DEFAULT '0',
   `scheduleinstalldate` datetime DEFAULT NULL,
   `lastsuccesstime` datetime DEFAULT NULL,
