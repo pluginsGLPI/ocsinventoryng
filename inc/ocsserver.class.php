@@ -4113,14 +4113,22 @@ JAVASCRIPT;
 
                echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
                //if (!$tolinked) {
-               //   self::checkBox($target);
+                  self::checkBox($target);
                //   echo "<table class='tab_cadrehov'>";
                //} else {
                   echo "<table class='tab_cadrehov'>";
                //}
                echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
-               echo "<input class='submit' type='submit' name='import_ok' value=\"" .
+               
+               if ($tolinked) {
+                  echo "<input class='submit' type='submit' name='import_ok' value=\"" .
+                  _sx('button', 'Link', 'ocsinventoryng') . "\">";
+                  echo "&nbsp;<input class='submit' type='submit' name='delete_link' value=\"" .
+                              _sx('button', 'Delete link', 'ocsinventoryng') . "\">";
+               } else {
+                  echo "<input class='submit' type='submit' name='import_ok' value=\"" .
                   _sx('button', 'Import', 'ocsinventoryng') . "\">";
+               }
                echo "</td></tr>\n";
                echo "<tr>";
                //if (!$tolinked) {
@@ -4138,14 +4146,14 @@ JAVASCRIPT;
                   echo "<th>" . __('Target location', 'ocsinventoryng') . "</th>\n";
                }
                if ($tolinked) {
-                  echo "<th width='30%'>&nbsp;</th>";
+                  echo "<th width='30%'>" . __('Item to link', 'ocsinventoryng') . "</th>";
                }
                echo "</tr>\n";
                
                $rule = new RuleImportEntityCollection();
                foreach ($hardware as $ID => $tab) {
-                  $comp = new Computer();
-                  $comp->fields["id"] = $tab["id"];
+                  //$comp = new Computer();
+                  //$comp->fields["id"] = $tab["id"];
                   $data = array();
                   
                   echo "<tr class='tab_bg_2'>";
@@ -4257,6 +4265,7 @@ JAVASCRIPT;
                   }
 
                   if ($tolinked) {
+                     $ko = 0;
                      echo "<td  width='30%'>";
                      $tab['entities_id'] = $entity;
                      $rulelink = new RuleImportComputerCollection();
@@ -4280,7 +4289,7 @@ JAVASCRIPT;
                            $options['entity'] = $entity;
                         }
                         $options['width'] = "100%";
-                        $ko = 0;
+                        
                         if (isset($options['value']) && $options['value'] > 0) {
                            
                            $query = "SELECT *

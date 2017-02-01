@@ -49,6 +49,19 @@ if (isset($_POST["change_import_mode"])) {
    }
 }
 
+if (isset ($_POST["delete_link"])) {
+   
+   $link = new PluginOcsinventoryngOcslink();
+   if (isset($_POST["toimport"]) && (count($_POST['toimport']) > 0)) {
+      foreach ($_POST['toimport'] as $key => $val) {
+         if ($val == "on") {
+            $link->deleteByCriteria(array('ocsid' => $key));
+         }
+      }
+   }
+   Html::back();
+}
+
 if (isset($_SESSION["ocs_link"])) {
    if ($count = count($_SESSION["ocs_link"])) {
       $percent = min(100,
