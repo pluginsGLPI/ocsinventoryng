@@ -92,7 +92,7 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
                   }
 
                   if (isset($item['ruleid'])) {
-                     $url_rule                                   = $CFG_GLPI["url_base"] . "/index.php?redirect=Rule_" . $item['ruleid'];
+                     $url_rule                                   = $CFG_GLPI["url_base"] . "/index.php?redirect=RuleImportComputer_" . $item['ruleid'];
                      $tmp['##checkruleimportentity.url_rule##']  = $url_rule;
                      $tmp['##checkruleimportentity.name_rule##'] = $item['rule_name'];
                   }
