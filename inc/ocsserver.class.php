@@ -1087,6 +1087,9 @@ JAVASCRIPT;
                                                              "trash"  => _x('button', 'Put in dustbin'),
                                                              "delete" => _x('button', 'Delete permanently')), array('value' => $this->fields["deconnection_behavior"]));
       echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
+      echo __("Define the action to do on other objects when computer is disconnecting from them", 'ocsinventoryng');
+      echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Use the OCSNG software dictionary', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("use_soft_dict", $this->fields["use_soft_dict"]);
@@ -4319,8 +4322,16 @@ JAVASCRIPT;
                }
 
                echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
-               echo "<input class='submit' type='submit' name='import_ok' value=\"" .
-                  _sx('button', 'Import', 'ocsinventoryng') . "\">\n";
+               if ($tolinked) {
+                  echo "<input class='submit' type='submit' name='import_ok' value=\"" .
+                  _sx('button', 'Link', 'ocsinventoryng') . "\">";
+                  echo "&nbsp;<input class='submit' type='submit' name='delete_link' value=\"" .
+                              _sx('button', 'Delete link', 'ocsinventoryng') . "\">";
+               } else {
+                  echo "<input class='submit' type='submit' name='import_ok' value=\"" .
+                  _sx('button', 'Import', 'ocsinventoryng') . "\">";
+               }
+
                echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' " .
                   "value='$serverId'>";
                echo "</td></tr>";

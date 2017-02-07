@@ -36,6 +36,11 @@ if (isset($_POST["force_ocssnmp_resynch"])) {
    PluginOcsinventoryngSnmpOcslink::updateSnmp($_POST["id"], $_POST["plugin_ocsinventoryng_ocsservers_id"]);
    Html::back();
 
+} else if (isset($_POST["delete_link"])) {
+   $link = new PluginOcsinventoryngSnmpOcslink();
+   $link->delete(array('id' => $_POST["id"]), 1);
+   Html::back();
+
 } else {
    Html::displayErrorAndDie("lost");
 }
