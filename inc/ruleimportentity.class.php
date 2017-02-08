@@ -140,6 +140,9 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
     */
    static function checkRuleImportEntity($plugin_ocsinventoryng_ocsservers_id) {
 
+      ini_set("memory_limit", "-1");
+      ini_set("max_execution_time", "0");
+   
       $data = array();
 
       $computers = self::getComputerOcsLink($plugin_ocsinventoryng_ocsservers_id);

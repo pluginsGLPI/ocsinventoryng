@@ -640,6 +640,157 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
       $query = "UPDATE `accountinfo` SET `TAG` = '" . $tag . "' WHERE `HARDWARE_ID` = '" . $id . "'";
       $this->db->query($query);
    }
+   
+      /**
+    * @see PluginOcsinventoryngOcsClient::getComputers()
+    * @param array $options
+    * @return array
+    */
+   public function countComputers($options, $id = 0)
+   {
+
+
+      if (isset($options['OFFSET'])) {
+         $offset = "OFFSET  " . $options['OFFSET'];
+      } else {
+         $offset = "";
+      }
+      if (isset($options['MAX_RECORDS'])) {
+         $max_records = "LIMIT  " . $options['MAX_RECORDS'];
+      } else {
+         $max_records = "";
+      }
+      if (isset($options['ORDER'])) {
+         $order = $options['ORDER'];
+      } else {
+         $order = " LASTDATE ";
+      }
+
+      if (isset($options['FILTER'])) {
+         $filters = $options['FILTER'];
+         if (isset($filters['IDS']) and $filters['IDS']) {
+            $ids = $filters['IDS'];
+            $where_ids = " AND hardware.ID IN (";
+            $where_ids .= join(',', $ids);
+            $where_ids .= ") ";
+         } else {
+            $where_ids = "";
+         }
+
+         if (isset($filters['EXCLUDE_IDS']) and $filters['EXCLUDE_IDS']) {
+            $exclude_ids = $filters['EXCLUDE_IDS'];
+            $where_exclude_ids = " AND hardware.ID NOT IN (";
+            $where_exclude_ids .= join(',', $exclude_ids);
+            $where_exclude_ids .= ") ";
+         } else {
+            $where_exclude_ids = "";
+         }
+         if (isset($filters['DEVICEIDS']) and $filters['DEVICEIDS']) {
+            $deviceids = $filters['DEVICEIDS'];
+            $where_deviceids = " AND hardware.DEVICEID IN ('";
+            $where_deviceids .= join('\',\'', $deviceids);
+            $where_deviceids .= "') ";
+         } else {
+            $where_deviceids = "";
+         }
+
+         if (isset($filters['EXCLUDE_DEVICEIDS']) and $filters['EXCLUDE_DEVICEIDS']) {
+            $exclude_deviceids = $filters['EXCLUDE_DEVICEIDS'];
+            $where_exclude_deviceids = " AND hardware.DEVICEID NOT IN (";
+            $where_exclude_deviceids .= join(',', $exclude_deviceids);
+            $where_exclude_deviceids .= ") ";
+         } else {
+            $where_exclude_deviceids = "";
+         }
+
+         if (isset($filters['TAGS']) and $filters['TAGS']) {
+            $tags = $filters['TAGS'];
+            $where_tags = " AND accountinfo.TAG IN (";
+            $where_tags .= "'" . join('\',\'', $tags) . "'";
+            $where_tags .= ") ";
+         } else {
+            $where_tags = "";
+         }
+
+         if (isset($filters['EXCLUDE_TAGS']) and $filters['EXCLUDE_TAGS']) {
+
+            $exclude_tags = $filters['EXCLUDE_TAGS'];
+            $where_exclude_tags = " AND accountinfo.TAG NOT IN (";
+            $where_exclude_tags .= "'" . join('\',\'', $exclude_tags) . "'";
+            $where_exclude_tags .= ") ";
+         } else {
+            $where_exclude_tags = "";
+         }
+
+         if (isset($filters['INVENTORIED_SINCE']) and $filters['INVENTORIED_SINCE']) {
+
+            if (!isset($filters['CHECKSUM'])) {
+               $since = $filters['INVENTORIED_SINCE'];
+               $where_since = " AND (`hardware`.`LASTDATE` > ";
+               $where_since .= "'" . $since . "'";
+               $where_since .= ") ";
+            } else {
+               $where_since = "";
+            }
+         } else {
+            $where_since = "";
+         }
+
+         if (isset($filters['INVENTORIED_BEFORE']) and $filters['INVENTORIED_BEFORE']) {
+
+            $before = $filters['INVENTORIED_BEFORE'];
+            $where_before = " AND (UNIX_TIMESTAMP(`hardware`.`LASTDATE`) < (UNIX_TIMESTAMP(" . $before . ")-180";
+            // $where_before .= "'" .$before. "'";
+            $where_before .= ")) ";
+         } else {
+            $where_before = "";
+         }
+
+
+         if (isset($filters['CHECKSUM']) and $filters['CHECKSUM']) {
+            $checksum = $filters['CHECKSUM'];
+
+            $where_checksum = " AND (('" . $checksum . "' & `hardware`.`CHECKSUM`) > '0'";
+            if (isset($filters['INVENTORIED_SINCE']) and $filters['INVENTORIED_SINCE']) {
+               $since = $filters['INVENTORIED_SINCE'];
+               $where_checksum .= " OR `hardware`.`LASTDATE` > '$since'";
+            }
+            $where_checksum .= ")";
+         } else {
+            $where_checksum = "";
+         }
+         $where_condition = $where_ids . $where_exclude_ids . $where_deviceids . $where_exclude_deviceids . $where_tags . $where_exclude_tags . $where_checksum . $where_since . $where_before;
+      } else {
+         $where_condition = "";
+      }
+
+      if ($id > 0) {
+         $query = "SELECT count(DISTINCT `hardware`.`ID`) FROM `hardware`
+                           WHERE `hardware`.`ID` = $id
+                           $where_condition";
+      } else {
+         $query = "SELECT DISTINCT `hardware`.`ID` FROM `hardware`
+                           WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
+                           $where_condition
+                           ORDER BY $order
+                           $max_records $offset";
+      }
+      $request = $this->db->query($query);
+
+      if ($this->db->numrows($request)) {
+
+         $count = $this->db->numrows($request);
+         while ($hardwareid = $this->db->fetch_assoc($request)) {
+            $hardwareids[] = $hardwareid['ID'];
+         }
+         return $hardwareids;
+      } else {
+
+         return array();
+      }
+
+      return $res;
+   }
 
    /**
     * @see PluginOcsinventoryngOcsClient::getComputers()
