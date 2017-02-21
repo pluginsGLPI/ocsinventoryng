@@ -4004,9 +4004,9 @@ JAVASCRIPT;
       $cfg_ocs = self::getConfig($serverId);
       $computerOptions = array('ORDER'    => 'LASTDATE',
                                'COMPLETE' => '0',
-                               //'FILTER'   => array(
-                               //   'EXCLUDE_IDS' => $already_linked
-                               //),
+                               'FILTER'   => array(
+                                  'EXCLUDE_IDS' => $already_linked
+                               ),
                                'DISPLAY'  => array(
                                   'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS
                                ),
@@ -4020,22 +4020,18 @@ JAVASCRIPT;
       if ($cfg_ocs["tag_exclude"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
          $computerOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
       }
+      
       $ocsClient = self::getDBocs($serverId);
-      $ocsResult = $ocsClient->getComputers($computerOptions);
-
-      $computerlink = array();
-      if (isset($ocsResult['COMPUTERS'])) {
-         if (count($ocsResult['COMPUTERS'])) {
-            foreach ($ocsResult['COMPUTERS'] as $comp) {
-            
-            if (!in_array($comp['META']['ID'], $already_linked)){
-                  $computerlink[] = $comp;
-               }
-            }
-            $computers = array_slice($computerlink, $start, $_SESSION['glpilist_limit']);
-         }
+      $allComputers = $ocsClient->countComputers($computerOptions);
+      
+      if ($start != 0) {
+         $computerOptions['OFFSET'] = $start;
       }
-
+      $computerOptions['MAX_RECORDS'] = $start + $_SESSION['glpilist_limit'];
+      $ocsResult = $ocsClient->getComputers($computerOptions);
+      
+      $computers = $ocsResult['COMPUTERS'];
+      
       $hardware = array();
       if (isset($computers)) {
          if (count($computers)) {
@@ -4088,7 +4084,7 @@ JAVASCRIPT;
             }
             echo "<div class='center'>";
 
-            if ($numrows = count($computerlink)) {
+            if ($numrows = count($allComputers)) {
                $parameters = "check=$check";
                Html::printPager($start, $numrows, $target, $parameters);
 
