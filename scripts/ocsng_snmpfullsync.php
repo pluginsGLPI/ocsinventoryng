@@ -230,7 +230,7 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
                                WHERE `glpi_plugin_ocsinventoryng_snmpocslinks`.`plugin_ocsinventoryng_ocsservers_id`
                                             = '$ocsServerId'";
    $already_linked_result = $DB->query($already_linked_query);
-   $already_linked_ids = array();
+   $already_linked_ocs_ids = array();
 
    if ($DB->numrows($already_linked_result) > 0) {
       while ($data = $DB->fetch_assoc($already_linked_result)) {
