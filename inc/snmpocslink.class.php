@@ -511,6 +511,18 @@ JAVASCRIPT;
 
                            echo "<tr class='tab_bg_1'><td>" . __('Uptime', 'ocsinventoryng');
                            echo "</td><td>" . $UPTIME . "</td></tr>";
+                           
+                           echo "<tr class='tab_bg_1 center'><td colspan='2'>";
+                           $target = Toolbox::getItemTypeFormURL(__CLASS__);
+                           
+                           Html::showSimpleForm($target, 'delete_link',
+                                             _sx('button', 'Delete link', 'ocsinventoryng'),
+                                             array('items_id' => $items_id,
+                                                'itemtype' => $item->getType(),
+                                                'id' => $data["id"],
+                                                'plugin_ocsinventoryng_ocsservers_id' => $data["plugin_ocsinventoryng_ocsservers_id"]));
+                           echo "</td></tr>";
+                     
                         }
                         if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
                            echo "</table><table class='tab_cadre_fixe'>";
@@ -1078,7 +1090,35 @@ JAVASCRIPT;
             || ($action == "update" && $cfg_ocs['importsnmp_createport'] && !$linked)
             || ($action == "update" && $cfg_ocs['linksnmp_createport'] && $linked))
       ) {
+         
+         //Delete Existing network config
+         $query = "SELECT `id`
+                FROM `glpi_networkports`
+                WHERE `items_id` = '".$id_printer."'
+                AND `itemtype` = '".$itemtype."'";
 
+         foreach ($DB->request($query) as $networkPortID) {
+
+            $queryPort = "SELECT `id`
+             FROM `glpi_networknames`
+             WHERE `items_id` = '".$networkPortID['id']."'
+               AND `itemtype` = 'NetworkPort'";
+
+            foreach ($DB->request($queryPort) as $networkNameID) {
+               
+               $ipAddress = new IPAddress();
+               $ipAddress->deleteByCriteria(array('items_id' => $networkNameID['id'],
+                                                   'itemtype' => 'NetworkName'), 1);
+            }
+            
+            $nn = new NetworkName();
+            $nn->deleteByCriteria(array('items_id' => $networkPortID['id'],
+                                          'itemtype' => 'NetworkPort'), 1);
+         }
+         $np = new NetworkPort();
+         $np->deleteByCriteria(array('items_id' => $id_printer,
+                                      'itemtype' => $itemtype), 1);
+                                      
          //Add network port
          $ip = $ocsSnmp['META']['IPADDR'];
          $mac = $ocsSnmp['META']['MACADDR'];
@@ -1375,12 +1415,53 @@ JAVASCRIPT;
             || ($action == "update" && $cfg_ocs['importsnmp_createport'] && !$linked)
             || ($action == "update" && $cfg_ocs['linksnmp_createport'] && $linked))
       ) {
-         //Add network port
+         //Add local port
          $ip = $ocsSnmp['META']['IPADDR'];
          $mac = $ocsSnmp['META']['MACADDR'];
+         
+         //if ($cfg_ocs['history_devices']) {
+            
+            //$table = getTableForItemType("NetworkPort");
+            //$query = "DELETE
+            //                FROM `glpi_networkports`
+            //                WHERE `items_id` = '" . $id_network . "'
+            //                AND `itemtype` = '" . $itemtype . "'
+            //                 AND `instantiation_type` = 'NetworkPortLocal'";
+            //$DB->query($query);
+         //}
+         
+         $query = "SELECT `id`
+                FROM `glpi_networkports`
+                WHERE `items_id` = '".$id_network."'
+                AND `itemtype` = '".$itemtype."'";
 
+         foreach ($DB->request($query) as $networkPortID) {
+
+            $queryPort = "SELECT `id`
+             FROM `glpi_networknames`
+             WHERE `items_id` = '".$networkPortID['id']."'
+               AND `itemtype` = 'NetworkPort'";
+
+            foreach ($DB->request($queryPort) as $networkNameID) {
+               
+               $ipAddress = new IPAddress();
+               $ipAddress->deleteByCriteria(array('items_id' => $networkNameID['id'],
+                                                   'itemtype' => 'NetworkName'), 1);
+            }
+            
+            $nn = new NetworkName();
+            $nn->deleteByCriteria(array('items_id' => $networkPortID['id'],
+                                          'itemtype' => 'NetworkPort'), 1);
+         }
          $np = new NetworkPort();
-         $np->getFromDBByQuery("WHERE `mac` LIKE '$mac' AND `items_id` = '$id_network' AND `itemtype` LIKE '$itemtype' ");
+         $np->deleteByCriteria(array('items_id' => $id_network,
+                                      'itemtype' => $itemtype), 1);
+                                            
+         
+         $np = new NetworkPort();
+         $np->getFromDBByQuery("WHERE `mac` LIKE '$mac' 
+                                 AND `items_id` = '$id_network' 
+                                 AND `itemtype` LIKE '$itemtype'");
          if (count($np->fields) < 1) {
 
             $item = new $itemtype();
@@ -1393,14 +1474,151 @@ JAVASCRIPT;
                'mac' => $mac,
                'items_id' => $id_network,
                'itemtype' => $itemtype,
-               'instantiation_type' => "NetworkPortEthernet",
+               'instantiation_type' => "NetworkPortLocal",
                "entities_id" => $entity,
                "NetworkName__ipaddresses" => array("-100" => $ip),
                '_create_children' => 1,
-               //'is_dynamic'         => 1,
+               'is_dynamic'         => 1,
                'is_deleted' => 0);
 
             $np->add($port_input, array(), $cfg_ocs['history_network']);
+         }
+         
+         //All PORTS
+         if ($id_network > 0
+            && isset($ocsSnmp['NETWORKS'])
+            && count($ocsSnmp['NETWORKS']) > 0
+         ) {
+            //$CompDevice = new Item_DeviceNetworkCard();
+            //if ($cfg_ocs['history_devices']) {
+               //$table = getTableForItemType("Item_DeviceNetworkCard");
+               //$query = "DELETE
+               //                FROM `" . $table . "`
+               //                WHERE `items_id` = '" . $id_network . "'
+               //                AND `itemtype` = '" . $itemtype . "'";
+               //$DB->query($query);
+               
+               //$table = getTableForItemType("NetworkPort");
+               //$query = "DELETE
+               //                FROM `glpi_networkports`
+               //                WHERE `items_id` = '" . $id_network . "'
+               //                AND `itemtype` = '" . $itemtype . "'
+               //                 AND `instantiation_type` = 'NetworkPortEthernet'";
+               //   $DB->query($query);
+               
+               //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+               
+               //$query = "SELECT `id`
+               // FROM `glpi_networkports`
+               // WHERE `items_id` = '".$id_network."'
+               // AND `itemtype` = '".$itemtype."'
+               // AND `instantiation_type` = 'NetworkPortEthernet'";
+
+               //foreach ($DB->request($query) as $networkPortID) {
+
+               //   $queryPort = "SELECT `id`
+               //    FROM `glpi_networknames`
+               //    WHERE `items_id` = '".$networkPortID['id']."'
+               //      AND `itemtype` = 'NetworkPort'";
+
+               //   foreach ($DB->request($queryPort) as $networkNameID) {
+                     
+               //      $ipAddress = new IPAddress();
+               //      $ipAddress->deleteByCriteria(array('items_id' => $networkNameID['id'],
+               //                                          'itemtype' => 'NetworkName'), 1);
+               //   }
+                  
+               //   $nn = new NetworkName();
+               //   $nn->deleteByCriteria(array('items_id' => $networkPortID['id'],
+               //                                 'itemtype' => 'NetworkPort'), 1);
+               //}
+               //$np = new NetworkPort();
+               //$np->deleteByCriteria(array('items_id' => $id_network,
+               //                             'itemtype' => $itemtype,
+               //                             'instantiation_type' => 'NetworkPortEthernet'), 1);
+               
+            //}
+   
+
+            foreach ($ocsSnmp['NETWORKS'] as $k => $net) {
+               //$dev["designation"] = $net['SLOT'];
+               //$dev["comment"] = $net['TYPE'];
+               $mac = $net['MACADDR'];
+
+               $name_dest = $net['DEVICEPORT'];
+               $net['DEVICENAME'] = str_replace("SEP", "", $net['DEVICENAME']);
+               $mac_dest = self::addMacSeparator($net['DEVICENAME']);
+               
+               
+               $ip_dest = $net['DEVICEADDRESS'];
+               
+               
+               $item = new $itemtype();
+               $entity = (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0);
+               if ($item->getFromDB($id_network)) {
+                  $entity = $item->fields['entities_id'];
+               }
+
+               //$dev['entities_id'] = $entity;
+
+               //$device = new DeviceNetworkCard();
+               //$device_id = $device->import($dev);
+
+               //if ($device_id) {
+                  
+                  //$id = new Item_DeviceNetworkCard();
+                  //$id->getFromDBByQuery("WHERE `mac` LIKE '$mac' 
+                  //                     AND `items_id` = '$id_network' 
+                  //                     AND `itemtype` LIKE '$itemtype'");
+                  //if (count($id->fields) < 1) {
+                  
+                  //   $CompDevice->add(array('items_id' => $id_network,
+                  //      'itemtype' => $itemtype,
+                  //      'mac' => $mac,
+                  //      'entities_id' => $entity,
+                  //      'devicenetworkcards_id' => $device_id,
+                  //      'is_dynamic' => 1), array(), $cfg_ocs['history_devices']);
+                     
+                  //}
+                  $np = new NetworkPort();
+                  $np->getFromDBByQuery("WHERE `mac` LIKE '$mac' 
+                                       AND `items_id` = '$id_network' 
+                                       AND `itemtype` LIKE '$itemtype' 
+                                       AND `instantiation_type` = 'NetworkPortEthernet' ");
+                  if (count($np->fields) < 1) {
+
+                     $item = new $itemtype();
+                     $entity = (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0);
+                     if ($item->getFromDB($id_network)) {
+                        $entity = $item->fields['entities_id'];
+                     }
+
+                     $port_input = array('name' => $net['SLOT'],
+                        'mac' => $mac,
+                        'items_id' => $id_network,
+                        'itemtype' => $itemtype,
+                        'instantiation_type' => "NetworkPortEthernet",
+                        "entities_id" => $entity,
+                        //"NetworkName__ipaddresses" => array("-100" => $ip),
+                        '_create_children' => 1,
+                        'is_dynamic'         => 1,
+                        'is_deleted' => 0);
+
+                     $np_src = $np->add($port_input, array(), $cfg_ocs['history_network']);
+                  }
+                  
+                  $link = new NetworkPort_NetworkPort();
+                  $np_dest = new NetworkPort();
+                  $np_dest->getFromDBByQuery("WHERE `mac` LIKE '$mac_dest' ");
+                  if (count($np_dest->fields) > 0) {
+                  
+                     $link_input = array('networkports_id_1' => $np_src,
+                                          'networkports_id_2' => $np_dest->fields['id']);
+                     $link->add($link_input, array(), $cfg_ocs['history_network']);
+                     
+                  }
+               //}
+            }
          }
       }
 
@@ -1408,6 +1626,11 @@ JAVASCRIPT;
    }
    
    
+   public static function addMacSeparator($mac, $separator = ':')
+   {
+     return join($separator, str_split($mac, 2));
+   }
+
    /**
     * @param $plugin_ocsinventoryng_ocsservers_id
     * @param $itemtype
@@ -1483,7 +1706,7 @@ JAVASCRIPT;
          && $ocsSnmp['MEMORIES'][0]['CAPACITY'] > 0
       ) {
 
-         $dev['designation'] = __('Computer Memory', 'ocsinventoryng');
+         $dev['designation'] = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep(__("Computer Memory", 'ocsinventoryng')));
 
          $item = new $itemtype();
          $entity = (isset($_SESSION['glpiactive_entity'])?$_SESSION['glpiactive_entity']:0);
@@ -1727,6 +1950,33 @@ JAVASCRIPT;
             || ($action == "update" && $cfg_ocs['importsnmp_createport'] && !$linked)
             || ($action == "update" && $cfg_ocs['linksnmp_createport'] && $linked))
       ) {
+         //Delete Existing network config
+         $query = "SELECT `id`
+                FROM `glpi_networkports`
+                WHERE `items_id` = '".$id_item."'
+                AND `itemtype` = '".$itemtype."'";
+
+         foreach ($DB->request($query) as $networkPortID) {
+
+            $queryPort = "SELECT `id`
+             FROM `glpi_networknames`
+             WHERE `items_id` = '".$networkPortID['id']."'
+               AND `itemtype` = 'NetworkPort'";
+
+            foreach ($DB->request($queryPort) as $networkNameID) {
+               
+               $ipAddress = new IPAddress();
+               $ipAddress->deleteByCriteria(array('items_id' => $networkNameID['id'],
+                                                   'itemtype' => 'NetworkName'), 1);
+            }
+            
+            $nn = new NetworkName();
+            $nn->deleteByCriteria(array('items_id' => $networkPortID['id'],
+                                          'itemtype' => 'NetworkPort'), 1);
+         }
+         $np = new NetworkPort();
+         $np->deleteByCriteria(array('items_id' => $id_item,
+                                      'itemtype' => $itemtype), 1);
 
          //Add network port
          $ip = $ocsSnmp['META']['IPADDR'];
@@ -1830,6 +2080,34 @@ JAVASCRIPT;
             || ($action == "update" && $cfg_ocs['importsnmp_createport'] && !$linked)
             || ($action == "update" && $cfg_ocs['linksnmp_createport'] && $linked))
       ) {
+         
+         //Delete Existing network config
+         $query = "SELECT `id`
+                FROM `glpi_networkports`
+                WHERE `items_id` = '".$id_item."'
+                AND `itemtype` = '".$itemtype."'";
+
+         foreach ($DB->request($query) as $networkPortID) {
+
+            $queryPort = "SELECT `id`
+             FROM `glpi_networknames`
+             WHERE `items_id` = '".$networkPortID['id']."'
+               AND `itemtype` = 'NetworkPort'";
+
+            foreach ($DB->request($queryPort) as $networkNameID) {
+               
+               $ipAddress = new IPAddress();
+               $ipAddress->deleteByCriteria(array('items_id' => $networkNameID['id'],
+                                                   'itemtype' => 'NetworkName'), 1);
+            }
+            
+            $nn = new NetworkName();
+            $nn->deleteByCriteria(array('items_id' => $networkPortID['id'],
+                                          'itemtype' => 'NetworkPort'), 1);
+         }
+         $np = new NetworkPort();
+         $np->deleteByCriteria(array('items_id' => $id_item,
+                                      'itemtype' => $itemtype), 1);
 
          //Add network port
          $ip = $ocsSnmp['META']['IPADDR'];
@@ -2309,13 +2587,33 @@ JAVASCRIPT;
                      if (getItemForItemtype($tab["type"])) {
                         $type = $tab["type"];
                         $options['name'] = "tolink_items[" . $tab["id"] . "]";
-
+                        $used = array();
                         $self = new self;
+                        
                         if ($item = $self->getFromDBbyName($tab["type"], $tab["name"])) {
-                           $options['value'] = (isset($item->fields['id'])) ? $item->fields['id'] : false;
+                           $ido = (isset($item->fields['id'])) ? $item->fields['id'] : 0;
+                           
+                           if ($ido > 0) {
+                              $query = "SELECT *
+                                        FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
+                                        WHERE `itemtype` = '".$tab["type"]."' AND `items_id` = '".$ido."' ";
+                              
+                              $result = $DB->query($query);
+                              if ($DB->numrows($result) > 0) {
+                                 $used[] = $ido;
+                              } else {
+                           
+                                 $options['value'] = $ido;
+                              }
+                           }
                         }
+                        
+                        
+                        $options['used'] = $used;
+
                         $type::dropdown($options);
                         echo "<input type='hidden' name='tolink_itemtype[" . $tab["id"] . "]' value='" . $tab["type"] . "'>";
+                        unset($options['value']);
 
                      } else {
 
@@ -2469,7 +2767,8 @@ JAVASCRIPT;
 
             // query snmp links
             $query = "SELECT * FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
-                WHERE `glpi_plugin_ocsinventoryng_snmpocslinks`.`ocs_id` IN (" . implode(',', $ocs_snmp_ids) . ")";
+                WHERE `glpi_plugin_ocsinventoryng_snmpocslinks`.`ocs_id` IN (" . implode(',', $ocs_snmp_ids) . ")
+                ORDER BY last_update DESC";
             $result = $DB->query($query);
 
             // Get all links between glpi and OCS
