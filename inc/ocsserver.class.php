@@ -4614,7 +4614,9 @@ JAVASCRIPT;
                   $ram["entities_id"] = $entities_id;
                   if (!in_array(stripslashes($prevalue . $ram["designation"]), $import_device)) {
 
-                     $ram["frequence"] = $line2["SPEED"];
+                     if ($line2["SPEED"] != "Unknown") {
+                        $ram["frequence"] = $line2["SPEED"];
+                     }
                      $ram["devicememorytypes_id"] = Dropdown::importExternal('DeviceMemoryType', $line2["TYPE"]);
 
                      $DeviceMemory = new DeviceMemory();
