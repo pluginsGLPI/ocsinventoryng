@@ -2022,7 +2022,8 @@ JAVASCRIPT;
     */
    static function addOrUpdateOther($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action, $linked = false, $cfg_ocs)
    {
-
+      global $DB;
+      
       $snmpDevice = new $itemtype();
 
       $input = array(
