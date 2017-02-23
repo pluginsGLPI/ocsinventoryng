@@ -763,13 +763,18 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
       } else {
          $where_condition = "";
       }
+      $join = "";
+      if ((isset($filters['EXCLUDE_TAGS']) and $filters['EXCLUDE_TAGS']) ||
+         (isset($filters['TAGS']) and $filters['TAGS'])) {
+         $join = "LEFT JOIN `accountinfo` ON (`hardware`.`ID` = `accountinfo`.`HARDWARE_ID`) ";
+      }
 
       if ($id > 0) {
-         $query = "SELECT count(DISTINCT `hardware`.`ID`) FROM `hardware`
+         $query = "SELECT count(DISTINCT `hardware`.`ID`) FROM `hardware` $join
                            WHERE `hardware`.`ID` = $id
                            $where_condition";
       } else {
-         $query = "SELECT DISTINCT `hardware`.`ID` FROM `hardware`
+         $query = "SELECT DISTINCT `hardware`.`ID` FROM `hardware` $join
                            WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
                            $where_condition
                            ORDER BY $order
