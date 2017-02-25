@@ -974,7 +974,26 @@ function plugin_ocsinventoryng_install()
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_winupdates` 
                ADD `entities_id` int(11) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.3.3 update table glpi_plugin_ocsinventoryng_winupdates add entities_id");
-    }
+   }
+   
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+      && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_teamviewer')
+   ) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `import_teamviewer` TINYINT(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.3.3 update table glpi_plugin_ocsinventoryng_ocsservers add import_teamviewer");
+      
+      $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_teamviewers` (
+                 `id` int(11) NOT NULL AUTO_INCREMENT,
+                 `computers_id` int(11) NOT NULL DEFAULT '0',
+                 `entities_id` int(11) NOT NULL DEFAULT '0',
+                 `twid` varchar(255) DEFAULT NULL,
+                 `version` varchar(255) DEFAULT NULL,
+                 PRIMARY KEY (`id`),
+                 KEY `computers_id` (`computers_id`)
+               ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+      $DB->queryOrDie($query, "1.3.2 create table glpi_plugin_ocsinventoryng_teamviewers");
+   }
    
    //add notification
    $query  = "SELECT `id`

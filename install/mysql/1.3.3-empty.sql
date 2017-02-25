@@ -80,6 +80,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `import_antivirus` tinyint(1) NOT NULL DEFAULT '0',
   `import_officepack` tinyint(1) NOT NULL DEFAULT '0',
   `import_winupdatestate` tinyint(1) NOT NULL DEFAULT '0',
+  `import_teamviewer` tinyint(1) NOT NULL DEFAULT '0',
   `import_os_serial` tinyint(1) NOT NULL DEFAULT '1',
   `import_ip` tinyint(1) NOT NULL DEFAULT '1',
   `import_disk` tinyint(1) NOT NULL DEFAULT '1',
@@ -189,6 +190,20 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_winupdates` (
   `lastsuccesstime` datetime DEFAULT NULL,
   `detectsuccesstime` datetime DEFAULT NULL,
   `downloadsuccesstime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `computers_id` (`computers_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+### Dump table glpi_plugin_ocsinventoryng_teamviewers
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_teamviewers`;
+CREATE TABLE `glpi_plugin_ocsinventoryng_teamviewers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `computers_id` int(11) NOT NULL DEFAULT '0',
+  `entities_id` int(11) NOT NULL DEFAULT '0',
+  `twid` varchar(255) DEFAULT NULL,
+  `version` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `computers_id` (`computers_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

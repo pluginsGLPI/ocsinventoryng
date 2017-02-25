@@ -785,18 +785,6 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Registry', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("import_registry", $this->fields["import_registry"]);
       echo "</td>\n";
-      echo "<td class='center'>" . __('Antivirus', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("import_antivirus", $this->fields["import_antivirus"]);
-      echo "&nbsp;";
-      Html::showToolTip(nl2br(__('Security Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/security) must be installed', 'ocsinventoryng')));
-      echo "&nbsp;</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Microsoft Office licenses', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("import_officepack", $this->fields["import_officepack"]);
-      echo "&nbsp;";
-      Html::showToolTip(nl2br(__('Depends on software import and OfficePack Plugin for (https://github.com/PluginsOCSInventory-NG/officepack) OCSNG must be installed', 'ocsinventoryng')));
-      echo "</td>\n";
-
       //check version
       if ($this->fields['ocs_version'] > self::OCS1_3_VERSION_LIMIT) {
          echo "<td class='center'>" .
@@ -808,6 +796,19 @@ JAVASCRIPT;
          echo "<input type='hidden' name='import_vms' value='0'>";
          echo "</td>\n";
       }
+      echo "</tr>\n";
+      
+      echo "<tr><th colspan='4'>" . __('OCS Inventory NG plugins', 'ocsinventoryng') . "</th>\n";
+
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Microsoft Office licenses', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_officepack", $this->fields["import_officepack"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Depends on software import and OfficePack Plugin for (https://github.com/PluginsOCSInventory-NG/officepack) OCSNG must be installed', 'ocsinventoryng')));
+      echo "</td><td class='center'>" . __('Antivirus', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_antivirus", $this->fields["import_antivirus"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Security Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/security) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td>\n";
       echo "</tr>";
       
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Uptime', 'ocsinventoryng') . "</td>\n<td>";
@@ -819,7 +820,15 @@ JAVASCRIPT;
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Winupdate Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/winupdate) must be installed', 'ocsinventoryng')));
       echo "&nbsp;</td></tr>\n";
-
+      
+      
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Teamviewer', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_teamviewer", $this->fields["import_teamviewer"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Teamviewer Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/teamviewer) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td><td colspan='2'></td></tr>\n";
+      
+      
       echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
       echo __('No import: the plugin will not import these elements', 'ocsinventoryng');
       echo "<br>" . __('Global import: everything is imported but the material is globally managed (without duplicate)', 'ocsinventoryng');
@@ -2008,6 +2017,9 @@ JAVASCRIPT;
                if ($ocsConfig["import_winupdatestate"]) {
                   self::resetWinupdatestate($computers_id, $cfg_ocs);
                }
+               if ($ocsConfig["import_teamviewer"]) {
+                  self::resetTeamviewer($computers_id, $cfg_ocs);
+               }
                if ($ocsConfig["import_officepack"]) {
                   self::resetOfficePack($computers_id);
                }
@@ -2716,7 +2728,8 @@ JAVASCRIPT;
             $antivirus = false;
             $uptime = false;
             $officepack = false;
-            $winupdatestate = true;
+            $winupdatestate = false;
+            $teamviewer = false;
             $virtualmachines = false;
             $mb = false;
             $controllers = false;
@@ -2878,6 +2891,10 @@ JAVASCRIPT;
                   $winupdatestate = true;
                   $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_WUPDATE;
                }
+               if ($cfg_ocs["import_teamviewer"]) {
+                  $teamviewer = true;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_TEAMVIEWER;
+               }
                if ($mixed_checksum & pow(2, self::VIRTUALMACHINES_FL)) {
                   //no vm in ocs before 1.3
                   if (!($cfg_ocs['ocs_version'] < self::OCS1_3_VERSION_LIMIT)) {
@@ -3028,13 +3045,18 @@ JAVASCRIPT;
                }
 
                if ($antivirus && isset($ocsComputer["SECURITYCENTER"])) {
-                  //import registry entries not needed
+                  //import antivirus entries
                   self::updateAntivirus($line['computers_id'], $ocsComputer["SECURITYCENTER"], $cfg_ocs);
                }
                
                if ($winupdatestate && isset($ocsComputer["WINUPDATESTATE"])) {
-                  //import registry entries not needed
+                  //import winupdatestate entries
                   self::updateWinupdatestate($line['computers_id'], $ocsComputer["WINUPDATESTATE"], $cfg_ocs);
+               }
+               
+               if ($teamviewer && isset($ocsComputer["TEAMVIEWER"])) {
+                  //import teamviewer entries
+                  self::updateTeamviewer($line['computers_id'], $ocsComputer["TEAMVIEWER"], $cfg_ocs);
                }
                
                if ($uptime && isset($ocsComputer["UPTIME"])) {
@@ -4606,11 +4628,13 @@ JAVASCRIPT;
                   if (!is_numeric($line2["CAPACITY"])) {
                      $line2["CAPACITY"] = 0;
                   }
-                  $ram["size_default"] = $line2["CAPACITY"];
+                  if (is_numeric($line2["CAPACITY"])) {
+                     $ram["size_default"] = $line2["CAPACITY"];
+                  }
                   $ram["entities_id"] = $entities_id;
                   if (!in_array(stripslashes($prevalue . $ram["designation"]), $import_device)) {
 
-                     if ($line2["SPEED"] != "Unknown") {
+                     if ($line2["SPEED"] != "Unknown" && is_numeric($line2["SPEED"])) {
                         $ram["frequence"] = $line2["SPEED"];
                      }
                      $ram["devicememorytypes_id"] = Dropdown::importExternal('DeviceMemoryType', $line2["TYPE"]);
@@ -5411,6 +5435,32 @@ JAVASCRIPT;
 //      TODO add history for antivirus
 //      if ($cfg_ocs['history_antivirus']) {
       $table = getTableForItemType('PluginOcsinventoryngWinupdate');
+      $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `computers_id` = '" . $glpi_computers_id . "'";
+      $DB->query($query);
+//      }
+      //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//      $av = new ComputerAntivirus();
+//      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
+//         'is_dynamic' => 1));
+   }
+   
+   
+   /**
+    * Delete old Teamviewer entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    *
+    * @param $cfg_ocs
+    * @return nothing .
+    */
+   static function resetTeamviewer($glpi_computers_id, $cfg_ocs)
+   {
+      global $DB;
+//      TODO add history for antivirus
+//      if ($cfg_ocs['history_antivirus']) {
+      $table = getTableForItemType('PluginOcsinventoryngTeamviewer');
       $query = "DELETE
                             FROM `" . $table . "`
                             WHERE `computers_id` = '" . $glpi_computers_id . "'";
@@ -6386,8 +6436,6 @@ JAVASCRIPT;
     * @param $computers_id integer : glpi computer id.
     * @param $ocsComputer
     * @param $cfg_ocs array : ocs config
-    * @internal param int $plugin_ocsinventoryng_ocsservers_id : ocs server id
-    * @internal param int $ocsid : ocs computer id (ID).
     */
    static function updateAntivirus($computers_id, $ocsComputer, $cfg_ocs)
    {
@@ -6426,8 +6474,6 @@ JAVASCRIPT;
     * @param $computers_id integer : glpi computer id.
     * @param $ocsComputer
     * @param $cfg_ocs array : ocs config
-    * @internal param int $plugin_ocsinventoryng_ocsservers_id : ocs server id
-    * @internal param int $ocsid : ocs computer id (ID).
     */
    static function updateWinupdatestate($computers_id, $ocsComputer, $cfg_ocs)
    {
@@ -6451,6 +6497,32 @@ JAVASCRIPT;
          $CompWupdate->add($input, array('disable_unicity_check' => true));
          unset($wup->fields);
       }
+
+      return;
+   }
+   
+   /**
+    * Update config of the Teamviewer
+    *
+    * This function erase old data and import the new ones about Teamviewer
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $cfg_ocs array : ocs config
+    */
+   static function updateTeamviewer($computers_id, $ocsComputer, $cfg_ocs)
+   {
+
+      self::resetTeamviewer($computers_id, $cfg_ocs);
+
+      $CompTeam = new PluginOcsinventoryngTeamviewer();
+      $input = array();
+
+      $input["computers_id"] = $computers_id;
+      $input["version"] = $ocsComputer["VERSION"];
+      $input["twid"] = $ocsComputer["TWID"];
+
+      $CompTeam->add($input, array('disable_unicity_check' => true));
 
       return;
    }

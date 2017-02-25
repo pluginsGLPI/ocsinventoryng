@@ -169,6 +169,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                      echo "<td colspan='2'></td>";
                      echo "</tr>";
                   }
+                  
+                  PluginOcsinventoryngTeamviewer::showForSimpleForItem($item);
+                  
                   echo "<tr class='tab_bg_1'>";
                   //If have write right on OCS and ocsreports url is not empty in OCS config
                   if (Session::haveRight("plugin_ocsinventoryng", UPDATE)

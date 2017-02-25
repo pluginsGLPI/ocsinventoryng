@@ -71,7 +71,17 @@ function plugin_init_ocsinventoryng()
    if (TableExists('glpi_plugin_ocsinventoryng_winupdates')) {
       Plugin::registerClass('PluginOcsinventoryngWinupdate',
          array('addtabon' => 'Computer'));
-   } 
+   }
+   if (TableExists('glpi_plugin_ocsinventoryng_teamviewers')) {
+      Plugin::registerClass('PluginOcsinventoryngTeamviewer',
+         array('addtabon' => 'Computer',
+               'link_types' => true));
+      
+      if (class_exists('PluginOcsinventoryngTeamviewer')) {
+         Link::registerTag(PluginOcsinventoryngTeamviewer::$tags);
+      }
+      
+   }
    Plugin::registerClass('PluginOcsinventoryngOcsServer',
       array('massiveaction_noupdate_types' => true,
          'systeminformations_types' => true));

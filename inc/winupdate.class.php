@@ -105,7 +105,7 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
 
       if ($result = $DB->request('glpi_plugin_ocsinventoryng_winupdates', array('computers_id' => $ID))) {
          echo "<table class='tab_cadre_fixehov'>";
-         $colspan = 7;
+         $colspan = 5;
          echo "<tr class='noHover'><th colspan='$colspan'>".self::getTypeName($result->numrows()).
               "</th></tr>";
 
