@@ -4047,9 +4047,9 @@ JAVASCRIPT;
       }
       $computerOptions['MAX_RECORDS'] = $start + $_SESSION['glpilist_limit'];
       $ocsResult = $ocsClient->getComputers($computerOptions);
-      
-      $computers = $ocsResult['COMPUTERS'];
-      
+
+      $computers = (isset($ocsResult['COMPUTERS'])?$ocsResult['COMPUTERS']:array());
+
       $hardware = array();
       if (isset($computers)) {
          if (count($computers)) {
