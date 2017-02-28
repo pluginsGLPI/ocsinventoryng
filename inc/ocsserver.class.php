@@ -3033,7 +3033,7 @@ JAVASCRIPT;
                }
                if ($softwares && isset($ocsComputer["SOFTWARES"])) {
                   // Get import software
-                  self::updateSoftware($cfg_ocs, $line['computers_id'], $ocsComputer["SOFTWARES"], $comp->fields["entities_id"]);
+                  self::updateSoftware($cfg_ocs, $line['computers_id'], $ocsComputer, $comp->fields["entities_id"], $officepack);
                }
                if ($drives && isset($ocsComputer["DRIVES"])) {
                   // Get import drives
@@ -3068,10 +3068,6 @@ JAVASCRIPT;
                   // Get import vm
                   self::updateVirtualMachines($line['computers_id'], $ocsComputer["VIRTUALMACHINES"], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs);
                }
-               if ($officepack && isset($ocsComputer["OFFICEPACK"])) {
-                  // Get import officepack
-                  self::updateOfficePack($line['computers_id'], $comp->fields["entities_id"], $ocsComputer["OFFICEPACK"], $cfg_ocs);
-            }
             }
             //Update TAG
             self::updateTag($line);
@@ -5887,51 +5883,14 @@ JAVASCRIPT;
     *
     * @internal param \type $ocsservers_id
     */
-   static function updateOfficePack($computers_id, $entity, $ocsComputer, $cfg_ocs){
+   static function updateOfficePack($computers_id, $softwares_id, $softwares_name, $softwareversions_id, $entity, $ocsOfficePacks, $cfg_ocs, &$imported_licences){
       global $DB;
-
-      $software = new Software();
-      $ocsOfficePacks = $ocsComputer;
-
-      // Read imported software in last sync
-      $query    = "SELECT `glpi_computers_softwarelicenses`.`id` as id,
-                          `glpi_softwares`.`name` as sname,
-                          `glpi_softwarelicenses`.`name` as lname,
-                          `glpi_softwareversions`.`name` as vname
-                   FROM `glpi_computers_softwarelicenses`
-                   INNER JOIN `glpi_softwarelicenses`
-                           ON `glpi_softwarelicenses`.`id`= `glpi_computers_softwarelicenses`.`softwarelicenses_id`
-                   INNER JOIN `glpi_softwares`
-                           ON `glpi_softwares`.`id`= `glpi_softwarelicenses`.`softwares_id`
-                   INNER JOIN `glpi_softwareversions`
-                           ON `glpi_softwarelicenses`.`softwareversions_id_use` = `glpi_softwareversions`.`id`
-                   WHERE `glpi_computers_softwarelicenses`.`computers_id`='$computers_id'
-                         AND `is_dynamic`";
-      $imported = array();
-
-      foreach ($DB->request($query) as $data) {
-         $imported[$data['id']] = strtolower($data['vname']);
-      }
 
       if (count($ocsOfficePacks) > 0) {
          foreach ($ocsOfficePacks as $ocsOfficePack) {
             $ocsOfficePack = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsOfficePack));
-            
-            $query1 = "SELECT `glpi_softwares`.`id` AS softwares_id,
-                              `glpi_softwareversions`.`id` AS softwareversions_id,
-                              `glpi_softwareversions`.`name` AS softwareversions_name
-                     FROM `glpi_softwares`
-                     LEFT JOIN `glpi_softwareversions` ON `glpi_softwareversions`.`softwares_id` = `glpi_softwares`.`id`
-                     LEFT JOIN `glpi_computers_softwareversions` ON `glpi_computers_softwareversions`.softwareversions_id = `glpi_softwareversions`.`id`
-                     WHERE `glpi_computers_softwareversions`.`computers_id` = '" . $computers_id . "'
-                      AND `is_dynamic` 
-                      AND `glpi_softwares`.`name` = '" . $ocsOfficePack['PRODUCT'] . "'
-                      AND `glpi_softwareversions`.`name` = '" . $ocsOfficePack['OFFICEVERSION'] . "'";
 
-            $result = $DB->query($query1);
-            if ($DB->numrows($result) > 0) {
-               $softwares_id        = $DB->result($result, 0, 'softwares_id');
-               $softwareversions_id = $DB->result($result, 0, 'softwareversions_id');
+            if ($ocsOfficePack['PRODUCT'] == $softwares_name) {
 
                $soft_l['softwares_id']            = $softwares_id;
                $soft_l['softwareversions_id_use'] = $softwareversions_id;
@@ -5940,7 +5899,7 @@ JAVASCRIPT;
                $soft_l['serial']                  = $ocsOfficePack['OFFICEKEY'];
                $soft_l['comment']                 = $ocsOfficePack['NOTE'];
 
-               $id = array_search(strtolower(stripslashes($ocsOfficePack['OFFICEVERSION'])), $imported);
+               $id = array_search($softwareversions_id, $imported_licences);
 
                $software_licenses         = new SoftwareLicense();
                $computer_softwarelicenses = new Computer_SoftwareLicense();
@@ -5949,74 +5908,62 @@ JAVASCRIPT;
                   //---- The software exists in this license for this computer --------------//
                   //---------------------------- Update comments ----------------------------//
                   //---------------------------------------------------- --------------------//
-                  if(!empty($ocsOfficePack['OFFICEKEY'])){
+                  if (!empty($ocsOfficePack['OFFICEKEY'])) {
                      if ($software_licenses->getFromDBByQuery("WHERE `softwares_id` = " . $softwares_id . " 
                                                             AND `serial` = '" . $ocsOfficePack['OFFICEKEY'] . "'
-                                                            AND `softwareversions_id_use` = " . $softwareversions_id)) {
+                                                            AND `softwareversions_id_use` = " . $softwareversions_id)
+                     ) {
 
                         $software_licenses->update(array('id'      => $software_licenses->getID(),
                                                          'comment' => $ocsOfficePack['NOTE']));
                         if (!$computer_softwarelicenses->getFromDBByQuery("WHERE `computers_id` = " . $computers_id . "
-                              AND `softwarelicenses_id` = " . $software_licenses->getID())) {
+                              AND `softwarelicenses_id` = " . $software_licenses->getID())
+                        ) {
 
                            $computer_soft_l['computers_id']        = $computers_id;
                            $computer_soft_l['softwarelicenses_id'] = $software_licenses->getID();
                            $computer_soft_l['is_dynamic']          = -1;
                            $computer_softwarelicenses->add($computer_soft_l);
                            //Update for validity
-                           $software_licenses->update(array('id'      => $software_licenses->getID(),
-                                                         'is_valid' => 1));
+                           $software_licenses->update(array('id'       => $software_licenses->getID(),
+                                                            'is_valid' => 1));
                         }
                      }
                   }
 
-                  unset($imported[$id]);
+                  unset($imported_licences[$id]);
                } else {
                   //------------------------------------------------------------------------//
                   //---- The software doesn't exists in this license for this computer -----//
                   //------------------------------------------------------------------------//
-                  if(!empty($ocsOfficePack['OFFICEKEY'])){
+                  if (!empty($ocsOfficePack['OFFICEKEY'])) {
                      if ($software_licenses->getFromDBByQuery("WHERE `softwares_id` = " . $softwares_id . " 
                                                            AND `serial` = '" . $ocsOfficePack['OFFICEKEY'] . "'
-                                                           AND `softwareversions_id_use` = " . $softwareversions_id)) {
-                       $id_software_licenses = $software_licenses->getID();
+                                                           AND `softwareversions_id_use` = " . $softwareversions_id)
+                     ) {
+                        $id_software_licenses = $software_licenses->getID();
                      } else {
                         $software_licenses->fields['softwares_id'] = $softwares_id;
                         $id_software_licenses                      = $software_licenses->add($soft_l, array(), $cfg_ocs['history_software']);
                      }
 
-                    if ($id_software_licenses) {
-                       $computer_soft_l['computers_id']        = $computers_id;
-                       $computer_soft_l['softwarelicenses_id'] = $id_software_licenses;
-                       $computer_soft_l['is_dynamic']          = 1;
-                       $computer_soft_l['number']              = -1;
+                     if ($id_software_licenses) {
+                        $computer_soft_l['computers_id']        = $computers_id;
+                        $computer_soft_l['softwarelicenses_id'] = $id_software_licenses;
+                        $computer_soft_l['is_dynamic']          = 1;
+                        $computer_soft_l['number']              = -1;
 
-                       $computer_softwarelicenses->add($computer_soft_l);
-                       //Update for validity
-                          $software_licenses->update(array('id'      => $id_software_licenses,
-                                                        'is_valid' => 1));
-                    }
+                        $computer_softwarelicenses->add($computer_soft_l);
+                        //Update for validity
+                        $software_licenses->update(array('id'       => $id_software_licenses,
+                                                         'is_valid' => 1));
+                     }
                   }
                }
             }
          }
       }
-      foreach ($imported as $id => $unused) {
-         $computer_softwarelicenses->delete(array('id' => $id), true, $cfg_ocs['history_software']);
-         // delete cause a getFromDB, so fields contains values
-         $verid = $computer_softwarelicenses->getField('softwareversions_id');
 
-         if (countElementsInTable('glpi_computers_softwarelicenses', "softwarelicenses_id = '$verid'") == 0) {
-
-            $vers = new SoftwareVersion();
-            if ($vers->getFromDB($verid)
-                && countElementsInTable('glpi_softwarelicenses', "softwares_id = '" . $vers->fields['softwares_id'] . "'") == 0) {
-               $soft = new Software();
-               $soft->delete(array('id' => $vers->fields['softwares_id']), 1);
-            }
-            $vers->delete(array("id" => $verid));
-         }
-      }
    }
 
    /**
@@ -6228,7 +6175,7 @@ JAVASCRIPT;
     * @internal param OCS $ocsservers_id server id
     * @internal param computer $ocsid 's id in OCS
     */
-   static function updateSoftware($cfg_ocs, $computers_id, $ocsComputer, $entity)
+   static function updateSoftware($cfg_ocs, $computers_id, $ocsComputer, $entity, $officepack)
    {
       global $DB;
 
@@ -6236,7 +6183,7 @@ JAVASCRIPT;
       $computer_softwareversion = new Computer_SoftwareVersion();
       $softwares = array();
       //---- Get all the softwares for this machine from OCS -----//
-      $softwares = $ocsComputer;
+      $softwares = $ocsComputer["SOFTWARES"];
       $soft = new Software();
 
       // Read imported software in last sync
@@ -6255,6 +6202,28 @@ JAVASCRIPT;
 
       foreach ($DB->request($query) as $data) {
          $imported[$data['id']] = strtolower($data['sname'] . self::FIELD_SEPARATOR . $data['vname']);
+      }
+
+      if($officepack) {
+         // Read imported software in last sync
+         $query             = "SELECT `glpi_computers_softwarelicenses`.`id` as id,
+                          `glpi_softwares`.`name` as sname,
+                          `glpi_softwarelicenses`.`name` as lname,
+                          `glpi_softwareversions`.`id` as vid
+                   FROM `glpi_computers_softwarelicenses`
+                   INNER JOIN `glpi_softwarelicenses`
+                           ON `glpi_softwarelicenses`.`id`= `glpi_computers_softwarelicenses`.`softwarelicenses_id`
+                   INNER JOIN `glpi_softwares`
+                           ON `glpi_softwares`.`id`= `glpi_softwarelicenses`.`softwares_id`
+                   INNER JOIN `glpi_softwareversions`
+                           ON `glpi_softwarelicenses`.`softwareversions_id_use` = `glpi_softwareversions`.`id`
+                   WHERE `glpi_computers_softwarelicenses`.`computers_id`='$computers_id'
+                         AND `is_dynamic`";
+         $imported_licences = array();
+
+         foreach ($DB->request($query) as $data) {
+            $imported_licences[$data['id']] = strtolower($data['vid']);
+         }
       }
 
       if (count($softwares) > 0) {
@@ -6357,7 +6326,7 @@ JAVASCRIPT;
                   //Update version for this machine
                   self::updateSoftwareVersion($computers_id, $versionID, $installdate, $cfg_ocs['history_software']);
 
-                  unset($isNewSoft);
+//                  unset($isNewSoft);
                   unset($imported[$id]);
                } else {
                   //------------------------------------------------------------------------//
@@ -6368,6 +6337,10 @@ JAVASCRIPT;
                   $versionID = self::importVersion($cfg_ocs, $isNewSoft, $modified_version, $version_comments);
                   //Install version for this machine
                   $instID = self::installSoftwareVersion($computers_id, $versionID, $installdate,  $cfg_ocs['history_software']);
+               }
+               if ($officepack && isset($ocsComputer["OFFICEPACK"])) {
+                  // Get import officepack
+                  self::updateOfficePack($computers_id, $isNewSoft, $name, $versionID, $entity, $ocsComputer["OFFICEPACK"], $cfg_ocs, $imported_licences);
                }
             }
          }
@@ -6391,6 +6364,26 @@ JAVASCRIPT;
                $soft->putInTrash($vers->fields['softwares_id'], __('Software deleted by OCSNG synchronization', 'ocsinventoryng'));
             }
             $vers->delete(array("id" => $verid, '_no_history' => !$cfg_ocs['history_software']), true, $cfg_ocs['history_software']);
+         }
+      }
+
+      if($officepack) {
+         $computer_softwarelicenses = new Computer_SoftwareLicense();
+         foreach ($imported_licences as $id => $unused) {
+            $computer_softwarelicenses->delete(array('id' => $id), true, $cfg_ocs['history_software']);
+            // delete cause a getFromDB, so fields contains values
+            $verid = $computer_softwarelicenses->getField('softwareversions_id');
+
+            if (countElementsInTable('glpi_computers_softwarelicenses', "softwarelicenses_id = '$verid'") == 0) {
+
+               $vers = new SoftwareVersion();
+               if ($vers->getFromDB($verid)
+                   && countElementsInTable('glpi_softwarelicenses', "softwares_id = '" . $vers->fields['softwares_id'] . "'") == 0) {
+                  $soft = new Software();
+                  $soft->delete(array('id' => $vers->fields['softwares_id']), 1);
+               }
+               $vers->delete(array("id" => $verid));
+            }
          }
       }
    }
