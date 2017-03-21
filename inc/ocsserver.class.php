@@ -826,7 +826,11 @@ JAVASCRIPT;
       Dropdown::showYesNo("import_teamviewer", $this->fields["import_teamviewer"]);
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Teamviewer Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/teamviewer) must be installed', 'ocsinventoryng')));
-      echo "&nbsp;</td><td colspan='2'></td></tr>\n";
+      echo "&nbsp;</td><td class='center'>" . __('Proxy Settings', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_proxysetting", $this->fields["import_proxysetting"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Navigator Proxy Setting Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/navigatorproxysetting) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td></tr>\n";
       
       
       echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
@@ -2017,6 +2021,9 @@ JAVASCRIPT;
                if ($ocsConfig["import_winupdatestate"]) {
                   self::resetWinupdatestate($computers_id, $cfg_ocs);
                }
+               if ($ocsConfig["import_proxysetting"]) {
+                  self::resetProxysetting($computers_id, $cfg_ocs);
+               }
                if ($ocsConfig["import_teamviewer"]) {
                   self::resetTeamviewer($computers_id, $cfg_ocs);
                }
@@ -2729,6 +2736,7 @@ JAVASCRIPT;
             $uptime = false;
             $officepack = false;
             $winupdatestate = false;
+            $proxysetting = false;
             $teamviewer = false;
             $virtualmachines = false;
             $mb = false;
@@ -2891,6 +2899,10 @@ JAVASCRIPT;
                   $winupdatestate = true;
                   $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_WUPDATE;
                }
+               if ($cfg_ocs["import_proxysetting"]) {
+                  $proxysetting = true;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_PROXYSETTING;
+               }
                if ($cfg_ocs["import_teamviewer"]) {
                   $teamviewer = true;
                   $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_TEAMVIEWER;
@@ -3052,6 +3064,11 @@ JAVASCRIPT;
                if ($winupdatestate && isset($ocsComputer["WINUPDATESTATE"])) {
                   //import winupdatestate entries
                   self::updateWinupdatestate($line['computers_id'], $ocsComputer["WINUPDATESTATE"], $cfg_ocs);
+               }
+               
+               if ($proxysetting && isset($ocsComputer["NAVIGATORPROXYSETTING"])) {
+                  //import proxysetting entries
+                  self::updateProxysetting($line['computers_id'], $ocsComputer["NAVIGATORPROXYSETTING"], $cfg_ocs);
                }
                
                if ($teamviewer && isset($ocsComputer["TEAMVIEWER"])) {
@@ -5442,6 +5459,30 @@ JAVASCRIPT;
 //         'is_dynamic' => 1));
    }
    
+   /**
+    * Delete old Proxysetting entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    *
+    * @param $cfg_ocs
+    * @return nothing .
+    */
+   static function resetProxysetting($glpi_computers_id, $cfg_ocs)
+   {
+      global $DB;
+//      TODO add history for antivirus
+//      if ($cfg_ocs['history_antivirus']) {
+      $table = getTableForItemType('PluginOcsinventoryngProxysetting');
+      $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `computers_id` = '" . $glpi_computers_id . "'";
+      $DB->query($query);
+//      }
+      //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//      $av = new ComputerAntivirus();
+//      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
+//         'is_dynamic' => 1));
+   }
    
    /**
     * Delete old Teamviewer entries
@@ -6481,6 +6522,10 @@ JAVASCRIPT;
          $input = array();
 
          $input["computers_id"] = $computers_id;
+         $computer = new Computer;
+         if ($computer->getFromDB($computers_id)) {
+            $input["entities_id"] = $computer->fields['entities_id'];
+         }
          $input["auoptions"] = $wupdate["AUOPTIONS"];
          $input["scheduleinstalldate"] = $wupdate["SCHEDULEDINSTALLDATE"];
          $input["lastsuccesstime"] = $wupdate["LASTSUCCESSTIME"];
@@ -6493,6 +6538,44 @@ JAVASCRIPT;
 
       return;
    }
+   
+   
+   /**
+    * Update config of the Proxysetting
+    *
+    * This function erase old data and import the new ones about Proxysetting
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $cfg_ocs array : ocs config
+    */
+   static function updateProxysetting($computers_id, $ocsComputer, $cfg_ocs)
+   {
+
+      self::resetProxysetting($computers_id, $cfg_ocs);
+
+      $ProxySetting = new PluginOcsinventoryngProxysetting();
+
+      $input = array();
+
+      $input["enable"] = $ocsComputer["ENABLE"];
+      $input["computers_id"] = $computers_id;
+      $computer = new Computer;
+      if ($computer->getFromDB($computers_id)) {
+         $input["entities_id"] = $computer->fields['entities_id'];
+      }
+      if (isset($ocsComputer["AUTOCONFIGURL"])) {
+         $input["autoconfigurl"] = $ocsComputer["AUTOCONFIGURL"];
+      }
+      $input["address"] = $ocsComputer["ADDRESS"];
+      if (isset($ocsComputer["OVERRIDE"])) {
+         $input["override"] = $ocsComputer["OVERRIDE"];
+      }
+      $ProxySetting->add($input, array('disable_unicity_check' => true));
+
+      return;
+   }
+   
    
    /**
     * Update config of the Teamviewer
@@ -6512,6 +6595,10 @@ JAVASCRIPT;
       $input = array();
 
       $input["computers_id"] = $computers_id;
+      $computer = new Computer;
+      if ($computer->getFromDB($computers_id)) {
+         $input["entities_id"] = $computer->fields['entities_id'];
+      }
       $input["version"] = $ocsComputer["VERSION"];
       $input["twid"] = $ocsComputer["TWID"];
 

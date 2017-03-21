@@ -44,7 +44,7 @@ function plugin_ocsinventoryng_install()
    ) {
 
       $install = true;
-      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.3.3-empty.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.3.4-empty.sql");
       
       $migration->createRule(array('sub_type' => 'RuleImportComputer',
          'entities_id' => 0,
@@ -1051,7 +1051,28 @@ function plugin_ocsinventoryng_install()
                      'checkruleimportentity', 'mail'," . $templates_id . ", 1, 1, NOW(), NOW());";
       $DB->queryOrDie($query, $DB->error());
    }
-
+   
+   /*1.3.4*/
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','import_proxysetting')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `import_proxysetting` tinyint(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.3.2 update table glpi_plugin_ocsinventoryng_ocsservers add import_proxysetting");
+      
+      $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_proxysettings` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `computers_id` int(11) NOT NULL DEFAULT '0',
+              `entities_id` int(11) NOT NULL DEFAULT '0',
+              `enabled` int(11) NOT NULL DEFAULT '0',
+              `autoconfigurl` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `address` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `override` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              KEY `computers_id` (`computers_id`)
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+      $DB->queryOrDie($query, "1.3.2 create table glpi_plugin_ocsinventoryng_proxysettings");
+   }
+   
    $cron = new CronTask();
    if (!$cron->getFromDBbyName('PluginOcsinventoryngThread', 'CleanOldThreads')) {
       CronTask::Register('PluginOcsinventoryngThread', 'CleanOldThreads', HOUR_TIMESTAMP,
@@ -1119,6 +1140,7 @@ function plugin_ocsinventoryng_uninstall()
       "glpi_plugin_ocsinventoryng_details",
       "glpi_plugin_ocsinventoryng_registrykeys",
       "glpi_plugin_ocsinventoryng_winupdates",
+      "glpi_plugin_ocsinventoryng_proxysettings",
       "glpi_plugin_ocsinventoryng_networkports",
       "glpi_plugin_ocsinventoryng_networkporttypes",
       "glpi_plugin_ocsinventoryng_ocsservers_profiles",
@@ -1263,7 +1285,8 @@ function plugin_ocsinventoryng_getDatabaseRelations()
          "glpi_computers"
          => array("glpi_plugin_ocsinventoryng_ocslinks" => "computers_id",
             "glpi_plugin_ocsinventoryng_registrykeys" => "computers_id",
-            "glpi_plugin_ocsinventoryng_winupdates" => "computers_id"),
+            "glpi_plugin_ocsinventoryng_winupdates" => "computers_id",
+            "glpi_plugin_ocsinventoryng_proxysettings" => "computers_id"),
 
 
          "glpi_states"
