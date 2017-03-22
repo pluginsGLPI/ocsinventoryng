@@ -76,6 +76,12 @@ function plugin_init_ocsinventoryng()
       Plugin::registerClass('PluginOcsinventoryngProxysetting',
          array('addtabon' => 'Computer'));
    }
+   
+   if (TableExists('glpi_plugin_ocsinventoryng_winusers')) {
+      Plugin::registerClass('PluginOcsinventoryngWinuser',
+         array('addtabon' => 'Computer'));
+   }
+   
    if (TableExists('glpi_plugin_ocsinventoryng_teamviewers')) {
       Plugin::registerClass('PluginOcsinventoryngTeamviewer',
          array('addtabon' => 'Computer',

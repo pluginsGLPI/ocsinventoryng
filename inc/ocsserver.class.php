@@ -832,6 +832,11 @@ JAVASCRIPT;
       Html::showToolTip(nl2br(__('Navigator Proxy Setting Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/navigatorproxysetting) must be installed', 'ocsinventoryng')));
       echo "&nbsp;</td></tr>\n";
       
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Windows Users', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_winusers", $this->fields["import_winusers"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Winusers Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/winusers) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td><td class='center' colspan='2'></td></tr>\n";
       
       echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
       echo __('No import: the plugin will not import these elements', 'ocsinventoryng');
@@ -2024,6 +2029,9 @@ JAVASCRIPT;
                if ($ocsConfig["import_proxysetting"]) {
                   self::resetProxysetting($computers_id, $cfg_ocs);
                }
+               if ($ocsConfig["import_winusers"]) {
+                  self::resetWinuser($computers_id, $cfg_ocs);
+               }
                if ($ocsConfig["import_teamviewer"]) {
                   self::resetTeamviewer($computers_id, $cfg_ocs);
                }
@@ -2737,6 +2745,7 @@ JAVASCRIPT;
             $officepack = false;
             $winupdatestate = false;
             $proxysetting = false;
+            $winuser = false;
             $teamviewer = false;
             $virtualmachines = false;
             $mb = false;
@@ -2902,6 +2911,10 @@ JAVASCRIPT;
                if ($cfg_ocs["import_proxysetting"]) {
                   $proxysetting = true;
                   $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_PROXYSETTING;
+               }
+               if ($cfg_ocs["import_winusers"]) {
+                  $winuser = true;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_WINUSERS;
                }
                if ($cfg_ocs["import_teamviewer"]) {
                   $teamviewer = true;
@@ -3069,6 +3082,11 @@ JAVASCRIPT;
                if ($proxysetting && isset($ocsComputer["NAVIGATORPROXYSETTING"])) {
                   //import proxysetting entries
                   self::updateProxysetting($line['computers_id'], $ocsComputer["NAVIGATORPROXYSETTING"], $cfg_ocs);
+               }
+               
+               if ($winuser && isset($ocsComputer["WINUSERS"])) {
+                  //import proxysetting entries
+                  self::updateWinuser($line['computers_id'], $ocsComputer["WINUSERS"], $cfg_ocs);
                }
                
                if ($teamviewer && isset($ocsComputer["TEAMVIEWER"])) {
@@ -5485,6 +5503,31 @@ JAVASCRIPT;
    }
    
    /**
+    * Delete old Winuser entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    *
+    * @param $cfg_ocs
+    * @return nothing .
+    */
+   static function resetWinuser($glpi_computers_id, $cfg_ocs)
+   {
+      global $DB;
+//      TODO add history for antivirus
+//      if ($cfg_ocs['history_antivirus']) {
+      $table = getTableForItemType('PluginOcsinventoryngWinuser');
+      $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `computers_id` = '" . $glpi_computers_id . "'";
+      $DB->query($query);
+//      }
+      //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//      $av = new ComputerAntivirus();
+//      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
+//         'is_dynamic' => 1));
+   }
+   
+   /**
     * Delete old Teamviewer entries
     *
     * @param $glpi_computers_id integer : glpi computer id.
@@ -6576,6 +6619,45 @@ JAVASCRIPT;
       return;
    }
    
+   
+   /**
+    * Update config of the WinUsers
+    *
+    * This function erase old data and import the new ones about WinUser
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $cfg_ocs array : ocs config
+    */
+   static function updateWinuser($computers_id, $ocsComputer, $cfg_ocs)
+   {
+
+      self::resetWinuser($computers_id, $cfg_ocs);
+
+      $winusers = new PluginOcsinventoryngWinuser();
+      //update data
+      foreach ($ocsComputer as $wusers) {
+
+         $wuser = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($wusers));
+         $input = array();
+
+         $input["computers_id"] = $computers_id;
+         $computer = new Computer;
+         if ($computer->getFromDB($computers_id)) {
+            $input["entities_id"] = $computer->fields['entities_id'];
+         }
+         $input["name"] = $wuser["NAME"];
+         $input["type"] = $wuser["TYPE"];
+         $input["description"] = $wuser["DESCRIPTION"];
+         $input["disabled"] = $wuser["DISABLED"];
+         $input["sid"] = $wuser["SID"];
+         
+         $winusers->add($input, array('disable_unicity_check' => true));
+         unset($wusers->fields);
+      }
+
+      return;
+   }
    
    /**
     * Update config of the Teamviewer

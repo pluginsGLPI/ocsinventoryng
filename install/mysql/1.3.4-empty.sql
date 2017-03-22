@@ -81,6 +81,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `import_officepack` tinyint(1) NOT NULL DEFAULT '0',
   `import_winupdatestate` tinyint(1) NOT NULL DEFAULT '0',
   `import_proxysetting` tinyint(1) NOT NULL DEFAULT '0',
+  `import_winusers` tinyint(1) NOT NULL DEFAULT '0',
   `import_teamviewer` tinyint(1) NOT NULL DEFAULT '0',
   `import_os_serial` tinyint(1) NOT NULL DEFAULT '1',
   `import_ip` tinyint(1) NOT NULL DEFAULT '1',
@@ -206,6 +207,22 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_proxysettings` (
   `autoconfigurl` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `address` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `override` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `computers_id` (`computers_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+### Dump table glpi_plugin_ocsinventoryng_winusers
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_winusers`;
+CREATE TABLE `glpi_plugin_ocsinventoryng_winusers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `computers_id` int(11) NOT NULL DEFAULT '0',
+  `entities_id` int(11) NOT NULL DEFAULT '0',
+  `name` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `type` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `disabled` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `sid` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `computers_id` (`computers_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

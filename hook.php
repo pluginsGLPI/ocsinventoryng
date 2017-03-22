@@ -1057,7 +1057,7 @@ function plugin_ocsinventoryng_install()
        && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','import_proxysetting')) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
                ADD `import_proxysetting` tinyint(1) NOT NULL DEFAULT '0';";
-      $DB->queryOrDie($query, "1.3.2 update table glpi_plugin_ocsinventoryng_ocsservers add import_proxysetting");
+      $DB->queryOrDie($query, "1.3.4 update table glpi_plugin_ocsinventoryng_ocsservers add import_proxysetting");
       
       $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_proxysettings` (
               `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1070,7 +1070,28 @@ function plugin_ocsinventoryng_install()
               PRIMARY KEY (`id`),
               KEY `computers_id` (`computers_id`)
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
-      $DB->queryOrDie($query, "1.3.2 create table glpi_plugin_ocsinventoryng_proxysettings");
+      $DB->queryOrDie($query, "1.3.4 create table glpi_plugin_ocsinventoryng_proxysettings");
+   }
+   
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','import_winusers')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `import_winusers` tinyint(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.3.4 update table glpi_plugin_ocsinventoryng_ocsservers add import_winusers");
+      
+      $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_winusers` (
+              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `computers_id` int(11) NOT NULL DEFAULT '0',
+              `entities_id` int(11) NOT NULL DEFAULT '0',
+              `name` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `type` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `description` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `disabled` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `sid` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              KEY `computers_id` (`computers_id`)
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+      $DB->queryOrDie($query, "1.3.4 create table glpi_plugin_ocsinventoryng_winusers");
    }
    
    $cron = new CronTask();
@@ -1141,6 +1162,7 @@ function plugin_ocsinventoryng_uninstall()
       "glpi_plugin_ocsinventoryng_registrykeys",
       "glpi_plugin_ocsinventoryng_winupdates",
       "glpi_plugin_ocsinventoryng_proxysettings",
+      "glpi_plugin_ocsinventoryng_winusers",
       "glpi_plugin_ocsinventoryng_networkports",
       "glpi_plugin_ocsinventoryng_networkporttypes",
       "glpi_plugin_ocsinventoryng_ocsservers_profiles",
@@ -1286,7 +1308,8 @@ function plugin_ocsinventoryng_getDatabaseRelations()
          => array("glpi_plugin_ocsinventoryng_ocslinks" => "computers_id",
             "glpi_plugin_ocsinventoryng_registrykeys" => "computers_id",
             "glpi_plugin_ocsinventoryng_winupdates" => "computers_id",
-            "glpi_plugin_ocsinventoryng_proxysettings" => "computers_id"),
+            "glpi_plugin_ocsinventoryng_proxysettings" => "computers_id",
+            "glpi_plugin_ocsinventoryng_winusers" => "computers_id"),
 
 
          "glpi_states"
