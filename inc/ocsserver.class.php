@@ -6267,7 +6267,8 @@ JAVASCRIPT;
       $computer_softwareversion = new Computer_SoftwareVersion();
       $softwares = array();
       //---- Get all the softwares for this machine from OCS -----//
-      $softwares = $ocsComputer["SOFTWARES"];
+      $softwares = (isset($ocsComputer["SOFTWARES"])?$ocsComputer["SOFTWARES"]:array());
+      
       $soft = new Software();
 
       // Read imported software in last sync
@@ -6599,24 +6600,32 @@ JAVASCRIPT;
 
       $ProxySetting = new PluginOcsinventoryngProxysetting();
 
-      $input = array();
+      //update data
+      foreach ($ocsComputer as $prox) {
 
-      $input["enable"] = $ocsComputer["ENABLE"];
-      $input["computers_id"] = $computers_id;
-      $computer = new Computer;
-      if ($computer->getFromDB($computers_id)) {
-         $input["entities_id"] = $computer->fields['entities_id'];
+         $proxy = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($prox));
+         $input = array();
+
+         $input["computers_id"] = $computers_id;
+         $computer = new Computer;
+         if ($computer->getFromDB($computers_id)) {
+            $input["entities_id"] = $computer->fields['entities_id'];
+         }
+         $input["user"] = $proxy["USER"];
+         $input["enable"] = $proxy["ENABLE"];
+         if (isset($ocsComputer["AUTOCONFIGURL"])) {
+            $input["autoconfigurl"] = $proxy["AUTOCONFIGURL"];
+         }
+         $input["address"] = $proxy["ADDRESS"];
+         if (isset($proxy["OVERRIDE"])) {
+            $input["override"] = $proxy["OVERRIDE"];
+         }
+         $ProxySetting->add($input, array('disable_unicity_check' => true));
+         unset($prox->fields);
       }
-      if (isset($ocsComputer["AUTOCONFIGURL"])) {
-         $input["autoconfigurl"] = $ocsComputer["AUTOCONFIGURL"];
-      }
-      $input["address"] = $ocsComputer["ADDRESS"];
-      if (isset($ocsComputer["OVERRIDE"])) {
-         $input["override"] = $ocsComputer["OVERRIDE"];
-      }
-      $ProxySetting->add($input, array('disable_unicity_check' => true));
 
       return;
+
    }
    
    

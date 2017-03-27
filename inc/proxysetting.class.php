@@ -103,7 +103,7 @@ class PluginOcsinventoryngProxysetting extends CommonDBChild {
 
       echo "<div class='spaced center'>";
 
-      if ($result = $DB->request('glpi_plugin_ocsinventoryng_proxysettings', array('computers_id' => $ID))) {
+      if ($result = $DB->request('glpi_plugin_ocsinventoryng_proxysettings', array('computers_id' => $ID, 'ORDER' => 'user'))) {
          echo "<table class='tab_cadre_fixehov'>";
          $colspan = 5;
          echo "<tr class='noHover'><th colspan='$colspan'>".self::getTypeName($result->numrows()).
@@ -111,9 +111,11 @@ class PluginOcsinventoryngProxysetting extends CommonDBChild {
 
          if ($result->numrows() != 0) {
 
-            $header = "<tr><th>".__('Proxy enabled', 'ocsinventoryng')."</th>";
+            $header = "<tr><th>".__('User')."</th>";
+            $header .= "<th>".__('Proxy enabled', 'ocsinventoryng')."</th>";
             $header .= "<th>".__('Auto Config URL', 'ocsinventoryng')."</th>";
             $header .= "<th>".__('Proxy address', 'ocsinventoryng')."</th>";
+            $header .="<th>".__('Proxy exceptions', 'ocsinventoryng')."</th>";
             $header .= "</tr>";
             echo $header;
 
@@ -125,12 +127,11 @@ class PluginOcsinventoryngProxysetting extends CommonDBChild {
 
             foreach($result as $data) {
                echo "<tr class='tab_bg_2'>";
+               echo "<td>".$data['user']."</td>";
                echo "<td class='center'>".Dropdown::getYesNo($data['enabled'])."</td>";
                echo "<td>".$data['autoconfigurl']."</td>";
-               echo "<td>".$data['address']."</td></tr>";
-               echo "<tr class='tab_bg_2'>";
-               echo "<th>".__('Proxy exceptions', 'ocsinventoryng')."</th>";
-               echo "<td colspan='3'>" . $data['override'] . "</td>";
+               echo "<td>".$data['address']."</td>";
+               echo "<td>" . $data['override'] . "</td>";
                echo "</tr>";
                Session::addToNavigateListItems(__CLASS__, $data['id']);
             }

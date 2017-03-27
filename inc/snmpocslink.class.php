@@ -1810,7 +1810,7 @@ JAVASCRIPT;
          if ($item->getFromDB($id_item)) {
             $entity = $item->fields['entities_id'];
          }
-         PluginOcsinventoryngOcsServer::updateSoftware($cfg_ocs, $id_item, $ocsSnmp["SOFTWARES"], $entity);
+         PluginOcsinventoryngOcsServer::updateSoftware($cfg_ocs, $id_item, $ocsSnmp["SOFTWARES"], $entity, false);
          
          }
       if ($id_item > 0

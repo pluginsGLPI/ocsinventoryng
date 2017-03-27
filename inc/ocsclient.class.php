@@ -458,7 +458,7 @@ abstract class PluginOcsinventoryngOcsClient
          ),
          'navigatorproxysetting' => array(
             'plugins' => self::PLUGINS_PROXYSETTING,
-            'multi' => 0,
+            'multi' => 1,
          ),
          'winusers' => array(
             'plugins' => self::PLUGINS_WINUSERS,

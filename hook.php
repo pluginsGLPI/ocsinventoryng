@@ -1063,6 +1063,7 @@ function plugin_ocsinventoryng_install()
               `id` int(11) NOT NULL AUTO_INCREMENT,
               `computers_id` int(11) NOT NULL DEFAULT '0',
               `entities_id` int(11) NOT NULL DEFAULT '0',
+              `user` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
               `enabled` int(11) NOT NULL DEFAULT '0',
               `autoconfigurl` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
               `address` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1523,6 +1524,21 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype)
             $sopt[10012]['joinparams']    = array('beforejoin'
                                              => array('table' => 'glpi_plugin_ocsinventoryng_ocslinks',
                                              'joinparams' => array('jointype' => 'child')));
+                                             
+            $sopt[10014]['table'] = 'glpi_plugin_ocsinventoryng_proxysettings';
+            $sopt[10014]['field'] = 'enabled';
+            $sopt[10014]['name'] = __('Proxy enabled', 'ocsinventoryng');
+            $sopt[10014]['forcegroupby'] = true;
+            $sopt[10014]['massiveaction'] = false;
+            //$sopt[10014]['datatype']      = 'dropdown';
+            $sopt[10014]['joinparams'] = array('jointype' => 'child');
+
+            $sopt[10015]['table'] = 'glpi_plugin_ocsinventoryng_proxysettings';
+            $sopt[10015]['field'] = 'address';
+            $sopt[10015]['name'] = __('Proxy address', 'ocsinventoryng');
+            $sopt[10015]['forcegroupby'] = true;
+            $sopt[10015]['massiveaction'] = false;
+            $sopt[10015]['joinparams'] = array('jointype' => 'child');
          }
       }
       if (in_array($itemtype, PluginOcsinventoryngSnmpOcslink::$snmptypes)) {

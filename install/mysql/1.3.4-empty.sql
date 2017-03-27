@@ -203,6 +203,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_proxysettings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `computers_id` int(11) NOT NULL DEFAULT '0',
   `entities_id` int(11) NOT NULL DEFAULT '0',
+  `user` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `enabled` int(11) NOT NULL DEFAULT '0',
   `autoconfigurl` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `address` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
