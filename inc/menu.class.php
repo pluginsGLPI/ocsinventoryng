@@ -169,11 +169,11 @@ class PluginOcsinventoryngMenu extends CommonGLPI
                $ong[2] = __('IPDiscover Import', 'ocsinventoryng');
 
 
-               if (isset($_POST["plugin_ocsinventoryng_ocsservers_id"])) {
-                  $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = $_POST["plugin_ocsinventoryng_ocsservers_id"];
-               } else {
-                  $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = PluginOcsinventoryngOcsServer::getFirstServer();
-               }
+               //if (isset($_POST["plugin_ocsinventoryng_ocsservers_id"])) {
+               //   $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = $_POST["plugin_ocsinventoryng_ocsservers_id"];
+               //} else {
+               //   $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = PluginOcsinventoryngOcsServer::getFirstServer();
+               //}
 
                if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
                   && $_SESSION["plugin_ocsinventoryng_ocsservers_id"] > 0
@@ -195,11 +195,11 @@ class PluginOcsinventoryngMenu extends CommonGLPI
                echo Html::image($CFG_GLPI["root_doc"] . "/pics/warning.png", array('alt' => __('Warning')));
                echo "<br>";
                echo "<div class='red b'>";
-               _e('No OCSNG server defined', 'ocsinventoryng');
+               echo __('No OCSNG server defined', 'ocsinventoryng');
                echo "<br>";
-               _e('You must to configure a OCSNG server', 'ocsinventoryng');
+               echo __('You must to configure a OCSNG server', 'ocsinventoryng');
                echo " : <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php'>";
-               _e('Add a OCSNG server', 'ocsinventoryng');
+               echo __('Add a OCSNG server', 'ocsinventoryng');
                echo "</a>";
                echo "</div></div>";
             }

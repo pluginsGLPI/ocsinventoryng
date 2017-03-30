@@ -83,7 +83,7 @@ if (isset($_SESSION["ocs_import"]["id"])) {
          PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_import"]['statistics'], true);
       } else {
          echo "<div class='center b red'>";
-         _e('No import: the plugin will not import these elements', 'ocsinventoryng');
+         echo __('No import: the plugin will not import these elements', 'ocsinventoryng');
          echo "</div>";
       }
       unset($_SESSION["ocs_import"]);

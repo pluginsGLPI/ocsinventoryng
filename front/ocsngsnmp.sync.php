@@ -76,7 +76,7 @@ if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
          PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false, true);
       } else {
          echo "<div class='center b red'>";
-         _e('No synchronization: the plugin will not synchronize these elements', 'ocsinventoryng');
+         echo __('No synchronization: the plugin will not synchronize these elements', 'ocsinventoryng');
          echo "</div>";
       }
       unset($_SESSION["ocs_updatesnmp"]);

@@ -69,7 +69,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
          && countElementsInTable('glpi_plugin_ocsinventoryng_ocslinks',
             "`computers_id`='" . $item->getField('computers_id') . "'") > 0
       ) {
-         _e('OCS Inventory NG');
+         echo __('OCS Inventory NG');
       }
    }
 
@@ -161,7 +161,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                   if ($data['uptime'] != null) {
                      echo "<tr class='tab_bg_1'>";
                      echo "<td class='left'>";
-                     _e('Uptime', 'ocsinventoryng');
+                     echo __('Uptime', 'ocsinventoryng');
                      echo "</td>";
                      echo "<td class='left'>";
                      echo $data['uptime'];
@@ -343,14 +343,14 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
 
                   echo "<tr class='tab_bg_1'>";
                   echo "<td class='left'>";
-                  _e('OCSNG DEVICE ID', 'ocsinventoryng');
+                  echo __('OCSNG DEVICE ID', 'ocsinventoryng');
                   echo "</td>";
                   echo "<td class='left'>";
                   echo $data['ocs_deviceid'];
                   echo "</td>";
 
                   echo "<td class='left'>";
-                  _e('OCSNG TAG', 'ocsinventoryng');
+                  echo __('OCSNG TAG', 'ocsinventoryng');
                   echo "</td>";
                   echo "<td class='left'>";
                   echo $data['tag'];
@@ -364,7 +364,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                   echo "</td>";
                   
                   echo "<td class='left'>";
-                  _e('Uptime', 'ocsinventoryng');
+                  echo __('Uptime', 'ocsinventoryng');
                   echo "</td>";
                   echo "<td class='left'>";
                   echo $data['uptime'];
@@ -452,7 +452,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                      } else {
                         echo "<tr class='tab_bg_1'>";
                         echo "<td colspan='2' class='red'>";
-                        _e('No computer found into OCSNG Database', 'ocsinventoryng');
+                        echo __('No computer found into OCSNG Database', 'ocsinventoryng');
                         echo "</td>";
                         echo "</tr>";
                      }
@@ -462,7 +462,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                      ) {
                         echo "<tr class='tab_bg_1'>";
                         echo "<td>";
-                        _e('Checksum test', 'ocsinventoryng');
+                        echo __('Checksum test', 'ocsinventoryng');
                         echo "</td>";
                         echo "<td>";
                         $format = '(%1$2d = %1$04b) = (%2$2d = %2$04b)'
@@ -484,7 +484,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                   echo "<tr><th colspan = '2'>" . __('OCSNG link', 'ocsinventoryng') . "</th>";
                   echo "<tr class='tab_bg_1'>";
                   echo "<td colspan='2' >";
-                  _e('No computer found into OCSNG Database', 'ocsinventoryng');
+                  echo __('No computer found into OCSNG Database', 'ocsinventoryng');
                   echo "</td>";
                   echo "</tr>";
                   echo "</table>";
@@ -497,7 +497,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                echo "<tr><th colspan = '2'>" . __('OCSNG link', 'ocsinventoryng') . "</th>";
                echo "<tr class='tab_bg_1'>";
                echo "<td colspan='2' '>";
-               _e('No computer found into OCSNG Database', 'ocsinventoryng');
+               echo __('No computer found into OCSNG Database', 'ocsinventoryng');
                echo "</td>";
                echo "</tr>";
                echo "</table>";
@@ -510,7 +510,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
             echo "<tr><th colspan = '2'>" . __('OCSNG link', 'ocsinventoryng') . "</th>";
             echo "<tr class='tab_bg_1'>";
             echo "<td colspan='2' '>";
-            _e('No computer found into OCSNG Database', 'ocsinventoryng');
+            echo __('No computer found into OCSNG Database', 'ocsinventoryng');
             echo "</td>";
             echo "</tr>";
             echo "</table>";

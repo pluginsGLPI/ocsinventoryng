@@ -1979,15 +1979,15 @@ function plugin_ocsinventoryng_preProcessRulePreviewResults($params)
 
             switch ($output["action"]) {
                case PluginOcsinventoryngOcsServer::LINK_RESULT_LINK:
-                  _e('Link possible', 'ocsinventoryng');
+                  echo __('Link possible', 'ocsinventoryng');
                   break;
 
                case PluginOcsinventoryngOcsServer::LINK_RESULT_NO_IMPORT:
-                  _e('Import refused', 'ocsinventoryng');
+                  echo __('Import refused', 'ocsinventoryng');
                   break;
 
                case PluginOcsinventoryngOcsServer::LINK_RESULT_IMPORT:
-                  _e('New computer created in GLPI', 'ocsinventoryng');
+                  echo __('New computer created in GLPI', 'ocsinventoryng');
                   break;
             }
 

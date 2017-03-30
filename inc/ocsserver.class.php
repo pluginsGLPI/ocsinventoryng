@@ -297,7 +297,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                                                                "display_emptychoice" => false));
          echo "</td></tr>";
          echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
-         _e('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
+         echo __('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
          echo "</td></tr>";
          echo "</table></div>";
          Html::closeForm();
@@ -354,21 +354,21 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
       }
 
       echo "<tr><th colspan='4'>";
-      _e('Setup rules engine', 'ocsinventoryng');
+      echo __('Setup rules engine', 'ocsinventoryng');
       echo "</th></tr>";
 
       echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
             <a href='" . $CFG_GLPI["root_doc"] . "/front/ruleimportentity.php'>" . __('Rules for assigning an item to an entity') . "
             </a>";
       echo "<br><div class='red'>";
-      _e('Setup rules for choose entity on items import', 'ocsinventoryng');
+      echo __('Setup rules for choose entity on items import', 'ocsinventoryng');
       echo "</div></td>";
 
       echo "<td class='center b' colspan='2'>
             <a href='" . $CFG_GLPI["root_doc"] . "/front/ruleimportcomputer.php'>" . __('Rules for import and link computers') . "
          </a>";
       echo "<br><div class='red'>";
-      _e('Setup rules for select criteria for items link', 'ocsinventoryng');
+      echo __('Setup rules for select criteria for items link', 'ocsinventoryng');
       echo "</div></td>";
 
       echo "</tr>\n";
@@ -418,7 +418,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                                                                "display_emptychoice" => false));
          echo "</td></tr>";
          echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
-         _e('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
+         echo __('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
          echo "</td></tr>";
          echo "</table></div>";
          Html::closeForm();
@@ -444,7 +444,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
       printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
       echo "<br>";
       echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php?id=" . $plugin_ocsinventoryng_ocsservers_id . "&forcetab=PluginOcsinventoryngOcsServer\$2'>";
-      _e('See Setup : Datas to import before', 'ocsinventoryng');
+      echo __('See Setup : Datas to import before', 'ocsinventoryng');
       echo "</a>";
       echo "</th></tr>";
 
@@ -513,7 +513,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
             }
          } else {
             echo "<tr class='tab_bg_2'><td class='center red' colspan='2'>";
-            _e('The selected server is not active. Import and synchronisation is not available', 'ocsinventoryng');
+            echo __('The selected server is not active. Import and synchronisation is not available', 'ocsinventoryng');
             echo "</td></tr>\n";
          }
       }
@@ -555,7 +555,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
       echo "<form name='formconfig' id='formconfig' action='" . Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer") . "' method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
       echo "<tr><th>";
-      _e('All');
+      echo __('All');
 
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
@@ -959,7 +959,7 @@ JAVASCRIPT;
       echo "<form name='historyconfig' id='historyconfig' action='" . Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer") . "' method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
       echo "<tr><th colspan ='4'>";
-      _e('All');
+      echo __('All');
 
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
@@ -3594,7 +3594,7 @@ JAVASCRIPT;
       } else {
          echo "<div class='center b '>" . __('No item to clean', 'ocsinventoryng') . "</div>";
          echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-         _e('Back');
+         echo __('Back');
          echo "</a>";
       }
       echo "</div>";
@@ -3683,7 +3683,7 @@ JAVASCRIPT;
       if ($DB->numrows($already_linked_result) == 0) {
          echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
          echo "<br><a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-         _e('Back');
+         echo __('Back');
          echo "</a>";
          echo "</div>";
          return;
@@ -3847,14 +3847,14 @@ JAVASCRIPT;
          } else {
             echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
             echo "<br><a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-            _e('Back');
+            echo __('Back');
             echo "</a>";
             echo "</div>";
          }
       } else {
          echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
          echo "<br><a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-         _e('Back');
+         echo __('Back');
          echo "</a>";
          echo "</div>";
       }
@@ -4357,9 +4357,9 @@ JAVASCRIPT;
                         Computer::dropdown($options);
                         if ($ko > 0) {
                            echo "<div class='red'>";
-                           _e('Warning ! This computer is already linked with another OCS computer.', 'ocsinventoryng');
+                           echo __('Warning ! This computer is already linked with another OCS computer.', 'ocsinventoryng');
                            echo "</br>";
-                           _e('Check first that duplicates have been correctly managed in OCSNG', 'ocsinventoryng');
+                           echo __('Check first that duplicates have been correctly managed in OCSNG', 'ocsinventoryng');
                            echo "</div>";
                         }
                      } else {
@@ -4401,7 +4401,7 @@ JAVASCRIPT;
                echo "</table>";
                echo "<br><div class='center'>";
                echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-               _e('Back');
+               echo __('Back');
                echo "</a>";
                echo "</div>";
             }
@@ -4416,7 +4416,7 @@ JAVASCRIPT;
             echo "</table></div>";
             echo "<br><div class='center'>";
             echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-            _e('Back');
+            echo __('Back');
             echo "</a>";
             echo "</div>";
          }
@@ -4430,7 +4430,7 @@ JAVASCRIPT;
          echo "</table></div>";
          echo "<br><div class='center'>";
          echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-         _e('Back');
+         echo __('Back');
          echo "</a>";
          echo "</div>";
       }
@@ -7255,7 +7255,7 @@ JAVASCRIPT;
 
       if ($finished) {
          echo "&nbsp;-&nbsp;";
-         _e('Task completed.');
+         echo __('Task completed.');
       }
       echo "</th>";
 
