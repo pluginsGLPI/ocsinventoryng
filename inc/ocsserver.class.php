@@ -1101,12 +1101,12 @@ JAVASCRIPT;
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Behavior when disconnecting', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showFromArray("deconnection_behavior", array(''       => __('Preserve'),
-                                                             "trash"  => _x('button', 'Put in dustbin'),
-                                                             "delete" => _x('button', 'Delete permanently')), array('value' => $this->fields["deconnection_behavior"]));
+      Dropdown::showFromArray("deconnection_behavior", array(''       => __('Preserve link', 'ocsinventoryng'),
+                                                             "trash"  => __('Put the link in dustbin', 'ocsinventoryng'),
+                                                             "delete" => __('Delete  the link permanently', 'ocsinventoryng')), array('value' => $this->fields["deconnection_behavior"]));
       echo "</td></tr>\n";
       echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
-      echo __("Define the action to do on other objects when computer is disconnecting from them", 'ocsinventoryng');
+      echo __("Define the action to do on link with other objects when computer is disconnecting from them", 'ocsinventoryng');
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Use the OCSNG software dictionary', 'ocsinventoryng') . "</td>\n<td>";
