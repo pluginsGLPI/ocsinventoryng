@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-10 11:53+0200\n"
-"PO-Revision-Date: 2017-04-10 09:55+0000\n"
+"POT-Creation-Date: 2017-04-10 13:52+0200\n"
+"PO-Revision-Date: 2017-04-10 11:54+0000\n"
 "Last-Translator: Amandine Manceau\n"
 "Language-Team: German (Germany) (http://www.transifex.com/yllen/GLPI_ocsinventoryng/language/de_DE/)\n"
 "MIME-Version: 1.0\n"
@@ -900,7 +900,7 @@ msgid ""
 "/PluginsOCSInventory-NG/navigatorproxysetting) must be installed"
 msgstr ""
 
-#: inc/ocsserver.class.php:835
+#: inc/ocsserver.class.php:835 inc/winuser.class.php:43
 msgid "Windows Users"
 msgstr ""
 
@@ -1795,4 +1795,12 @@ msgstr ""
 
 #: inc/winupdate.class.php:172
 msgid "Disables AU"
+msgstr ""
+
+#: inc/winuser.class.php:117
+msgid "Disabled"
+msgstr ""
+
+#: inc/winuser.class.php:118
+msgid "SID"
 msgstr ""
