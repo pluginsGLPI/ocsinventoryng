@@ -5953,7 +5953,10 @@ JAVASCRIPT;
                         $computer_soft_l['is_dynamic']          = 1;
                         $computer_soft_l['number']              = -1;
 
-                        $computer_softwarelicenses->add($computer_soft_l);
+                        if(!$computer_softwarelicenses->getFromDBByQuery("WHERE `computers_id` = $computers_id 
+                                                                         AND `softwarelicenses_id` = $id_software_licenses")) {
+                           $computer_softwarelicenses->add($computer_soft_l);
+                        }
                         //Update for validity
                         $software_licenses->update(array('id'       => $id_software_licenses,
                                                          'is_valid' => 1));
