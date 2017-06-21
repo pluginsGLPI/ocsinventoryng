@@ -402,7 +402,7 @@ class PluginOcsinventoryngThread extends CommonDBTM
                   echo "<a href=\"ocsserver.form.php?id=" . $ocsConfig["id"] . "\">" .
                      $ocsConfig["name"] . "</a>";
                } else {
-                  _e('All servers', 'ocsinventoryng');
+                  echo __('All servers', 'ocsinventoryng');
                }
                echo "</td>";
                echo "<td class='center'>";

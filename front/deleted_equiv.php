@@ -53,7 +53,7 @@ if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
 
       }
       echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-      _e('Back');
+      echo __('Back');
       echo "</a>";
    }
 } else {
@@ -87,7 +87,7 @@ if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
          echo "</table></div>";
       }
       echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-      _e('Back');
+      echo __('Back');
       echo "</a>";
    }
 }

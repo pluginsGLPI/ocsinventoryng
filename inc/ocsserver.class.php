@@ -297,7 +297,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                                                                "display_emptychoice" => false));
          echo "</td></tr>";
          echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
-         _e('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
+         echo __('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
          echo "</td></tr>";
          echo "</table></div>";
          Html::closeForm();
@@ -354,21 +354,21 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
       }
 
       echo "<tr><th colspan='4'>";
-      _e('Setup rules engine', 'ocsinventoryng');
+      echo __('Setup rules engine', 'ocsinventoryng');
       echo "</th></tr>";
 
       echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
             <a href='" . $CFG_GLPI["root_doc"] . "/front/ruleimportentity.php'>" . __('Rules for assigning an item to an entity') . "
             </a>";
       echo "<br><div class='red'>";
-      _e('Setup rules for choose entity on items import', 'ocsinventoryng');
+      echo __('Setup rules for choose entity on items import', 'ocsinventoryng');
       echo "</div></td>";
 
       echo "<td class='center b' colspan='2'>
             <a href='" . $CFG_GLPI["root_doc"] . "/front/ruleimportcomputer.php'>" . __('Rules for import and link computers') . "
          </a>";
       echo "<br><div class='red'>";
-      _e('Setup rules for select criteria for items link', 'ocsinventoryng');
+      echo __('Setup rules for select criteria for items link', 'ocsinventoryng');
       echo "</div></td>";
 
       echo "</tr>\n";
@@ -418,7 +418,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                                                                "display_emptychoice" => false));
          echo "</td></tr>";
          echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
-         _e('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
+         echo __('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
          echo "</td></tr>";
          echo "</table></div>";
          Html::closeForm();
@@ -444,7 +444,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
       printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
       echo "<br>";
       echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php?id=" . $plugin_ocsinventoryng_ocsservers_id . "&forcetab=PluginOcsinventoryngOcsServer\$2'>";
-      _e('See Setup : Datas to import before', 'ocsinventoryng');
+      echo __('See Setup : Datas to import before', 'ocsinventoryng');
       echo "</a>";
       echo "</th></tr>";
 
@@ -513,7 +513,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
             }
          } else {
             echo "<tr class='tab_bg_2'><td class='center red' colspan='2'>";
-            _e('The selected server is not active. Import and synchronisation is not available', 'ocsinventoryng');
+            echo __('The selected server is not active. Import and synchronisation is not available', 'ocsinventoryng');
             echo "</td></tr>\n";
          }
       }
@@ -555,7 +555,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
       echo "<form name='formconfig' id='formconfig' action='" . Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer") . "' method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
       echo "<tr><th>";
-      _e('All');
+      echo __('All');
 
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
@@ -826,8 +826,17 @@ JAVASCRIPT;
       Dropdown::showYesNo("import_teamviewer", $this->fields["import_teamviewer"]);
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Teamviewer Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/teamviewer) must be installed', 'ocsinventoryng')));
-      echo "&nbsp;</td><td colspan='2'></td></tr>\n";
+      echo "&nbsp;</td><td class='center'>" . __('Proxy Settings', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_proxysetting", $this->fields["import_proxysetting"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Navigator Proxy Setting Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/navigatorproxysetting) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td></tr>\n";
       
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Windows Users', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_winusers", $this->fields["import_winusers"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Winusers Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/winusers) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td><td class='center' colspan='2'></td></tr>\n";
       
       echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
       echo __('No import: the plugin will not import these elements', 'ocsinventoryng');
@@ -950,7 +959,7 @@ JAVASCRIPT;
       echo "<form name='historyconfig' id='historyconfig' action='" . Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer") . "' method='post'>";
       echo "<table class='tab_cadre_fixe'>\n";
       echo "<tr><th colspan ='4'>";
-      _e('All');
+      echo __('All');
 
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
@@ -1092,12 +1101,12 @@ JAVASCRIPT;
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Behavior when disconnecting', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showFromArray("deconnection_behavior", array(''       => __('Preserve'),
-                                                             "trash"  => _x('button', 'Put in dustbin'),
-                                                             "delete" => _x('button', 'Delete permanently')), array('value' => $this->fields["deconnection_behavior"]));
+      Dropdown::showFromArray("deconnection_behavior", array(''       => __('Preserve link', 'ocsinventoryng'),
+                                                             "trash"  => __('Put the link in dustbin', 'ocsinventoryng'),
+                                                             "delete" => __('Delete  the link permanently', 'ocsinventoryng')), array('value' => $this->fields["deconnection_behavior"]));
       echo "</td></tr>\n";
       echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
-      echo __("Define the action to do on other objects when computer is disconnecting from them", 'ocsinventoryng');
+      echo __("Define the action to do on link with other objects when computer is disconnecting from them", 'ocsinventoryng');
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Use the OCSNG software dictionary', 'ocsinventoryng') . "</td>\n<td>";
@@ -2017,6 +2026,12 @@ JAVASCRIPT;
                if ($ocsConfig["import_winupdatestate"]) {
                   self::resetWinupdatestate($computers_id, $cfg_ocs);
                }
+               if ($ocsConfig["import_proxysetting"]) {
+                  self::resetProxysetting($computers_id, $cfg_ocs);
+               }
+               if ($ocsConfig["import_winusers"]) {
+                  self::resetWinuser($computers_id, $cfg_ocs);
+               }
                if ($ocsConfig["import_teamviewer"]) {
                   self::resetTeamviewer($computers_id, $cfg_ocs);
                }
@@ -2729,6 +2744,8 @@ JAVASCRIPT;
             $uptime = false;
             $officepack = false;
             $winupdatestate = false;
+            $proxysetting = false;
+            $winuser = false;
             $teamviewer = false;
             $virtualmachines = false;
             $mb = false;
@@ -2891,6 +2908,14 @@ JAVASCRIPT;
                   $winupdatestate = true;
                   $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_WUPDATE;
                }
+               if ($cfg_ocs["import_proxysetting"]) {
+                  $proxysetting = true;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_PROXYSETTING;
+               }
+               if ($cfg_ocs["import_winusers"]) {
+                  $winuser = true;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_WINUSERS;
+               }
                if ($cfg_ocs["import_teamviewer"]) {
                   $teamviewer = true;
                   $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_TEAMVIEWER;
@@ -3052,6 +3077,16 @@ JAVASCRIPT;
                if ($winupdatestate && isset($ocsComputer["WINUPDATESTATE"])) {
                   //import winupdatestate entries
                   self::updateWinupdatestate($line['computers_id'], $ocsComputer["WINUPDATESTATE"], $cfg_ocs);
+               }
+               
+               if ($proxysetting && isset($ocsComputer["NAVIGATORPROXYSETTING"])) {
+                  //import proxysetting entries
+                  self::updateProxysetting($line['computers_id'], $ocsComputer["NAVIGATORPROXYSETTING"], $cfg_ocs);
+               }
+               
+               if ($winuser && isset($ocsComputer["WINUSERS"])) {
+                  //import proxysetting entries
+                  self::updateWinuser($line['computers_id'], $ocsComputer["WINUSERS"], $cfg_ocs);
                }
                
                if ($teamviewer && isset($ocsComputer["TEAMVIEWER"])) {
@@ -3559,7 +3594,7 @@ JAVASCRIPT;
       } else {
          echo "<div class='center b '>" . __('No item to clean', 'ocsinventoryng') . "</div>";
          echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-         _e('Back');
+         echo __('Back');
          echo "</a>";
       }
       echo "</div>";
@@ -3648,7 +3683,7 @@ JAVASCRIPT;
       if ($DB->numrows($already_linked_result) == 0) {
          echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
          echo "<br><a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-         _e('Back');
+         echo __('Back');
          echo "</a>";
          echo "</div>";
          return;
@@ -3812,14 +3847,14 @@ JAVASCRIPT;
          } else {
             echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
             echo "<br><a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-            _e('Back');
+            echo __('Back');
             echo "</a>";
             echo "</div>";
          }
       } else {
          echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
          echo "<br><a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-         _e('Back');
+         echo __('Back');
          echo "</a>";
          echo "</div>";
       }
@@ -4322,9 +4357,9 @@ JAVASCRIPT;
                         Computer::dropdown($options);
                         if ($ko > 0) {
                            echo "<div class='red'>";
-                           _e('Warning ! This computer is already linked with another OCS computer.', 'ocsinventoryng');
+                           echo __('Warning ! This computer is already linked with another OCS computer.', 'ocsinventoryng');
                            echo "</br>";
-                           _e('Check first that duplicates have been correctly managed in OCSNG', 'ocsinventoryng');
+                           echo __('Check first that duplicates have been correctly managed in OCSNG', 'ocsinventoryng');
                            echo "</div>";
                         }
                      } else {
@@ -4366,7 +4401,7 @@ JAVASCRIPT;
                echo "</table>";
                echo "<br><div class='center'>";
                echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-               _e('Back');
+               echo __('Back');
                echo "</a>";
                echo "</div>";
             }
@@ -4381,7 +4416,7 @@ JAVASCRIPT;
             echo "</table></div>";
             echo "<br><div class='center'>";
             echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-            _e('Back');
+            echo __('Back');
             echo "</a>";
             echo "</div>";
          }
@@ -4395,7 +4430,7 @@ JAVASCRIPT;
          echo "</table></div>";
          echo "<br><div class='center'>";
          echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-         _e('Back');
+         echo __('Back');
          echo "</a>";
          echo "</div>";
       }
@@ -5442,6 +5477,55 @@ JAVASCRIPT;
 //         'is_dynamic' => 1));
    }
    
+   /**
+    * Delete old Proxysetting entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    *
+    * @param $cfg_ocs
+    * @return nothing .
+    */
+   static function resetProxysetting($glpi_computers_id, $cfg_ocs)
+   {
+      global $DB;
+//      TODO add history for antivirus
+//      if ($cfg_ocs['history_antivirus']) {
+      $table = getTableForItemType('PluginOcsinventoryngProxysetting');
+      $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `computers_id` = '" . $glpi_computers_id . "'";
+      $DB->query($query);
+//      }
+      //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//      $av = new ComputerAntivirus();
+//      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
+//         'is_dynamic' => 1));
+   }
+   
+   /**
+    * Delete old Winuser entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    *
+    * @param $cfg_ocs
+    * @return nothing .
+    */
+   static function resetWinuser($glpi_computers_id, $cfg_ocs)
+   {
+      global $DB;
+//      TODO add history for antivirus
+//      if ($cfg_ocs['history_antivirus']) {
+      $table = getTableForItemType('PluginOcsinventoryngWinuser');
+      $query = "DELETE
+                            FROM `" . $table . "`
+                            WHERE `computers_id` = '" . $glpi_computers_id . "'";
+      $DB->query($query);
+//      }
+      //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+//      $av = new ComputerAntivirus();
+//      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
+//         'is_dynamic' => 1));
+   }
    
    /**
     * Delete old Teamviewer entries
@@ -6186,7 +6270,8 @@ JAVASCRIPT;
       $computer_softwareversion = new Computer_SoftwareVersion();
       $softwares = array();
       //---- Get all the softwares for this machine from OCS -----//
-      $softwares = $ocsComputer["SOFTWARES"];
+      $softwares = (isset($ocsComputer["SOFTWARES"])?$ocsComputer["SOFTWARES"]:array());
+      
       $soft = new Software();
 
       // Read imported software in last sync
@@ -6484,6 +6569,10 @@ JAVASCRIPT;
          $input = array();
 
          $input["computers_id"] = $computers_id;
+         $computer = new Computer;
+         if ($computer->getFromDB($computers_id)) {
+            $input["entities_id"] = $computer->fields['entities_id'];
+         }
          $input["auoptions"] = $wupdate["AUOPTIONS"];
          $input["scheduleinstalldate"] = $wupdate["SCHEDULEDINSTALLDATE"];
          $input["lastsuccesstime"] = $wupdate["LASTSUCCESSTIME"];
@@ -6492,6 +6581,91 @@ JAVASCRIPT;
 
          $CompWupdate->add($input, array('disable_unicity_check' => true));
          unset($wup->fields);
+      }
+
+      return;
+   }
+   
+   
+   /**
+    * Update config of the Proxysetting
+    *
+    * This function erase old data and import the new ones about Proxysetting
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $cfg_ocs array : ocs config
+    */
+   static function updateProxysetting($computers_id, $ocsComputer, $cfg_ocs)
+   {
+
+      self::resetProxysetting($computers_id, $cfg_ocs);
+
+      $ProxySetting = new PluginOcsinventoryngProxysetting();
+
+      //update data
+      foreach ($ocsComputer as $prox) {
+
+         $proxy = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($prox));
+         $input = array();
+
+         $input["computers_id"] = $computers_id;
+         $computer = new Computer;
+         if ($computer->getFromDB($computers_id)) {
+            $input["entities_id"] = $computer->fields['entities_id'];
+         }
+         $input["user"] = $proxy["USER"];
+         $input["enable"] = $proxy["ENABLE"];
+         if (isset($ocsComputer["AUTOCONFIGURL"])) {
+            $input["autoconfigurl"] = $proxy["AUTOCONFIGURL"];
+         }
+         $input["address"] = $proxy["ADDRESS"];
+         if (isset($proxy["OVERRIDE"])) {
+            $input["override"] = $proxy["OVERRIDE"];
+         }
+         $ProxySetting->add($input, array('disable_unicity_check' => true));
+         unset($prox->fields);
+      }
+
+      return;
+
+   }
+   
+   
+   /**
+    * Update config of the WinUsers
+    *
+    * This function erase old data and import the new ones about WinUser
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $cfg_ocs array : ocs config
+    */
+   static function updateWinuser($computers_id, $ocsComputer, $cfg_ocs)
+   {
+
+      self::resetWinuser($computers_id, $cfg_ocs);
+
+      $winusers = new PluginOcsinventoryngWinuser();
+      //update data
+      foreach ($ocsComputer as $wusers) {
+
+         $wuser = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($wusers));
+         $input = array();
+
+         $input["computers_id"] = $computers_id;
+         $computer = new Computer;
+         if ($computer->getFromDB($computers_id)) {
+            $input["entities_id"] = $computer->fields['entities_id'];
+         }
+         $input["name"] = $wuser["NAME"];
+         $input["type"] = $wuser["TYPE"];
+         $input["description"] = $wuser["DESCRIPTION"];
+         $input["disabled"] = $wuser["DISABLED"];
+         $input["sid"] = $wuser["SID"];
+         
+         $winusers->add($input, array('disable_unicity_check' => true));
+         unset($wusers->fields);
       }
 
       return;
@@ -6515,6 +6689,10 @@ JAVASCRIPT;
       $input = array();
 
       $input["computers_id"] = $computers_id;
+      $computer = new Computer;
+      if ($computer->getFromDB($computers_id)) {
+         $input["entities_id"] = $computer->fields['entities_id'];
+      }
       $input["version"] = $ocsComputer["VERSION"];
       $input["twid"] = $ocsComputer["TWID"];
 
@@ -7080,7 +7258,7 @@ JAVASCRIPT;
 
       if ($finished) {
          echo "&nbsp;-&nbsp;";
-         _e('Task completed.');
+         echo __('Task completed.');
       }
       echo "</th>";
 

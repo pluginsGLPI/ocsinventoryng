@@ -259,7 +259,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM
          }
       }
       if (!$nbservers) {
-         _e('None');
+         echo __('None');
       }
       echo "</td></tr>";
       if ($nbservers && Session::haveRight("profile", UPDATE)) {

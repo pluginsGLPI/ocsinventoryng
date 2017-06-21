@@ -122,7 +122,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM
       echo "<table class='tab_cadre_fixe'>\n";
 
       echo "<tr><th colspan ='4'>";
-      _e('All');
+      echo __('All');
 
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
@@ -387,7 +387,7 @@ JAVASCRIPT;
             "display_emptychoice" => false));
          echo "</td></tr>";
          echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
-         _e('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
+         echo __('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
          echo "</td></tr>";
          echo "</table></div>";
          Html::closeForm();
@@ -412,10 +412,10 @@ JAVASCRIPT;
          //host not imported by thread
          echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
          echo "<tr><th colspan='4'>";
-         _e('OCSNG SNMP import', 'ocsinventoryng');
+         echo __('OCSNG SNMP import', 'ocsinventoryng');
          echo "<br>";
          echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php?id=" . $plugin_ocsinventoryng_ocsservers_id . "&forcetab=PluginOcsinventoryngSnmpOcslink\$1'>";
-         _e('See Setup : SNMP Import before', 'ocsinventoryng');
+         echo __('See Setup : SNMP Import before', 'ocsinventoryng');
          echo "</a>";
          echo "</th></tr>";
 
@@ -1810,7 +1810,7 @@ JAVASCRIPT;
          if ($item->getFromDB($id_item)) {
             $entity = $item->fields['entities_id'];
          }
-         PluginOcsinventoryngOcsServer::updateSoftware($cfg_ocs, $id_item, $ocsSnmp["SOFTWARES"], $entity);
+         PluginOcsinventoryngOcsServer::updateSoftware($cfg_ocs, $id_item, $ocsSnmp["SOFTWARES"], $entity, false);
          
          }
       if ($id_item > 0
@@ -2262,13 +2262,13 @@ JAVASCRIPT;
       echo "<tr><th colspan='6'>" . __('Filter SNMP Objects list', 'ocsinventoryng') . "</th></tr>";
       echo "<tr class='tab_bg_2'>";
       echo "<td class='center'>";
-      _e('By itemtype', 'ocsinventoryng');
+      echo __('By itemtype', 'ocsinventoryng');
       echo "</td><td class='center'>";
       Dropdown::showItemTypes("itemtype", self::$snmptypes, array('value' => $p['itemtype']));
       echo "</td>";
 
       echo "<td class='center'>";
-      _e('By IP', 'ocsinventoryng');
+      echo __('By IP', 'ocsinventoryng');
       echo "</td><td class='center'>";
       echo "<input type=\"text\" name=\"ip\" value='" . $p['ip'] . "'>";
       echo "</td>";

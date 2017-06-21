@@ -129,7 +129,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 
             }
          } else if ($table != "hardware") {
-            if (self::OcsTableExists($table)) {
+            if (self::OcsTableExists($table) && $table != "glpi_plugin_ocsinventoryng_ocsservers") {
                $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` = $id";
                $request = $this->db->query($query);
                while ($computer = $this->db->fetch_assoc($request)) {
