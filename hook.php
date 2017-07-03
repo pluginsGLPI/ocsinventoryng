@@ -2228,7 +2228,7 @@ function plugin_ocsinventoryng_showLocksForItem($params = array())
          echo "<tr class='tab_bg_1'>";
 
          echo "<td class='center' width='10'>";
-         echo "<input type='checkbox' name='lockfield[" . $key . "]'></td>";
+         echo "<input type='checkbox' name='lockfield[" . $val . "]'></td>";
          echo "<td class='left' width='95%'>" . $lockable_fields[$val] . "</td>";
          echo "</tr>\n";
       }
@@ -2254,7 +2254,7 @@ function plugin_ocsinventoryng_unlockFields($params = array())
    $computer->check($_POST['id'], UPDATE);
    if (isset($_POST["lockfield"]) && count($_POST["lockfield"])) {
       foreach ($_POST["lockfield"] as $key => $val) {
-         PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST["id"], $key, "computer_update");
+         PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST["id"], $key, "computer_update", true);
       }
    }
 }
