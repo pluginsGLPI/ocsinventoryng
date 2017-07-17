@@ -2370,13 +2370,14 @@ JAVASCRIPT;
          $table = getTableNameForForeignKeyField($glpi_field);
 
          $ocs_val = null;
-         if (array_key_exists($ocs_field, $ocs_fields[$ocs_section])) {
-            $ocs_val = $ocs_fields[$ocs_section][$ocs_field];
-         } else if (isset($ocs_fields[$ocs_section][0]) 
-            && array_key_exists($ocs_field, $ocs_fields[$ocs_section][0])) {
-            $ocs_val = $ocs_fields[$ocs_section][0][$ocs_field];
+         if (is_array($ocs_fields[$ocs_section])) {
+            if (array_key_exists($ocs_field, $ocs_fields[$ocs_section])) {
+               $ocs_val = $ocs_fields[$ocs_section][$ocs_field];
+            } else if (isset($ocs_fields[$ocs_section][0]) 
+               && array_key_exists($ocs_field, $ocs_fields[$ocs_section][0])) {
+               $ocs_val = $ocs_fields[$ocs_section][0][$ocs_field];
+            }
          }
-
          if (!is_null($ocs_val)) {
             $ocs_field = Toolbox::encodeInUtf8($ocs_field);
 
@@ -8058,8 +8059,11 @@ JAVASCRIPT;
       $already_processed = array();
       $p = new Peripheral();
       $conn = new Computer_Item();
-
+      
+      $peripherals = array();
+      
       foreach ($ocsComputer as $peripheral) {
+         
          if ($peripheral["CAPTION"] !== '') {
             $peripherals[] = $peripheral;
          }
