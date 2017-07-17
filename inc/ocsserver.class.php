@@ -1102,7 +1102,7 @@ JAVASCRIPT;
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Behavior when disconnecting', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showFromArray("deconnection_behavior", array(''       => __('Preserve link', 'ocsinventoryng'),
-                                                             "trash"  => __('Put the link in dustbin', 'ocsinventoryng'),
+                                                             "trash"  => __('Put the link in dustbin and add a lock', 'ocsinventoryng'),
                                                              "delete" => __('Delete  the link permanently', 'ocsinventoryng')), array('value' => $this->fields["deconnection_behavior"]));
       echo "</td></tr>\n";
       echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
@@ -2370,7 +2370,7 @@ JAVASCRIPT;
          $table = getTableNameForForeignKeyField($glpi_field);
 
          $ocs_val = null;
-         if (is_array($ocs_fields[$ocs_section])) {
+         if (isset($ocs_fields[$ocs_section]) && is_array($ocs_fields[$ocs_section])) {
             if (array_key_exists($ocs_field, $ocs_fields[$ocs_section])) {
                $ocs_val = $ocs_fields[$ocs_section][$ocs_field];
             } else if (isset($ocs_fields[$ocs_section][0]) 
