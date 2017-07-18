@@ -6539,7 +6539,7 @@ JAVASCRIPT;
             $input["is_active"] = $antivirus["enabled"];
             $input["is_uptodate"] = $antivirus["uptodate"];
             $input["is_dynamic"] = 1;
-            $av->add($input, array('disable_unicity_check' => true));
+            $av->add($input, array('disable_unicity_check' => true), 0);
             unset($anti->fields);
          }
       }
@@ -6580,7 +6580,7 @@ JAVASCRIPT;
          $input["detectsuccesstime"] = $wupdate["DETECTSUCCESSTIME"];
          $input["downloadsuccesstime"] = $wupdate["DOWNLOADSUCCESSTIME"];
 
-         $CompWupdate->add($input, array('disable_unicity_check' => true));
+         $CompWupdate->add($input, array('disable_unicity_check' => true), 0);
          unset($wup->fields);
       }
 
@@ -6624,7 +6624,7 @@ JAVASCRIPT;
          if (isset($proxy["OVERRIDE"])) {
             $input["override"] = $proxy["OVERRIDE"];
          }
-         $ProxySetting->add($input, array('disable_unicity_check' => true));
+         $ProxySetting->add($input, array('disable_unicity_check' => true), 0);
          unset($prox->fields);
       }
 
@@ -6665,7 +6665,7 @@ JAVASCRIPT;
          $input["disabled"] = $wuser["DISABLED"];
          $input["sid"] = $wuser["SID"];
          
-         $winusers->add($input, array('disable_unicity_check' => true));
+         $winusers->add($input, array('disable_unicity_check' => true), 0);
          unset($wusers->fields);
       }
 
@@ -6697,7 +6697,7 @@ JAVASCRIPT;
       $input["version"] = $ocsComputer["VERSION"];
       $input["twid"] = $ocsComputer["TWID"];
 
-      $CompTeam->add($input, array('disable_unicity_check' => true));
+      $CompTeam->add($input, array('disable_unicity_check' => true), 0);
 
       return;
    }
