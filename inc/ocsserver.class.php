@@ -1980,7 +1980,7 @@ JAVASCRIPT;
                   self::resetDevices($computers_id, 'DevicePci', $cfg_ocs);
                }
                if ($ocsConfig["import_device_bios"]) {
-                  self::resetDevices($computers_id, 'PluginOcsinventoryngDeviceBiosdata', $cfg_ocs);
+                  self::resetDevices($computers_id, 'DeviceFirmware', $cfg_ocs);
                }
                if ($ocsConfig["import_device_motherboard"]) {
                   self::resetDevices($computers_id, 'DeviceMotherboard', $cfg_ocs);
@@ -2738,6 +2738,84 @@ JAVASCRIPT;
             $controllers     = false;
             $slots           = false;
 
+            if ($force == 1) {
+               if ($cfg_ocs["import_general_os"]
+                   || $cfg_ocs["import_os_serial"]) {
+                  self::resetOS($line['computers_id'], "OperatingSystem", $cfg_ocs);
+               }
+               if ($cfg_ocs["import_device_processor"]) {
+                  self::resetDevices($line['computers_id'], 'DeviceProcessor', $cfg_ocs);
+               }
+               if ($cfg_ocs["import_device_iface"]) {
+                  self::resetDevices($line['computers_id'], 'DeviceNetworkCard', $cfg_ocs);
+               }
+               if ($cfg_ocs["import_device_memory"]) {
+                  self::resetDevices($line['computers_id'], 'DeviceMemory', $cfg_ocs);
+               }
+               if ($cfg_ocs["import_device_hdd"]) {
+                  self::resetDevices($line['computers_id'], 'DeviceHardDrive', $cfg_ocs);
+               }
+               if ($cfg_ocs["import_device_sound"]) {
+                  self::resetDevices($line['computers_id'], 'DeviceSoundCard', $cfg_ocs);
+               }
+               if ($cfg_ocs["import_device_gfxcard"]) {
+                  self::resetDevices($line['computers_id'], 'DeviceGraphicCard', $cfg_ocs);
+               }
+               if ($cfg_ocs["import_device_drive"]) {
+                  self::resetDevices($line['computers_id'], 'DeviceDrive', $cfg_ocs);
+               }
+               if ($cfg_ocs["import_device_modem"]
+                   || $cfg_ocs["import_device_port"]
+                   || $cfg_ocs["import_device_slot"]
+               ) {
+                  self::resetDevices($line['computers_id'], 'DevicePci', $cfg_ocs);
+               }
+               if ($cfg_ocs["import_device_bios"]) {
+                  self::resetDevices($line['computers_id'], 'DeviceFirmware', $cfg_ocs);
+               }
+               if ($cfg_ocs["import_device_motherboard"]) {
+                  self::resetDevices($line['computers_id'], 'DeviceMotherboard', $cfg_ocs);
+               }
+               if ($cfg_ocs["import_device_controller"]) {
+                  self::resetDevices($line['computers_id'], 'DeviceControl', $cfg_ocs);
+               }
+               if ($cfg_ocs["import_software"]) {
+                  self::resetSoftwares($line['computers_id'], $cfg_ocs);
+               }
+               if ($cfg_ocs["import_disk"]) {
+                  self::resetDisks($line['computers_id'], $cfg_ocs);
+               }
+               if ($cfg_ocs["import_periph"]) {
+                  self::resetPeripherals($line['computers_id'], $cfg_ocs);
+               }
+               if ($cfg_ocs["import_monitor"] == 1) { // Only reset monitor as global in unit management
+                  self::resetMonitors($line['computers_id'], $cfg_ocs);    // try to link monitor with existing
+               }
+               if ($cfg_ocs["import_printer"]) {
+                  self::resetPrinters($line['computers_id'], $cfg_ocs);
+               }
+               if ($cfg_ocs["import_registry"]) {
+                  self::resetRegistry($line['computers_id']);
+               }
+               if ($cfg_ocs["import_antivirus"]) {
+                  self::resetAntivirus($line['computers_id'], $cfg_ocs);
+               }
+               if ($cfg_ocs["import_winupdatestate"]) {
+                  self::resetWinupdatestate($line['computers_id'], $cfg_ocs);
+               }
+               if ($cfg_ocs["import_proxysetting"]) {
+                  self::resetProxysetting($line['computers_id'], $cfg_ocs);
+               }
+               if ($cfg_ocs["import_winusers"]) {
+                  self::resetWinuser($line['computers_id'], $cfg_ocs);
+               }
+               if ($cfg_ocs["import_teamviewer"]) {
+                  self::resetTeamviewer($line['computers_id'], $cfg_ocs);
+               }
+               if ($cfg_ocs["import_officepack"]) {
+                  self::resetOfficePack($line['computers_id']);
+               }
+            }
             if ($mixed_checksum) {
 
                // Get updates on computers
@@ -2965,7 +3043,7 @@ JAVASCRIPT;
                   self::updateHardware($p);
                }
                if ($bios) {
-                  self::updateBios($line['computers_id'], $ocsComputer, $cfg_ocs, $computer_updates, $comp->fields['entities_id']);
+                  self::updateComputerFromBios($line['computers_id'], $ocsComputer, $cfg_ocs, $computer_updates, $comp->fields['entities_id']);
                }
                // Get import devices
                $import_device = array();
@@ -2993,45 +3071,45 @@ JAVASCRIPT;
                   }
                }
                if ($bios && isset($ocsComputer['BIOS'])) {
-                  self::updateDevices("PluginOcsinventoryngItem_DeviceBiosdata", $line['computers_id'], $ocsComputer['BIOS'], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DeviceFirmware", $line['computers_id'], $ocsComputer['BIOS'], $cfg_ocs, $import_device, '');
                }
                if ($memories && isset($ocsComputer['MEMORIES'])) {
-                  self::updateDevices("Item_DeviceMemory", $line['computers_id'], $ocsComputer['MEMORIES'], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DeviceMemory", $line['computers_id'], $ocsComputer['MEMORIES'], $cfg_ocs, $import_device, '');
                }
                if ($storages && isset($ocsComputer['STORAGES'])) {
                   if ($storages["hdd"]) {
-                     self::updateDevices("Item_DeviceHardDrive", $line['computers_id'], $ocsComputer['STORAGES'], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
+                     self::updateDevices("Item_DeviceHardDrive", $line['computers_id'], $ocsComputer['STORAGES'], $cfg_ocs, $import_device, '');
                   }
                   if ($storages["drive"]) {
-                     self::updateDevices("Item_DeviceDrive", $line['computers_id'], $ocsComputer['STORAGES'], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
+                     self::updateDevices("Item_DeviceDrive", $line['computers_id'], $ocsComputer['STORAGES'], $cfg_ocs, $import_device, '');
                   }
                }
                if ($cpus && isset($ocsComputer['CPUS'])) {
-                  self::updateDevices("Item_DeviceProcessor", $line['computers_id'], $ocsComputer['CPUS'], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DeviceProcessor", $line['computers_id'], $ocsComputer['CPUS'], $cfg_ocs, $import_device, '');
                }
                if ($videos && isset($ocsComputer['VIDEOS'])) {
-                  self::updateDevices("Item_DeviceGraphicCard", $line['computers_id'], $ocsComputer['VIDEOS'], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DeviceGraphicCard", $line['computers_id'], $ocsComputer['VIDEOS'], $cfg_ocs, $import_device, '');
                }
                if ($mb && isset($ocsComputer['BIOS'])) {
-                  self::updateDevices("Item_DeviceMotherboard", $line['computers_id'], $ocsComputer['BIOS'], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DeviceMotherboard", $line['computers_id'], $ocsComputer['BIOS'], $cfg_ocs, $import_device, '');
                }
                if ($controllers && isset($ocsComputer['CONTROLLERS'])) {
-                  self::updateDevices("Item_DeviceControl", $line['computers_id'], $ocsComputer['CONTROLLERS'], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DeviceControl", $line['computers_id'], $ocsComputer['CONTROLLERS'], $cfg_ocs, $import_device, '');
                }
                if ($sounds && isset($ocsComputer['SOUNDS'])) {
-                  self::updateDevices("Item_DeviceSoundCard", $line['computers_id'], $ocsComputer['SOUNDS'], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DeviceSoundCard", $line['computers_id'], $ocsComputer['SOUNDS'], $cfg_ocs, $import_device, '');
                }
                if ($networks && isset($ocsComputer['NETWORKS'])) {
-                  self::updateDevices("Item_DeviceNetworkCard", $line['computers_id'], $ocsComputer['NETWORKS'], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, array());
+                  self::updateDevices("Item_DeviceNetworkCard", $line['computers_id'], $ocsComputer['NETWORKS'], $cfg_ocs, $import_device, array());
                }
                if ($modems && isset($ocsComputer['MODEMS'])) {
-                  self::updateDevices("Item_DevicePci", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DevicePci", $line['computers_id'], $ocsComputer, $cfg_ocs, $import_device, '');
                }
                if ($slots && isset($ocsComputer['SLOTS'])) {
-                  self::updateDevices("Item_DevicePci", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DevicePci", $line['computers_id'], $ocsComputer, $cfg_ocs, $import_device, '');
                }
                if ($ports && isset($ocsComputer['PORTS'])) {
-                  self::updateDevices("Item_DevicePci", $line['computers_id'], $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DevicePci", $line['computers_id'], $ocsComputer, $cfg_ocs, $import_device, '');
                }
                if ($monitors && isset($ocsComputer["MONITORS"])) {
                   self::importMonitor($cfg_ocs, $line['computers_id'], $plugin_ocsinventoryng_ocsservers_id, $ocsComputer["MONITORS"], $comp->fields["entities_id"]);
@@ -3294,14 +3372,15 @@ JAVASCRIPT;
          }
 
          if (intval($options['cfg_ocs']["import_general_os"]) > 0) {
+            $operatingsystems_id = 0;
             if (!in_array("operatingsystems_id", $options['computers_updates'])) {
-
                $os_data             = self::encodeOcsDataInUtf8($is_utf8, $hardware['OSNAME']);
                $operatingsystems_id = Dropdown::importExternal('OperatingSystem', $os_data);
                if ($operatingsystems_id > 0) {
                   $updates++;
                }
             }
+            $operatingsystemversions_id = 0;
             if (!in_array("operatingsystemversions_id", $options['computers_updates'])) {
                $osv_data                   = self::encodeOcsDataInUtf8($is_utf8, $hardware['OSVERSION']);
                $operatingsystemversions_id = Dropdown::importExternal('OperatingSystemVersion', $osv_data);
@@ -3309,6 +3388,7 @@ JAVASCRIPT;
                   $updates++;
                }
             }
+            $operatingsystemservicepacks_id = 0;
             if (!in_array("operatingsystemservicepacks_id", $options['computers_updates'])) {
 
                $ossp_data                      = self::encodeOcsDataInUtf8($is_utf8, $hardware['OSCOMMENTS']);
@@ -3317,6 +3397,7 @@ JAVASCRIPT;
                   $updates++;
                }
             }
+            $operatingsystemarchitectures_id = 0;
             if (!in_array("operatingsystemarchitectures_id", $options['computers_updates'])
                 && isset($hardware["ARCH"])
             ) {
@@ -3345,7 +3426,7 @@ JAVASCRIPT;
                                'operatingsystemarchitectures_id' => $operatingsystemarchitectures_id,
                                'license_number'                  => $license_number,
                                'license_id'                      => $license_id,
-                               '_nolock'                      => true,
+                               '_nolock'                         => true,
                                //                                      'is_dynamic'                               => 1,
                                //                                      'entities_id'                              => $options['entities_id']
                          ), array(), $options['dohistory']);
@@ -3397,7 +3478,7 @@ JAVASCRIPT;
     * @internal param int $ocsid : glpi computer id
     * @internal param the $entities_id entity in which the computer is imported
     */
-   static function updateBios($computers_id, $ocsComputer, $cfg_ocs, $computer_updates, $entities_id = 0) {
+   static function updateComputerFromBios($computers_id, $ocsComputer, $cfg_ocs, $computer_updates, $entities_id = 0) {
 
       $compupdate = array();
       $computer   = $ocsComputer;
@@ -4658,7 +4739,7 @@ JAVASCRIPT;
     * @internal param bool $dohistory : log changes?
     *
     */
-   static function updateDevices($devicetype, $computers_id, $ocsComputer, $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $import_device, $import_ip) {
+   static function updateDevices($devicetype, $computers_id, $ocsComputer, $cfg_ocs, $import_device, $import_ip) {
       $prevalue = $devicetype . self::FIELD_SEPARATOR;
       $do_clean = false;
       $comp     = new Computer();
@@ -4666,27 +4747,29 @@ JAVASCRIPT;
       $entities_id = $comp->fields['entities_id'];
       switch ($devicetype) {
 
-         case "PluginOcsinventoryngItem_DeviceBiosdata":
+         case "Item_DeviceFirmware":
             $CompDevice = new $devicetype();
             //Bios
             $do_clean            = true;
             $bios["designation"] = $ocsComputer["BVERSION"];
-            $bios["assettag"]    = $ocsComputer["ASSETTAG"];
-            $bios["entities_id"] = $entities_id;
-            //$date = str_replace("/", "-", $ocsComputer['BIOS']["BDATE"]);
-            //$date = date("Y-m-d", strtotime($date));
-            $bios["date"]             = $ocsComputer["BDATE"];
-            $bios["manufacturers_id"] = Dropdown::importExternal('Manufacturer', self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsComputer["SMANUFACTURER"]));
+            //            $bios["assettag"]    = $ocsComputer["ASSETTAG"];
+            $bios["entities_id"]             = $entities_id;
+//            $date                            = str_replace("/", "-", $ocsComputer["BDATE"]);
+//            $date                            = date("Y-m-d", strtotime($date));
+            $bios["comment"]                    = $ocsComputer["BDATE"]." - ".$ocsComputer["ASSETTAG"];
+            $bios["manufacturers_id"]        = Dropdown::importExternal('Manufacturer', self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsComputer["SMANUFACTURER"]));
+            $bios["devicefirmwaremodels_id"] = Dropdown::importExternal('DeviceFirmwareModel', self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsComputer["SMODEL"]));
+            $bios["devicefirmwaretypes_id"]  = Dropdown::importExternal('DeviceFirmwareType', self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsComputer["TYPE"]));
             if (!in_array(stripslashes($prevalue . $bios["designation"]), $import_device)) {
 
-               $DeviceBios = new PluginOcsinventoryngDeviceBiosdata();
+               $DeviceBios = new DeviceFirmware();
                $bios_id    = $DeviceBios->import($bios);
                if ($bios_id) {
-                  $CompDevice->add(array('items_id'                                 => $computers_id,
-                                         'itemtype'                                 => 'Computer',
-                                         'plugin_ocsinventoryng_devicebiosdatas_id' => $bios_id,
-                                         'is_dynamic'                               => 1,
-                                         'entities_id'                              => $entities_id), array(), $cfg_ocs['history_devices']);
+                  $CompDevice->add(array('items_id'           => $computers_id,
+                                         'itemtype'           => 'Computer',
+                                         'devicefirmwares_id' => $bios_id,
+                                         'is_dynamic'         => 1,
+                                         'entities_id'        => $entities_id), array(), $cfg_ocs['history_devices']);
                }
             } else {
                $tmp = array_search(stripslashes($prevalue . $bios["designation"]), $import_device);
@@ -5039,7 +5122,7 @@ JAVASCRIPT;
             break;
          case "Item_DeviceMotherboard":
             $CompDevice = new $devicetype();
-            //Bios
+            //Motherboard
             $do_clean          = true;
             $mb["designation"] = $ocsComputer["MMODEL"];
 
@@ -5399,10 +5482,6 @@ JAVASCRIPT;
 
       $linktype = 'Item_' . $itemtype;
 
-      if ($itemtype == "PluginOcsinventoryngDeviceBiosdata") {
-         $linktype = "PluginOcsinventoryngItem_DeviceBiosdata";
-      }
-
       $item = new $linktype();
       $item->deleteByCriteria(array('items_id'   => $glpi_computers_id,
                                     'itemtype'   => 'Computer',
@@ -5508,9 +5587,8 @@ JAVASCRIPT;
     */
    static function resetWinupdatestate($glpi_computers_id, $cfg_ocs) {
 
-      $av = new ComputerAntivirus();
-      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
-                                  'is_dynamic'   => 1), 1);
+      $av = new PluginOcsinventoryngWinupdate();
+      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
 
    }
 
@@ -5525,9 +5603,8 @@ JAVASCRIPT;
     */
    static function resetProxysetting($glpi_computers_id, $cfg_ocs) {
 
-      $av = new ComputerAntivirus();
-      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
-                                  'is_dynamic'   => 1), 1);
+      $av = new PluginOcsinventoryngProxysetting();
+      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
 
    }
 
@@ -5542,9 +5619,8 @@ JAVASCRIPT;
     */
    static function resetWinuser($glpi_computers_id, $cfg_ocs) {
 
-      $av = new ComputerAntivirus();
-      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
-                                  'is_dynamic'   => 1), 1);
+      $av = new PluginOcsinventoryngWinuser();
+      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
 
    }
 
@@ -5560,8 +5636,7 @@ JAVASCRIPT;
    static function resetTeamviewer($glpi_computers_id, $cfg_ocs) {
 
       $team = new PluginOcsinventoryngTeamviewer();
-      $team->deleteByCriteria(array('computers_id' => $glpi_computers_id,
-                                    'is_dynamic'   => 1), 1);
+      $team->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
 
    }
 

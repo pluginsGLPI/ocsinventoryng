@@ -115,12 +115,6 @@ function plugin_init_ocsinventoryng() {
    Plugin::registerClass('PluginOcsinventoryngNetworkPort',
                          array('networkport_instantiations' => true));
 
-   Plugin::registerClass('PluginOcsinventoryngDeviceBiosdata',
-                         array('device_types' => true));
-
-   Plugin::registerClass('PluginOcsinventoryngItem_DeviceBiosdata',
-                         array('item_device_types' => true));
-
    Plugin::registerClass('PluginOcsinventoryngSnmpOcslink',
                          array('addtabon' => array('Computer', 'Printer', 'NetworkEquipment', 'Peripheral', 'Phone')));
 
@@ -167,7 +161,7 @@ function plugin_init_ocsinventoryng() {
                                                      10 => 'Item_DevicePci',
                                                      11 => 'Item_DeviceCase',
                                                      12 => 'Item_DevicePowerSupply',
-                                                     13 => 'PluginOcsinventoryngItem_DeviceBiosdata');
+                                                     13 => 'Item_DeviceFirmware');
 }
 
 
