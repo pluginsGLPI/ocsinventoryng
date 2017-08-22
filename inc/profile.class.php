@@ -368,7 +368,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM
    {
       global $DB;
       //Cannot launch migration if there's nothing to migrate...
-      if (!TableExists('glpi_plugin_ocsinventoryng_profiles')) {
+      if (!$DB->tableExists('glpi_plugin_ocsinventoryng_profiles')) {
          return true;
       }
 
