@@ -5588,7 +5588,7 @@ JAVASCRIPT;
                   $soft = new Software();
                   $soft->delete(array('id' => $license->fields['softwares_id']), 1);
                }
-               $license->delete(array("id" => $data['softwareversions_id']));
+               $license->delete(array("id" => $data['softwarelicenses_id']));
             }
          }
 
