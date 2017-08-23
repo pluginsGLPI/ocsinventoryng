@@ -1121,7 +1121,7 @@ function plugin_ocsinventoryng_install() {
       $bios_id = $DeviceBios->import($bios);
 
       $condition = "`plugin_ocsinventoryng_devicebiosdatas_id` = " . $ocsbios["id"];
-      foreach (getAllDatasFromTable('glpi_plugin_ocsinventoryng_items_devicebios', $condition) as $item_bios) {
+      foreach (getAllDatasFromTable('glpi_plugin_ocsinventoryng_items_devicebiosdatas', $condition) as $item_bios) {
          $CompDevice = new Item_DeviceFirmware();
          $CompDevice->add(array('items_id'           => $item_bios['items_id'],
                                 'itemtype'           => $item_bios['itemtype'],
