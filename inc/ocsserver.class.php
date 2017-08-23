@@ -3318,7 +3318,7 @@ JAVASCRIPT;
       if ($ocsComputer) {
          $hardware = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer['HARDWARE']));
          $updates  = 0;
-
+         $license_number = NULL;
          if (intval($options['cfg_ocs']["import_os_serial"]) > 0
              && !in_array("license_number", $options['computers_updates'])
          ) {
@@ -3328,6 +3328,7 @@ JAVASCRIPT;
                $updates++;
             }
          }
+         $license_id = NULL;
          if (intval($options['cfg_ocs']["import_os_serial"]) > 0
              && !in_array("license_id", $options['computers_updates'])
          ) {
@@ -5572,7 +5573,7 @@ JAVASCRIPT;
 
       $av = new ComputerAntivirus();
       $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
-                                  'is_dynamic'   => 1), 1, $cfg_ocs['history_antivirus']);
+                                  'is_dynamic'   => 1), 1, 1);
 
    }
 
@@ -5675,7 +5676,7 @@ JAVASCRIPT;
                   $soft = new Software();
                   $soft->delete(array('id' => $license->fields['softwares_id']), 1);
                }
-               $license->delete(array("id" => $data['softwareversions_id']));
+               $license->delete(array("id" => $data['softwarelicenses_id']));
             }
          }
 
