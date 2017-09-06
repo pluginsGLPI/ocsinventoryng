@@ -3428,8 +3428,8 @@ JAVASCRIPT;
                                'license_number'                  => $license_number,
                                'license_id'                      => $license_id,
                                '_nolock'                         => true,
-                               //                                      'is_dynamic'                               => 1,
-                               //                                      'entities_id'                              => $options['entities_id']
+                               'is_dynamic'                      => 1,
+                               'entities_id'                     => $options['entities_id']
                          ), array(), $options['dohistory']);
             //            }
          }
@@ -5507,7 +5507,7 @@ JAVASCRIPT;
       $item = new $linktype();
       $item->deleteByCriteria(array('items_id' => $glpi_computers_id,
                                     'itemtype' => 'Computer',
-                                    //               'is_dynamic' => 1
+                                    'is_dynamic' => 1
                               ), 1, $cfg_ocs['history_hardware']
       );
    }
