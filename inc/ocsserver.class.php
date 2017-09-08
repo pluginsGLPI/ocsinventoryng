@@ -4217,7 +4217,7 @@ JAVASCRIPT;
       if ($start != 0) {
          $computerOptions['OFFSET'] = $start;
       }
-      $computerOptions['MAX_RECORDS'] = $start + $_SESSION['glpilist_limit'];
+      $computerOptions['MAX_RECORDS'] = $_SESSION['glpilist_limit'];
       $ocsResult                      = $ocsClient->getComputers($computerOptions);
 
       $computers = (isset($ocsResult['COMPUTERS']) ? $ocsResult['COMPUTERS'] : array());
