@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -250,11 +250,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM
                if (Session::haveRight("profile", UPDATE)) {
                   echo "<input type='checkbox' name='item[" . $configid[$id] . "]' value='1'>";
                }
-               if ($data['id'] == $id) {
-                  echo $ocsserver->getLink();
-               } else {
-                  echo $ocsserver->getName();
-               }
+               echo $ocsserver->getLink();
             }
          }
       }
@@ -383,8 +379,8 @@ class PluginOcsinventoryngProfile extends CommonDBTM
          $current_rights = ProfileRight::getProfileRights($profiles_id, array_values($matching));
          foreach ($matching as $old => $new) {
             if (!isset($current_rights[$old])) {
-               $query = "UPDATE `glpi_profilerights` 
-                         SET `rights`='" . self::translateARight($profile_data[$old]) . "' 
+               $query = "UPDATE `glpi_profilerights`
+                         SET `rights`='" . self::translateARight($profile_data[$old]) . "'
                          WHERE `name`='$new' AND `profiles_id`='$profiles_id'";
                $DB->query($query);
             }
@@ -414,8 +410,8 @@ class PluginOcsinventoryngProfile extends CommonDBTM
          self::migrateOneProfile($prof['id']);
       }
       foreach ($DB->request("SELECT *
-                           FROM `glpi_profilerights` 
-                           WHERE `profiles_id`='" . $_SESSION['glpiactiveprofile']['id'] . "' 
+                           FROM `glpi_profilerights`
+                           WHERE `profiles_id`='" . $_SESSION['glpiactiveprofile']['id'] . "'
                               AND `name` LIKE '%plugin_ocsinventoryng%'") as $prof) {
          $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
       }
