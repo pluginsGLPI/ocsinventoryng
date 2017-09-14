@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -218,10 +218,11 @@ class PluginOcsinventoryngProfile extends CommonDBTM
          $configid[$data['plugin_ocsinventoryng_ocsservers_id']] = $data['id'];
       }
       if (Session::haveRight("profile", UPDATE)) {
-         Dropdown::show('PluginOcsinventoryngOcsServer', array('width' => '50%',
-            'used' => $used,
-            'value' => '',
-            'condition' => "is_active = 1"));
+         Dropdown::show('PluginOcsinventoryngOcsServer', ['width'     => '50%',
+                                                          'used'      => $used,
+                                                          'value'     => '',
+                                                          'condition' => "is_active = 1",
+                                                          'toadd'     => ['-1' => __('All')]]);
          echo "&nbsp;&nbsp;<input type='hidden' name='profile' value='$profiles_id'>";
          echo "&nbsp;&nbsp;<input type='submit' name='addocsserver' value=\"" . _sx('button', 'Add') . "\" class='submit' >";
       }
@@ -383,8 +384,8 @@ class PluginOcsinventoryngProfile extends CommonDBTM
          $current_rights = ProfileRight::getProfileRights($profiles_id, array_values($matching));
          foreach ($matching as $old => $new) {
             if (!isset($current_rights[$old])) {
-               $query = "UPDATE `glpi_profilerights` 
-                         SET `rights`='" . self::translateARight($profile_data[$old]) . "' 
+               $query = "UPDATE `glpi_profilerights`
+                         SET `rights`='" . self::translateARight($profile_data[$old]) . "'
                          WHERE `name`='$new' AND `profiles_id`='$profiles_id'";
                $DB->query($query);
             }
@@ -414,8 +415,8 @@ class PluginOcsinventoryngProfile extends CommonDBTM
          self::migrateOneProfile($prof['id']);
       }
       foreach ($DB->request("SELECT *
-                           FROM `glpi_profilerights` 
-                           WHERE `profiles_id`='" . $_SESSION['glpiactiveprofile']['id'] . "' 
+                           FROM `glpi_profilerights`
+                           WHERE `profiles_id`='" . $_SESSION['glpiactiveprofile']['id'] . "'
                               AND `name` LIKE '%plugin_ocsinventoryng%'") as $prof) {
          $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
       }
@@ -431,4 +432,25 @@ class PluginOcsinventoryngProfile extends CommonDBTM
       }
    }
 
+
+   static function addAllServers($profile) {
+      global $DB;
+
+      $profservers = new PluginOcsinventoryngOcsserver_Profile();
+
+      $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+             FROM `glpi_plugin_ocsinventoryng_ocsservers`
+             LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+               ON (`glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id`
+                        = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                    AND `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`profiles_id` = ".$profile.")
+             WHERE `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`id` IS NULL
+                   AND `glpi_plugin_ocsinventoryng_ocsservers`.`is_active` = 1";
+
+      foreach ($DB->request($query) as $data) {
+         $input['plugin_ocsinventoryng_ocsservers_id'] = $data['id'];
+         $input['profiles_id']                         = $profile;
+         $newID = $profservers->add($input);
+      }
+   }
 }
