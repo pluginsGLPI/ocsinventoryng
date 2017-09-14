@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@ include('../../../inc/includes.php');
 Session::checkRight("profile", READ);
 
 $profservers = new PluginOcsinventoryngOcsserver_Profile();
+$prof        = new PluginOcsinventoryngProfile();
 
 if (isset($_POST["addocsserver"]) && ($_POST['plugin_ocsinventoryng_ocsservers_id'] > 0)) {
    $input['profiles_id'] = $_POST['profile'];
@@ -40,6 +41,9 @@ if (isset($_POST["addocsserver"]) && ($_POST['plugin_ocsinventoryng_ocsservers_i
    $newID = $profservers->add($input);
    Html::back();
 
+} else if (isset($_POST["addocsserver"]) && $_POST["plugin_ocsinventoryng_ocsservers_id"] == -1) {
+   $prof::addAllServers($_POST['profile']);
+   Html::back();
 }
 
 if (isset ($_POST['delete'])) {

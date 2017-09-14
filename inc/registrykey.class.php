@@ -177,4 +177,20 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM
       }
       return true;
    }
+
+   function getSearchOptions()
+   {
+
+      $tab = array();
+
+      $tab['common'] = self::getTypeName(2);
+
+      $tab[1]['table'] = $this->getTable();
+      $tab[1]['field'] = 'id';
+      $tab[1]['name'] = __('ID');
+      $tab[1]['datatype'] = 'integer';
+
+
+      return $tab;
+   }
 }
