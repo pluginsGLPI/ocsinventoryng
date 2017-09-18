@@ -32,14 +32,18 @@ include('../../../inc/includes.php');
 Session::checkRight("profile", READ);
 
 $profservers = new PluginOcsinventoryngOcsserver_Profile();
+$prof        = new PluginOcsinventoryngProfile();
 
 if (isset($_POST["addocsserver"]) && ($_POST['plugin_ocsinventoryng_ocsservers_id'] > 0)) {
-   $input['profiles_id'] = $_POST['profile'];
+   $input['profiles_id']                         = $_POST['profile'];
    $input['plugin_ocsinventoryng_ocsservers_id'] = $_POST['plugin_ocsinventoryng_ocsservers_id'];
 
    $newID = $profservers->add($input);
    Html::back();
 
+} else if (isset($_POST["addocsserver"]) && $_POST["plugin_ocsinventoryng_ocsservers_id"] == -1) {
+   $prof::addAllServers($_POST['profile']);
+   Html::back();
 }
 
 if (isset ($_POST['delete'])) {

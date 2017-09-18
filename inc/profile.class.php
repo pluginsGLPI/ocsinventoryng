@@ -34,23 +34,23 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginOcsinventoryngProfile
  */
-class PluginOcsinventoryngProfile extends CommonDBTM
-{
+class PluginOcsinventoryngProfile extends CommonDBTM {
 
 
    static $rightname = "profile";
 
    /**
     * @see inc/CommonGLPI::getTabNameForItem()
+    *
     * @param CommonGLPI $item
-    * @param int $withtemplate
+    * @param int        $withtemplate
+    *
     * @return string|translated
     */
-   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
-   {
+   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       if ($item->getType() == 'Profile'
-         && $item->getField('interface') != 'helpdesk'
+          && $item->getField('interface') != 'helpdesk'
       ) {
          return __('OCSNG', 'ocsinventoryng');
       }
@@ -60,25 +60,26 @@ class PluginOcsinventoryngProfile extends CommonDBTM
 
    /**
     * @see inc/CommonGLPI::displayTabContentForItem()
+    *
     * @param CommonGLPI $item
-    * @param int $tabnum
-    * @param int $withtemplate
+    * @param int        $tabnum
+    * @param int        $withtemplate
+    *
     * @return bool|true
     */
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
-   {
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
 
       if ($item->getType() == 'Profile') {
-         $ID = $item->getID();
+         $ID   = $item->getID();
          $prof = new self();
 
          self::addDefaultProfileInfos($ID,
-            array('plugin_ocsinventoryng' => 0,
-               'plugin_ocsinventoryng_sync' => 0,
-               'plugin_ocsinventoryng_view' => 0,
-               'plugin_ocsinventoryng_clean' => 0,
-               'plugin_ocsinventoryng_rule' => 0
-            ));
+                                      array('plugin_ocsinventoryng'       => 0,
+                                            'plugin_ocsinventoryng_sync'  => 0,
+                                            'plugin_ocsinventoryng_view'  => 0,
+                                            'plugin_ocsinventoryng_clean' => 0,
+                                            'plugin_ocsinventoryng_rule'  => 0
+                                      ));
          $prof->showForm($ID);
       }
       return true;
@@ -88,40 +89,39 @@ class PluginOcsinventoryngProfile extends CommonDBTM
    /**
     * @param $ID
     */
-   static function createFirstAccess($ID)
-   {
+   static function createFirstAccess($ID) {
       //85
       self::addDefaultProfileInfos($ID,
-         array('plugin_ocsinventoryng' => READ + CREATE + UPDATE + PURGE,
-            'plugin_ocsinventoryng_sync' => READ + UPDATE,
-            'plugin_ocsinventoryng_view' => READ,
-            'plugin_ocsinventoryng_clean' => READ + UPDATE,
-            'plugin_ocsinventoryng_rule' => READ + UPDATE), true);
+                                   array('plugin_ocsinventoryng'       => READ + CREATE + UPDATE + PURGE,
+                                         'plugin_ocsinventoryng_sync'  => READ + UPDATE,
+                                         'plugin_ocsinventoryng_view'  => READ,
+                                         'plugin_ocsinventoryng_clean' => READ + UPDATE,
+                                         'plugin_ocsinventoryng_rule'  => READ + UPDATE), true);
    }
 
 
    /**
-    * @param $profiles_id
-    * @param $rights
+    * @param      $profiles_id
+    * @param      $rights
     * @param bool $drop_existing
+    *
     * @internal param $profile
     */
-   static function addDefaultProfileInfos($profiles_id, $rights, $drop_existing = false)
-   {
+   static function addDefaultProfileInfos($profiles_id, $rights, $drop_existing = false) {
 
       $profileRight = new ProfileRight();
       foreach ($rights as $right => $value) {
          if (countElementsInTable('glpi_profilerights',
-               "`profiles_id`='$profiles_id' AND `name`='$right'") && $drop_existing
+                                  "`profiles_id`='$profiles_id' AND `name`='$right'") && $drop_existing
          ) {
             $profileRight->deleteByCriteria(array('profiles_id' => $profiles_id, 'name' => $right));
          }
          if (!countElementsInTable('glpi_profilerights',
-            "`profiles_id`='$profiles_id' AND `name`='$right'")
+                                   "`profiles_id`='$profiles_id' AND `name`='$right'")
          ) {
             $myright['profiles_id'] = $profiles_id;
-            $myright['name'] = $right;
-            $myright['rights'] = $value;
+            $myright['name']        = $right;
+            $myright['rights']      = $value;
             $profileRight->add($myright);
 
             //Add right to the current session
@@ -180,15 +180,15 @@ class PluginOcsinventoryngProfile extends CommonDBTM
    /**
     * Show profile form
     *
-    * @param int $profiles_id
+    * @param int  $profiles_id
     * @param bool $openform
     * @param bool $closeform
+    *
     * @return nothing
     * @internal param int $items_id id of the profile
     * @internal param value $target url of target
     */
-   function showForm($profiles_id = 0, $openform = TRUE, $closeform = TRUE)
-   {
+   function showForm($profiles_id = 0, $openform = TRUE, $closeform = TRUE) {
       global $DB, $CFG_GLPI;
 
       $profile = new Profile();
@@ -197,31 +197,32 @@ class PluginOcsinventoryngProfile extends CommonDBTM
       echo "<div class='firstbloc'>";
 
       if (($canedit = Session::haveRightsOr(self::$rightname, array(CREATE, UPDATE, PURGE)))
-         && $openform
+          && $openform
       ) {
          echo "<form action='" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/profile.form.php' method='post'>";
       }
       //Delegating
       echo "<table class='tab_cadre_fixehov'>";
       echo "<tr><th colspan='4' class='center b'>" . sprintf(__('%1$s - %2$s'), 'OcsinventoryNG',
-            $profile->fields["name"]) . "</th>";
+                                                             $profile->fields["name"]) . "</th>";
       echo "</tr>";
 
       $used = array();
       echo "<tr class='tab_bg_1'>";
       echo "<td>" . sprintf(__('%1$s : %2$s'),
-            _n('Allowed OCSNG server', 'Allowed OCSNG servers', 2, 'ocsinventoryng'), "&nbsp;");
+                            _n('Allowed OCSNG server', 'Allowed OCSNG servers', 2, 'ocsinventoryng'), "&nbsp;");
       //$profile = $this->fields['id'];
       $crit = array('profiles_id' => $profiles_id);
       foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers_profiles", $crit) as $data) {
-         $used[$data['plugin_ocsinventoryng_ocsservers_id']] = $data['plugin_ocsinventoryng_ocsservers_id'];
+         $used[$data['plugin_ocsinventoryng_ocsservers_id']]     = $data['plugin_ocsinventoryng_ocsservers_id'];
          $configid[$data['plugin_ocsinventoryng_ocsservers_id']] = $data['id'];
       }
       if (Session::haveRight("profile", UPDATE)) {
-         Dropdown::show('PluginOcsinventoryngOcsServer', array('width' => '50%',
-            'used' => $used,
-            'value' => '',
-            'condition' => "is_active = 1"));
+         Dropdown::show('PluginOcsinventoryngOcsServer', ['width'     => '50%',
+                                                          'used'      => $used,
+                                                          'value'     => '',
+                                                          'condition' => "is_active = 1",
+                                                          'toadd'     => ['-1' => __('All')]]);
          echo "&nbsp;&nbsp;<input type='hidden' name='profile' value='$profiles_id'>";
          echo "&nbsp;&nbsp;<input type='submit' name='addocsserver' value=\"" . _sx('button', 'Add') . "\" class='submit' >";
       }
@@ -231,9 +232,9 @@ class PluginOcsinventoryngProfile extends CommonDBTM
       echo "<table width='100%'><tr class='tab_bg_1'><td>";
 
       $nbservers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers_profiles',
-         "`profiles_id` = " . $profiles_id);
+                                        "`profiles_id` = " . $profiles_id);
 
-      $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`,
+      $query  = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`,
                        `glpi_plugin_ocsinventoryng_ocsservers`.`name`
                 FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
                 LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
@@ -250,11 +251,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM
                if (Session::haveRight("profile", UPDATE)) {
                   echo "<input type='checkbox' name='item[" . $configid[$id] . "]' value='1'>";
                }
-               if ($data['id'] == $id) {
-                  echo $ocsserver->getLink();
-               } else {
-                  echo $ocsserver->getName();
-               }
+               echo $ocsserver->getLink();
             }
          }
       }
@@ -273,7 +270,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM
       Html::closeForm();
 
       if (($canedit = Session::haveRightsOr(self::$rightname, array(CREATE, UPDATE, PURGE)))
-         && $openform
+          && $openform
       ) {
 
          echo "<form method='post' action='" . $profile->getFormURL() . "'>";
@@ -281,18 +278,18 @@ class PluginOcsinventoryngProfile extends CommonDBTM
 
       $rights = $this->getAllRights();
 
-      $profile->displayRightsChoiceMatrix($rights, array('canedit' => $canedit,
-         'default_class' => 'tab_bg_2',
-         'title' => __('General')));
+      $profile->displayRightsChoiceMatrix($rights, array('canedit'       => $canedit,
+                                                         'default_class' => 'tab_bg_2',
+                                                         'title'         => __('General')));
 
 
       if ($canedit
-         && $closeform
+          && $closeform
       ) {
          echo "<div class='center'>";
          echo Html::hidden('id', array('value' => $profiles_id));
          echo Html::submit(_sx('button', 'Save'),
-            array('name' => 'update'));
+                           array('name' => 'update'));
          echo "</div>\n";
          Html::closeForm();
       }
@@ -303,30 +300,29 @@ class PluginOcsinventoryngProfile extends CommonDBTM
    /**
     * @return array
     */
-   static function getAllRights()
-   {
+   static function getAllRights() {
 
 
       $rights = array(
          array('itemtype' => 'PluginOcsinventoryngOcsServer',
-            'label' => _n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng'),
-            'field' => 'plugin_ocsinventoryng'),
+               'label'    => _n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng'),
+               'field'    => 'plugin_ocsinventoryng'),
          array('itemtype' => 'PluginOcsinventoryngOcsServer',
-            'label' => __('Manually synchronization', 'ocsinventoryng'),
-            'field' => 'plugin_ocsinventoryng_sync',
-            'rights' => array(READ => __('Read'), UPDATE => __('Update'))),
+               'label'    => __('Manually synchronization', 'ocsinventoryng'),
+               'field'    => 'plugin_ocsinventoryng_sync',
+               'rights'   => array(READ => __('Read'), UPDATE => __('Update'))),
          array('itemtype' => 'PluginOcsinventoryngOcsServer',
-            'label' => __('See information', 'ocsinventoryng'),
-            'field' => 'plugin_ocsinventoryng_view',
-            'rights' => array(READ => __('Read'))),
+               'label'    => __('See information', 'ocsinventoryng'),
+               'field'    => 'plugin_ocsinventoryng_view',
+               'rights'   => array(READ => __('Read'))),
          array('itemtype' => 'PluginOcsinventoryngOcsServer',
-            'label' => __('Clean links between GLPI and OCSNG', 'ocsinventoryng'),
-            'field' => 'plugin_ocsinventoryng_clean',
-            'rights' => array(READ => __('Read'), UPDATE => __('Update'))),
+               'label'    => __('Clean links between GLPI and OCSNG', 'ocsinventoryng'),
+               'field'    => 'plugin_ocsinventoryng_clean',
+               'rights'   => array(READ => __('Read'), UPDATE => __('Update'))),
          array('itemtype' => 'PluginOcsinventoryngOcsServer',
-            'label' => _n('Rule', 'Rules', 2),
-            'field' => 'plugin_ocsinventoryng_rule',
-            'rights' => array(READ => __('Read'), UPDATE => __('Update')))
+               'label'    => _n('Rule', 'Rules', 2),
+               'field'    => 'plugin_ocsinventoryng_rule',
+               'rights'   => array(READ => __('Read'), UPDATE => __('Update')))
       );
 
       return $rights;
@@ -337,11 +333,11 @@ class PluginOcsinventoryngProfile extends CommonDBTM
     * Init profiles
     *
     * @param $old_right
+    *
     * @return int
     */
 
-   static function translateARight($old_right)
-   {
+   static function translateARight($old_right) {
       switch ($old_right) {
          case '':
             return 0;
@@ -361,11 +357,12 @@ class PluginOcsinventoryngProfile extends CommonDBTM
    /**
     * @since 0.85
     * Migration rights from old system to the new one for one profile
+    *
     * @param $profiles_id the profile ID
+    *
     * @return bool
     */
-   static function migrateOneProfile($profiles_id)
-   {
+   static function migrateOneProfile($profiles_id) {
       global $DB;
       //Cannot launch migration if there's nothing to migrate...
       if (!$DB->tableExists('glpi_plugin_ocsinventoryng_profiles')) {
@@ -373,13 +370,13 @@ class PluginOcsinventoryngProfile extends CommonDBTM
       }
 
       foreach ($DB->request('glpi_plugin_ocsinventoryng_profiles',
-         "`profiles_id`='$profiles_id'") as $profile_data) {
+                            "`profiles_id`='$profiles_id'") as $profile_data) {
 
-         $matching = array('ocsng' => 'plugin_ocsinventoryng',
-            'sync_ocsng' => 'plugin_ocsinventoryng_sync',
-            'view_ocsng' => 'plugin_ocsinventoryng_view',
-            'clean_ocsng' => 'plugin_ocsinventoryng_clean',
-            'rule_ocs' => 'plugin_ocsinventoryng_rule');
+         $matching       = array('ocsng'       => 'plugin_ocsinventoryng',
+                                 'sync_ocsng'  => 'plugin_ocsinventoryng_sync',
+                                 'view_ocsng'  => 'plugin_ocsinventoryng_view',
+                                 'clean_ocsng' => 'plugin_ocsinventoryng_clean',
+                                 'rule_ocs'    => 'plugin_ocsinventoryng_rule');
          $current_rights = ProfileRight::getProfileRights($profiles_id, array_values($matching));
          foreach ($matching as $old => $new) {
             if (!isset($current_rights[$old])) {
@@ -395,15 +392,14 @@ class PluginOcsinventoryngProfile extends CommonDBTM
    /**
     * Initialize profiles, and migrate it necessary
     */
-   static function initProfile()
-   {
+   static function initProfile() {
       global $DB;
       $profile = new self();
 
       //Add new rights in glpi_profilerights table
       foreach ($profile->getAllRights() as $data) {
          if (countElementsInTable("glpi_profilerights",
-               "`name` = '" . $data['field'] . "'") == 0
+                                  "`name` = '" . $data['field'] . "'") == 0
          ) {
             ProfileRight::addProfileRights(array($data['field']));
          }
@@ -422,8 +418,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM
    }
 
 
-   static function removeRightsFromSession()
-   {
+   static function removeRightsFromSession() {
       foreach (self::getAllRights() as $right) {
          if (isset($_SESSION['glpiactiveprofile'][$right['field']])) {
             unset($_SESSION['glpiactiveprofile'][$right['field']]);
@@ -431,4 +426,24 @@ class PluginOcsinventoryngProfile extends CommonDBTM
       }
    }
 
+   static function addAllServers($profile) {
+      global $DB;
+
+      $profservers = new PluginOcsinventoryngOcsserver_Profile();
+
+      $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+              FROM `glpi_plugin_ocsinventoryng_ocsservers`
+              LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers_profiles`
+                ON (`glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id`
+                         = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                     AND `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`profiles_id` = " . $profile . ")
+              WHERE `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`id` IS NULL
+                    AND `glpi_plugin_ocsinventoryng_ocsservers`.`is_active` = 1";
+
+      foreach ($DB->request($query) as $data) {
+         $input['plugin_ocsinventoryng_ocsservers_id'] = $data['id'];
+         $input['profiles_id']                         = $profile;
+         $newID                                        = $profservers->add($input);
+      }
+   }
 }
