@@ -1108,12 +1108,12 @@ function plugin_ocsinventoryng_install() {
    foreach (getAllDatasFromTable('glpi_plugin_ocsinventoryng_devicebiosdatas') as $ocsbios) {
 
       $DeviceBios               = new DeviceFirmware();
-      $bios["designation"]      = $ocsbios["designation"];
-      $bios["comment"]          = $ocsbios["comment"];
+      $bios["designation"]      = addslashes($ocsbios["designation"]);
+      $bios["comment"]          = addslashes($ocsbios["comment"]);
       $bios["entities_id"]      = $ocsbios["entities_id"];
       $bios["is_recursive"]     = $ocsbios["is_recursive"];
       $bios["manufacturers_id"] = $ocsbios["manufacturers_id"];
-      $bios["version"]          = $ocsbios["assettag"];
+      $bios["version"]          = addslashes($ocsbios["assettag"]);
       $date                     = str_replace("/", "-", $ocsbios["date"]);
       $date                     = date("Y-m-d", strtotime($date));
       $bios["date"]             = $date;
