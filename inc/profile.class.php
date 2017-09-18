@@ -251,11 +251,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM
                if (Session::haveRight("profile", UPDATE)) {
                   echo "<input type='checkbox' name='item[" . $configid[$id] . "]' value='1'>";
                }
-               if ($data['id'] == $id) {
-                  echo $ocsserver->getLink();
-               } else {
-                  echo $ocsserver->getName();
-               }
+               echo $ocsserver->getLink();
             }
          }
       }
