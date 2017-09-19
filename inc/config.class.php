@@ -10,7 +10,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -128,8 +128,12 @@ class PluginOcsinventoryngConfig extends CommonDBTM
     * @return bool
     * @internal param $target
     */
-   function showForm()
-   {
+   function showForm() {
+
+      if (!Session::haveRight("plugin_ocsinventoryng_sync", READ)) {
+         return false;
+      }
+      $canedit = Session::haveRight("plugin_ocsinventoryng_sync", UPDATE);
 
       $this->getFromDB(1);
       $this->showFormHeader();
@@ -155,8 +159,8 @@ class PluginOcsinventoryngConfig extends CommonDBTM
       echo "&nbsp;" . _n('second', 'seconds', 2, 'ocsinventoryng') . "</td>";
       echo "</tr>";
 
-      $this->showFormButtons(array('canedit' => true,
-         'candel' => false));
+      $this->showFormButtons(['canedit' => $canedit,
+                              'candel'  => false]);
 
       return true;
    }
