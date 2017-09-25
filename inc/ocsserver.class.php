@@ -324,10 +324,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
       echo "</th></tr>";
 
 
-      if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
-
+      if (Session::haveRight("plugin_ocsinventoryng", READ)) {
          //config server
-
          if ($isactive) {
             echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 2 : 4) . "'>
                   <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
@@ -337,7 +335,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                    <br>" . sprintf(__('Configuration of OCSNG server %s', 'ocsinventoryng'), $name) . "
                   </a></td>";
 
-            if ($usemassimport) {
+            if ($usemassimport && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
                //config massimport
                echo "<td class='center b' colspan='2'>
                      <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/config.form.php'>
