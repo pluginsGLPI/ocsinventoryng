@@ -4060,7 +4060,8 @@ JAVASCRIPT;
    {
       global $DB, $CFG_GLPI;
 
-      if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+      if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)
+            && !Session::haveRight("plugin_ocsinventoryng_import", UPDATE)) {
          return false;
       }
 
