@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@
 
 include('../../../inc/includes.php');
 
-Session::checkRight("plugin_ocsinventoryng", UPDATE);
+Session::checkRight("plugin_ocsinventoryng", READ);
 
 $ocs = new PluginOcsinventoryngOcsServer();
 
