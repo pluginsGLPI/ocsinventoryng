@@ -1169,10 +1169,12 @@ JAVASCRIPT;
       Dropdown::showFromArray('deleted_behavior', $actions, array('value' => $this->fields['deleted_behavior']));
       echo "</td></tr>";
 
-      echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
-      echo "<input type='submit' name='update' class='submit' value='" .
-         _sx('button', 'Save') . "'>";
-      echo "</td></tr>";
+      if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+         echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
+         echo "<input type='submit' name='update' class='submit' value='" .
+                _sx('button', 'Save') . "'>";
+         echo "</td></tr>";
+      }
 
       echo "</table>\n";
       Html::closeForm();
