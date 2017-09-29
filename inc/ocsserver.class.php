@@ -576,7 +576,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
    function ocsFormConfig($ID)
    {
 
-      if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+      if (!Session::haveRight("plugin_ocsinventoryng", READ)) {
          return false;
       }
       $this->getFromDB($ID);
@@ -1100,7 +1100,6 @@ JAVASCRIPT;
     */
    function ocsFormImportOptions($ID)
    {
-
       $this->getFromDB($ID);
       echo "<div class='center'>";
       echo "<form name='formconfig' action='" . Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer") . "' method='post'>";
