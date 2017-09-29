@@ -980,7 +980,7 @@ JAVASCRIPT;
    function ocsHistoryConfig($ID)
    {
 
-      if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+      if (!Session::haveRight("plugin_ocsinventoryng", READ)) {
          return false;
       }
       $this->getFromDB($ID);
