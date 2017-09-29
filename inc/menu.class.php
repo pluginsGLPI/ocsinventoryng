@@ -10,7 +10,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -101,10 +101,13 @@ class PluginOcsinventoryngMenu extends CommonGLPI
       $menu['options']['networkport']['title'] = _n('Unknown imported network port type', 'Unknown imported network ports types', 2, 'ocsinventoryng');
       $menu['options']['networkport']['page'] = '/plugins/ocsinventoryng/front/networkport.php';
 
-      if (Session::haveRight("plugin_ocsinventoryng_clean", READ)) {
+      if (Session::haveRight("plugin_ocsinventoryng_clean", UPDATE)
+            || Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
          // Deleted_equiv
-         $menu['options']['deleted_equiv']['title'] = __s('Clean OCSNG deleted computers', 'ocsinventoryng');
-         $menu['options']['deleted_equiv']['page'] = '/plugins/ocsinventoryng/front/deleted_equiv.php';
+               if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+            $menu['options']['deleted_equiv']['title'] = __s('Clean OCSNG deleted computers', 'ocsinventoryng');
+            $menu['options']['deleted_equiv']['page'] = '/plugins/ocsinventoryng/front/deleted_equiv.php';
+         }
 
          // Clean
          $menu['options']['clean']['title'] = __s('Clean links between GLPI and OCSNG', 'ocsinventoryng');

@@ -545,14 +545,18 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
           }
       }
 
-      if (Session::haveRight("plugin_ocsinventoryng_clean", READ) && $isactive) {
-         echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 4 : 2) . "'>
-               <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/deleted_equiv.php'>
-               <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/trash.png' " .
-                  "alt='" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "' " .
-                  "title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\" >
-               <br>" . __('Clean OCSNG deleted computers', 'ocsinventoryng') . "
-               </a></td></tr>";
+      if ((Session::haveRight("plugin_ocsinventoryng_clean", UPDATE)
+           || Session::haveRight(static::$rightname, UPDATE))
+          && $isactive) {
+         if (Session::haveRight(static::$rightname, UPDATE)) {
+            echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 4 : 2) . "'>
+                  <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/deleted_equiv.php'>
+                  <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/trash.png' " .
+                    "alt='" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "' " .
+                    "title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\" >
+                  <br>" . __('Clean OCSNG deleted computers', 'ocsinventoryng') . "
+                  </a></td></tr>";
+         }
 
          echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 4 : 2) . "'>
                <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.clean.php'>
