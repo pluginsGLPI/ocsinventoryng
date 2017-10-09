@@ -43,6 +43,7 @@ if (isset ($_SESSION["ocs_link"])) {
 if (isset ($_SESSION["ocs_update"])) {
    unset ($_SESSION["ocs_update"]);
 }
+// when open the menu, no $_POST
 if (isset($_POST["plugin_ocsinventoryng_ocsservers_id"])) {
    $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = $_POST["plugin_ocsinventoryng_ocsservers_id"];
 } else {

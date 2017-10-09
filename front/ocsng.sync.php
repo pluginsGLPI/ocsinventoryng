@@ -29,7 +29,7 @@
 
 include('../../../inc/includes.php');
 
-Session::checkRight("plugin_ocsinventoryng", UPDATE);
+Session::checkRight("plugin_ocsinventoryng_sync", READ);
 
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "sync");
 

@@ -283,8 +283,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
                    FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
                    LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
-                      ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
-                   WHERE `profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . " AND `glpi_plugin_ocsinventoryng_ocsservers`.`is_active`='1'
+                      ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` 
+                        = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                   WHERE `profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . " 
+                   AND `glpi_plugin_ocsinventoryng_ocsservers`.`is_active`='1'
                    ORDER BY `name` ASC";
          foreach ($DB->request($query) as $data) {
             $ocsservers[] = $data['id'];
@@ -317,15 +319,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $usemassimport = self::useMassImport();
 
       echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
-      echo "<tr><th colspan='4'>";
-      printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
-      echo "</th></tr>";
-
-
-      if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
-
+      if (Session::haveRight("plugin_ocsinventoryng", READ)) {
+         echo "<tr><th colspan='4'>";
+         printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
+         echo "</th></tr>";
          //config server
-
          if ($isactive) {
             echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 2 : 4) . "'>
                   <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
@@ -335,7 +333,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                    <br>" . sprintf(__('Configuration of OCSNG server %s', 'ocsinventoryng'), $name) . "
                   </a></td>";
 
-            if ($usemassimport) {
+            if ($usemassimport && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
                //config massimport
                echo "<td class='center b' colspan='2'>
                      <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/config.form.php'>
@@ -515,14 +513,18 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          }
       }
 
-      if (Session::haveRight("plugin_ocsinventoryng_clean", READ) && $isactive) {
-         echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 4 : 2) . "'>
+      if ((Session::haveRight("plugin_ocsinventoryng_clean", UPDATE)
+           || Session::haveRight(static::$rightname, UPDATE))
+          && $isactive) {
+         if (Session::haveRight(static::$rightname, UPDATE)) {
+            echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 4 : 2) . "'>
             <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/deleted_equiv.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/trash.png' " .
-              "alt='" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "' " .
-              "title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\" >
+                 "alt='" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "' " .
+                 "title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\" >
                   <br>" . __('Clean OCSNG deleted computers', 'ocsinventoryng') . "
                </a></td>";
+         }
          echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 4 : 2) . "'>
                <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.clean.php'>
                 <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/clean.png' " .
@@ -544,7 +546,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
     */
    function ocsFormConfig($ID) {
 
-      if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+      if (!Session::haveRight("plugin_ocsinventoryng", READ)) {
          return false;
       }
       $this->getFromDB($ID);
@@ -947,7 +949,7 @@ JAVASCRIPT;
     */
    function ocsHistoryConfig($ID) {
 
-      if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+      if (!Session::haveRight("plugin_ocsinventoryng", READ)) {
          return false;
       }
       $this->getFromDB($ID);
@@ -1138,10 +1140,11 @@ JAVASCRIPT;
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
-      echo "<input type='submit' name='update' class='submit' value='" .
-           _sx('button', 'Save') . "'>";
-      echo "</td></tr>";
-
+      if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+         echo "<input type='submit' name='update' class='submit' value='" .
+              _sx('button', 'Save') . "'>";
+         echo "</td></tr>";
+      }
       echo "</table>\n";
       Html::closeForm();
       echo "</div>";
@@ -3316,8 +3319,8 @@ JAVASCRIPT;
       $options['do_history'] = $options['cfg_ocs']["history_hardware"];
 
       if ($ocsComputer) {
-         $hardware = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer['HARDWARE']));
-         $updates  = 0;
+         $hardware       = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer['HARDWARE']));
+         $updates        = 0;
          $license_number = NULL;
          if (intval($options['cfg_ocs']["import_os_serial"]) > 0
              && !in_array("license_number", $options['computers_updates'])
@@ -4166,7 +4169,9 @@ JAVASCRIPT;
    static function showComputersToAdd($serverId, $advanced, $check, $start, $entity = 0, $tolinked = false) {
       global $DB, $CFG_GLPI;
 
-      if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+      if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)
+          && !Session::haveRight("plugin_ocsinventoryng_import", UPDATE)
+          && !Session::haveRight("plugin_ocsinventoryng_link", UPDATE)) {
          return false;
       }
 
@@ -4754,10 +4759,10 @@ JAVASCRIPT;
             $do_clean            = true;
             $bios["designation"] = $ocsComputer["BVERSION"];
             //            $bios["assettag"]    = $ocsComputer["ASSETTAG"];
-            $bios["entities_id"]             = $entities_id;
-//            $date                            = str_replace("/", "-", $ocsComputer["BDATE"]);
-//            $date                            = date("Y-m-d", strtotime($date));
-            $bios["comment"]                    = $ocsComputer["BDATE"]." - ".$ocsComputer["ASSETTAG"];
+            $bios["entities_id"] = $entities_id;
+            //            $date                            = str_replace("/", "-", $ocsComputer["BDATE"]);
+            //            $date                            = date("Y-m-d", strtotime($date));
+            $bios["comment"]                 = $ocsComputer["BDATE"] . " - " . $ocsComputer["ASSETTAG"];
             $bios["manufacturers_id"]        = Dropdown::importExternal('Manufacturer', self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsComputer["SMANUFACTURER"]));
             $bios["devicefirmwaremodels_id"] = Dropdown::importExternal('DeviceFirmwareModel', self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsComputer["SMODEL"]));
             $bios["devicefirmwaretypes_id"]  = Dropdown::importExternal('DeviceFirmwareType', self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsComputer["TYPE"]));
@@ -5505,8 +5510,8 @@ JAVASCRIPT;
       $linktype = 'Item_' . $itemtype;
 
       $item = new $linktype();
-      $item->deleteByCriteria(array('items_id' => $glpi_computers_id,
-                                    'itemtype' => 'Computer',
+      $item->deleteByCriteria(array('items_id'   => $glpi_computers_id,
+                                    'itemtype'   => 'Computer',
                                     'is_dynamic' => 1
                               ), 1, $cfg_ocs['history_hardware']
       );

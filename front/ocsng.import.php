@@ -29,7 +29,8 @@
 
 include('../../../inc/includes.php');
 
-Session::checkRight("plugin_ocsinventoryng", UPDATE);
+Session::checkSeveralRightsOr(array("plugin_ocsinventoryng"        => UPDATE,
+                                    "plugin_ocsinventoryng_import" => UPDATE));
 
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "import");
 
@@ -52,9 +53,9 @@ if (isset($_SESSION["ocs_import"]["id"])) {
 
    if ($count = count($_SESSION["ocs_import"]["id"])) {
       $percent = min(100,
-         round(100 * ($_SESSION["ocs_import_count"] - $count) / $_SESSION["ocs_import_count"],
-            0));
-      $key = array_pop($_SESSION["ocs_import"]["id"]);
+                     round(100 * ($_SESSION["ocs_import_count"] - $count) / $_SESSION["ocs_import_count"],
+                           0));
+      $key     = array_pop($_SESSION["ocs_import"]["id"]);
       if (isset($_SESSION["ocs_import"]["entities_id"][$key])) {
          $entity = $_SESSION["ocs_import"]["entities_id"][$key];
       } else {
@@ -67,12 +68,12 @@ if (isset($_SESSION["ocs_import"]["id"])) {
          $location = -1;
       }
 
-      $conf = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+      $conf   = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
       $action = PluginOcsinventoryngOcsServer::processComputer($key,
-         $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-         0, $entity, $location);
+                                                               $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                                                               0, $entity, $location);
       PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_import"]['statistics'],
-         $action['status']);
+                                                            $action['status']);
       PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_import"]['statistics']);
       Html::displayProgressBar(400, $percent);
 
@@ -107,9 +108,9 @@ if (!isset($_POST["import_ok"])) {
    PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($display_list) {
       PluginOcsinventoryngOcsServer::showComputersToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-         $_SESSION["change_import_mode"],
-         $_GET['check'], $_GET['start'],
-         $_SESSION['glpiactiveentities']);
+                                                        $_SESSION["change_import_mode"],
+                                                        $_GET['check'], $_GET['start'],
+                                                        $_SESSION['glpiactiveentities']);
    }
 
 } else {

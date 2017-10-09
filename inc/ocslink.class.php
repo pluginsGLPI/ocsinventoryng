@@ -89,7 +89,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          if (!empty($items_id)
              && $item->fields["is_dynamic"]
-             && Session::haveRight("plugin_ocsinventoryng_view", READ)
+             && Session::haveRight("plugin_ocsinventoryng_link", READ)
          ) {
             $query = "SELECT *
                       FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -143,7 +143,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo $data["tag"];
                   echo "</td>";
 
-                  if (Session::haveRight("plugin_ocsinventoryng_view", READ)
+                  if (Session::haveRight("plugin_ocsinventoryng_link", READ)
                       && Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)
                   ) {
                      echo "<td>" . __('Automatic update OCSNG', 'ocsinventoryng') .
@@ -259,7 +259,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                if (!empty($items_id)
                    //&& $item->fields["is_dynamic"]
-                   && Session::haveRight("plugin_ocsinventoryng_view", READ)
+                   && Session::haveRight("plugin_ocsinventoryng_link", READ)
                ) {
                   $query = "SELECT *
                             FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
@@ -317,7 +317,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          if (!empty($items_id)
              && $item->fields["is_dynamic"]
-             && Session::haveRight("plugin_ocsinventoryng_view", READ)
+             && Session::haveRight("plugin_ocsinventoryng_link", READ)
          ) {
 
             $query = "SELECT *
@@ -369,7 +369,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                   echo "</tr>";
 
-                  if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
+                  if (Session::haveRight("plugin_ocsinventoryng_link", UPDATE)) {
                      echo "<tr class='tab_bg_1'>";
                      echo "<td class='center'>";
                      echo "<input type='hidden' name='link_id' value='" . $data["id"] . "'>";
@@ -705,7 +705,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))
-          && Session::haveRight("plugin_ocsinventoryng_view", READ)
+          && Session::haveRight("plugin_ocsinventoryng_link", READ)
       ) {
 
          switch ($item->getType()) {

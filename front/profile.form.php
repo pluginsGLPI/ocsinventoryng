@@ -46,6 +46,9 @@ if (isset($_POST["addocsserver"]) && ($_POST['plugin_ocsinventoryng_ocsservers_i
    Html::back();
 }
 
+// stock selected servers in session
+$_SESSION["plugin_ocsinventoryng_ocsservers_id"] = PluginOcsinventoryngOcsServer::getFirstServer();
+
 if (isset ($_POST['delete'])) {
    $input = array();
    foreach ($_POST['item'] as $id => $val) {

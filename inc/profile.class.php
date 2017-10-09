@@ -74,11 +74,13 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
          $prof = new self();
 
          self::addDefaultProfileInfos($ID,
-                                      array('plugin_ocsinventoryng'       => 0,
-                                            'plugin_ocsinventoryng_sync'  => 0,
-                                            'plugin_ocsinventoryng_view'  => 0,
-                                            'plugin_ocsinventoryng_clean' => 0,
-                                            'plugin_ocsinventoryng_rule'  => 0
+                                      array('plugin_ocsinventoryng'        => 0,
+                                            'plugin_ocsinventoryng_sync'   => 0,
+                                            'plugin_ocsinventoryng_view'   => 0,
+                                            'plugin_ocsinventoryng_import' => 0,
+                                            'plugin_ocsinventoryng_link'   => 0,
+                                            'plugin_ocsinventoryng_clean'  => 0,
+                                            'plugin_ocsinventoryng_rule'   => 0
                                       ));
          $prof->showForm($ID);
       }
@@ -92,11 +94,13 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
    static function createFirstAccess($ID) {
       //85
       self::addDefaultProfileInfos($ID,
-                                   array('plugin_ocsinventoryng'       => READ + CREATE + UPDATE + PURGE,
-                                         'plugin_ocsinventoryng_sync'  => READ + UPDATE,
-                                         'plugin_ocsinventoryng_view'  => READ,
-                                         'plugin_ocsinventoryng_clean' => READ + UPDATE,
-                                         'plugin_ocsinventoryng_rule'  => READ + UPDATE), true);
+                                   array('plugin_ocsinventoryng'        => READ + CREATE + UPDATE + PURGE,
+                                         'plugin_ocsinventoryng_sync'   => READ + UPDATE,
+                                         'plugin_ocsinventoryng_view'   => READ,
+                                         'plugin_ocsinventoryng_import' => READ + UPDATE,
+                                         'plugin_ocsinventoryng_link'   => READ + UPDATE,
+                                         'plugin_ocsinventoryng_clean'  => READ + UPDATE,
+                                         'plugin_ocsinventoryng_rule'   => READ + UPDATE), true);
    }
 
 
@@ -301,33 +305,40 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
     * @return array
     */
    static function getAllRights() {
-
-
-      $rights = array(
-         array('itemtype' => 'PluginOcsinventoryngOcsServer',
-               'label'    => _n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng'),
-               'field'    => 'plugin_ocsinventoryng'),
-         array('itemtype' => 'PluginOcsinventoryngOcsServer',
-               'label'    => __('Manually synchronization', 'ocsinventoryng'),
-               'field'    => 'plugin_ocsinventoryng_sync',
-               'rights'   => array(READ => __('Read'), UPDATE => __('Update'))),
-         array('itemtype' => 'PluginOcsinventoryngOcsServer',
-               'label'    => __('See information', 'ocsinventoryng'),
-               'field'    => 'plugin_ocsinventoryng_view',
-               'rights'   => array(READ => __('Read'))),
-         array('itemtype' => 'PluginOcsinventoryngOcsServer',
-               'label'    => __('Clean links between GLPI and OCSNG', 'ocsinventoryng'),
-               'field'    => 'plugin_ocsinventoryng_clean',
-               'rights'   => array(READ => __('Read'), UPDATE => __('Update'))),
-         array('itemtype' => 'PluginOcsinventoryngOcsServer',
-               'label'    => _n('Rule', 'Rules', 2),
-               'field'    => 'plugin_ocsinventoryng_rule',
-               'rights'   => array(READ => __('Read'), UPDATE => __('Update')))
-      );
-
+      $rights = [['itemtype' => 'PluginOcsinventoryngOcsServer',
+                  'label'    => _n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng'),
+                  'field'    => 'plugin_ocsinventoryng'],
+                 ['itemtype' => 'PluginOcsinventoryngOcsServer',
+                  'label'    => __('Manually synchronization', 'ocsinventoryng'),
+                  'field'    => 'plugin_ocsinventoryng_sync',
+                  'rights'   => [READ   => __('Read'),
+                                 UPDATE => __('Update')]],
+                 ['itemtype' => 'PluginOcsinventoryngOcsServer',
+                  'label'    => __('See information', 'ocsinventoryng'),
+                  'field'    => 'plugin_ocsinventoryng_view',
+                  'rights'   => [READ => __('Read')]],
+                 ['itemtype' => 'PluginOcsinventoryngOcsServer',
+                  'label'    => __('Clean links between GLPI and OCSNG', 'ocsinventoryng'),
+                  'field'    => 'plugin_ocsinventoryng_clean',
+                  'rights'   => [READ   => __('Read'),
+                                 UPDATE => __('Update')]],
+                 ['itemtype' => 'PluginOcsinventoryngOcsServer',
+                  'label'    => __('Import computer', 'ocsinventoryng'),
+                  'field'    => 'plugin_ocsinventoryng_import',
+                  'rights'   => [READ   => __('Read'),
+                                 UPDATE => __('Update')]],
+                 ['itemtype' => 'PluginOcsinventoryngOcsServer',
+                  'label'    => __('Link computer', 'ocsinventoryng'),
+                  'field'    => 'plugin_ocsinventoryng_link',
+                  'rights'   => [READ   => __('Read'),
+                                 UPDATE => __('Update')]],
+                 ['itemtype' => 'PluginOcsinventoryngOcsServer',
+                  'label'    => _n('Rule', 'Rules', 2),
+                  'field'    => 'plugin_ocsinventoryng_rule',
+                  'rights'   => [READ   => __('Read'),
+                                 UPDATE => __('Update')]]];
       return $rights;
    }
-
 
    /**
     * Init profiles
