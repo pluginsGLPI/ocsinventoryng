@@ -285,8 +285,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
          $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
                    FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
                    LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
-                      ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
-                   WHERE `profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . " AND `glpi_plugin_ocsinventoryng_ocsservers`.`is_active`='1'
+                      ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id`
+                        = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                   WHERE `profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . "
+                         AND `glpi_plugin_ocsinventoryng_ocsservers`.`is_active`='1'
                    ORDER BY `name` ASC";
          foreach ($DB->request($query) as $data) {
             $ocsservers[] = $data['id'];
@@ -306,7 +308,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
               FROM `glpi_plugin_ocsinventoryng_ocsservers`
               LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers_profiles`
                   ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
-              WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`id` = '" . $plugin_ocsinventoryng_ocsservers_id . "' 
+              WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`id` = '" . $plugin_ocsinventoryng_ocsservers_id . "'
               AND `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`profiles_id`= '" . $_SESSION["glpiactiveprofile"]['id'] . "'";
       $result = $DB->query($sql);
       $isactive = 0;
@@ -319,15 +321,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
       $usemassimport = self::useMassImport();
 
       echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
-      echo "<tr><th colspan='4'>";
-      printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
-      echo "</th></tr>";
-
-
       if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
-
+         echo "<tr><th colspan='4'>";
+         printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
+         echo "</th></tr>";
          //config server
-
          if ($isactive) {
             echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 2 : 4) . "'>
                   <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
@@ -427,7 +425,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
               FROM `glpi_plugin_ocsinventoryng_ocsservers`
               LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers_profiles`
                   ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
-              WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`id` = '" . $plugin_ocsinventoryng_ocsservers_id . "' 
+              WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`id` = '" . $plugin_ocsinventoryng_ocsservers_id . "'
               AND `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`profiles_id`= '" . $_SESSION["glpiactiveprofile"]['id'] . "'";
       $result = $DB->query($sql);
       $isactive = 0;
@@ -797,7 +795,7 @@ JAVASCRIPT;
          echo "</td>\n";
       }
       echo "</tr>\n";
-      
+
       echo "<tr><th colspan='4'>" . __('OCS Inventory NG plugins', 'ocsinventoryng') . "</th>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Microsoft Office licenses', 'ocsinventoryng') . "</td>\n<td>";
@@ -810,7 +808,7 @@ JAVASCRIPT;
       Html::showToolTip(nl2br(__('Security Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/security) must be installed', 'ocsinventoryng')));
       echo "&nbsp;</td>\n";
       echo "</tr>";
-      
+
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Uptime', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("import_uptime", $this->fields["import_uptime"]);
       echo "&nbsp;";
@@ -820,8 +818,8 @@ JAVASCRIPT;
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Winupdate Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/winupdate) must be installed', 'ocsinventoryng')));
       echo "&nbsp;</td></tr>\n";
-      
-      
+
+
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Teamviewer', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("import_teamviewer", $this->fields["import_teamviewer"]);
       echo "&nbsp;";
@@ -831,13 +829,13 @@ JAVASCRIPT;
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Navigator Proxy Setting Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/navigatorproxysetting) must be installed', 'ocsinventoryng')));
       echo "&nbsp;</td></tr>\n";
-      
+
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Windows Users', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("import_winusers", $this->fields["import_winusers"]);
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Winusers Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/winusers) must be installed', 'ocsinventoryng')));
       echo "&nbsp;</td><td class='center' colspan='2'></td></tr>\n";
-      
+
       echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
       echo __('No import: the plugin will not import these elements', 'ocsinventoryng');
       echo "<br>" . __('Global import: everything is imported but the material is globally managed (without duplicate)', 'ocsinventoryng');
@@ -1150,7 +1148,7 @@ JAVASCRIPT;
       Html::closeForm();
       echo "</div>";
    }
-   
+
    /**
     *
     */
@@ -1163,7 +1161,7 @@ JAVASCRIPT;
       $this->fields['is_active'] = 1;
       $this->fields['use_locks'] = 1;
    }
-   
+
    /**
     * Print simple ocs config form (database part)
     *
@@ -1360,7 +1358,7 @@ JAVASCRIPT;
             return $value;
       }
    }
-   
+
    /**
     * check is one of the servers use_mass_import sync mode
     *
@@ -1957,12 +1955,12 @@ JAVASCRIPT;
 
             // Reset only if not in ocs id change case
             if (!$ocs_id_change) {
-            
+
                $changes[0] = '0';
                $changes[1] = "";
                $changes[2] = $ocsid;
                PluginOcsinventoryngOcslink::history($computers_id, $changes, PluginOcsinventoryngOcslink::HISTORY_OCS_LINK);
-               
+
                if ($ocsConfig["import_general_os"]) {
                   self::resetDropdown($computers_id, "operatingsystems_id", "glpi_operatingsystems");
                }
@@ -2373,7 +2371,7 @@ JAVASCRIPT;
          if (isset($ocs_fields[$ocs_section]) && is_array($ocs_fields[$ocs_section])) {
             if (array_key_exists($ocs_field, $ocs_fields[$ocs_section])) {
                $ocs_val = $ocs_fields[$ocs_section][$ocs_field];
-            } else if (isset($ocs_fields[$ocs_section][0]) 
+            } else if (isset($ocs_fields[$ocs_section][0])
                && array_key_exists($ocs_field, $ocs_fields[$ocs_section][0])) {
                $ocs_val = $ocs_fields[$ocs_section][0][$ocs_field];
             }
@@ -2937,7 +2935,7 @@ JAVASCRIPT;
                } else {
                   $ocsCheckResult = 0;
                }
-               
+
                if (!isset($ocsWanted)) {
                   $ocsWanted = 0;
                }
@@ -2950,7 +2948,7 @@ JAVASCRIPT;
                } else {
                   $ocsPluginsResult = 0;
                }
-               
+
                $import_options = array(
                   'DISPLAY' => array(
                      'CHECKSUM' => $ocsCheckResult,
@@ -2958,7 +2956,7 @@ JAVASCRIPT;
                      'PLUGINS'   => $ocsPluginsResult
                   ),
                );
-              
+
                $ocsComputer = $ocsClient->getComputer($line['ocsid'], $import_options);
 
                // Update Administrative informations
@@ -3074,27 +3072,27 @@ JAVASCRIPT;
                   //import antivirus entries
                   self::updateAntivirus($line['computers_id'], $ocsComputer["SECURITYCENTER"], $cfg_ocs);
                }
-               
+
                if ($winupdatestate && isset($ocsComputer["WINUPDATESTATE"])) {
                   //import winupdatestate entries
                   self::updateWinupdatestate($line['computers_id'], $ocsComputer["WINUPDATESTATE"], $cfg_ocs);
                }
-               
+
                if ($proxysetting && isset($ocsComputer["NAVIGATORPROXYSETTING"])) {
                   //import proxysetting entries
                   self::updateProxysetting($line['computers_id'], $ocsComputer["NAVIGATORPROXYSETTING"], $cfg_ocs);
                }
-               
+
                if ($winuser && isset($ocsComputer["WINUSERS"])) {
                   //import proxysetting entries
                   self::updateWinuser($line['computers_id'], $ocsComputer["WINUSERS"], $cfg_ocs);
                }
-               
+
                if ($teamviewer && isset($ocsComputer["TEAMVIEWER"])) {
                   //import teamviewer entries
                   self::updateTeamviewer($line['computers_id'], $ocsComputer["TEAMVIEWER"], $cfg_ocs);
                }
-               
+
                if ($uptime && isset($ocsComputer["UPTIME"])) {
                   //import uptime
                   self::updateUptime($line['id'], $ocsComputer["UPTIME"], $cfg_ocs);
@@ -3149,7 +3147,7 @@ JAVASCRIPT;
       $ocsServerId = $options['plugin_ocsinventoryng_ocsservers_id'];
       self::checkOCSconnection($ocsServerId);
       $ocsClient = self::getDBocs($ocsServerId);
-      
+
       $opts = array(
          'DISPLAY' => array(
             'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
@@ -3903,7 +3901,7 @@ JAVASCRIPT;
    {
       global $DB;
 
-      $query = "SELECT `$field`, `plugin_ocsinventoryng_ocsservers_id` 
+      $query = "SELECT `$field`, `plugin_ocsinventoryng_ocsservers_id`
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `computers_id` = '$computers_id'";
 
@@ -3946,7 +3944,7 @@ JAVASCRIPT;
 
       $newArray = addslashes(exportArrayToDB($newArray));
 
-      $query = "SELECT `$field`, `plugin_ocsinventoryng_ocsservers_id` 
+      $query = "SELECT `$field`, `plugin_ocsinventoryng_ocsservers_id`
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `computers_id` = '$computers_id'";
 
@@ -3979,7 +3977,7 @@ JAVASCRIPT;
    {
       global $DB;
 
-      $query = "SELECT `$field`, `plugin_ocsinventoryng_ocsservers_id` 
+      $query = "SELECT `$field`, `plugin_ocsinventoryng_ocsservers_id`
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `computers_id` = '$computers_id'";
 
@@ -4074,10 +4072,10 @@ JAVASCRIPT;
       if ($cfg_ocs["tag_exclude"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
          $computerOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
       }
-      
+
       $ocsClient = self::getDBocs($serverId);
       $allComputers = $ocsClient->countComputers($computerOptions);
-      
+
       if ($start != 0) {
          $computerOptions['OFFSET'] = $start;
       }
@@ -4172,7 +4170,7 @@ JAVASCRIPT;
                   echo "<table class='tab_cadrehov'>";
                //}
                echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
-               
+
                if ($tolinked) {
                   echo "<input class='submit' type='submit' name='import_ok' value=\"" .
                   _sx('button', 'Link', 'ocsinventoryng') . "\">";
@@ -4202,13 +4200,13 @@ JAVASCRIPT;
                   echo "<th width='30%'>" . __('Item to link', 'ocsinventoryng') . "</th>";
                }
                echo "</tr>\n";
-               
+
                $rule = new RuleImportEntityCollection();
                foreach ($hardware as $ID => $tab) {
                   //$comp = new Computer();
                   //$comp->fields["id"] = $tab["id"];
                   $data = array();
-                  
+
                   echo "<tr class='tab_bg_2'>";
                   //if (!$tolinked) {
                      echo "<td>";
@@ -4342,9 +4340,9 @@ JAVASCRIPT;
                            $options['entity'] = $entity;
                         }
                         $options['width'] = "100%";
-                        
+
                         if (isset($options['value']) && $options['value'] > 0) {
-                           
+
                            $query = "SELECT *
                                      FROM `glpi_plugin_ocsinventoryng_ocslinks`
                                      WHERE `computers_id` = '".$options['value']."' ";
@@ -5349,12 +5347,12 @@ JAVASCRIPT;
       global $DB;
 
       if ($cfg_ocs['history_devices']) {
-         
+
          $linktable = getTableForItemType('Item_' . $itemtype);
          if ($itemtype == "PluginOcsinventoryngDeviceBiosdata") {
             $linktable = getTableForItemType('PluginOcsinventoryngItem_DeviceBiosdata');
          }
-      
+
          $query = "DELETE
                             FROM `" . $linktable . "`
                             WHERE `items_id` = '" . $glpi_computers_id . "'
@@ -5452,7 +5450,7 @@ JAVASCRIPT;
 //      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
 //         'is_dynamic' => 1));
    }
-   
+
    /**
     * Delete old Winupdatestate entries
     *
@@ -5477,7 +5475,7 @@ JAVASCRIPT;
 //      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
 //         'is_dynamic' => 1));
    }
-   
+
    /**
     * Delete old Proxysetting entries
     *
@@ -5502,7 +5500,7 @@ JAVASCRIPT;
 //      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
 //         'is_dynamic' => 1));
    }
-   
+
    /**
     * Delete old Winuser entries
     *
@@ -5527,7 +5525,7 @@ JAVASCRIPT;
 //      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
 //         'is_dynamic' => 1));
    }
-   
+
    /**
     * Delete old Teamviewer entries
     *
@@ -5994,7 +5992,7 @@ JAVASCRIPT;
                   //---------------------------- Update comments ----------------------------//
                   //---------------------------------------------------- --------------------//
                   if (!empty($ocsOfficePack['OFFICEKEY'])) {
-                     if ($software_licenses->getFromDBByQuery("WHERE `softwares_id` = " . $softwares_id . " 
+                     if ($software_licenses->getFromDBByQuery("WHERE `softwares_id` = " . $softwares_id . "
                                                             AND `serial` = '" . $ocsOfficePack['OFFICEKEY'] . "'
                                                             AND `softwareversions_id_use` = " . $softwareversions_id)
                      ) {
@@ -6022,7 +6020,7 @@ JAVASCRIPT;
                   //---- The software doesn't exists in this license for this computer -----//
                   //------------------------------------------------------------------------//
                   if (!empty($ocsOfficePack['OFFICEKEY'])) {
-                     if ($software_licenses->getFromDBByQuery("WHERE `softwares_id` = " . $softwares_id . " 
+                     if ($software_licenses->getFromDBByQuery("WHERE `softwares_id` = " . $softwares_id . "
                                                            AND `serial` = '" . $ocsOfficePack['OFFICEKEY'] . "'
                                                            AND `softwareversions_id_use` = " . $softwareversions_id)
                      ) {
@@ -6038,7 +6036,7 @@ JAVASCRIPT;
                         $computer_soft_l['is_dynamic']          = 1;
                         $computer_soft_l['number']              = -1;
 
-                        if(!$computer_softwarelicenses->getFromDBByQuery("WHERE `computers_id` = $computers_id 
+                        if(!$computer_softwarelicenses->getFromDBByQuery("WHERE `computers_id` = $computers_id
                                                                          AND `softwarelicenses_id` = $id_software_licenses")) {
                            $computer_softwarelicenses->add($computer_soft_l);
                         }
@@ -6272,7 +6270,7 @@ JAVASCRIPT;
       $softwares = array();
       //---- Get all the softwares for this machine from OCS -----//
       $softwares = (isset($ocsComputer["SOFTWARES"])?$ocsComputer["SOFTWARES"]:array());
-      
+
       $soft = new Software();
 
       // Read imported software in last sync
@@ -6546,8 +6544,8 @@ JAVASCRIPT;
 
       return;
    }
-   
-   
+
+
    /**
     * Update config of the Winupdatestate
     *
@@ -6586,8 +6584,8 @@ JAVASCRIPT;
 
       return;
    }
-   
-   
+
+
    /**
     * Update config of the Proxysetting
     *
@@ -6631,8 +6629,8 @@ JAVASCRIPT;
       return;
 
    }
-   
-   
+
+
    /**
     * Update config of the WinUsers
     *
@@ -6664,14 +6662,14 @@ JAVASCRIPT;
          $input["description"] = $wuser["DESCRIPTION"];
          $input["disabled"] = $wuser["DISABLED"];
          $input["sid"] = $wuser["SID"];
-         
+
          $winusers->add($input, array('disable_unicity_check' => true), 0);
          unset($wusers->fields);
       }
 
       return;
    }
-   
+
    /**
     * Update config of the Teamviewer
     *
@@ -6701,7 +6699,7 @@ JAVASCRIPT;
 
       return;
    }
-   
+
    /**
     * @param $id
     * @param $ocsComputer
@@ -6910,7 +6908,7 @@ JAVASCRIPT;
 
    /**
     * cron Clean Old Agents
-    * 
+    *
     * @param $task
     * @return int
     */
@@ -6978,7 +6976,7 @@ JAVASCRIPT;
 
    /**
     * cron Restore Old Agents
-    * 
+    *
     * @global type $DB
     * @global type $CFG_GLPI
     * @param type $task
@@ -6998,17 +6996,17 @@ JAVASCRIPT;
 
       $cron_status                         = 0;
       $plugin_ocsinventoryng_ocsservers_id = 0;
-      foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers", 
+      foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers",
                            "`is_active` = 1 AND `use_cleancron` = 1 AND `use_restorationcron` = 1") as $config) {
          $plugin_ocsinventoryng_ocsservers_id = $config["id"];
          if ($plugin_ocsinventoryng_ocsservers_id > 0) {
             $delay = $config['delay_restorationcron'];
 
             $query = "SELECT `glpi_computers`.`id`
-                     FROM `glpi_computers` 
-                     INNER JOIN `glpi_plugin_ocsinventoryng_ocslinks` AS ocslink 
+                     FROM `glpi_computers`
+                     INNER JOIN `glpi_plugin_ocsinventoryng_ocslinks` AS ocslink
                         ON ocslink.`computers_id` = `glpi_computers`.`id`
-                     WHERE `glpi_computers`.`is_deleted` = 1 
+                     WHERE `glpi_computers`.`is_deleted` = 1
                      AND ( unix_timestamp(ocslink.`last_ocs_update`) >= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY))";
 
 
@@ -7577,6 +7575,7 @@ JAVASCRIPT;
                 LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
                 ON `glpi_plugin_ocsinventoryng_ocsservers`.`id` = `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id`
                 WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`is_active`='1'
+                      AND`profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . "
                 ORDER BY `glpi_plugin_ocsinventoryng_ocsservers`.`id` ASC LIMIT 1 ";
       $results = $DB->query($query);
       if ($DB->numrows($results) > 0) {
@@ -8059,11 +8058,11 @@ JAVASCRIPT;
       $already_processed = array();
       $p = new Peripheral();
       $conn = new Computer_Item();
-      
+
       $peripherals = array();
-      
+
       foreach ($ocsComputer as $peripheral) {
-         
+
          if ($peripheral["CAPTION"] !== '') {
             $peripherals[] = $peripheral;
          }
