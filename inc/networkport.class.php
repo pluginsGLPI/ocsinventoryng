@@ -195,7 +195,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
 
       if ($mask != ''
           && $gateway != ''
-          && $subnet != '') {
+          && $subnet != ''
+            && $subnet != '0.0.0.0') {
          $IPNetwork = new IPNetwork();
          if (countElementsInTable('glpi_ipnetworks',
                                   "`address`='" . $subnet . "'
@@ -212,6 +213,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
                'addressable' => 1,
                'entities_id' => $entities_id
             );
+
             $IPNetwork->networkUpdate = true;
             $IPNetwork->add($input, array(), !$dohistory);
          }
@@ -262,9 +264,6 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
       foreach ($ocsNetworks as $line) {
          $line    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
          $mac     = $line['MACADDR'];
-         $mask    = $line['IPMASK'];
-         $gateway = $line['IPGATEWAY'];
-         $subnet  = $line['IPSUBNET'];
          if (!isset($network_ports[$mac])) {
             $network_ports[$mac] = array('virtual' => array());
          }
@@ -355,6 +354,10 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
             }
             $inst_input['items_devicenetworkcards_id'] = $item_device->getID();
 
+            $mask    = $main['result']['IPMASK'];
+            $gateway = $main['result']['IPGATEWAY'];
+            $subnet  = $main['result']['IPSUBNET'];
+
             $networkports_id = self::updateNetworkPort($mac, $main['name'], $computers_id,
                $type->fields['instantiation_type'],
                $inst_input, $main['ip'], false,
@@ -370,6 +373,9 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
          }
 
          foreach ($ports['virtual'] as $port) {
+            $mask    = $port['result']['IPMASK'];
+            $gateway = $port['result']['IPGATEWAY'];
+            $subnet  = $port['result']['IPSUBNET'];
             $inst_input = array('networkports_id_alias' => $networkports_id);
             $id = self::updateNetworkPort($mac, $port['name'], $computers_id,
                'NetworkPortAlias', $inst_input, $port['ip'],
