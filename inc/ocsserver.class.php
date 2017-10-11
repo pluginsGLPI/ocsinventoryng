@@ -466,7 +466,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                          <br>" . __('Import new computers', 'ocsinventoryng') . "
                          </a></td>";
                 } else {
-                   echo "<td class='center b' colspan='2'>";
+                   echo "<td class='center b' colspan='2'></td>";
                 }
 
                 if ($usemassimport && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
@@ -495,7 +495,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                          <br>" . __('Synchronize computers already imported', 'ocsinventoryng') . "
                          </a></td>";
                 } else {
-                   echo "<td class='center b' colspan='2'>";
+                   echo "<td class='center b' colspan='2'></td>";
                 }
 
                 if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $usemassimport) {
@@ -525,7 +525,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                          <br>" . __('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng') . "
                          </a></td>";
                 } else {
-                   echo "<td class='center b' colspan='2'>";
+                   echo "<td class='center b' colspan='2'></td>";
                 }
 
                 if ($usemassimport && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
@@ -4208,20 +4208,22 @@ JAVASCRIPT;
                }
 
                echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
-               if (!$tolinked && $caneditimport) {
+               if ($caneditlink && $caneditimport) {
                   self::checkBox($target);
                }
                echo "<table class='tab_cadre_fixe'>";
+               echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
                if (($tolinked && $caneditlink)
-                    || (!$tolinked && $caneditimport)) {
-                  echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
+                  || (!$tolinked && $caneditimport)) {
+                  if (($tolinked && $caneditlink)) {
                   echo "<input class='submit' type='submit' name='import_ok' value=\"" .
-                  _sx('button', 'Link', 'ocsinventoryng') . "\">";
+                       _sx('button', 'Link', 'ocsinventoryng') . "\">";
                   echo "&nbsp;<input class='submit' type='submit' name='delete_link' value=\"" .
-                              _sx('button', 'Delete link', 'ocsinventoryng') . "\">";
-               } else {
+                       _sx('button', 'Delete link', 'ocsinventoryng') . "\">";
+                  } elseif (!$tolinked && $caneditimport) {
                   echo "<input class='submit' type='submit' name='import_ok' value=\"" .
-                  _sx('button', 'Import', 'ocsinventoryng') . "\">";
+                       _sx('button', 'Import', 'ocsinventoryng') . "\">";
+                  }
                }
                echo "</td></tr>\n";
                echo "<tr>";
