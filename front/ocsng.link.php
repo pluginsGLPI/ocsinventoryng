@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@
 
 include('../../../inc/includes.php');
 
-Session::checkRight("plugin_ocsinventoryng", UPDATE);
+Session::checkRight("plugin_ocsinventoryng_link", UPDATE);
 
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "link");
 
@@ -50,7 +50,7 @@ if (isset($_POST["change_import_mode"])) {
 }
 
 if (isset ($_POST["delete_link"])) {
-   
+
    $link = new PluginOcsinventoryngOcslink();
    if (isset($_POST["toimport"]) && (count($_POST['toimport']) > 0)) {
       foreach ($_POST['toimport'] as $key => $val) {
@@ -97,7 +97,7 @@ if (!isset($_POST["import_ok"])) {
       1);
 
 } else {
-   
+
    if (isset($_POST["toimport"]) && (count($_POST['toimport']) > 0)) {
       $_SESSION["ocs_link_count"] = 0;
 

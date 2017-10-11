@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -91,7 +91,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
 
          if (!empty($items_id)
             && $item->fields["is_dynamic"]
-            && Session::haveRight("plugin_ocsinventoryng_view", READ)
+            && Session::haveRight("plugin_ocsinventoryng_link", READ)
          ) {
             $query = "SELECT *
                       FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -145,7 +145,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                   echo $data["tag"];
                   echo "</td>";
 
-                  if (Session::haveRight("plugin_ocsinventoryng_view", READ)
+                  if (Session::haveRight("plugin_ocsinventoryng_link", READ)
                      && Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)
                   ) {
                      echo "<td>" . __('Automatic update OCSNG', 'ocsinventoryng') .
@@ -157,7 +157,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                      echo "<td colspan='2'></td>";
                   }
                   echo "</tr>";
-                  
+
                   if ($data['uptime'] != null) {
                      echo "<tr class='tab_bg_1'>";
                      echo "<td class='left'>";
@@ -169,9 +169,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                      echo "<td colspan='2'></td>";
                      echo "</tr>";
                   }
-                  
+
                   PluginOcsinventoryngTeamviewer::showForSimpleForItem($item);
-                  
+
                   echo "<tr class='tab_bg_1'>";
                   //If have write right on OCS and ocsreports url is not empty in OCS config
                   if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
@@ -261,7 +261,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
 
                if (!empty($items_id)
                   //&& $item->fields["is_dynamic"]
-                  && Session::haveRight("plugin_ocsinventoryng_view", READ)
+                  && Session::haveRight("plugin_ocsinventoryng_link", READ)
                ) {
                   $query = "SELECT *
                             FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
@@ -320,7 +320,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
 
          if (!empty($items_id)
             && $item->fields["is_dynamic"]
-            && Session::haveRight("plugin_ocsinventoryng_view", READ)
+            && Session::haveRight("plugin_ocsinventoryng_link", READ)
          ) {
 
             $query = "SELECT *
@@ -357,12 +357,14 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                   echo "</td>";
 
                   echo "<tr class='tab_bg_1'>";
-                  echo "<td class='left'>" . __('Automatic update OCSNG', 'ocsinventoryng') .
-                     "</td>";
-                  echo "<td class='left'>";
-                  Dropdown::showYesNo("use_auto_update", $data["use_auto_update"]);
-                  echo "</td>";
-                  
+                  if (Session::haveRight("plugin_ocsinventoryng_link", READ)
+                        && Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
+                     echo "<td class='left'>" . __('Automatic update OCSNG', 'ocsinventoryng') .
+                          "</td>";
+                     echo "<td class='left'>";
+                     Dropdown::showYesNo("use_auto_update", $data["use_auto_update"]);
+                     echo "</td>";
+                 }
                   echo "<td class='left'>";
                   echo __('Uptime', 'ocsinventoryng');
                   echo "</td>";
@@ -684,7 +686,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
    {
 
       if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))
-         && Session::haveRight("plugin_ocsinventoryng_view", READ)
+         && Session::haveRight("plugin_ocsinventoryng_link", READ)
       ) {
 
          switch ($item->getType()) {
