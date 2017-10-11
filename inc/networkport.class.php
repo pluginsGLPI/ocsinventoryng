@@ -65,8 +65,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
     */
    static private function updateNetworkPort($mac, $name, $computers_id, $instantiation_type,
                                              $inst_input, $ips, $check_name, $dohistory,
-                                             $already_known_ports)
-   {
+                                             $already_known_ports, $mask, $gateway, $subnet, $entities_id) {
       global $DB;
 
       $network_port = new NetworkPort();
@@ -193,6 +192,31 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
             }
          }
       }
+
+      if ($mask != ''
+          && $gateway != ''
+          && $subnet != '') {
+         $IPNetwork = new IPNetwork();
+         if (countElementsInTable('glpi_ipnetworks',
+                                  "`address`='" . $subnet . "'
+                                           AND `netmask`='" . $mask . "'
+                                           AND `gateway`='" . $gateway . "'
+                                           AND `entities_id`='" . $entities_id . "'") == 0) {
+            $input = array(
+               'name'        => $subnet . '/' .
+                                $mask . ' - ' .
+                                $gateway,
+               'network'     => $subnet . ' / ' .
+                                $mask,
+               'gateway'     => $gateway,
+               'addressable' => 1,
+               'entities_id' => $entities_id
+            );
+            $IPNetwork->networkUpdate = true;
+            $IPNetwork->add($input, array(), !$dohistory);
+         }
+      }
+
       if ($ips) {
          foreach ($ips as $ip) {
             $ip_input = array('name' => $ip,
@@ -236,8 +260,11 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
       $network_ports = array();
       $network_ifaces = array();
       foreach ($ocsNetworks as $line) {
-         $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
-         $mac = $line['MACADDR'];
+         $line    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
+         $mac     = $line['MACADDR'];
+         $mask    = $line['IPMASK'];
+         $gateway = $line['IPGATEWAY'];
+         $subnet  = $line['IPSUBNET'];
          if (!isset($network_ports[$mac])) {
             $network_ports[$mac] = array('virtual' => array());
          }
@@ -267,8 +294,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
          //    3°) if the networkport is issued by VMWare
          if (((isset($line['VIRTUALDEV'])) && ($line['VIRTUALDEV'] == '1'))
             || (isset($network_ports[$mac]['main']))
-            || (preg_match('/^vm(k|nic)([0-9]+)$/', $name))
-         ) {
+            || (preg_match('/^vm(k|nic)([0-9]+)$/', $name))) {
             $network_ports[$mac]['virtual'] [] = $values;
          } else {
             $network_ports[$mac]['main'] = $values;
@@ -332,7 +358,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
             $networkports_id = self::updateNetworkPort($mac, $main['name'], $computers_id,
                $type->fields['instantiation_type'],
                $inst_input, $main['ip'], false,
-               $cfg_ocs['history_network'], $already_known_ports);
+               $cfg_ocs['history_network'], $already_known_ports, $mask, $gateway, $subnet, $entities_id);
 
             if ($networkports_id < 0) {
                continue;
@@ -347,7 +373,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
             $inst_input = array('networkports_id_alias' => $networkports_id);
             $id = self::updateNetworkPort($mac, $port['name'], $computers_id,
                'NetworkPortAlias', $inst_input, $port['ip'],
-               true, $cfg_ocs['history_network'], $already_known_ports);
+               true, $cfg_ocs['history_network'], $already_known_ports, $mask, $gateway, $subnet, $entities_id);
             if ($id > 0) {
                $already_known_ports[] = $id;
             }

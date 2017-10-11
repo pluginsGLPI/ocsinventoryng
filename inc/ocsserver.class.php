@@ -285,8 +285,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
          $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
                    FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
                    LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
-                      ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
-                   WHERE `profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . " AND `glpi_plugin_ocsinventoryng_ocsservers`.`is_active`='1'
+                      ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id`
+                        = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
+                   WHERE `profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . "
+                         AND `glpi_plugin_ocsinventoryng_ocsservers`.`is_active`='1'
                    ORDER BY `name` ASC";
          foreach ($DB->request($query) as $data) {
             $ocsservers[] = $data['id'];
@@ -319,12 +321,13 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
       $usemassimport = self::useMassImport();
 
       echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
+
       echo "<tr><th colspan='4'>";
       printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
       echo "</th></tr>";
 
-
       if (Session::haveRight("plugin_ocsinventoryng", READ)) {
+
          //config server
          if ($isactive) {
             echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 2 : 4) . "'>
@@ -7617,6 +7620,7 @@ JAVASCRIPT;
                 LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
                 ON `glpi_plugin_ocsinventoryng_ocsservers`.`id` = `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id`
                 WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`is_active`='1'
+                      AND`profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . "
                 ORDER BY `glpi_plugin_ocsinventoryng_ocsservers`.`id` ASC LIMIT 1 ";
       $results = $DB->query($query);
       if ($DB->numrows($results) > 0) {
