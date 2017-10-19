@@ -752,10 +752,18 @@ function plugin_ocsinventoryng_install() {
                       "##notimported.url##&lt;/a&gt;&lt;br /&gt;##ENDFOREACHnotimported##&lt;/p&gt;');";
       $DB->queryOrDie($query, $DB->error());
 
-      $query = "INSERT INTO `glpi_notifications`
-                VALUES (NULL, 'Computers not imported', 0, 'PluginOcsinventoryngNotimportedcomputer',
-                        'not_imported', 'mail'," . $templates_id . ", '', 1, 1, NOW(), NOW());";
+      $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`, `is_active`)
+                VALUES ('Computers not imported', 0, 'PluginOcsinventoryngNotimportedcomputer', 'not_imported',  1, 1);";
       $DB->queryOrDie($query, $DB->error());
+
+      $query_id = "SELECT `id` FROM `glpi_notifications`
+               WHERE `name` = 'Computers not imported' AND `itemtype` = 'PluginOcsinventoryngNotimportedcomputer' AND `event` = 'not_imported'";
+      $result = $DB->query($query_id) or die ($DB->error());
+      $notification = $DB->result($result, 0, 'id');
+
+      $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+               VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
+      $DB->query($query);
 
    }
 
@@ -1044,11 +1052,18 @@ function plugin_ocsinventoryng_install() {
 &lt;/table&gt;');";
       $DB->queryOrDie($query, $DB->error());
       //Add notification
-      $query = "INSERT INTO `glpi_notifications`
-             (`name`, `entities_id`, `itemtype`, `event`, `mode`, `notificationtemplates_id`, `is_recursive`, `is_active`, `date_mod`, `date_creation`)
-             VALUES ('Check rule import entity', 0, 'PluginOcsinventoryngRuleImportEntity',
-                     'checkruleimportentity', 'mail'," . $templates_id . ", 1, 1, NOW(), NOW());";
+      $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`, `is_active`)
+             VALUES ('Check rule import entity', 0, 'PluginOcsinventoryngRuleImportEntity','checkruleimportentity', 1, 1);";
       $DB->queryOrDie($query, $DB->error());
+
+      $query_id = "SELECT `id` FROM `glpi_notifications`
+               WHERE `name` = 'Check rule import entity' AND `itemtype` = 'PluginOcsinventoryngRuleImportEntity' AND `event` = 'checkruleimportentity'";
+      $result = $DB->query($query_id) or die ($DB->error());
+      $notification = $DB->result($result, 0, 'id');
+
+      $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+               VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
+      $DB->query($query);
    }
 
    /*1.3.4*/
@@ -2765,10 +2780,18 @@ function plugin_ocsinventoryng_upgrademassocsimport14to15() {
                       "##notimported.url##&lt;/a&gt;&lt;br /&gt;##ENDFOREACHnotimported##&lt;/p&gt;');";
       $DB->queryOrDie($query, $DB->error());
 
-      $query = "INSERT INTO `glpi_notifications`
-                VALUES (NULL, 'Computers not imported', 0, 'PluginMassocsimportNotimported',
-                        'not_imported', 'mail'," . $templates_id . ", '', 1, 1, NOW(), NOW());";
+      $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`, `is_active`)
+                VALUES ('Computers not imported', 0, 'PluginMassocsimportNotimported', 'not_imported', 1, 1);";
       $DB->queryOrDie($query, $DB->error());
+
+      $query_id = "SELECT `id` FROM `glpi_notifications`
+               WHERE `name` = 'Computers not imported' AND `itemtype` = 'PluginMassocsimportNotimported' AND `event` = 'not_imported'";
+      $result = $DB->query($query_id) or die ($DB->error());
+      $notification = $DB->result($result, 0, 'id');
+
+      $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+               VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
+      $DB->query($query);
    }
    $migration->executeMigration();
 }
