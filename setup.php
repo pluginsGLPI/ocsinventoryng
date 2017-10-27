@@ -89,8 +89,17 @@ function plugin_init_ocsinventoryng() {
       if (class_exists('PluginOcsinventoryngTeamviewer')) {
          Link::registerTag(PluginOcsinventoryngTeamviewer::$tags);
       }
-
    }
+
+   if ($DB->tableExists('glpi_plugin_ocsinventoryng_osinstalls')) {
+      $PLUGIN_HOOKS['post_item_form']['ocsinventoryng'] = ['PluginOcsinventoryngOsinstall', 'showForItem_OperatingSystem'];
+   }
+
+   if ($DB->tableExists('glpi_plugin_ocsinventoryng_networkshares')) {
+      Plugin::registerClass('PluginOcsinventoryngNetworkshare',
+                            array('addtabon'   => 'Computer'));
+   }
+
    Plugin::registerClass('PluginOcsinventoryngOcsServer',
                          array('massiveaction_noupdate_types' => true,
                                'systeminformations_types'     => true));
@@ -171,7 +180,7 @@ function plugin_init_ocsinventoryng() {
 function plugin_version_ocsinventoryng() {
 
    return array('name'           => "OCS Inventory NG",
-                'version'        => '1.4.2',
+                'version'        => '1.4.3',
                 'author'         => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
                 'license'        => 'GPLv2+',
                 'homepage'       => 'https://github.com/pluginsGLPI/ocsinventoryng',

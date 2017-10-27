@@ -67,6 +67,8 @@ abstract class PluginOcsinventoryngOcsClient
    const PLUGINS_TEAMVIEWER = 0x00005;
    const PLUGINS_PROXYSETTING = 0x00006;
    const PLUGINS_WINUSERS = 0x00007;
+   const PLUGINS_OSINSTALL = 0x00008;
+   const PLUGINS_NETWORKSHARE = 0x00008;
    const PLUGINS_ALL = 0x00010;
    
    private $id;
@@ -455,6 +457,14 @@ abstract class PluginOcsinventoryngOcsClient
          'winupdatestate' => array(
             'plugins' => self::PLUGINS_WUPDATE,
             'multi' => 0,
+         ),
+         'osinstall' => array(
+            'plugins' => self::PLUGINS_OSINSTALL,
+            'multi' => 0,
+         ),
+         'networkshare' => array(
+            'plugins' => self::PLUGINS_NETWORKSHARE,
+            'multi' => 1,
          ),
          'navigatorproxysetting' => array(
             'plugins' => self::PLUGINS_PROXYSETTING,

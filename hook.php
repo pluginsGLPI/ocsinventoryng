@@ -43,7 +43,7 @@ function plugin_ocsinventoryng_install() {
    ) {
 
       $install = true;
-      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.4.0-empty.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.4.3-empty.sql");
 
       $migration->createRule(array('sub_type'     => 'RuleImportComputer',
                                    'entities_id'  => 0,
@@ -1149,6 +1149,51 @@ function plugin_ocsinventoryng_install() {
    $migration->dropTable("glpi_plugin_ocsinventoryng_devicebiosdatas");
    $migration->dropTable("glpi_plugin_ocsinventoryng_items_devicebios");
 
+   /*1.4.3*/
+   if ($DB->tableExists('glpi_plugin_ocsinventoryng_ocsservers')
+       && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_osinstall')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `import_osinstall` TINYINT(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.4.3 update table glpi_plugin_ocsinventoryng_ocsservers add import_osinstall");
+
+      $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_osinstalls` (
+              `id` INT(11) NOT NULL AUTO_INCREMENT,
+              `computers_id` INT(11) NOT NULL DEFAULT '0',
+              `entities_id` INT(11) NOT NULL DEFAULT '0',
+              `build_version` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `install_date` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `codeset` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `countrycode` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `oslanguage` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `curtimezone` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `locale` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              KEY `computers_id` (`computers_id`)
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+      $DB->queryOrDie($query, "1.4.3 create table glpi_plugin_ocsinventoryng_osinstalls");
+   }
+
+   if ($DB->tableExists('glpi_plugin_ocsinventoryng_ocsservers')
+       && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_networkshare')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `import_networkshare` TINYINT(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.4.3 update table glpi_plugin_ocsinventoryng_ocsservers add import_networkshare");
+
+      $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_networkshares` (
+              `id` INT(11) NOT NULL AUTO_INCREMENT,
+              `computers_id` INT(11) NOT NULL DEFAULT '0',
+              `entities_id` INT(11) NOT NULL DEFAULT '0',
+              `drive` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `path` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `size` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `freespace` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `quota` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              KEY `computers_id` (`computers_id`)
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+      $DB->queryOrDie($query, "1.4.3 create table glpi_plugin_ocsinventoryng_networkshares");
+   }
+
    $cron = new CronTask();
    if (!$cron->getFromDBbyName('PluginOcsinventoryngThread', 'CleanOldThreads')) {
       CronTask::Register('PluginOcsinventoryngThread', 'CleanOldThreads', HOUR_TIMESTAMP,
@@ -1479,14 +1524,14 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
 
             $sopt[10002]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
             $sopt[10002]['field']         = 'last_update';
-            $sopt[10002]['name']          = __('GLPI import date', 'ocsinventoryng');
+            $sopt[10002]['name']          = __('OCSNG', 'ocsinventoryng')." - ".__('GLPI import date', 'ocsinventoryng');
             $sopt[10002]['datatype']      = 'datetime';
             $sopt[10002]['massiveaction'] = false;
             $sopt[10002]['joinparams']    = array('jointype' => 'child');
 
             $sopt[10003]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
             $sopt[10003]['field']         = 'last_ocs_update';
-            $sopt[10003]['name']          = __('Last OCSNG inventory date', 'ocsinventoryng');
+            $sopt[10003]['name']          = __('OCSNG', 'ocsinventoryng')." - ".__('Last OCSNG inventory date', 'ocsinventoryng');
             $sopt[10003]['datatype']      = 'datetime';
             $sopt[10003]['massiveaction'] = false;
             $sopt[10003]['joinparams']    = array('jointype' => 'child');
@@ -1494,47 +1539,47 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
             $sopt[10001]['table']      = 'glpi_plugin_ocsinventoryng_ocslinks';
             $sopt[10001]['field']      = 'use_auto_update';
             $sopt[10001]['linkfield']  = '_auto_update_ocs'; // update through compter update process
-            $sopt[10001]['name']       = __('Automatic update OCSNG', 'ocsinventoryng');
+            $sopt[10001]['name']       = __('OCSNG', 'ocsinventoryng')." - ".__('Automatic update OCSNG', 'ocsinventoryng');
             $sopt[10001]['datatype']   = 'bool';
             $sopt[10001]['joinparams'] = array('jointype' => 'child');
 
             $sopt[10004]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
             $sopt[10004]['field']         = 'ocs_agent_version';
-            $sopt[10004]['name']          = __('Inventory agent', 'ocsinventoryng');
+            $sopt[10004]['name']          = __('OCSNG', 'ocsinventoryng')." - ".__('Inventory agent', 'ocsinventoryng');
             $sopt[10004]['massiveaction'] = false;
             $sopt[10004]['joinparams']    = array('jointype' => 'child');
 
             $sopt[10005]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
             $sopt[10005]['field']         = 'tag';
-            $sopt[10005]['name']          = __('OCSNG TAG', 'ocsinventoryng');
+            $sopt[10005]['name']          = __('OCSNG', 'ocsinventoryng')." - ".__('OCSNG TAG', 'ocsinventoryng');
             $sopt[10005]['datatype']      = 'string';
             $sopt[10005]['massiveaction'] = false;
             $sopt[10005]['joinparams']    = array('jointype' => 'child');
 
             $sopt[10006]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
             $sopt[10006]['field']         = 'ocsid';
-            $sopt[10006]['name']          = __('OCSNG ID', 'ocsinventoryng');
+            $sopt[10006]['name']          = __('OCSNG', 'ocsinventoryng')." - ".__('OCSNG ID', 'ocsinventoryng');
             $sopt[10006]['datatype']      = 'number';
             $sopt[10006]['massiveaction'] = false;
             $sopt[10006]['joinparams']    = array('jointype' => 'child');
 
             $sopt[10007]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
             $sopt[10007]['field']         = 'last_ocs_conn';
-            $sopt[10007]['name']          = __('Last OCSNG connection date', 'ocsinventoryng');
+            $sopt[10007]['name']          = __('OCSNG', 'ocsinventoryng')." - ".__('Last OCSNG connection date', 'ocsinventoryng');
             $sopt[10007]['datatype']      = 'date';
             $sopt[10007]['massiveaction'] = false;
             $sopt[10007]['joinparams']    = array('jointype' => 'child');
 
             $sopt[10008]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
             $sopt[10008]['field']         = 'ip_src';
-            $sopt[10008]['name']          = __('IP Source', 'ocsinventoryng');
+            $sopt[10008]['name']          = __('OCSNG', 'ocsinventoryng')." - ".__('IP Source', 'ocsinventoryng');
             $sopt[10008]['datatype']      = 'string';
             $sopt[10008]['massiveaction'] = false;
             $sopt[10008]['joinparams']    = array('jointype' => 'child');
 
             $sopt[10009]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
             $sopt[10009]['field']         = 'uptime';
-            $sopt[10009]['name']          = __('Uptime', 'ocsinventoryng');
+            $sopt[10009]['name']          = __('OCSNG', 'ocsinventoryng')." - ".__('Uptime', 'ocsinventoryng');
             $sopt[10009]['datatype']      = 'string';
             $sopt[10009]['massiveaction'] = false;
             $sopt[10009]['joinparams']    = array('jointype' => 'child');
@@ -1543,7 +1588,7 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
 
             $sopt[10010]['table']         = 'glpi_plugin_ocsinventoryng_registrykeys';
             $sopt[10010]['field']         = 'value';
-            $sopt[10010]['name']          = sprintf(__('%1$s: %2$s'), __('Registry',
+            $sopt[10010]['name']          = sprintf(__('%1$s: %2$s'), __('OCSNG', 'ocsinventoryng')." - ".__('Registry',
                                                                          'ocsinventoryng'), __('Key/Value',
                                                                                                'ocsinventoryng'));
             $sopt[10010]['forcegroupby']  = true;
@@ -1552,7 +1597,7 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
 
             $sopt[10011]['table']         = 'glpi_plugin_ocsinventoryng_registrykeys';
             $sopt[10011]['field']         = 'ocs_name';
-            $sopt[10011]['name']          = sprintf(__('%1$s: %2$s'), __('Registry',
+            $sopt[10011]['name']          = sprintf(__('%1$s: %2$s'), __('OCSNG', 'ocsinventoryng')." - ".__('Registry',
                                                                          'ocsinventoryng'), __('OCSNG name',
                                                                                                'ocsinventoryng'));
             $sopt[10011]['forcegroupby']  = true;
@@ -1561,7 +1606,7 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
 
             $sopt[10012]['table']         = 'glpi_plugin_ocsinventoryng_ocsservers';
             $sopt[10012]['field']         = 'name';
-            $sopt[10012]['name']          = __('OCSNG server', 'ocsinventoryng');
+            $sopt[10012]['name']          = __('OCSNG', 'ocsinventoryng')." - ".__('OCSNG server', 'ocsinventoryng');
             $sopt[10012]['forcegroupby']  = true;
             $sopt[10012]['massiveaction'] = false;
             $sopt[10012]['datatype']      = 'dropdown';
@@ -1571,7 +1616,7 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
 
             $sopt[10014]['table']         = 'glpi_plugin_ocsinventoryng_proxysettings';
             $sopt[10014]['field']         = 'enabled';
-            $sopt[10014]['name']          = __('Proxy enabled', 'ocsinventoryng');
+            $sopt[10014]['name']          = __('OCSNG', 'ocsinventoryng')." - ".__('Proxy enabled', 'ocsinventoryng');
             $sopt[10014]['forcegroupby']  = true;
             $sopt[10014]['massiveaction'] = false;
             //$sopt[10014]['datatype']      = 'dropdown';
@@ -1579,7 +1624,7 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
 
             $sopt[10015]['table']         = 'glpi_plugin_ocsinventoryng_proxysettings';
             $sopt[10015]['field']         = 'address';
-            $sopt[10015]['name']          = __('Proxy address', 'ocsinventoryng');
+            $sopt[10015]['name']          = __('OCSNG', 'ocsinventoryng')." - ".__('Proxy address', 'ocsinventoryng');
             $sopt[10015]['forcegroupby']  = true;
             $sopt[10015]['massiveaction'] = false;
             $sopt[10015]['joinparams']    = array('jointype' => 'child');
@@ -1590,7 +1635,7 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
 
             $sopt[10013]['table']         = 'glpi_plugin_ocsinventoryng_snmpocslinks';
             $sopt[10013]['field']         = 'last_update';
-            $sopt[10013]['name']          = __('SNMP Import', 'ocsinventoryng') . " - " . __('GLPI import date', 'ocsinventoryng');
+            $sopt[10013]['name']          = __('OCSNG', 'ocsinventoryng')." - ".__('SNMP Import', 'ocsinventoryng') . " - " . __('GLPI import date', 'ocsinventoryng');
             $sopt[10013]['datatype']      = 'datetime';
             $sopt[10013]['massiveaction'] = false;
             $sopt[10013]['joinparams']    = array('jointype' => 'itemtype_item');

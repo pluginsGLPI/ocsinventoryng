@@ -820,6 +820,22 @@ JAVASCRIPT;
       }
       echo "</tr>\n";
 
+      echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
+      echo __('No import: the plugin will not import these elements', 'ocsinventoryng');
+      echo "<br>" . __('Global import: everything is imported but the material is globally managed (without duplicate)', 'ocsinventoryng');
+      echo "<br>" . __("Unit import: everything is imported as it is", 'ocsinventoryng');
+      echo "</td></tr>";
+
+      echo "</table>";
+      echo "</div>";
+
+      //Linked objects
+
+      echo "<h2><a href='#'>" . __('OCS Inventory NG plugins', 'ocsinventoryng') . "</a></h2>";
+
+      echo "<div>";
+      echo "<table class='tab_cadre' width='100%'>";
+
       echo "<tr><th colspan='4'>" . __('OCS Inventory NG plugins', 'ocsinventoryng') . "</th>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Microsoft Office licenses', 'ocsinventoryng') . "</td>\n<td>";
@@ -858,13 +874,19 @@ JAVASCRIPT;
       Dropdown::showYesNo("import_winusers", $this->fields["import_winusers"]);
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Winusers Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/winusers) must be installed', 'ocsinventoryng')));
-      echo "&nbsp;</td><td class='center' colspan='2'></td></tr>\n";
+      echo "&nbsp;</td>\n";
+      echo "<td class='center'>" . __('OS Informations', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_osinstall", $this->fields["import_osinstall"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('OSInstall Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/osinstall) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
-      echo __('No import: the plugin will not import these elements', 'ocsinventoryng');
-      echo "<br>" . __('Global import: everything is imported but the material is globally managed (without duplicate)', 'ocsinventoryng');
-      echo "<br>" . __("Unit import: everything is imported as it is", 'ocsinventoryng');
-      echo "</td></tr>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Network shares', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_networkshare", $this->fields["import_networkshare"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Networkshare Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/networkshare) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td>\n";
+      echo "<td class='center'></td>\n<td></td></tr>\n";
 
       echo "</table>";
       echo "</div>";
@@ -2038,8 +2060,14 @@ JAVASCRIPT;
                if ($ocsConfig["import_winupdatestate"]) {
                   self::resetWinupdatestate($computers_id, $cfg_ocs);
                }
+               if ($ocsConfig["import_osinstall"]) {
+                  self::resetOSInstall($computers_id, $cfg_ocs);
+               }
                if ($ocsConfig["import_proxysetting"]) {
                   self::resetProxysetting($computers_id, $cfg_ocs);
+               }
+               if ($ocsConfig["import_networkshare"]) {
+                  self::resetNetworkshare($computers_id, $cfg_ocs);
                }
                if ($ocsConfig["import_winusers"]) {
                   self::resetWinuser($computers_id, $cfg_ocs);
@@ -2756,7 +2784,9 @@ JAVASCRIPT;
             $uptime          = false;
             $officepack      = false;
             $winupdatestate  = false;
+            $osinstall       = false;
             $proxysetting    = false;
+            $networkshare    = false;
             $winuser         = false;
             $teamviewer      = false;
             $virtualmachines = false;
@@ -2829,8 +2859,14 @@ JAVASCRIPT;
                if ($cfg_ocs["import_winupdatestate"]) {
                   self::resetWinupdatestate($line['computers_id'], $cfg_ocs);
                }
+               if ($cfg_ocs["import_osinstall"]) {
+                  self::resetOSInstall($line['computers_id'], $cfg_ocs);
+               }
                if ($cfg_ocs["import_proxysetting"]) {
                   self::resetProxysetting($line['computers_id'], $cfg_ocs);
+               }
+               if ($cfg_ocs["import_networkshare"]) {
+                  self::resetNetworkshare($line['computers_id'], $cfg_ocs);
                }
                if ($cfg_ocs["import_winusers"]) {
                   self::resetWinuser($line['computers_id'], $cfg_ocs);
@@ -2998,9 +3034,17 @@ JAVASCRIPT;
                   $winupdatestate = true;
                   $ocsPlugins[]   = PluginOcsinventoryngOcsClient::PLUGINS_WUPDATE;
                }
+               if ($cfg_ocs["import_osinstall"]) {
+                  $osinstall    = true;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_OSINSTALL;
+               }
                if ($cfg_ocs["import_proxysetting"]) {
                   $proxysetting = true;
                   $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_PROXYSETTING;
+               }
+               if ($cfg_ocs["import_networkshare"]) {
+                  $networkshare = true;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_NETWORKSHARE;
                }
                if ($cfg_ocs["import_winusers"]) {
                   $winuser      = true;
@@ -3166,12 +3210,20 @@ JAVASCRIPT;
                   //import winupdatestate entries
                   self::updateWinupdatestate($line['computers_id'], $ocsComputer["WINUPDATESTATE"], $cfg_ocs);
                }
+               if ($osinstall && isset($ocsComputer["OSINSTALL"])) {
+                  //import osinstall entries
+                  self::updateOSInstall($line['computers_id'], $ocsComputer["OSINSTALL"], $cfg_ocs);
+               }
                if ($proxysetting && isset($ocsComputer["NAVIGATORPROXYSETTING"])) {
                   //import proxysetting entries
                   self::updateProxysetting($line['computers_id'], $ocsComputer["NAVIGATORPROXYSETTING"], $cfg_ocs);
                }
+               if ($networkshare && isset($ocsComputer["NETWORKSHARE"])) {
+                  //import networkshare entries
+                  self::updateNetworkshare($line['computers_id'], $ocsComputer["NETWORKSHARE"], $cfg_ocs);
+               }
                if ($winuser && isset($ocsComputer["WINUSERS"])) {
-                  //import proxysetting entries
+                  //import winusers entries
                   self::updateWinuser($line['computers_id'], $ocsComputer["WINUSERS"], $cfg_ocs);
                }
                if ($teamviewer && isset($ocsComputer["TEAMVIEWER"])) {
@@ -5623,8 +5675,25 @@ JAVASCRIPT;
     */
    static function resetWinupdatestate($glpi_computers_id, $cfg_ocs) {
 
-      $av = new PluginOcsinventoryngWinupdate();
-      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+      $win = new PluginOcsinventoryngWinupdate();
+      $win->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+
+   }
+
+
+   /**
+    * Delete old osinstall entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    *
+    * @param $cfg_ocs
+    *
+    * @return nothing .
+    */
+   static function resetOSInstall($glpi_computers_id, $cfg_ocs) {
+
+      $os = new PluginOcsinventoryngOsinstall();
+      $os->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
 
    }
 
@@ -5639,8 +5708,24 @@ JAVASCRIPT;
     */
    static function resetProxysetting($glpi_computers_id, $cfg_ocs) {
 
-      $av = new PluginOcsinventoryngProxysetting();
-      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+      $proxy = new PluginOcsinventoryngProxysetting();
+      $proxy->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+
+   }
+
+   /**
+    * Delete old Networkshare entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    *
+    * @param $cfg_ocs
+    *
+    * @return nothing .
+    */
+   static function resetNetworkshare($glpi_computers_id, $cfg_ocs) {
+
+      $share = new PluginOcsinventoryngNetworkshare();
+      $share->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
 
    }
 
@@ -5655,8 +5740,8 @@ JAVASCRIPT;
     */
    static function resetWinuser($glpi_computers_id, $cfg_ocs) {
 
-      $av = new PluginOcsinventoryngWinuser();
-      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+      $wuser = new PluginOcsinventoryngWinuser();
+      $wuser->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
 
    }
 
@@ -6690,6 +6775,46 @@ JAVASCRIPT;
       return;
    }
 
+   /**
+    * Update config of the OSInstall
+    *
+    * This function erase old data and import the new ones about OSInstall
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $cfg_ocs array : ocs config
+    */
+   static function updateOSInstall($computers_id, $ocsComputer, $cfg_ocs) {
+
+      self::resetOSInstall($computers_id, $cfg_ocs);
+
+      $osinstall = new PluginOcsinventoryngOsinstall();
+      //update data
+      foreach ($ocsComputer as $osi) {
+
+         $os    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($osi));
+         $input = array();
+
+         $input["computers_id"] = $computers_id;
+         $computer              = new Computer;
+         if ($computer->getFromDB($computers_id)) {
+            $input["entities_id"] = $computer->fields['entities_id'];
+         }
+
+         $input["build_version"] = $os["BUILDVER"];
+         $input["install_date"]  = $os["INSTDATE"];
+         $input["codeset"]       = $os["CODESET"];
+         $input["countrycode"]   = $os["COUNTRYCODE"];
+         $input["oslanguage"]    = $os["OSLANGUAGE"];
+         $input["curtimezone"]   = $os["CURTIMEZONE"];
+         $input["locale"]        = $os["LOCALE"];
+         $osinstall->add($input, array('disable_unicity_check' => true), 0);
+         $osinstall->fields = [];
+      }
+
+      return;
+   }
+
 
    /**
     * Update config of the Proxysetting
@@ -6734,6 +6859,45 @@ JAVASCRIPT;
 
    }
 
+
+   /**
+    * Update config of the Networkshare
+    *
+    * This function erase old data and import the new ones about Networkshare
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $cfg_ocs array : ocs config
+    */
+   static function updateNetworkshare($computers_id, $ocsComputer, $cfg_ocs) {
+
+      self::resetNetworkshare($computers_id, $cfg_ocs);
+
+      $Shares = new PluginOcsinventoryngNetworkshare();
+
+      //update data
+      foreach ($ocsComputer as $share) {
+
+         $sha = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($share));
+         $input = array();
+
+         $input["computers_id"] = $computers_id;
+         $computer              = new Computer;
+         if ($computer->getFromDB($computers_id)) {
+            $input["entities_id"] = $computer->fields['entities_id'];
+         }
+         $input["drive"]   = $sha["DRIVE"];
+         $input["path"] = $sha["PATH"];
+         $input["size"] = $sha["SIZE"];
+         $input["freespace"] = $sha["FREESPACE"];
+         $input["quota"] = $sha["QUOTA"];
+         $Shares->add($input, array('disable_unicity_check' => true), 0);
+         $Shares->fields = [];
+      }
+
+      return;
+
+   }
 
    /**
     * Update config of the WinUsers
