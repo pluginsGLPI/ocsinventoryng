@@ -4227,7 +4227,7 @@ JAVASCRIPT;
                }
                echo "</td></tr>\n";
                echo "<tr>";
-               if ($caneditlink && $caneditimport) {
+               if ($caneditlink || $caneditimport) {
                   echo "<th width='5%'>&nbsp;</th>";
                }
                echo "<th>" . __('Name') . "</th>\n";
