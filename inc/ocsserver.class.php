@@ -4227,9 +4227,9 @@ JAVASCRIPT;
                }
                echo "</td></tr>\n";
                echo "<tr>";
-               //if (!$tolinked) {
+               if ($caneditlink && $caneditimport) {
                   echo "<th width='5%'>&nbsp;</th>";
-               //}
+               }
                echo "<th>" . __('Name') . "</th>\n";
                echo "<th>" . __('Manufacturer') . "</th>\n";
                echo "<th>" . __('Model') . "</th>\n";
