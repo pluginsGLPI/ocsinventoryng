@@ -3147,10 +3147,10 @@ JAVASCRIPT;
                   self::updateDevices("Item_DeviceMemory", $line['computers_id'], $ocsComputer['MEMORIES'], $cfg_ocs, $import_device, '');
                }
                if ($storages && isset($ocsComputer['STORAGES'])) {
-                  if ($storages["hdd"]) {
+                  if (isset($storages["hdd"]) && $storages["hdd"]) {
                      self::updateDevices("Item_DeviceHardDrive", $line['computers_id'], $ocsComputer['STORAGES'], $cfg_ocs, $import_device, '');
                   }
-                  if ($storages["drive"]) {
+                  if (isset($storages["drive"]) && $storages["drive"]) {
                      self::updateDevices("Item_DeviceDrive", $line['computers_id'], $ocsComputer['STORAGES'], $cfg_ocs, $import_device, '');
                   }
                }
