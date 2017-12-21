@@ -1250,7 +1250,6 @@ function plugin_ocsinventoryng_uninstall() {
    $tables = array("glpi_plugin_ocsinventoryng_ocsservers",
                    "glpi_plugin_ocsinventoryng_ocslinks",
                    "glpi_plugin_ocsinventoryng_ocsadmininfoslinks",
-                   "glpi_plugin_ocsinventoryng_profiles",
                    "glpi_plugin_ocsinventoryng_threads",
                    "glpi_plugin_ocsinventoryng_snmpocslinks",
                    "glpi_plugin_ocsinventoryng_ipdiscoverocslinks",
@@ -1265,14 +1264,23 @@ function plugin_ocsinventoryng_uninstall() {
                    "glpi_plugin_ocsinventoryng_networkports",
                    "glpi_plugin_ocsinventoryng_networkporttypes",
                    "glpi_plugin_ocsinventoryng_ocsservers_profiles",
-                   "glpi_plugin_ocsinventoryng_devicebiosdatas",
                    "glpi_plugin_ocsinventoryng_ruleimportentities",
-                   "glpi_plugin_ocsinventoryng_items_devicebiosdatas");
+                   "glpi_plugin_ocsinventoryng_osinstalls",
+                   "glpi_plugin_ocsinventoryng_networkshares",
+                   "glpi_plugin_ocsinventoryng_teamviewers");
 
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
    }
 
+      $old_tables = array("glpi_plugin_ocsinventoryng_profiles",
+                   "glpi_plugin_ocsinventoryng_devicebiosdatas",
+                   "glpi_plugin_ocsinventoryng_items_devicebiosdatas");
+
+   foreach ($old_tables as $table) {
+      $DB->query("DROP TABLE IF EXISTS `$table`;");
+   }
+   
    $tables_glpi = array("glpi_bookmarks", "glpi_displaypreferences", "glpi_logs");
 
    foreach ($tables_glpi as $table_glpi) {
@@ -1293,8 +1301,10 @@ function plugin_ocsinventoryng_uninstall() {
    foreach ($tables_ocs as $table_ocs) {
       $DB->query("DROP TABLE IF EXISTS `$table_ocs`;");
    }
-   $tables_mass = array("backup_glpi_plugin_massocsimport_configs", "backup_glpi_plugin_massocsimport_details",
-                        "backup_glpi_plugin_massocsimport_notimported", "backup_glpi_plugin_massocsimport_servers",
+   $tables_mass = array("backup_glpi_plugin_massocsimport_configs",
+                        "backup_glpi_plugin_massocsimport_details",
+                        "backup_glpi_plugin_massocsimport_notimported",
+                        "backup_glpi_plugin_massocsimport_servers",
                         "backup_glpi_plugin_massocsimport_threads");
 
    foreach ($tables_mass as $table_mass) {
