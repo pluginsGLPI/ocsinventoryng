@@ -29,7 +29,7 @@
 
 include('../../../inc/includes.php');
 
-Session::checkRight("plugin_ocsinventoryng", UPDATE);
+Session::checkRight("plugin_ocsinventoryng_import", READ);
 
 Html::header(__('Computers imported by automatic actions', 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "detail");
 
