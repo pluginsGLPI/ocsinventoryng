@@ -339,11 +339,13 @@ JAVASCRIPT;
 
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center' colspan='4'>";
-      echo "<input type='hidden' name='id' value='$ID'>";
-      echo "<input type='submit' name='updateSNMP' class='submit' value='" .
-         _sx('button', 'Save') . "'>";
-      echo "</td></tr>";
+      if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+         echo "<tr class='tab_bg_2'><td class='center' colspan='4'>";
+         echo "<input type='hidden' name='id' value='$ID'>";
+         echo "<input type='submit' name='updateSNMP' class='submit' value='" .
+              _sx('button', 'Save') . "'>";
+         echo "</td></tr>";
+      }
 
       echo "</table>\n";
       Html::closeForm();
