@@ -446,11 +446,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          //config server
          if ($isactive) {
 
-            if (Session::haveRight("plugin_ocsinventoryng_import", UPDATE)
-                || Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+            if (Session::haveRight("plugin_ocsinventoryng_import", READ)) {
                //manual import
                echo "<tr class='tab_bg_1'>";
-               if (Session::haveRight("plugin_ocsinventoryng_import", UPDATE)) {
+               if (Session::haveRight("plugin_ocsinventoryng_import", READ)) {
                   echo "<td class='center b' colspan='2'>
                   <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.import.php'>
                    <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' " .
@@ -474,8 +473,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                echo "</tr>\n";
             }
             //manual synchro
-            if (Session::haveRight("plugin_ocsinventoryng_sync", READ)
-                || Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+            if (Session::haveRight("plugin_ocsinventoryng_sync", READ)) {
                echo "<tr class='tab_bg_1'>";
                if (Session::haveRight("plugin_ocsinventoryng_sync", READ) && $isactive) {
                   echo "<td class='center b' colspan='2'>
@@ -488,7 +486,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                } else {
                   echo "<td class='center b' colspan='2'></td>";
                }
-               if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $usemassimport) {
+               if (Session::haveRight("plugin_ocsinventoryng_import", READ) && $usemassimport) {
                   //host imported by thread
                   echo "<td class='center b' colspan='2'>
                      <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/detail.php'>
@@ -501,11 +499,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                echo "</tr>\n";
             }
             //link
-            if (Session::haveRight("plugin_ocsinventoryng_link", UPDATE)
-                || Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+            if (Session::haveRight("plugin_ocsinventoryng_link", READ)
+                || Session::haveRight("plugin_ocsinventoryng", READ)) {
                echo "<tr class='tab_bg_1'>";
 
-               if (Session::haveRight("plugin_ocsinventoryng_link", UPDATE) && $isactive) {
+               if (Session::haveRight("plugin_ocsinventoryng_link", READ) && $isactive) {
                   echo "<td class='center b' colspan='2'>
                   <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.link.php'>
                    <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' " .
@@ -4249,14 +4247,15 @@ JAVASCRIPT;
    static function showComputersToAdd($serverId, $advanced, $check, $start, $entity = 0, $tolinked = false) {
       global $DB, $CFG_GLPI;
 
-      if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)
-          && !Session::haveRight("plugin_ocsinventoryng_import", UPDATE)
-          && !Session::haveRight("plugin_ocsinventoryng_link", UPDATE)) {
+      if (!Session::haveRight("plugin_ocsinventoryng", READ)
+          && !Session::haveRight("plugin_ocsinventoryng_import", READ)
+          && !Session::haveRight("plugin_ocsinventoryng_link", READ)) {
          return false;
       }
 
       $caneditimport = Session::haveRight('plugin_ocsinventoryng_import', UPDATE);
       $caneditlink   = Session::haveRight('plugin_ocsinventoryng_link', UPDATE);
+      $usecheckbox   = ($tolinked && $caneditlink) || (!$tolinked && $caneditimport);
 
       $title = __('Import new computers', 'ocsinventoryng');
       if ($tolinked) {
@@ -4389,15 +4388,24 @@ JAVASCRIPT;
                }
 
                echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
-               if ($caneditlink && $caneditimport) {
+               if ($usecheckbox) {
                   self::checkBox($target);
                }
                echo "<table class='tab_cadrehov'>";
 
-               echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
+               if ($usecheckbox) {
+                  $nb_cols = 6;
+                  if ($advanced && !$tolinked) {
+                     $nb_cols += 3;
+                  }
+                  if ($tolinked) {
+                     $nb_cols += 1;
+                  }
+                  if (($tolinked && $caneditlink) || (!$tolinked && $caneditimport)) {
+                     $nb_cols += 1;
+                  }
 
-               if (($tolinked && $caneditlink)
-                   || (!$tolinked && $caneditimport)) {
+                  echo "<tr class='tab_bg_1'><td colspan='" . $nb_cols . "' class='center'>";
                   if (($tolinked && $caneditlink)) {
                      echo "<input class='submit' type='submit' name='import_ok' value=\"" .
                           _sx('button', 'Link', 'ocsinventoryng') . "\">";
@@ -4410,9 +4418,9 @@ JAVASCRIPT;
                }
                echo "</td></tr>\n";
                echo "<tr>";
-               //if (!$tolinked) {
+               if ($usecheckbox) {
                echo "<th width='5%'>&nbsp;</th>";
-               //}
+               }
                echo "<th>" . __('Name') . "</th>\n";
                echo "<th>" . __('Manufacturer') . "</th>\n";
                echo "<th>" . __('Model') . "</th>\n";
@@ -4436,12 +4444,12 @@ JAVASCRIPT;
                   $data = array();
 
                   echo "<tr class='tab_bg_2'>";
-                  //if (!$tolinked) {
+                  if ($usecheckbox) {
                   echo "<td>";
                   echo "<input type='checkbox' name='toimport[" . $tab["id"] . "]' " .
                        ($check == "all" ? "checked" : "") . ">";
                   echo "</td>";
-                  //}
+                  }
                   if ($advanced && !$tolinked) {
                      $location = isset($tab["locations_id"]) ? $tab["locations_id"] : 0;
                      $data     = $rule->processAllRules(array('ocsservers_id' => $serverId,
@@ -4548,7 +4556,6 @@ JAVASCRIPT;
                      echo "<td  width='30%'>";
                      $tab['entities_id'] = $entity;
                      $rulelink           = new RuleImportComputerCollection();
-                     $rulelink_results   = array();
                      $params             = array('entities_id' => $entity,
                                                  'plugin_ocsinventoryng_ocsservers_id'
                                                                => $serverId);
@@ -4596,9 +4603,8 @@ JAVASCRIPT;
                   }
                   echo "</tr>\n";
                }
-               if (($tolinked && $caneditlink)
-                   || (!$tolinked && $caneditimport)) {
-                  echo "<tr class='tab_bg_1'><td colspan='" . (($advanced || $tolinked) ? 10 : 7) . "' class='center'>";
+               if ($usecheckbox) {
+                  echo "<tr class='tab_bg_1'><td colspan='" . $nb_cols . "' class='center'>";
                   if ($tolinked) {
                      echo "<input class='submit' type='submit' name='import_ok' value=\"" .
                           _sx('button', 'Link', 'ocsinventoryng') . "\">";
@@ -4615,9 +4621,9 @@ JAVASCRIPT;
                echo "</table>\n";
                Html::closeForm();
 
-               //if (!$tolinked) {
+               if ($usecheckbox) {
                self::checkBox($target);
-               //}
+               }
 
                Html::printPager($start, $numrows, $target, $parameters);
             } else {
