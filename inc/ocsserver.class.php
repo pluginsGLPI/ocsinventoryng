@@ -973,10 +973,12 @@ JAVASCRIPT;
 
       echo "</td></tr>\n";
 
+      if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
          echo "<tr class='tab_bg_2 center'><td colspan='4'>";
          echo "<input type='submit' name='update' class='submit' value=\"" .
               _sx('button', 'Save') . "\">";
          echo "</td></tr>\n";
+      }
       echo "</table>\n";
       Html::closeForm();
       echo "</div>\n";
@@ -1096,10 +1098,12 @@ JAVASCRIPT;
       Dropdown::showYesNo("history_admininfos", $this->fields["history_admininfos"]);
       echo "</td></tr>\n";
 
+      if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
          echo "<tr class='tab_bg_2 center'><td colspan='4'>";
          echo "<input type='submit' name='update' class='submit' value=\"" .
               _sx('button', 'Save') . "\">";
          echo "</td></tr>\n";
+      }
       echo "</table>\n";
       Html::closeForm();
       echo "</div>\n";
@@ -4441,10 +4445,10 @@ JAVASCRIPT;
 
                   echo "<tr class='tab_bg_2'>";
                   if ($usecheckbox) {
-                     echo "<td>";
-                     echo "<input type='checkbox' name='toimport[" . $tab["id"] . "]' " .
-                          ($check == "all" ? "checked" : "") . ">";
-                     echo "</td>";
+                  echo "<td>";
+                  echo "<input type='checkbox' name='toimport[" . $tab["id"] . "]' " .
+                       ($check == "all" ? "checked" : "") . ">";
+                  echo "</td>";
                   }
                   if ($advanced && !$tolinked) {
                      $location = isset($tab["locations_id"]) ? $tab["locations_id"] : 0;
@@ -4618,7 +4622,7 @@ JAVASCRIPT;
                Html::closeForm();
 
                if ($usecheckbox) {
-                  self::checkBox($target);
+               self::checkBox($target);
                }
 
                Html::printPager($start, $numrows, $target, $parameters);
