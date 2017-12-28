@@ -1094,6 +1094,16 @@ function plugin_ocsinventoryng_install()
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
       $DB->queryOrDie($query, "1.3.4 create table glpi_plugin_ocsinventoryng_winusers");
    }
+
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_user')) {
+
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `import_user` tinyint(1) NOT NULL DEFAULT '1',
+               ADD `import_user_location` tinyint(1) NOT NULL DEFAULT '1',
+               ADD `import_user_group` tinyint(1) NOT NULL DEFAULT '1';";
+      $DB->queryOrDie($query, "1.3.4 update table glpi_plugin_ocsinventoryng_ocsservers add user fields");
+   }
    
    $cron = new CronTask();
    if (!$cron->getFromDBbyName('PluginOcsinventoryngThread', 'CleanOldThreads')) {
