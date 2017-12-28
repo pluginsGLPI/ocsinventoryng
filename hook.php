@@ -1194,6 +1194,16 @@ function plugin_ocsinventoryng_install() {
       $DB->queryOrDie($query, "1.4.3 create table glpi_plugin_ocsinventoryng_networkshares");
    }
 
+   if ($DB->tableExists('glpi_plugin_ocsinventoryng_ocsservers')
+       && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_user')) {
+
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `import_user` tinyint(1) NOT NULL DEFAULT '1',
+               ADD `import_user_location` tinyint(1) NOT NULL DEFAULT '1',
+               ADD `import_user_group` tinyint(1) NOT NULL DEFAULT '1';";
+      $DB->queryOrDie($query, "1.4.3 update table glpi_plugin_ocsinventoryng_ocsservers add user fields");
+   }
+
    $cron = new CronTask();
    if (!$cron->getFromDBbyName('PluginOcsinventoryngThread', 'CleanOldThreads')) {
       CronTask::Register('PluginOcsinventoryngThread', 'CleanOldThreads', HOUR_TIMESTAMP,
