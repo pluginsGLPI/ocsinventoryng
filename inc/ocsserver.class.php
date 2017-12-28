@@ -2572,7 +2572,8 @@ JAVASCRIPT;
          )
       ));
 
-      $locations_id = 0;
+      $locations_id = 0; 
+      $groups_id    = 0; 
       $contact      = (isset($ocsComputer['META']["USERID"])) ? $ocsComputer['META']["USERID"] : "";
       if (!empty($contact) && $cfg_ocs["import_general_contact"] > 0) {
          $query  = "SELECT `id`
