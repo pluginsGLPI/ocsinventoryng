@@ -402,7 +402,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       }
       //echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an subnet', 'ocsinventoryng') .
       //"</th></tr>\n";
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Subnet', 'ocsinventoryng') . "</td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Subnet') . "</td>";
       echo "<td class='center'>";
       $tab = array('0' => Dropdown::EMPTY_VALUE,
          '1' => __('All Subnets', 'ocsinventoryng'),
@@ -1360,7 +1360,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
 
       $subnet_name = self::getSubnetNamebyIP($ipAdress);
       echo "<div class='center'>";
-      echo "<h2>" . __('Subnet', 'ocsinventoryng') . " " . $subnet_name . " (" . $ipAdress . ") - " . $status_name;
+      echo "<h2>" . __('Subnet') . " " . $subnet_name . " (" . $ipAdress . ") - " . $status_name;
       echo "&nbsp;";
       $refresh = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php?" . $reload;
       Html::showSimpleForm($refresh, 'refresh', _sx('button', 'Refresh'), array(), $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro.png");

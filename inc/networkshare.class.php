@@ -119,7 +119,7 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
 
          if ($result->numrows() != 0) {
 
-            $header = "<tr><th>" . __('Drive', 'ocsinventoryng') . "</th>";
+            $header = "<tr><th>" . _n('Drive', 'Drives', 1) . "</th>";
             $header .= "<th>" . __('Path', 'ocsinventoryng') . "</th>";
             $header .= "<th>" . __('Global size') . "</th>";
             $header .= "<th>" . __('Free size') . "</th>";
