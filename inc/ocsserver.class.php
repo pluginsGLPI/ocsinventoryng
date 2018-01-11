@@ -7378,6 +7378,8 @@ JAVASCRIPT;
    static function cronocsng($task) {
       global $DB;
 
+      $_SESSION["glpiname"] = 'ocsinventoryng';
+
       //Get a randon server id
       $plugin_ocsinventoryng_ocsservers_id = self::getRandomServerID();
       if ($plugin_ocsinventoryng_ocsservers_id > 0) {
