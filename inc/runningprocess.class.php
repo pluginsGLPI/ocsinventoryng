@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-class PluginOcsinventoryngNetworkshare extends CommonDBChild {
+class PluginOcsinventoryngRunningprocess extends CommonDBChild {
 
    // From CommonDBChild
    static public $itemtype = 'Computer';
@@ -40,7 +40,7 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
    static $rightname = "plugin_ocsinventoryng";
 
    static function getTypeName($nb = 0) {
-      return __('Network shares', 'ocsinventoryng');
+      return __('Running Process', 'ocsinventoryng');
    }
 
    function cleanDBonPurge() {
@@ -63,14 +63,15 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
          // can exists for template
          if (($item->getType() == 'Computer')
              && Computer::canView()
-             && $cfg_ocs["import_networkshare"]) {
+             && $cfg_ocs["import_runningprocess"]) {
             $nb = 0;
             if ($_SESSION['glpishow_count_on_tabs']) {
-               $nb = countElementsInTable('glpi_plugin_ocsinventoryng_networkshares',
+               $nb = countElementsInTable('glpi_plugin_ocsinventoryng_runningprocesses',
                                           "computers_id = '" . $item->getID() . "'");
             }
             return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
          }
+         return '';
       }
       return '';
    }
@@ -106,24 +107,24 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
           || !$comp->can($ID, READ)) {
          return false;
       }
-      $canedit = $comp->canEdit($ID);
 
       echo "<div class='spaced center'>";
 
-      if ($result = $DB->request('glpi_plugin_ocsinventoryng_networkshares', array('computers_id' => $ID, 'ORDER' => 'drive'))) {
+      if ($result = $DB->request('glpi_plugin_ocsinventoryng_runningprocesses',
+                                 array('computers_id' => $ID, 'ORDER' => 'processname'))) {
          echo "<table class='tab_cadre_fixehov'>";
-         $colspan = 6;
-         echo "<tr class='noHover'><th colspan='$colspan'>" . self::getTypeName($result->numrows()) .
+         echo "<tr class='noHover'><th colspan='7'>" . self::getTypeName($result->numrows()) .
               "</th></tr>";
 
          if ($result->numrows() != 0) {
 
-            $header = "<tr><th>" . _n('Drive', 'Drives', 1) . "</th>";
-            $header .= "<th>" . __('Path', 'ocsinventoryng') . "</th>";
-            $header .= "<th>" . __('Global size') . "</th>";
-            $header .= "<th>" . __('Free size') . "</th>";
-            $header .= "<th>".__('Free percentage')."</th>";
-            $header .= "<th>" . __('Quota', 'ocsinventoryng') . "</th>";
+            $header = "<tr><th>" . __('Process name', 'ocsinventoryng') . "</th>";
+            $header .= "<th>" . __('Process ID', 'ocsinventoryng') . "</th>";
+            $header .= "<th>" . __('User') . "</th>";
+            $header .= "<th>" . sprintf(__('%1$s (%2$s)'),__('Process memory', 'ocsinventoryng'), __('Mio')) . "</th>";
+            $header .= "<th>" . __('Command line', 'ocsinventoryng') . "</th>";
+            $header .= "<th>" . __('Description') . "</th>";
+            $header .= "<th>" . __('Company', 'ocsinventoryng') . "</th>";
             $header .= "</tr>";
             echo $header;
 
@@ -135,30 +136,19 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
 
             foreach ($result as $data) {
                echo "<tr class='tab_bg_2'>";
-               echo "<td>" . $data['drive'] . "</td>";
-               echo "<td>" . $data['path'] . "</td>";
-               $tmp = Toolbox::getSize(str_replace(",",".", $data['size']) * 1024 * 1024 * 1024 * 1024);
-               echo "<td>" . $tmp . "</td>";
-               $tmp = Toolbox::getSize(str_replace(",",".", $data['freespace']) * 1024 * 1024 * 1024 * 1024);
-               echo "<td>" . $tmp . "</td>";
-
-               echo "<td>";
-               $percent = 0;
-               $total = str_replace(",",".", $data['size']);
-               $free = str_replace(",",".", $data['freespace']);
-               if ($total > 0) {
-                  $percent = round(100*$free/$total);
-               }
-               Html::displayProgressBar('100', $percent, ['simple'       => true,
-                                                          'forcepadding' => false]);
-               echo "</td>";
-               echo "<td>" . $data['quota'] . "</td>";
+               echo "<td>" . $data['processname'] . "</td>";
+               echo "<td>" . $data['processid'] . "</td>";
+               echo "<td>" . $data['username'] . "</td>";
+               echo "<td>" . $data['processmemory'] . "</td>";
+               echo "<td>" . $data['commandline'] . "</td>";
+               echo "<td>" . $data['description'] . "</td>";
+               echo "<td>" . $data['company'] . "</td>";
                echo "</tr>";
                Session::addToNavigateListItems(__CLASS__, $data['id']);
             }
             echo $header;
          } else {
-            echo "<tr class='tab_bg_2'><th colspan='$colspan'>" . __('No item found') . "</th></tr>";
+            echo "<tr class='tab_bg_2'><th colspan='7'>" . __('No item found') . "</th></tr>";
          }
 
          echo "</table>";
