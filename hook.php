@@ -1333,9 +1333,7 @@ function plugin_ocsinventoryng_uninstall() {
                    "glpi_plugin_ocsinventoryng_networkshares",
                    "glpi_plugin_ocsinventoryng_runningprocesses",
                    "glpi_plugin_ocsinventoryng_services",
-                   "glpi_plugin_ocsinventoryng_teamviewers",
-                   "glpi_plugin_ocsinventoryng_runningprocesses",
-                   "glpi_plugin_ocsinventoryng_services");
+                   "glpi_plugin_ocsinventoryng_teamviewers");
 
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
