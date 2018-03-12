@@ -125,6 +125,16 @@ function plugin_init_ocsinventoryng()
    Plugin::registerClass('PluginOcsinventoryngSnmpOcslink',
       array('addtabon' => array('Computer', 'Printer', 'NetworkEquipment', 'Peripheral', 'Phone')));
 
+   if (TableExists('glpi_plugin_ocsinventoryng_runningprocesses')) {
+      Plugin::registerClass('PluginOcsinventoryngRunningprocess',
+                            array('addtabon'   => 'Computer'));
+   }
+
+   if (TableExists('glpi_plugin_ocsinventoryng_services')) {
+      Plugin::registerClass('PluginOcsinventoryngService',
+                            array('addtabon'   => 'Computer'));
+   }
+
    // transfer
    $PLUGIN_HOOKS['item_transfer']['ocsinventoryng'] = "plugin_ocsinventoryng_item_transfer";
 
@@ -179,7 +189,7 @@ function plugin_version_ocsinventoryng()
 {
 
    return array('name' => "OCS Inventory NG",
-      'version' => '1.3.5',
+      'version' => '1.3.6',
       'author' => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
       'license' => 'GPLv2+',
       'homepage' => 'https://github.com/pluginsGLPI/ocsinventoryng',

@@ -35,8 +35,7 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginOcsinventoryngOcsServer
  */
-class PluginOcsinventoryngOcsServer extends CommonDBTM
-{
+class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
    static $types = array('Computer');
    static $rightname = "plugin_ocsinventoryng";
@@ -898,6 +897,16 @@ JAVASCRIPT;
       Dropdown::showYesNo("import_winusers", $this->fields["import_winusers"]);
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Winusers Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/winusers) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td><td class='center'>" . __('Service', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_service", $this->fields["import_service"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Service Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/services) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td></tr>\n";
+
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Running Process', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_runningprocess", $this->fields["import_runningprocess"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Running Process Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/runningProcess) must be installed', 'ocsinventoryng')));
       echo "&nbsp;</td><td class='center' colspan='2'></td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
@@ -2105,6 +2114,12 @@ JAVASCRIPT;
                if ($ocsConfig["import_officepack"]) {
                   self::resetOfficePack($computers_id);
                }
+               if ($ocsConfig["import_service"]) {
+                  self::resetService($computers_id, $cfg_ocs);
+               }
+               if ($ocsConfig["import_runningprocess"]) {
+                  self::resetRunningProcess($computers_id, $cfg_ocs);
+               }
                $changes[0] = '0';
                $changes[1] = "";
                $changes[2] = $ocsid;
@@ -2763,6 +2778,7 @@ JAVASCRIPT;
             } else {
 
                $locations_id = 0;
+               $groups_id = 0;
                $contact = (isset($computer['META']["USERID"])) ? $computer['META']["USERID"] : "";
                if (!empty($contact) && $cfg_ocs["import_general_contact"] > 0) {
                   $query = "SELECT `id`
@@ -2815,33 +2831,35 @@ JAVASCRIPT;
             $mixed_checksum = intval($ocs_checksum) & intval($cfg_ocs["checksum"]);
 
             // Is an update to do ?
-            $bios = false;
-            $memories = false;
-            $storages = array();
-            $cpus = false;
-            $hardware = false;
-            $videos = false;
-            $sounds = false;
-            $networks = false;
-            $modems = false;
-            $ports = false;
-            $monitors = false;
-            $printers = false;
-            $inputs = false;
-            $softwares = false;
-            $drives = false;
-            $registry = false;
-            $antivirus = false;
-            $uptime = false;
-            $officepack = false;
-            $winupdatestate = false;
-            $proxysetting = false;
-            $winuser = false;
-            $teamviewer = false;
+            $bios            = false;
+            $memories        = false;
+            $storages        = array();
+            $cpus            = false;
+            $hardware        = false;
+            $videos          = false;
+            $sounds          = false;
+            $networks        = false;
+            $modems          = false;
+            $ports           = false;
+            $monitors        = false;
+            $printers        = false;
+            $inputs          = false;
+            $softwares       = false;
+            $drives          = false;
+            $registry        = false;
+            $antivirus       = false;
+            $uptime          = false;
+            $officepack      = false;
+            $winupdatestate  = false;
+            $proxysetting    = false;
+            $winuser         = false;
+            $teamviewer      = false;
             $virtualmachines = false;
-            $mb = false;
-            $controllers = false;
-            $slots = false;
+            $mb              = false;
+            $controllers     = false;
+            $slots           = false;
+            $service         = false;
+            $runningprocess  = false;
 
             if ($mixed_checksum) {
 
@@ -3010,6 +3028,14 @@ JAVASCRIPT;
                if ($cfg_ocs["import_teamviewer"]) {
                   $teamviewer = true;
                   $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_TEAMVIEWER;
+               }
+               if ($cfg_ocs["import_runningprocess"]) {
+                  $runningprocess = true;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_RUNNINGPROCESS;
+               }
+               if ($cfg_ocs["import_service"]) {
+                  $service = true;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_SERVICE;
                }
                if ($mixed_checksum & pow(2, self::VIRTUALMACHINES_FL)) {
                   //no vm in ocs before 1.3
@@ -3193,6 +3219,15 @@ JAVASCRIPT;
                if ($virtualmachines && isset($ocsComputer["VIRTUALMACHINES"])) {
                   // Get import vm
                   self::updateVirtualMachines($line['computers_id'], $ocsComputer["VIRTUALMACHINES"], $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs);
+               }
+
+               if ($runningprocess && isset($ocsComputer["RUNNINGPROCESS"])) {
+                  //import runningprocess entries
+                  self::updateRunningprocess($line['computers_id'], $ocsComputer["RUNNINGPROCESS"], $cfg_ocs);
+               }
+               if ($service && isset($ocsComputer["SERVICE"])) {
+                  //import service entries
+                  self::updateService($line['computers_id'], $ocsComputer["SERVICE"], $cfg_ocs);
                }
             }
             //Update TAG
@@ -5896,6 +5931,38 @@ JAVASCRIPT;
    }
 
    /**
+    * Delete old Services entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    *
+    * @param $cfg_ocs
+    *
+    * @return nothing .
+    */
+   static function resetService($glpi_computers_id, $cfg_ocs) {
+
+      $service = new PluginOcsinventoryngService();
+      $service->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+
+   }
+
+   /**
+    * Delete old Runningprocess entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    *
+    * @param $cfg_ocs
+    *
+    * @return nothing .
+    */
+   static function resetRunningProcess($glpi_computers_id, $cfg_ocs) {
+
+      $runningprocess = new PluginOcsinventoryngRunningprocess();
+      $runningprocess->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+
+   }
+
+   /**
     * Update config of a new version
     *
     * This function create a new software in GLPI with some general datas.
@@ -6820,6 +6887,64 @@ JAVASCRIPT;
             $DB->query($query);
          }
       }
+   }
+
+   /**
+    * Update config of the Runningprocess
+    *
+    * This function erase old data and import the new ones about Runningprocess
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $cfg_ocs array : ocs config
+    */
+   static function updateRunningprocess($computers_id, $ocsComputer, $cfg_ocs) {
+
+      self::resetRunningProcess($computers_id, $cfg_ocs);
+
+      $Runningprocess = new PluginOcsinventoryngRunningprocess();
+
+      //update data
+      foreach ($ocsComputer as $runningprocess) {
+
+         $process = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($runningprocess));
+         $input = array_change_key_case($process, CASE_LOWER);
+         $input["computers_id"] = $computers_id;
+
+         $Runningprocess->add($input, array('disable_unicity_check' => true), 0);
+         $Runningprocess->fields = [];
+      }
+
+      return;
+   }
+
+   /**
+    * Update config of the Service
+    *
+    * This function erase old data and import the new ones about Service
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $cfg_ocs array : ocs config
+    */
+   static function updateService($computers_id, $ocsComputer, $cfg_ocs) {
+
+      self::resetService($computers_id, $cfg_ocs);
+
+      $Service = new PluginOcsinventoryngService();
+
+      //update data
+      foreach ($ocsComputer as $service) {
+
+         $service = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($service));
+         $input = array_change_key_case($service, CASE_LOWER);
+         $input["computers_id"] = $computers_id;
+
+         $Service->add($input, array('disable_unicity_check' => true), 0);
+         $Service->fields = [];
+      }
+
+      return;
    }
 
    /**

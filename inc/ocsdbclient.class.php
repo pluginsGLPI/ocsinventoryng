@@ -221,7 +221,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
       $version = $this->getConfig("GUI_VERSION");
 
       foreach ($DATA_MAP as $table => $value) {
-
          if ($table == "dico_soft") {
             continue;
          }
@@ -404,6 +403,43 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DETECTSUCCESSTIME"] = $meta["DETECTSUCCESSTIME"];
                $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DOWNLOADSUCCESSTIME"] = $meta["DOWNLOADSUCCESSTIME"];
 
+            }
+
+         } elseif (self::OcsTableExists("runningprocess") && $table == "runningprocess") {
+            $query   = "SELECT `runningprocess`.* FROM `hardware`
+            INNER JOIN `runningprocess` ON (`hardware`.`id` = `runningprocess`.`HARDWARE_ID`)
+            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") ";
+            $request = $this->db->query($query);
+            while ($meta = $this->db->fetch_assoc($request)) {
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["CPUUSAGE"]      = $meta["CPUUSAGE"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["TTY"]           = $meta["TTY"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["STARTED"]       = $meta["STARTED"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["VIRTUALMEMORY"] = $meta["VIRTUALMEMORY"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PROCESSNAME"]   = $meta["PROCESSNAME"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PROCESSID"]     = $meta["PROCESSID"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["USERNAME"]      = $meta["USERNAME"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PROCESSMEMORY"] = $meta["PROCESSMEMORY"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["COMMANDLINE"]   = $meta["COMMANDLINE"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DESCRIPTION"]   = $meta["DESCRIPTION"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["COMPANY"]       = $meta["COMPANY"];
+            }
+
+         } elseif (self::OcsTableExists("service") && $table == "service") {
+
+            $query   = "SELECT `service`.* FROM `hardware`
+            INNER JOIN `service` ON (`hardware`.`id` = `service`.`HARDWARE_ID`)
+            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") ";
+            $request = $this->db->query($query);
+            while ($meta = $this->db->fetch_assoc($request)) {
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCNAME"]         = $meta["SVCNAME"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCDN"]           = $meta["SVCDN"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSTATE"]        = $meta["SVCSTATE"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCDESC"]         = $meta["SVCDESC"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSTARTMODE"]    = $meta["SVCSTARTMODE"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCPATH"]         = $meta["SVCPATH"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSTARTNAME"]    = $meta["SVCSTARTNAME"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCEXITCODE"]     = $meta["SVCEXITCODE"];
+               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSPECEXITCODE"] = $meta["SVCSPECEXITCODE"];
             }
 
          } elseif ($table == "hardware") {

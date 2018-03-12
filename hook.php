@@ -953,7 +953,7 @@ function plugin_ocsinventoryng_install()
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
       $DB->queryOrDie($query, "1.3.2 create table glpi_plugin_ocsinventoryng_winupdates");
    }
-   /*1.3.3*/
+   /******************* Migration 1.3.3 *******************/
    if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
        && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','use_checkruleimportentity')) {
       $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_ruleimportentities` (
@@ -992,8 +992,10 @@ function plugin_ocsinventoryng_install()
                  PRIMARY KEY (`id`),
                  KEY `computers_id` (`computers_id`)
                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
-      $DB->queryOrDie($query, "1.3.2 create table glpi_plugin_ocsinventoryng_teamviewers");
+      $DB->queryOrDie($query, "1.3.3 create table glpi_plugin_ocsinventoryng_teamviewers");
    }
+
+   /******************* Migration 1.4.3 *******************/
    
    //add notification
    $query  = "SELECT `id`
@@ -1051,8 +1053,8 @@ function plugin_ocsinventoryng_install()
                      'checkruleimportentity', 'mail'," . $templates_id . ", 1, 1, NOW(), NOW());";
       $DB->queryOrDie($query, $DB->error());
    }
-   
-   /*1.3.4*/
+
+   /******************* Migration 1.3.4 *******************/
    if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
        && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers','import_proxysetting')) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
@@ -1104,6 +1106,59 @@ function plugin_ocsinventoryng_install()
                ADD `import_user_group` tinyint(1) NOT NULL DEFAULT '1';";
       $DB->queryOrDie($query, "1.3.4 update table glpi_plugin_ocsinventoryng_ocsservers add user fields");
    }
+   /******************* Migration 1.3.4 *******************/
+
+   /******************* Migration 1.3.6 *******************/
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_runningprocess')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `import_runningprocess` TINYINT(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.3.6 update table glpi_plugin_ocsinventoryng_ocsservers add import_runningprocess");
+
+      $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_runningprocesses` (
+                  `id` INT(11) NOT NULL AUTO_INCREMENT,
+                  `computers_id` INT(11) NOT NULL DEFAULT '0',
+                  `cpuusage` VARCHAR(255) DEFAULT NULL,
+                  `tty` VARCHAR(255) DEFAULT NULL,
+                  `started` VARCHAR(15) DEFAULT NULL,
+                  `virtualmemory` VARCHAR(255) DEFAULT NULL,
+                  `processname` VARCHAR(255) DEFAULT NULL,
+                  `processid` VARCHAR(255) DEFAULT NULL,
+                  `username` VARCHAR(255) DEFAULT NULL,
+                  `processmemory` VARCHAR(255) DEFAULT NULL,
+                  `commandline` VARCHAR(255) DEFAULT NULL,
+                  `description` VARCHAR(255) DEFAULT NULL,
+                  `company` VARCHAR(255) DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              KEY `computers_id` (`computers_id`)
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+      $DB->queryOrDie($query, "1.3.6 create table glpi_plugin_ocsinventoryng_runningprocesses");
+   }
+
+   if (TableExists('glpi_plugin_ocsinventoryng_ocsservers')
+       && !FieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_service')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `import_service` TINYINT(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.3.6 update table glpi_plugin_ocsinventoryng_ocsservers add import_service");
+
+      $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_services` (
+                  `id` INT(11) NOT NULL AUTO_INCREMENT,
+                  `computers_id` INT(11) NOT NULL DEFAULT '0',
+                  `svcname` VARCHAR(128) NOT NULL, 
+                  `svcdn` VARCHAR(255) NOT NULL, 
+                  `svcstate` VARCHAR(32) DEFAULT NULL, 
+                  `svcdesc` VARCHAR(1536) DEFAULT NULL, 
+                  `svcstartmode` VARCHAR(32) DEFAULT NULL, 
+                  `svcpath` VARCHAR(512) DEFAULT NULL,
+                  `svcstartname` VARCHAR(128) DEFAULT NULL, 
+                  `svcexitcode` INTEGER DEFAULT NULL, 
+                  `svcspecexitcode` INTEGER DEFAULT NULL, 
+              PRIMARY KEY (`id`),
+              KEY `computers_id` (`computers_id`)
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+      $DB->queryOrDie($query, "1.3.6 create table glpi_plugin_ocsinventoryng_services");
+   }
+   /******************* Migration 1.3.6 *******************/
    
    $cron = new CronTask();
    if (!$cron->getFromDBbyName('PluginOcsinventoryngThread', 'CleanOldThreads')) {
@@ -1160,26 +1215,28 @@ function plugin_ocsinventoryng_uninstall()
    include_once(GLPI_ROOT . "/plugins/ocsinventoryng/inc/menu.class.php");
 
    $tables = array("glpi_plugin_ocsinventoryng_ocsservers",
-      "glpi_plugin_ocsinventoryng_ocslinks",
-      "glpi_plugin_ocsinventoryng_ocsadmininfoslinks",
-      "glpi_plugin_ocsinventoryng_profiles",
-      "glpi_plugin_ocsinventoryng_threads",
-      "glpi_plugin_ocsinventoryng_snmpocslinks",
-      "glpi_plugin_ocsinventoryng_ipdiscoverocslinks",
-      "glpi_plugin_ocsinventoryng_servers",
-      "glpi_plugin_ocsinventoryng_configs",
-      "glpi_plugin_ocsinventoryng_notimportedcomputers",
-      "glpi_plugin_ocsinventoryng_details",
-      "glpi_plugin_ocsinventoryng_registrykeys",
-      "glpi_plugin_ocsinventoryng_winupdates",
-      "glpi_plugin_ocsinventoryng_proxysettings",
-      "glpi_plugin_ocsinventoryng_winusers",
-      "glpi_plugin_ocsinventoryng_networkports",
-      "glpi_plugin_ocsinventoryng_networkporttypes",
-      "glpi_plugin_ocsinventoryng_ocsservers_profiles",
-      "glpi_plugin_ocsinventoryng_devicebiosdatas",
-      "glpi_plugin_ocsinventoryng_ruleimportentities",
-      "glpi_plugin_ocsinventoryng_items_devicebiosdatas");
+                   "glpi_plugin_ocsinventoryng_ocslinks",
+                   "glpi_plugin_ocsinventoryng_ocsadmininfoslinks",
+                   "glpi_plugin_ocsinventoryng_profiles",
+                   "glpi_plugin_ocsinventoryng_threads",
+                   "glpi_plugin_ocsinventoryng_snmpocslinks",
+                   "glpi_plugin_ocsinventoryng_ipdiscoverocslinks",
+                   "glpi_plugin_ocsinventoryng_servers",
+                   "glpi_plugin_ocsinventoryng_configs",
+                   "glpi_plugin_ocsinventoryng_notimportedcomputers",
+                   "glpi_plugin_ocsinventoryng_details",
+                   "glpi_plugin_ocsinventoryng_registrykeys",
+                   "glpi_plugin_ocsinventoryng_winupdates",
+                   "glpi_plugin_ocsinventoryng_proxysettings",
+                   "glpi_plugin_ocsinventoryng_winusers",
+                   "glpi_plugin_ocsinventoryng_networkports",
+                   "glpi_plugin_ocsinventoryng_networkporttypes",
+                   "glpi_plugin_ocsinventoryng_ocsservers_profiles",
+                   "glpi_plugin_ocsinventoryng_devicebiosdatas",
+                   "glpi_plugin_ocsinventoryng_ruleimportentities",
+                   "glpi_plugin_ocsinventoryng_items_devicebiosdatas",
+                   "glpi_plugin_ocsinventoryng_runningprocesses",
+                   "glpi_plugin_ocsinventoryng_services");
 
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");

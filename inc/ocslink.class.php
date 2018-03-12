@@ -776,4 +776,30 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
       return '';
    }
 
+   /**
+    * @param CommonDBTM $item
+    *
+    * @return int
+    */
+   static function getOCSServerForItem(CommonDBTM $item) {
+      global $DB;
+
+      $query = "SELECT *
+                      FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                      WHERE `computers_id` = '" . $item->getID() . "' " .
+               getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
+
+      $result = $DB->query($query);
+      if ($DB->numrows($result) > 0) {
+         $data = $DB->fetch_assoc($result);
+
+         if (count($data)) {
+
+            return $data['plugin_ocsinventoryng_ocsservers_id'];
+         }
+
+         return false;
+      }
+   }
+
 }
