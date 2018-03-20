@@ -100,6 +100,16 @@ function plugin_init_ocsinventoryng() {
                             array('addtabon'   => 'Computer'));
    }
 
+   if ($DB->tableExists('glpi_plugin_ocsinventoryng_runningprocesses')) {
+      Plugin::registerClass('PluginOcsinventoryngRunningprocess',
+                            array('addtabon'   => 'Computer'));
+   }
+
+   if ($DB->tableExists('glpi_plugin_ocsinventoryng_services')) {
+      Plugin::registerClass('PluginOcsinventoryngService',
+                            array('addtabon'   => 'Computer'));
+   }
+
    Plugin::registerClass('PluginOcsinventoryngOcsServer',
                          array('massiveaction_noupdate_types' => true,
                                'systeminformations_types'     => true));
@@ -180,7 +190,7 @@ function plugin_init_ocsinventoryng() {
 function plugin_version_ocsinventoryng() {
 
    return array('name'           => "OCS Inventory NG",
-                'version'        => '1.4.3',
+                'version'        => '1.4.4',
                 'author'         => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
                 'license'        => 'GPLv2+',
                 'homepage'       => 'https://github.com/pluginsGLPI/ocsinventoryng',

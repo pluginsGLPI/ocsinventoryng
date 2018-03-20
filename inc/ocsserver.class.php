@@ -910,6 +910,17 @@ JAVASCRIPT;
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Networkshare Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/networkshare) must be installed', 'ocsinventoryng')));
       echo "&nbsp;</td>\n";
+      echo "<td class='center'>" . __('Service', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_service", $this->fields["import_service"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Service Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/services) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td></tr>\n";
+
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Running Process', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_runningprocess", $this->fields["import_runningprocess"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Running Process Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/runningProcess) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td>\n";
       echo "<td class='center'></td>\n<td></td></tr>\n";
 
       echo "</table>";
@@ -2097,6 +2108,12 @@ JAVASCRIPT;
                if ($ocsConfig["import_networkshare"]) {
                   self::resetNetworkshare($computers_id, $cfg_ocs);
                }
+               if ($ocsConfig["import_service"]) {
+                  self::resetService($computers_id, $cfg_ocs);
+               }
+               if ($ocsConfig["import_runningprocess"]) {
+                  self::resetRunningProcess($computers_id, $cfg_ocs);
+               }
                if ($ocsConfig["import_winusers"]) {
                   self::resetWinuser($computers_id, $cfg_ocs);
                }
@@ -2765,6 +2782,7 @@ JAVASCRIPT;
             } else {
 
                $locations_id = 0;
+               $groups_id    = 0;
                $contact      = (isset($computer['META']["USERID"])) ? $computer['META']["USERID"] : "";
                if (!empty($contact) && $cfg_ocs["import_general_contact"] > 0) {
                   $query  = "SELECT `id`
@@ -2841,6 +2859,8 @@ JAVASCRIPT;
             $osinstall       = false;
             $proxysetting    = false;
             $networkshare    = false;
+            $service         = false;
+            $runningprocess  = false;
             $winuser         = false;
             $teamviewer      = false;
             $virtualmachines = false;
@@ -2921,6 +2941,12 @@ JAVASCRIPT;
                }
                if ($cfg_ocs["import_networkshare"]) {
                   self::resetNetworkshare($line['computers_id'], $cfg_ocs);
+               }
+               if ($cfg_ocs["import_service"]) {
+                  self::resetService($line['computers_id'], $cfg_ocs);
+               }
+               if ($cfg_ocs["import_runningprocess"]) {
+                  self::resetRunningProcess($line['computers_id'], $cfg_ocs);
                }
                if ($cfg_ocs["import_winusers"]) {
                   self::resetWinuser($line['computers_id'], $cfg_ocs);
@@ -3100,6 +3126,14 @@ JAVASCRIPT;
                   $networkshare = true;
                   $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_NETWORKSHARE;
                }
+               if ($cfg_ocs["import_runningprocess"]) {
+                  $runningprocess = true;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_RUNNINGPROCESS;
+               }
+               if ($cfg_ocs["import_service"]) {
+                  $service = true;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_SERVICE;
+               }
                if ($cfg_ocs["import_winusers"]) {
                   $winuser      = true;
                   $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_WINUSERS;
@@ -3275,6 +3309,14 @@ JAVASCRIPT;
                if ($networkshare && isset($ocsComputer["NETWORKSHARE"])) {
                   //import networkshare entries
                   self::updateNetworkshare($line['computers_id'], $ocsComputer["NETWORKSHARE"], $cfg_ocs);
+               }
+               if ($runningprocess && isset($ocsComputer["RUNNINGPROCESS"])) {
+                  //import runningprocess entries
+                  self::updateRunningprocess($line['computers_id'], $ocsComputer["RUNNINGPROCESS"], $cfg_ocs);
+               }
+               if ($service && isset($ocsComputer["SERVICE"])) {
+                  //import service entries
+                  self::updateService($line['computers_id'], $ocsComputer["SERVICE"], $cfg_ocs);
                }
                if ($winuser && isset($ocsComputer["WINUSERS"])) {
                   //import winusers entries
@@ -5793,6 +5835,38 @@ JAVASCRIPT;
    }
 
    /**
+    * Delete old Services entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    *
+    * @param $cfg_ocs
+    *
+    * @return nothing .
+    */
+   static function resetService($glpi_computers_id, $cfg_ocs) {
+
+      $service = new PluginOcsinventoryngService();
+      $service->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+
+   }
+
+   /**
+    * Delete old Runningprocess entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    *
+    * @param $cfg_ocs
+    *
+    * @return nothing .
+    */
+   static function resetRunningProcess($glpi_computers_id, $cfg_ocs) {
+
+      $runningprocess = new PluginOcsinventoryngRunningprocess();
+      $runningprocess->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+
+   }
+
+   /**
     * Delete old Winuser entries
     *
     * @param $glpi_computers_id integer : glpi computer id.
@@ -6924,14 +6998,14 @@ JAVASCRIPT;
 
 
    /**
-    * Update config of the Networkshare
-    *
-    * This function erase old data and import the new ones about Networkshare
-    *
-    * @param $computers_id integer : glpi computer id.
-    * @param $ocsComputer
-    * @param $cfg_ocs array : ocs config
-    */
+ * Update config of the Networkshare
+ *
+ * This function erase old data and import the new ones about Networkshare
+ *
+ * @param $computers_id integer : glpi computer id.
+ * @param $ocsComputer
+ * @param $cfg_ocs array : ocs config
+ */
    static function updateNetworkshare($computers_id, $ocsComputer, $cfg_ocs) {
 
       self::resetNetworkshare($computers_id, $cfg_ocs);
@@ -6960,6 +7034,64 @@ JAVASCRIPT;
 
       return;
 
+   }
+
+   /**
+    * Update config of the Runningprocess
+    *
+    * This function erase old data and import the new ones about Runningprocess
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $cfg_ocs array : ocs config
+    */
+   static function updateRunningprocess($computers_id, $ocsComputer, $cfg_ocs) {
+
+      self::resetRunningProcess($computers_id, $cfg_ocs);
+
+      $Runningprocess = new PluginOcsinventoryngRunningprocess();
+
+      //update data
+      foreach ($ocsComputer as $runningprocess) {
+
+         $process = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($runningprocess));
+         $input = array_change_key_case($process, CASE_LOWER);
+         $input["computers_id"] = $computers_id;
+
+         $Runningprocess->add($input, array('disable_unicity_check' => true), 0);
+         $Runningprocess->fields = [];
+      }
+
+      return;
+   }
+
+   /**
+    * Update config of the Service
+    *
+    * This function erase old data and import the new ones about Service
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $cfg_ocs array : ocs config
+    */
+   static function updateService($computers_id, $ocsComputer, $cfg_ocs) {
+
+      self::resetService($computers_id, $cfg_ocs);
+
+      $Service = new PluginOcsinventoryngService();
+
+      //update data
+      foreach ($ocsComputer as $service) {
+
+         $service = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($service));
+         $input = array_change_key_case($service, CASE_LOWER);
+         $input["computers_id"] = $computers_id;
+
+         $Service->add($input, array('disable_unicity_check' => true), 0);
+         $Service->fields = [];
+      }
+
+      return;
    }
 
    /**
