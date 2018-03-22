@@ -1717,6 +1717,20 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
             $sopt[10015]['forcegroupby']  = true;
             $sopt[10015]['massiveaction'] = false;
             $sopt[10015]['joinparams']    = array('jointype' => 'child');
+
+            $sopt[10016]['table'] = 'glpi_plugin_ocsinventoryng_services';
+            $sopt[10016]['field'] = 'svcname';
+            $sopt[10016]['name'] = __('OCSNG', 'ocsinventoryng') . " - " . __('Name of the service', 'ocsinventoryng');
+            $sopt[10016]['forcegroupby'] = true;
+            $sopt[10016]['massiveaction'] = false;
+            $sopt[10016]['joinparams'] = array('jointype' => 'child');
+
+            $sopt[10017]['table'] = 'glpi_plugin_ocsinventoryng_runningprocesses';
+            $sopt[10017]['field'] = 'processname';
+            $sopt[10017]['name'] = __('OCSNG', 'ocsinventoryng') . " - " . __('Process name', 'ocsinventoryng');
+            $sopt[10017]['forcegroupby'] = true;
+            $sopt[10017]['massiveaction'] = false;
+            $sopt[10017]['joinparams'] = array('jointype' => 'child');
          }
       }
       if (in_array($itemtype, PluginOcsinventoryngSnmpOcslink::$snmptypes)) {
