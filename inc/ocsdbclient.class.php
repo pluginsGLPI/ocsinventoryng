@@ -627,6 +627,13 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['SOFTWARES'][] = $snmp_request;
          }
+
+         //drives
+         $query   = "SELECT * FROM `snmp_drives` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $request = $this->db->query($query);
+         while ($snmp_request = $this->db->fetch_assoc($request)) {
+            $snmp[$snmp_request['SNMP_ID']]['COMPUTERDISKS'][] = $snmp_request;
+         }
       }
       return $snmp;
 

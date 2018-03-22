@@ -1256,6 +1256,19 @@ function plugin_ocsinventoryng_install() {
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
       $DB->queryOrDie($query, "1.4.4 create table glpi_plugin_ocsinventoryng_services");
    }
+
+   if ($DB->tableExists('glpi_plugin_ocsinventoryng_ocsservers')
+       && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'importsnmp_computerdisks')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `importsnmp_computerdisks` TINYINT(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.4.4 update table glpi_plugin_ocsinventoryng_ocsservers add importsnmp_computerdisks");
+
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `linksnmp_computerdisks` TINYINT(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.4.4 update table glpi_plugin_ocsinventoryng_ocsservers add linksnmp_computerdisks");
+   }
+
+
    /******************* Migration 1.4.4 *******************/
 
    $cron = new CronTask();
