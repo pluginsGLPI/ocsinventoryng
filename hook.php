@@ -1614,9 +1614,9 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype)
             $sopt[10016]['massiveaction'] = false;
             $sopt[10016]['joinparams'] = array('jointype' => 'child');
 
-            $sopt[10017]['table'] = 'glpi_plugin_ocsinventoryng_services';
-            $sopt[10017]['field'] = 'svcname';
-            $sopt[10017]['name'] = __('Name of the service', 'ocsinventoryng');
+            $sopt[10017]['table'] = 'glpi_plugin_ocsinventoryng_runningprocesses';
+            $sopt[10017]['field'] = 'processname';
+            $sopt[10017]['name'] = __('Process name', 'ocsinventoryng');
             $sopt[10017]['forcegroupby'] = true;
             $sopt[10017]['massiveaction'] = false;
             $sopt[10017]['joinparams'] = array('jointype' => 'child');
