@@ -672,16 +672,11 @@ JAVASCRIPT;
       Dropdown::showYesNo("import_general_domain", $this->fields["import_general_domain"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Alternate username') . "</td>\n<td>";
-      Dropdown::showYesNo("import_general_contact", $this->fields["import_general_contact"]);
-      echo "</td>\n";
+      echo "<tr class='tab_bg_2'>";
       echo "<td class='center'>" . __('Comments') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_comment", $this->fields["import_general_comment"]);
-      echo "</td></tr>\n";
-
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('IP') . "</td>\n<td>";
-      Dropdown::showYesNo("import_ip", $this->fields["import_ip"]);
       echo "</td>\n";
+
       if (self::checkOCSconnection($ID) && self::checkVersion($ID)) {
          echo "<td class='center'>" . __('UUID') . "</td>\n<td>";
          Dropdown::showYesNo("import_general_uuid", $this->fields["import_general_uuid"]);
@@ -690,6 +685,37 @@ JAVASCRIPT;
          echo "<input type='hidden' name='import_general_uuid' value='0'>";
       }
       echo "</td></tr>\n";
+
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('IP') . "</td>\n<td>";
+      Dropdown::showYesNo("import_ip", $this->fields["import_ip"]);
+      echo "</td>\n";
+
+      echo "<td colspan='2'></td></tr>\n";
+
+      echo "<tr class='tab_bg_2'>";
+      echo "<th colspan='4'>" . __('User informations', 'ocsinventoryng');
+      echo "</th></tr>\n";
+
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Alternate username') . "</td>\n<td>";
+      Dropdown::showYesNo("import_general_contact", $this->fields["import_general_contact"]);
+      echo "</td>";
+      echo "<td class='center'>" . __('Affect user from contact', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_user", $this->fields["import_user"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Depends on contact import', 'ocsinventoryng')));
+      echo "</td></tr>\n";
+
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Affect user location by default', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_user_location", $this->fields["import_user_location"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Depends on contact import', 'ocsinventoryng')));
+      echo "</td>\n";
+      echo "<td class='center'>" . __('Affect first group of user by default', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_user_group", $this->fields["import_user_group"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Depends on contact import', 'ocsinventoryng')));
+      echo "</td></tr>\n";
+
       echo "</table>";
       echo "</div>";
 
@@ -884,6 +910,17 @@ JAVASCRIPT;
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Networkshare Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/networkshare) must be installed', 'ocsinventoryng')));
       echo "&nbsp;</td>\n";
+      echo "<td class='center'>" . __('Service', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_service", $this->fields["import_service"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Service Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/services) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td></tr>\n";
+
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Running Process', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_runningprocess", $this->fields["import_runningprocess"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Running Process Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/runningProcess) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td>\n";
       echo "<td class='center'></td>\n<td></td></tr>\n";
 
       echo "</table>";
@@ -973,10 +1010,12 @@ JAVASCRIPT;
 
       echo "</td></tr>\n";
 
+      if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
          echo "<tr class='tab_bg_2 center'><td colspan='4'>";
          echo "<input type='submit' name='update' class='submit' value=\"" .
               _sx('button', 'Save') . "\">";
          echo "</td></tr>\n";
+      }
       echo "</table>\n";
       Html::closeForm();
       echo "</div>\n";
@@ -1096,10 +1135,12 @@ JAVASCRIPT;
       Dropdown::showYesNo("history_admininfos", $this->fields["history_admininfos"]);
       echo "</td></tr>\n";
 
+      if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
          echo "<tr class='tab_bg_2 center'><td colspan='4'>";
          echo "<input type='submit' name='update' class='submit' value=\"" .
               _sx('button', 'Save') . "\">";
          echo "</td></tr>\n";
+      }
       echo "</table>\n";
       Html::closeForm();
       echo "</div>\n";
@@ -2067,6 +2108,12 @@ JAVASCRIPT;
                if ($ocsConfig["import_networkshare"]) {
                   self::resetNetworkshare($computers_id, $cfg_ocs);
                }
+               if ($ocsConfig["import_service"]) {
+                  self::resetService($computers_id, $cfg_ocs);
+               }
+               if ($ocsConfig["import_runningprocess"]) {
+                  self::resetRunningProcess($computers_id, $cfg_ocs);
+               }
                if ($ocsConfig["import_winusers"]) {
                   self::resetWinuser($computers_id, $cfg_ocs);
                }
@@ -2384,7 +2431,7 @@ JAVASCRIPT;
     *
     * @return array
     */
-   static function getComputerInformations($ocs_fields = array(), $cfg_ocs, $entities_id, $locations_id = 0) {
+   static function getComputerInformations($ocs_fields = array(), $cfg_ocs, $entities_id, $locations_id = 0, $groups_id = 0) {
       $input               = array();
       $input["is_dynamic"] = 1;
 
@@ -2396,6 +2443,10 @@ JAVASCRIPT;
 
       if ($locations_id) {
          $input["locations_id"] = $locations_id;
+      }
+
+      if ($groups_id) {
+         $input["groups_id"] = $groups_id;
       }
 
       $input['ocsid']      = $ocs_fields['META']['ID'];
@@ -2503,6 +2554,7 @@ JAVASCRIPT;
 
       if (intval($cfg_ocs["import_general_contact"]) == 0) {
          unset($input["contact"]);
+         unset($input["users_id"]);
       }
 
       if (intval($cfg_ocs["import_general_domain"]) == 0) {
@@ -2525,6 +2577,7 @@ JAVASCRIPT;
       global $DB;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
       $comp = new Computer();
 
       $rules_matched = array();
@@ -2538,9 +2591,10 @@ JAVASCRIPT;
          )
       ));
 
-      $locations_id = 0;
+      $locations_id = 0; 
+      $groups_id    = 0; 
       $contact      = (isset($ocsComputer['META']["USERID"])) ? $ocsComputer['META']["USERID"] : "";
-      if (!empty($contact)) {
+      if (!empty($contact) && $cfg_ocs["import_general_contact"] > 0) {
          $query  = "SELECT `id`
                    FROM `glpi_users`
                    WHERE `name` = '" . $contact . "';";
@@ -2550,7 +2604,12 @@ JAVASCRIPT;
             $user_id = $DB->result($result, 0, 0);
             $user    = new User();
             $user->getFromDB($user_id);
-            $locations_id = $user->fields["locations_id"];
+            if ($cfg_ocs["import_user_location"] > 0) {
+               $locations_id = $user->fields["locations_id"];
+            }
+            if ($cfg_ocs["import_user_group"] > 0) {
+               $groups_id = self::getUserGroup(0, $user_id, '`is_requester`', true);
+            }
          }
       }
 
@@ -2561,9 +2620,11 @@ JAVASCRIPT;
          $data = array();
          $data = $rule->processAllRules(array('ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                                               '_source'       => 'ocsinventoryng',
-                                              'locations_id'  => $locations_id
+                                              'locations_id'  => $locations_id,
+                                              'groups_id'     => $groups_id
                                         ), array(
-                                           'locations_id' => $locations_id
+                                           'locations_id' => $locations_id,
+                                           'groups_id'    => $groups_id
                                         ), array('ocsid' => $ocsid));
 
          if (isset($data['_ignore_import']) && $data['_ignore_import'] == 1) {
@@ -2594,7 +2655,9 @@ JAVASCRIPT;
             $computer = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer));
 
             $locations_id = (isset($data['locations_id']) ? $data['locations_id'] : 0);
-            $input        = self::getComputerInformations($computer, self::getConfig($plugin_ocsinventoryng_ocsservers_id), $data['entities_id'], $locations_id);
+            $groups_id    = (isset($data['groups_id']) ? $data['groups_id'] : 0);
+            $input        = self::getComputerInformations($computer, self::getConfig($plugin_ocsinventoryng_ocsservers_id),
+                                                          $data['entities_id'], $locations_id, $groups_id);
             //Check if machine could be linked with another one already in DB
             $rulelink         = new RuleImportComputerCollection();
             $rulelink_results = array();
@@ -2719,8 +2782,9 @@ JAVASCRIPT;
             } else {
 
                $locations_id = 0;
+               $groups_id    = 0;
                $contact      = (isset($computer['META']["USERID"])) ? $computer['META']["USERID"] : "";
-               if (!empty($contact)) {
+               if (!empty($contact) && $cfg_ocs["import_general_contact"] > 0) {
                   $query  = "SELECT `id`
                             FROM `glpi_users`
                             WHERE `name` = '" . $contact . "';";
@@ -2730,7 +2794,12 @@ JAVASCRIPT;
                      $user_id = $DB->result($result, 0, 0);
                      $user    = new User();
                      $user->getFromDB($user_id);
-                     $locations_id = $user->fields["locations_id"];
+                     if ($cfg_ocs["import_user_location"] > 0) {
+                        $locations_id = $user->fields["locations_id"];
+                     }
+                     if ($cfg_ocs["import_user_group"] > 0) {
+                        $groups_id = self::getUserGroup($comp->fields["entities_id"], $user_id, '`is_requester`', true);
+                     }
                   }
                }
                $rule = new RuleImportEntityCollection();
@@ -2738,8 +2807,13 @@ JAVASCRIPT;
                $data = array();
                $data = $rule->processAllRules(array('ocsservers_id' => $line["plugin_ocsinventoryng_ocsservers_id"],
                                                     '_source'       => 'ocsinventoryng',
-                                                    'locations_id'  => $locations_id), array('locations_id' => $locations_id), array('ocsid' => $line["ocsid"]));
-               self::updateLocation($line, $data, $cfg_ocs);
+                                                    'locations_id'  => $locations_id,
+                                                    'groups_id'     => $groups_id),
+                                              array('locations_id' => $locations_id,
+                                                    'groups_id'    => $groups_id),
+                                              array('ocsid' => $line["ocsid"]));
+
+               self::updateComputerFields($line, $data, $cfg_ocs);
             }
 
             // update last_update and and last_ocs_update
@@ -2785,6 +2859,8 @@ JAVASCRIPT;
             $osinstall       = false;
             $proxysetting    = false;
             $networkshare    = false;
+            $service         = false;
+            $runningprocess  = false;
             $winuser         = false;
             $teamviewer      = false;
             $virtualmachines = false;
@@ -2865,6 +2941,12 @@ JAVASCRIPT;
                }
                if ($cfg_ocs["import_networkshare"]) {
                   self::resetNetworkshare($line['computers_id'], $cfg_ocs);
+               }
+               if ($cfg_ocs["import_service"]) {
+                  self::resetService($line['computers_id'], $cfg_ocs);
+               }
+               if ($cfg_ocs["import_runningprocess"]) {
+                  self::resetRunningProcess($line['computers_id'], $cfg_ocs);
                }
                if ($cfg_ocs["import_winusers"]) {
                   self::resetWinuser($line['computers_id'], $cfg_ocs);
@@ -3044,6 +3126,14 @@ JAVASCRIPT;
                   $networkshare = true;
                   $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_NETWORKSHARE;
                }
+               if ($cfg_ocs["import_runningprocess"]) {
+                  $runningprocess = true;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_RUNNINGPROCESS;
+               }
+               if ($cfg_ocs["import_service"]) {
+                  $service = true;
+                  $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_SERVICE;
+               }
                if ($cfg_ocs["import_winusers"]) {
                   $winuser      = true;
                   $ocsPlugins[] = PluginOcsinventoryngOcsClient::PLUGINS_WINUSERS;
@@ -3220,6 +3310,14 @@ JAVASCRIPT;
                   //import networkshare entries
                   self::updateNetworkshare($line['computers_id'], $ocsComputer["NETWORKSHARE"], $cfg_ocs);
                }
+               if ($runningprocess && isset($ocsComputer["RUNNINGPROCESS"])) {
+                  //import runningprocess entries
+                  self::updateRunningprocess($line['computers_id'], $ocsComputer["RUNNINGPROCESS"], $cfg_ocs);
+               }
+               if ($service && isset($ocsComputer["SERVICE"])) {
+                  //import service entries
+                  self::updateService($line['computers_id'], $ocsComputer["SERVICE"], $cfg_ocs);
+               }
                if ($winuser && isset($ocsComputer["WINUSERS"])) {
                   //import winusers entries
                   self::updateWinuser($line['computers_id'], $ocsComputer["WINUSERS"], $cfg_ocs);
@@ -3298,25 +3396,26 @@ JAVASCRIPT;
          $updates = array();
 
          if (intval($options['cfg_ocs']["import_general_domain"]) > 0
-             && !in_array("domains_id", $options['computers_updates'])
-         ) {
+             && !in_array("domains_id", $options['computers_updates'])) {
             $updates["domains_id"] = Dropdown::importExternal('Domain', self::encodeOcsDataInUtf8($is_utf8, $hardware["WORKGROUP"]));
          }
 
          if (intval($options['cfg_ocs']["import_general_contact"]) > 0
-             && !in_array("contact", $options['computers_updates'])
-         ) {
+             && !in_array("contact", $options['computers_updates'])) {
 
             $updates["contact"] = self::encodeOcsDataInUtf8($is_utf8, $hardware["USERID"]);
-            $query              = "SELECT `id`
-                      FROM `glpi_users`
-                      WHERE `name` = '" . $hardware["USERID"] . "';";
-            $result             = $DB->query($query);
 
-            if ($DB->numrows($result) == 1
-                && !in_array("users_id", $options['computers_updates'])
-            ) {
-               $updates["users_id"] = $DB->result($result, 0, 0);
+            if (intval($options['cfg_ocs']["import_user"]) > 0) {
+               $query = "SELECT `id`
+                         FROM `glpi_users`
+                         WHERE `name` = '" . $hardware["USERID"] . "';";
+               $result = $DB->query($query);
+
+               if ($DB->numrows($result) == 1
+                   && !in_array("users_id", $options['computers_updates'])
+               ) {
+                  $updates["users_id"] = $DB->result($result, 0, 0);
+               }
             }
          }
 
@@ -4441,10 +4540,10 @@ JAVASCRIPT;
 
                   echo "<tr class='tab_bg_2'>";
                   if ($usecheckbox) {
-                     echo "<td>";
-                     echo "<input type='checkbox' name='toimport[" . $tab["id"] . "]' " .
-                          ($check == "all" ? "checked" : "") . ">";
-                     echo "</td>";
+                  echo "<td>";
+                  echo "<input type='checkbox' name='toimport[" . $tab["id"] . "]' " .
+                       ($check == "all" ? "checked" : "") . ">";
+                  echo "</td>";
                   }
                   if ($advanced && !$tolinked) {
                      $location = isset($tab["locations_id"]) ? $tab["locations_id"] : 0;
@@ -4618,7 +4717,7 @@ JAVASCRIPT;
                Html::closeForm();
 
                if ($usecheckbox) {
-                  self::checkBox($target);
+               self::checkBox($target);
                }
 
                Html::printPager($start, $numrows, $target, $parameters);
@@ -5732,6 +5831,38 @@ JAVASCRIPT;
 
       $share = new PluginOcsinventoryngNetworkshare();
       $share->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+
+   }
+
+   /**
+    * Delete old Services entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    *
+    * @param $cfg_ocs
+    *
+    * @return nothing .
+    */
+   static function resetService($glpi_computers_id, $cfg_ocs) {
+
+      $service = new PluginOcsinventoryngService();
+      $service->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+
+   }
+
+   /**
+    * Delete old Runningprocess entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    *
+    * @param $cfg_ocs
+    *
+    * @return nothing .
+    */
+   static function resetRunningProcess($glpi_computers_id, $cfg_ocs) {
+
+      $runningprocess = new PluginOcsinventoryngRunningprocess();
+      $runningprocess->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
 
    }
 
@@ -6867,14 +6998,14 @@ JAVASCRIPT;
 
 
    /**
-    * Update config of the Networkshare
-    *
-    * This function erase old data and import the new ones about Networkshare
-    *
-    * @param $computers_id integer : glpi computer id.
-    * @param $ocsComputer
-    * @param $cfg_ocs array : ocs config
-    */
+ * Update config of the Networkshare
+ *
+ * This function erase old data and import the new ones about Networkshare
+ *
+ * @param $computers_id integer : glpi computer id.
+ * @param $ocsComputer
+ * @param $cfg_ocs array : ocs config
+ */
    static function updateNetworkshare($computers_id, $ocsComputer, $cfg_ocs) {
 
       self::resetNetworkshare($computers_id, $cfg_ocs);
@@ -6903,6 +7034,64 @@ JAVASCRIPT;
 
       return;
 
+   }
+
+   /**
+    * Update config of the Runningprocess
+    *
+    * This function erase old data and import the new ones about Runningprocess
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $cfg_ocs array : ocs config
+    */
+   static function updateRunningprocess($computers_id, $ocsComputer, $cfg_ocs) {
+
+      self::resetRunningProcess($computers_id, $cfg_ocs);
+
+      $Runningprocess = new PluginOcsinventoryngRunningprocess();
+
+      //update data
+      foreach ($ocsComputer as $runningprocess) {
+
+         $process = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($runningprocess));
+         $input = array_change_key_case($process, CASE_LOWER);
+         $input["computers_id"] = $computers_id;
+
+         $Runningprocess->add($input, array('disable_unicity_check' => true), 0);
+         $Runningprocess->fields = [];
+      }
+
+      return;
+   }
+
+   /**
+    * Update config of the Service
+    *
+    * This function erase old data and import the new ones about Service
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $cfg_ocs array : ocs config
+    */
+   static function updateService($computers_id, $ocsComputer, $cfg_ocs) {
+
+      self::resetService($computers_id, $cfg_ocs);
+
+      $Service = new PluginOcsinventoryngService();
+
+      //update data
+      foreach ($ocsComputer as $service) {
+
+         $service = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($service));
+         $input = array_change_key_case($service, CASE_LOWER);
+         $input["computers_id"] = $computers_id;
+
+         $Service->add($input, array('disable_unicity_check' => true), 0);
+         $Service->fields = [];
+      }
+
+      return;
    }
 
    /**
@@ -7321,6 +7510,8 @@ JAVASCRIPT;
    static function cronocsng($task) {
       global $DB;
 
+      $_SESSION["glpiname"] = 'ocsinventoryng';
+
       //Get a randon server id
       $plugin_ocsinventoryng_ocsservers_id = self::getRandomServerID();
       if ($plugin_ocsinventoryng_ocsservers_id > 0) {
@@ -7553,8 +7744,9 @@ JAVASCRIPT;
       $ocsComputer = $ocsClient->getComputer($line_links["ocsid"]);
 
       $locations_id = 0;
+      $groups_id    = 0;
       $contact      = (isset($ocsComputer['META']["USERID"])) ? $ocsComputer['META']["USERID"] : "";
-      if (!empty($contact)) {
+      if (!empty($contact) && $cfg_ocs["import_general_contact"] > 0) {
          $query  = "SELECT `id`
                    FROM `glpi_users`
                    WHERE `name` = '" . $contact . "';";
@@ -7564,19 +7756,28 @@ JAVASCRIPT;
             $user_id = $DB->result($result, 0, 0);
             $user    = new User();
             $user->getFromDB($user_id);
-            $locations_id = $user->fields["locations_id"];
+
+            if ($cfg_ocs["import_user_location"] > 0) {
+               $locations_id = $user->fields["locations_id"];
+            }
+            if ($cfg_ocs["import_user_group"] > 0) {
+               $comp = new Computer();
+               $comp->getFromDB($line_links["computers_id"]);
+               $groups_id = self::getUserGroup($comp->fields["entities_id"], $user_id, '`is_requester`', true);
+            }
          }
       }
 
       // Get all rules for the current plugin_ocsinventoryng_ocsservers_id
       $rule = new RuleImportEntityCollection();
 
-      $data = array();
       $data = $rule->processAllRules(array('ocsservers_id' => $line_links["plugin_ocsinventoryng_ocsservers_id"],
                                            '_source'       => 'ocsinventoryng',
-                                           'locations_id'  => $locations_id
+                                           'locations_id'  => $locations_id,
+                                           'groups_id'     => $groups_id
                                      ), array(
-                                        'locations_id' => $locations_id
+                                        'locations_id' => $locations_id,
+                                        'groups_id'    => $groups_id
                                      ), array('ocsid' => $line_links["ocsid"]));
 
       // If entity is changing move items to the new entities_id
@@ -7596,11 +7797,42 @@ JAVASCRIPT;
       }
 
       //If location is update by a rule
-      self::updateLocation($line_links, $data, $cfg_ocs);
+      self::updateComputerFields($line_links, $data, $cfg_ocs);
    }
 
    /**
-    * Update location for a computer if needed after rule processing
+    * @param        $entity
+    * @param        $userid
+    * @param string $filter
+    * @param bool   $first
+    *
+    * @return array|int
+    */
+   static private function getUserGroup ($entity, $userid, $filter='', $first=true) {
+      global $DB;
+
+      $query = "SELECT `glpi_groups`.`id`
+                FROM `glpi_groups_users`
+                INNER JOIN `glpi_groups` ON (`glpi_groups`.`id` = `glpi_groups_users`.`groups_id`)
+                WHERE `glpi_groups_users`.`users_id` = '".$userid."'".
+               getEntitiesRestrictRequest(' AND ', 'glpi_groups', '', $entity, true);
+
+      if ($filter) {
+         $query .= "AND (".$filter.")";
+      }
+      $rep = [];
+      foreach ($DB->request($query) as $data) {
+         if ($first) {
+            return $data['id'];
+         }
+         $rep[] = $data['id'];
+      }
+      return ($first ? 0 : $rep);
+   }
+
+
+   /**
+    * Update fields : location / group for a computer if needed after rule processing
     *
     * @param $line_links
     * @param $data
@@ -7611,7 +7843,7 @@ JAVASCRIPT;
     * @internal param $data
     *
     */
-   static function updateLocation($line_links, $data, $cfg_ocs) {
+   static function updateComputerFields($line_links, $data, $cfg_ocs) {
 
       //If there's a location to update
       if (isset($data['locations_id'])) {
@@ -7625,8 +7857,7 @@ JAVASCRIPT;
             //defined in a parent entity, but recursive
             if ($location->fields['entities_id'] == $computer->fields['entities_id']
                 || (in_array($location->fields['entities_id'], $ancestors)
-                    && $location->fields['is_recursive'])
-            ) {
+                    && $location->fields['is_recursive'])) {
                $ko    = 0;
                $locks = self::getLocksForComputer($line_links['computers_id']);
                if (is_array($locks) && count($locks)) {
@@ -7642,7 +7873,37 @@ JAVASCRIPT;
             }
          }
       }
+
+      //If there's a Group to update
+      if (isset($data['groups_id'])) {
+         $computer = new Computer();
+         $computer->getFromDB($line_links['computers_id']);
+         $ancestors = getAncestorsOf('glpi_entities', $computer->fields['entities_id']);
+
+         $group = new Group();
+         if ($group->getFromDB($data['groups_id'])) {
+            //If group is in the same entity as the computer, or if the group is
+            //defined in a parent entity, but recursive
+            if ($group->fields['entities_id'] == $computer->fields['entities_id']
+                || (in_array($group->fields['entities_id'], $ancestors)
+                    && $group->fields['is_recursive'])) {
+               $ko    = 0;
+               $locks = self::getLocksForComputer($line_links['computers_id']);
+               if (is_array($locks) && count($locks)) {
+                  if (in_array("groups_id", $locks)) {
+                     $ko = 1;
+                  }
+               }
+               if ($ko == 0) {
+                  $tmp['groups_id'] = $data['groups_id'];
+                  $tmp['id']           = $line_links['computers_id'];
+                  $computer->update($tmp, $cfg_ocs['history_hardware']);
+               }
+            }
+         }
+      }
    }
+
 
    /**
     * @param $ID

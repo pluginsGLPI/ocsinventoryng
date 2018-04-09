@@ -217,10 +217,12 @@ JAVASCRIPT;
       echo "</td><td class='center'>" . __('Import SNMP softwares', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("importsnmp_computersoftwares", $conf->fields["importsnmp_computersoftwares"]);
       echo "</td></tr>\n";
-      
+
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Import SNMP virtual machines', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("importsnmp_computervm", $conf->fields["importsnmp_computervm"]);
-      echo "</td><td colspan='2'</td></tr>\n";
+      echo "</td><td class='center'>" . __('Import SNMP volumes', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("importsnmp_computerdisks", $conf->fields["importsnmp_computerdisks"]);
+      echo "</td></tr>\n";
       
       echo "<tr><th colspan='4'>" . __('Printer SNMP import options', 'ocsinventoryng') . "</th></tr>\n";
 
@@ -306,7 +308,9 @@ JAVASCRIPT;
       
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Link SNMP virtual machines', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("linksnmp_computervm", $conf->fields["linksnmp_computervm"]);
-      echo "</td><td colspan='2'></td></tr>\n";
+      echo "</td><td class='center'>" . __('Link SNMP volumes', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("linksnmp_computerdisks", $conf->fields["linksnmp_computerdisks"]);
+      echo "</td></tr>\n";
       
       echo "<tr><th colspan='4'>" . __('Printer SNMP link options', 'ocsinventoryng') . "</th></tr>\n";
 
@@ -339,11 +343,13 @@ JAVASCRIPT;
 
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center' colspan='4'>";
-      echo "<input type='hidden' name='id' value='$ID'>";
-      echo "<input type='submit' name='updateSNMP' class='submit' value='" .
-         _sx('button', 'Save') . "'>";
-      echo "</td></tr>";
+      if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+         echo "<tr class='tab_bg_2'><td class='center' colspan='4'>";
+         echo "<input type='hidden' name='id' value='$ID'>";
+         echo "<input type='submit' name='updateSNMP' class='submit' value='" .
+              _sx('button', 'Save') . "'>";
+         echo "</td></tr>";
+      }
 
       echo "</table>\n";
       Html::closeForm();
@@ -2004,6 +2010,92 @@ JAVASCRIPT;
 
             $np->add($port_input, array(), $cfg_ocs['history_network']);
          }
+      }
+
+      if ($id_item > 0
+          && isset($ocsSnmp['COMPUTERDISKS'])
+          && (($cfg_ocs['importsnmp_computerdisks'] && $action == "add")
+              || ($cfg_ocs['linksnmp_computerdisks'] && $linked)
+              || ($action == "update" && $cfg_ocs['importsnmp_computerdisks'] && !$linked)
+              || ($action == "update" && $cfg_ocs['linksnmp_computerdisks'] && $linked))
+          && count($ocsSnmp['COMPUTERDISKS']) > 0
+      ) {
+         $already_processed = array();
+         $computerDisk = new ComputerDisk();
+
+         foreach ($ocsSnmp['COMPUTERDISKS'] as $k => $ocsComputerDisks) {
+
+            $ocsComputerDisks       = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputerDisks));
+            $disk                   = array();
+            $disk['computers_id']   = $id_item;
+            $disk['name']           = $ocsComputerDisks['FILESYSTEM'];
+            $disk['mountpoint']     = $ocsComputerDisks['VOLUMN'];
+            $disk['device']         = $ocsComputerDisks['TYPE'];
+            $disk['totalsize']      = $ocsComputerDisks['TOTAL'];
+            $disk['freesize']       = $ocsComputerDisks['FREE'];
+            $disk['filesystems_id'] = Dropdown::importExternal('Filesystem', $ocsComputerDisks["FILESYSTEM"]);
+            $disk['is_dynamic']     = 1;
+
+            // Ok import disk
+            if (isset($disk['name']) && !empty($disk["name"])) {
+               $disk['totalsize'] = $ocsComputerDisks['TOTAL'];
+               $disk['freesize']  = $ocsComputerDisks['FREE'];
+
+               $query   = "SELECT `id`
+                            FROM `glpi_computerdisks`
+                            WHERE `computers_id`='$id_item'
+                               AND `name`='" . $disk['name'] . "'
+                               AND `is_dynamic`";
+               $results = $DB->query($query);
+               if ($DB->numrows($results) == 1) {
+                  $id = $DB->result($results, 0, 'id');
+               } else {
+                  $id = false;
+               }
+
+               if (!$id) {
+                  $computerDisk->reset();
+                  $disk['is_dynamic']  = 1;
+                  $id_disk             = $computerDisk->add($disk, array(), $cfg_ocs['history_drives']);
+                  $already_processed[] = $id_disk;
+               } else {
+                  // Only update if needed
+                  if ($computerDisk->getFromDB($id)) {
+
+                     // Update on type, total size change or variation of 5%
+                     if ($computerDisk->fields['totalsize'] != $disk['totalsize']
+                         || ($computerDisk->fields['filesystems_id'] != $disk['filesystems_id'])
+                         || ((abs($disk['freesize'] - $computerDisk->fields['freesize']) / $disk['totalsize']) > 0.05)) {
+
+                        $toupdate['id']             = $id;
+                        $toupdate['totalsize']      = $disk['totalsize'];
+                        $toupdate['freesize']       = $disk['freesize'];
+                        $toupdate['filesystems_id'] = $disk['filesystems_id'];
+                        $computerDisk->update($toupdate, $cfg_ocs['history_drives']);
+                     }
+                     $already_processed[] = $id;
+                  }
+               }
+            }
+
+         }
+      }
+
+      // Delete Unexisting Items not found in OCS
+      //Look for all ununsed disks
+      $query = "SELECT `id`
+                FROM `glpi_computerdisks`
+                WHERE `computers_id`='$id_item'
+                   AND `is_dynamic`";
+      if (!empty($already_processed)) {
+         $query .= "AND `id` NOT IN (" . implode(',', $already_processed) . ")";
+      }
+      foreach ($DB->request($query) as $data) {
+         //Delete all connexions
+         $computerDisk->delete(array('id'             => $data['id'],
+                          '_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                          '_no_history' => !$cfg_ocs['history_drives']),
+                    true, $cfg_ocs['history_drives']);
       }
 
       return $id_item;

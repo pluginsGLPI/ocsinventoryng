@@ -449,6 +449,42 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ruleimportentities` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_runningprocesses`;
+CREATE TABLE `glpi_plugin_ocsinventoryng_runningprocesses` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `computers_id` INT(11) NOT NULL DEFAULT '0',
+  `cpuusage` VARCHAR(255) DEFAULT NULL,
+  `tty` VARCHAR(255) DEFAULT NULL,
+  `started` VARCHAR(15) DEFAULT NULL,
+  `virtualmemory` VARCHAR(255) DEFAULT NULL,
+  `processname` VARCHAR(255) DEFAULT NULL,
+  `processid` VARCHAR(255) DEFAULT NULL,
+  `username` VARCHAR(255) DEFAULT NULL,
+  `processmemory` VARCHAR(255) DEFAULT NULL,
+  `commandline` VARCHAR(255) DEFAULT NULL,
+  `description` VARCHAR(255) DEFAULT NULL,
+  `company` VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `computers_id` (`computers_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_services`;
+CREATE TABLE `glpi_plugin_ocsinventoryng_services` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `computers_id` INT(11) NOT NULL DEFAULT '0',
+  `svcname` VARCHAR(128) NOT NULL,
+  `svcdn` VARCHAR(255) NOT NULL,
+  `svcstate` VARCHAR(32) DEFAULT NULL,
+  `svcdesc` VARCHAR(1536) DEFAULT NULL,
+  `svcstartmode` VARCHAR(32) DEFAULT NULL,
+  `svcpath` VARCHAR(512) DEFAULT NULL,
+  `svcstartname` VARCHAR(128) DEFAULT NULL,
+  `svcexitcode` INTEGER DEFAULT NULL,
+  `svcspecexitcode` INTEGER DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `computers_id` (`computers_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 INSERT INTO `glpi_plugin_ocsinventoryng_configs`(`id`,`thread_log_frequency`,`is_displayempty`,`import_limit`) VALUES (1, 2, 1, 0);
 
 INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Unkown port', '*', '*', 'PluginOcsinventoryngNetworkPort', NULL, NULL,NULL, NULL);
