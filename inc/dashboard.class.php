@@ -31,24 +31,23 @@
 /**
  * Class PluginOcsinventoryngDashboard
  */
-class PluginOcsinventoryngDashboard extends CommonGLPI
-{
+class PluginOcsinventoryngDashboard extends CommonGLPI {
 
-   public $widgets = array();
+   public  $widgets = array();
    private $options;
    private $form;
 
    /**
     * PluginOcsinventoryngDashboard constructor.
+    *
     * @param array $options
     */
-   function __construct($options = array())
-   {
+   function __construct($options = array()) {
       $this->options = $options;
+      $this->interfaces = ["central"];
    }
 
-   function init()
-   {
+   function init() {
 
 
    }
@@ -56,103 +55,215 @@ class PluginOcsinventoryngDashboard extends CommonGLPI
    /**
     * @return array
     */
-   function getWidgetsForItem()
-   {
+   function getWidgetsForItem() {
       return array(
-         $this->getType() . "1" => __("Last synchronization of computers by month", "ocsinventoryng"),
-         $this->getType() . "2" => __("Detail of imported computers", "ocsinventoryng"),
+         $this->getType() . "1" => __("Last synchronization of computers by month", "ocsinventoryng") . "&nbsp;<i class='fa fa-bar-chart'></i>",
+         $this->getType() . "2" => __("Detail of imported computers", "ocsinventoryng") . "&nbsp;<i class='fa fa-pie-chart'></i>",
       );
    }
 
    /**
     * @param $widgetId
+    *
     * @return PluginMydashboardDatatable|PluginMydashboardHBarChart|PluginMydashboardHtml|PluginMydashboardLineChart|PluginMydashboardPieChart|PluginMydashboardVBarChart
     */
-   function getWidgetContentForItem($widgetId)
-   {
-      global $DB;
+   function getWidgetContentForItem($widgetId) {
+      global $DB, $CFG_GLPI;
 
       if (empty($this->form))
          $this->init();
       switch ($widgetId) {
          case $this->getType() . "1":
-            $plugin = new Plugin();
-            if ($plugin->isActivated("ocsinventoryng")) {
 
-               $query = "SELECT DISTINCT
-                           DATE_FORMAT(`glpi_plugin_ocsinventoryng_ocslinks`.`last_update`, '%b %Y') AS period_name,
+            $query = "SELECT DISTINCT
+                           DATE_FORMAT(`glpi_plugin_ocsinventoryng_ocslinks`.`last_update`, '%b %Y') AS periodsync_name,
                            COUNT(`glpi_plugin_ocsinventoryng_ocslinks`.`id`) AS nb,
-                           DATE_FORMAT(`glpi_plugin_ocsinventoryng_ocslinks`.`last_update`, '%y%m') AS period
+                           DATE_FORMAT(`glpi_plugin_ocsinventoryng_ocslinks`.`last_update`, '%Y-%m') AS periodsync
                         FROM `glpi_plugin_ocsinventoryng_ocslinks`
                         LEFT JOIN `glpi_computers`
                            ON `glpi_computers`.`id`=`glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`
                         WHERE `glpi_computers`.`is_deleted` = '0' AND `glpi_computers`.`entities_id` = '" . $_SESSION["glpiactive_entity"] . "'";
 
-               //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-               $query .= " GROUP BY period_name ORDER BY period ASC";
-
-               $widget = PluginMydashboardHelper::getWidgetsFromDBQuery('vbarchart', $query);
-
-               $datas = $widget->getTabDatas();
-
-               $widget->setWidgetTitle(__("Last synchronization of computers by month", "ocsinventoryng"));
-               $widget->setOption("xaxis", array("ticks" => PluginMydashboardBarChart::getTicksFromLabels($datas)));
-               $widget->setOption("markers", array("show" => true, "position" => "ct", "labelFormatter" => PluginMydashboardBarChart::getLabelFormatter(2)));
-               $widget->setOption('legend', array('show' => false));
-               $widget->toggleWidgetRefresh();
-
-               return $widget;
-            } else {
-               $widget = new PluginMydashboardDatatable();
-               $widget->setWidgetTitle(__("Last synchronization of computers by month", "ocsinventoryng"));
-               return $widget;
+            //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
+            $query    .= " GROUP BY periodsync_name ORDER BY periodsync ASC";
+            $result   = $DB->query($query);
+            $nb       = $DB->numrows($result);
+            $tabdata  = [];
+            $tabnames = [];
+            $tabsyncdates = [];
+            if ($nb) {
+               while ($data = $DB->fetch_assoc($result)) {
+                  $tabdata[]  = $data['nb'];
+                  $tabnames[] = $data['periodsync_name'];
+                  $tabsyncdates[] = $data['periodsync'];
+               }
             }
+
+            $widget = new PluginMydashboardHtml();
+            $widget->setWidgetTitle(__("Last synchronization of computers by month", "ocsinventoryng"));
+
+            $dataBarset  = json_encode($tabdata);
+            $labelsBar   = json_encode($tabnames);
+            $tabsyncset = json_encode($tabsyncdates);
+
+            $nbcomputers     = __('Computers number', 'mydashboard');
+
+            $graph = "<script type='text/javascript'>
+                     var barsynchChartData = {
+                             datasets: [{
+                               data: $dataBarset,
+                               label: '$nbcomputers',
+                               backgroundColor: '#1f77b4',
+                     //          backgroundColor: '#FFF',
+                  //                   fill: false,
+                  //                   lineTension: '0.1',
+                             }],
+                           labels: $labelsBar
+                           };
+                     var datesyncset = $tabsyncset;
+                     $(document).ready(
+                        function () {
+                            var isChartRendered = false;
+                            var canvas = document . getElementById('LastSynchroChart');
+                            var ctx = canvas . getContext('2d');
+                            ctx.canvas.width = 700;
+                            ctx.canvas.height = 400;
+                            var LastSynchroChart = new Chart(ctx, {
+                                  type: 'bar',
+                                  data: barsynchChartData,
+                                  options: {
+                                      responsive:true,
+                                      maintainAspectRatio: true,
+                                      title:{
+                                          display:false,
+                                          text:'LastSynchroChart'
+                                      },
+                                      tooltips: {
+                                          enabled: false,
+//                                          mode: 'index',
+//                                          intersect: false
+                                      },
+                                      scales: {
+                                          xAxes: [{
+                                              stacked: true,
+                                          }],
+                                          yAxes: [{
+                                              stacked: true
+                                          }]
+                                      },
+                                     hover: {
+                                        onHover: function(event,elements) {
+                                           $('#LastSynchroChart').css('cursor', elements[0] ? 'pointer' : 'default');
+                                         }
+                                      },
+                                      animation: {
+                                       onComplete: function() {
+                                          
+                                          var chartInstance = this.chart,
+                                          ctx = chartInstance.ctx;
+                                          ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                                          ctx.textAlign = 'center';
+                                          ctx.textBaseline = 'bottom';
+                              
+                                          this.data.datasets.forEach(function (dataset, i) {
+                                              var meta = chartInstance.controller.getDatasetMeta(i);
+                                              meta.data.forEach(function (bar, index) {
+                                                  var data = dataset.data[index];                            
+                                                  ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                                              });
+                                          });
+                                          isChartRendered = true
+                                       }
+                                     }
+                                  }
+                              });
+                              
+                           canvas.onclick = function(evt) {
+                              var activeSynchroPoints = LastSynchroChart.getElementsAtEvent(evt);
+                              if (activeSynchroPoints[0]) {
+                                var chartSyncData = activeSynchroPoints[0]['_chart'].config.data;
+                                var idx = activeSynchroPoints[0]['_index'];
+                                var label = chartSyncData.labels[idx];
+                                var value = chartSyncData.datasets[0].data[idx];
+                                var dateinv = datesyncset[idx];
+                  //              var url = \"http://example.com/?label=\" + label + \"&value=\" + value;
+                                $.ajax({
+                                   url: '" . $CFG_GLPI['root_doc'] . "/plugins/mydashboard/ajax/launchURL.php',
+                                   type: 'POST',
+                                   data:{dateinv:dateinv, widget:'$widgetId'},
+                                   success:function(response) {
+                                           window.open(response);
+                                         }
+                                });
+                              }
+                            };
+                     }
+                 );
+                      </script>";
+            if (!$nb) {
+               $graph .= __('No data available', 'mydashboard');
+            } else {
+               $graph .= "<button class='btn btn-primary btn-sm' onclick='downloadGraph(\"LastSynchroChart\");'>" . __("Save as PNG", "mydashboard") . "</button>";
+            }
+
+            $graph .= "<div id=\"chart-container\" class=\"chart-container\">"; // style="position: relative; height:45vh; width:45vw"
+            $graph .= "<canvas id=\"LastSynchroChart\"></canvas>";
+            $graph .= "</div>";
+
+
+            $widget->setWidgetHtmlContent(
+               $graph
+            );
+
+            return $widget;
+
             break;
 
          case $this->getType() . "2":
-            $plugin = new Plugin();
-            if ($plugin->isActivated("ocsinventoryng")) {
 
-               $counts = array();
+            $counts = [];
+            $name   = [];
 
-               $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) as nb
+            $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
                               FROM `glpi_computers`
                               LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks` ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` ) 
                               WHERE `glpi_computers`.`is_deleted` = '0' AND `glpi_computers`.`is_template` = '0' AND `glpi_computers`.`entities_id` = '" . $_SESSION["glpiactive_entity"] . "' ";
 
-               //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-               $query .= " AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` = 1) )";
+            //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
+            $query .= " AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` = 1) )";
 
-               $result = $DB->query($query);
-               $nb = $DB->numrows($result);
+            $result = $DB->query($query);
+            $nb     = $DB->numrows($result);
 
-               if ($nb) {
-                  while ($data = $DB->fetch_assoc($result)) {
-                     $counts[__('OCS Inventory NG', 'ocsinventoryng')] = $data["nb"];
-                  }
+            if ($nb) {
+               while ($data = $DB->fetch_assoc($result)) {
+                  $counts[] = $data["nb"];
+                  $name[]   = __('OCS Inventory NG', 'ocsinventoryng');
                }
-               
-               if ($plugin->isActivated("fusioninventory")) {
-               
-                  $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
+            }
+            $plugin = new Plugin();
+            if ($plugin->isActivated("fusioninventory")) {
+
+               $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
                                  FROM `glpi_computers`
                                  LEFT JOIN `glpi_plugin_fusioninventory_inventorycomputercomputers` ON (`glpi_computers`.`id` = `glpi_plugin_fusioninventory_inventorycomputercomputers`.`computers_id` ) 
                                  WHERE `glpi_computers`.`is_deleted` = '0' AND `glpi_computers`.`is_template` = '0' AND `glpi_computers`.`entities_id` = '" . $_SESSION["glpiactive_entity"] . "'";
 
-                  //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-                  $query .= " AND ( `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` NOT LIKE '' )";
+               //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
+               $query .= " AND ( `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` NOT LIKE '' )";
 
 
-                  $result = $DB->query($query);
-                  $nb = $DB->numrows($result);
+               $result = $DB->query($query);
+               $nb     = $DB->numrows($result);
 
-                  if ($nb) {
-                     while ($data = $DB->fetch_assoc($result)) {
-                        $counts[__('Fusion Inventory', 'ocsinventoryng')] = $data["nb"];
-                     }
+               if ($nb) {
+                  while ($data = $DB->fetch_assoc($result)) {
+                     $counts[] = $data["nb"];
+                     $name[]   = __('Fusion Inventory', 'ocsinventoryng');
                   }
                }
-               if ($plugin->isActivated("fusioninventory")) {
+            }
+            if ($plugin->isActivated("fusioninventory")) {
                $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
                               FROM `glpi_computers`
                               LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks` ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` ) 
@@ -161,38 +272,107 @@ class PluginOcsinventoryngDashboard extends CommonGLPI
 
                //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
                $query .= " AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`last_update` LIKE '' OR `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` IS NULL) AND (`glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` LIKE '' OR `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` IS NULL) )";
-               } else {
-                  $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
+            } else {
+               $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
                               FROM `glpi_computers`
                               LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks` ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` ) 
                               WHERE `glpi_computers`.`is_deleted` = '0' AND `glpi_computers`.`is_template` = '0' AND `glpi_computers`.`entities_id` = '" . $_SESSION["glpiactive_entity"] . "'";
 
                //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
                $query .= " AND (`glpi_plugin_ocsinventoryng_ocslinks`.`last_update` LIKE '' OR `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` IS NULL) ";
-               }
-               $result = $DB->query($query);
-               $nb = $DB->numrows($result);
-
-               if ($nb) {
-                  while ($data = $DB->fetch_assoc($result)) {
-                     $counts[__('Without agent', 'ocsinventoryng')] = $data["nb"];
-                  }
-               }
-
-               $widget = PluginMydashboardHelper::getWidgetsFromDBQuery('piechart', $query);
-               $datas = $widget->getTabDatas();
-               $widget->setWidgetTitle(__("Detail of imported computers", "ocsinventoryng"));
-               //$widget->setOption("spreadsheet", array("tickFormatter" => PluginMydashboardPieChart::getTickFormatter($widget->getWidgetTitle())));
-
-               $widget->setTabDatas($counts);
-               $widget->toggleWidgetRefresh();
-
-               return $widget;
-            } else {
-               $widget = new PluginMydashboardDatatable();
-               $widget->setWidgetTitle(__("Detail of imported computers", "ocsinventoryng"));
-               return $widget;
             }
+            $result = $DB->query($query);
+            $nb     = $DB->numrows($result);
+
+            if ($nb) {
+               while ($data = $DB->fetch_assoc($result)) {
+                  $counts[] = $data["nb"];
+                  $name[]   = __('Without agent', 'ocsinventoryng');
+               }
+            }
+
+            $widget = new PluginMydashboardHtml();
+            $title  = __("Detail of imported computers", "ocsinventoryng");
+            $widget->setWidgetTitle($title);
+
+            $colors             = array(
+               "#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c",
+               "#98df8a", "#d62728", "#ff9896", "#9467bd", "#c5b0d5",
+               //               "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f",
+               //               "#c7c7c7", "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"
+            );
+            $dataPieset         = json_encode($counts);
+            $backgroundPieColor = json_encode($colors);
+            $labelsPie          = json_encode($name);
+
+            $graph = "<script type='text/javascript'>
+         
+            var dataInvPie = {
+              datasets: [{
+                data: $dataPieset,
+                backgroundColor: $backgroundPieColor
+              }],
+              labels: $labelsPie
+            };
+            
+            $(document).ready(
+              function() {
+                var canvas = document.getElementById('InventoryTypePieChart');
+                var ctx = canvas.getContext('2d');
+                ctx.canvas.width = 700;
+                ctx.canvas.height = 400;
+                var InventoryTypePieChart = new Chart(ctx, {
+                  type: 'pie',
+                  data: dataInvPie,
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    animation: {
+                        onComplete: function() {
+                          isChartRendered = true
+                        }
+                      }
+                   }
+                });
+//                    canvas.onclick = function(evt) {
+//                        var activePoints = InventoryTypePieChart.getElementsAtEvent(evt);
+//                        if (activePoints[0]) {
+//                          var chartData = activePoints[0]['_chart'].config.data;
+//                          var idx = activePoints[0]['_index'];
+//                          var label = chartData.labels[idx];
+//                          var value = chartData.datasets[0].data[idx];
+//                          var dateinv = dateset[idx];
+//            //              var url = \"http://example.com/?label=\" + label + \"&value=\" + value;
+//                          $.ajax({
+//                             url: '" . $CFG_GLPI['root_doc'] . "/plugins/mydashboard/ajax/launchURL.php',
+//                             type: 'POST',
+//                             data:{dateinv:dateinv, widget:'$widgetId'},
+//                             success:function(response) {
+//                                     window.open(response);
+//                                   }
+//                          });
+//                        }
+//                      };
+                   }
+                 );
+                
+             </script>";
+
+            if (!$nb) {
+               $graph .= __('No data available', 'mydashboard');
+            } else {
+               $graph .= "<button class='btn btn-primary btn-sm' onclick='downloadGraph(\"InventoryTypePieChart\");'>" . __("Save as PNG", "mydashboard") . "</button>";
+            }
+            $graph .= "<div id=\"chart-container\" class=\"chart-container\">";//style=\"position: relative; height:30vh; width:30vw\"
+            $graph .= "<canvas id=\"InventoryTypePieChart\"></canvas>";
+            $graph .= "</div>";
+
+            $widget->setWidgetHtmlContent(
+               $graph
+            );
+
+            return $widget;
+
             break;
       }
    }
