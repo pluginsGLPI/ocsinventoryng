@@ -7119,13 +7119,15 @@ JAVASCRIPT;
          if ($computer->getFromDB($computers_id)) {
             $input["entities_id"] = $computer->fields['entities_id'];
          }
-         $input["name"]        = $wuser["NAME"];
-         $input["type"]        = $wuser["TYPE"];
-         $input["description"] = $wuser["DESCRIPTION"];
-         $input["disabled"]    = $wuser["DISABLED"];
-         $input["sid"]         = $wuser["SID"];
+         if (!empty($wuser) && isset($wuser["NAME"])) {
+            $input["name"]        = $wuser["NAME"];
+            $input["type"]        = $wuser["TYPE"];
+            $input["description"] = $wuser["DESCRIPTION"];
+            $input["disabled"]    = $wuser["DISABLED"];
+            $input["sid"]         = $wuser["SID"];
 
-         $winusers->add($input, array('disable_unicity_check' => true), 0);
+            $winusers->add($input, array('disable_unicity_check' => true), 0);
+         }
          $winusers->fields = [];
       }
 
