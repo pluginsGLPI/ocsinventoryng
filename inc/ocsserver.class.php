@@ -2608,7 +2608,7 @@ JAVASCRIPT;
                $locations_id = $user->fields["locations_id"];
             }
             if ($cfg_ocs["import_user_group"] > 0) {
-               $groups_id = self::getUserGroup(0, $user_id, '`is_requester`', true);
+               $groups_id = self::getUserGroup(0, $user_id, '`is_itemgroup`', true);
             }
          }
       }
@@ -2798,7 +2798,7 @@ JAVASCRIPT;
                         $locations_id = $user->fields["locations_id"];
                      }
                      if ($cfg_ocs["import_user_group"] > 0) {
-                        $groups_id = self::getUserGroup($comp->fields["entities_id"], $user_id, '`is_requester`', true);
+                        $groups_id = self::getUserGroup($comp->fields["entities_id"], $user_id, '`is_itemgroup`', true);
                      }
                   }
                }
@@ -7765,7 +7765,7 @@ JAVASCRIPT;
             if ($cfg_ocs["import_user_group"] > 0) {
                $comp = new Computer();
                $comp->getFromDB($line_links["computers_id"]);
-               $groups_id = self::getUserGroup($comp->fields["entities_id"], $user_id, '`is_requester`', true);
+               $groups_id = self::getUserGroup($comp->fields["entities_id"], $user_id, '`is_itemgroup`', true);
             }
          }
       }
