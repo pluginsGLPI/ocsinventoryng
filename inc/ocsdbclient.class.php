@@ -108,7 +108,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                         $colname        = $this->db->fetch_assoc($requestcolname);
                         if ($colname['NAME'] != "") {
                            if (!is_null($value)) {
-                              $name         = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" . $value;
+                              $name         = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" . Toolbox::addslashes_deep($value);
                               $query        = "SELECT TVALUE,NAME FROM config WHERE NAME = '" . $name . "'";
                               $requestvalue = $this->db->query($query);
                               $custom_value = $this->db->fetch_assoc($requestvalue);
@@ -248,7 +248,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                            $colname = $this->db->fetch_assoc($requestcolname);
                            if ($colname['NAME'] != "") {
                               if (!is_null($value)) {
-                                 $name = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" . $value;
+                                 $name = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" . Toolbox::addslashes_deep($value);
                                  $query = "SELECT TVALUE,NAME FROM config WHERE NAME = '" . $name . "'";
                                  $requestvalue = $this->db->query($query);
                                  $custom_value = $this->db->fetch_assoc($requestvalue);
