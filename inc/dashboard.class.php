@@ -43,7 +43,7 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
     * @param array $options
     */
    function __construct($options = array()) {
-      $this->options = $options;
+      $this->options    = $options;
       $this->interfaces = ["central"];
    }
 
@@ -85,16 +85,16 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                         WHERE `glpi_computers`.`is_deleted` = '0' AND `glpi_computers`.`entities_id` = '" . $_SESSION["glpiactive_entity"] . "'";
 
             //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-            $query    .= " GROUP BY periodsync_name ORDER BY periodsync ASC";
-            $result   = $DB->query($query);
-            $nb       = $DB->numrows($result);
-            $tabdata  = [];
-            $tabnames = [];
+            $query        .= " GROUP BY periodsync_name ORDER BY periodsync ASC";
+            $result       = $DB->query($query);
+            $nb           = $DB->numrows($result);
+            $tabdata      = [];
+            $tabnames     = [];
             $tabsyncdates = [];
             if ($nb) {
                while ($data = $DB->fetch_assoc($result)) {
-                  $tabdata[]  = $data['nb'];
-                  $tabnames[] = $data['periodsync_name'];
+                  $tabdata[]      = $data['nb'];
+                  $tabnames[]     = $data['periodsync_name'];
                   $tabsyncdates[] = $data['periodsync'];
                }
             }
@@ -102,11 +102,11 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
             $widget = new PluginMydashboardHtml();
             $widget->setWidgetTitle(__("Last synchronization of computers by month", "ocsinventoryng"));
 
-            $dataBarset  = json_encode($tabdata);
-            $labelsBar   = json_encode($tabnames);
+            $dataBarset = json_encode($tabdata);
+            $labelsBar  = json_encode($tabnames);
             $tabsyncset = json_encode($tabsyncdates);
 
-            $nbcomputers     = __('Computers number', 'mydashboard');
+            $nbcomputers = __('Computers number', 'mydashboard');
 
             $graph = "<script type='text/javascript'>
                      var barsynchChartData = {
@@ -202,14 +202,11 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                       </script>";
             if (!$nb) {
                $graph .= __('No data available', 'mydashboard');
-            } else {
-               $graph .= "<button class='btn btn-primary btn-sm' onclick='downloadGraph(\"LastSynchroChart\");'>" . __("Save as PNG", "mydashboard") . "</button>";
             }
 
-            $graph .= "<div id=\"chart-container\" class=\"chart-container\">"; // style="position: relative; height:45vh; width:45vw"
-            $graph .= "<canvas id=\"LastSynchroChart\"></canvas>";
-            $graph .= "</div>";
-
+            $criterias = [];
+            $params    = [];
+            $graph     .= PluginMydashboardHelper::getGraphHeader($widgetId, 'LastSynchroChart', false, $params, $criterias, true, true);
 
             $widget->setWidgetHtmlContent(
                $graph
@@ -360,12 +357,11 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
 
             if (!$nb) {
                $graph .= __('No data available', 'mydashboard');
-            } else {
-               $graph .= "<button class='btn btn-primary btn-sm' onclick='downloadGraph(\"InventoryTypePieChart\");'>" . __("Save as PNG", "mydashboard") . "</button>";
             }
-            $graph .= "<div id=\"chart-container\" class=\"chart-container\">";//style=\"position: relative; height:30vh; width:30vw\"
-            $graph .= "<canvas id=\"InventoryTypePieChart\"></canvas>";
-            $graph .= "</div>";
+
+            $criterias = [];
+            $params    = [];
+            $graph     .= PluginMydashboardHelper::getGraphHeader($widgetId, 'InventoryTypePieChart', false, $params, $criterias, true, true);
 
             $widget->setWidgetHtmlContent(
                $graph
