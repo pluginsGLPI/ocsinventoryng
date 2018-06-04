@@ -2608,7 +2608,7 @@ JAVASCRIPT;
                $locations_id = $user->fields["locations_id"];
             }
             if ($cfg_ocs["import_user_group"] > 0) {
-               $groups_id = self::getUserGroup(0, $user_id, '`is_requester`', true);
+               $groups_id = self::getUserGroup(0, $user_id, '`is_itemgroup`', true);
             }
          }
       }
@@ -2798,7 +2798,7 @@ JAVASCRIPT;
                         $locations_id = $user->fields["locations_id"];
                      }
                      if ($cfg_ocs["import_user_group"] > 0) {
-                        $groups_id = self::getUserGroup($comp->fields["entities_id"], $user_id, '`is_requester`', true);
+                        $groups_id = self::getUserGroup($comp->fields["entities_id"], $user_id, '`is_itemgroup`', true);
                      }
                   }
                }
@@ -7119,13 +7119,15 @@ JAVASCRIPT;
          if ($computer->getFromDB($computers_id)) {
             $input["entities_id"] = $computer->fields['entities_id'];
          }
-         $input["name"]        = $wuser["NAME"];
-         $input["type"]        = $wuser["TYPE"];
-         $input["description"] = $wuser["DESCRIPTION"];
-         $input["disabled"]    = $wuser["DISABLED"];
-         $input["sid"]         = $wuser["SID"];
+         if (!empty($wuser) && isset($wuser["NAME"])) {
+            $input["name"]        = $wuser["NAME"];
+            $input["type"]        = $wuser["TYPE"];
+            $input["description"] = $wuser["DESCRIPTION"];
+            $input["disabled"]    = $wuser["DISABLED"];
+            $input["sid"]         = $wuser["SID"];
 
-         $winusers->add($input, array('disable_unicity_check' => true), 0);
+            $winusers->add($input, array('disable_unicity_check' => true), 0);
+         }
          $winusers->fields = [];
       }
 
@@ -7763,7 +7765,7 @@ JAVASCRIPT;
             if ($cfg_ocs["import_user_group"] > 0) {
                $comp = new Computer();
                $comp->getFromDB($line_links["computers_id"]);
-               $groups_id = self::getUserGroup($comp->fields["entities_id"], $user_id, '`is_requester`', true);
+               $groups_id = self::getUserGroup($comp->fields["entities_id"], $user_id, '`is_itemgroup`', true);
             }
          }
       }
