@@ -2012,6 +2012,7 @@ JAVASCRIPT;
          }
       }
 
+      $computerDisk = new ComputerDisk();
       if ($id_item > 0
           && isset($ocsSnmp['COMPUTERDISKS'])
           && (($cfg_ocs['importsnmp_computerdisks'] && $action == "add")
@@ -2021,7 +2022,6 @@ JAVASCRIPT;
           && count($ocsSnmp['COMPUTERDISKS']) > 0
       ) {
          $already_processed = array();
-         $computerDisk = new ComputerDisk();
 
          foreach ($ocsSnmp['COMPUTERDISKS'] as $k => $ocsComputerDisks) {
 
