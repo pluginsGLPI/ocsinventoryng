@@ -20,7 +20,7 @@ msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-05 12:06+0100\n"
-"PO-Revision-Date: 2018-02-05 11:10+0000\n"
+"PO-Revision-Date: 2018-02-05 16:51+0000\n"
 "Last-Translator: Amandine Manceau\n"
 "Language-Team: French (France) (http://www.transifex.com/yllen/GLPI_ocsinventoryng/language/fr_FR/)\n"
 "MIME-Version: 1.0\n"
@@ -978,17 +978,17 @@ msgstr "Service"
 msgid ""
 "Service Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/services) must be installed"
-msgstr "Le plugin Service pour OCSNG doit être installé (https://github.com/PluginsOCSInventory-NG/services) "
+msgstr "Le plugin Service pour OCSNG doit être installé (https://github.com/PluginsOCSInventory-NG/services)"
 
 #: inc/ocsserver.class.php:919 inc/runningprocess.class.php:43
 msgid "Running Process"
-msgstr "Processus en  cours"
+msgstr "Processus en cours"
 
 #: inc/ocsserver.class.php:922
 msgid ""
 "Running Process Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/runningProcess) must be installed"
-msgstr "Le plugin Running Process pour OCSNG doit être installé (https://github.com/PluginsOCSInventory-NG/runningProcess) "
+msgstr "Le plugin Running Process pour OCSNG doit être installé (https://github.com/PluginsOCSInventory-NG/runningProcess)"
 
 #: inc/ocsserver.class.php:931 inc/ocsserver.class.php:935
 msgid "OCSNG administrative information"

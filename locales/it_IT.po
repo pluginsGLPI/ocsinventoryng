@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-05 12:06+0100\n"
-"PO-Revision-Date: 2018-02-05 11:08+0000\n"
-"Last-Translator: Amandine Manceau\n"
+"PO-Revision-Date: 2018-02-05 17:30+0000\n"
+"Last-Translator: Pierfrancesco Passerini <p.passerini@gmail.com>\n"
 "Language-Team: Italian (Italy) (http://www.transifex.com/yllen/GLPI_ocsinventoryng/language/it_IT/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -434,7 +434,7 @@ msgstr "Scegli ID"
 
 #: inc/ipdiscoverocslink.class.php:1069
 msgid "Unable to add. an object with same MAC address already exists."
-msgstr "Impossibile aggiungere. E' già presente un oggetto con lo stesso indirizzo MAC."
+msgstr "Inserimento non permesso. E' già presente un oggetto con lo stesso indirizzo MAC."
 
 #: inc/ipdiscoverocslink.class.php:1378
 msgid "No new IPDiscover device to import"
@@ -890,7 +890,7 @@ msgstr "Licenze Microsoft Office"
 msgid ""
 "Depends on software import and OfficePack Plugin for (https://github.com"
 "/PluginsOCSInventory-NG/officepack) OCSNG must be installed"
-msgstr "Deve essere installato OfficePack Plugin for OCS-NG (https://github.com/PluginsOCSInventory-NG/officepack)"
+msgstr "Deve essere installato il Plugin OfficePack per OCS-NG (https://github.com/PluginsOCSInventory-NG/officepack)"
 
 #: inc/ocsserver.class.php:869
 msgid "Antivirus"
@@ -900,13 +900,13 @@ msgstr "Antivirus"
 msgid ""
 "Security Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/security) must be installed"
-msgstr "Deve essere installato Security Plugin for OCS-NG (https://github.com/PluginsOCSInventory-NG/security)"
+msgstr "Deve essere installato il Plugin Security per OCS-NG (https://github.com/PluginsOCSInventory-NG/security)"
 
 #: inc/ocsserver.class.php:879
 msgid ""
 "Uptime Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/uptime) "
 "must be installed"
-msgstr "Deve essere installato Uptime Plugin for OCS-NG (https://github.com/PluginsOCSInventory-NG/uptime)"
+msgstr "Deve essere installato il Plugin Uptime per OCS-NG (https://github.com/PluginsOCSInventory-NG/uptime)"
 
 #: inc/ocsserver.class.php:880
 msgid "Windows Update State"
@@ -916,7 +916,7 @@ msgstr "Impostazione Windows Update"
 msgid ""
 "Winupdate Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/winupdate) must be installed"
-msgstr "Deve essere installato Winupdate Plugin for OCS-NG (https://github.com/PluginsOCSInventory-NG/winupdate)"
+msgstr "Deve essere installato il Plugin Winupdate per OCS-NG (https://github.com/PluginsOCSInventory-NG/winupdate)"
 
 #: inc/ocsserver.class.php:887
 msgid "Teamviewer"
@@ -926,7 +926,7 @@ msgstr "Teamviewer"
 msgid ""
 "Teamviewer Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/teamviewer) must be installed"
-msgstr "Deve essere installato Teamviewer Plugin for OCSN-G (https://github.com/PluginsOCSInventory-NG/teamviewer)"
+msgstr "Deve essere installato il Plugin Teamviewer per OCS-NG (https://github.com/PluginsOCSInventory-NG/teamviewer)"
 
 #: inc/ocsserver.class.php:891 inc/proxysetting.class.php:43
 msgid "Proxy Settings"
@@ -936,7 +936,7 @@ msgstr "Impostazioni proxy"
 msgid ""
 "Navigator Proxy Setting Plugin for OCSNG (https://github.com"
 "/PluginsOCSInventory-NG/navigatorproxysetting) must be installed"
-msgstr "Deve essere installato Navigator Proxy Setting Plugin for OCS-NG (https://github.com/PluginsOCSInventory-NG/navigatorproxysetting)"
+msgstr "Deve essere installato il Plugin Navigator Proxy Setting per OCS-NG (https://github.com/PluginsOCSInventory-NG/navigatorproxysetting)"
 
 #: inc/ocsserver.class.php:897 inc/winuser.class.php:43
 msgid "Windows Users"
@@ -946,7 +946,7 @@ msgstr "Utente Windows"
 msgid ""
 "Winusers Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/winusers) must be installed"
-msgstr "Deve essere installato Winusers Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/winusers)"
+msgstr "Deve essere installato il Plugin Winusers per OCS-NG (https://github.com/PluginsOCSInventory-NG/winusers)"
 
 #: inc/ocsserver.class.php:902 inc/osinstall.class.php:43
 msgid "OS Informations"
@@ -956,33 +956,33 @@ msgstr "Sistema Operativo"
 msgid ""
 "OSInstall Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/osinstall) must be installed"
-msgstr "Deve essere installato OSInstall Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/osinstall)"
+msgstr "Deve essere installato il Plugin OSInstall per OCS-NG (https://github.com/PluginsOCSInventory-NG/osinstall)"
 
 #: inc/ocsserver.class.php:911
 msgid ""
 "Networkshare Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/networkshare) must be installed"
-msgstr "Deve essere installato Networkshare Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/networkshare)"
+msgstr "Deve essere installato il Plugin Networkshare per OCS-NG (https://github.com/PluginsOCSInventory-NG/networkshare)"
 
 #: inc/ocsserver.class.php:913 inc/service.class.php:43
 msgid "Service"
-msgstr ""
+msgstr "Servizio"
 
 #: inc/ocsserver.class.php:916
 msgid ""
 "Service Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/services) must be installed"
-msgstr ""
+msgstr "Deve essere installato il Plugin Service per OCS-NG (https://github.com/PluginsOCSInventory-NG/services)"
 
 #: inc/ocsserver.class.php:919 inc/runningprocess.class.php:43
 msgid "Running Process"
-msgstr ""
+msgstr "Processo in esecuzione"
 
 #: inc/ocsserver.class.php:922
 msgid ""
 "Running Process Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/runningProcess) must be installed"
-msgstr ""
+msgstr "Deve essere installato il Plugin Running Process per OCS-NG (https://github.com/PluginsOCSInventory-NG/runningProcess)"
 
 #: inc/ocsserver.class.php:931 inc/ocsserver.class.php:935
 msgid "OCSNG administrative information"
@@ -1209,7 +1209,7 @@ msgstr "Configurazione e versione OCS-NG valide"
 
 #: inc/ocsserver.class.php:1603
 msgid "Unable to add. The OCSNG server already exists."
-msgstr "Impossibile aggiungerlo. Il server OCS-NG esista già."
+msgstr "Inserimento non permesso. Il server OCS-NG esista già."
 
 #: inc/ocsserver.class.php:1977
 #, php-format
@@ -1515,55 +1515,55 @@ msgstr "Elementi che non soddisfano le regole di assegnazione all'entità %s: %s
 
 #: inc/runningprocess.class.php:121
 msgid "Process name"
-msgstr ""
+msgstr "Nome processo"
 
 #: inc/runningprocess.class.php:122
 msgid "Process ID"
-msgstr ""
+msgstr "ID processo"
 
 #: inc/runningprocess.class.php:124
 msgid "Process memory"
-msgstr ""
+msgstr "Memoria processo"
 
 #: inc/runningprocess.class.php:125
 msgid "Command line"
-msgstr ""
+msgstr "Riga comando"
 
 #: inc/runningprocess.class.php:127
 msgid "Company"
-msgstr ""
+msgstr "Azienda"
 
 #: inc/service.class.php:117
 msgid "Name of the service"
-msgstr ""
+msgstr "Nome del servizio"
 
 #: inc/service.class.php:118
 msgid "Full name"
-msgstr ""
+msgstr "Nome completo"
 
 #: inc/service.class.php:119
 msgid "Service Status"
-msgstr ""
+msgstr "Stato del servizio"
 
 #: inc/service.class.php:121
 msgid "Start type"
-msgstr ""
+msgstr "Tipo di avvio"
 
 #: inc/service.class.php:122
 msgid "Access path"
-msgstr ""
+msgstr "Percorso"
 
 #: inc/service.class.php:123
 msgid "Session"
-msgstr ""
+msgstr "Sessione"
 
 #: inc/service.class.php:124
 msgid "Exit code"
-msgstr ""
+msgstr " Codice di uscita"
 
 #: inc/service.class.php:125
 msgid "Spec Exit code"
-msgstr ""
+msgstr "Codice di uscita speciale"
 
 #: inc/snmpocslink.class.php:66
 msgid "OCSNG SNMP"

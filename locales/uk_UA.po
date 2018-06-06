@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: uk_UA\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
 #: hook.php:1457 front/notimportedcomputer.php:34 inc/menu.class.php:94
 #: inc/notificationtargetnotimportedcomputer.class.php:46
@@ -132,6 +132,7 @@ msgid_plural "OCSNG servers"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: hook.php:1697 inc/proxysetting.class.php:123
 msgid "Proxy enabled"
@@ -153,6 +154,7 @@ msgid_plural "OCSNG links"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: hook.php:2149
 msgid "Link possible"
@@ -176,6 +178,7 @@ msgid_plural "Locked fields"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: hook.php:2406
 msgid "You don't use locks - See setup for activate them"
@@ -224,6 +227,7 @@ msgid_plural "Unknown imported network ports types"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: front/ocsng.clean.php:53 inc/menu.class.php:109 inc/ocsserver.class.php:552
 #: inc/ocsserver.class.php:553 inc/ocsserver.class.php:554
@@ -274,6 +278,7 @@ msgid_plural "seconds"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: inc/config.class.php:182
 msgid "Lock not activated"
@@ -326,6 +331,7 @@ msgid_plural "Computers not imported"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: inc/detail.class.php:61
 msgid "Process time"
@@ -579,6 +585,7 @@ msgid_plural "Network port types"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: inc/networkporttype.class.php:135
 msgid "Any kind"
@@ -1464,6 +1471,7 @@ msgid_plural "Allowed OCSNG servers"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: inc/profile.class.php:312
 msgid "Manually synchronization"
@@ -1496,6 +1504,7 @@ msgid_plural "%d registry keys found"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+msgstr[3] ""
 
 #: inc/registrykey.class.php:98
 msgid "Hive"
