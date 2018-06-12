@@ -317,8 +317,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          if (!empty($items_id)
              && $item->fields["is_dynamic"]
-             && Session::haveRight("plugin_ocsinventoryng_link", READ)
-         ) {
+             && Session::haveRight("plugin_ocsinventoryng_link", READ)) {
 
             $query = "SELECT *
                       FROM `glpi_plugin_ocsinventoryng_ocslinks`

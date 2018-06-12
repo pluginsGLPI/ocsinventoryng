@@ -34,17 +34,16 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginOcsinventoryngRegistryKey
  */
-class PluginOcsinventoryngRegistryKey extends CommonDBTM
-{
+class PluginOcsinventoryngRegistryKey extends CommonDBTM {
 
    static $rightname = "plugin_ocsinventoryng";
 
    /**
     * @param int $nb
+    *
     * @return string|translated
     */
-   static function getTypeName($nb = 0)
-   {
+   static function getTypeName($nb = 0) {
       // No plural
       return __('Registry', 'ocsinventoryng');
    }
@@ -53,8 +52,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM
    /**
     *
     */
-   function cleanDBonPurge()
-   {
+   function cleanDBonPurge() {
 
       $self = new self();
       $self->deleteByCriteria(array('computers_id' => $this->fields['id']));
@@ -68,8 +66,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM
     *
     * @return bool
     */
-   static function showForComputer($ID)
-   {
+   static function showForComputer($ID) {
       global $DB;
 
       if (!Session::haveRight("computer", READ)) {
@@ -78,11 +75,11 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM
 
       //REGISTRY HIVE
       $REGISTRY_HIVE = array("HKEY_CLASSES_ROOT",
-         "HKEY_CURRENT_USER",
-         "HKEY_LOCAL_MACHINE",
-         "HKEY_USERS",
-         "HKEY_CURRENT_CONFIG",
-         "HKEY_DYN_DATA");
+                             "HKEY_CURRENT_USER",
+                             "HKEY_LOCAL_MACHINE",
+                             "HKEY_USERS",
+                             "HKEY_CURRENT_CONFIG",
+                             "HKEY_DYN_DATA");
 
       $query = "SELECT *
                 FROM `glpi_plugin_ocsinventoryng_registrykeys`
@@ -92,7 +89,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM
          if ($DB->numrows($result) != 0) {
             echo "<div class='center'><table class='tab_cadre_fixe'>";
             echo "<tr><th colspan='4'>" . sprintf(_n('%d registry key found',
-                  '%d registry keys found', $DB->numrows($result), 'ocsinventoryng'), $DB->numrows($result));
+                                                     '%d registry keys found', $DB->numrows($result), 'ocsinventoryng'), $DB->numrows($result));
             echo "</th></tr>\n";
 
             echo "<tr><th>" . __('Name') . "</th>";
@@ -125,13 +122,14 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM
 
    /**
     * @param CommonGLPI $item
-    * @param int $withtemplate
+    * @param int        $withtemplate
+    *
     * @return array|string|translated
     */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))
-         && Computer::canView()) {
+          && Computer::canView()) {
 
          switch ($item->getType()) {
             case 'Computer' :
@@ -148,23 +146,23 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM
 
    /**
     * @param CommonDBTM $item
+    *
     * @return int
     */
-   static function countForItem(CommonDBTM $item)
-   {
+   static function countForItem(CommonDBTM $item) {
 
       return countElementsInTable('glpi_plugin_ocsinventoryng_registrykeys',
-         "`computers_id` = '" . $item->getID() . "'");
+                                  "`computers_id` = '" . $item->getID() . "'");
    }
 
    /**
     * @param CommonGLPI $item
-    * @param int $tabnum
-    * @param int $withtemplate
+    * @param int        $tabnum
+    * @param int        $withtemplate
+    *
     * @return bool
     */
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
-   {
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
 
       if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))) {
          switch ($item->getType()) {
@@ -176,16 +174,15 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM
       return true;
    }
 
-   function getSearchOptions()
-   {
+   function getSearchOptions() {
 
       $tab = array();
 
       $tab['common'] = self::getTypeName(2);
 
-      $tab[1]['table'] = $this->getTable();
-      $tab[1]['field'] = 'id';
-      $tab[1]['name'] = __('ID');
+      $tab[1]['table']    = $this->getTable();
+      $tab[1]['field']    = 'id';
+      $tab[1]['name']     = __('ID');
       $tab[1]['datatype'] = 'integer';
 
 
