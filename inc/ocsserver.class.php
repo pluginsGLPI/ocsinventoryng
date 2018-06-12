@@ -7121,10 +7121,10 @@ JAVASCRIPT;
          }
          if (!empty($wuser) && isset($wuser["NAME"])) {
             $input["name"]        = $wuser["NAME"];
-            $input["type"]        = $wuser["TYPE"];
-            $input["description"] = $wuser["DESCRIPTION"];
-            $input["disabled"]    = $wuser["DISABLED"];
-            $input["sid"]         = $wuser["SID"];
+            $input["type"]        = (isset($wuser["TYPE"]) ? $wuser["TYPE"]: '');
+            $input["description"] = (isset($wuser["TYPE"]) ? $wuser["DESCRIPTION"] : '');
+            $input["disabled"]    = (isset($wuser["TYPE"]) ? $wuser["DISABLED"] : '');
+            $input["sid"]         = (isset($wuser["TYPE"]) ? $wuser["SID"]: '');
 
             $winusers->add($input, array('disable_unicity_check' => true), 0);
          }
