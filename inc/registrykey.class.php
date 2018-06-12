@@ -128,12 +128,10 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM
     * @param int $withtemplate
     * @return array|string|translated
     */
-   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
-   {
+   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       if (in_array($item->getType(), PluginOcsinventoryngOcsServer::getTypes(true))
-         && $this->canView()
-      ) {
+         && Computer::canView()) {
 
          switch ($item->getType()) {
             case 'Computer' :
