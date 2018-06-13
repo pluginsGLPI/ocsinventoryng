@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -40,11 +40,10 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM
    /**
     * @param $ID
     */
-   function cleanForOcsServer($ID)
-   {
+   function cleanForOcsServer($ID) {
 
       $temp = new self();
-      $temp->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $ID));
+      $temp->deleteByCriteria(['plugin_ocsinventoryng_ocsservers_id' => $ID]);
 
    }
 
@@ -53,8 +52,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM
     * @param $glpi_column
     * @return true
     */
-   function getFromDBbyOcsServerIDAndGlpiColumn($plugin_ocsinventoryng_ocsservers_id, $glpi_column)
-   {
+   function getFromDBbyOcsServerIDAndGlpiColumn($plugin_ocsinventoryng_ocsservers_id, $glpi_column) {
 
       return $this->getFromDBByQuery("WHERE `" . $this->getTable() . "`.`plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id' AND `" . $this->getTable() . "`.`glpi_column` = '$glpi_column'");
 
@@ -66,8 +64,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM
     * @param $computer_updates
     * @return array
     */
-   static function addInfocomsForComputer($computers_id, $date, $computer_updates)
-   {
+   static function addInfocomsForComputer($computers_id, $date, $computer_updates) {
       global $DB;
 
       $infocom = new Infocom();
@@ -77,11 +74,11 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM
             || $infocom->fields['use_date'] == 'NULL'
          ) {
             //add use_date
-            $infocom->update(array('id' => $infocom->fields['id'], 'use_date' => $use_date));
+            $infocom->update(['id' => $infocom->fields['id'], 'use_date' => $use_date]);
          }
       } else {
          //add infocom
-         $infocom->add(array('items_id' => $computers_id, 'itemtype' => 'Computer', 'use_date' => $use_date));
+         $infocom->add(['items_id' => $computers_id, 'itemtype' => 'Computer', 'use_date' => $use_date]);
 
       }
 

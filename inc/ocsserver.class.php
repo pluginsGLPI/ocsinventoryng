@@ -38,7 +38,7 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
-   static $types     = array('Computer');
+   static $types     = ['Computer'];
    static $rightname = "plugin_ocsinventoryng";
    // From CommonDBTM
    public $dohistory = true;
@@ -145,7 +145,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                return $ong;
          }
 
-
       }
       return '';
    }
@@ -190,9 +189,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
     *
     * @return array
     */
-   function defineTabs($options = array()) {
+   function defineTabs($options = []) {
 
-      $ong = array();
+      $ong = [];
       $this->addDefaultFormTab($ong);
       $this->addStandardTab(__CLASS__, $ong, $options);
       $this->addStandardTab('PluginOcsinventoryngSnmpOcslink', $ong, $options);
@@ -206,7 +205,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
     */
    function getSearchOptions() {
 
-      $tab = array();
+      $tab = [];
 
       $tab['common'] = self::getTypeName();
 
@@ -265,7 +264,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    static function setupMenu($plugin_ocsinventoryng_ocsservers_id) {
       global $CFG_GLPI, $DB;
       $name       = "";
-      $ocsservers = array();
+      $ocsservers = [];
       //echo "<div class='center'>";
       //echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png' " .
       //"alt='OCS Inventory NG' title='OCS Inventory NG'>";
@@ -291,10 +290,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          foreach ($DB->request($query) as $data) {
             $ocsservers[] = $data['id'];
          }
-         Dropdown::show('PluginOcsinventoryngOcsServer', array("condition"           => "`id` IN ('" . implode("','", $ocsservers) . "')",
+         Dropdown::show('PluginOcsinventoryngOcsServer', ["condition"           => "`id` IN ('" . implode("','", $ocsservers) . "')",
                                                                "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                                "on_change"           => "this.form.submit()",
-                                                               "display_emptychoice" => false));
+                                                               "display_emptychoice" => false]);
          echo "</td></tr>";
          echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
          echo __('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
@@ -383,7 +382,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    static function importMenu($plugin_ocsinventoryng_ocsservers_id) {
       global $CFG_GLPI, $DB;
       $name                = "";
-      $ocsservers          = array();
+      $ocsservers          = [];
       $numberActiveServers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
       if ($numberActiveServers > 0) {
          echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
@@ -403,10 +402,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          foreach ($DB->request($query) as $data) {
             $ocsservers[] = $data['id'];
          }
-         Dropdown::show('PluginOcsinventoryngOcsServer', array("condition"           => "`id` IN ('" . implode("','", $ocsservers) . "')",
+         Dropdown::show('PluginOcsinventoryngOcsServer', ["condition"           => "`id` IN ('" . implode("','", $ocsservers) . "')",
                                                                "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                                "on_change"           => "this.form.submit()",
-                                                               "display_emptychoice" => false));
+                                                               "display_emptychoice" => false]);
          echo "</td></tr>";
          echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
          echo __('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
@@ -595,15 +594,14 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             }
          </script>
 JAVASCRIPT;
-      Dropdown::showYesNo('init_all', 0, -1, array(
+      Dropdown::showYesNo('init_all', 0, -1, [
          'width'     => '10%',
          'on_change' => "form_init_all(this.form, this.selectedIndex);"
-      ));
+      ]);
       echo "</th></tr>";
 
       echo "<tr class='tab_bg_2'>\n";
       echo "<td class='top'>\n";
-
 
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
@@ -790,15 +788,15 @@ JAVASCRIPT;
 
       echo "<tr><th colspan='4'>" . __('Linked objects', 'ocsinventoryng') . "</th>\n";
 
-      $import_array = array("0" => __('No import'),
+      $import_array = ["0" => __('No import'),
                             "1" => __('Global import', 'ocsinventoryng'),
-                            "2" => __('Unit import', 'ocsinventoryng'));
+                            "2" => __('Unit import', 'ocsinventoryng')];
 
-      $import_array2 = array("0" => __('No import'),
+      $import_array2 = ["0" => __('No import'),
                              "1" => __('Global import', 'ocsinventoryng'),
                              "2" => __('Unit import', 'ocsinventoryng'),
                              "3" => __('Unit import on serial number', 'ocsinventoryng'),
-                             "4" => __('Unit import serial number only', 'ocsinventoryng'));
+                             "4" => __('Unit import serial number only', 'ocsinventoryng')];
 
       $periph   = $this->fields["import_periph"];
       $monitor  = $this->fields["import_monitor"];
@@ -806,23 +804,23 @@ JAVASCRIPT;
       $software = $this->fields["import_software"];
 
       echo "<tr class='tab_bg_2'><td class='center'>" . _n('Device', 'Devices', 2) . " </td>\n<td>";
-      Dropdown::showFromArray("import_periph", $import_array, array('value' => $periph));
+      Dropdown::showFromArray("import_periph", $import_array, ['value' => $periph]);
       echo "</td>\n";
       echo "<td class='center'>" . _n('Monitor', 'Monitors', 2) . "</td>\n<td>";
-      Dropdown::showFromArray("import_monitor", $import_array2, array('value' => $monitor));
+      Dropdown::showFromArray("import_monitor", $import_array2, ['value' => $monitor]);
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Comments') . " " . _n('Monitor', 'Monitors', 2) . " </td>\n<td>";
       Dropdown::showYesNo("import_monitor_comment", $this->fields["import_monitor_comment"]);
       echo "</td>\n";
       echo "<td class='center'>" . _n('Printer', 'Printers', 2) . "</td>\n<td>";
-      Dropdown::showFromArray("import_printer", $import_array, array('value' => $printer));
+      Dropdown::showFromArray("import_printer", $import_array, ['value' => $printer]);
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . _n('Software', 'Software', 2) . "</td>\n<td>";
-      $import_array = array("0" => __('No import'),
-                            "1" => __('Unit import', 'ocsinventoryng'));
-      Dropdown::showFromArray("import_software", $import_array, array('value' => $software));
+      $import_array = ["0" => __('No import'),
+                            "1" => __('Unit import', 'ocsinventoryng')];
+      Dropdown::showFromArray("import_software", $import_array, ['value' => $software]);
       echo "</td>\n";
       echo "<td class='center'>" . _n('Volume', 'Volumes', 2) . "</td>\n<td>";
       Dropdown::showYesNo("import_disk", $this->fields["import_disk"]);
@@ -882,7 +880,6 @@ JAVASCRIPT;
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Winupdate Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/winupdate) must be installed', 'ocsinventoryng')));
       echo "&nbsp;</td></tr>\n";
-
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Teamviewer', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showYesNo("import_teamviewer", $this->fields["import_teamviewer"]);
@@ -946,8 +943,8 @@ JAVASCRIPT;
       $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "otherserial");
 
       $value = (isset($link->fields["ocs_column"]) ? $link->fields["ocs_column"] : "");
-      Dropdown::showFromArray("import_otherserial", $oserial, array('value' => $value,
-                                                                    'width' => '100%'));
+      Dropdown::showFromArray("import_otherserial", $oserial, ['value' => $value,
+                                                                    'width' => '100%']);
       echo "</td>\n";
       echo "<td class='center'>" . __('Location') . " </td>\n";
       echo "<td>";
@@ -955,8 +952,8 @@ JAVASCRIPT;
       $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "locations_id");
 
       $value = (isset($link->fields["ocs_column"]) ? $link->fields["ocs_column"] : "");
-      Dropdown::showFromArray("import_location", $opt, array('value' => $value,
-                                                             'width' => '100%'));
+      Dropdown::showFromArray("import_location", $opt, ['value' => $value,
+                                                             'width' => '100%']);
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Group') . " </td>\n";
@@ -965,8 +962,8 @@ JAVASCRIPT;
       $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "groups_id");
 
       $value = (isset($link->fields["ocs_column"]) ? $link->fields["ocs_column"] : "");
-      Dropdown::showFromArray("import_group", $opt, array('value' => $value,
-                                                          'width' => '100%'));
+      Dropdown::showFromArray("import_group", $opt, ['value' => $value,
+                                                          'width' => '100%']);
 
       echo "</td>\n";
       echo "<td class='center'>" . __('Alternate username number') . " </td>\n";
@@ -975,8 +972,8 @@ JAVASCRIPT;
       $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "contact_num");
 
       $value = (isset($link->fields["ocs_column"]) ? $link->fields["ocs_column"] : "");
-      Dropdown::showFromArray("import_contact_num", $opt, array('value' => $value,
-                                                                'width' => '100%'));
+      Dropdown::showFromArray("import_contact_num", $opt, ['value' => $value,
+                                                                'width' => '100%']);
 
       echo "</td></tr>\n";
 
@@ -986,8 +983,8 @@ JAVASCRIPT;
       $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "networks_id");
 
       $value = (isset($link->fields["ocs_column"]) ? $link->fields["ocs_column"] : "");
-      Dropdown::showFromArray("import_network", $opt, array('value' => $value,
-                                                            'width' => '100%'));
+      Dropdown::showFromArray("import_network", $opt, ['value' => $value,
+                                                            'width' => '100%']);
 
       echo "</td>\n";
       $opt_date = self::getColumnListFromAccountInfoTable($ID, 'hardware');
@@ -997,8 +994,8 @@ JAVASCRIPT;
       $link->getFromDBbyOcsServerIDAndGlpiColumn($ID, "use_date");
 
       $value = (isset($link->fields["ocs_column"]) ? $link->fields["ocs_column"] : "");
-      Dropdown::showFromArray("import_use_date", $opt_date, array('value' => $value,
-                                                                  'width' => '100%'));
+      Dropdown::showFromArray("import_use_date", $opt_date, ['value' => $value,
+                                                                  'width' => '100%']);
       echo "</td></tr>\n";
 
       echo "</table>";
@@ -1052,10 +1049,10 @@ JAVASCRIPT;
             }
          </script>
 JAVASCRIPT;
-      Dropdown::showYesNo('init_all', 0, -1, array(
+      Dropdown::showYesNo('init_all', 0, -1, [
          'width'     => '10%',
          'on_change' => "form_init_all(this.form, this.selectedIndex);"
-      ));
+      ]);
       echo "</th></tr>";
       echo "<tr>
       <th colspan='4'><input type='hidden' name='id' value='$ID'>" . __('General history', 'ocsinventoryng') .
@@ -1178,14 +1175,14 @@ JAVASCRIPT;
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Default status', 'ocsinventoryng') .
            "</td>\n<td>";
-      State::dropdown(array('name'  => 'states_id_default',
-                            'value' => $this->fields["states_id_default"]));
+      State::dropdown(['name'  => 'states_id_default',
+                            'value' => $this->fields["states_id_default"]]);
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Behavior when disconnecting', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showFromArray("deconnection_behavior", array(''       => __('Preserve link', 'ocsinventoryng'),
+      Dropdown::showFromArray("deconnection_behavior", [''       => __('Preserve link', 'ocsinventoryng'),
                                                              "trash"  => __('Put the link in dustbin and add a lock', 'ocsinventoryng'),
-                                                             "delete" => __('Delete  the link permanently', 'ocsinventoryng')), array('value' => $this->fields["deconnection_behavior"]));
+                                                             "delete" => __('Delete  the link permanently', 'ocsinventoryng')], ['value' => $this->fields["deconnection_behavior"]]);
       echo "</td></tr>\n";
       echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
       echo __("Define the action to do on link with other objects when computer is disconnecting from them", 'ocsinventoryng');
@@ -1201,9 +1198,9 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_2'><td class='center'>" .
            __('Number of items to synchronize via the automatic OCSNG action', 'ocsinventoryng') .
            "</td>\n<td>";
-      Dropdown::showNumber('cron_sync_number', array('value' => $this->fields['cron_sync_number'],
+      Dropdown::showNumber('cron_sync_number', ['value' => $this->fields['cron_sync_number'],
                                                      'min'   => 1,
-                                                     'toadd' => array(0 => __('None'))));
+                                                     'toadd' => [0 => __('None')]]);
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td class='center b red' colspan='4'>";
@@ -1220,7 +1217,7 @@ JAVASCRIPT;
       foreach (getAllDatasFromTable('glpi_states') as $state) {
          $actions['STATE_' . $state['id']] = sprintf(__('Change to state %s', 'ocsinventoryng'), $state['name']);
       }
-      Dropdown::showFromArray('deleted_behavior', $actions, array('value' => $this->fields['deleted_behavior']));
+      Dropdown::showFromArray('deleted_behavior', $actions, ['value' => $this->fields['deleted_behavior']]);
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
@@ -1255,26 +1252,26 @@ JAVASCRIPT;
     *
     * @return Nothing (display)
     * */
-   function showForm($ID, $options = array()) {
+   function showForm($ID, $options = []) {
 
       $this->initForm($ID, $options);
       $this->showFormHeader($options);
 
-      $conn_type_values = array(
+      $conn_type_values = [
          0 => __('Database', 'ocsinventoryng'),
          //1 => __('Webservice (SOAP)', 'ocsinventoryng'),
-      );
+      ];
 
-      $sync_method_values = array(
+      $sync_method_values = [
          0 => __("Standard (allow manual actions)", "ocsinventoryng"),
          1 => __("Expert (Fully automatic, for large configuration)", "ocsinventoryng")
-      );
+      ];
 
       echo "<tr class='tab_bg_1'>";
       echo "<td class='center'>" . __('Connection type', 'ocsinventoryng') . "</td>";
       echo "<td id='conn_type_container'>";
-      Dropdown::showFromArray('conn_type', $conn_type_values, array('value'     => $this->fields['conn_type'],
-                                                                    'on_change' => "form_init_all(this.form, this.selectedIndex);"));
+      Dropdown::showFromArray('conn_type', $conn_type_values, ['value'     => $this->fields['conn_type'],
+                                                                    'on_change' => "form_init_all(this.form, this.selectedIndex);"]);
       echo "</td>";
       echo "<td class='center'>" . __("Active") . "</td>";
       echo "<td>";
@@ -1296,7 +1293,7 @@ JAVASCRIPT;
          echo "&nbsp;";
          Html::showSimpleForm(Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer"), 'force_checksum',
                               _sx('button', 'Reload Checksum', 'ocsinventoryng'),
-                              array('id' => $ID));
+                              ['id' => $ID]);
       }
       echo "</td>";
       echo "</tr>";
@@ -1309,7 +1306,7 @@ JAVASCRIPT;
       echo "</td>";
       echo "<td class='center'>" . __("Synchronisation method", "ocsinventoryng") . "</td>";
       echo "<td>";
-      Dropdown::showFromArray('use_massimport', $sync_method_values, array('value' => $this->fields['use_massimport']));
+      Dropdown::showFromArray('use_massimport', $sync_method_values, ['value' => $this->fields['use_massimport']]);
       echo "</td>";
       echo "</tr>";
 
@@ -1344,7 +1341,7 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_1'>";
       echo "<td class='center'>" . __('Use automatic action for clean old agents & drop from OCSNG software', 'ocsinventoryng') . "</td>";
       echo "<td>";
-      Dropdown::showYesNo("use_cleancron", $this->fields["use_cleancron"], -1, array('on_change' => 'hide_show_cleancron(this.value);'));
+      Dropdown::showYesNo("use_cleancron", $this->fields["use_cleancron"], -1, ['on_change' => 'hide_show_cleancron(this.value);']);
       echo "</td>";
       echo Html::scriptBlock("
          function hide_show_cleancron(val) {
@@ -1361,7 +1358,7 @@ JAVASCRIPT;
       echo "<td class='center' id='show_cleancron_td1' $style>" . __("Action") . "</td>";
       $actions = self::getValuesActionCron();
       echo "<td id='show_cleancron_td2' $style>";
-      Dropdown::showFromArray("action_cleancron", $actions, array('value' => $this->fields["action_cleancron"]));
+      Dropdown::showFromArray("action_cleancron", $actions, ['value' => $this->fields["action_cleancron"]]);
       echo "</td>";
 
       echo "<td colspan ='2' id='show_cleancron_td3' $notstyle></td>";
@@ -1370,7 +1367,7 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_1' id='show_cleancron_tr1' $style>";
       echo "<td class='center'>" . __('Use automatic action restore deleted computer', 'ocsinventoryng') . "</td>";
       echo "<td>";
-      Dropdown::showYesNo("use_restorationcron", $this->fields["use_restorationcron"], -1, array('on_change' => 'hide_show_restorecron(this.value);'));
+      Dropdown::showYesNo("use_restorationcron", $this->fields["use_restorationcron"], -1, ['on_change' => 'hide_show_restorecron(this.value);']);
       echo "</td>";
 
       echo Html::scriptBlock("
@@ -1386,7 +1383,7 @@ JAVASCRIPT;
 
       echo "<td class='center' id='show_restorecron_td1' $style>" . __("Number of days for the restoration of computers from the date of last inventory", "ocsinventoryng") . "</td>";
       echo "<td id='show_restorecron_td2' $style>";
-      Dropdown::showNumber("delay_restorationcron", array('value' => $this->fields["delay_restorationcron"]));
+      Dropdown::showNumber("delay_restorationcron", ['value' => $this->fields["delay_restorationcron"]]);
       echo "</td>";
 
       echo "<td colspan ='2' id='show_restorecron_td3' $notstyle></td>";
@@ -1417,7 +1414,7 @@ JAVASCRIPT;
     * @return type
     */
    static function getValuesActionCron() {
-      $values                               = array();
+      $values                               = [];
       $values[self::ACTION_PURGE_COMPUTER]  = self::getActionCronName(self::ACTION_PURGE_COMPUTER);
       $values[self::ACTION_DELETE_COMPUTER] = self::getActionCronName(self::ACTION_DELETE_COMPUTER);
 
@@ -1514,8 +1511,7 @@ JAVASCRIPT;
 
       // Update checksum
       $checksum = 0;
-      if (
-         //$this->fields["import_device_processor"] ||
+      if (//$this->fields["import_device_processor"] ||
          $this->fields["import_general_contact"]
          || $this->fields["import_general_comment"]
          || $this->fields["import_general_domain"]
@@ -1629,13 +1625,13 @@ JAVASCRIPT;
    function cleanDBonPurge() {
 
       $link = new PluginOcsinventoryngOcslink();
-      $link->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
+      $link->deleteByCriteria(['plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']]);
 
       $admin = new PluginOcsinventoryngOcsAdminInfosLink();
-      $admin->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
+      $admin->deleteByCriteria(['plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']]);
 
       $server = new PluginOcsinventoryngServer();
-      $server->deleteByCriteria(array('plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']));
+      $server->deleteByCriteria(['plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']]);
 
       unset($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
 
@@ -1964,11 +1960,11 @@ JAVASCRIPT;
             }
          }
       }
-      $options     = array(
-         "DISPLAY" => array(
+      $options     = [
+         "DISPLAY" => [
             "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS,
-         )
-      );
+         ]
+      ];
       $ocsComputer = $ocsClient->getComputer($ocsid, $options);
 
       $serial       = (isset($ocsComputer['BIOS']["SSN"])) ? $ocsComputer['BIOS']["SSN"] : "";
@@ -2024,7 +2020,7 @@ JAVASCRIPT;
             $comp->update($input, $cfg_ocs['history_hardware']);
             // Auto restore if deleted
             if ($comp->fields['is_deleted']) {
-               $comp->restore(array('id' => $computers_id));
+               $comp->restore(['id' => $computers_id]);
             }
 
             // Reset only if not in ocs id change case
@@ -2184,10 +2180,10 @@ JAVASCRIPT;
 
       if ($version) {
          $server = new self();
-         $server->update(array(
+         $server->update([
                             'id'          => $ID,
                             'ocs_version' => $version
-                         ));
+                         ]);
       }
       return true;
       if (!$version || ($version < self::OCS_VERSION_LIMIT && strpos($version, '2.0') !== 0)) { // hack for 2.0 RC
@@ -2272,7 +2268,7 @@ JAVASCRIPT;
                                            AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
                      $DB->query($query);
                      // for history, see below
-                     $data = array('ID' => $equiv);
+                     $data = ['ID' => $equiv];
                   }
                }
                //foreach($ocs_deviceid as $deviceid => $equiv){
@@ -2302,7 +2298,7 @@ JAVASCRIPT;
                   }
                }
             } else { // Deleted
-               $ocslinks_toclean = array();
+               $ocslinks_toclean = [];
                if (strstr($del, "-")) {
                   $link = "ocs_deviceid";
                } else {
@@ -2378,7 +2374,7 @@ JAVASCRIPT;
                   if (!$computer->fields['is_deleted']) {
                      $computer->fields['is_deleted'] = 1;
                      $computer->fields['date_mod']   = $_SESSION['glpi_currenttime'];
-                     $computer->updateInDB(array('is_deleted', 'date_mod'));
+                     $computer->updateInDB(['is_deleted', 'date_mod']);
                      //add history
                      $changes[0] = 0;
                      $changes[2] = "";
@@ -2404,23 +2400,23 @@ JAVASCRIPT;
    static function getOcsFieldsMatching() {
 
       // Manufacturer and Model both as text (for rules) and as id (for import)
-      return array('manufacturer'                    => array('BIOS', 'SMANUFACTURER'),
-                   'manufacturers_id'                => array('BIOS', 'SMANUFACTURER'),
-                   'license_number'                  => array('HARDWARE', 'WINPRODKEY'),
-                   'license_id'                      => array('HARDWARE', 'WINPRODID'),
-                   'operatingsystems_id'             => array('HARDWARE', 'OSNAME'),
-                   'operatingsystemversions_id'      => array('HARDWARE', 'OSVERSION'),
-                   'operatingsystemarchitectures_id' => array('HARDWARE', 'ARCH'),
-                   'operatingsystemservicepacks_id'  => array('HARDWARE', 'OSCOMMENTS'),
-                   'domains_id'                      => array('HARDWARE', 'WORKGROUP'),
-                   'contact'                         => array('HARDWARE', 'USERID'),
-                   'name'                            => array('META', 'NAME'),
-                   'comment'                         => array('HARDWARE', 'DESCRIPTION'),
-                   'serial'                          => array('BIOS', 'SSN'),
-                   'model'                           => array('BIOS', 'SMODEL'),
-                   'computermodels_id'               => array('BIOS', 'SMODEL'),
-                   'TAG'                             => array('ACCOUNTINFO', 'TAG')
-      );
+      return ['manufacturer'                    => ['BIOS', 'SMANUFACTURER'],
+                   'manufacturers_id'                => ['BIOS', 'SMANUFACTURER'],
+                   'license_number'                  => ['HARDWARE', 'WINPRODKEY'],
+                   'license_id'                      => ['HARDWARE', 'WINPRODID'],
+                   'operatingsystems_id'             => ['HARDWARE', 'OSNAME'],
+                   'operatingsystemversions_id'      => ['HARDWARE', 'OSVERSION'],
+                   'operatingsystemarchitectures_id' => ['HARDWARE', 'ARCH'],
+                   'operatingsystemservicepacks_id'  => ['HARDWARE', 'OSCOMMENTS'],
+                   'domains_id'                      => ['HARDWARE', 'WORKGROUP'],
+                   'contact'                         => ['HARDWARE', 'USERID'],
+                   'name'                            => ['META', 'NAME'],
+                   'comment'                         => ['HARDWARE', 'DESCRIPTION'],
+                   'serial'                          => ['BIOS', 'SSN'],
+                   'model'                           => ['BIOS', 'SMODEL'],
+                   'computermodels_id'               => ['BIOS', 'SMODEL'],
+                   'TAG'                             => ['ACCOUNTINFO', 'TAG']
+      ];
    }
 
    /**
@@ -2431,8 +2427,8 @@ JAVASCRIPT;
     *
     * @return array
     */
-   static function getComputerInformations($ocs_fields = array(), $cfg_ocs, $entities_id, $locations_id = 0, $groups_id = 0) {
-      $input               = array();
+   static function getComputerInformations($ocs_fields = [], $cfg_ocs, $entities_id, $locations_id = 0, $groups_id = 0) {
+      $input               = [];
       $input["is_dynamic"] = 1;
 
       if ($cfg_ocs["states_id_default"] > 0) {
@@ -2475,7 +2471,7 @@ JAVASCRIPT;
                   continue;
                }
                $itemtype        = getItemTypeForTable($table);
-               $external_params = array();
+               $external_params = [];
 
                foreach ($item->additional_fields_for_dictionnary as $field) {
                   $additional_ocs_section = $ocs_fields_matching[$field][0];
@@ -2580,19 +2576,19 @@ JAVASCRIPT;
       $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
       $comp = new Computer();
 
-      $rules_matched = array();
+      $rules_matched = [];
       $ocsClient     = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient->setChecksum(PluginOcsinventoryngOcsClient::CHECKSUM_ALL, $ocsid);
 
-      $ocsComputer = $ocsClient->getComputer($ocsid, array(
-         'DISPLAY' => array(
+      $ocsComputer = $ocsClient->getComputer($ocsid, [
+         'DISPLAY' => [
             'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE | PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
             'WANTED'   => PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO
-         )
-      ));
+         ]
+      ]);
 
-      $locations_id = 0; 
-      $groups_id    = 0; 
+      $locations_id = 0;
+      $groups_id    = 0;
       $contact      = (isset($ocsComputer['META']["USERID"])) ? $ocsComputer['META']["USERID"] : "";
       if (!empty($contact) && $cfg_ocs["import_general_contact"] > 0) {
          $query  = "SELECT `id`
@@ -2617,20 +2613,20 @@ JAVASCRIPT;
       if ($defaultentity == -1 && ($defaultlocation == -1 || $defaultlocation == 0)) {
          //Try to affect computer to an entity
          $rule = new RuleImportEntityCollection();
-         $data = array();
-         $data = $rule->processAllRules(array('ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+         $data = [];
+         $data = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                                               '_source'       => 'ocsinventoryng',
                                               'locations_id'  => $locations_id,
                                               'groups_id'     => $groups_id
-                                        ), array(
+                                        ], [
                                            'locations_id' => $locations_id,
                                            'groups_id'    => $groups_id
-                                        ), array('ocsid' => $ocsid));
+                                        ], ['ocsid' => $ocsid]);
 
          if (isset($data['_ignore_import']) && $data['_ignore_import'] == 1) {
             //ELSE Return code to indicates that the machine was not imported because it doesn't matched rules
-            return array('status'       => self::COMPUTER_LINK_REFUSED,
-                         'rule_matched' => $data['_ruleid']);
+            return ['status'       => self::COMPUTER_LINK_REFUSED,
+                         'rule_matched' => $data['_ruleid']];
          }
       } else {
          //An entity or a location has already been defined via the web interface
@@ -2660,12 +2656,12 @@ JAVASCRIPT;
                                                           $data['entities_id'], $locations_id, $groups_id);
             //Check if machine could be linked with another one already in DB
             $rulelink         = new RuleImportComputerCollection();
-            $rulelink_results = array();
-            $params           = array('entities_id' => $data['entities_id'],
+            $rulelink_results = [];
+            $params           = ['entities_id' => $data['entities_id'],
                                       'plugin_ocsinventoryng_ocsservers_id'
                                                     => $plugin_ocsinventoryng_ocsservers_id,
-                                      'ocsid'       => $ocsid);
-            $rulelink_results = $rulelink->processAllRules(Toolbox::stripslashes_deep($input), array(), $params);
+                                      'ocsid'       => $ocsid];
+            $rulelink_results = $rulelink->processAllRules(Toolbox::stripslashes_deep($input), [], $params);
 
             //If at least one rule matched
             //else do import as usual
@@ -2674,9 +2670,9 @@ JAVASCRIPT;
 
                switch ($rulelink_results['action']) {
                   case self::LINK_RESULT_NO_IMPORT :
-                     return array('status'       => self::COMPUTER_LINK_REFUSED,
+                     return ['status'       => self::COMPUTER_LINK_REFUSED,
                                   'entities_id'  => $data['entities_id'],
-                                  'rule_matched' => $rules_matched);
+                                  'rule_matched' => $rules_matched];
 
                   case self::LINK_RESULT_LINK :
                      if (is_array($rulelink_results['found_computers']) && count($rulelink_results['found_computers']) > 0) {
@@ -2684,10 +2680,10 @@ JAVASCRIPT;
                         foreach ($rulelink_results['found_computers'] as $tmp => $computers_id) {
 
                            if (self::linkComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $computers_id)) {
-                              return array('status'       => self::COMPUTER_LINKED,
+                              return ['status'       => self::COMPUTER_LINKED,
                                            'entities_id'  => $data['entities_id'],
                                            'rule_matched' => $rules_matched,
-                                           'computers_id' => $computers_id);
+                                           'computers_id' => $computers_id];
                            }
                         }
                         break;
@@ -2695,7 +2691,7 @@ JAVASCRIPT;
                }
             }
             //ADD IF NOT LINKED
-            $computers_id = $comp->add($input, array('unicity_error_message' => false));
+            $computers_id = $comp->add($input, ['unicity_error_message' => false]);
             if ($computers_id) {
                $ocsid      = $computer['META']['ID'];
                $changes[0] = '0';
@@ -2710,14 +2706,14 @@ JAVASCRIPT;
                //Return code to indicates that the machine was imported
                // var_dump("post",$_POST,"session",$_SESSION,"server",$_SERVER,"get",$_GET,"cookie",$_COOKIE,"request",$_REQUEST);
                //die("lets see the thisngs in post get session, cookie and reques");
-               return array('status'       => self::COMPUTER_IMPORTED,
+               return ['status'       => self::COMPUTER_IMPORTED,
                             'entities_id'  => $data['entities_id'],
                             'rule_matched' => $rules_matched,
-                            'computers_id' => $computers_id);
+                            'computers_id' => $computers_id];
             }
-            return array('status'       => self::COMPUTER_NOT_UNIQUE,
+            return ['status'       => self::COMPUTER_NOT_UNIQUE,
                          'entities_id'  => $data['entities_id'],
-                         'rule_matched' => $rules_matched);
+                         'rule_matched' => $rules_matched];
          }
 
          if ($lock) {
@@ -2725,8 +2721,8 @@ JAVASCRIPT;
          }
       }
       //ELSE Return code to indicates that the machine was not imported because it doesn't matched rules
-      return array('status'       => self::COMPUTER_FAILED_IMPORT,
-                   'rule_matched' => $rules_matched);
+      return ['status'       => self::COMPUTER_FAILED_IMPORT,
+                   'rule_matched' => $rules_matched];
    }
 
    /** Update a ocs computer
@@ -2757,11 +2753,11 @@ JAVASCRIPT;
          $comp = new Computer();
          $comp->getFromDB($line["computers_id"]);
          $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-         $options   = array(
-            "DISPLAY" => array(
+         $options   = [
+            "DISPLAY" => [
                "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE,
-            )
-         );
+            ]
+         ];
          $computer  = $ocsClient->getComputer($line['ocsid'], $options);
          $data_ocs  = $computer;
 
@@ -2804,14 +2800,14 @@ JAVASCRIPT;
                }
                $rule = new RuleImportEntityCollection();
 
-               $data = array();
-               $data = $rule->processAllRules(array('ocsservers_id' => $line["plugin_ocsinventoryng_ocsservers_id"],
+               $data = [];
+               $data = $rule->processAllRules(['ocsservers_id' => $line["plugin_ocsinventoryng_ocsservers_id"],
                                                     '_source'       => 'ocsinventoryng',
                                                     'locations_id'  => $locations_id,
-                                                    'groups_id'     => $groups_id),
-                                              array('locations_id' => $locations_id,
-                                                    'groups_id'    => $groups_id),
-                                              array('ocsid' => $line["ocsid"]));
+                                                    'groups_id'     => $groups_id],
+                                              ['locations_id' => $locations_id,
+                                                    'groups_id'    => $groups_id],
+                                              ['ocsid' => $line["ocsid"]]);
 
                self::updateComputerFields($line, $data, $cfg_ocs);
             }
@@ -2966,8 +2962,8 @@ JAVASCRIPT;
                   $computer_updates = self::migrateComputerUpdates($line["computers_id"], $computer_updates);
                }
 
-               $ocsCheck   = array();
-               $ocsPlugins = array();
+               $ocsCheck   = [];
+               $ocsPlugins = [];
                if ($mixed_checksum & pow(2, self::HARDWARE_FL)) {
                   $hardware   = true;
                   $ocsCheck[] = PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE;
@@ -3033,7 +3029,6 @@ JAVASCRIPT;
                   }
                }
                if ($mixed_checksum & pow(2, self::NETWORKS_FL)) {
-
 
                   if ($cfg_ocs["import_device_iface"]
                       || $cfg_ocs["import_ip"]
@@ -3162,7 +3157,7 @@ JAVASCRIPT;
                if (!isset($ocsWanted)) {
                   $ocsWanted = 0;
                }
-               $ocsPluginsResult = array();
+               $ocsPluginsResult = [];
                if ($ocsPlugins) {
                   $ocsPluginsResult = $ocsPlugins[0];
                   foreach ($ocsPlugins as $plug) {
@@ -3172,13 +3167,13 @@ JAVASCRIPT;
                   $ocsPluginsResult = 0;
                }
 
-               $import_options = array(
-                  'DISPLAY' => array(
+               $import_options = [
+                  'DISPLAY' => [
                      'CHECKSUM' => $ocsCheckResult,
                      'WANTED'   => $ocsWanted,
                      'PLUGINS'  => $ocsPluginsResult
-                  ),
-               );
+                  ],
+               ];
 
                $ocsComputer = $ocsClient->getComputer($line['ocsid'], $import_options);
 
@@ -3190,21 +3185,21 @@ JAVASCRIPT;
                $loghistory["history"] = $cfg_ocs['history_hardware'];
 
                if ($hardware) {
-                  $p = array('computers_id'                        => $line['computers_id'],
+                  $p = ['computers_id'                        => $line['computers_id'],
                              'ocs_id'                              => $line['ocsid'],
                              'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                              'cfg_ocs'                             => $cfg_ocs,
                              'computers_updates'                   => $computer_updates,
                              'dohistory'                           => $cfg_ocs['history_hardware'],
                              'check_history'                       => true,
-                             'entities_id'                         => $comp->fields['entities_id']);
+                             'entities_id'                         => $comp->fields['entities_id']];
                   self::updateHardware($p);
                }
                if ($bios) {
                   self::updateComputerFromBios($line['computers_id'], $ocsComputer, $cfg_ocs, $computer_updates, $comp->fields['entities_id']);
                }
                // Get import devices
-               $import_device = array();
+               $import_device = [];
                $types         = $CFG_GLPI['ocsinventoryng_devices_index'];
                foreach ($types as $old => $type) {
                   $associated_type  = str_replace('Item_', '', $type);
@@ -3258,7 +3253,7 @@ JAVASCRIPT;
                   self::updateDevices("Item_DeviceSoundCard", $line['computers_id'], $ocsComputer['SOUNDS'], $cfg_ocs, $import_device, '');
                }
                if ($networks && isset($ocsComputer['NETWORKS'])) {
-                  self::updateDevices("Item_DeviceNetworkCard", $line['computers_id'], $ocsComputer['NETWORKS'], $cfg_ocs, $import_device, array());
+                  self::updateDevices("Item_DeviceNetworkCard", $line['computers_id'], $ocsComputer['NETWORKS'], $cfg_ocs, $import_device, []);
                }
                if ($modems && isset($ocsComputer['MODEMS'])) {
                   self::updateDevices("Item_DevicePci", $line['computers_id'], $ocsComputer, $cfg_ocs, $import_device, '');
@@ -3342,16 +3337,16 @@ JAVASCRIPT;
             $newchecksum = $oldChecksum - $mixed_checksum;
             $ocsClient->setChecksum($newchecksum, $line['ocsid']);
             //Return code to indicate that computer was synchronized
-            return array('status'       => self::COMPUTER_SYNCHRONIZED,
+            return ['status'       => self::COMPUTER_SYNCHRONIZED,
                          'entities_id'  => $comp->fields["entities_id"],
-                         'rule_matched' => array(),
-                         'computers_id' => $line['computers_id']);
+                         'rule_matched' => [],
+                         'computers_id' => $line['computers_id']];
          }
          // ELSE Return code to indicate only last inventory date changed
-         return array('status'       => self::COMPUTER_NOTUPDATED,
+         return ['status'       => self::COMPUTER_NOTUPDATED,
                       'entities_id'  => $comp->fields["entities_id"],
-                      'rule_matched' => array(),
-                      'computers_id' => $line['computers_id']);
+                      'rule_matched' => [],
+                      'computers_id' => $line['computers_id']];
       }
    }
 
@@ -3360,14 +3355,14 @@ JAVASCRIPT;
     *
     * @return array
     */
-   static function setComputerHardware($params = array()) {
+   static function setComputerHardware($params = []) {
       global $DB;
 
       $options['computers_id']                        = 0;
       $options['ocs_id']                              = 0;
       $options['plugin_ocsinventoryng_ocsservers_id'] = 0;
-      $options['cfg_ocs']                             = array();
-      $options['computers_update']                    = array();
+      $options['cfg_ocs']                             = [];
+      $options['computers_update']                    = [];
       $options['check_history']                       = true;
       $options['do_history']                          = 2;
 
@@ -3381,11 +3376,11 @@ JAVASCRIPT;
       //      self::checkOCSconnection($ocsServerId);
       $ocsClient = self::getDBocs($ocsServerId);
 
-      $opts        = array(
-         'DISPLAY' => array(
+      $opts        = [
+         'DISPLAY' => [
             'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
-         )
-      );
+         ]
+      ];
       $ocsComputer = $ocsClient->getComputer($options['ocs_id'], $opts);
 
       $options['do_history'] = $options['cfg_ocs']["history_hardware"];
@@ -3393,7 +3388,7 @@ JAVASCRIPT;
       if ($ocsComputer) {
          $hardware = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer['HARDWARE']));
 
-         $updates = array();
+         $updates = [];
 
          if (intval($options['cfg_ocs']["import_general_domain"]) > 0
              && !in_array("domains_id", $options['computers_updates'])) {
@@ -3446,7 +3441,7 @@ JAVASCRIPT;
             $updates["uuid"] = $hardware["UUID"];
          }
 
-         $results = array();
+         $results = [];
          if (count($updates)) {
             $updates["id"]          = $options['computers_id'];
             $updates["entities_id"] = $options['entities_id'];
@@ -3462,14 +3457,14 @@ JAVASCRIPT;
     *
     * @return array
     */
-   static function setComputerOS($params = array()) {
+   static function setComputerOS($params = []) {
       global $DB;
 
       $options['computers_id']                        = 0;
       $options['ocs_id']                              = 0;
       $options['plugin_ocsinventoryng_ocsservers_id'] = 0;
-      $options['cfg_ocs']                             = array();
-      $options['computers_update']                    = array();
+      $options['cfg_ocs']                             = [];
+      $options['computers_update']                    = [];
       $options['check_history']                       = true;
       $options['do_history']                          = 2;
 
@@ -3481,11 +3476,11 @@ JAVASCRIPT;
       $ocsServerId = $options['plugin_ocsinventoryng_ocsservers_id'];
       $ocsClient   = self::getDBocs($ocsServerId);
 
-      $opts        = array(
-         'DISPLAY' => array(
+      $opts        = [
+         'DISPLAY' => [
             'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
-         )
-      );
+         ]
+      ];
       $ocsComputer = $ocsClient->getComputer($options['ocs_id'], $opts);
 
       $options['do_history'] = $options['cfg_ocs']["history_hardware"];
@@ -3493,7 +3488,7 @@ JAVASCRIPT;
       if ($ocsComputer) {
          $hardware       = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer['HARDWARE']));
          $updates        = 0;
-         $license_number = NULL;
+         $license_number = null;
          if (intval($options['cfg_ocs']["import_os_serial"]) > 0
              && !in_array("license_number", $options['computers_updates'])
          ) {
@@ -3503,7 +3498,7 @@ JAVASCRIPT;
                $updates++;
             }
          }
-         $license_id = NULL;
+         $license_id = null;
          if (intval($options['cfg_ocs']["import_os_serial"]) > 0
              && !in_array("license_id", $options['computers_updates'])
          ) {
@@ -3594,7 +3589,7 @@ JAVASCRIPT;
             $device = new Item_OperatingSystem();
 
             //            if ($operatingsystems_id) {
-            $device->add(array('items_id'                        => $options['computers_id'],
+            $device->add(['items_id'                        => $options['computers_id'],
                                'itemtype'                        => 'Computer',
                                'operatingsystems_id'             => $operatingsystems_id,
                                'operatingsystemversions_id'      => $operatingsystemversions_id,
@@ -3605,7 +3600,7 @@ JAVASCRIPT;
                                '_nolock'                         => true,
                                'is_dynamic'                      => 1,
                                'entities_id'                     => $options['entities_id']
-                         ), array(), $options['dohistory']);
+                         ], [], $options['dohistory']);
             //            }
          }
       }
@@ -3617,16 +3612,16 @@ JAVASCRIPT;
     * @param $params array
     *
     */
-   static function updateHardware($params = array()) {
+   static function updateHardware($params = []) {
 
-      $p = array('computers_id'                        => 0,
+      $p = ['computers_id'                        => 0,
                  'ocs_id'                              => 0,
                  'plugin_ocsinventoryng_ocsservers_id' => 0,
-                 'cfg_ocs'                             => array(),
-                 'computers_updates'                   => array(),
+                 'cfg_ocs'                             => [],
+                 'computers_updates'                   => [],
                  'dohistory'                           => true,
                  'check_history'                       => true,
-                 'entities_id'                         => 0);
+                 'entities_id'                         => 0];
       foreach ($params as $key => $value) {
          $p[$key] = $value;
       }
@@ -3656,10 +3651,10 @@ JAVASCRIPT;
     */
    static function updateComputerFromBios($computers_id, $ocsComputer, $cfg_ocs, $computer_updates, $entities_id = 0) {
 
-      $compupdate = array();
+      $compupdate = [];
       $computer   = $ocsComputer;
       if (!is_null($computer)) {
-         $compudate = array();
+         $compudate = [];
 
          if (isset($computer["BIOS"])) {
 
@@ -3678,7 +3673,7 @@ JAVASCRIPT;
                 && !in_array("computermodels_id", $computer_updates)
             ) {
 
-               $compupdate["computermodels_id"] = Dropdown::importExternal('ComputerModel', self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $bios["SMODEL"]), -1, (isset($bios["SMANUFACTURER"]) ? array("manufacturer" => $bios["SMANUFACTURER"]) : array()));
+               $compupdate["computermodels_id"] = Dropdown::importExternal('ComputerModel', self::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $bios["SMODEL"]), -1, (isset($bios["SMANUFACTURER"]) ? ["manufacturer" => $bios["SMANUFACTURER"]] : []));
             }
 
             if (intval($cfg_ocs["import_general_manufacturer"]) > 0
@@ -3767,9 +3762,9 @@ JAVASCRIPT;
       // Select unexisting OCS hardware
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
-      $computerOptions = array(
+      $computerOptions = [
          'COMPLETE' => '0',
-      );
+      ];
 
       $computers = $ocsClient->getComputers($computerOptions);
 
@@ -3777,7 +3772,7 @@ JAVASCRIPT;
           && count($computers['COMPUTERS']) > 0) {
          $hardware = $computers['COMPUTERS'];
       } else {
-         $hardware = array();
+         $hardware = [];
       }
 
       $query  = "SELECT `ocsid`
@@ -3786,7 +3781,7 @@ JAVASCRIPT;
                            = '$plugin_ocsinventoryng_ocsservers_id'";
       $result = $DB->query($query);
 
-      $ocs_missing = array();
+      $ocs_missing = [];
       if ($DB->numrows($result) > 0) {
          while ($data = $DB->fetch_array($result)) {
             $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
@@ -3820,7 +3815,7 @@ JAVASCRIPT;
       $result_glpi = $DB->query($query_glpi);
 
       // fetch all links missing between glpi and OCS
-      $already_linked = array();
+      $already_linked = [];
       if ($DB->numrows($result_glpi) > 0) {
          while ($data = $DB->fetch_assoc($result_glpi)) {
             $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
@@ -3940,7 +3935,7 @@ JAVASCRIPT;
                $comp = new Computer();
                if ($cfg_ocs['deleted_behavior']) {
                   if ($cfg_ocs['deleted_behavior'] == 1) {
-                     $comp->delete(array("id" => $data["computers_id"]), 0);
+                     $comp->delete(["id" => $data["computers_id"]], 0);
                   } else {
                      if (preg_match('/STATE_(.*)/', $cfg_ocs['deleted_behavior'], $results)) {
                         $tmp['id']          = $data["computers_id"];
@@ -4001,7 +3996,7 @@ JAVASCRIPT;
          return;
       }
 
-      $already_linked_ids = array();
+      $already_linked_ids = [];
       while ($data = $DB->fetch_assoc($already_linked_result)) {
          $already_linked_ids [] = $data['ocsid'];
       }
@@ -4019,22 +4014,22 @@ JAVASCRIPT;
       // Fetch linked computers from ocs
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
-      $ocsResult = $ocsClient->getComputers(array(
+      $ocsResult = $ocsClient->getComputers([
                                                'ORDER'    => 'LASTDATE',
                                                'COMPLETE' => '0',
-                                               'FILTER'   => array(
+                                               'FILTER'   => [
                                                   'IDS'      => $already_linked_ids,
                                                   'CHECKSUM' => $cfg_ocs["checksum"],
                                                   //'INVENTORIED_BEFORE' => 'NOW()',
                                                   //'INVENTORIED_SINCE' => $max_date,
-                                               )
-                                            ));
+                                               ]
+                                            ]);
 
       if (isset($ocsResult['COMPUTERS'])) {
          if (count($ocsResult['COMPUTERS']) > 0) {
             // Get all ids of the returned computers
-            $ocs_computer_ids = array();
-            $hardware         = array();
+            $ocs_computer_ids = [];
+            $hardware         = [];
             $computers        = array_slice($ocsResult['COMPUTERS'], $start, $_SESSION['glpilist_limit']);
             foreach ($computers as $computer) {
                $ID                  = $computer['META']['ID'];
@@ -4065,7 +4060,7 @@ JAVASCRIPT;
             $result_glpi = $DB->query($query_glpi);
 
             // Get all links between glpi and OCS
-            $already_linked = array();
+            $already_linked = [];
             if ($DB->numrows($result_glpi) > 0) {
                while ($data = $DB->fetch_assoc($result_glpi)) {
                   $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
@@ -4366,7 +4361,7 @@ JAVASCRIPT;
                      FROM `glpi_plugin_ocsinventoryng_ocslinks`
                      WHERE `plugin_ocsinventoryng_ocsservers_id` = '$serverId'";
       $result_glpi    = $DB->query($query_glpi);
-      $already_linked = array();
+      $already_linked = [];
       if ($DB->numrows($result_glpi) > 0) {
          while ($data = $DB->fetch_array($result_glpi)) {
             $already_linked [] = $data["ocsid"];
@@ -4374,16 +4369,16 @@ JAVASCRIPT;
       }
 
       $cfg_ocs         = self::getConfig($serverId);
-      $computerOptions = array('ORDER'    => 'LASTDATE',
+      $computerOptions = ['ORDER'    => 'LASTDATE',
                                'COMPLETE' => '0',
-                               'FILTER'   => array(
+                               'FILTER'   => [
                                   'EXCLUDE_IDS' => $already_linked
-                               ),
-                               'DISPLAY'  => array(
+                               ],
+                               'DISPLAY'  => [
                                   'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS
-                               ),
+                               ],
                                'ORDER'    => 'NAME'
-      );
+      ];
 
       if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
          $computerOptions['FILTER']['TAGS'] = $tag_limit;
@@ -4402,9 +4397,9 @@ JAVASCRIPT;
       $computerOptions['MAX_RECORDS'] = $_SESSION['glpilist_limit'];
       $ocsResult                      = $ocsClient->getComputers($computerOptions);
 
-      $computers = (isset($ocsResult['COMPUTERS']) ? $ocsResult['COMPUTERS'] : array());
+      $computers = (isset($ocsResult['COMPUTERS']) ? $ocsResult['COMPUTERS'] : []);
 
-      $hardware = array();
+      $hardware = [];
       if (isset($computers)) {
          if (count($computers)) {
             // Get all hardware from OCS DB
@@ -4470,9 +4465,9 @@ JAVASCRIPT;
                   echo "<tr><th>" . __('Manual import mode', 'ocsinventoryng') . "</th></tr>\n";
                   echo "<tr class='tab_bg_1'><td class='center'>";
                   if ($advanced) {
-                     Html::showSimpleForm($target, 'change_import_mode', __('Disable preview', 'ocsinventoryng'), array('id' => 'false'));
+                     Html::showSimpleForm($target, 'change_import_mode', __('Disable preview', 'ocsinventoryng'), ['id' => 'false']);
                   } else {
-                     Html::showSimpleForm($target, 'change_import_mode', __('Enable preview', 'ocsinventoryng'), array('id' => 'true'));
+                     Html::showSimpleForm($target, 'change_import_mode', __('Enable preview', 'ocsinventoryng'), ['id' => 'true']);
                   }
                   echo "</td></tr>";
                   echo "<tr class='tab_bg_1'><td class='center b'>" .
@@ -4506,7 +4501,7 @@ JAVASCRIPT;
                           _sx('button', 'Link', 'ocsinventoryng') . "\">";
                      echo "&nbsp;<input class='submit' type='submit' name='delete_link' value=\"" .
                           _sx('button', 'Delete link', 'ocsinventoryng') . "\">";
-                  } elseif (!$tolinked && $caneditimport) {
+                  } else if (!$tolinked && $caneditimport) {
                      echo "<input class='submit' type='submit' name='import_ok' value=\"" .
                           _sx('button', 'Import', 'ocsinventoryng') . "\">";
                   }
@@ -4514,7 +4509,7 @@ JAVASCRIPT;
                echo "</td></tr>\n";
                echo "<tr>";
                if ($usecheckbox) {
-               echo "<th width='5%'>&nbsp;</th>";
+                  echo "<th width='5%'>&nbsp;</th>";
                }
                echo "<th>" . __('Name') . "</th>\n";
                echo "<th>" . __('Manufacturer') . "</th>\n";
@@ -4536,21 +4531,21 @@ JAVASCRIPT;
                foreach ($hardware as $ID => $tab) {
                   //$comp = new Computer();
                   //$comp->fields["id"] = $tab["id"];
-                  $data = array();
+                  $data = [];
 
                   echo "<tr class='tab_bg_2'>";
                   if ($usecheckbox) {
-                  echo "<td>";
-                  echo "<input type='checkbox' name='toimport[" . $tab["id"] . "]' " .
+                     echo "<td>";
+                     echo "<input type='checkbox' name='toimport[" . $tab["id"] . "]' " .
                        ($check == "all" ? "checked" : "") . ">";
-                  echo "</td>";
+                     echo "</td>";
                   }
                   if ($advanced && !$tolinked) {
                      $location = isset($tab["locations_id"]) ? $tab["locations_id"] : 0;
-                     $data     = $rule->processAllRules(array('ocsservers_id' => $serverId,
+                     $data     = $rule->processAllRules(['ocsservers_id' => $serverId,
                                                               '_source'       => 'ocsinventoryng',
                                                               'locations_id'  => $location
-                                                        ), array('locations_id' => $location), array('ocsid' => $tab["id"]));
+                                                        ], ['locations_id' => $location], ['ocsid' => $tab["id"]]);
                   }
                   echo "<td>" . $tab["name"] . "</td>\n";
                   echo "<td>" . $tab["manufacturer"] . "</td>";
@@ -4631,18 +4626,18 @@ JAVASCRIPT;
                      }
                      echo "<td width='20%'>";
                      $ent = "toimport_entities[" . $tab["id"] . "]";
-                     Entity::dropdown(array('name'     => $ent,
+                     Entity::dropdown(['name'     => $ent,
                                             'value'    => $data['entities_id'],
-                                            'comments' => 0));
+                                            'comments' => 0]);
                      echo "</td>\n";
                      echo "<td width='20%'>";
                      if (!isset($data['locations_id'])) {
                         $data['locations_id'] = 0;
                      }
                      $loc = "toimport_locations[" . $tab["id"] . "]";
-                     Location::dropdown(array('name'     => $loc,
+                     Location::dropdown(['name'     => $loc,
                                               'value'    => $data['locations_id'],
-                                              'comments' => 0));
+                                              'comments' => 0]);
                      echo "</td>\n";
                   }
 
@@ -4651,13 +4646,13 @@ JAVASCRIPT;
                      echo "<td  width='30%'>";
                      $tab['entities_id'] = $entity;
                      $rulelink           = new RuleImportComputerCollection();
-                     $params             = array('entities_id' => $entity,
+                     $params             = ['entities_id' => $entity,
                                                  'plugin_ocsinventoryng_ocsservers_id'
-                                                               => $serverId);
-                     $rulelink_results   = $rulelink->processAllRules(Toolbox::stripslashes_deep($tab), array(), $params);
+                                                               => $serverId];
+                     $rulelink_results   = $rulelink->processAllRules(Toolbox::stripslashes_deep($tab), [], $params);
 
                      //Look for the computer using automatic link criterias as defined in OCSNG configuration
-                     $options       = array('name' => "tolink[" . $tab["id"] . "]");
+                     $options       = ['name' => "tolink[" . $tab["id"] . "]"];
                      $show_dropdown = true;
                      //If the computer is not explicitly refused by a rule
                      if (!isset($rulelink_results['action'])
@@ -4717,7 +4712,7 @@ JAVASCRIPT;
                Html::closeForm();
 
                if ($usecheckbox) {
-               self::checkBox($target);
+                  self::checkBox($target);
                }
 
                Html::printPager($start, $numrows, $target, $parameters);
@@ -4772,7 +4767,7 @@ JAVASCRIPT;
     */
    static function migrateImportDevice($import_device) {
 
-      $new_import_device = array(self::IMPORT_TAG_078);
+      $new_import_device = [self::IMPORT_TAG_078];
       if (count($import_device)) {
          foreach ($import_device as $key => $val) {
             $tmp = explode(self::FIELD_SEPARATOR, $val);
@@ -4800,9 +4795,9 @@ JAVASCRIPT;
     */
    static function migrateComputerUpdates($computers_id, $computer_update) {
 
-      $new_computer_update = array(self::IMPORT_TAG_078);
+      $new_computer_update = [self::IMPORT_TAG_078];
 
-      $updates = array('ID'                 => 'id',
+      $updates = ['ID'                 => 'id',
                        'FK_entities'        => 'entities_id',
                        'tech_num'           => 'users_id_tech',
                        'comments'           => 'comment',
@@ -4823,7 +4818,7 @@ JAVASCRIPT;
                        'ocs_import'         => 'is_dynamic',
                        'FK_users'           => 'users_id',
                        'FK_groups'          => 'groups_id',
-                       'state'              => 'states_id');
+                       'state'              => 'states_id'];
 
       if (count($computer_update)) {
          foreach ($computer_update as $field) {
@@ -4958,11 +4953,11 @@ JAVASCRIPT;
                $DeviceBios = new DeviceFirmware();
                $bios_id    = $DeviceBios->import($bios);
                if ($bios_id) {
-                  $CompDevice->add(array('items_id'           => $computers_id,
+                  $CompDevice->add(['items_id'           => $computers_id,
                                          'itemtype'           => 'Computer',
                                          'devicefirmwares_id' => $bios_id,
                                          'is_dynamic'         => 1,
-                                         'entities_id'        => $entities_id), array(), $cfg_ocs['history_devices']);
+                                         'entities_id'        => $entities_id], [], $cfg_ocs['history_devices']);
                }
             } else {
                $tmp = array_search(stripslashes($prevalue . $bios["designation"]), $import_device);
@@ -5004,19 +4999,19 @@ JAVASCRIPT;
                      $DeviceMemory = new DeviceMemory();
                      $ram_id       = $DeviceMemory->import($ram);
                      if ($ram_id) {
-                        $CompDevice->add(array('items_id'          => $computers_id,
+                        $CompDevice->add(['items_id'          => $computers_id,
                                                'itemtype'          => 'Computer',
                                                'entities_id'       => $entities_id,
                                                'devicememories_id' => $ram_id,
                                                'size'              => $line2["CAPACITY"],
-                                               'is_dynamic'        => 1), array(), $cfg_ocs['history_devices']);
+                                               'is_dynamic'        => 1], [], $cfg_ocs['history_devices']);
                      }
                   } else {
                      $tmp = array_search(stripslashes($prevalue . $ram["designation"]), $import_device);
                      list($type, $id) = explode(self::FIELD_SEPARATOR, $tmp);
 
-                     $CompDevice->update(array('id'   => $id,
-                                               'size' => $line2["CAPACITY"]), $cfg_ocs['history_devices']);
+                     $CompDevice->update(['id'   => $id,
+                                               'size' => $line2["CAPACITY"]], $cfg_ocs['history_devices']);
                      unset($import_device[$tmp]);
                   }
                }
@@ -5048,20 +5043,20 @@ JAVASCRIPT;
                      $DeviceHardDrive        = new DeviceHardDrive();
                      $dd_id                  = $DeviceHardDrive->import($dd);
                      if ($dd_id) {
-                        $CompDevice->add(array('items_id'            => $computers_id,
+                        $CompDevice->add(['items_id'            => $computers_id,
                                                'itemtype'            => 'Computer',
                                                'entities_id'         => $entities_id,
                                                'deviceharddrives_id' => $dd_id,
                                                'serial'              => $line2["SERIALNUMBER"],
                                                'capacity'            => $line2["DISKSIZE"],
-                                               'is_dynamic'          => 1), array(), $cfg_ocs['history_devices']);
+                                               'is_dynamic'          => 1], [], $cfg_ocs['history_devices']);
                      }
                   } else {
                      $tmp = array_search(stripslashes($prevalue . $dd["designation"]), $import_device);
                      list($type, $id) = explode(self::FIELD_SEPARATOR, $tmp);
-                     $CompDevice->update(array('id'       => $id,
+                     $CompDevice->update(['id'       => $id,
                                                'capacity' => $line2["DISKSIZE"],
-                                               'serial'   => $line2["SERIALNUMBER"]), $cfg_ocs['history_devices']);
+                                               'serial'   => $line2["SERIALNUMBER"]], $cfg_ocs['history_devices']);
                      unset($import_device[$tmp]);
                   }
                }
@@ -5089,11 +5084,11 @@ JAVASCRIPT;
                      $DeviceDrive = new DeviceDrive();
                      $stor_id     = $DeviceDrive->import($stor);
                      if ($stor_id) {
-                        $CompDevice->add(array('items_id'        => $computers_id,
+                        $CompDevice->add(['items_id'        => $computers_id,
                                                'itemtype'        => 'Computer',
                                                'entities_id'     => $entities_id,
                                                'devicedrives_id' => $stor_id,
-                                               'is_dynamic'      => 1), array(), $cfg_ocs['history_devices']);
+                                               'is_dynamic'      => 1], [], $cfg_ocs['history_devices']);
                      }
                   } else {
                      $tmp = array_search(stripslashes($prevalue . $stor["designation"]), $import_device);
@@ -5120,11 +5115,11 @@ JAVASCRIPT;
                      $DevicePci = new DevicePci();
                      $mdm_id    = $DevicePci->import($mdm);
                      if ($mdm_id) {
-                        $CompDevice->add(array('items_id'      => $computers_id,
+                        $CompDevice->add(['items_id'      => $computers_id,
                                                'itemtype'      => 'Computer',
                                                'entities_id'   => $entities_id,
                                                'devicepcis_id' => $mdm_id,
-                                               'is_dynamic'    => 1), array(), $cfg_ocs['history_devices']);
+                                               'is_dynamic'    => 1], [], $cfg_ocs['history_devices']);
                      }
                   } else {
                      $tmp = array_search(stripslashes($prevalue . $mdm["designation"]), $import_device);
@@ -5155,11 +5150,11 @@ JAVASCRIPT;
                         $DevicePci = new DevicePci();
                         $port_id   = $DevicePci->import($port);
                         if ($port_id) {
-                           $CompDevice->add(array('items_id'      => $computers_id,
+                           $CompDevice->add(['items_id'      => $computers_id,
                                                   'itemtype'      => 'Computer',
                                                   'entities_id'   => $entities_id,
                                                   'devicepcis_id' => $port_id,
-                                                  'is_dynamic'    => 1), array(), $cfg_ocs['history_devices']);
+                                                  'is_dynamic'    => 1], [], $cfg_ocs['history_devices']);
                         }
                      } else {
                         $tmp = array_search(stripslashes($prevalue . $port["designation"]), $import_device);
@@ -5189,11 +5184,11 @@ JAVASCRIPT;
                         $DevicePci = new DevicePci();
                         $pci_id    = $DevicePci->import($pci);
                         if ($pci_id) {
-                           $CompDevice->add(array('items_id'      => $computers_id,
+                           $CompDevice->add(['items_id'      => $computers_id,
                                                   'itemtype'      => 'Computer',
                                                   'entities_id'   => $entities_id,
                                                   'devicepcis_id' => $pci_id,
-                                                  'is_dynamic'    => 1), array(), $cfg_ocs['history_devices']);
+                                                  'is_dynamic'    => 1], [], $cfg_ocs['history_devices']);
                         }
                      } else {
                         $id = array_search(stripslashes($prevalue . $pci["designation"]), $import_device);
@@ -5209,7 +5204,7 @@ JAVASCRIPT;
             $do_clean = true;
             foreach ($ocsComputer as $line2) {
                $line2                    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
-               $processor                = array();
+               $processor                = [];
                $processor["designation"] = $line2["TYPE"];
                if (!is_numeric($line2["SPEED"])) {
                   $line2["SPEED"] = 0;
@@ -5224,18 +5219,18 @@ JAVASCRIPT;
                   $DeviceProcessor = new DeviceProcessor();
                   $proc_id         = $DeviceProcessor->import($processor);
                   if ($proc_id) {
-                     $CompDevice->add(array('items_id'            => $computers_id,
+                     $CompDevice->add(['items_id'            => $computers_id,
                                             'itemtype'            => 'Computer',
                                             'entities_id'         => $entities_id,
                                             'deviceprocessors_id' => $proc_id,
                                             'frequency'           => $line2["SPEED"],
-                                            'is_dynamic'          => 1), array(), $cfg_ocs['history_devices']);
+                                            'is_dynamic'          => 1], [], $cfg_ocs['history_devices']);
                   }
                } else {
                   $tmp = array_search(stripslashes($prevalue . $processor["designation"]), $import_device);
                   list($type, $id) = explode(self::FIELD_SEPARATOR, $tmp);
-                  $CompDevice->update(array('id'        => $id,
-                                            'frequency' => $line2["SPEED"]), $cfg_ocs['history_devices']);
+                  $CompDevice->update(['id'        => $id,
+                                            'frequency' => $line2["SPEED"]], $cfg_ocs['history_devices']);
                   unset($import_device[$tmp]);
                }
             }
@@ -5263,18 +5258,18 @@ JAVASCRIPT;
                      $DeviceGraphicCard       = new DeviceGraphicCard();
                      $video_id                = $DeviceGraphicCard->import($video);
                      if ($video_id) {
-                        $CompDevice->add(array('items_id'              => $computers_id,
+                        $CompDevice->add(['items_id'              => $computers_id,
                                                'itemtype'              => 'Computer',
                                                'entities_id'           => $entities_id,
                                                'devicegraphiccards_id' => $video_id,
                                                'memory'                => $line2["MEMORY"],
-                                               'is_dynamic'            => 1), array(), $cfg_ocs['history_devices']);
+                                               'is_dynamic'            => 1], [], $cfg_ocs['history_devices']);
                      }
                   } else {
                      $tmp = array_search(stripslashes($prevalue . $video["designation"]), $import_device);
                      list($type, $id) = explode(self::FIELD_SEPARATOR, $tmp);
-                     $CompDevice->update(array('id'     => $id,
-                                               'memory' => $line2["MEMORY"]), $cfg_ocs['history_devices']);
+                     $CompDevice->update(['id'     => $id,
+                                               'memory' => $line2["MEMORY"]], $cfg_ocs['history_devices']);
                      unset($import_device[$tmp]);
                   }
                }
@@ -5300,11 +5295,11 @@ JAVASCRIPT;
                      $DeviceSoundCard = new DeviceSoundCard();
                      $snd_id          = $DeviceSoundCard->import($snd);
                      if ($snd_id) {
-                        $CompDevice->add(array('items_id'            => $computers_id,
+                        $CompDevice->add(['items_id'            => $computers_id,
                                                'itemtype'            => 'Computer',
                                                'entities_id'         => $entities_id,
                                                'devicesoundcards_id' => $snd_id,
-                                               'is_dynamic'          => 1), array(), $cfg_ocs['history_devices']);
+                                               'is_dynamic'          => 1], [], $cfg_ocs['history_devices']);
                      }
                   } else {
                      $id = array_search(stripslashes($prevalue . $snd["designation"]), $import_device);
@@ -5328,12 +5323,12 @@ JAVASCRIPT;
                $devicemotherboards_id = $DeviceMB->import($mb);
                if ($devicemotherboards_id) {
                   $serial = $ocsComputer["MSN"];
-                  $CompDevice->add(array('items_id'              => $computers_id,
+                  $CompDevice->add(['items_id'              => $computers_id,
                                          'itemtype'              => 'Computer',
                                          'devicemotherboards_id' => $devicemotherboards_id,
                                          'is_dynamic'            => 1,
                                          'serial'                => $serial,
-                                         'entities_id'           => $entities_id), array(), $cfg_ocs['history_devices']);
+                                         'entities_id'           => $entities_id], [], $cfg_ocs['history_devices']);
                }
             } else {
                $tmp = array_search(stripslashes($prevalue . $mb["designation"]), $import_device);
@@ -5363,11 +5358,11 @@ JAVASCRIPT;
                      $DeviceControl = new DeviceControl();
                      $ctrl_id       = $DeviceControl->import($ctrl);
                      if ($ctrl_id) {
-                        $CompDevice->add(array('items_id'          => $computers_id,
+                        $CompDevice->add(['items_id'          => $computers_id,
                                                'itemtype'          => 'Computer',
                                                'entities_id'       => $entities_id,
                                                'devicecontrols_id' => $ctrl_id,
-                                               'is_dynamic'        => 1), array(), $cfg_ocs['history_devices']);
+                                               'is_dynamic'        => 1], [], $cfg_ocs['history_devices']);
                      }
                   } else {
                      $id = array_search(stripslashes($prevalue . $ctrl["designation"]), $import_device);
@@ -5384,8 +5379,8 @@ JAVASCRIPT;
             if (!(strpos($key, $devicetype . '$$') === false)) {
                list($type, $id) = explode(self::FIELD_SEPARATOR, $key);
                $CompDevice = new $devicetype();
-               $CompDevice->delete(array('id'          => $id,
-                                         '_no_history' => !$cfg_ocs['history_devices']), true, $cfg_ocs['history_devices']);
+               $CompDevice->delete(['id'          => $id,
+                                         '_no_history' => !$cfg_ocs['history_devices']], true, $cfg_ocs['history_devices']);
             }
          }
       }
@@ -5395,8 +5390,8 @@ JAVASCRIPT;
          foreach ($import_ip as $key => $val) {
             if ($key > 0) {
                $netport = new NetworkPort();
-               $netport->delete(array('id'          => $key,
-                                      '_no_history' => !$cfg_ocs['history_network']), 0, $cfg_ocs['history_network']);
+               $netport->delete(['id'          => $key,
+                                      '_no_history' => !$cfg_ocs['history_network']], 0, $cfg_ocs['history_network']);
             }
          }
       }
@@ -5457,17 +5452,16 @@ JAVASCRIPT;
    static function getGeneralIpAddress($plugin_ocsinventoryng_ocsservers_id, $computers_id) {
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-      $options   = array(
-         'DISPLAY' => array(
+      $options   = [
+         'DISPLAY' => [
             'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
-         )
-      );
+         ]
+      ];
       $computer  = $ocsClient->getComputer($computers_id, $options);
       $ipaddress = $computer["HARDWARE"]["IPADDR"];
       if ($ipaddress) {
          return $ipaddress;
       }
-
 
       return '';
    }
@@ -5562,7 +5556,7 @@ JAVASCRIPT;
     */
    static function getColumnListFromAccountInfoTable($ID, $table) {
 
-      $listColumn = array("0" => __('No import'));
+      $listColumn = ["0" => __('No import')];
       if ($ID != -1) {
          if (self::checkOCSconnection($ID)) {
             $ocsClient          = self::getDBocs($ID);
@@ -5676,9 +5670,9 @@ JAVASCRIPT;
       $linktype = 'Item_' . $itemtype;
 
       $item = new $linktype();
-      $item->deleteByCriteria(array('items_id'   => $glpi_computers_id,
+      $item->deleteByCriteria(['items_id'   => $glpi_computers_id,
                                     'itemtype'   => 'Computer',
-                                    'is_dynamic' => 1), 1, $cfg_ocs['history_devices']);
+                                    'is_dynamic' => 1], 1, $cfg_ocs['history_devices']);
 
    }
 
@@ -5697,10 +5691,10 @@ JAVASCRIPT;
       $linktype = 'Item_' . $itemtype;
 
       $item = new $linktype();
-      $item->deleteByCriteria(array('items_id'   => $glpi_computers_id,
+      $item->deleteByCriteria(['items_id'   => $glpi_computers_id,
                                     'itemtype'   => 'Computer',
                                     'is_dynamic' => 1
-                              ), 1, $cfg_ocs['history_hardware']
+                              ], 1, $cfg_ocs['history_hardware']
       );
    }
 
@@ -5749,7 +5743,7 @@ JAVASCRIPT;
    static function resetRegistry($glpi_computers_id) {
 
       $registry = new PluginOcsinventoryngRegistryKey();
-      $registry->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+      $registry->deleteByCriteria(['computers_id' => $glpi_computers_id], 1);
    }
 
    /**
@@ -5764,8 +5758,8 @@ JAVASCRIPT;
    static function resetAntivirus($glpi_computers_id, $cfg_ocs) {
 
       $av = new ComputerAntivirus();
-      $av->deleteByCriteria(array('computers_id' => $glpi_computers_id,
-                                  'is_dynamic'   => 1), 1, 1);
+      $av->deleteByCriteria(['computers_id' => $glpi_computers_id,
+                                  'is_dynamic'   => 1], 1, 1);
 
    }
 
@@ -5781,7 +5775,7 @@ JAVASCRIPT;
    static function resetWinupdatestate($glpi_computers_id, $cfg_ocs) {
 
       $win = new PluginOcsinventoryngWinupdate();
-      $win->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+      $win->deleteByCriteria(['computers_id' => $glpi_computers_id], 1);
 
    }
 
@@ -5798,7 +5792,7 @@ JAVASCRIPT;
    static function resetOSInstall($glpi_computers_id, $cfg_ocs) {
 
       $os = new PluginOcsinventoryngOsinstall();
-      $os->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+      $os->deleteByCriteria(['computers_id' => $glpi_computers_id], 1);
 
    }
 
@@ -5814,7 +5808,7 @@ JAVASCRIPT;
    static function resetProxysetting($glpi_computers_id, $cfg_ocs) {
 
       $proxy = new PluginOcsinventoryngProxysetting();
-      $proxy->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+      $proxy->deleteByCriteria(['computers_id' => $glpi_computers_id], 1);
 
    }
 
@@ -5830,7 +5824,7 @@ JAVASCRIPT;
    static function resetNetworkshare($glpi_computers_id, $cfg_ocs) {
 
       $share = new PluginOcsinventoryngNetworkshare();
-      $share->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+      $share->deleteByCriteria(['computers_id' => $glpi_computers_id], 1);
 
    }
 
@@ -5846,7 +5840,7 @@ JAVASCRIPT;
    static function resetService($glpi_computers_id, $cfg_ocs) {
 
       $service = new PluginOcsinventoryngService();
-      $service->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+      $service->deleteByCriteria(['computers_id' => $glpi_computers_id], 1);
 
    }
 
@@ -5862,7 +5856,7 @@ JAVASCRIPT;
    static function resetRunningProcess($glpi_computers_id, $cfg_ocs) {
 
       $runningprocess = new PluginOcsinventoryngRunningprocess();
-      $runningprocess->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+      $runningprocess->deleteByCriteria(['computers_id' => $glpi_computers_id], 1);
 
    }
 
@@ -5878,7 +5872,7 @@ JAVASCRIPT;
    static function resetWinuser($glpi_computers_id, $cfg_ocs) {
 
       $wuser = new PluginOcsinventoryngWinuser();
-      $wuser->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+      $wuser->deleteByCriteria(['computers_id' => $glpi_computers_id], 1);
 
    }
 
@@ -5894,7 +5888,7 @@ JAVASCRIPT;
    static function resetTeamviewer($glpi_computers_id, $cfg_ocs) {
 
       $team = new PluginOcsinventoryngTeamviewer();
-      $team->deleteByCriteria(array('computers_id' => $glpi_computers_id), 1);
+      $team->deleteByCriteria(['computers_id' => $glpi_computers_id], 1);
 
    }
 
@@ -5931,14 +5925,14 @@ JAVASCRIPT;
 
                if ($DB->result($result3, 0, 0) == 1) {
                   $soft = new Software();
-                  $soft->delete(array('id' => $license->fields['softwares_id']), 1);
+                  $soft->delete(['id' => $license->fields['softwares_id']], 1);
                }
-               $license->delete(array("id" => $data['softwarelicenses_id']));
+               $license->delete(["id" => $data['softwarelicenses_id']]);
             }
          }
 
          $computer_softwarelicenses = new Computer_SoftwareVersion();
-         $computer_softwarelicenses->deleteByCriteria(array('computers_id' => $glpi_computers_id));
+         $computer_softwarelicenses->deleteByCriteria(['computers_id' => $glpi_computers_id]);
       }
    }
 
@@ -5965,7 +5959,7 @@ JAVASCRIPT;
          $conn = new Computer_Item();
 
          while ($data = $DB->fetch_assoc($result)) {
-            $conn->delete(array('id' => $data['id'], '_no_history' => !$cfg_ocs['history_printer']), true, $cfg_ocs['history_printer']);
+            $conn->delete(['id' => $data['id'], '_no_history' => !$cfg_ocs['history_printer']], true, $cfg_ocs['history_printer']);
 
             $query2  = "SELECT COUNT(*)
                        FROM `glpi_computers_items`
@@ -5975,7 +5969,7 @@ JAVASCRIPT;
 
             $printer = new Printer();
             if ($DB->result($result2, 0, 0) == 1) {
-               $printer->delete(array('id' => $data['items_id'], '_no_history' => !$cfg_ocs['history_printer']), true, $cfg_ocs['history_printer']);
+               $printer->delete(['id' => $data['items_id'], '_no_history' => !$cfg_ocs['history_printer']], true, $cfg_ocs['history_printer']);
             }
          }
       }
@@ -6006,7 +6000,7 @@ JAVASCRIPT;
 
          while ($data = $DB->fetch_assoc($result)) {
 
-            $conn->delete(array('id' => $data['id'], '_no_history' => !$cfg_ocs['history_monitor']), true, $cfg_ocs['history_monitor']);
+            $conn->delete(['id' => $data['id'], '_no_history' => !$cfg_ocs['history_monitor']], true, $cfg_ocs['history_monitor']);
 
             $query2  = "SELECT COUNT(*)
                        FROM `glpi_computers_items`
@@ -6015,7 +6009,7 @@ JAVASCRIPT;
             $result2 = $DB->query($query2);
 
             if ($DB->result($result2, 0, 0) == 1) {
-               $mon->delete(array('id' => $data['items_id'], '_no_history' => !$cfg_ocs['history_monitor']), true, $cfg_ocs['history_monitor']);
+               $mon->delete(['id' => $data['items_id'], '_no_history' => !$cfg_ocs['history_monitor']], true, $cfg_ocs['history_monitor']);
             }
          }
       }
@@ -6044,7 +6038,7 @@ JAVASCRIPT;
       if ($DB->numrows($result) > 0) {
          $conn = new Computer_Item();
          while ($data = $DB->fetch_assoc($result)) {
-            $conn->delete(array('id' => $data['id'], '_no_history' => !$cfg_ocs['history_peripheral']), true, $cfg_ocs['history_peripheral']);
+            $conn->delete(['id' => $data['id'], '_no_history' => !$cfg_ocs['history_peripheral']], true, $cfg_ocs['history_peripheral']);
 
             $query2  = "SELECT COUNT(*)
                        FROM `glpi_computers_items`
@@ -6053,7 +6047,7 @@ JAVASCRIPT;
             $result2 = $DB->query($query2);
 
             if ($DB->result($result2, 0, 0) == 1) {
-               $per->delete(array('id' => $data['items_id'], '_no_history' => !$cfg_ocs['history_peripheral']), true, $cfg_ocs['history_peripheral']);
+               $per->delete(['id' => $data['items_id'], '_no_history' => !$cfg_ocs['history_peripheral']], true, $cfg_ocs['history_peripheral']);
             }
          }
       }
@@ -6094,16 +6088,15 @@ JAVASCRIPT;
 
                if ($DB->result($result3, 0, 0) == 1) {
                   $soft = new Software();
-                  $soft->delete(array('id' => $vers->fields['softwares_id'], '_no_history' => !$cfg_ocs['history_software']), true, $cfg_ocs['history_software']);
+                  $soft->delete(['id' => $vers->fields['softwares_id'], '_no_history' => !$cfg_ocs['history_software']], true, $cfg_ocs['history_software']);
                }
-               $vers->delete(array("id" => $data['softwareversions_id'], '_no_history' => !$cfg_ocs['history_software']), true, $cfg_ocs['history_software']);
+               $vers->delete(["id" => $data['softwareversions_id'], '_no_history' => !$cfg_ocs['history_software']], true, $cfg_ocs['history_software']);
             }
          }
 
-
          $csv = new Computer_SoftwareVersion();
-         $csv->deleteByCriteria(array('computers_id' => $glpi_computers_id,
-                                      'is_dynamic'   => 1), 1, $cfg_ocs['history_software']);
+         $csv->deleteByCriteria(['computers_id' => $glpi_computers_id,
+                                      'is_dynamic'   => 1], 1, $cfg_ocs['history_software']);
 
       }
    }
@@ -6120,8 +6113,8 @@ JAVASCRIPT;
    static function resetDisks($glpi_computers_id, $cfg_ocs) {
 
       $dd = new ComputerDisk();
-      $dd->deleteByCriteria(array('computers_id' => $glpi_computers_id,
-                                  'is_dynamic'   => 1), 1, $cfg_ocs['history_drives']);
+      $dd->deleteByCriteria(['computers_id' => $glpi_computers_id,
+                                  'is_dynamic'   => 1], 1, $cfg_ocs['history_drives']);
 
    }
 
@@ -6193,7 +6186,7 @@ JAVASCRIPT;
          $input["softwares_id"] = $software;
          $input["name"]         = $version;
          $input["comment"]      = $comments;
-         $isNewVers             = $vers->add($input, array(), $cfg_ocs['history_software']);
+         $isNewVers             = $vers->add($input, [], $cfg_ocs['history_software']);
       }
 
       return ($isNewVers);
@@ -6214,7 +6207,7 @@ JAVASCRIPT;
     */
    static function updateVirtualMachines($computers_id, $ocsComputer, $ocsservers_id, $cfg_ocs) {
       global $DB;
-      $already_processed = array();
+      $already_processed = [];
 
       $virtualmachine     = new ComputerVirtualMachine();
       $ocsVirtualmachines = $ocsComputer;
@@ -6222,7 +6215,7 @@ JAVASCRIPT;
       if (count($ocsVirtualmachines) > 0) {
          foreach ($ocsVirtualmachines as $ocsVirtualmachine) {
             $ocsVirtualmachine  = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsVirtualmachine));
-            $vm                 = array();
+            $vm                 = [];
             $vm['name']         = $ocsVirtualmachine['NAME'];
             $vm['vcpu']         = $ocsVirtualmachine['VCPU'];
             $vm['ram']          = $ocsVirtualmachine['MEMORY'];
@@ -6253,7 +6246,7 @@ JAVASCRIPT;
             }
             if (!$id) {
                $virtualmachine->reset();
-               $id_vm = $virtualmachine->add($vm, array(), $cfg_ocs['history_vm']);
+               $id_vm = $virtualmachine->add($vm, [], $cfg_ocs['history_vm']);
                if ($id_vm) {
                   $already_processed[] = $id_vm;
                }
@@ -6277,8 +6270,8 @@ JAVASCRIPT;
       }
       foreach ($DB->request($query) as $data) {
          //Delete all connexions
-         $virtualmachine->delete(array('id'             => $data['id'],
-                                       '_ocsservers_id' => $ocsservers_id, '_no_history' => !$cfg_ocs['history_vm']), true, $cfg_ocs['history_vm']);
+         $virtualmachine->delete(['id'             => $data['id'],
+                                       '_ocsservers_id' => $ocsservers_id, '_no_history' => !$cfg_ocs['history_vm']], true, $cfg_ocs['history_vm']);
       }
    }
 
@@ -6326,8 +6319,8 @@ JAVASCRIPT;
                                                             AND `softwareversions_id_use` = " . $softwareversions_id)
                      ) {
 
-                        $software_licenses->update(array('id'      => $software_licenses->getID(),
-                                                         'comment' => $ocsOfficePack['NOTE']));
+                        $software_licenses->update(['id'      => $software_licenses->getID(),
+                                                         'comment' => $ocsOfficePack['NOTE']]);
                         if (!$computer_softwarelicenses->getFromDBByQuery("WHERE `computers_id` = " . $computers_id . "
                               AND `softwarelicenses_id` = " . $software_licenses->getID())
                         ) {
@@ -6337,8 +6330,8 @@ JAVASCRIPT;
                            $computer_soft_l['is_dynamic']          = -1;
                            $computer_softwarelicenses->add($computer_soft_l);
                            //Update for validity
-                           $software_licenses->update(array('id'       => $software_licenses->getID(),
-                                                            'is_valid' => 1));
+                           $software_licenses->update(['id'       => $software_licenses->getID(),
+                                                            'is_valid' => 1]);
                         }
                      }
                   }
@@ -6356,7 +6349,7 @@ JAVASCRIPT;
                         $id_software_licenses = $software_licenses->getID();
                      } else {
                         $software_licenses->fields['softwares_id'] = $softwares_id;
-                        $id_software_licenses                      = $software_licenses->add($soft_l, array(), $cfg_ocs['history_software']);
+                        $id_software_licenses                      = $software_licenses->add($soft_l, [], $cfg_ocs['history_software']);
                      }
 
                      if ($id_software_licenses) {
@@ -6370,8 +6363,8 @@ JAVASCRIPT;
                            $computer_softwarelicenses->add($computer_soft_l);
                         }
                         //Update for validity
-                        $software_licenses->update(array('id'       => $id_software_licenses,
-                                                         'is_valid' => 1));
+                        $software_licenses->update(['id'       => $id_software_licenses,
+                                                         'is_valid' => 1]);
                      }
                   }
                }
@@ -6397,7 +6390,7 @@ JAVASCRIPT;
    static function updateDisk($computers_id, $ocsComputer, $ocsservers_id, $cfg_ocs) {
       global $DB;
 
-      $already_processed = array();
+      $already_processed = [];
       $logical_drives    = $ocsComputer;
 
       $d = new ComputerDisk();
@@ -6407,21 +6400,21 @@ JAVASCRIPT;
 
             // Only not empty disk
             if ($logical_drive['TOTAL'] > 0) {
-               $disk                 = array();
+               $disk                 = [];
                $disk['computers_id'] = $computers_id;
                $disk['is_dynamic']   = 1;
 
                // TYPE : vxfs / ufs  : VOLUMN = mount / FILESYSTEM = device
-               if (in_array($logical_drive['TYPE'], array("vxfs", "ufs"))) {
+               if (in_array($logical_drive['TYPE'], ["vxfs", "ufs"])) {
                   $disk['name']           = $logical_drive['VOLUMN'];
                   $disk['mountpoint']     = $logical_drive['VOLUMN'];
                   $disk['device']         = $logical_drive['FILESYSTEM'];
                   $disk['filesystems_id'] = Dropdown::importExternal('Filesystem', $logical_drive["TYPE"]);
-               } else if (in_array($logical_drive['FILESYSTEM'], array('ext2', 'ext3', 'ext4', 'ffs',
+               } else if (in_array($logical_drive['FILESYSTEM'], ['ext2', 'ext3', 'ext4', 'ffs',
                                                                        'fuseblk', 'fusefs', 'hfs', 'jfs',
                                                                        'jfs2', 'Journaled HFS+', 'nfs',
                                                                        'smbfs', 'reiserfs', 'vmfs', 'VxFS',
-                                                                       'ufs', 'xfs', 'zfs'))) {
+                                                                       'ufs', 'xfs', 'zfs'])) {
                   // Try to detect mount point : OCS database is dirty
                   $disk['mountpoint'] = $logical_drive['VOLUMN'];
                   $disk['device']     = $logical_drive['TYPE'];
@@ -6438,7 +6431,7 @@ JAVASCRIPT;
                      $disk['name'] = $disk['mountpoint'];
                   }
                   $disk['filesystems_id'] = Dropdown::importExternal('Filesystem', $logical_drive["FILESYSTEM"]);
-               } else if (in_array($logical_drive['FILESYSTEM'], array('FAT', 'FAT32', 'NTFS'))) {
+               } else if (in_array($logical_drive['FILESYSTEM'], ['FAT', 'FAT32', 'NTFS'])) {
                   if (!empty($logical_drive['VOLUMN'])) {
                      $disk['name'] = $logical_drive['VOLUMN'];
                   } else {
@@ -6468,7 +6461,7 @@ JAVASCRIPT;
                   if (!$id) {
                      $d->reset();
                      $disk['is_dynamic']  = 1;
-                     $id_disk             = $d->add($disk, array(), $cfg_ocs['history_drives']);
+                     $id_disk             = $d->add($disk, [], $cfg_ocs['history_drives']);
                      $already_processed[] = $id_disk;
                   } else {
                      // Only update if needed
@@ -6504,8 +6497,8 @@ JAVASCRIPT;
       }
       foreach ($DB->request($query) as $data) {
          //Delete all connexions
-         $d->delete(array('id'             => $data['id'],
-                          '_ocsservers_id' => $ocsservers_id, '_no_history' => !$cfg_ocs['history_drives']), true, $cfg_ocs['history_drives']);
+         $d->delete(['id'             => $data['id'],
+                          '_ocsservers_id' => $ocsservers_id, '_no_history' => !$cfg_ocs['history_drives']], true, $cfg_ocs['history_drives']);
       }
    }
 
@@ -6533,11 +6526,11 @@ JAVASCRIPT;
          }
 
          $tmp = new Computer_SoftwareVersion();
-         return $tmp->add(array('computers_id'        => $computers_id,
+         return $tmp->add(['computers_id'        => $computers_id,
                                 'softwareversions_id' => $softwareversions_id,
                                 'date_install'        => $installdate,
                                 'is_dynamic'          => 1,
-                                'is_deleted'          => 0), array(), $dohistory);
+                                'is_deleted'          => 0], [], $dohistory);
       }
       return 0;
    }
@@ -6566,10 +6559,9 @@ JAVASCRIPT;
             $data = $DB->fetch_array($result);
             $tmp  = new Computer_SoftwareVersion();
 
-
-            $input = array('id'           => $data['id'],
+            $input = ['id'           => $data['id'],
                            '_no_history'  => !$dohistory,
-                           'date_install' => $installdate);
+                           'date_install' => $installdate];
             return $tmp->update($input);
 
          }
@@ -6596,9 +6588,9 @@ JAVASCRIPT;
 
       $is_utf8                  = $cfg_ocs["ocs_db_utf8"];
       $computer_softwareversion = new Computer_SoftwareVersion();
-      $softwares                = array();
+      $softwares                = [];
       //---- Get all the softwares for this machine from OCS -----//
-      $softwares = (isset($ocsComputer["SOFTWARES"]) ? $ocsComputer["SOFTWARES"] : array());
+      $softwares = (isset($ocsComputer["SOFTWARES"]) ? $ocsComputer["SOFTWARES"] : []);
 
       $soft = new Software();
 
@@ -6613,8 +6605,7 @@ JAVASCRIPT;
                               ON `glpi_softwares`.`id`= `glpi_softwareversions`.`softwares_id`
                       WHERE `glpi_computers_softwareversions`.`computers_id`='$computers_id'
                             AND `is_dynamic`";
-      $imported = array();
-
+      $imported = [];
 
       foreach ($DB->request($query) as $data) {
          $imported[$data['id']] = strtolower($data['sname'] . self::FIELD_SEPARATOR . $data['vname']);
@@ -6635,7 +6626,7 @@ JAVASCRIPT;
                            ON `glpi_softwarelicenses`.`softwareversions_id_use` = `glpi_softwareversions`.`id`
                    WHERE `glpi_computers_softwarelicenses`.`computers_id`='$computers_id'
                          AND `is_dynamic`";
-         $imported_licences = array();
+         $imported_licences = [];
 
          foreach ($DB->request($query) as $data) {
             $imported_licences[$data['id']] = strtolower($data['vid']);
@@ -6648,7 +6639,7 @@ JAVASCRIPT;
 
             //As we cannot be sure that data coming from OCS are in utf8, let's try to encode them
             //if possible
-            foreach (array('NAME', 'PUBLISHER', 'VERSION') as $field) {
+            foreach (['NAME', 'PUBLISHER', 'VERSION'] as $field) {
                if (isset($software[$field])) {
                   $software[$field] = self::encodeOcsDataInUtf8($is_utf8, $software[$field]);
                }
@@ -6671,15 +6662,15 @@ JAVASCRIPT;
             $modified_name       = $name;
             $modified_version    = $version;
             $version_comments    = $software['COMMENTS'];
-            $is_helpdesk_visible = NULL;
+            $is_helpdesk_visible = null;
             if (!$cfg_ocs["use_soft_dict"]) {
                //Software dictionnary
-               $params         = array("name"         => $name,
+               $params         = ["name"         => $name,
                                        "manufacturer" => $manufacturer,
                                        "old_version"  => $version,
-                                       "entities_id"  => $entity);
+                                       "entities_id"  => $entity];
                $rulecollection = new RuleDictionnarySoftwareCollection();
-               $res_rule       = $rulecollection->processAllRules(Toolbox::stripslashes_deep($params), array(), Toolbox::stripslashes_deep(array('version' => $version)));
+               $res_rule       = $rulecollection->processAllRules(Toolbox::stripslashes_deep($params), [], Toolbox::stripslashes_deep(['version' => $version]));
 
                if (isset($res_rule["name"])
                    && $res_rule["name"]
@@ -6763,7 +6754,7 @@ JAVASCRIPT;
       }
 
       foreach ($imported as $id => $unused) {
-         $computer_softwareversion->delete(array('id' => $id, '_no_history' => !$cfg_ocs['history_software']), true, $cfg_ocs['history_software']);
+         $computer_softwareversion->delete(['id' => $id, '_no_history' => !$cfg_ocs['history_software']], true, $cfg_ocs['history_software']);
          // delete cause a getFromDB, so fields contains values
          $verid = $computer_softwareversion->getField('softwareversions_id');
 
@@ -6779,14 +6770,14 @@ JAVASCRIPT;
                // 1 is the current to be removed
                $soft->putInTrash($vers->fields['softwares_id'], __('Software deleted by OCSNG synchronization', 'ocsinventoryng'));
             }
-            $vers->delete(array("id" => $verid, '_no_history' => !$cfg_ocs['history_software']), true, $cfg_ocs['history_software']);
+            $vers->delete(["id" => $verid, '_no_history' => !$cfg_ocs['history_software']], true, $cfg_ocs['history_software']);
          }
       }
 
       if ($officepack) {
          $computer_softwarelicenses = new Computer_SoftwareLicense();
          foreach ($imported_licences as $id => $unused) {
-            $computer_softwarelicenses->delete(array('id' => $id), true, $cfg_ocs['history_software']);
+            $computer_softwarelicenses->delete(['id' => $id], true, $cfg_ocs['history_software']);
             // delete cause a getFromDB, so fields contains values
             $verid = $computer_softwarelicenses->getField('softwareversions_id');
 
@@ -6796,9 +6787,9 @@ JAVASCRIPT;
                if ($vers->getFromDB($verid)
                    && countElementsInTable('glpi_softwarelicenses', "softwares_id = '" . $vers->fields['softwares_id'] . "'") == 0) {
                   $soft = new Software();
-                  $soft->delete(array('id' => $vers->fields['softwares_id']), 1);
+                  $soft->delete(['id' => $vers->fields['softwares_id']], 1);
                }
-               $vers->delete(array("id" => $verid));
+               $vers->delete(["id" => $verid]);
             }
          }
       }
@@ -6824,13 +6815,13 @@ JAVASCRIPT;
       //update data
       foreach ($ocsComputer as $registry) {
          $registry              = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($registry));
-         $input                 = array();
+         $input                 = [];
          $input["computers_id"] = $computers_id;
          $input["hive"]         = $registry["regtree"];
          $input["value"]        = $registry["regvalue"];
          $input["path"]         = $registry["regkey"];
          $input["ocs_name"]     = $registry["name"];
-         $reg->add($input, array('disable_unicity_check' => true));
+         $reg->add($input, ['disable_unicity_check' => true]);
          $reg->fields = [];
       }
 
@@ -6855,7 +6846,7 @@ JAVASCRIPT;
       foreach ($ocsComputer as $anti) {
 
          $antivirus = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($anti));
-         $input     = array();
+         $input     = [];
 
          if ($antivirus["category"] == "AntiVirus") {
             $input["computers_id"]      = $computers_id;
@@ -6865,7 +6856,7 @@ JAVASCRIPT;
             $input["is_active"]         = $antivirus["enabled"];
             $input["is_uptodate"]       = $antivirus["uptodate"];
             $input["is_dynamic"]        = 1;
-            $av->add($input, array('disable_unicity_check' => true), 0);
+            $av->add($input, ['disable_unicity_check' => true], 0);
             $av->fields = [];
          }
       }
@@ -6892,7 +6883,7 @@ JAVASCRIPT;
       foreach ($ocsComputer as $wup) {
 
          $wupdate = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($wup));
-         $input   = array();
+         $input   = [];
 
          $input["computers_id"] = $computers_id;
          $computer              = new Computer;
@@ -6905,7 +6896,7 @@ JAVASCRIPT;
          $input["detectsuccesstime"]   = $wupdate["DETECTSUCCESSTIME"];
          $input["downloadsuccesstime"] = $wupdate["DOWNLOADSUCCESSTIME"];
 
-         $CompWupdate->add($input, array('disable_unicity_check' => true), 0);
+         $CompWupdate->add($input, ['disable_unicity_check' => true], 0);
          $CompWupdate->fields = [];
       }
 
@@ -6930,7 +6921,7 @@ JAVASCRIPT;
       foreach ($ocsComputer as $osi) {
 
          $os    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($osi));
-         $input = array();
+         $input = [];
 
          $input["computers_id"] = $computers_id;
          $computer              = new Computer;
@@ -6945,7 +6936,7 @@ JAVASCRIPT;
          $input["oslanguage"]    = $os["OSLANGUAGE"];
          $input["curtimezone"]   = $os["CURTIMEZONE"];
          $input["locale"]        = $os["LOCALE"];
-         $osinstall->add($input, array('disable_unicity_check' => true), 0);
+         $osinstall->add($input, ['disable_unicity_check' => true], 0);
          $osinstall->fields = [];
       }
 
@@ -6972,7 +6963,7 @@ JAVASCRIPT;
       foreach ($ocsComputer as $prox) {
 
          $proxy = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($prox));
-         $input = array();
+         $input = [];
 
          $input["computers_id"] = $computers_id;
          $computer              = new Computer;
@@ -6988,7 +6979,7 @@ JAVASCRIPT;
          if (isset($proxy["OVERRIDE"])) {
             $input["override"] = $proxy["OVERRIDE"];
          }
-         $ProxySetting->add($input, array('disable_unicity_check' => true), 0);
+         $ProxySetting->add($input, ['disable_unicity_check' => true], 0);
          $ProxySetting->fields = [];
       }
 
@@ -7016,7 +7007,7 @@ JAVASCRIPT;
       foreach ($ocsComputer as $share) {
 
          $sha = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($share));
-         $input = array();
+         $input = [];
 
          $input["computers_id"] = $computers_id;
          $computer              = new Computer;
@@ -7028,7 +7019,7 @@ JAVASCRIPT;
          $input["size"] = $sha["SIZE"];
          $input["freespace"] = $sha["FREESPACE"];
          $input["quota"] = $sha["QUOTA"];
-         $Shares->add($input, array('disable_unicity_check' => true), 0);
+         $Shares->add($input, ['disable_unicity_check' => true], 0);
          $Shares->fields = [];
       }
 
@@ -7058,7 +7049,7 @@ JAVASCRIPT;
          $input = array_change_key_case($process, CASE_LOWER);
          $input["computers_id"] = $computers_id;
 
-         $Runningprocess->add($input, array('disable_unicity_check' => true), 0);
+         $Runningprocess->add($input, ['disable_unicity_check' => true], 0);
          $Runningprocess->fields = [];
       }
 
@@ -7087,7 +7078,7 @@ JAVASCRIPT;
          $input = array_change_key_case($service, CASE_LOWER);
          $input["computers_id"] = $computers_id;
 
-         $Service->add($input, array('disable_unicity_check' => true), 0);
+         $Service->add($input, ['disable_unicity_check' => true], 0);
          $Service->fields = [];
       }
 
@@ -7112,7 +7103,7 @@ JAVASCRIPT;
       foreach ($ocsComputer as $wusers) {
 
          $wuser = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($wusers));
-         $input = array();
+         $input = [];
 
          $input["computers_id"] = $computers_id;
          $computer              = new Computer;
@@ -7126,7 +7117,7 @@ JAVASCRIPT;
             $input["disabled"]    = (isset($wuser["TYPE"]) ? $wuser["DISABLED"] : '');
             $input["sid"]         = (isset($wuser["TYPE"]) ? $wuser["SID"]: '');
 
-            $winusers->add($input, array('disable_unicity_check' => true), 0);
+            $winusers->add($input, ['disable_unicity_check' => true], 0);
          }
          $winusers->fields = [];
       }
@@ -7148,7 +7139,7 @@ JAVASCRIPT;
       self::resetTeamviewer($computers_id, $cfg_ocs);
 
       $CompTeam = new PluginOcsinventoryngTeamviewer();
-      $input    = array();
+      $input    = [];
 
       $input["computers_id"] = $computers_id;
       $computer              = new Computer;
@@ -7158,7 +7149,7 @@ JAVASCRIPT;
       $input["version"] = $ocsComputer["VERSION"];
       $input["twid"]    = $ocsComputer["TWID"];
 
-      $CompTeam->add($input, array('disable_unicity_check' => true), 0);
+      $CompTeam->add($input, ['disable_unicity_check' => true], 0);
 
       return;
    }
@@ -7211,12 +7202,12 @@ JAVASCRIPT;
       $result          = $DB->query($queryListUpdate);
 
       if ($DB->numrows($result) > 0) {
-         $options  = array(
-            "DISPLAY" => array(
+         $options  = [
+            "DISPLAY" => [
                "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
                "WANTED"   => PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO,
-            )
-         );
+            ]
+         ];
          $computer = $ocsClient->getComputer($ocsid, $options);
 
          if ($computer) {
@@ -7253,7 +7244,7 @@ JAVASCRIPT;
                            break;
                      }
 
-                     $input                = array();
+                     $input                = [];
                      $input[$glpi_column]  = $var;
                      $input["id"]          = $computers_id;
                      $input["entities_id"] = $entities_id;
@@ -7270,7 +7261,7 @@ JAVASCRIPT;
                      if (isset($computer["BIOS"]["ASSETTAG"])
                          && !empty($computer["BIOS"]["ASSETTAG"])
                      ) {
-                        $input                = array();
+                        $input                = [];
                         $input[$glpi_column]  = $var;
                         $input["id"]          = $computers_id;
                         $input["entities_id"] = $entities_id;
@@ -7312,7 +7303,6 @@ JAVASCRIPT;
 
       if ($DB->numrows($result) > 0) {
 
-
          if (isset($ocsComputer['HARDWARE'])) {
             $metas = $ocsComputer['HARDWARE'];
             foreach ($metas as $key => $meta) {
@@ -7337,7 +7327,6 @@ JAVASCRIPT;
                            $computer_updates = PluginOcsinventoryngOcsAdminInfosLink::addInfocomsForComputer($computers_id, $date, $computer_updates);
                            break;
 
-
                      }
                   }
                }
@@ -7356,13 +7345,13 @@ JAVASCRIPT;
       // no translation for the name of the project
       switch ($name) {
          case 'ocsng':
-            return array('description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Launch OCSNG synchronization script', 'ocsinventoryng'));
+            return ['description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Launch OCSNG synchronization script', 'ocsinventoryng')];
             break;
          case 'CleanOldAgents':
-            return array('description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Clean old agents & drop from OCSNG software', 'ocsinventoryng'));
+            return ['description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Clean old agents & drop from OCSNG software', 'ocsinventoryng')];
             break;
          case 'RestoreOldAgents':
-            return array('description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Restore computers from the date of last inventory', 'ocsinventoryng'));
+            return ['description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Restore computers from the date of last inventory', 'ocsinventoryng')];
             break;
       }
    }
@@ -7398,7 +7387,7 @@ JAVASCRIPT;
             if ($config['action_cleancron'] == self::ACTION_PURGE_COMPUTER) {
                //action purge agents OCSNG
 
-               $computers = array();
+               $computers = [];
                if (count($agents) > 0) {
 
                   $nb = $ocsClient->deleteOldAgents($agents);
@@ -7472,7 +7461,6 @@ JAVASCRIPT;
                      WHERE `glpi_computers`.`is_deleted` = 1 
                      AND ( unix_timestamp(ocslink.`last_ocs_update`) >= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY))";
 
-
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
                $computer = new Computer();
@@ -7480,7 +7468,7 @@ JAVASCRIPT;
                   $computer->fields['id']         = $data['id'];
                   $computer->fields['is_deleted'] = 0;
                   $computer->fields['date_mod']   = $_SESSION['glpi_currenttime'];
-                  $computer->updateInDB(array('is_deleted', 'date_mod'));
+                  $computer->updateInDB(['is_deleted', 'date_mod']);
                   //add history
                   $changes[0] = 0;
                   $changes[2] = "";
@@ -7594,25 +7582,25 @@ JAVASCRIPT;
     */
    static function getAvailableStatistics($snmp = false, $ipdiscover = false) {
 
-      $stats = array('imported_machines_number'     => __('Computers imported', 'ocsinventoryng'),
+      $stats = ['imported_machines_number'     => __('Computers imported', 'ocsinventoryng'),
                      'synchronized_machines_number' => __('Computers synchronized', 'ocsinventoryng'),
                      'linked_machines_number'       => __('Computers linked', 'ocsinventoryng'),
                      'notupdated_machines_number'   => __('Computers not updated', 'ocsinventoryng'),
                      'failed_rules_machines_number' => __("Computers don't check any rule", 'ocsinventoryng'),
                      'not_unique_machines_number'   => __('Duplicate computers', 'ocsinventoryng'),
-                     'link_refused_machines_number' => __('Computers whose import is refused by a rule', 'ocsinventoryng'));
+                     'link_refused_machines_number' => __('Computers whose import is refused by a rule', 'ocsinventoryng')];
       if ($snmp) {
-         $stats = array('imported_snmp_number'        => __('SNMP objects imported', 'ocsinventoryng'),
+         $stats = ['imported_snmp_number'        => __('SNMP objects imported', 'ocsinventoryng'),
                         'synchronized_snmp_number'    => __('SNMP objects synchronized', 'ocsinventoryng'),
                         'linked_snmp_number'          => __('SNMP objects linked', 'ocsinventoryng'),
                         'notupdated_snmp_number'      => __('SNMP objects not updated', 'ocsinventoryng'),
-                        'failed_imported_snmp_number' => __("SNMP objects not imported", 'ocsinventoryng'));
+                        'failed_imported_snmp_number' => __("SNMP objects not imported", 'ocsinventoryng')];
       }
       if ($ipdiscover) {
-         $stats = array('imported_ipdiscover_number'        => __('IPDISCOVER objects imported', 'ocsinventoryng'),
+         $stats = ['imported_ipdiscover_number'        => __('IPDISCOVER objects imported', 'ocsinventoryng'),
                         'synchronized_ipdiscover_number'    => __('IPDISCOVER objects synchronized', 'ocsinventoryng'),
                         'notupdated_ipdiscover_number'      => __('IPDISCOVER objects not updated', 'ocsinventoryng'),
-                        'failed_imported_ipdiscover_number' => __("IPDISCOVER objects not imported", 'ocsinventoryng'));
+                        'failed_imported_ipdiscover_number' => __("IPDISCOVER objects not imported", 'ocsinventoryng')];
       }
 
       return $stats;
@@ -7624,7 +7612,7 @@ JAVASCRIPT;
     * @param bool  $snmp
     * @param bool  $ipdiscover
     */
-   static function manageImportStatistics(&$statistics = array(), $action = false, $snmp = false, $ipdiscover = false) {
+   static function manageImportStatistics(&$statistics = [], $action = false, $snmp = false, $ipdiscover = false) {
 
       if (empty($statistics)) {
          foreach (self::getAvailableStatistics($snmp, $ipdiscover) as $field => $label) {
@@ -7705,7 +7693,7 @@ JAVASCRIPT;
     * @param bool  $snmp
     * @param bool  $ipdiscover
     */
-   static function showStatistics($statistics = array(), $finished = false, $snmp = false, $ipdiscover = false) {
+   static function showStatistics($statistics = [], $finished = false, $snmp = false, $ipdiscover = false) {
 
       echo "<div class='center b'>";
       echo "<table class='tab_cadre_fixe'>";
@@ -7773,14 +7761,14 @@ JAVASCRIPT;
       // Get all rules for the current plugin_ocsinventoryng_ocsservers_id
       $rule = new RuleImportEntityCollection();
 
-      $data = $rule->processAllRules(array('ocsservers_id' => $line_links["plugin_ocsinventoryng_ocsservers_id"],
+      $data = $rule->processAllRules(['ocsservers_id' => $line_links["plugin_ocsinventoryng_ocsservers_id"],
                                            '_source'       => 'ocsinventoryng',
                                            'locations_id'  => $locations_id,
                                            'groups_id'     => $groups_id
-                                     ), array(
+                                     ], [
                                         'locations_id' => $locations_id,
                                         'groups_id'    => $groups_id
-                                     ), array('ocsid' => $line_links["ocsid"]));
+                                     ], ['ocsid' => $line_links["ocsid"]]);
 
       // If entity is changing move items to the new entities_id
       if (isset($data['entities_id']) && $data['entities_id'] > -1 && $data['entities_id'] != $line_links['entities_id']) {
@@ -7792,8 +7780,8 @@ JAVASCRIPT;
          $transfer = new Transfer();
          $transfer->getFromDB($CFG_GLPI['transfers_id_auto']);
 
-         $item_to_transfer = array("Computer" => array($line_links['computers_id']
-                                                       => $line_links['computers_id']));
+         $item_to_transfer = ["Computer" => [$line_links['computers_id']
+                                                       => $line_links['computers_id']]];
 
          $transfer->moveItems($item_to_transfer, $data['entities_id'], $transfer->fields);
       }
@@ -7810,7 +7798,7 @@ JAVASCRIPT;
     *
     * @return array|int
     */
-   static private function getUserGroup ($entity, $userid, $filter='', $first=true) {
+   static private function getUserGroup ($entity, $userid, $filter = '', $first = true) {
       global $DB;
 
       $query = "SELECT `glpi_groups`.`id`
@@ -7918,7 +7906,7 @@ JAVASCRIPT;
       $query  = "SELECT *
       FROM `glpi_plugin_ocsinventoryng_ocslinks`
       WHERE `computers_id` = '$ID'";
-      $locks  = array();
+      $locks  = [];
       $result = $DB->query($query);
       if ($DB->numrows($result) == 1) {
          $data = $DB->fetch_assoc($result);
@@ -8037,7 +8025,7 @@ JAVASCRIPT;
     */
    static function getLockableFields() {
 
-      return array("name"                            => __('Name'),
+      return ["name"                            => __('Name'),
                    "computertypes_id"                => __('Type'),
                    "manufacturers_id"                => __('Manufacturer'),
                    "computermodels_id"               => __('Model'),
@@ -8057,7 +8045,7 @@ JAVASCRIPT;
                    "users_id"                        => __('User'),
                    "locations_id"                    => __('Location'),
                    "use_date"                        => __('Startup date'),
-                   "groups_id"                       => __('Group'));
+                   "groups_id"                       => __('Group')];
    }
 
    /**
@@ -8125,12 +8113,12 @@ JAVASCRIPT;
    static function importMonitor($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity) {
       global $DB, $CFG_GLPI;
 
-      $already_processed = array();
+      $already_processed = [];
       $do_clean          = true;
       $m                 = new Monitor();
       $conn              = new Computer_Item();
 
-      $monitors    = array();
+      $monitors    = [];
       $checkserial = true;
 
       // First pass - check if all serial present
@@ -8151,7 +8139,7 @@ JAVASCRIPT;
 
          foreach ($monitors as $monitor) {
 
-            $mon = array();
+            $mon = [];
             if (!empty($monitor["CAPTION"])) {
                $mon["name"]             = self::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"], $monitor["CAPTION"]);
                $mon["monitormodels_id"] = Dropdown::importExternal('MonitorModel', $monitor["CAPTION"]);
@@ -8221,7 +8209,7 @@ JAVASCRIPT;
                         $input["states_id"] = $cfg_ocs["states_id_default"];
                      }
                      $input["entities_id"] = $entity;
-                     $id_monitor           = $m->add($input, array(), $cfg_ocs['history_monitor']);
+                     $id_monitor           = $m->add($input, [], $cfg_ocs['history_monitor']);
                   }
                } else if ($cfg_ocs["import_monitor"] >= 2) {
                   //Config says : manage monitors as single units
@@ -8270,28 +8258,27 @@ JAVASCRIPT;
                      }
                   }
 
-
                   if (!$id_monitor) {
                      $input = $mon;
                      if ($cfg_ocs["states_id_default"] > 0) {
                         $input["states_id"] = $cfg_ocs["states_id_default"];
                      }
                      $input["entities_id"] = $entity;
-                     $id_monitor           = $m->add($input, array(), $cfg_ocs['history_monitor']);
+                     $id_monitor           = $m->add($input, [], $cfg_ocs['history_monitor']);
                   }
                } // ($cfg_ocs["import_monitor"] >= 2)
 
                if ($id_monitor) {
                   //Import unique : Disconnect monitor on other computer done in Connect function
-                  $connID              = $conn->add(array('computers_id' => $computers_id,
+                  $connID              = $conn->add(['computers_id' => $computers_id,
                                                           'itemtype'     => 'Monitor',
                                                           'items_id'     => $id_monitor,
                                                           'is_dynamic'   => 1,
-                                                          'is_deleted'   => 0), array(), $cfg_ocs['history_monitor']);
+                                                          'is_deleted'   => 0], [], $cfg_ocs['history_monitor']);
                   $already_processed[] = $id_monitor;
 
                   //Update column "is_deleted" set value to 0 and set status to default
-                  $input = array();
+                  $input = [];
                   $old   = new Monitor();
                   if ($old->getFromDB($id_monitor)) {
                      if ($old->fields["is_deleted"]) {
@@ -8386,14 +8373,14 @@ JAVASCRIPT;
    static function importPrinter($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity) {
       global $DB, $CFG_GLPI;
 
-      $already_processed = array();
+      $already_processed = [];
 
       $conn = new Computer_Item();
       $p    = new Printer();
 
       foreach ($ocsComputer as $printer) {
          $printer = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($printer));
-         $print   = array();
+         $print   = [];
          // TO TEST : PARSE NAME to have real name.
          $print['name'] = self::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"], $printer['NAME']);
 
@@ -8411,7 +8398,7 @@ JAVASCRIPT;
 
          if (!empty($print["name"])) {
             $rulecollection = new RuleDictionnaryPrinterCollection();
-            $res_rule       = Toolbox::addslashes_deep($rulecollection->processAllRules(Toolbox::stripslashes_deep($params), array(), array()));
+            $res_rule       = Toolbox::addslashes_deep($rulecollection->processAllRules(Toolbox::stripslashes_deep($params), [], []));
 
             if (!isset($res_rule["_ignore_import"]) || !$res_rule["_ignore_import"]) {
 
@@ -8478,7 +8465,7 @@ JAVASCRIPT;
                            $input["states_id"] = $cfg_ocs["states_id_default"];
                         }
                         $input["entities_id"] = $entity;
-                        $id_printer           = $p->add($input, array(), $cfg_ocs['history_printer']);
+                        $id_printer           = $p->add($input, [], $cfg_ocs['history_printer']);
                      }
                   } else if ($management_process == 2) {
                      //Config says : manage printers as single units
@@ -8491,18 +8478,18 @@ JAVASCRIPT;
                      }
                      $input["entities_id"] = $entity;
                      $input['is_dynamic']  = 1;
-                     $id_printer           = $p->add($input, array(), $cfg_ocs['history_printer']);
+                     $id_printer           = $p->add($input, [], $cfg_ocs['history_printer']);
                   }
 
                   if ($id_printer) {
                      $already_processed[] = $id_printer;
                      $conn                = new Computer_Item();
-                     $connID              = $conn->add(array('computers_id' => $computers_id,
+                     $connID              = $conn->add(['computers_id' => $computers_id,
                                                              'itemtype'     => 'Printer',
                                                              'items_id'     => $id_printer,
-                                                             'is_dynamic'   => 1), array(), $cfg_ocs['history_printer']);
+                                                             'is_dynamic'   => 1], [], $cfg_ocs['history_printer']);
                      //Update column "is_deleted" set value to 0 and set status to default
-                     $input                = array();
+                     $input                = [];
                      $input["id"]          = $id_printer;
                      $input["is_deleted"]  = 0;
                      $input["entities_id"] = $entity;
@@ -8582,11 +8569,11 @@ JAVASCRIPT;
    static function importPeripheral($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity) {
       global $DB, $CFG_GLPI;
 
-      $already_processed = array();
+      $already_processed = [];
       $p                 = new Peripheral();
       $conn              = new Computer_Item();
 
-      $peripherals = array();
+      $peripherals = [];
 
       foreach ($ocsComputer as $peripheral) {
 
@@ -8597,7 +8584,7 @@ JAVASCRIPT;
       if (count($peripherals) > 0) {
          foreach ($peripherals as $peripheral) {
             $peripheral     = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($peripheral));
-            $periph         = array();
+            $periph         = [];
             $periph["name"] = self::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"], $peripheral["CAPTION"]);
             //Look for a monitor with the same name (and serial if possible) already connected
             //to this computer
@@ -8648,7 +8635,7 @@ JAVASCRIPT;
                         $input["states_id"] = $cfg_ocs["states_id_default"];
                      }
                      $input["entities_id"] = $entity;
-                     $id_periph            = $p->add($input, array(), $cfg_ocs['history_peripheral']);
+                     $id_periph            = $p->add($input, [], $cfg_ocs['history_peripheral']);
                   }
                } else if ($cfg_ocs["import_periph"] == 2) {
                   //Config says : manage peripherals as single units
@@ -8659,19 +8646,19 @@ JAVASCRIPT;
                      $input["states_id"] = $cfg_ocs["states_id_default"];
                   }
                   $input["entities_id"] = $entity;
-                  $id_periph            = $p->add($input, array(), $cfg_ocs['history_peripheral']);
+                  $id_periph            = $p->add($input, [], $cfg_ocs['history_peripheral']);
                }
 
                if ($id_periph) {
                   $already_processed[] = $id_periph;
                   $conn                = new Computer_Item();
-                  if ($connID = $conn->add(array('computers_id' => $computers_id,
+                  if ($connID = $conn->add(['computers_id' => $computers_id,
                                                  'itemtype'     => 'Peripheral',
                                                  'items_id'     => $id_periph,
-                                                 'is_dynamic'   => 1), array(), $cfg_ocs['history_peripheral'])
+                                                 'is_dynamic'   => 1], [], $cfg_ocs['history_peripheral'])
                   ) {
                      //Update column "is_deleted" set value to 0 and set status to default
-                     $input                = array();
+                     $input                = [];
                      $input["id"]          = $id_periph;
                      $input["is_deleted"]  = 0;
                      $input["entities_id"] = $entity;
@@ -8743,7 +8730,7 @@ JAVASCRIPT;
     *
     * @return an
     */
-   function getSpecificMassiveActions($checkitem = NULL) {
+   function getSpecificMassiveActions($checkitem = null) {
 
       $actions = parent::getSpecificMassiveActions($checkitem);
 
@@ -8764,21 +8751,21 @@ JAVASCRIPT;
       switch ($ma->getAction()) {
          case 'plugin_ocsinventoryng_force_ocsng_update':
             echo "&nbsp;" .
-                 Html::submit(_x('button', 'Post'), array('name' => 'massiveaction'));
+                 Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
             return true;
          case 'plugin_ocsinventoryng_lock_ocsng_field':
             $fields['all'] = __('All');
             $fields        += self::getLockableFields();
             Dropdown::showFromArray("field", $fields);
             echo "&nbsp;" .
-                 Html::submit(_x('button', 'Post'), array('name' => 'massiveaction'));
+                 Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
             return true;
          case 'plugin_ocsinventoryng_unlock_ocsng_field':
             $fields['all'] = __('All');
             $fields        += self::getLockableFields();
             Dropdown::showFromArray("field", $fields);
             echo "&nbsp;" .
-                 Html::submit(_x('button', 'Post'), array('name' => 'massiveaction'));
+                 Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
             return true;
       }
       return parent::showMassiveActionsSubForm($ma);
@@ -8840,7 +8827,7 @@ JAVASCRIPT;
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
                      }
                   } else {
-                     if (self::addToOcsArray($id, array($_POST['field']), "computer_update")) {
+                     if (self::addToOcsArray($id, [$_POST['field']], "computer_update")) {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                      } else {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
@@ -8858,7 +8845,7 @@ JAVASCRIPT;
                foreach ($ids as $id) {
 
                   if ($_POST['field'] == 'all') {
-                     if (self::replaceOcsArray($id, array(), "computer_update")) {
+                     if (self::replaceOcsArray($id, [], "computer_update")) {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                      } else {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);

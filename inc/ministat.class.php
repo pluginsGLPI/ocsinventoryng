@@ -10,7 +10,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -54,56 +54,49 @@ class PluginOcsinventoryngMiniStat
    /**
     *
     */
-   function Reset()
-   {
+   function Reset() {
       $this->Min = $this->Max = $this->Tot = $this->Nb = 0;
    }
 
    /**
     * @return int
     */
-   function GetMinimum()
-   {
+   function GetMinimum() {
       return $this->Min;
    }
 
    /**
     * @return int
     */
-   function GetMaximum()
-   {
+   function GetMaximum() {
       return $this->Max;
    }
 
    /**
     * @return int
     */
-   function GetTotal()
-   {
+   function GetTotal() {
       return $this->Tot;
    }
 
    /**
     * @return int
     */
-   function GetCount()
-   {
+   function GetCount() {
       return $this->Nb;
    }
 
    /**
     * @return float|int
     */
-   function GetAverage()
-   {
+   function GetAverage() {
       return $this->Nb > 0 ? $this->Tot / $this->Nb : 0;
    }
 
    /**
     * @param $Value
     */
-   function AddValue($Value)
-   {
+   function AddValue($Value) {
 
       if ($this->Nb > 0) {
          if ($Value < $this->Min) {

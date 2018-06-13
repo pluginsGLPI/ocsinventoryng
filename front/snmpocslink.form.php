@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ if (isset($_POST["force_ocssnmp_resynch"])) {
 
 } else if (isset($_POST["delete_link"])) {
    $link = new PluginOcsinventoryngSnmpOcslink();
-   $link->delete(array('id' => $_POST["id"]), 1);
+   $link->delete(['id' => $_POST["id"]], 1);
    Html::back();
 
 } else {

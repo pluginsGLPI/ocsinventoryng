@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -46,8 +46,7 @@ class PluginOcsinventoryngDBocs extends DBmysql
     * @param $dbdefault
     * @internal param ID $ID of the ocs server ID
     */
-   function __construct($dbhost, $dbuser, $dbpassword, $dbdefault)
-   {
+   function __construct($dbhost, $dbuser, $dbpassword, $dbdefault) {
 
       $this->dbhost = $dbhost;
       $this->dbuser = $dbuser;

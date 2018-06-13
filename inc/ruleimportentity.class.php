@@ -58,7 +58,7 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
 
       switch ($name) {
          case "CheckRuleImportEntity" :
-            return array('description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Alerts on computers that no longer respond the rules for assigning an item to an entity', 'ocsinventoryng'));
+            return ['description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Alerts on computers that no longer respond the rules for assigning an item to an entity', 'ocsinventoryng')];
       }
    }
 
@@ -72,7 +72,7 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
     */
    static function cronCheckRuleImportEntity($task) {
       global $DB, $CFG_GLPI;
-      
+
       ini_set("memory_limit", "-1");
       ini_set("max_execution_time", "0");
 
@@ -98,7 +98,7 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
          if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
             $computers = self::checkRuleImportEntity($plugin_ocsinventoryng_ocsservers_id);
-            
+
             foreach ($computers as $entities_id => $items) {
                $message = $plugin_ocsinventoryng_ocsservers_name . ": <br />" .
                           sprintf(__('Items that do not meet the allocation rules for the entity %s: %s', 'ocsinventoryng'),
@@ -107,9 +107,9 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
 
                if (NotificationEvent::raiseEvent("CheckRuleImportEntity",
                                                  new PluginOcsinventoryngRuleImportEntity(),
-                                                 array('entities_id' => $entities_id,
-                                                       'items'       => $items))) {
-                  
+                                                 ['entities_id' => $entities_id,
+                                                       'items'       => $items])) {
+
                   $cron_status = 1;
                   if ($task) {
                      $task->addVolume(1);
@@ -143,16 +143,16 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
     */
    static function checkRuleImportEntity($plugin_ocsinventoryng_ocsservers_id) {
 
-      $data = array();
+      $data = [];
 
       $computers = self::getComputerOcsLink($plugin_ocsinventoryng_ocsservers_id);
 
       $ruleCollection = new RuleImportEntityCollection();
-      $fields         = array();
+      $fields         = [];
 
       foreach ($computers as $computer) {
          $computer['_source'] = 'ocsinventoryng';
-         $fields              = $ruleCollection->processAllRules($computer, $fields, array('ocsid' => $computer['ocsid']));
+         $fields              = $ruleCollection->processAllRules($computer, $fields, ['ocsid' => $computer['ocsid']]);
 
          //case pc matched with a rule
          if (isset($fields['_ruleid'])) {
@@ -163,7 +163,7 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
             || isset($fields['locations_id']) && $fields['locations_id'] != $computer['locations_id']) {
 
                if (!isset($data[$entities_id])) {
-                  $data[$entities_id] = array();
+                  $data[$entities_id] = [];
                }
 
                $data[$entities_id][$computer['id']]           = $computer;
@@ -181,7 +181,7 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
                if (isset($fields['entities_id']) && $fields['entities_id'] != $entities_id) {
 
                   if (!isset($data[$fields['entities_id']])) {
-                     $data[$fields['entities_id']] = array();
+                     $data[$fields['entities_id']] = [];
                   }
 
                   $data[$entities_id][$computer['id']]['error'][]     = 'Entity';
@@ -195,7 +195,7 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
             $entities_id = $computer['entities_id'];
 
             if (!isset($data[$entities_id])) {
-               $data[$entities_id] = array();
+               $data[$entities_id] = [];
             }
             $data[$entities_id][$computer['id']]            = $computer;
             $data[$entities_id][$computer['id']]['error'][] = self::NO_RULE;
@@ -216,7 +216,7 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
 
       $ocslinks = $ocslink->find("`plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id", "entities_id");
 
-      $computers = array();
+      $computers = [];
       foreach ($ocslinks as $ocs) {
          $computer = new Computer();
          if ($computer->getFromDB($ocs['computers_id'])) {

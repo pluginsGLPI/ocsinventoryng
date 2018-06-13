@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -50,12 +50,12 @@ if (isset($_POST["change_import_mode"])) {
 }
 
 if (isset ($_POST["delete_link"])) {
-   
+
    $link = new PluginOcsinventoryngOcslink();
    if (isset($_POST["toimport"]) && (count($_POST['toimport']) > 0)) {
       foreach ($_POST['toimport'] as $key => $val) {
          if ($val == "on") {
-            $link->deleteByCriteria(array('ocsid' => $key));
+            $link->deleteByCriteria(['ocsid' => $key]);
          }
       }
    }
@@ -97,7 +97,7 @@ if (!isset($_POST["import_ok"])) {
       1);
 
 } else {
-   
+
    if (isset($_POST["toimport"]) && (count($_POST['toimport']) > 0)) {
       $_SESSION["ocs_link_count"] = 0;
 
@@ -107,8 +107,8 @@ if (!isset($_POST["import_ok"])) {
 
                foreach ($_POST['tolink'] as $ocsid => $computers_id) {
                   if ($computers_id > 0 && $key == $ocsid) {
-                     $_SESSION["ocs_link"][] = array('ocsid' => $ocsid,
-                        'computers_id' => $computers_id);
+                     $_SESSION["ocs_link"][] = ['ocsid' => $ocsid,
+                        'computers_id' => $computers_id];
 
                   }
                }

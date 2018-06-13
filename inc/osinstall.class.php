@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@ class PluginOcsinventoryngOsinstall extends CommonDBChild {
    function cleanDBonPurge() {
 
       $self = new self();
-      $self->deleteByCriteria(array('computers_id' => $this->fields['id']));
+      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
 
    }
 
@@ -67,13 +67,12 @@ class PluginOcsinventoryngOsinstall extends CommonDBChild {
             PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
             $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
             // can exists for template
-            if (
-//               ($item->getType() == 'Item_OperatingSystem')
+            if (//               ($item->getType() == 'Item_OperatingSystem')
                 //             && Computer::canView()
-//                &&
+            //                &&
             $cfg_ocs["import_osinstall"]
             ) {
-               if ($result = $DB->request('glpi_plugin_ocsinventoryng_osinstalls', array('computers_id' => $computer->getID()))) {
+               if ($result = $DB->request('glpi_plugin_ocsinventoryng_osinstalls', ['computers_id' => $computer->getID()])) {
                   echo "<table class='tab_cadre_fixe'>";
                   $colspan = 4;
                   echo "<tr class='noHover'><th colspan='$colspan'>" . self::getTypeName($result->numrows()) .

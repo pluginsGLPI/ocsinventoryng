@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -45,12 +45,12 @@ if (isset($_POST["itemtype"])
    echo "<input type='hidden' name='tolink_itemtype[" . $_POST["id"] . "]' value='" . $_POST["itemtype"] . "'>";
    echo "<br>";
    $field_id = Html::cleanId("dropdown_" . $_POST['myname'] . $rand);
-   $p = array('itemtype' => $_POST["itemtype"],
+   $p = ['itemtype' => $_POST["itemtype"],
       //'entity_restrict'     => $_POST['entity_restrict'],
       'table' => $table,
       //'multiple'            => $_POST["multiple"],
       'myname' => $_POST["myname"],
-      'rand' => $_POST["rand"]);
+      'rand' => $_POST["rand"]];
 
    if (isset($_POST["used"]) && !empty($_POST["used"])) {
       if (isset($_POST["used"][$_POST["itemtype"]])) {

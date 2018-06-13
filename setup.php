@@ -40,51 +40,51 @@ function plugin_init_ocsinventoryng() {
    global $PLUGIN_HOOKS, $CFG_GLPI, $DB;
 
    $PLUGIN_HOOKS['csrf_compliant']['ocsinventoryng'] = true;
-   $PLUGIN_HOOKS['use_rules']['ocsinventoryng']      = array('RuleImportEntity', 'RuleImportComputer');
+   $PLUGIN_HOOKS['use_rules']['ocsinventoryng']      = ['RuleImportEntity', 'RuleImportComputer'];
 
-   $PLUGIN_HOOKS['change_profile']['ocsinventoryng'] = array('PluginOcsinventoryngProfile',
-                                                             'initProfile');
+   $PLUGIN_HOOKS['change_profile']['ocsinventoryng'] = ['PluginOcsinventoryngProfile',
+                                                             'initProfile'];
 
-   $PLUGIN_HOOKS['import_item']['ocsinventoryng'] = array('Computer');
+   $PLUGIN_HOOKS['import_item']['ocsinventoryng'] = ['Computer'];
 
    $PLUGIN_HOOKS['autoinventory_information']['ocsinventoryng']
-      = array('Computer'               => array('PluginOcsinventoryngOcslink', 'showSimpleForItem'),
-              'ComputerDisk'           => array('PluginOcsinventoryngOcslink', 'showSimpleForChild'),
-              'ComputerVirtualMachine' => array('PluginOcsinventoryngOcslink', 'showSimpleForChild'),
-              'Printer'                => array('PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'),
-              'NetworkEquipment'       => array('PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'),
-              'Peripheral'             => array('PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'),
-              'Phone'                  => array('PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'));
+      = ['Computer'               => ['PluginOcsinventoryngOcslink', 'showSimpleForItem'],
+              'ComputerDisk'           => ['PluginOcsinventoryngOcslink', 'showSimpleForChild'],
+              'ComputerVirtualMachine' => ['PluginOcsinventoryngOcslink', 'showSimpleForChild'],
+              'Printer'                => ['PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'],
+              'NetworkEquipment'       => ['PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'],
+              'Peripheral'             => ['PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'],
+              'Phone'                  => ['PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem']];
 
    //Locks management
    $PLUGIN_HOOKS['display_locked_fields']['ocsinventoryng'] = 'plugin_ocsinventoryng_showLocksForItem';
    $PLUGIN_HOOKS['unlock_fields']['ocsinventoryng']         = 'plugin_ocsinventoryng_unlockFields';
 
    Plugin::registerClass('PluginOcsinventoryngOcslink',
-                         array('forwardentityfrom' => 'Computer',
-                               'addtabon'          => 'Computer'));
+                         ['forwardentityfrom' => 'Computer',
+                               'addtabon'          => 'Computer']);
 
    Plugin::registerClass('PluginOcsinventoryngRegistryKey',
-                         array('addtabon' => 'Computer'));
+                         ['addtabon' => 'Computer']);
 
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_winupdates')) {
       Plugin::registerClass('PluginOcsinventoryngWinupdate',
-                            array('addtabon' => 'Computer'));
+                            ['addtabon' => 'Computer']);
    }
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_proxysettings')) {
       Plugin::registerClass('PluginOcsinventoryngProxysetting',
-                            array('addtabon' => 'Computer'));
+                            ['addtabon' => 'Computer']);
    }
 
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_winusers')) {
       Plugin::registerClass('PluginOcsinventoryngWinuser',
-                            array('addtabon' => 'Computer'));
+                            ['addtabon' => 'Computer']);
    }
 
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_teamviewers')) {
       Plugin::registerClass('PluginOcsinventoryngTeamviewer',
-                            array('addtabon'   => 'Computer',
-                                  'link_types' => true));
+                            ['addtabon'   => 'Computer',
+                                  'link_types' => true]);
 
       if (class_exists('PluginOcsinventoryngTeamviewer')) {
          Link::registerTag(PluginOcsinventoryngTeamviewer::$tags);
@@ -97,45 +97,45 @@ function plugin_init_ocsinventoryng() {
 
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_networkshares')) {
       Plugin::registerClass('PluginOcsinventoryngNetworkshare',
-                            array('addtabon'   => 'Computer'));
+                            ['addtabon'   => 'Computer']);
    }
 
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_runningprocesses')) {
       Plugin::registerClass('PluginOcsinventoryngRunningprocess',
-                            array('addtabon'   => 'Computer'));
+                            ['addtabon'   => 'Computer']);
    }
 
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_services')) {
       Plugin::registerClass('PluginOcsinventoryngService',
-                            array('addtabon'   => 'Computer'));
+                            ['addtabon'   => 'Computer']);
    }
 
    Plugin::registerClass('PluginOcsinventoryngOcsServer',
-                         array('massiveaction_noupdate_types' => true,
-                               'systeminformations_types'     => true));
+                         ['massiveaction_noupdate_types' => true,
+                               'systeminformations_types'     => true]);
 
    Plugin::registerClass('PluginOcsinventoryngProfile',
-                         array('addtabon' => 'Profile'));
+                         ['addtabon' => 'Profile']);
 
    Plugin::registerClass('PluginOcsinventoryngNotimportedcomputer',
-                         array('massiveaction_noupdate_types' => true,
+                         ['massiveaction_noupdate_types' => true,
                                'massiveaction_nodelete_types' => true,
-                               'notificationtemplates_types'  => true));
+                               'notificationtemplates_types'  => true]);
 
    Plugin::registerClass('PluginOcsinventoryngRuleImportEntity',
-                         array('massiveaction_noupdate_types' => true,
+                         ['massiveaction_noupdate_types' => true,
                                'massiveaction_nodelete_types' => true,
-                               'notificationtemplates_types'  => true));
+                               'notificationtemplates_types'  => true]);
 
    Plugin::registerClass('PluginOcsinventoryngDetail',
-                         array('massiveaction_noupdate_types' => true,
-                               'massiveaction_nodelete_types' => true));
+                         ['massiveaction_noupdate_types' => true,
+                               'massiveaction_nodelete_types' => true]);
 
    Plugin::registerClass('PluginOcsinventoryngNetworkPort',
-                         array('networkport_instantiations' => true));
+                         ['networkport_instantiations' => true]);
 
    Plugin::registerClass('PluginOcsinventoryngSnmpOcslink',
-                         array('addtabon' => array('Computer', 'Printer', 'NetworkEquipment', 'Peripheral', 'Phone')));
+                         ['addtabon' => ['Computer', 'Printer', 'NetworkEquipment', 'Peripheral', 'Phone']]);
 
    // transfer
    $PLUGIN_HOOKS['item_transfer']['ocsinventoryng'] = "plugin_ocsinventoryng_item_transfer";
@@ -147,7 +147,7 @@ function plugin_init_ocsinventoryng() {
 
       // Display a menu entry ?
       if (Session::haveRight("plugin_ocsinventoryng", READ)) {
-         $PLUGIN_HOOKS['menu_toadd']['ocsinventoryng'] = array('tools' => 'PluginOcsinventoryngMenu');
+         $PLUGIN_HOOKS['menu_toadd']['ocsinventoryng'] = ['tools' => 'PluginOcsinventoryngMenu'];
       }
 
       if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
@@ -164,11 +164,11 @@ function plugin_init_ocsinventoryng() {
       $PLUGIN_HOOKS['post_init']['ocsinventoryng'] = 'plugin_ocsinventoryng_postinit';
 
       if (class_exists('PluginMydashboardMenu')) {
-         $PLUGIN_HOOKS['mydashboard']['ocsinventoryng'] = array("PluginOcsinventoryngDashboard");
+         $PLUGIN_HOOKS['mydashboard']['ocsinventoryng'] = ["PluginOcsinventoryngDashboard"];
       }
    }
 
-   $CFG_GLPI['ocsinventoryng_devices_index'] = array(1  => 'Item_DeviceMotherboard',
+   $CFG_GLPI['ocsinventoryng_devices_index'] = [1  => 'Item_DeviceMotherboard',
                                                      2  => 'Item_DeviceProcessor',
                                                      3  => 'Item_DeviceMemory',
                                                      4  => 'Item_DeviceHardDrive',
@@ -180,7 +180,7 @@ function plugin_init_ocsinventoryng() {
                                                      10 => 'Item_DevicePci',
                                                      11 => 'Item_DeviceCase',
                                                      12 => 'Item_DevicePowerSupply',
-                                                     13 => 'Item_DeviceFirmware');
+                                                     13 => 'Item_DeviceFirmware'];
 }
 
 
@@ -189,12 +189,12 @@ function plugin_init_ocsinventoryng() {
  **/
 function plugin_version_ocsinventoryng() {
 
-   return array('name'           => "OCS Inventory NG",
+   return ['name'           => "OCS Inventory NG",
                 'version'        => '1.4.4',
                 'author'         => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
                 'license'        => 'GPLv2+',
                 'homepage'       => 'https://github.com/pluginsGLPI/ocsinventoryng',
-                'minGlpiVersion' => '9.2');
+                'minGlpiVersion' => '9.2'];
 
 }
 

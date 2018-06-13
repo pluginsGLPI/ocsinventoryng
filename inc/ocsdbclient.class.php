@@ -10,7 +10,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -59,8 +59,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       return $this->db;
    }
 
-   public function getComputerRule($id, $tables = array()) {
-      $computers = array();
+   public function getComputerRule($id, $tables = []) {
+      $computers = [];
 
       $query = "SELECT `hardware`.*,`accountinfo`.`TAG` FROM `hardware`
             INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
@@ -86,7 +86,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          $computers[strtoupper('hardware')] = $hardware;
 
       }
-
 
       foreach ($tables as $table) {
 
@@ -151,7 +150,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     **/
    function OcsTableExists($tablename) {
 
-
       // Get a list of tables contained within the database.
       $result = $this->db->list_tables("%" . $tablename . "%");
 
@@ -183,7 +181,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    private function getComputerSections($ids, $checksum, $wanted, $plugins, $complete = 0) {
 
       $OCS_MAP  = self::getOcsMap();
-      $DATA_MAP = array();
+      $DATA_MAP = [];
       foreach ($OCS_MAP as $table => $value) {
 
          if ($table == "dico_soft") {
@@ -197,12 +195,12 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
             if ($check & $checksum) {
                $DATA_MAP[$table] = $value;
             }
-         } elseif (isset($value['wanted'])) {
+         } else if (isset($value['wanted'])) {
             $check = $value['wanted'];
             if ($wanted & self::WANTED_ACCOUNTINFO) {
                $DATA_MAP[$table] = $value;
             }
-         } elseif (isset($value['plugins'])) {
+         } else if (isset($value['plugins'])) {
             $check = $value['plugins'];
             if (self::OcsTableExists($table) && (($check & $plugins) || $plugins == self::PLUGINS_ALL)) {
                $DATA_MAP[$table] = $value;
@@ -223,9 +221,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          }
          if (isset($value['checksum'])) {
             $check = $value['checksum'];
-         } elseif (isset($value['wanted'])) {
+         } else if (isset($value['wanted'])) {
             $check = $value['wanted'];
-         } elseif (isset($value['plugins'])) {
+         } else if (isset($value['plugins'])) {
             $check = $value['plugins'];
          }
          $multi = $value['multi'];
@@ -269,7 +267,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                   }
                }
             }
-         } elseif ($table == "softwares") {
+         } else if ($table == "softwares") {
             if (($check & $checksum) || $complete > 0) {
 
                if (self::WANTED_DICO_SOFT & $wanted) {
@@ -318,7 +316,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                   $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
                }
             }
-         } elseif ($table == "registry") {
+         } else if ($table == "registry") {
 
             if (($check & $checksum) || $complete > 0) {
                $query   = "SELECT `registry`.`NAME` AS name,
@@ -338,7 +336,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                   }
                }
             }
-         } elseif (self::OcsTableExists("securitycenter") && $table == "securitycenter") {
+         } else if (self::OcsTableExists("securitycenter") && $table == "securitycenter") {
 
             if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
                $query   = "SELECT `securitycenter`.`SCV` AS scv,
@@ -360,7 +358,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                   }
                }
             }
-         } elseif (self::OcsTableExists("uptime") && $table == "uptime") {
+         } else if (self::OcsTableExists("uptime") && $table == "uptime") {
 
             if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
                $query   = "SELECT `uptime`.`TIME` AS time,
@@ -372,7 +370,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                   $computers[$up['HARDWARE_ID']][strtoupper($table)] = $up;
                }
             }
-         } elseif (self::OcsTableExists("officepack") && $table == "officepack") {
+         } else if (self::OcsTableExists("officepack") && $table == "officepack") {
 
             $query   = "SELECT `officepack`.* FROM `hardware`
             INNER JOIN `officepack` ON (`hardware`.`id` = `officepack`.`HARDWARE_ID`)
@@ -387,7 +385,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
             }
 
-         } elseif (self::OcsTableExists("winupdatestate") && $table == "winupdatestate") {
+         } else if (self::OcsTableExists("winupdatestate") && $table == "winupdatestate") {
 
             $query   = "SELECT `winupdatestate`.* FROM `hardware`
             INNER JOIN `winupdatestate` ON (`hardware`.`id` = `winupdatestate`.`HARDWARE_ID`)
@@ -402,7 +400,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
             }
 
-         } elseif (self::OcsTableExists("osinstall") && $table == "osinstall") {
+         } else if (self::OcsTableExists("osinstall") && $table == "osinstall") {
 
             $query   = "SELECT `osinstall`.* FROM `hardware`
             INNER JOIN `osinstall` ON (`hardware`.`id` = `osinstall`.`HARDWARE_ID`)
@@ -419,7 +417,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
             }
 
-         } elseif (self::OcsTableExists("networkshare") && $table == "networkshare") {
+         } else if (self::OcsTableExists("networkshare") && $table == "networkshare") {
 
             $query   = "SELECT `networkshare`.* FROM `hardware`
             INNER JOIN `networkshare` ON (`hardware`.`id` = `networkshare`.`HARDWARE_ID`)
@@ -433,7 +431,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["QUOTA"]  = $meta["QUOTA"];
             }
 
-         } elseif (self::OcsTableExists("runningprocess") && $table == "runningprocess") {
+         } else if (self::OcsTableExists("runningprocess") && $table == "runningprocess") {
 
             $query   = "SELECT `runningprocess`.* FROM `hardware`
             INNER JOIN `runningprocess` ON (`hardware`.`id` = `runningprocess`.`HARDWARE_ID`)
@@ -453,7 +451,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["COMPANY"]       = $meta["COMPANY"];
             }
 
-         } elseif (self::OcsTableExists("service") && $table == "service") {
+         } else if (self::OcsTableExists("service") && $table == "service") {
 
             $query   = "SELECT `service`.* FROM `hardware`
             INNER JOIN `service` ON (`hardware`.`id` = `service`.`HARDWARE_ID`)
@@ -471,7 +469,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSPECEXITCODE"] = $meta["SVCSPECEXITCODE"];
             }
 
-         } elseif ($table == "hardware") {
+         } else if ($table == "hardware") {
 
             $query   = "SELECT `hardware`.*,`accountinfo`.`TAG` FROM `hardware`
             INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
@@ -528,7 +526,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     */
    private function getSnmpSections($ids, $complete = 1) {
 
-      $snmp = array();
+      $snmp = [];
 
       // Check for basics snmp infos
       $query   = "SELECT * FROM `snmp` WHERE `ID` IN (" . implode(',', $ids) . ")";
@@ -661,31 +659,30 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    public function searchComputers($field, $value) {
 
       if ($field == "id" || $field == "ID") {
-         $options = array(
-            "FILTER" => array(
-               'IDS' => array(
+         $options = [
+            "FILTER" => [
+               'IDS' => [
                   $value
-               )
-            )
-         );
-      } elseif ($field == "tag" || $field == "TAG") {
-         $options = array(
-            "FILTER" => array(
-               'TAGS' => array(
+               ]
+            ]
+         ];
+      } else if ($field == "tag" || $field == "TAG") {
+         $options = [
+            "FILTER" => [
+               'TAGS' => [
                   $value
-               )
-            )
-         );
-      } elseif ($field == "deviceid" || $field == "DEVICEID") {
-         $options = array(
-            "FILTER" => array(
-               'DEVICEIDS' => array(
+               ]
+            ]
+         ];
+      } else if ($field == "deviceid" || $field == "DEVICEID") {
+         $options = [
+            "FILTER" => [
+               'DEVICEIDS' => [
                   $value
-               )
-            )
-         );
+               ]
+            ]
+         ];
       }
-
 
       $res = $this->getComputers($options);
       return $res;
@@ -721,7 +718,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     * @return array
     */
    public function countComputers($options, $id = 0) {
-
 
       if (isset($options['OFFSET'])) {
          $offset = "OFFSET  " . $options['OFFSET'];
@@ -818,7 +814,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          } else {
             $where_before = "";
          }
-
 
          if (isset($filters['CHECKSUM']) and $filters['CHECKSUM']) {
             $checksum = $filters['CHECKSUM'];
@@ -864,7 +859,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          return $hardwareids;
       } else {
 
-         return array();
+         return [];
       }
 
       return $res;
@@ -878,7 +873,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     * @return array
     */
    public function getComputers($options, $id = 0) {
-
 
       if (isset($options['OFFSET'])) {
          $offset = "OFFSET  " . $options['OFFSET'];
@@ -976,7 +970,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
             $where_before = "";
          }
 
-
          if (isset($filters['CHECKSUM']) and $filters['CHECKSUM']) {
             $checksum = $filters['CHECKSUM'];
 
@@ -993,7 +986,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       } else {
          $where_condition = "";
       }
-
 
       /*$query = "SELECT * FROM `hardware`, `accountinfo`
                         WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
@@ -1022,7 +1014,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                            $where_condition
                            ORDER BY $order
                            $max_records  $offset";
-         
+
          $request = $this->db->query($query);*/
          $this->getAccountInfoColumns();
          while ($hardwareid = $this->db->fetch_assoc($request)) {
@@ -1055,7 +1047,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
       } else {
 
-         $res = array();
+         $res = [];
       }
 
       return $res;
@@ -1145,7 +1137,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                         LIMIT " . intval($cfg_ocs["cron_sync_number"]);
 
       $res  = $this->db->query($query);
-      $data = array();
+      $data = [];
 
       if ($res->num_rows > 0) {
          while ($num = $this->db->fetch_assoc($res)) {
@@ -1162,7 +1154,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       $query = "SELECT `ID`, `DEVICEID`
                     FROM `hardware`";
       $res   = $this->db->query($query);
-      $data  = array();
+      $data  = [];
 
       if ($res->num_rows > 0) {
          while ($num = $this->db->fetch_assoc($res)) {
@@ -1196,7 +1188,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                      AND ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) 
                      AND deviceid <> '_SYSTEMGROUP_' AND deviceid <> '_DOWNLOADGROUP_'";
       $res    = $this->db->query($query);
-      $data   = array();
+      $data   = [];
 
       if ($res->num_rows > 0) {
          while ($num = $this->db->fetch_assoc($res)) {
@@ -1228,7 +1220,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                   $did = $num["deviceid"];
                   if ($did) {
 
-                     $tables = array("accesslog",
+                     $tables = ["accesslog",
                                      "accountinfo",
                                      "bios",
                                      "controllers",
@@ -1262,7 +1254,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                                      "virtualmachines",
                                      "cpus",
                                      "sim"
-                     );
+                     ];
                      if (isset($tables) and is_array($tables)) {
                         foreach ($tables as $table) {
                            if (self::OcsTableExists($table)) {
@@ -1314,7 +1306,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
             $count++;
          }
       } else {
-         $res = array();
+         $res = [];
       }
       $_SESSION["ocs_deleted_equiv"]["deleted"] = 0;
       if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
@@ -1368,7 +1360,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          while ($column = $this->db->fetch_assoc($columns)) {
             $res[$column['Field']] = $column['Field'];
          }
-      } elseif ($table == 'hardware') {
+      } else if ($table == 'hardware') {
          $res['DEVICEID'] = 'DEVICEID';
       }
       return $res;
@@ -1383,7 +1375,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     * @return array
     */
    public function getSnmp($options) {
-
 
       if (isset($options['OFFSET'])) {
          $offset = "OFFSET  " . $options['OFFSET'];
@@ -1458,7 +1449,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
             $where_before = "";
          }
 
-
          if (isset($filters['CHECKSUM']) and $filters['CHECKSUM']) {
             $checksum       = $filters['CHECKSUM'];
             $where_checksum = " AND ('" . $checksum . "' & snmp.CHECKSUM) ";
@@ -1470,7 +1460,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          $where_condition = "";
       }
 
-
       $query   = "SELECT DISTINCT snmp.ID FROM snmp, snmp_accountinfo
                         WHERE snmp.SNMPDEVICEID NOT LIKE '\\_%'
                         AND snmp.ID = snmp_accountinfo.SNMP_ID
@@ -1478,7 +1467,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       $request = $this->db->query($query);
 
       if ($this->db->numrows($request)) {
-
 
          $count   = $this->db->numrows($request);
          $query   = "SELECT DISTINCT snmp.ID, snmp.NAME FROM snmp, snmp_accountinfo
@@ -1510,8 +1498,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          $res["SNMP"] = $this->getSnmpSections($snmpids, $complete);
       } else {
 
-
-         $res = array();
+         $res = [];
       }
 
       return $res;

@@ -42,9 +42,9 @@ if (isset($_GET["ip"])) {
 if (isset($_POST["ip"])) {
 
    $ipAdress = $_POST["ip"];
-   $values = array();
+   $values = [];
    if (isset($_POST["subnetName"]) && isset($_POST["subnetChoice"]) && isset($_POST["SubnetMask"])) {
-      $values = array("subnetName" => $_POST["subnetName"], "subnetChoice" => $_POST["subnetChoice"], "subnetMask" => $_POST["SubnetMask"]);
+      $values = ["subnetName" => $_POST["subnetName"], "subnetChoice" => $_POST["subnetChoice"], "subnetMask" => $_POST["SubnetMask"]];
    }
    $ip->modifyNetworkForm($ipAdress, $values);
 }

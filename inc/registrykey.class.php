@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
    function cleanDBonPurge() {
 
       $self = new self();
-      $self->deleteByCriteria(array('computers_id' => $this->fields['id']));
+      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
 
    }
 
@@ -74,12 +74,12 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
       }
 
       //REGISTRY HIVE
-      $REGISTRY_HIVE = array("HKEY_CLASSES_ROOT",
+      $REGISTRY_HIVE = ["HKEY_CLASSES_ROOT",
                              "HKEY_CURRENT_USER",
                              "HKEY_LOCAL_MACHINE",
                              "HKEY_USERS",
                              "HKEY_CURRENT_CONFIG",
-                             "HKEY_DYN_DATA");
+                             "HKEY_DYN_DATA"];
 
       $query = "SELECT *
                 FROM `glpi_plugin_ocsinventoryng_registrykeys`
@@ -176,7 +176,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
 
    function getSearchOptions() {
 
-      $tab = array();
+      $tab = [];
 
       $tab['common'] = self::getTypeName(2);
 
@@ -184,7 +184,6 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
       $tab[1]['field']    = 'id';
       $tab[1]['name']     = __('ID');
       $tab[1]['datatype'] = 'integer';
-
 
       return $tab;
    }

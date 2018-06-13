@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -31,8 +31,9 @@ include('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-if (!isset($_GET["plugin_ocsinventoryng_ocsservers_id"]))
+if (!isset($_GET["plugin_ocsinventoryng_ocsservers_id"])) {
    $_GET["plugin_ocsinventoryng_ocsservers_id"] = "0";
+}
 
 $thread = new PluginOcsinventoryngThread();
 

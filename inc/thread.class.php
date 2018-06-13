@@ -10,7 +10,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -40,21 +40,19 @@ class PluginOcsinventoryngThread extends CommonDBTM
     * @param int $nb
     * @return translated
     */
-   static function getTypeName($nb = 0)
-   {
+   static function getTypeName($nb = 0) {
       return _n('OCSNG server', 'OCSNG servers', $nb, 'ocsinventoryng');
    }
 
    /**
     * @param $processid
     **/
-   function deleteThreadsByProcessId($processid)
-   {
+   function deleteThreadsByProcessId($processid) {
       global $DB;
 
-      foreach ($DB->request($this->getTable(), array('processid' => $processid)) as $data) {
+      foreach ($DB->request($this->getTable(), ['processid' => $processid]) as $data) {
          // Requires to clean details
-         $this->delete(array('id' => $data['id']), true);
+         $this->delete(['id' => $data['id']], true);
       }
    }
 
@@ -62,16 +60,14 @@ class PluginOcsinventoryngThread extends CommonDBTM
    /**
     *
     */
-   function cleanDBonPurge()
-   {
+   function cleanDBonPurge() {
       PluginOcsinventoryngDetail::deleteThreadDetailsByProcessID($this->fields['id']);
    }
 
 
-   function title()
-   {
+   function title() {
 
-      $buttons = array();
+      $buttons = [];
       $title = "";
       $buttons["thread.php"] = __('Back to processes list', 'ocsinventoryng');
       Html::displayTitle("", "", $title, $buttons);
@@ -83,8 +79,7 @@ class PluginOcsinventoryngThread extends CommonDBTM
     * @param $pid
     * @internal param array $options
     */
-   function showForm($pid)
-   {
+   function showForm($pid) {
       global $DB;
 
       $config = new PluginOcsinventoryngConfig();
@@ -203,8 +198,7 @@ class PluginOcsinventoryngThread extends CommonDBTM
     *
     * @return int
     */
-   function getProcessStatus($pid)
-   {
+   function getProcessStatus($pid) {
       global $DB;
 
       $sql = "SELECT `status`
@@ -232,8 +226,7 @@ class PluginOcsinventoryngThread extends CommonDBTM
     *
     * @return bool
     */
-   function deleteOldProcesses($delete_frequency)
-   {
+   function deleteOldProcesses($delete_frequency) {
       global $DB;
 
       $nbdel = 0;
@@ -258,8 +251,7 @@ class PluginOcsinventoryngThread extends CommonDBTM
     * @param $target
     * @param int $plugin_ocsinventoryng_ocsservers_id
     */
-   function showProcesses($target, $plugin_ocsinventoryng_ocsservers_id = 0)
-   {
+   function showProcesses($target, $plugin_ocsinventoryng_ocsservers_id = 0) {
       global $DB, $CFG_GLPI;
 
       $canedit = Session::haveRight("plugin_ocsinventoryng", UPDATE);
@@ -422,7 +414,7 @@ class PluginOcsinventoryngThread extends CommonDBTM
 
       if ($canedit) {
          Html::openArrowMassives("processes");
-         Html::closeArrowMassives(array("delete_processes" => _x('button', 'Delete permanently')));
+         Html::closeArrowMassives(["delete_processes" => _x('button', 'Delete permanently')]);
       }
       Html::closeForm();
    }
@@ -440,8 +432,7 @@ class PluginOcsinventoryngThread extends CommonDBTM
     * @param $time
     **/
    function showshowStat($duree, &$imported, &$synchronized, &$linked, &$failed, &$notupdated,
-                         &$notunique, &$linkedrefused, &$time)
-   {
+                         &$notunique, &$linkedrefused, &$time) {
 
       $title = __('Statistics');
       if ($duree < 9999) {
@@ -507,8 +498,7 @@ class PluginOcsinventoryngThread extends CommonDBTM
    /**
     * @return bool
     */
-   function showErrorLog()
-   {
+   function showErrorLog() {
 
       $fic = GLPI_LOG_DIR . "/ocsng_fullsync.log";
       if (!is_file($fic)) {
@@ -518,7 +508,7 @@ class PluginOcsinventoryngThread extends CommonDBTM
       $size = filesize($fic);
 
       if ($size > 20000) {
-         $logfile = file_get_contents($fic, 0, NULL, $size - 20000, 20000);
+         $logfile = file_get_contents($fic, 0, null, $size - 20000, 20000);
          $events = explode("\n", $logfile);
          // Remove fist partial event
          array_shift($events);
@@ -563,8 +553,7 @@ class PluginOcsinventoryngThread extends CommonDBTM
    /**
     * @return bool
     */
-   function lognothing()
-   {
+   function lognothing() {
 
       echo "<div class='center'>";
       echo "<table class='tab_cadre_fixe'>";
@@ -579,8 +568,7 @@ class PluginOcsinventoryngThread extends CommonDBTM
    /**
     * @param $status
     **/
-   function displayProcessStatusIcon($status)
-   {
+   function displayProcessStatusIcon($status) {
       global $CFG_GLPI;
 
       switch ($status) {
@@ -604,15 +592,14 @@ class PluginOcsinventoryngThread extends CommonDBTM
     *
     * @return array
     */
-   static function cronInfo($name)
-   {
+   static function cronInfo($name) {
 
       switch ($name) {
          case "CleanOldThreads" :
-            return array('description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Clean processes', 'ocsinventoryng'),
-               'parameter' => __('Delete processes after', 'ocsinventoryng'));
+            return ['description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Clean processes', 'ocsinventoryng'),
+               'parameter' => __('Delete processes after', 'ocsinventoryng')];
       }
-      return array();
+      return [];
    }
 
 
@@ -624,8 +611,7 @@ class PluginOcsinventoryngThread extends CommonDBTM
     * @return integer : 0 (nothing to do)
     *                   >0 (endded)
     **/
-   static function cronCleanOldThreads($task)
-   {
+   static function cronCleanOldThreads($task) {
 
       $thread = new self();
       $nb = $thread->deleteOldProcesses($task->fields['param']);
@@ -642,8 +628,7 @@ class PluginOcsinventoryngThread extends CommonDBTM
     *
     * @return string
     **/
-   static function timestampToStringShort($time)
-   {
+   static function timestampToStringShort($time) {
 
       $sign = '';
       if ($time < 0) {

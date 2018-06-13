@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -44,7 +44,7 @@ if (isset($_POST["delete"])
       foreach ($_POST['toupdate'] as $key => $val) {
          if ($val == "on") {
             $link = new PluginOcsinventoryngSnmpOcslink();
-            $link->delete(array('id' => $key), 1);
+            $link->delete(['id' => $key], 1);
          }
       }
       Html::redirect($_SERVER['PHP_SELF']);

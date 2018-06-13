@@ -10,7 +10,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -45,11 +45,10 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     * @param $user
     * @param $pass
     */
-   public function __construct($id, $url, $user, $pass)
-   {
+   public function __construct($id, $url, $user, $pass) {
       parent::__construct($id);
 
-      $options = array(
+      $options = [
          'location' => "$url/ocsinterface",
          'uri' => "$url/Apache/Ocsinventory/Interface",
          'login' => $user,
@@ -57,7 +56,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
          'trace' => true,
          'soap_version' => SOAP_1_1,
          'exceptions' => 0
-      );
+      ];
 
       $this->soapClient = new SoapClient(null, $options);
    }
@@ -65,8 +64,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
    /**
     * @see PluginOcsinventoryngOcsClient::checkConnection()
     */
-   public function checkConnection()
-   {
+   public function checkConnection() {
       return !is_soap_fault($this->soapClient->ocs_config_V2('LOGLEVEL'));
    }
 
@@ -75,16 +73,15 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     * @param mixed $value
     * @return array
     */
-   public function searchComputers($field, $value)
-   {
-      $xml = $this->callSoap('search_computers_V1', array($field, $value));
+   public function searchComputers($field, $value) {
+      $xml = $this->callSoap('search_computers_V1', [$field, $value]);
 
       $computerObjs = simplexml_load_string($xml);
 
-      $computers = array();
+      $computers = [];
       if (count($computerObjs) > 0) {
          foreach ($computerObjs as $obj) {
-            $computers [] = array(
+            $computers [] = [
                'ID' => (int)$obj->DATABASEID,
                'CHECKSUM' => (int)$obj->CHECKSUM,
                'DEVICEID' => (string)$obj->DEVICEID,
@@ -92,7 +89,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
                'LASTDATE' => (string)$obj->LASTDATE,
                'NAME' => (string)$obj->NAME,
                'TAG' => (string)$obj->TAG
-            );
+            ];
          }
       }
       return $computers;
@@ -103,8 +100,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     * @param array $options
     * @return array
     */
-   public function getComputers($options)
-   {
+   public function getComputers($options) {
       $offset = $originalOffset = isset($options['OFFSET']) ? (int)$options['OFFSET'] : 0;
       $maxRecords = isset($options['MAX_RECORDS']) ? (int)$options['MAX_RECORDS'] : null;
       $checksum = isset($options['CHECKSUM']) ? (int)$options['CHECKSUM'] : 131071;
@@ -115,7 +111,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
       $originalEnd = isset($options['MAX_RECORDS']) ? $originalOffset + $maxRecords : null;
       $ocsMap = $this->getOcsMap();
 
-      $computers = array();
+      $computers = [];
 
       do {
          $options['ENGINE'] = $engine;
@@ -128,7 +124,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
          $xml = $this->callSoap('get_computers_V1', new PluginOcsinventoryngOcsSoapRequest($options));
 
-         $computerObjs = array();
+         $computerObjs = [];
          $computerObjs = simplexml_load_string($xml);
 
          if (count($computerObjs) > 0) {
@@ -139,8 +135,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
                $meta = $obj->META;
 
-               $computer = array(
-                  'META' => array(
+               $computer = [
+                  'META' => [
                      'ID' => (int)$meta->DATABASEID,
                      'CHECKSUM' => (int)$meta->CHECKSUM,
                      'DEVICEID' => (string)$meta->DEVICEID,
@@ -148,13 +144,12 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
                      'LASTDATE' => (string)$meta->LASTDATE,
                      'NAME' => (string)$meta->NAME,
                      'TAG' => (string)$meta->TAG
-                  )
-               );
-
+                  ]
+               ];
 
                foreach ($obj->children() as $sectionName => $sectionObj) {
-                  $section = array();
-                  $special_sections = array('ACCOUNTINFO', 'DICO_SOFT');
+                  $section = [];
+                  $special_sections = ['ACCOUNTINFO', 'DICO_SOFT'];
                   foreach ($sectionObj as $key => $val) {
                      if (in_array($sectionName, $special_sections)) {
                         $section[(string)$val->attributes()->Name] = (string)$val;
@@ -163,7 +158,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
                      }
                   }
                   if (!isset($computer[$sectionName])) {
-                     $computer[$sectionName] = array();
+                     $computer[$sectionName] = [];
                   }
 
                   $lowerSectionName = strtolower($sectionName);
@@ -194,10 +189,10 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
       } while ($options['OFFSET'] + $computerObjs['MAX_RECORDS'] < $end);
 
       //toolbox::logdebug($computers);
-      return array(
+      return [
          'TOTAL_COUNT' => $totalCount,
          'COMPUTERS' => $computers
-      );
+      ];
    }
 
    /**
@@ -206,19 +201,18 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     * @param int $wanted
     * @return array
     */
-   public function getComputerSections($ids, $checksum = self::CHECKSUM_ALL, $wanted = self::WANTED_ALL)
-   {
-      $xml = $this->callSoap('get_computer_sections_V1', array($ids, $checksum, $wanted));
+   public function getComputerSections($ids, $checksum = self::CHECKSUM_ALL, $wanted = self::WANTED_ALL) {
+      $xml = $this->callSoap('get_computer_sections_V1', [$ids, $checksum, $wanted]);
 
       $computerObjs = simplexml_load_string($xml);
 
-      $computers = array();
+      $computers = [];
       foreach ($computerObjs as $obj) {
          $id = (int)$obj['ID'];
-         $computer = array();
+         $computer = [];
 
          foreach ($obj as $sectionName => $sectionObj) {
-            $computer[$sectionName] = array();
+            $computer[$sectionName] = [];
             foreach ($sectionObj as $key => $val) {
                $computer[$sectionName][$key] = (string)$val;
             }
@@ -233,8 +227,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
    /**
     * @param $id
     */
-   public function getAccountInfo($id)
-   {
+   public function getAccountInfo($id) {
    }
 
 
@@ -284,24 +277,22 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     *         )
     *      )
     */
-   public function getSnmp($options)
-   {
+   public function getSnmp($options) {
    }
-   
+
    /**
     * @see PluginOcsinventoryngOcsClient::getConfig()
     * @param string $key
     * @return array|bool|mixed
     */
-   public function getConfig($key)
-   {
+   public function getConfig($key) {
       $xml = $this->callSoap('ocs_config_V2', $key);
       if (!is_soap_fault($xml)) {
          $configObj = simplexml_load_string($xml);
-         $config = array(
+         $config = [
             'IVALUE' => (int)$configObj->IVALUE,
             'TVALUE' => (string)$configObj->TVALUE
-         );
+         ];
          return $config;
       }
       return false;
@@ -313,13 +304,12 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     * @param int $ivalue
     * @param string $tvalue
     */
-   public function setConfig($key, $ivalue, $tvalue)
-   {
-      $this->callSoap('ocs_config_V2', array(
+   public function setConfig($key, $ivalue, $tvalue) {
+      $this->callSoap('ocs_config_V2', [
          $key,
          $ivalue,
          $tvalue
-      ));
+      ]);
    }
 
    /**
@@ -329,8 +319,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     * @param $max_date
     * @return array $data the computers to update
     */
-   public function getComputersToUpdate($cfg_ocs, $max_date)
-   {
+   public function getComputersToUpdate($cfg_ocs, $max_date) {
    }
 
    /**
@@ -338,19 +327,17 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     *
     * @return array $data the list of computers
     */
-   public function getOCSComputers()
-   {
+   public function getOCSComputers() {
    }
-   
+
    /**
     *
     */
-   public function getDeletedComputers()
-   {
-      $deletedObjs = array();
+   public function getDeletedComputers() {
+      $deletedObjs = [];
       //$xml = $this->callSoap('get_deleted_computers_V1', new PluginOcsinventoryngOcsSoapRequest(array()));
       //$deletedObjs = simplexml_load_string($xml);
-      $res = array();
+      $res = [];
 
       /* if (is_array($deletedObjs) && count($deletedObjs) > 0) {
           foreach ($deletedObjs as $obj) {
@@ -368,20 +355,19 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     * @param null $equiv
     * @return mixed|void
     */
-   public function removeDeletedComputers($deleted, $equiv = null)
-   {
+   public function removeDeletedComputers($deleted, $equiv = null) {
       $count = 0;
       if (is_array($deleted)) {
          foreach ($deleted as $del) {
-            $this->callSoap('remove_deleted_computer_V1', array($del));
+            $this->callSoap('remove_deleted_computer_V1', [$del]);
             $count++;
          }
       } else {
          if ($equiv) {
-            $this->callSoap('remove_deleted_computer_V1', array($deleted, $equiv));
+            $this->callSoap('remove_deleted_computer_V1', [$deleted, $equiv]);
             $count++;
          } else {
-            $this->callSoap('remove_deleted_computer_V1', array($deleted));
+            $this->callSoap('remove_deleted_computer_V1', [$deleted]);
             $count++;
          }
       }
@@ -397,35 +383,31 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     *         'DELETED' => 'EQUIV'
     *      )
     */
-   public function getOldAgents()
-   {
+   public function getOldAgents() {
    }
-   
+
    /**
     * @param $columns
     * @param $table
     * @param $conditions
     * @param $sort
     */
-   public function getUnique($columns, $table, $conditions, $sort)
-   {
+   public function getUnique($columns, $table, $conditions, $sort) {
    }
 
    /**
     * @param int $checksum
     * @param int $id
     */
-   public function setChecksum($checksum, $id)
-   {
-      $this->callSoap('reset_checksum_V1', array($checksum, $id));
+   public function setChecksum($checksum, $id) {
+      $this->callSoap('reset_checksum_V1', [$checksum, $id]);
    }
 
    /**
     * @param int $id
     * @return int
     */
-   public function getChecksum($id)
-   {
+   public function getChecksum($id) {
       $xml = $this->callSoap('get_checksum_V1', $id);
       return (int)simplexml_load_string($xml);
    }
@@ -436,13 +418,12 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     * @param $table
     * @return array
     */
-   public function getAccountInfoColumns($table)
-   {
+   public function getAccountInfoColumns($table) {
       $xml = $this->callSoap('_get_account_fields_V1', new PluginOcsinventoryngOcsSoapRequest());
-      $res = array(
+      $res = [
          'HARDWARE_ID' => 'HARDWARE_ID',
          'TAG' => 'TAG'
-      );
+      ];
       $res = array_merge($res, (array)$xml);
       return $res;
    }
@@ -459,9 +440,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     * @param int $ssn
     * @param int $id
     */
-   public function updateBios($ssn, $id)
-   {
-
+   public function updateBios($ssn, $id) {
 
    }
 
@@ -470,8 +449,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     * @param int $tag
     * @param int $id
     */
-   public function updateTag($tag, $id)
-   {
+   public function updateTag($tag, $id) {
    }
 
 
@@ -566,15 +544,14 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     * @param mixed $request
     * @return mixed
     */
-   private function callSoap($method, $request)
-   {
+   private function callSoap($method, $request) {
       if ($request instanceof PluginOcsinventoryngOcsSoapRequest) {
          $res = $this->soapClient->$method($request->toXml());
       } else if (is_array($request)) {
-         $res = call_user_func_array(array(
+         $res = call_user_func_array([
             $this->soapClient,
             $method
-         ), $request);
+         ], $request);
       } else {
          $res = $this->soapClient->$method($request);
       }

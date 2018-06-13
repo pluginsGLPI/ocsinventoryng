@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -84,7 +84,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
       $target = Toolbox::getItemTypeFormURL(__CLASS__);
 
-      if (in_array($item->getType(), array('Computer'))) {
+      if (in_array($item->getType(), ['Computer'])) {
          $items_id = $item->getField('id');
 
          if (!empty($items_id)
@@ -134,7 +134,6 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   } else {
                      echo "<td colspan='2'></td>";
                   }
-
 
                   echo "<tr class='tab_bg_1'>";
                   echo "<td>" . __('OCSNG TAG', 'ocsinventoryng') .
@@ -188,8 +187,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                      echo "<td class='center' colspan='2'>";
                      Html::showSimpleForm($target, 'force_ocs_resynch',
                                           _sx('button', 'Force synchronization', 'ocsinventoryng'),
-                                          array('id'         => $items_id,
-                                                'resynch_id' => $data["id"]));
+                                          ['id'         => $items_id,
+                                                'resynch_id' => $data["id"]]);
                      echo "</td>";
 
                   } else {
@@ -221,10 +220,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                      echo "<td class='center' colspan='2'>";
                      Html::showSimpleForm($target, 'force_ocssnmp_resynch',
                                           _sx('button', 'Force SNMP synchronization', 'ocsinventoryng'),
-                                          array('items_id'                            => $items_id,
+                                          ['items_id'                            => $items_id,
                                                 'itemtype'                            => $item->getType(),
                                                 'id'                                  => $data["id"],
-                                                'plugin_ocsinventoryng_ocsservers_id' => $data["plugin_ocsinventoryng_ocsservers_id"]));
+                                                'plugin_ocsinventoryng_ocsservers_id' => $data["plugin_ocsinventoryng_ocsservers_id"]]);
                      echo "</td>";
 
                   }
@@ -232,12 +231,12 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                   $linked_ids [] = $data['ocs_id'];
                   $ocsClient     = PluginOcsinventoryngOcsServer::getDBocs($data['plugin_ocsinventoryng_ocsservers_id']);
-                  $ocsResult     = $ocsClient->getSnmp(array(
+                  $ocsResult     = $ocsClient->getSnmp([
                                                           'MAX_RECORDS' => 1,
-                                                          'FILTER'      => array(
+                                                          'FILTER'      => [
                                                              'IDS' => $linked_ids,
-                                                          )
-                                                       ));
+                                                          ]
+                                                       ]);
                   if (isset($ocsResult['SNMP'])) {
                      if (count($ocsResult['SNMP']) > 0) {
                         foreach ($ocsResult['SNMP'] as $snmp) {
@@ -312,7 +311,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
       $target = Toolbox::getItemTypeFormURL(__CLASS__);
 
-      if (in_array($item->getType(), array('Computer'))) {
+      if (in_array($item->getType(), ['Computer'])) {
          $items_id = $item->getField('id');
 
          if (!empty($items_id)
@@ -400,14 +399,14 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
                      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($data["plugin_ocsinventoryng_ocsservers_id"]);
 
-                     $options         = array(
-                        'DISPLAY'  => array(
+                     $options         = [
+                        'DISPLAY'  => [
                            'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE,
                            'PLUGINS'  => PluginOcsinventoryngOcsClient::PLUGINS_ALL
-                        ),
+                        ],
                         'COMPLETE' => 1
-                     );
-                     $computer        = array();
+                     ];
+                     $computer        = [];
                      $checksum_client = 0;
                      $computer        = $ocsClient->getComputer($data["ocsid"], $options);
                      echo "<br><table class='tab_cadre_fixe'>";
@@ -618,10 +617,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     **/
    static function purgeComputer(Computer $comp) {
       $link = new self();
-      $link->deleteByCriteria(array('computers_id' => $comp->getField("id")));
+      $link->deleteByCriteria(['computers_id' => $comp->getField("id")]);
 
       $reg = new PluginOcsinventoryngRegistryKey();
-      $reg->deleteByCriteria(array('computers_id' => $comp->getField("id")));
+      $reg->deleteByCriteria(['computers_id' => $comp->getField("id")]);
    }
 
 
@@ -654,7 +653,6 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                // 1 : the management mode IS NOT global
                // 2 : a deconnection's status have been defined
                // 3 : unique with serial
-
 
                if (($mode >= 2)
                    && (strlen($decoConf) > 0)
@@ -710,7 +708,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          switch ($item->getType()) {
             case 'Computer' :
                if (!$withtemplate) {
-                  return array('1' => _n('OCSNG link', 'OCSNG links', 1, 'ocsinventoryng'));
+                  return ['1' => _n('OCSNG link', 'OCSNG links', 1, 'ocsinventoryng')];
                }
          }
       }
