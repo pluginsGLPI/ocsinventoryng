@@ -227,47 +227,50 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
             $check = $value['plugins'];
          }
          $multi = $value['multi'];
-         if ($table == "accountinfo") {
-            if (($wanted & self::WANTED_ACCOUNTINFO) || $complete > 0) {
-               $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-               $request = $this->db->query($query);
-               while ($accountinfo = $this->db->fetch_assoc($request)) {
-                  foreach ($accountinfo as $column => $value) {
-                     if (preg_match('/fields_\d+/', $column, $matches)) {
-                        $colnumb = explode("fields_", $matches['0']);
 
-                        if (self::OcsTableExists("accountinfo_config")) {
-                           $col            = $colnumb['1'];
-                           $query          = "SELECT ID,NAME FROM accountinfo_config WHERE ID = '" . $col . "'";
-                           $requestcolname = $this->db->query($query);
-                           $colname        = $this->db->fetch_assoc($requestcolname);
-                           if ($colname['NAME'] != "") {
-                              if (!is_null($value)) {
-                                 $name = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" . Toolbox::addslashes_deep($value);
-                                 $query        = "SELECT TVALUE,NAME FROM config WHERE NAME = '" . $name . "'";
-                                 $requestvalue = $this->db->query($query);
-                                 $custom_value = $this->db->fetch_assoc($requestvalue);
-                                 if (isset($custom_value['TVALUE'])) {
-                                    $accountinfo[$column] = $custom_value['TVALUE'];
+         switch ($table) {
+            case "accountinfo" :
+               if (($wanted & self::WANTED_ACCOUNTINFO) || $complete > 0) {
+                  $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                  $request = $this->db->query($query);
+                  while ($accountinfo = $this->db->fetch_assoc($request)) {
+                     foreach ($accountinfo as $column => $value) {
+                        if (preg_match('/fields_\d+/', $column, $matches)) {
+                           $colnumb = explode("fields_", $matches['0']);
+
+                           if (self::OcsTableExists("accountinfo_config")) {
+                              $col            = $colnumb['1'];
+                              $query          = "SELECT ID,NAME FROM accountinfo_config WHERE ID = '" . $col . "'";
+                              $requestcolname = $this->db->query($query);
+                              $colname        = $this->db->fetch_assoc($requestcolname);
+                              if ($colname['NAME'] != "") {
+                                 if (!is_null($value)) {
+                                    $name         = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" . Toolbox::addslashes_deep($value);
+                                    $query        = "SELECT TVALUE,NAME FROM config WHERE NAME = '" . $name . "'";
+                                    $requestvalue = $this->db->query($query);
+                                    $custom_value = $this->db->fetch_assoc($requestvalue);
+                                    if (isset($custom_value['TVALUE'])) {
+                                       $accountinfo[$column] = $custom_value['TVALUE'];
+                                    }
                                  }
                               }
                            }
                         }
                      }
-                  }
-                  $accountinfomap = $this->getAccountInfoColumns();
-                  foreach ($accountinfo as $key => $value) {
-                     unset($accountinfo[$key]);
-                     $accountinfo[$accountinfomap[$key]] = $value;
-                  }
-                  if ($multi) {
-                     $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)][] = $accountinfo;
-                  } else {
-                     $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)] = $accountinfo;
+                     $accountinfomap = $this->getAccountInfoColumns();
+                     foreach ($accountinfo as $key => $value) {
+                        unset($accountinfo[$key]);
+                        $accountinfo[$accountinfomap[$key]] = $value;
+                     }
+                     if ($multi) {
+                        $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)][] = $accountinfo;
+                     } else {
+                        $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)] = $accountinfo;
+                     }
                   }
                }
-            }
-         } else if ($table == "softwares") {
+               break;
+            case "softwares" :
             if (($check & $checksum) || $complete > 0) {
 
                if (self::WANTED_DICO_SOFT & $wanted) {
@@ -288,8 +291,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                                         `softwares`.`BITSWIDTH`";
                   }
                   $query .= "FROM `softwares`
-                                        INNER JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
-                                        WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                            INNER JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
+                            WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                } else {
                   $query = "SELECT
                                         `softwares`.`NAME`,
@@ -308,7 +311,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                                   `softwares`.`BITSWIDTH`";
                   }
                   $query .= "FROM `softwares`
-                                        WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                             WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                }
 
                $request = $this->db->query($query);
@@ -316,17 +319,18 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                   $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
                }
             }
-         } else if ($table == "registry") {
+            break;
+            case "registry" :
 
             if (($check & $checksum) || $complete > 0) {
                $query   = "SELECT `registry`.`NAME` AS name,
-                          `registry`.`REGVALUE` AS regvalue,
-                          `registry`.`HARDWARE_ID` AS HARDWARE_ID,
-                          `regconfig`.`REGTREE` AS regtree,
-                          `regconfig`.`REGKEY` AS regkey
-                   FROM `registry`
-                   LEFT JOIN `regconfig` ON (`registry`.`NAME` = `regconfig`.`NAME`)
-                   WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                                   `registry`.`REGVALUE` AS regvalue,
+                                   `registry`.`HARDWARE_ID` AS HARDWARE_ID,
+                                   `regconfig`.`REGTREE` AS regtree,
+                                   `regconfig`.`REGKEY` AS regkey
+                         FROM `registry`
+                         LEFT JOIN `regconfig` ON (`registry`.`NAME` = `regconfig`.`NAME`)
+                         WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                $request = $this->db->query($query);
                while ($reg = $this->db->fetch_assoc($request)) {
                   if ($multi) {
@@ -336,182 +340,196 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                   }
                }
             }
-         } else if (self::OcsTableExists("securitycenter") && $table == "securitycenter") {
-
-            if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
-               $query   = "SELECT `securitycenter`.`SCV` AS scv,
-                          `securitycenter`.`CATEGORY` AS category,
-                          `securitycenter`.`HARDWARE_ID` AS HARDWARE_ID,
-                          `securitycenter`.`COMPANY` AS company,
-                          `securitycenter`.`PRODUCT` AS product,
-                          `securitycenter`.`VERSION` AS version,
-                          `securitycenter`.`ENABLED` AS enabled,
-                          `securitycenter`.`UPTODATE` AS uptodate
-                   FROM `securitycenter`
-                   WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-               $request = $this->db->query($query);
-               while ($av = $this->db->fetch_assoc($request)) {
-                  if ($multi) {
-                     $computers[$av['HARDWARE_ID']][strtoupper($table)][] = $av;
-                  } else {
-                     $computers[$av['HARDWARE_ID']][strtoupper($table)] = $av;
-                  }
-               }
-            }
-         } else if (self::OcsTableExists("uptime") && $table == "uptime") {
-
-            if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
-               $query   = "SELECT `uptime`.`TIME` AS time,
-                          `uptime`.`HARDWARE_ID` AS HARDWARE_ID
-                   FROM `uptime`
-                   WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-               $request = $this->db->query($query);
-               while ($up = $this->db->fetch_assoc($request)) {
-                  $computers[$up['HARDWARE_ID']][strtoupper($table)] = $up;
-               }
-            }
-         } else if (self::OcsTableExists("officepack") && $table == "officepack") {
-
-            $query   = "SELECT `officepack`.* FROM `hardware`
-            INNER JOIN `officepack` ON (`hardware`.`id` = `officepack`.`HARDWARE_ID`)
-            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ")
-            AND `INSTALL`";
-            $request = $this->db->query($query);
-            while ($meta = $this->db->fetch_assoc($request)) {
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["OFFICEVERSION"] = $meta["OFFICEVERSION"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PRODUCT"]       = $meta["PRODUCT"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["OFFICEKEY"]     = $meta["OFFICEKEY"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["NOTE"]          = $meta["NOTE"];
-
-            }
-
-         } else if (self::OcsTableExists("winupdatestate") && $table == "winupdatestate") {
-
-            $query   = "SELECT `winupdatestate`.* FROM `hardware`
-            INNER JOIN `winupdatestate` ON (`hardware`.`id` = `winupdatestate`.`HARDWARE_ID`)
-            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") ";
-            $request = $this->db->query($query);
-            while ($meta = $this->db->fetch_assoc($request)) {
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["AUOPTIONS"]            = $meta["AUOPTIONS"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SCHEDULEDINSTALLDATE"] = $meta["SCHEDULEDINSTALLDATE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["LASTSUCCESSTIME"]      = $meta["LASTSUCCESSTIME"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DETECTSUCCESSTIME"]    = $meta["DETECTSUCCESSTIME"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DOWNLOADSUCCESSTIME"]  = $meta["DOWNLOADSUCCESSTIME"];
-
-            }
-
-         } else if (self::OcsTableExists("osinstall") && $table == "osinstall") {
-
-            $query   = "SELECT `osinstall`.* FROM `hardware`
-            INNER JOIN `osinstall` ON (`hardware`.`id` = `osinstall`.`HARDWARE_ID`)
-            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") ";
-            $request = $this->db->query($query);
-            while ($meta = $this->db->fetch_assoc($request)) {
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["BUILDVER"]    = $meta["BUILDVER"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["INSTDATE"]    = $meta["INSTDATE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["CODESET"]     = $meta["CODESET"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["COUNTRYCODE"] = $meta["COUNTRYCODE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["OSLANGUAGE"]  = $meta["OSLANGUAGE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["CURTIMEZONE"] = $meta["CURTIMEZONE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["LOCALE"]      = $meta["LOCALE"];
-
-            }
-
-         } else if (self::OcsTableExists("networkshare") && $table == "networkshare") {
-
-            $query   = "SELECT `networkshare`.* FROM `hardware`
-            INNER JOIN `networkshare` ON (`hardware`.`id` = `networkshare`.`HARDWARE_ID`)
-            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") ";
-            $request = $this->db->query($query);
-            while ($meta = $this->db->fetch_assoc($request)) {
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DRIVE"]    = $meta["DRIVE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PATH"]    = $meta["PATH"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SIZE"]     = $meta["SIZE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["FREESPACE"] = $meta["FREESPACE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["QUOTA"]  = $meta["QUOTA"];
-            }
-
-         } else if (self::OcsTableExists("runningprocess") && $table == "runningprocess") {
-
-            $query   = "SELECT `runningprocess`.* FROM `hardware`
-            INNER JOIN `runningprocess` ON (`hardware`.`id` = `runningprocess`.`HARDWARE_ID`)
-            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") ";
-            $request = $this->db->query($query);
-            while ($meta = $this->db->fetch_assoc($request)) {
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["CPUUSAGE"]      = $meta["CPUUSAGE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["TTY"]           = $meta["TTY"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["STARTED"]       = $meta["STARTED"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["VIRTUALMEMORY"] = $meta["VIRTUALMEMORY"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PROCESSNAME"]   = $meta["PROCESSNAME"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PROCESSID"]     = $meta["PROCESSID"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["USERNAME"]      = $meta["USERNAME"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PROCESSMEMORY"] = $meta["PROCESSMEMORY"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["COMMANDLINE"]   = $meta["COMMANDLINE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DESCRIPTION"]   = $meta["DESCRIPTION"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["COMPANY"]       = $meta["COMPANY"];
-            }
-
-         } else if (self::OcsTableExists("service") && $table == "service") {
-
-            $query   = "SELECT `service`.* FROM `hardware`
-            INNER JOIN `service` ON (`hardware`.`id` = `service`.`HARDWARE_ID`)
-            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") ";
-            $request = $this->db->query($query);
-            while ($meta = $this->db->fetch_assoc($request)) {
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCNAME"]         = $meta["SVCNAME"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCDN"]           = $meta["SVCDN"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSTATE"]        = $meta["SVCSTATE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCDESC"]         = $meta["SVCDESC"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSTARTMODE"]    = $meta["SVCSTARTMODE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCPATH"]         = $meta["SVCPATH"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSTARTNAME"]    = $meta["SVCSTARTNAME"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCEXITCODE"]     = $meta["SVCEXITCODE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSPECEXITCODE"] = $meta["SVCSPECEXITCODE"];
-            }
-
-         } else if ($table == "hardware") {
-
-            $query   = "SELECT `hardware`.*,`accountinfo`.`TAG` FROM `hardware`
-            INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
-            WHERE `ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
-            while ($meta = $this->db->fetch_assoc($request)) {
-               $computers[$meta['ID']]["META"]["ID"]       = $meta["ID"];
-               $computers[$meta['ID']]["META"]["CHECKSUM"] = $meta["CHECKSUM"];
-               $computers[$meta['ID']]["META"]["DEVICEID"] = $meta["DEVICEID"];
-               $computers[$meta['ID']]["META"]["LASTCOME"] = $meta["LASTCOME"];
-               $computers[$meta['ID']]["META"]["LASTDATE"] = $meta["LASTDATE"];
-               $computers[$meta['ID']]["META"]["NAME"]     = $meta["NAME"];
-               $computers[$meta['ID']]["META"]["TAG"]      = $meta["TAG"];
-               $computers[$meta['ID']]["META"]["USERID"]   = $meta["USERID"];
-               $computers[$meta['ID']]["META"]["UUID"]     = $meta["UUID"];
-            }
-
-            if (($check & $checksum) || $complete > 0) {
-               $query   = "SELECT * FROM `" . $table . "` WHERE `ID` IN (" . implode(',', $ids) . ")";
-               $request = $this->db->query($query);
-               while ($hardware = $this->db->fetch_assoc($request)) {
-                  if ($multi) {
-                     $computers[$hardware['ID']][strtoupper($table)][] = $hardware;
-                  } else {
-                     $computers[$hardware['ID']][strtoupper($table)] = $hardware;
-                  }
-               }
-            }
-         } else {
-            if (self::OcsTableExists($table)) {
-               if (($check & $checksum) || $complete > 0) {
-                  $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+            break;
+            case "securitycenter" :
+            if (self::OcsTableExists("securitycenter")) {
+               if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
+                  $query   = "SELECT `securitycenter`.`SCV` AS scv,
+                                   `securitycenter`.`CATEGORY` AS category,
+                                   `securitycenter`.`HARDWARE_ID` AS HARDWARE_ID,
+                                   `securitycenter`.`COMPANY` AS company,
+                                   `securitycenter`.`PRODUCT` AS product,
+                                   `securitycenter`.`VERSION` AS version,
+                                   `securitycenter`.`ENABLED` AS enabled,
+                                   `securitycenter`.`UPTODATE` AS uptodate
+                            FROM `securitycenter`
+                            WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                   $request = $this->db->query($query);
-                  while ($computer = $this->db->fetch_assoc($request)) {
+                  while ($av = $this->db->fetch_assoc($request)) {
                      if ($multi) {
-                        $computers[$computer['HARDWARE_ID']][strtoupper($table)][] = $computer;
+                        $computers[$av['HARDWARE_ID']][strtoupper($table)][] = $av;
                      } else {
-                        $computers[$computer['HARDWARE_ID']][strtoupper($table)] = $computer;
+                        $computers[$av['HARDWARE_ID']][strtoupper($table)] = $av;
                      }
                   }
                }
             }
+            break;
+            case "uptime" :
+            if (self::OcsTableExists("uptime")) {
+               if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
+                  $query   = "SELECT `TIME` AS time, `HARDWARE_ID`
+                            FROM `uptime`
+                            WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                  $request = $this->db->query($query);
+                  while ($up = $this->db->fetch_assoc($request)) {
+                     $computers[$up['HARDWARE_ID']][strtoupper($table)] = $up;
+                  }
+               }
+            }
+            break;
+            case "officepack" :
+               if (self::OcsTableExists("officepack")) {
+                  $query   = "SELECT `ID`, `HARDWARE_ID`, `OFFICEVERSION`, `PRODUCT`, `OFFICEKEY`, `NOTE`
+                              FROM `officepack`
+                              WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")
+                              AND `INSTALL`";
+                  $request = $this->db->query($query);
+                  while ($meta = $this->db->fetch_assoc($request)) {
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["OFFICEVERSION"] = $meta["OFFICEVERSION"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PRODUCT"]       = $meta["PRODUCT"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["OFFICEKEY"]     = $meta["OFFICEKEY"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["NOTE"]          = $meta["NOTE"];
+
+                  }
+               }
+               break;
+            case "winupdatestate" :
+               if (self::OcsTableExists("winupdatestate")) {
+                  $query   = "SELECT `ID`, `HARDWARE_ID`, `AUOPTIONS`, `SCHEDULEDINSTALLDATE`, `LASTSUCCESSTIME`, 
+                              `DETECTSUCCESSTIME`, `DOWNLOADSUCCESSTIME`
+                              FROM `winupdatestate`
+                              WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ") ";
+                  $request = $this->db->query($query);
+                  while ($meta = $this->db->fetch_assoc($request)) {
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["AUOPTIONS"]            = $meta["AUOPTIONS"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SCHEDULEDINSTALLDATE"] = $meta["SCHEDULEDINSTALLDATE"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["LASTSUCCESSTIME"]      = $meta["LASTSUCCESSTIME"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DETECTSUCCESSTIME"]    = $meta["DETECTSUCCESSTIME"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DOWNLOADSUCCESSTIME"]  = $meta["DOWNLOADSUCCESSTIME"];
+
+                  }
+               }
+               break;
+            case "osinstall" :
+               if (self::OcsTableExists("osinstall")) {
+                  $query   = "SELECT `osinstall`.* 
+                              FROM `osinstall`
+                              WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ") ";
+                  $request = $this->db->query($query);
+                  while ($meta = $this->db->fetch_assoc($request)) {
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["BUILDVER"]    = $meta["BUILDVER"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["INSTDATE"]    = $meta["INSTDATE"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["CODESET"]     = $meta["CODESET"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["COUNTRYCODE"] = $meta["COUNTRYCODE"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["OSLANGUAGE"]  = $meta["OSLANGUAGE"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["CURTIMEZONE"] = $meta["CURTIMEZONE"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["LOCALE"]      = $meta["LOCALE"];
+
+                  }
+               }
+               break;
+            case "networkshare" :
+               if (self::OcsTableExists("networkshare")) {
+                  $query   = "SELECT `ID`, `HARDWARE_ID`, `DRIVE`, `PATH`, `SIZE`, `FREESPACE`, `QUOTA`
+                              FROM `networkshare`
+                              WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ") ";
+                  $request = $this->db->query($query);
+                  while ($meta = $this->db->fetch_assoc($request)) {
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DRIVE"]     = $meta["DRIVE"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PATH"]      = $meta["PATH"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SIZE"]      = $meta["SIZE"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["FREESPACE"] = $meta["FREESPACE"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["QUOTA"]     = $meta["QUOTA"];
+                  }
+               }
+               break;
+            case "runningprocess" :
+               if (self::OcsTableExists("runningprocess")) {
+                  $query   = "SELECT * 
+                              FROM `runningprocess`
+                              WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ") ";
+                  $request = $this->db->query($query);
+                  while ($meta = $this->db->fetch_assoc($request)) {
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["CPUUSAGE"]      = $meta["CPUUSAGE"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["TTY"]           = $meta["TTY"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["STARTED"]       = $meta["STARTED"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["VIRTUALMEMORY"] = $meta["VIRTUALMEMORY"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PROCESSNAME"]   = $meta["PROCESSNAME"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PROCESSID"]     = $meta["PROCESSID"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["USERNAME"]      = $meta["USERNAME"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PROCESSMEMORY"] = $meta["PROCESSMEMORY"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["COMMANDLINE"]   = $meta["COMMANDLINE"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DESCRIPTION"]   = $meta["DESCRIPTION"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["COMPANY"]       = $meta["COMPANY"];
+                  }
+               }
+               break;
+            case "service" :
+               if (self::OcsTableExists("service")) {
+                  $query   = "SELECT `service`.* 
+                              FROM `service`
+                              WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ") ";
+                  $request = $this->db->query($query);
+                  while ($meta = $this->db->fetch_assoc($request)) {
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCNAME"]         = $meta["SVCNAME"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCDN"]           = $meta["SVCDN"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSTATE"]        = $meta["SVCSTATE"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCDESC"]         = $meta["SVCDESC"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSTARTMODE"]    = $meta["SVCSTARTMODE"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCPATH"]         = $meta["SVCPATH"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSTARTNAME"]    = $meta["SVCSTARTNAME"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCEXITCODE"]     = $meta["SVCEXITCODE"];
+                     $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSPECEXITCODE"] = $meta["SVCSPECEXITCODE"];
+                  }
+               }
+               break;
+            case "hardware" :
+
+               $query   = "SELECT `hardware`.*,`accountinfo`.`TAG` 
+                          FROM `hardware`
+                          INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
+                          WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ")";
+               $request = $this->db->query($query);
+               while ($meta = $this->db->fetch_assoc($request)) {
+                  $computers[$meta['ID']]["META"]["ID"]       = $meta["ID"];
+                  $computers[$meta['ID']]["META"]["CHECKSUM"] = $meta["CHECKSUM"];
+                  $computers[$meta['ID']]["META"]["DEVICEID"] = $meta["DEVICEID"];
+                  $computers[$meta['ID']]["META"]["LASTCOME"] = $meta["LASTCOME"];
+                  $computers[$meta['ID']]["META"]["LASTDATE"] = $meta["LASTDATE"];
+                  $computers[$meta['ID']]["META"]["NAME"]     = $meta["NAME"];
+                  $computers[$meta['ID']]["META"]["TAG"]      = $meta["TAG"];
+                  $computers[$meta['ID']]["META"]["USERID"]   = $meta["USERID"];
+                  $computers[$meta['ID']]["META"]["UUID"]     = $meta["UUID"];
+               }
+
+               if (($check & $checksum) || $complete > 0) {
+                  $query   = "SELECT * FROM `" . $table . "` WHERE `ID` IN (" . implode(',', $ids) . ")";
+                  $request = $this->db->query($query);
+                  while ($hardware = $this->db->fetch_assoc($request)) {
+                     if ($multi) {
+                        $computers[$hardware['ID']][strtoupper($table)][] = $hardware;
+                     } else {
+                        $computers[$hardware['ID']][strtoupper($table)] = $hardware;
+                     }
+                  }
+               }
+               break;
+            default :
+               if (self::OcsTableExists($table)) {
+                  if (($check & $checksum) || $complete > 0) {
+                     $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                     $request = $this->db->query($query);
+                     while ($computer = $this->db->fetch_assoc($request)) {
+                        if ($multi) {
+                           $computers[$computer['HARDWARE_ID']][strtoupper($table)][] = $computer;
+                        } else {
+                           $computers[$computer['HARDWARE_ID']][strtoupper($table)] = $computer;
+                        }
+                     }
+                  }
+               }
+               break;
          }
       }
 
@@ -869,6 +887,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     * @see PluginOcsinventoryngOcsClient::getComputers()
     *
     * @param array $options
+    * @param int $id
     *
     * @return array
     */

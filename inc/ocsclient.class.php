@@ -134,6 +134,7 @@ abstract class PluginOcsinventoryngOcsClient
     *            'WANTED' => int      // special sections to return (see WANTED_* constants)
     *         )
     *      )
+    * @param int $id hardware id
     *
     * @return array List of computers :
     *      array (
