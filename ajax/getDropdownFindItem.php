@@ -67,11 +67,11 @@ if (isset($_POST['used']) && !empty($_POST['used'])) {
 }
 
 if ($item->maybeDeleted()) {
-   $where .= " AND `is_deleted` = '0' ";
+   $where .= " AND `is_deleted` = 0 ";
 }
 
 if ($item->maybeTemplate()) {
-   $where .= " AND `is_template` = '0' ";
+   $where .= " AND `is_template` = 0 ";
 }
 
 if ((strlen($_POST['searchText']) > 0)) {

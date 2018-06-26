@@ -31,8 +31,7 @@
 /**
  * Class PluginOcsinventoryngOcsSoapRequest
  */
-class PluginOcsinventoryngOcsSoapRequest
-{
+class PluginOcsinventoryngOcsSoapRequest {
    /**
     * @var mixed
     */
@@ -55,6 +54,7 @@ class PluginOcsinventoryngOcsSoapRequest
    /**
     * @param $tagName
     * @param $value
+    *
     * @return string
     */
    private function _toXml($tagName, $value) {
@@ -81,6 +81,7 @@ class PluginOcsinventoryngOcsSoapRequest
 
    /**
     * @param $array
+    *
     * @return bool
     */
    private function isIndexed($array) {

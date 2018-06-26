@@ -31,6 +31,9 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
+/**
+ * Class PluginOcsinventoryngProxysetting
+ */
 class PluginOcsinventoryngProxysetting extends CommonDBChild {
 
    // From CommonDBChild
@@ -67,7 +70,7 @@ class PluginOcsinventoryngProxysetting extends CommonDBChild {
             $nb = 0;
             if ($_SESSION['glpishow_count_on_tabs']) {
                $nb = countElementsInTable('glpi_plugin_ocsinventoryng_proxysettings',
-                                          "computers_id = '" . $item->getID() . "'");
+                                          "computers_id = " . $item->getID());
             }
             return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
          }
@@ -107,11 +110,11 @@ class PluginOcsinventoryngProxysetting extends CommonDBChild {
           || !$comp->can($ID, READ)) {
          return false;
       }
-      $canedit = $comp->canEdit($ID);
 
       echo "<div class='spaced center'>";
 
-      if ($result = $DB->request('glpi_plugin_ocsinventoryng_proxysettings', ['computers_id' => $ID, 'ORDER' => 'user'])) {
+      if ($result = $DB->request('glpi_plugin_ocsinventoryng_proxysettings',
+                                 ['computers_id' => $ID, 'ORDER' => 'user'])) {
          echo "<table class='tab_cadre_fixehov'>";
          $colspan = 5;
          echo "<tr class='noHover'><th colspan='$colspan'>" . self::getTypeName($result->numrows()) .

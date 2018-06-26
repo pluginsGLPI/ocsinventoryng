@@ -31,8 +31,6 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-
-/// OCS NetworkPort class
 /**
  * Class PluginOcsinventoryngNetworkPort
  */
@@ -74,7 +72,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       $query = "SELECT `id`, `is_dynamic`
                 FROM `glpi_networkports`
                 WHERE `itemtype` = 'Computer'
-                   AND `items_id` = '$computers_id'
+                   AND `items_id` = $computers_id
                    AND `mac` = '$mac'";
 
       // If there is virtual ports, then, filter by port's name
@@ -92,14 +90,14 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       $ports = $DB->request($query);
       if ($ports->numrows() == 0) {
          $port_input = ['name'               => $name,
-                             'mac'                => $mac,
-                             'items_id'           => $computers_id,
-                             'itemtype'           => 'Computer',
-                             '_no_history'        => !$dohistory,
-                             'instantiation_type' => $instantiation_type,
-                             '_create_children'   => 1,
-                             'is_dynamic'         => 1,
-                             'is_deleted'         => 0];
+                        'mac'                => $mac,
+                        'items_id'           => $computers_id,
+                        'itemtype'           => 'Computer',
+                        '_no_history'        => !$dohistory,
+                        'instantiation_type' => $instantiation_type,
+                        '_create_children'   => 1,
+                        'is_dynamic'         => 1,
+                        'is_deleted'         => 0];
 
          $networkports_id = $network_port->add($port_input, [], $dohistory);
          if ($networkports_id === false) {
@@ -145,7 +143,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       $query        = "SELECT `id`, `is_dynamic`
                 FROM `glpi_networknames`
                 WHERE `itemtype` = 'NetworkPort'
-                   AND `items_id` = '$networkports_id'
+                   AND `items_id` = $networkports_id
                 ORDER BY `is_dynamic`";
       if ((!$ips) || (count($ips) == 0)) {
          foreach ($DB->request($query) as $line) {
@@ -156,12 +154,12 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       } else {
          $names = $DB->request($query);
          if ($names->numrows() == 0) {
-            $name_input      = ['itemtype'    => 'NetworkPort',
-                                     'items_id'    => $networkports_id,
-                                     'is_dynamic'  => 1,
-                                     'is_deleted'  => 0,
-                                     '_no_history' => !$dohistory,
-                                     'name'        => 'OCS-INVENTORY-NG'];
+            $name_input = ['itemtype'    => 'NetworkPort',
+                           'items_id'    => $networkports_id,
+                           'is_dynamic'  => 1,
+                           'is_deleted'  => 0,
+                           '_no_history' => !$dohistory,
+                           'name'        => 'OCS-INVENTORY-NG'];
             $networknames_id = $network_name->add($name_input);
          } else {
             $line            = $names->next();
@@ -176,10 +174,10 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          $ip_address              = new IPAddress();
          $already_known_addresses = [];
          $query                   = "SELECT `id`, `name`, `is_dynamic`, `mainitems_id`
-                   FROM `glpi_ipaddresses`
-                   WHERE `itemtype` = 'NetworkName'
-                     AND `items_id` = '$networknames_id'
-                   ORDER BY `is_dynamic`";
+                                     FROM `glpi_ipaddresses`
+                                     WHERE `itemtype` = 'NetworkName'
+                                       AND `items_id` = $networknames_id
+                                     ORDER BY `is_dynamic`";
          foreach ($DB->request($query) as $line) {
             if (in_array($line['name'], $ips)
                 && !empty($line['mainitems_id'])) {
@@ -191,16 +189,23 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          }
       }
 
+
       if ($mask != ''
           && $gateway != ''
           && $subnet != ''
           && $subnet != '0.0.0.0') {
          $IPNetwork = new IPNetwork();
-         if (countElementsInTable('glpi_ipnetworks',
-                                  "`address`='" . $subnet . "'
-                                           AND `netmask`='" . $mask . "'
-                                           AND `gateway`='" . $gateway . "'
-                                           AND `entities_id`='" . $entities_id . "'") == 0) {
+
+         $condition = "`address`='" . $subnet . "'
+                      AND `netmask`='" . $mask . "'
+                      AND `entities_id`= $entities_id ";
+
+         //To avoid the "Invalid gateway address" error message when adding a gateway to 0.0.0.0
+         if($gateway != '0.0.0.0') {
+            $condition .= "AND `gateway` = '$gateway'";
+         }
+
+         if (countElementsInTable('glpi_ipnetworks', $condition) == 0) {
 
             $input                    = [
                'name'        => $subnet . '/' .
@@ -208,10 +213,14 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                 $gateway,
                'network'     => $subnet . ' / ' .
                                 $mask,
-               'gateway'     => $gateway,
+//               'gateway'     => $gateway,
                'addressable' => 1,
                'entities_id' => $entities_id
             ];
+
+            if($gateway != '0.0.0.0') {
+               $input['gateway']     = $gateway;
+            }
 
             $IPNetwork->networkUpdate = true;
             $IPNetwork->add($input, [], !$dohistory);
@@ -326,13 +335,13 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
                if ($net_id) {
                   $item_device->add(['items_id'              => $computers_id,
-                                          'itemtype'              => 'Computer',
-                                          'entities_id'           => $entities_id,
-                                          'devicenetworkcards_id' => $net_id,
-                                          'mac'                   => $mac,
-                                          '_no_history'           => !$cfg_ocs['history_network'],
-                                          'is_dynamic'            => 1,
-                                          'is_deleted'            => 0]);
+                                     'itemtype'              => 'Computer',
+                                     'entities_id'           => $entities_id,
+                                     'devicenetworkcards_id' => $net_id,
+                                     'mac'                   => $mac,
+                                     '_no_history'           => !$cfg_ocs['history_network'],
+                                     'is_dynamic'            => 1,
+                                     'is_deleted'            => 0]);
                }
             }
             if (!$item_device->isNewItem()) {
@@ -342,8 +351,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             if ($type->fields['instantiation_type'] == __CLASS__) {
                $result     = $main['result'];
                $inst_input = ['TYPE'    => $result['TYPE'],
-                                   'TYPEMIB' => $result['TYPEMIB'],
-                                   'speed'   => $result['SPEED']];
+                              'TYPEMIB' => $result['TYPEMIB'],
+                              'speed'   => $result['SPEED']];
             } else {
                $inst_input = $type->fields;
                foreach (['id', 'name', 'OCS_TYPE', 'OCS_TYPEMIB',
@@ -360,7 +369,9 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $networkports_id = self::updateNetworkPort($mac, $main['name'], $computers_id,
                                                        $type->fields['instantiation_type'],
                                                        $inst_input, $main['ip'], false,
-                                                       $cfg_ocs['history_network'], $already_known_ports, $mask, $gateway, $subnet, $entities_id);
+                                                       $cfg_ocs['history_network'],
+                                                       $already_known_ports,
+                                                       $mask, $gateway, $subnet, $entities_id);
 
             if ($networkports_id < 0) {
                continue;
@@ -380,7 +391,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $inst_input = ['networkports_id_alias' => $networkports_id];
             $id         = self::updateNetworkPort($mac, $port['name'], $computers_id,
                                                   'NetworkPortAlias', $inst_input, $port['ip'],
-                                                  true, $cfg_ocs['history_network'], $already_known_ports, $mask, $gateway, $subnet, $entities_id);
+                                                  true, $cfg_ocs['history_network'], $already_known_ports,
+                                                  $mask, $gateway, $subnet, $entities_id);
             if ($id > 0) {
                $already_known_ports[] = $id;
             }
@@ -390,8 +402,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       $query = "SELECT `id`
                 FROM `glpi_networkports`
                 WHERE `itemtype` = 'Computer'
-                   AND `items_id` = '$computers_id'
-                   AND `is_dynamic` = '1'";
+                   AND `items_id` = $computers_id
+                   AND `is_dynamic` = 1";
       if (count($already_known_ports) > 0) {
          $query .= " AND `id` NOT IN ('" . implode("', '", $already_known_ports) . "')";
       }
@@ -403,8 +415,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       $query = "SELECT `id`
                 FROM `glpi_items_devicenetworkcards`
                 WHERE `itemtype` = 'Computer'
-                   AND `items_id` = '$computers_id'
-                   AND `is_dynamic` = '1'";
+                   AND `items_id` = $computers_id
+                   AND `is_dynamic` = 1";
       if (count($already_known_ifaces) > 0) {
          $query .= " AND `id` NOT IN ('" . implode("', '", $already_known_ifaces) . "')";
       }
@@ -667,7 +679,6 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       switch ($ma->getAction()) {
          case "plugin_ocsinventoryng_update_networkport_type":
             $networkport = new PluginOcsinventoryngNetworkPort();
-            $input       = $ma->getInput();
             foreach ($ids as $id) {
                if ($networkport->getFromDBByQuery("WHERE `networkports_id` = '$id'")) {
                   if ($networkport->transformAccordingTypes()) {

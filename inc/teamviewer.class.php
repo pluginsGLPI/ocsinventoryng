@@ -31,6 +31,9 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
+/**
+ * Class PluginOcsinventoryngTeamviewer
+ */
 class PluginOcsinventoryngTeamviewer extends CommonDBChild {
 
    // From CommonDBChild
@@ -190,7 +193,12 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
       echo "</div>";
    }
 
-
+   /**
+    * @param \Computer $comp
+    * @param string    $withtemplate
+    *
+    * @return bool
+    */
    static function showForSimpleForItem(Computer $comp, $withtemplate = '') {
       global $DB;
 
@@ -218,7 +226,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
                 FROM `glpi_links`
                 INNER JOIN `glpi_links_itemtypes`
                      ON `glpi_links`.`id` = `glpi_links_itemtypes`.`links_id`
-                WHERE `glpi_links_itemtypes`.`itemtype`='PluginOcsinventoryngTeamviewer' " .
+                WHERE `glpi_links_itemtypes`.`itemtype`= 'PluginOcsinventoryngTeamviewer' " .
                         getEntitiesRestrictRequest(" AND", "glpi_links", "entities_id",
                                                    $restrict, true) . "
                 ORDER BY name";

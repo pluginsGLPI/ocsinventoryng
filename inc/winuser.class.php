@@ -31,6 +31,9 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
+/**
+ * Class PluginOcsinventoryngWinuser
+ */
 class PluginOcsinventoryngWinuser extends CommonDBChild {
 
    // From CommonDBChild
@@ -67,7 +70,7 @@ class PluginOcsinventoryngWinuser extends CommonDBChild {
             $nb = 0;
             if ($_SESSION['glpishow_count_on_tabs']) {
                $nb = countElementsInTable('glpi_plugin_ocsinventoryng_winusers',
-                                          "computers_id = '" . $item->getID() . "'");
+                                          "computers_id = " . $item->getID());
             }
             return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
          }

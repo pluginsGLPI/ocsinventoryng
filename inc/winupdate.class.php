@@ -31,6 +31,9 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
+/**
+ * Class PluginOcsinventoryngWinupdate
+ */
 class PluginOcsinventoryngWinupdate extends CommonDBChild {
 
    // From CommonDBChild
@@ -107,7 +110,6 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
           || !$comp->can($ID, READ)) {
          return false;
       }
-      $canedit = $comp->canEdit($ID);
 
       echo "<div class='spaced center'>";
 

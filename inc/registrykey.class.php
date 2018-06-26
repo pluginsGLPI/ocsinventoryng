@@ -75,21 +75,23 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
 
       //REGISTRY HIVE
       $REGISTRY_HIVE = ["HKEY_CLASSES_ROOT",
-                             "HKEY_CURRENT_USER",
-                             "HKEY_LOCAL_MACHINE",
-                             "HKEY_USERS",
-                             "HKEY_CURRENT_CONFIG",
-                             "HKEY_DYN_DATA"];
+                        "HKEY_CURRENT_USER",
+                        "HKEY_LOCAL_MACHINE",
+                        "HKEY_USERS",
+                        "HKEY_CURRENT_CONFIG",
+                        "HKEY_DYN_DATA"];
 
       $query = "SELECT *
                 FROM `glpi_plugin_ocsinventoryng_registrykeys`
-                WHERE `computers_id` = '$ID'";
+                WHERE `computers_id` = $ID";
 
       if ($result = $DB->query($query)) {
          if ($DB->numrows($result) != 0) {
             echo "<div class='center'><table class='tab_cadre_fixe'>";
             echo "<tr><th colspan='4'>" . sprintf(_n('%d registry key found',
-                                                     '%d registry keys found', $DB->numrows($result), 'ocsinventoryng'), $DB->numrows($result));
+                                                     '%d registry keys found',
+                                                     $DB->numrows($result), 'ocsinventoryng'),
+                                                  $DB->numrows($result));
             echo "</th></tr>\n";
 
             echo "<tr><th>" . __('Name') . "</th>";
@@ -152,7 +154,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
    static function countForItem(CommonDBTM $item) {
 
       return countElementsInTable('glpi_plugin_ocsinventoryng_registrykeys',
-                                  "`computers_id` = '" . $item->getID() . "'");
+                                  "`computers_id` = " . $item->getID());
    }
 
    /**
@@ -174,6 +176,9 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
       return true;
    }
 
+   /**
+    * @return \an|array
+    */
    function getSearchOptions() {
 
       $tab = [];
