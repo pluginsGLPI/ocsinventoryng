@@ -204,10 +204,15 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                $graph .= __('No data available', 'mydashboard');
             }
 
-            $criterias = [];
-            $params    = [];
-            $graph     .= PluginMydashboardHelper::getGraphHeader($widgetId, 'LastSynchroChart', false, $params, $criterias, true, true);
-
+            $params    = ["widgetId"  => $widgetId,
+                          "name"      => 'LastSynchroChart',
+                          "onsubmit"  => false,
+                          "opt"       => [],
+                          "criterias" => [],
+                          "export"    => true,
+                          "canvas"    => true,
+                          "nb"        => $nb];
+            $graph     .= PluginMydashboardHelper::getGraphHeader($params);
             $widget->setWidgetHtmlContent(
                $graph
             );
@@ -358,10 +363,16 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                $graph .= __('No data available', 'mydashboard');
             }
 
-            $criterias = [];
-            $params    = [];
-            $graph     .= PluginMydashboardHelper::getGraphHeader($widgetId, 'InventoryTypePieChart', false, $params, $criterias, true, true);
 
+            $params    = ["widgetId"  => $widgetId,
+                          "name"      => 'InventoryTypePieChart',
+                          "onsubmit"  => false,
+                          "opt"       => [],
+                          "criterias" => [],
+                          "export"    => true,
+                          "canvas"    => true,
+                          "nb"        => $nb];
+            $graph     .= PluginMydashboardHelper::getGraphHeader($params);
             $widget->setWidgetHtmlContent(
                $graph
             );
