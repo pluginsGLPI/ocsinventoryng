@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -33,7 +33,9 @@ header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkLoginUser();
-if (!isset($_POST) || empty($_POST)) $_POST = $_GET;
+if (!isset($_POST) || empty($_POST)) {
+   $_POST = $_GET;
+}
 // Security
 if (!$DB->tableExists($_POST['table'])) {
    exit();
@@ -107,12 +109,12 @@ $query = "SELECT *
           $LIMIT";
 $result = $DB->query($query);
 
-$datas = array();
+$datas = [];
 
 // Display first if no search
 if ($_POST['page'] == 1 && empty($_POST['searchText'])) {
-   array_push($datas, array('id' => 0,
-      'text' => Dropdown::EMPTY_VALUE));
+   array_push($datas, ['id' => 0,
+      'text' => Dropdown::EMPTY_VALUE]);
 }
 $count = 0;
 if ($DB->numrows($result)) {
@@ -135,8 +137,8 @@ if ($DB->numrows($result)) {
          $output = sprintf(__('%1$s (%2$s)'), $output, $data['id']);
       }
 
-      array_push($datas, array('id' => $data['id'],
-         'text' => $output));
+      array_push($datas, ['id' => $data['id'],
+         'text' => $output]);
       $count++;
    }
 }

@@ -10,7 +10,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@
  */
 class PluginOcsinventoryngDashboard extends CommonGLPI {
 
-   public  $widgets = array();
+   public  $widgets = [];
    private $options;
    private $form;
 
@@ -42,13 +42,12 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
     *
     * @param array $options
     */
-   function __construct($options = array()) {
+   function __construct($options = []) {
       $this->options    = $options;
       $this->interfaces = ["central"];
    }
 
    function init() {
-
 
    }
 
@@ -56,10 +55,10 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
     * @return array
     */
    function getWidgetsForItem() {
-      return array(
+      return [
          $this->getType() . "1" => __("Last synchronization of computers by month", "ocsinventoryng") . "&nbsp;<i class='fa fa-bar-chart'></i>",
          $this->getType() . "2" => __("Detail of imported computers", "ocsinventoryng") . "&nbsp;<i class='fa fa-pie-chart'></i>",
-      );
+      ];
    }
 
    /**
@@ -70,8 +69,9 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
    function getWidgetContentForItem($widgetId) {
       global $DB, $CFG_GLPI;
 
-      if (empty($this->form))
+      if (empty($this->form)) {
          $this->init();
+      }
       switch ($widgetId) {
          case $this->getType() . "1":
 
@@ -254,7 +254,6 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
                $query .= " AND ( `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` NOT LIKE '' )";
 
-
                $result = $DB->query($query);
                $nb     = $DB->numrows($result);
 
@@ -297,12 +296,12 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
             $title  = __("Detail of imported computers", "ocsinventoryng");
             $widget->setWidgetTitle($title);
 
-            $colors             = array(
+            $colors             = [
                "#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c",
                "#98df8a", "#d62728", "#ff9896", "#9467bd", "#c5b0d5",
                //               "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f",
                //               "#c7c7c7", "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"
-            );
+            ];
             $dataPieset         = json_encode($counts);
             $backgroundPieColor = json_encode($colors);
             $labelsPie          = json_encode($name);

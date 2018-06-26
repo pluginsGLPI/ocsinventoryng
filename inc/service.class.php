@@ -46,7 +46,7 @@ class PluginOcsinventoryngService extends CommonDBChild {
    function cleanDBonPurge() {
 
       $self = new self();
-      $self->deleteByCriteria(array('computers_id' => $this->fields['id']));
+      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
 
    }
 
@@ -108,7 +108,7 @@ class PluginOcsinventoryngService extends CommonDBChild {
          return false;
       }
       echo "<div class='spaced center'>";
-      if ($result = $DB->request('glpi_plugin_ocsinventoryng_services', array('computers_id' => $ID, 'ORDER' => 'svcname'))) {
+      if ($result = $DB->request('glpi_plugin_ocsinventoryng_services', ['computers_id' => $ID, 'ORDER' => 'svcname'])) {
          echo "<table class='tab_cadre_fixehov'>";
          echo "<tr class='noHover'><th colspan='9'>" . self::getTypeName($result->numrows()) .
               "</th></tr>";

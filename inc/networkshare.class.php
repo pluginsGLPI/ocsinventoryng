@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
    function cleanDBonPurge() {
 
       $self = new self();
-      $self->deleteByCriteria(array('computers_id' => $this->fields['id']));
+      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
 
    }
 
@@ -110,7 +110,7 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
 
       echo "<div class='spaced center'>";
 
-      if ($result = $DB->request('glpi_plugin_ocsinventoryng_networkshares', array('computers_id' => $ID, 'ORDER' => 'drive'))) {
+      if ($result = $DB->request('glpi_plugin_ocsinventoryng_networkshares', ['computers_id' => $ID, 'ORDER' => 'drive'])) {
          echo "<table class='tab_cadre_fixehov'>";
          $colspan = 6;
          echo "<tr class='noHover'><th colspan='$colspan'>" . self::getTypeName($result->numrows()) .
@@ -137,15 +137,15 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
                echo "<tr class='tab_bg_2'>";
                echo "<td>" . $data['drive'] . "</td>";
                echo "<td>" . $data['path'] . "</td>";
-               $tmp = Toolbox::getSize(str_replace(",",".", $data['size']) * 1024 * 1024 * 1024 * 1024);
+               $tmp = Toolbox::getSize(str_replace(",", ".", $data['size']) * 1024 * 1024 * 1024 * 1024);
                echo "<td>" . $tmp . "</td>";
-               $tmp = Toolbox::getSize(str_replace(",",".", $data['freespace']) * 1024 * 1024 * 1024 * 1024);
+               $tmp = Toolbox::getSize(str_replace(",", ".", $data['freespace']) * 1024 * 1024 * 1024 * 1024);
                echo "<td>" . $tmp . "</td>";
 
                echo "<td>";
                $percent = 0;
-               $total = str_replace(",",".", $data['size']);
-               $free = str_replace(",",".", $data['freespace']);
+               $total = str_replace(",", ".", $data['size']);
+               $free = str_replace(",", ".", $data['freespace']);
                if ($total > 0) {
                   $percent = round(100*$free/$total);
                }

@@ -10,7 +10,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -38,10 +38,9 @@ class PluginOcsinventoryngDetail extends CommonDBTM
    /**
     * @return array
     */
-   function getSearchOptions()
-   {
+   function getSearchOptions() {
 
-      $tab = array();
+      $tab = [];
 
       $tab['common'] = _n('Computer not imported', 'Computers not imported', 2,
          'ocsinventoryng');
@@ -101,8 +100,7 @@ class PluginOcsinventoryngDetail extends CommonDBTM
     * @param $threadid
     * @param $threads_id
     **/
-   function logProcessedComputer($ocsid, $ocsservers_id, $action, $threadid, $threads_id)
-   {
+   function logProcessedComputer($ocsid, $ocsservers_id, $action, $threadid, $threads_id) {
 
       $input["ocsid"] = $ocsid;
       if (isset($action["rule_matched"])) {
@@ -135,11 +133,10 @@ class PluginOcsinventoryngDetail extends CommonDBTM
    /**
     * @param $threads_id
     **/
-   static function deleteThreadDetailsByProcessID($threads_id)
-   {
+   static function deleteThreadDetailsByProcessID($threads_id) {
 
       $temp = new self();
-      $temp->deleteByCriteria(array('plugin_ocsinventoryng_threads_id' => $threads_id));
+      $temp->deleteByCriteria(['plugin_ocsinventoryng_threads_id' => $threads_id]);
    }
 
 
@@ -148,8 +145,7 @@ class PluginOcsinventoryngDetail extends CommonDBTM
     *
     * @return mixed|string
     */
-   static function giveActionNameByActionID($action)
-   {
+   static function giveActionNameByActionID($action) {
 
       $actions = self::getActions();
       if (isset($actions[$action])) {
@@ -162,10 +158,9 @@ class PluginOcsinventoryngDetail extends CommonDBTM
    /**
     * @return array
     */
-   static function getActions()
-   {
+   static function getActions() {
 
-      return array(PluginOcsinventoryngOcsServer::COMPUTER_FAILED_IMPORT
+      return [PluginOcsinventoryngOcsServer::COMPUTER_FAILED_IMPORT
       => _n('Computer not imported',
             'Computers not imported', 2,
             'ocsinventoryng'),
@@ -185,7 +180,7 @@ class PluginOcsinventoryngDetail extends CommonDBTM
          => __('Computers not unique',
             'ocsinventoryng'),
          PluginOcsinventoryngOcsServer::COMPUTER_LINK_REFUSED
-         => __('Import refused by rule'));
+         => __('Import refused by rule')];
    }
 
 
@@ -193,11 +188,10 @@ class PluginOcsinventoryngDetail extends CommonDBTM
     * @param $name
     * @param $value (default 0)
     **/
-   static function showActions($name, $value = 0)
-   {
+   static function showActions($name, $value = 0) {
 
       $actions = self::getActions();
-      Dropdown::showFromArray($name, $actions, array('value' => $value));
+      Dropdown::showFromArray($name, $actions, ['value' => $value]);
    }
 
 }

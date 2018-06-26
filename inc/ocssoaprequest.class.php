@@ -10,7 +10,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -41,16 +41,14 @@ class PluginOcsinventoryngOcsSoapRequest
    /**
     * @param mixed $params
     */
-   public function __construct($params)
-   {
+   public function __construct($params) {
       $this->params = $params;
    }
 
    /**
     * @return string
     */
-   public function toXml()
-   {
+   public function toXml() {
       return $this->_toXml('REQUEST', $this->params);
    }
 
@@ -59,8 +57,7 @@ class PluginOcsinventoryngOcsSoapRequest
     * @param $value
     * @return string
     */
-   private function _toXml($tagName, $value)
-   {
+   private function _toXml($tagName, $value) {
       $xml = '';
 
       if (is_array($value)) {
@@ -86,8 +83,7 @@ class PluginOcsinventoryngOcsSoapRequest
     * @param $array
     * @return bool
     */
-   private function isIndexed($array)
-   {
+   private function isIndexed($array) {
       return (bool)count(array_filter(array_keys($array), 'is_numeric'));
    }
 }

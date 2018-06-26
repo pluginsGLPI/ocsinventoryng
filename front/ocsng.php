@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -29,8 +29,8 @@
 
 include('../../../inc/includes.php');
 
-Session::checkSeveralRightsOr(array("plugin_ocsinventoryng" => READ,
-   "plugin_ocsinventoryng_clean" => READ));
+Session::checkSeveralRightsOr(["plugin_ocsinventoryng" => READ,
+   "plugin_ocsinventoryng_clean" => READ]);
 
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsinventoryng");
 

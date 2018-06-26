@@ -51,7 +51,7 @@ if (isset($_POST["subnetsChoice"])
    || isset($_SESSION["subnets"])
 ) {
    $sN = "";
-   $networksDetail = array();
+   $networksDetail = [];
    $ocsServerId = $_SESSION["plugin_ocsinventoryng_ocsservers_id"];
    $tab = $_SESSION["subnets"];
    $subnets = $ip->getSubnets($ocsServerId);

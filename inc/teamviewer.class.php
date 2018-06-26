@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -48,7 +48,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
    function cleanDBonPurge() {
 
       $self = new self();
-      $self->deleteByCriteria(array('computers_id' => $this->fields['id']));
+      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
 
    }
 
@@ -112,7 +112,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
 
       echo "<div class='spaced center'>";
 
-      if ($result = $DB->request('glpi_plugin_ocsinventoryng_teamviewers', array('computers_id' => $ID))) {
+      if ($result = $DB->request('glpi_plugin_ocsinventoryng_teamviewers', ['computers_id' => $ID])) {
          echo "<table class='tab_cadre_fixehov'>";
          $colspan = 2;
          echo "<tr class='noHover'><th colspan='$colspan'>" . self::getTypeName($result->numrows()) .
@@ -148,7 +148,6 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
          }
 
          echo "</table></br>";
-
 
          if ($result->numrows() != 0) {
 
@@ -195,7 +194,6 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
    static function showForSimpleForItem(Computer $comp, $withtemplate = '') {
       global $DB;
 
-
       $ID = $comp->fields['id'];
 
       if (!$comp->getFromDB($ID)
@@ -203,7 +201,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
          return false;
       }
 
-      if ($result = $DB->request('glpi_plugin_ocsinventoryng_teamviewers', array('computers_id' => $ID))) {
+      if ($result = $DB->request('glpi_plugin_ocsinventoryng_teamviewers', ['computers_id' => $ID])) {
 
          if ($result->numrows() != 0) {
             foreach ($result as $data) {
@@ -256,7 +254,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
 
       if (strstr($link, "[TWID]")) {
          $link = str_replace("[TWID]", $item->fields['twid'], $link);
-         return array($link);
+         return [$link];
       }
 
       return parent::generateLinkContents($link, $item);

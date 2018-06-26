@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -72,15 +72,14 @@ abstract class PluginOcsinventoryngOcsClient
    const PLUGINS_SERVICE = 0x00010;
    const PLUGINS_RUNNINGPROCESS = 0x00011;
    const PLUGINS_ALL = 0x00012;
-   
+
    private $id;
 
    /**
     * PluginOcsinventoryngOcsClient constructor.
     * @param $id
     */
-   public function __construct($id)
-   {
+   public function __construct($id) {
       $this->id = $id;
    }
 
@@ -280,8 +279,7 @@ abstract class PluginOcsinventoryngOcsClient
     * @param array $options
     * @return mixed|null
     */
-   public function getOcsComputer($id, $tables = array())
-   {
+   public function getOcsComputer($id, $tables = []) {
 
       $result = $this->getComputerRule($id, $tables);
 
@@ -344,8 +342,7 @@ abstract class PluginOcsinventoryngOcsClient
    /* IMPLEMENTED FUNCTIONS */
    /*    * ********************** */
 
-   public function getId()
-   {
+   public function getId() {
       return $this->id;
    }
 
@@ -354,20 +351,18 @@ abstract class PluginOcsinventoryngOcsClient
     * @param array $options
     * @return mixed|null
     */
-   public function getComputer($id, $options = array())
-   {
-      
+   public function getComputer($id, $options = []) {
+
       //if (!isset($options['COMPLETE'])) {
       //   $options['COMPLETE'] = 0;
       //}
-      
+
       //if (!isset($options['FILTER'])) {
       //   $options['FILTER'] = array();
       //}
 
       //$options['FILTER']['IDS'] = array($id);
       $result = $this->getComputers($options, $id);
-
 
       if (!isset($result['TOTAL_COUNT']) || $result['TOTAL_COUNT'] < 1 || empty($result['COMPUTERS'])) {
          return null;
@@ -380,15 +375,13 @@ abstract class PluginOcsinventoryngOcsClient
     * @param array $options
     * @return mixed|null
     */
-   public function getSnmpDevice($id, $options = array())
-   {
+   public function getSnmpDevice($id, $options = []) {
       if (!isset($options['FILTER'])) {
-         $options['FILTER'] = array();
+         $options['FILTER'] = [];
       }
 
-      $options['FILTER']['IDS'] = array($id);
+      $options['FILTER']['IDS'] = [$id];
       $result = $this->getSnmp($options);
-
 
       if (!isset($result['TOTAL_COUNT']) || $result['TOTAL_COUNT'] < 1 || empty($result['SNMP'])) {
          return null;
@@ -403,8 +396,7 @@ abstract class PluginOcsinventoryngOcsClient
     * @param string $key The name of the config item to return
     * @return integer
     */
-   public function getIntConfig($key)
-   {
+   public function getIntConfig($key) {
       $config = $this->getConfig($key);
       return $config['IVALUE'];
    }
@@ -416,8 +408,7 @@ abstract class PluginOcsinventoryngOcsClient
     * @param string $key The name of the config item to return
     * @return string
     */
-   public function getTextConfig($key)
-   {
+   public function getTextConfig($key) {
       $config = $this->getConfig($key);
       return $config['TVALUE'];
    }
@@ -425,142 +416,141 @@ abstract class PluginOcsinventoryngOcsClient
    /**
     * @return array
     */
-   public function getOcsMap()
-   {
-      $DATA_MAP = array(
-         'hardware' => array(
+   public function getOcsMap() {
+      $DATA_MAP = [
+         'hardware' => [
             'checksum' => self::CHECKSUM_HARDWARE,
             'multi' => 0,
-         ),
-         'bios' => array(
+         ],
+         'bios' => [
             'checksum' => self::CHECKSUM_BIOS,
             'multi' => 0,
-         ),
-         'memories' => array(
+         ],
+         'memories' => [
             'checksum' => self::CHECKSUM_MEMORY_SLOTS,
             'multi' => 1,
-         ),
-         'slots' => array(
+         ],
+         'slots' => [
             'checksum' => self::CHECKSUM_SYSTEM_SLOTS,
             'multi' => 1,
-         ),
-         'registry' => array(
+         ],
+         'registry' => [
             'checksum' => self::CHECKSUM_REGISTRY,
             'multi' => 1,
-         ),
-         'securitycenter' => array(
+         ],
+         'securitycenter' => [
             'plugins' => self::PLUGINS_SECURITY,
             'multi' => 1,
-         ),
-         'uptime' => array(
+         ],
+         'uptime' => [
             'plugins' => self::PLUGINS_UPTIME,
             'multi' => 0,
-         ),
-         'winupdatestate' => array(
+         ],
+         'winupdatestate' => [
             'plugins' => self::PLUGINS_WUPDATE,
             'multi' => 0,
-         ),
-         'osinstall' => array(
+         ],
+         'osinstall' => [
             'plugins' => self::PLUGINS_OSINSTALL,
             'multi' => 0,
-         ),
-         'networkshare' => array(
+         ],
+         'networkshare' => [
             'plugins' => self::PLUGINS_NETWORKSHARE,
             'multi' => 1,
-         ),
-         'runningprocess' => array(
+         ],
+         'runningprocess' => [
             'plugins' => self::PLUGINS_RUNNINGPROCESS,
             'multi' => 1,
-         ),
-         'service' => array(
+         ],
+         'service' => [
             'plugins' => self::PLUGINS_SERVICE,
             'multi' => 1,
-         ),
-         'navigatorproxysetting' => array(
+         ],
+         'navigatorproxysetting' => [
             'plugins' => self::PLUGINS_PROXYSETTING,
             'multi' => 1,
-         ),
-         'winusers' => array(
+         ],
+         'winusers' => [
             'plugins' => self::PLUGINS_WINUSERS,
             'multi' => 1,
-         ),
-         'teamviewer' => array(
+         ],
+         'teamviewer' => [
             'plugins' => self::PLUGINS_TEAMVIEWER,
             'multi' => 0,
-         ),
-         'officepack' => array(
+         ],
+         'officepack' => [
             'plugins' => self::PLUGINS_OFFICE,
             'multi' => 1,
-         ),
-         'controllers' => array(
+         ],
+         'controllers' => [
             'checksum' => self::CHECKSUM_SYSTEM_CONTROLLERS,
             'multi' => 1,
-         ),
-         'monitors' => array(
+         ],
+         'monitors' => [
             'checksum' => self::CHECKSUM_MONITORS,
             'multi' => 1,
-         ),
-         'ports' => array(
+         ],
+         'ports' => [
             'checksum' => self::CHECKSUM_SYSTEM_PORTS,
             'multi' => 1,
-         ),
-         'storages' => array(
+         ],
+         'storages' => [
             'checksum' => self::CHECKSUM_STORAGE_PERIPHERALS,
             'multi' => 1,
-         ),
-         'drives' => array(
+         ],
+         'drives' => [
             'checksum' => self::CHECKSUM_LOGICAL_DRIVES,
             'multi' => 1,
-         ),
-         'inputs' => array(
+         ],
+         'inputs' => [
             'checksum' => self::CHECKSUM_INPUT_DEVICES,
             'multi' => 1,
-         ),
-         'modems' => array(
+         ],
+         'modems' => [
             'checksum' => self::CHECKSUM_MODEMS,
             'multi' => 1,
-         ),
-         'networks' => array(
+         ],
+         'networks' => [
             'checksum' => self::CHECKSUM_NETWORK_ADAPTERS,
             'multi' => 1,
-         ),
-         'printers' => array(
+         ],
+         'printers' => [
             'checksum' => self::CHECKSUM_PRINTERS,
             'multi' => 1,
-         ),
-         'sounds' => array(
+         ],
+         'sounds' => [
             'checksum' => self::CHECKSUM_SOUND_ADAPTERS,
             'multi' => 1,
-         ),
-         'videos' => array(
+         ],
+         'videos' => [
             'checksum' => self::CHECKSUM_VIDEO_ADAPTERS,
             'multi' => 1,
-         ),
-         'softwares' => array(
+         ],
+         'softwares' => [
             'checksum' => self::CHECKSUM_SOFTWARE,
             'multi' => 1,
-         ),
-         'virtualmachines' => array(
+         ],
+         'virtualmachines' => [
             'checksum' => self::CHECKSUM_VIRTUAL_MACHINES,
             'multi' => 1,
-         ),
-         'cpus' => array(
+         ],
+         'cpus' => [
             'checksum' => self::CHECKSUM_CPUS,
             'multi' => 1,
-         ),
-         'sim' => array(
+         ],
+         'sim' => [
             'checksum' => self::CHECKSUM_SIM,
             'multi' => 1,
-         ),
-         'accountinfo' => array(
+         ],
+         'accountinfo' => [
             'wanted' => self::WANTED_ACCOUNTINFO,
             'multi' => 1,
-         ),
-         'dico_soft' => array(
+         ],
+         'dico_soft' => [
             'wanted' => self::WANTED_DICO_SOFT,
             'multi' => 0,
-         ),
-      );
+         ],
+      ];
 
       return $DATA_MAP;
    }
@@ -569,8 +559,7 @@ abstract class PluginOcsinventoryngOcsClient
     * @param $tables
     * @return int
     */
-   public function getChecksumForTables($tables)
-   {
+   public function getChecksumForTables($tables) {
       $ocsMap = $this->getOcsMap();
       $checksum = self::CHECKSUM_NONE;
 
@@ -587,8 +576,7 @@ abstract class PluginOcsinventoryngOcsClient
     * @param $tables
     * @return int
     */
-   public function getWantedForTables($tables)
-   {
+   public function getWantedForTables($tables) {
       $ocsMap = $this->getOcsMap();
       $wanted = self::WANTED_NONE;
 
@@ -605,8 +593,7 @@ abstract class PluginOcsinventoryngOcsClient
     * @param $tables
     * @return int
     */
-   public function getPluginsForTables($tables)
-   {
+   public function getPluginsForTables($tables) {
       $ocsMap = $this->getOcsMap();
       $plugins = self::PLUGINS_NONE;
 
@@ -622,8 +609,7 @@ abstract class PluginOcsinventoryngOcsClient
    /**
     * @return string
     */
-   public function getConnectionType()
-   {
+   public function getConnectionType() {
       return get_class($this);
    }
 

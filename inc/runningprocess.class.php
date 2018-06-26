@@ -46,7 +46,7 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild {
    function cleanDBonPurge() {
 
       $self = new self();
-      $self->deleteByCriteria(array('computers_id' => $this->fields['id']));
+      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
 
    }
 
@@ -111,7 +111,7 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild {
       echo "<div class='spaced center'>";
 
       if ($result = $DB->request('glpi_plugin_ocsinventoryng_runningprocesses',
-                                 array('computers_id' => $ID, 'ORDER' => 'processname'))) {
+                                 ['computers_id' => $ID, 'ORDER' => 'processname'])) {
          echo "<table class='tab_cadre_fixehov'>";
          echo "<tr class='noHover'><th colspan='7'>" . self::getTypeName($result->numrows()) .
               "</th></tr>";
@@ -121,7 +121,7 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild {
             $header = "<tr><th>" . __('Process name', 'ocsinventoryng') . "</th>";
             $header .= "<th>" . __('Process ID', 'ocsinventoryng') . "</th>";
             $header .= "<th>" . __('User') . "</th>";
-            $header .= "<th>" . sprintf(__('%1$s (%2$s)'),__('Process memory', 'ocsinventoryng'), __('Mio')) . "</th>";
+            $header .= "<th>" . sprintf(__('%1$s (%2$s)'), __('Process memory', 'ocsinventoryng'), __('Mio')) . "</th>";
             $header .= "<th>" . __('Command line', 'ocsinventoryng') . "</th>";
             $header .= "<th>" . __('Description') . "</th>";
             $header .= "<th>" . __('Company', 'ocsinventoryng') . "</th>";

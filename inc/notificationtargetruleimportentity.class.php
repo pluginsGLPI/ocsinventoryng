@@ -35,38 +35,36 @@ if (!defined('GLPI_ROOT')) {
  * Class PluginOcsinventoryngNotificationRuleImportEntity
  */
 class PluginOcsinventoryngNotificationTargetRuleImportEntity extends NotificationTarget {
-   
+
    /**
     * @param int $nb
     * @return translated
     */
-   static function getTypeName($nb = 0)
-   {
+   static function getTypeName($nb = 0) {
       return __('Elements not match with the rule', 'ocsinventoryng');
    }
 
    /**
     * @see NotificationTarget::getEvents()
     */
-   function getEvents()
-   {
-      return array('checkruleimportentity' => __('Elements not match with the rule by automatic actions', 'ocsinventoryng'));
+   function getEvents() {
+      return ['checkruleimportentity' => __('Elements not match with the rule by automatic actions', 'ocsinventoryng')];
    }
 
 
    /**
     * @see NotificationTarget::getDatasForTemplate()
     */
-   function getDatasForTemplate($event, $options = array()) {
+   function getDatasForTemplate($event, $options = []) {
       global $CFG_GLPI;
 
       $this->datas['##checkruleimportentity.date##']   = Html::convDateTime(date('Y-m-d H:i:s'));
       $this->datas['##checkruleimportentity.title##']  = __('Verification of assignment rules for entities and locations', 'ocsinventoryng');
-      $this->datas['##checkruleimportentity.entity##'] = Dropdown::getDropdownName('glpi_entities',$options['entities_id']);
+      $this->datas['##checkruleimportentity.entity##'] = Dropdown::getDropdownName('glpi_entities', $options['entities_id']);
 
       foreach ($options['items'] as $id => $item) {
-         if(!empty($item)) {
-            $tmp = array();
+         if (!empty($item)) {
+            $tmp = [];
 
             $tmp['##checkruleimportentity.entity##']   = Dropdown::getDropdownName('glpi_entities', $item['entities_id']);
             $tmp['##checkruleimportentity.computer##'] = $item['name'];
@@ -81,7 +79,7 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
 
             foreach ($item['error'] as $key => $data) {
 
-               if($data === PluginOcsinventoryngRuleImportEntity::NO_RULE){
+               if ($data === PluginOcsinventoryngRuleImportEntity::NO_RULE) {
                   $tmp['##checkruleimportentity.error##'] .= __('No rules match', 'ocsinventoryng');
                } else {
                   $tmp['##checkruleimportentity.error##'] .= __($data) . "\n";
@@ -116,26 +114,26 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
     */
    function getTags() {
 
-      $tags = array('checkruleimportentity.date'      => __('Date'),
+      $tags = ['checkruleimportentity.date'      => __('Date'),
                     'checkruleimportentity.url'       => __('Link'),
                     'checkruleimportentity.entity'    => __('Entity'),
                     'checkruleimportentity.computer'  => __('Computer'),
                     'checkruleimportentity.location'  => __('Location'),
                     'checkruleimportentity.error'     => __('Error'),
                     'checkruleimportentity.name_rule' => __('Rule'),
-                    'checkruleimportentity.dataerror' => __('Data error', 'ocsinventoryng'));
+                    'checkruleimportentity.dataerror' => __('Data error', 'ocsinventoryng')];
 
       foreach ($tags as $tag => $label) {
-         $this->addTagToList(array('tag'   => $tag,
+         $this->addTagToList(['tag'   => $tag,
                                    'label' => $label,
-                                   'value' => true));
+                                   'value' => true]);
       }
 
-      $this->addTagToList(array('tag'     => 'checkruleimportentityitems',
+      $this->addTagToList(['tag'     => 'checkruleimportentityitems',
                                 'label'   => _n('Item', 'Items', 2),
                                 'value'   => false,
                                 'foreach' => true,
-                                'events'  => array('checkruleimportentity')));
+                                'events'  => ['checkruleimportentity']]);
       asort($this->tag_descriptions);
    }
 }

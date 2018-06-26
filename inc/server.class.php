@@ -10,7 +10,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -39,8 +39,7 @@ class PluginOcsinventoryngServer extends CommonDBTM
     * @param $id
     * @return bool
     */
-   function getFromDBbyOcsServer($id)
-   {
+   function getFromDBbyOcsServer($id) {
       global $DB;
 
       $query = "SELECT *

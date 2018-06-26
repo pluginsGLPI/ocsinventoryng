@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -91,7 +91,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
       $ports = $DB->request($query);
       if ($ports->numrows() == 0) {
-         $port_input = array('name'               => $name,
+         $port_input = ['name'               => $name,
                              'mac'                => $mac,
                              'items_id'           => $computers_id,
                              'itemtype'           => 'Computer',
@@ -99,9 +99,9 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                              'instantiation_type' => $instantiation_type,
                              '_create_children'   => 1,
                              'is_dynamic'         => 1,
-                             'is_deleted'         => 0);
+                             'is_deleted'         => 0];
 
-         $networkports_id = $network_port->add($port_input, array(), $dohistory);
+         $networkports_id = $network_port->add($port_input, [], $dohistory);
          if ($networkports_id === false) {
             return -1;
          }
@@ -115,9 +115,9 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          $networkports_id = $line['id'];
          $network_port->getFromDB($networkports_id);
          if ((!$check_name) && ($network_port->fields['name'] != $name)) {
-            $port_input = array('id'         => $network_port->getID(),
+            $port_input = ['id'         => $network_port->getID(),
                                 'name'       => $name,
-                                'is_dynamic' => 1);
+                                'is_dynamic' => 1];
             $network_port->update($port_input);
          }
          if (($network_port->fields['instantiation_type'] != $instantiation_type)
@@ -156,12 +156,12 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       } else {
          $names = $DB->request($query);
          if ($names->numrows() == 0) {
-            $name_input      = array('itemtype'    => 'NetworkPort',
+            $name_input      = ['itemtype'    => 'NetworkPort',
                                      'items_id'    => $networkports_id,
                                      'is_dynamic'  => 1,
                                      'is_deleted'  => 0,
                                      '_no_history' => !$dohistory,
-                                     'name'        => 'OCS-INVENTORY-NG');
+                                     'name'        => 'OCS-INVENTORY-NG'];
             $networknames_id = $network_name->add($name_input);
          } else {
             $line            = $names->next();
@@ -174,7 +174,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          }
 
          $ip_address              = new IPAddress();
-         $already_known_addresses = array();
+         $already_known_addresses = [];
          $query                   = "SELECT `id`, `name`, `is_dynamic`, `mainitems_id`
                    FROM `glpi_ipaddresses`
                    WHERE `itemtype` = 'NetworkName'
@@ -184,8 +184,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             if (in_array($line['name'], $ips)
                 && !empty($line['mainitems_id'])) {
                $already_known_addresses[] = $line['id'];
-               $ips                       = array_diff($ips, array($line['name']));
-            } elseif ($line['is_dynamic'] == 1) {
+               $ips                       = array_diff($ips, [$line['name']]);
+            } else if ($line['is_dynamic'] == 1) {
                $ip_address->delete($line, true, $dohistory);
             }
          }
@@ -202,7 +202,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                            AND `gateway`='" . $gateway . "'
                                            AND `entities_id`='" . $entities_id . "'") == 0) {
 
-            $input                    = array(
+            $input                    = [
                'name'        => $subnet . '/' .
                                 $mask . ' - ' .
                                 $gateway,
@@ -211,21 +211,21 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                'gateway'     => $gateway,
                'addressable' => 1,
                'entities_id' => $entities_id
-            );
+            ];
 
             $IPNetwork->networkUpdate = true;
-            $IPNetwork->add($input, array(), !$dohistory);
+            $IPNetwork->add($input, [], !$dohistory);
          }
       }
 
       if ($ips) {
          foreach ($ips as $ip) {
-            $ip_input = array('name'        => $ip,
+            $ip_input = ['name'        => $ip,
                               'itemtype'    => 'NetworkName',
                               'items_id'    => $networknames_id,
                               '_no_history' => !$dohistory,
                               'is_dynamic'  => 1,
-                              'is_deleted'  => 0);
+                              'is_deleted'  => 0];
             $ip_address->add($ip_input);
          }
       }
@@ -245,26 +245,26 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
       // Group by DESCRIPTION, MACADDR, TYPE, TYPEMIB, SPEED, VIRTUALDEV
       // to get an array in IPADDRESS
-      $ocsNetworks = array();
+      $ocsNetworks = [];
       foreach ($ocsComputer as $ocsNetwork) {
          $key = $ocsNetwork['DESCRIPTION'] . $ocsNetwork['MACADDR'] . $ocsNetwork['TYPE']
                 . $ocsNetwork['TYPEMIB'] . $ocsNetwork['SPEED'] . $ocsNetwork['VIRTUALDEV'];
 
          if (!isset($ocsNetworks[$key])) {
             $ocsNetworks[$key]              = $ocsNetwork;
-            $ocsNetworks[$key]['IPADDRESS'] = array($ocsNetwork['IPADDRESS']);
+            $ocsNetworks[$key]['IPADDRESS'] = [$ocsNetwork['IPADDRESS']];
          } else {
             $ocsNetworks[$key]['IPADDRESS'] [] = $ocsNetwork['IPADDRESS'];
          }
       }
-      $network_ports  = array();
-      $network_ifaces = array();
+      $network_ports  = [];
+      $network_ifaces = [];
       foreach ($ocsNetworks as $line) {
          $line    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
          $mac     = $line['MACADDR'];
 
          if (!isset($network_ports[$mac])) {
-            $network_ports[$mac] = array('virtual' => array());
+            $network_ports[$mac] = ['virtual' => []];
          }
          $name = PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"],
                                                                     $line['DESCRIPTION']);
@@ -281,10 +281,10 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $networkport_type->fields['speed'] = $speed;
          }
 
-         $values = array('name'   => $name,
+         $values = ['name'   => $name,
                          'type'   => (array_push($network_ifaces, $networkport_type) - 1),
                          'ip'     => $ip,
-                         'result' => $line);
+                         'result' => $line];
 
          // Virtual dev can be :
          //    1°) specifically defined from OCS
@@ -299,8 +299,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          }
       }
 
-      $already_known_ports  = array();
-      $already_known_ifaces = array();
+      $already_known_ports  = [];
+      $already_known_ifaces = [];
       foreach ($network_ports as $mac => $ports) {
          if (isset($ports['main'])) {
             $main = $ports['main'];
@@ -318,21 +318,21 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             // If not found, then, create it
             if ($item_device->isNewItem()) {
                $deviceNetworkCard = new DeviceNetworkCard();
-               $device_input      = array('designation' => $main['name'],
+               $device_input      = ['designation' => $main['name'],
                                           'bandwidth'   => $type->fields['speed'],
-                                          'entities_id' => $entities_id);
+                                          'entities_id' => $entities_id];
 
                $net_id = $deviceNetworkCard->import($device_input);
 
                if ($net_id) {
-                  $item_device->add(array('items_id'              => $computers_id,
+                  $item_device->add(['items_id'              => $computers_id,
                                           'itemtype'              => 'Computer',
                                           'entities_id'           => $entities_id,
                                           'devicenetworkcards_id' => $net_id,
                                           'mac'                   => $mac,
                                           '_no_history'           => !$cfg_ocs['history_network'],
                                           'is_dynamic'            => 1,
-                                          'is_deleted'            => 0));
+                                          'is_deleted'            => 0]);
                }
             }
             if (!$item_device->isNewItem()) {
@@ -341,13 +341,13 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
             if ($type->fields['instantiation_type'] == __CLASS__) {
                $result     = $main['result'];
-               $inst_input = array('TYPE'    => $result['TYPE'],
+               $inst_input = ['TYPE'    => $result['TYPE'],
                                    'TYPEMIB' => $result['TYPEMIB'],
-                                   'speed'   => $result['SPEED']);
+                                   'speed'   => $result['SPEED']];
             } else {
                $inst_input = $type->fields;
-               foreach (array('id', 'name', 'OCS_TYPE', 'OCS_TYPEMIB',
-                              'instantiation_type', 'comment') as $field) {
+               foreach (['id', 'name', 'OCS_TYPE', 'OCS_TYPEMIB',
+                              'instantiation_type', 'comment'] as $field) {
                   unset($inst_input[$field]);
                }
             }
@@ -377,7 +377,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $gateway = $port['result']['IPGATEWAY'];
             $subnet  = $port['result']['IPSUBNET'];
 
-            $inst_input = array('networkports_id_alias' => $networkports_id);
+            $inst_input = ['networkports_id_alias' => $networkports_id];
             $id         = self::updateNetworkPort($mac, $port['name'], $computers_id,
                                                   'NetworkPortAlias', $inst_input, $port['ip'],
                                                   true, $cfg_ocs['history_network'], $already_known_ports, $mask, $gateway, $subnet, $entities_id);
@@ -420,7 +420,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
     * @param array       $options
     * @param list        $recursiveItems
     */
-   function showInstantiationForm(NetworkPort $netport, $options = array(), $recursiveItems) {
+   function showInstantiationForm(NetworkPort $netport, $options = [], $recursiveItems) {
 
       if (!$options['several']) {
          echo "<tr class='tab_bg_1'>\n";
@@ -456,11 +456,11 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
     * @return null|the
     */
    function getInstantiationHTMLTableHeaders(HTMLTableGroup $group, HTMLTableSuperHeader $super,
-                                             HTMLTableSuperHeader $internet_super = NULL,
-                                             HTMLTableHeader $father = NULL,
-                                             array $options = array()) {
+                                             HTMLTableSuperHeader $internet_super = null,
+                                             HTMLTableHeader $father = null,
+                                             array $options = []) {
 
-      DeviceNetworkCard::getHTMLTableHeader('NetworkPortWifi', $group, $super, NULL,
+      DeviceNetworkCard::getHTMLTableHeader('NetworkPortWifi', $group, $super, null,
                                             $options);
 
       $group->addHeader('TYPE', __('OCS TYPE', 'ocsinventoryng'), $super);
@@ -468,7 +468,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       $group->addHeader('Generate', __('Create a mapping', 'ocsinventoryng'), $super);
 
       parent::getInstantiationHTMLTableHeaders($group, $super, $internet_super, $father, $options);
-      return NULL;
+      return null;
    }
 
 
@@ -483,9 +483,9 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
     * @return null|the
     */
    function getInstantiationHTMLTable(NetworkPort $netport, HTMLTableRow $row,
-                                      HTMLTableCell $father = NULL, array $options = array()) {
+                                      HTMLTableCell $father = null, array $options = []) {
 
-      DeviceNetworkCard::getHTMLTableCellsForItem($row, $this, NULL, $options);
+      DeviceNetworkCard::getHTMLTableCellsForItem($row, $this, null, $options);
 
       $row->addCell($row->getHeaderByName('Instantiation', 'TYPE'), $this->fields['TYPE']);
       $row->addCell($row->getHeaderByName('Instantiation', 'TYPEMIB'), $this->fields['TYPEMIB']);
@@ -494,7 +494,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       $row->addCell($row->getHeaderByName('Instantiation', 'Generate'), $value);
 
       parent::getInstantiationHTMLTable($netport, $row, $father, $options);
-      return NULL;
+      return null;
    }
 
 
@@ -513,7 +513,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                $instantiation = $networkport->getInstantiation();
                $input2        = $networkport_type->fields;
                unset($input2['id']);
-               foreach (array('networkports_id', 'items_devicenetworkcards_id') as $field) {
+               foreach (['networkports_id', 'items_devicenetworkcards_id'] as $field) {
                   if (isset($this->fields[$field])) {
                      $input2[$field] = $this->fields[$field];
                   }
@@ -523,7 +523,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                                                              ['speed'], false);
                }
                if ($instantiation->add($input2)) {
-                  $this->delete(array(static::getIndexName() => $this->getID()));
+                  $this->delete([static::getIndexName() => $this->getID()]);
                   return true;
                }
             }
@@ -563,18 +563,18 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             echo "<tr class='tab_bg_1'>";
             echo "<td rowspan='" . $typemib_results->numrows() . "'>" .
                  self::getTextualType($type['TYPE']) . "</td>";
-            $first = True;
+            $first = true;
             foreach ($typemib_results as $typemib) {
                if (!$first) {
                   echo "<tr class='tab_bg_1'>";
                } else {
-                  $first = False;
+                  $first = false;
                }
 
                echo "<td>" . self::getTextualType($typemib['TYPEMIB']) . "</td>";
 
                // Normalize speeds ...
-               $speeds = array();
+               $speeds = [];
                foreach (explode('#', $typemib['speed']) as $speed) {
                   $speed = NetworkPortEthernet::transformPortSpeed($speed, false);
                   if (($speed !== false) and (!in_array($speed, $speeds))) {
@@ -582,7 +582,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                   }
                }
                asort($speeds);
-               $printable_speeds = array();
+               $printable_speeds = [];
                foreach ($speeds as $speed) {
                   $printable_speeds[] = NetworkPortEthernet::transformPortSpeed($speed, true);
                }
@@ -612,7 +612,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
     *
     * @return an
     */
-   function getSpecificMassiveActions($checkitem = NULL) {
+   function getSpecificMassiveActions($checkitem = null) {
 
       $actions = parent::getSpecificMassiveActions($checkitem);
 
@@ -643,7 +643,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       switch ($ma->getAction()) {
          case 'plugin_ocsinventoryng_update_networkport_type':
             echo "&nbsp;" .
-                 Html::submit(_x('button', 'Post'), array('name' => 'massiveaction'));
+                 Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
             return true;
       }
       return parent::showMassiveActionsSubForm($ma);

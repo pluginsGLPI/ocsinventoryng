@@ -10,7 +10,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -60,7 +60,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
          switch ($item->getType()) {
             case __CLASS__ :
                //If connection to the OCS DB  is ok, and all rights are ok too
-               return array('1' => __('Check OCSNG import script', 'ocsinventoryng'));
+               return ['1' => __('Check OCSNG import script', 'ocsinventoryng')];
 
          }
       }
@@ -92,9 +92,9 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
     *
     * @return array
     */
-   function defineTabs($options = array()) {
+   function defineTabs($options = []) {
 
-      $ong = array();
+      $ong = [];
       $this->addDefaultFormTab($ong);
       $this->addStandardTab(__CLASS__, $ong, $options);
       return $ong;
@@ -152,12 +152,12 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
       echo "<td> " . __('Refresh information of a process every', 'ocsinventoryng') . " </td><td>";
-      Html::autocompletionTextField($this, "delay_refresh", array('size' => 5));
+      Html::autocompletionTextField($this, "delay_refresh", ['size' => 5]);
       echo "&nbsp;" . _n('second', 'seconds', 2, 'ocsinventoryng') . "</td>";
       echo "</tr>";
 
-      $this->showFormButtons(array('canedit' => $canedit,
-                                   'candel'  => false));
+      $this->showFormButtons(['canedit' => $canedit,
+                                   'candel'  => false]);
 
       return true;
    }
@@ -262,8 +262,8 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
    function showDebug() {
 
       NotificationEvent::debugEvent(new PluginOcsinventoryngNotimportedcomputer(),
-                                    array('entities_id' => 0,
-                                          'notimported' => array()));
+                                    ['entities_id' => 0,
+                                          'notimported' => []]);
    }
 
 }

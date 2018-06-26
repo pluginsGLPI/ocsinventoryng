@@ -4,13 +4,14 @@
 # 
 # Translators:
 # jacbob77 <jacbob77@tlen.pl>, 2012
+# Mariusz Urbanik <hans_klos@web.de>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-05 12:06+0100\n"
-"PO-Revision-Date: 2018-02-05 11:08+0000\n"
-"Last-Translator: Amandine Manceau\n"
+"PO-Revision-Date: 2018-04-09 20:27+0000\n"
+"Last-Translator: Mariusz Urbanik <hans_klos@web.de>\n"
 "Language-Team: Polish (Poland) (http://www.transifex.com/yllen/GLPI_ocsinventoryng/language/pl_PL/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -63,7 +64,7 @@ msgstr ""
 #: inc/ocsserver.class.php:7363 inc/profile.class.php:55
 #: inc/ruleimportentity.class.php:61 inc/thread.class.php:612
 msgid "OCSNG"
-msgstr ""
+msgstr "OCSNG"
 
 #: hook.php:1605 hook.php:1716 inc/ocslink.class.php:112
 msgid "GLPI import date"
@@ -77,7 +78,7 @@ msgstr "Ostatnia inwentaryzacja w OCSNG"
 
 #: hook.php:1620 inc/ocslink.class.php:149 inc/ocslink.class.php:357
 msgid "Automatic update OCSNG"
-msgstr ""
+msgstr "Automatyczna aktualizacja OCSNG"
 
 #: hook.php:1626 inc/notimportedcomputer.class.php:84
 #: inc/notimportedcomputer.class.php:258 inc/ocslink.class.php:109
@@ -103,7 +104,7 @@ msgstr ""
 
 #: hook.php:1653 inc/ocslink.class.php:132
 msgid "IP Source"
-msgstr ""
+msgstr "Źródłowy IP"
 
 #: hook.php:1660 inc/ocslink.class.php:162 inc/ocslink.class.php:250
 #: inc/ocslink.class.php:364 inc/ocsserver.class.php:876
@@ -141,11 +142,11 @@ msgstr ""
 
 #: hook.php:1705 inc/proxysetting.class.php:125
 msgid "Proxy address"
-msgstr ""
+msgstr "adres Proxy"
 
 #: hook.php:1716 inc/menu.class.php:186 inc/snmpocslink.class.php:79
 msgid "SNMP Import"
-msgstr ""
+msgstr "SNMP Import"
 
 #: hook.php:1969 inc/ocslink.class.php:54 inc/ocslink.class.php:339
 #: inc/ocslink.class.php:481 inc/ocslink.class.php:494
@@ -199,12 +200,12 @@ msgstr ""
 
 #: front/config.form.php:56 front/config.php:46
 msgid "Please activate the plugin"
-msgstr ""
+msgstr "Aktywuj plugin"
 
 #: front/deleted_equiv.php:41 front/deleted_equiv.php:51
 #: front/deleted_equiv.php:86
 msgid "Pc deleted"
-msgstr ""
+msgstr "PC usunięty"
 
 #: front/deleted_equiv.php:45 front/deleted_equiv.php:76
 msgid "No new computers to delete"
@@ -251,7 +252,7 @@ msgstr ""
 
 #: front/thread.form.php:34
 msgid "Information about the script"
-msgstr ""
+msgstr "Informacja o skrypcie"
 
 #: front/thread.php:40 inc/thread.class.php:314
 msgid "Processes execution of automatic actions"
@@ -301,7 +302,7 @@ msgstr ""
 
 #: inc/config.class.php:234 inc/thread.class.php:405
 msgid "All servers"
-msgstr ""
+msgstr "Wszystkie serwery"
 
 #: inc/dashboard.class.php:62 inc/dashboard.class.php:98
 #: inc/dashboard.class.php:107
@@ -315,7 +316,7 @@ msgstr ""
 
 #: inc/dashboard.class.php:131
 msgid "OCS Inventory NG"
-msgstr ""
+msgstr "OCS Inventory NG"
 
 #: inc/dashboard.class.php:151
 msgid "Fusion Inventory"
@@ -340,7 +341,7 @@ msgstr ""
 
 #: inc/detail.class.php:71
 msgid "Process"
-msgstr ""
+msgstr "Procesy"
 
 #: inc/detail.class.php:80 inc/thread.class.php:116
 msgid "Thread"
@@ -401,15 +402,15 @@ msgstr ""
 
 #: inc/ipdiscoverocslink.class.php:408
 msgid "All Subnets"
-msgstr ""
+msgstr "Wszystkie podsieci"
 
 #: inc/ipdiscoverocslink.class.php:409
 msgid "Known Subnets"
-msgstr ""
+msgstr "Znane podsieci"
 
 #: inc/ipdiscoverocslink.class.php:410
 msgid "Unknown Subnets"
-msgstr ""
+msgstr "Nieznane podsieci"
 
 #: inc/ipdiscoverocslink.class.php:763 inc/ipdiscoverocslink.class.php:1356
 msgid "Non Inventoried"
@@ -433,15 +434,15 @@ msgstr ""
 
 #: inc/ipdiscoverocslink.class.php:858
 msgid "Subnet Name"
-msgstr ""
+msgstr "Nazwa podsieci"
 
 #: inc/ipdiscoverocslink.class.php:866 inc/ipdiscoverocslink.class.php:885
 msgid "Choose ID"
-msgstr ""
+msgstr "Wybierz ID"
 
 #: inc/ipdiscoverocslink.class.php:1069
 msgid "Unable to add. an object with same MAC address already exists."
-msgstr ""
+msgstr "Nie można dodać obiektu z adresem MAC już istniejącym"
 
 #: inc/ipdiscoverocslink.class.php:1378
 msgid "No new IPDiscover device to import"
@@ -475,15 +476,15 @@ msgstr ""
 #: inc/ipdiscoverocslink.class.php:1614 inc/ipdiscoverocslink.class.php:1711
 msgctxt "button"
 msgid "Delete from OCSNG"
-msgstr ""
+msgstr "Usuń z OCSNG"
 
 #: inc/ipdiscoverocslink.class.php:1495
 msgid "DNS"
-msgstr ""
+msgstr "DNS"
 
 #: inc/ipdiscoverocslink.class.php:1497 inc/ipdiscoverocslink.class.php:1618
 msgid "OCS Type"
-msgstr ""
+msgstr "Typ OCS"
 
 #: inc/ipdiscoverocslink.class.php:1504 inc/ipdiscoverocslink.class.php:1628
 msgid "GLPI Type"
@@ -497,7 +498,7 @@ msgstr ""
 #: inc/menu.class.php:67 inc/ocsserver.class.php:331
 #: inc/ocsserver.class.php:332
 msgid "Configuration of OCSNG server"
-msgstr ""
+msgstr "Konfiguracja serwera OCSNG"
 
 #: inc/menu.class.php:74 inc/ocsserver.class.php:456
 #: inc/ocsserver.class.php:457 inc/ocsserver.class.php:458
@@ -523,12 +524,12 @@ msgstr ""
 
 #: inc/menu.class.php:114
 msgid "Import new snmp devices"
-msgstr ""
+msgstr "Importuj nowe urządzenie snmp"
 
 #: inc/menu.class.php:118 inc/snmpocslink.class.php:436
 #: inc/snmpocslink.class.php:437 inc/snmpocslink.class.php:438
 msgid "Synchronize snmp devices already imported"
-msgstr ""
+msgstr "Synchronizuj zaimportowane urządzenia snmp"
 
 #: inc/menu.class.php:122 inc/snmpocslink.class.php:428
 #: inc/snmpocslink.class.php:429 inc/snmpocslink.class.php:430
@@ -553,12 +554,12 @@ msgstr ""
 
 #: inc/menu.class.php:200
 msgid "Add a OCSNG server"
-msgstr ""
+msgstr "Dodaj serwer OCSNG"
 
 #: inc/networkport.class.php:432 inc/networkport.class.php:466
 #: inc/networkporttype.class.php:168
 msgid "OCS TYPE"
-msgstr ""
+msgstr "Typ OCS"
 
 #: inc/networkport.class.php:434 inc/networkport.class.php:467
 msgid "OCS MIB TYPE"
@@ -574,7 +575,7 @@ msgstr ""
 
 #: inc/networkport.class.php:542
 msgid "empty"
-msgstr ""
+msgstr "pusty"
 
 #: inc/networkport.class.php:599
 msgid "No unknown network port type from OCS !"
@@ -610,7 +611,7 @@ msgstr ""
 
 #: inc/networkporttype.class.php:183
 msgid "Wifi card Version"
-msgstr ""
+msgstr "Wersja karty Wifi"
 
 #: inc/networkporttype.class.php:189
 msgid "Transform unknown ports that match"
@@ -618,24 +619,24 @@ msgstr ""
 
 #: inc/networkporttype.class.php:225 inc/networkporttype.class.php:227
 msgid "Create"
-msgstr ""
+msgstr "Utwórz"
 
 #: inc/networkshare.class.php:43 inc/ocsserver.class.php:908
 msgid "Network shares"
-msgstr ""
+msgstr "Zasoby sieciowe"
 
 #: inc/networkshare.class.php:122 inc/registrykey.class.php:99
 msgid "Path"
-msgstr ""
+msgstr "Ścieżka"
 
 #: inc/networkshare.class.php:126
 msgid "Quota"
-msgstr ""
+msgstr "Przydział"
 
 #: inc/notificationtargetnotimportedcomputer.class.php:102
 #: inc/notimportedcomputer.class.php:75 inc/notimportedcomputer.class.php:263
 msgid "Device ID"
-msgstr ""
+msgstr "ID urządzenia"
 
 #: inc/notificationtargetruleimportentity.class.php:45
 #: inc/ruleimportentity.class.php:49
@@ -656,7 +657,7 @@ msgstr ""
 
 #: inc/notificationtargetruleimportentity.class.php:126
 msgid "Data error"
-msgstr ""
+msgstr "Błąd danych"
 
 #: inc/notimportedcomputer.class.php:65
 msgid "Verified rules"
@@ -697,7 +698,7 @@ msgstr ""
 #: inc/ocslink.class.php:190 inc/ocslink.class.php:383
 msgctxt "button"
 msgid "Force synchronization"
-msgstr ""
+msgstr "Wymuś synchronizację"
 
 #: inc/ocslink.class.php:213 inc/snmpocslink.class.php:489
 #: inc/snmpocslink.class.php:661
@@ -777,7 +778,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:142
 msgid "OCSNG console"
-msgstr ""
+msgstr "konsola OCSNG"
 
 #: inc/ocsserver.class.php:247
 msgid "Expert sync mode"
@@ -893,7 +894,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:865
 msgid "Microsoft Office licenses"
-msgstr ""
+msgstr "Licencje MS Office"
 
 #: inc/ocsserver.class.php:868
 msgid ""
@@ -903,7 +904,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:869
 msgid "Antivirus"
-msgstr ""
+msgstr "Antywirus"
 
 #: inc/ocsserver.class.php:872
 msgid ""
@@ -929,7 +930,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:887
 msgid "Teamviewer"
-msgstr ""
+msgstr "Teamviewer"
 
 #: inc/ocsserver.class.php:890
 msgid ""
@@ -939,7 +940,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:891 inc/proxysetting.class.php:43
 msgid "Proxy Settings"
-msgstr ""
+msgstr "Ustawienia proxy"
 
 #: inc/ocsserver.class.php:894
 msgid ""
@@ -949,7 +950,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:897 inc/winuser.class.php:43
 msgid "Windows Users"
-msgstr ""
+msgstr "Użytkownicy windows"
 
 #: inc/ocsserver.class.php:900
 msgid ""
@@ -1003,7 +1004,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:1069
 msgid "System history"
-msgstr ""
+msgstr "Historia systemowa"
 
 #: inc/ocsserver.class.php:1085
 msgid "Bios history"
@@ -1125,7 +1126,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:1264
 msgid "Database"
-msgstr ""
+msgstr "Baza danych"
 
 #: inc/ocsserver.class.php:1269
 msgid "Standard (allow manual actions)"
@@ -1137,7 +1138,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:1274
 msgid "Connection type"
-msgstr ""
+msgstr "Typ połączenia"
 
 #: inc/ocsserver.class.php:1298
 msgctxt "button"
@@ -1154,7 +1155,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:1310
 msgid "Synchronisation method"
-msgstr ""
+msgstr "Metoda synchronizacji"
 
 #: inc/ocsserver.class.php:1345
 msgid "Use automatic action for clean old agents & drop from OCSNG software"
@@ -1190,11 +1191,11 @@ msgstr ""
 
 #: inc/ocsserver.class.php:1439
 msgid "Delete computers"
-msgstr ""
+msgstr "Usuń komputery"
 
 #: inc/ocsserver.class.php:1462
 msgid "Connecting to the database"
-msgstr ""
+msgstr "Połączenie do bazy"
 
 #: inc/ocsserver.class.php:1466
 msgid "Connection to the database failed"
@@ -1285,7 +1286,7 @@ msgstr "Tryb importu podręcznika"
 
 #: inc/ocsserver.class.php:4473
 msgid "Disable preview"
-msgstr ""
+msgstr "Wyłącz podgląd"
 
 #: inc/ocsserver.class.php:4475
 msgid "Enable preview"
@@ -1340,7 +1341,7 @@ msgstr ""
 
 #: inc/ocsserver.class.php:7357
 msgid "Launch OCSNG synchronization script"
-msgstr ""
+msgstr "Uruchom skrypt synchronizacji OCSNG"
 
 #: inc/ocsserver.class.php:7360
 msgid "Clean old agents & drop from OCSNG software"
@@ -1444,7 +1445,7 @@ msgstr ""
 
 #: inc/osinstall.class.php:88
 msgid "Installation date"
-msgstr ""
+msgstr "Data instalacji"
 
 #: inc/osinstall.class.php:93
 msgid "Codeset"
@@ -1452,15 +1453,15 @@ msgstr ""
 
 #: inc/osinstall.class.php:95
 msgid "Country code"
-msgstr ""
+msgstr "Kod kraju"
 
 #: inc/osinstall.class.php:100
 msgid "OS Language"
-msgstr ""
+msgstr "OS Język"
 
 #: inc/osinstall.class.php:102
 msgid "Current Timezone"
-msgstr ""
+msgstr "Aktualna strefa czasowa"
 
 #: inc/osinstall.class.php:107
 msgid "Locale"
@@ -1528,7 +1529,7 @@ msgstr ""
 
 #: inc/runningprocess.class.php:121
 msgid "Process name"
-msgstr ""
+msgstr "Nazwa procesu"
 
 #: inc/runningprocess.class.php:122
 msgid "Process ID"
@@ -1552,7 +1553,7 @@ msgstr ""
 
 #: inc/service.class.php:118
 msgid "Full name"
-msgstr ""
+msgstr "Pełna nazwa"
 
 #: inc/service.class.php:119
 msgid "Service Status"
@@ -1891,7 +1892,7 @@ msgstr ""
 
 #: inc/thread.class.php:316
 msgid "See all servers"
-msgstr ""
+msgstr "Zobacz wszystkie serwery"
 
 #: inc/thread.class.php:323
 msgid "Number of threads"
@@ -1952,7 +1953,7 @@ msgstr ""
 
 #: inc/winupdate.class.php:177
 msgid "Notify before download"
-msgstr ""
+msgstr "Powiadom przed pobraniem"
 
 #: inc/winupdate.class.php:180
 msgid "Disables AU"
@@ -1960,8 +1961,8 @@ msgstr ""
 
 #: inc/winuser.class.php:125
 msgid "Disabled"
-msgstr ""
+msgstr "Wyłączony"
 
 #: inc/winuser.class.php:126
 msgid "SID"
-msgstr ""
+msgstr "SID"

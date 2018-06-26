@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -50,7 +50,7 @@ if (isset($_POST["addocsserver"]) && ($_POST['plugin_ocsinventoryng_ocsservers_i
 $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = PluginOcsinventoryngOcsServer::getFirstServer();
 
 if (isset ($_POST['delete'])) {
-   $input = array();
+   $input = [];
    foreach ($_POST['item'] as $id => $val) {
       $input['id'] = $id;
       $profservers->delete($input);

@@ -38,14 +38,13 @@ if (!defined('GLPI_ROOT')) {
 class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
 {
 
-   static $hardwareItemTypes = array('Computer', 'NetworkEquipment', 'Peripheral', 'Phone', 'Printer');
+   static $hardwareItemTypes = ['Computer', 'NetworkEquipment', 'Peripheral', 'Phone', 'Printer'];
 
    /**
     * @param int $nb
     * @return string|translated
     */
-   static function getTypeName($nb = 0)
-   {
+   static function getTypeName($nb = 0) {
       return __('IPDiscover Import', 'ocsinventoryng');
    }
 
@@ -55,8 +54,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
     * @param array|type $array
     * @return string $
     */
-   public static function parseArrayToString($array = array())
-   {
+   public static function parseArrayToString($array = []) {
       $token = "";
       if (sizeof($array) == 0) {
          return "''";
@@ -76,8 +74,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
     * @param type $inputs array
     * @param type $outputs array
     */
-   public static function getSubnetsName($inputs, &$outputs)
-   {
+   public static function getSubnetsName($inputs, &$outputs) {
 
       foreach ($inputs as $subnets) {
          if (isset($subnets["NAME"])) {
@@ -92,8 +89,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
     * get all the subnets ID
     * @param type outputs array
     */
-   public static function getAllSubnetsID(&$outputs)
-   {
+   public static function getAllSubnetsID(&$outputs) {
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"])->getDB();
       $query = "SELECT `config`.`TVALUE`
@@ -111,8 +107,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
     * @param $inputs
     * @param $outputs
     */
-   public static function getSubnetsID($inputs, &$outputs)
-   {
+   public static function getSubnetsID($inputs, &$outputs) {
       foreach ($inputs as $subnets) {
          if (isset($subnets["ID"])) {
             if ($subnets["ID"] != null
@@ -128,8 +123,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
     * @param $ipAdress
     * @return int|mixed
     */
-   static function getSubnetIDbyIP($ipAdress)
-   {
+   static function getSubnetIDbyIP($ipAdress) {
 
       $subnet = -1;
       $ocsClient = new PluginOcsinventoryngOcsServer();
@@ -153,8 +147,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
     * @param $ipAdress
     * @return string
     */
-   static function getSubnetNamebyIP($ipAdress)
-   {
+   static function getSubnetNamebyIP($ipAdress) {
 
       $name = "";
       $ocsClient = new PluginOcsinventoryngOcsServer();
@@ -176,8 +169,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
    /**
     * @param $count
     */
-   public static function countSubnetsID(&$count)
-   {
+   public static function countSubnetsID(&$count) {
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"])->getDB();
       $query = "SELECT MAX(`config`.`IVALUE`) as MAX
@@ -195,8 +187,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
     * get the OCS types from DB
     * @param type $out array
     */
-   public static function getOCSTypes(&$out)
-   {
+   public static function getOCSTypes(&$out) {
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"])->getDB();
       $query = "SELECT `devicetype`.`id` , `devicetype`.`name`
@@ -215,13 +206,12 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
     * @param type $plugin_ocsinventoryng_ocsservers_id
     * @return array with All Subnets , Known Subnets, Unknown Subnets, knownIP, unknownIP
     */
-   public static function getSubnets($plugin_ocsinventoryng_ocsservers_id)
-   {
-      $subnets = array();
-      $unknown = array();
-      $known = array();
-      $unknownIP = array();
-      $knownIP = array();
+   public static function getSubnets($plugin_ocsinventoryng_ocsservers_id) {
+      $subnets = [];
+      $unknown = [];
+      $known = [];
+      $unknownIP = [];
+      $knownIP = [];
       //$IP        = array();
       $query = "SELECT DISTINCT `networks`.`IPSUBNET`,`subnet`.`NAME`,`subnet`.`ID`
                FROM `networks` 
@@ -248,11 +238,11 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
             $knownIP[] = $subnets[$i]["IPSUBNET"];
          }
       }
-      return array("All Subnets" => $subnets,
+      return ["All Subnets" => $subnets,
          "Known Subnets" => $known,
          "Unknown Subnets" => $unknown,
          "knownIP" => $knownIP,
-         "unknownIP" => $unknownIP);
+         "unknownIP" => $unknownIP];
    }
 
 
@@ -263,10 +253,9 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
     * @param string $option
     * @return array
     */
-   public static function showSubnets($plugin_ocsinventoryng_ocsservers_id, $subnets, $knownMacAdresses, $option = "")
-   {
+   public static function showSubnets($plugin_ocsinventoryng_ocsservers_id, $subnets, $knownMacAdresses, $option = "") {
       //this query displays all the elements on the the networks we found :
-      $subnetsDetails = array();
+      $subnetsDetails = [];
       $knownNets = "";
       $unknownNets = "";
       $Nets = "";
@@ -285,7 +274,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
       } else {
          if ($option != "") {
 
-            $theSubnet = array();
+            $theSubnet = [];
             $getKnownSubnet = "SELECT `subnet`.`NETID`
                           FROM `subnet`
                           WHERE `ID` LIKE '$option'";
@@ -301,7 +290,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
          }
       }
       if ($Nets == "") {
-         return array();
+         return [];
       } else {
          $macAdresses = self::parseArrayToString($knownMacAdresses);
          $percentQuery = " SELECT * from (select inv.RSX as IP, inv.c as 'INVENTORIED', non_ident.c as 'NON_INVENTORIED', ipdiscover.c as 'IPDISCOVER', ident.c as 'IDENTIFIED', inv.name as 'NAME', CASE WHEN ident.c IS NULL and ipdiscover.c IS NULL THEN 100 WHEN ident.c IS NULL THEN 0 WHEN non_ident.c IS NULL THEN 0 ELSE round(100-(non_ident.c*100/(ident.c+non_ident.c)), 1) END as 'PERCENT' 
@@ -334,10 +323,9 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       }
    }
 
-   static function ipDiscoverMenu()
-   {
+   static function ipDiscoverMenu() {
       global $CFG_GLPI, $DB;
-      $ocsservers = array();
+      $ocsservers = [];
       //echo "<div class='center'>";
       //echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png' " .
       //"alt='OCS Inventory NG' title='OCS Inventory NG'>";
@@ -361,10 +349,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          foreach ($DB->request($query) as $data) {
             $ocsservers[] = $data['id'];
          }
-         Dropdown::show('PluginOcsinventoryngOcsServer', array("condition" => "`id` IN ('" . implode("','", $ocsservers) . "')",
+         Dropdown::show('PluginOcsinventoryngOcsServer', ["condition" => "`id` IN ('" . implode("','", $ocsservers) . "')",
             "value" => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
             "on_change" => "this.form.submit()",
-            "display_emptychoice" => false));
+            "display_emptychoice" => false]);
 
          echo "</td></tr>";
          echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
@@ -386,8 +374,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
    /**
     * @param $action
     */
-   static function showSubnetSearchForm($action)
-   {
+   static function showSubnetSearchForm($action) {
       global $CFG_GLPI;
 
       echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php?action=$action\"
@@ -404,15 +391,15 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       //"</th></tr>\n";
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Subnet') . "</td>";
       echo "<td class='center'>";
-      $tab = array('0' => Dropdown::EMPTY_VALUE,
+      $tab = ['0' => Dropdown::EMPTY_VALUE,
          '1' => __('All Subnets', 'ocsinventoryng'),
          '2' => __('Known Subnets', 'ocsinventoryng'),
-         '3' => __('Unknown Subnets', 'ocsinventoryng'));
+         '3' => __('Unknown Subnets', 'ocsinventoryng')];
 
       $subnets = self::getSubnets($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
       self::getSubnetsID($subnets["All Subnets"], $tab);
       $_SESSION["subnets"] = $tab;
-      Dropdown::showFromArray("subnetsChoice", $tab, array("on_change" => "this.form.submit()", "display_emptychoice" => false));
+      Dropdown::showFromArray("subnetsChoice", $tab, ["on_change" => "this.form.submit()", "display_emptychoice" => false]);
       echo "</td></tr>";
       /*echo "<tr class='tab_bg_1'>";
       echo "<td class='center'><a href='.form.php'>
@@ -456,8 +443,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param int $iterator
     * @return string
     */
-   static function showItem($value, $linkto = "", $id = "", $type = "", $checkbox = false, $check = "", $iterator = 0)
-   {
+   static function showItem($value, $linkto = "", $id = "", $type = "", $checkbox = false, $check = "", $iterator = 0) {
       $out = "<td>";
       if ($checkbox) {
          $out .= "<input type='checkbox' name='mactoimport[$iterator][" . $value . "]' " .
@@ -482,7 +468,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
    }
 
    /*static function showHeader($value) {
-    
+
       $out ="<th class='ipdisc_tab_header'>";
             $out .= $value;
             $out .= "</th>\n";
@@ -493,8 +479,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
    /**
     * @param $target
     */
-   static function checkBox($target)
-   {
+   static function checkBox($target) {
 
       echo "<div class='center'><a href='" . $target . "?check=all' " .
          "onclick= \"if (markCheckboxes('ipdiscover_form')) return false;\">" . __('Check all') .
@@ -510,10 +495,9 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @return array with mac addresses
     */
 
-   static function getKnownMacAdresseFromGlpi()
-   {
+   static function getKnownMacAdresseFromGlpi() {
       global $DB;
-      $macAdresses = array();
+      $macAdresses = [];
       $query = "SELECT `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`.`macaddress`
                 FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`";
       $result = $DB->query($query);
@@ -530,8 +514,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param type $macAdresses array
     * @return none
     */
-   static function deleteMACFromOCS($plugin_ocsinventoryng_ocsservers_id, $macAdresses)
-   {
+   static function deleteMACFromOCS($plugin_ocsinventoryng_ocsservers_id, $macAdresses) {
 
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
@@ -554,14 +537,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @internal param type $plugin_ocsinventoryng_ocsservers_id string
     * @internal param type $ids array
     */
-   static function deleteLink($id_links)
-   {
+   static function deleteLink($id_links) {
 
       $ids = self::getMacAdressKeyVal($id_links);
 
       foreach ($ids as $key => $id) {
          $disc = new self();
-         $disc->deleteByCriteria(array('id' => $id));
+         $disc->deleteByCriteria(['id' => $id]);
       }
    }
 
@@ -572,11 +554,12 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param $val
     * @return bool
     */
-   static function findInArray($array, $key, $val)
-   {
-      foreach ($array as $item)
-         if (isset($item[$key]) && $item[$key] == $val)
+   static function findInArray($array, $key, $val) {
+      foreach ($array as $item) {
+         if (isset($item[$key]) && $item[$key] == $val) {
             return true;
+         }
+      }
       return false;
    }
 
@@ -588,8 +571,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param array|type $knownMacAdresses array
     * @return array
     */
-   static function getHardware($ipAdress, $plugin_ocsinventoryng_ocsservers_id, $status, $knownMacAdresses = array())
-   {
+   static function getHardware($ipAdress, $plugin_ocsinventoryng_ocsservers_id, $status, $knownMacAdresses = []) {
       global $DB;
 
       $ocsClient = new PluginOcsinventoryngOcsServer();
@@ -636,7 +618,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       }
       if ($status == "imported") {
          $result = $DB->query($query);
-         $hardware = array();
+         $hardware = [];
          while ($res = $DBOCS->fetch_assoc($result)) {
             if (!isset($res["mac"])) {
                $hardware[] = $res;
@@ -646,7 +628,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          }
       } else {
          $result = $DBOCS->query($query);
-         $hardware = array();
+         $hardware = [];
 
          while ($res = $DBOCS->fetch_assoc($result)) {
             if (!isset($res["mac"])) {
@@ -662,11 +644,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
    /**
     * this function load in memory the mac address constructor
     */
-   static function loadMacConstructor()
-   {
+   static function loadMacConstructor() {
       $macFile = GLPI_ROOT . "/plugins/ocsinventoryng/files/macManufacturers.txt";
       $result = "";
-      $macs = array();
+      $macs = [];
       if ($file = @fopen($macFile, "r")) {
          while (!feof($file)) {
             $line = fgets($file, 4096);
@@ -684,11 +665,11 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
    static function getInventoriedComputers($ipAdress, $plugin_ocsinventoryng_ocsservers_id) {
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS     = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
-      $query     = " SELECT `hardware`.`lastdate`, `hardware`.`name`, `hardware`.`userid`, `hardware`.`osname`, `hardware`.`workgroup`, `hardware`.`osversion`, `hardware`.`ipaddr`, `hardware`.`userdomain` 
-         FROM `hardware` 
-         LEFT JOIN `networks` ON `networks`.`hardware_id`=`hardware`.`id` 
-         WHERE `networks`.`ipsubnet`='$ipAdress' 
-         AND status='Up' 
+      $query     = " SELECT `hardware`.`lastdate`, `hardware`.`name`, `hardware`.`userid`, `hardware`.`osname`, `hardware`.`workgroup`, `hardware`.`osversion`, `hardware`.`ipaddr`, `hardware`.`userdomain`
+         FROM `hardware`
+         LEFT JOIN `networks` ON `networks`.`hardware_id`=`hardware`.`id`
+         WHERE `networks`.`ipsubnet`='$ipAdress'
+         AND status='Up'
          ORDER BY `hardware`.`lastdate`";
       $result    = $DBOCS->query($query);
       $inv       = array();
@@ -702,12 +683,12 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS     = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
       $query     = " SELECT `netmap`.`ip`, `netmap`.`mac`, `netmap`.`mask`, `netmap`.`date`, `netmap`.`name` as DNS
-              FROM `netmap` 
-              LEFT JOIN `networks` 
-              ON `netmap`.`mac` =`networks`.`macaddr` 
-              WHERE `netmap`.`netid`='$ipAdress' 
-              AND (`networks`.`macaddr` IS NULL OR `networks`.`ipsubnet` <> `netmap`.`netid`) 
-              AND `netmap`.`mac` NOT IN ( SELECT DISTINCT(`network_devices`.`macaddr`) 
+              FROM `netmap`
+              LEFT JOIN `networks`
+              ON `netmap`.`mac` =`networks`.`macaddr`
+              WHERE `netmap`.`netid`='$ipAdress'
+              AND (`networks`.`macaddr` IS NULL OR `networks`.`ipsubnet` <> `netmap`.`netid`)
+              AND `netmap`.`mac` NOT IN ( SELECT DISTINCT(`network_devices`.`macaddr`)
               FROM `network_devices`) ORDER BY `netmap`.`ip`";
       $result    = $DBOCS->query($query);
       $nonInv    = array();
@@ -722,9 +703,9 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $DBOCS              = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
       $query              = "SELECT `network_devices`.`ID`,`network_devices`.`TYPE`,`network_devices`.`DESCRIPTION`,`network_devices`.`USER`,`netmap`.`IP`,`netmap`.`MAC`,`netmap`.`MASK`,`netmap`.`NETID`,`netmap`.`NAME`,`netmap`.`DATE`
               FROM `network_devices`
-              LEFT JOIN `netmap` 
-              ON `network_devices`.`MACADDr`=`netmap`.`MAC` 
-              WHERE `netmap`.`NETID`='$ipAdress' 
+              LEFT JOIN `netmap`
+              ON `network_devices`.`MACADDr`=`netmap`.`MAC`
+              WHERE `netmap`.`NETID`='$ipAdress'
               ORDER BY `network_devices`.`TYPE` asc";
       $result             = $DBOCS->query($query);
       $identifiedHardware = array();
@@ -742,8 +723,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param string $action
     * @global type $CFG_GLPI
     */
-   static function showSubnetsDetails($subnetsArray, $lim = 0, $start = 0, $action = "import")
-   {
+   static function showSubnetsDetails($subnetsArray, $lim = 0, $start = 0, $action = "import") {
       global $CFG_GLPI, $DB;
       $output_type = Search::HTML_OUTPUT; //0
       $return = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php";
@@ -819,8 +799,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @global type $CFG_GLPI
     */
 
-   static function modifyNetworkForm($ipAdress, $values = array())
-   {
+   static function modifyNetworkForm($ipAdress, $values = []) {
       global $CFG_GLPI;
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $ocsdb = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
@@ -865,9 +844,9 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             echo "<td> <input type=\"text\" name=\"subnetName\" value=\"$n\" required></td></tr>";
             echo "<tr class='tab_bg_2'><td class='center'>" . __('Choose ID', 'ocsinventoryng') . "</td>";
             echo "<td>";
-            $sbnts = array(Dropdown::EMPTY_VALUE);
+            $sbnts = [Dropdown::EMPTY_VALUE];
             self::getAllSubnetsID($sbnts);
-            Dropdown::showFromArray('subnetChoice', $sbnts, array('value' => $idValue));
+            Dropdown::showFromArray('subnetChoice', $sbnts, ['value' => $idValue]);
             echo "</td>";
             echo "<tr class='tab_bg_2'><td class='center'>" . __('IP address') . "</td>";
 
@@ -884,9 +863,9 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             echo "<td> <input type=\"text\" name=\"subnetName\" value=\"\" required></td></tr>";
             echo "<tr class='tab_bg_2'><td class='center'>" . __('Choose ID', 'ocsinventoryng') . "</td>";
             echo "<td>";
-            $sbnts = array(Dropdown::EMPTY_VALUE);
+            $sbnts = [Dropdown::EMPTY_VALUE];
             self::getAllSubnetsID($sbnts);
-            Dropdown::showFromArray('subnetChoice', $sbnts, array('on_change' => 'FillInput();'));
+            Dropdown::showFromArray('subnetChoice', $sbnts, ['on_change' => 'FillInput();']);
             echo "</td>";
 
             echo "<tr class='tab_bg_2'><td class='center'>" . __('IP address') . "</td>";
@@ -913,8 +892,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @return type array with the status of the import or update process
     * @global type $DB
     */
-   static function processIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id, $subnet)
-   {
+   static function processIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id, $subnet) {
       global $DB;
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $ocsClient->checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
@@ -941,8 +919,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param $subnet
     * @return array
     */
-   static function importIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id, $subnet)
-   {
+   static function importIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id, $subnet) {
       global $DB;
 
       $id = null;
@@ -952,10 +929,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       if (isset($ipDiscoveryObject["ocsItemType"])
          && $ipDiscoveryObject["ocsItemType"] == Dropdown::EMPTY_VALUE
       ) {
-         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
+         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT];
       }
       if ($ipDiscoveryObject["itemDescription"] == '') {
-         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
+         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT];
       }
 
       if ($ipDiscoveryObject["itemName"] == "") {
@@ -965,7 +942,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       switch ($ipDiscoveryObject["glpiItemType"]) {
          //empty dropdown value
          case '0' :
-            return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
+            return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT];
       }
 
       if (isset($ipDiscoveryObject["ocsItemType"])) {
@@ -977,17 +954,17 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $netPort->getFromDBByQuery("WHERE `mac` = '$mac' ");
       if (count($netPort->fields) < 1) {
 
-         $input = array(
+         $input = [
             'is_dynamic' => 1,
             'locations_id' => 0,
             'domains_id' => 0,
             'entities_id' => $ipDiscoveryObject["entity"],
             'name' => $ipDiscoveryObject["itemName"],
-            'comment' => $ipDiscoveryObject["itemDescription"]);
+            'comment' => $ipDiscoveryObject["itemDescription"]];
 
          $device = new $ipDiscoveryObject["glpiItemType"]();
 
-         $id = $device->add($input, array(), $cfg_ocs['history_devices']);
+         $id = $device->add($input, [], $cfg_ocs['history_devices']);
 
          //ipdiscover link
          $date = date("Y-m-d H:i:s");
@@ -1000,18 +977,18 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          $DB->query($glpiQuery);
 
          //add port
-         $port_input = array('name' => $ipDiscoveryObject["itemName"] . "-" . $ip,
+         $port_input = ['name' => $ipDiscoveryObject["itemName"] . "-" . $ip,
             'mac' => $mac,
             'items_id' => $id,
             'itemtype' => $glpiType,
             'instantiation_type' => "NetworkPortEthernet",
             "entities_id" => $ipDiscoveryObject["entity"],
-            "NetworkName__ipaddresses" => array("-100" => $ip),
+            "NetworkName__ipaddresses" => ["-100" => $ip],
             '_create_children' => 1,
             //'is_dynamic'                => 1,
-            'is_deleted' => 0);
+            'is_deleted' => 0];
 
-         $netPort->add($port_input, array(), $cfg_ocs['history_network']);
+         $netPort->add($port_input, [], $cfg_ocs['history_network']);
 
          /* $netPortInput = array(
               "itemtype"           => $glpiType,
@@ -1064,10 +1041,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       }
 
       if ($id) {
-         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_IMPORTED);
+         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_IMPORTED];
       } else {
          Session::addMessageAfterRedirect($mac . " : " . __('Unable to add. an object with same MAC address already exists.', 'ocsinventoryng'), false, ERROR);
-         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
+         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT];
       }
    }
 
@@ -1085,14 +1062,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @return type array
     * @internal param type $ipDiscoveryObject array
     */
-   static function linkIpDiscover($plugin_ocsinventoryng_ocsservers_id, $itemtypes, $items_id, $macAdresses, $ocsItemstypes, $itemsDescription, $subnet, $identify = 0)
-   {
+   static function linkIpDiscover($plugin_ocsinventoryng_ocsservers_id, $itemtypes, $items_id, $macAdresses, $ocsItemstypes, $itemsDescription, $subnet, $identify = 0) {
       global $DB;
 
       /*$id         = null;
       $identify   = false;
-      
-      if (isset($ipDiscoveryObject["ocsItemType"]) 
+
+      if (isset($ipDiscoveryObject["ocsItemType"])
             && $ipDiscoveryObject["ocsItemType"] == Dropdown::EMPTY_VALUE) {
          return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
       }
@@ -1115,14 +1091,14 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       }*/
 
       //ipdiscover link
-      $objs = array();
+      $objs = [];
       $macs = self::getMacAdressKeyVal($macAdresses);
 
       foreach ($itemtypes as $key => $type) {
-         $objs[$items_id[$key]] = array("itemtype" => $type,
+         $objs[$items_id[$key]] = ["itemtype" => $type,
             "mac" => $macs[$key],
             "description" => (isset($itemsDescription[$key]) ? $itemsDescription[$key] : 0),
-            "ocsType" => (isset($ocsItemstypes[$key]) ? $ocsItemstypes[$key] : 0));
+            "ocsType" => (isset($ocsItemstypes[$key]) ? $ocsItemstypes[$key] : 0)];
       }
 
       foreach ($objs as $id => $tab) {
@@ -1133,9 +1109,9 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                        VALUES('$id','" . $tab["itemtype"] . "','" . $tab["mac"] . "','$date','$subnet','$plugin_ocsinventoryng_ocsservers_id')";
          $DB->query($glpiQuery);
 
-         $input = array(
+         $input = [
             'is_dynamic' => 1,
-            'id' => $id);
+            'id' => $id];
 
          $device = new $tab["itemtype"]();
          $device->update($input);
@@ -1163,7 +1139,6 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          }
       }
 
-
       /*if ($id) {
           return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_IMPORTED);
        } else {
@@ -1181,16 +1156,15 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param type $plugin_ocsinventoryng_ocsservers_id integer
     * @return array
     */
-   static function updateIpDiscover($ipDiscoveryObject, $datas, $plugin_ocsinventoryng_ocsservers_id)
-   {
+   static function updateIpDiscover($ipDiscoveryObject, $datas, $plugin_ocsinventoryng_ocsservers_id) {
       global $DB;
       $res = null;
 
       if (isset($ipDiscoveryObject["ocsItemType"]) && $ipDiscoveryObject["ocsItemType"] == Dropdown::EMPTY_VALUE) {
-         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED);
+         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED];
       }
       if ($ipDiscoveryObject["itemDescription"] == '') {
-         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED);
+         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED];
       }
 
       if ($ipDiscoveryObject["itemName"] == "") {
@@ -1200,7 +1174,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       switch ($ipDiscoveryObject["glpiItemType"]) {
          //empty dropdown value
          case '0' :
-            return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED);
+            return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED];
       }
 
       $itemType1 = new $ipDiscoveryObject["glpiItemType"]();
@@ -1209,23 +1183,22 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       //same type of object
       //simple data update
       if ($itemType1 == $itemType2) {
-         $input = array("id" => $datas["id"],
+         $input = ["id" => $datas["id"],
             'entities_id' => $ipDiscoveryObject["entity"],
             'name' => $ipDiscoveryObject["itemName"],
-            'comment' => $ipDiscoveryObject["itemDescription"]);
+            'comment' => $ipDiscoveryObject["itemDescription"]];
          $res = $itemType1->update($input);
          $date = date("Y-m-d H:i:s");
          $glpiQuery = "UPDATE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
                          SET `last_update` = '$date'";
          $DB->query($glpiQuery);
-      }
-      //not same type 
+      } //not same type
       //delete old object and create a new one
       else {
          //delete old object
          $id = $datas["items_id"];
          $mac = $datas["macaddress"];
-         $result = $itemType2->delete(array("id" => $id));
+         $result = $itemType2->delete(["id" => $id]);
 
          if ($result) {
             //delete ipdiscoverocslink
@@ -1235,14 +1208,14 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             //add new ipdiscover object
             $action = self::importIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id);
             if ($action["status"] == 15) {
-               return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_SYNCHRONIZED);
+               return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_SYNCHRONIZED];
             }
          }
       }
       if ($res) {
-         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_SYNCHRONIZED);
+         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_SYNCHRONIZED];
       } else {
-         return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED);
+         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED];
       }
    }
 
@@ -1258,27 +1231,26 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @return array
     */
 
-   static function getIpDiscoverobject($macAdresses, $entities = array(), $glpiItemsTypes, $itemsNames = "", $itemsDescription, $itempsIp, $ocsItemsTypes = array())
-   {
-      $objectToImport = array();
+   static function getIpDiscoverobject($macAdresses, $entities = [], $glpiItemsTypes, $itemsNames = "", $itemsDescription, $itempsIp, $ocsItemsTypes = []) {
+      $objectToImport = [];
       $macs = self::getMacAdressKeyVal($macAdresses);
       if (!empty($entities)) {
          foreach ($macs as $key => $mac) {
             if (!empty($ocsItemsTypes)) {
-               $objectToImport[] = array("macAdress" => $mac,
+               $objectToImport[] = ["macAdress" => $mac,
                   "entity" => $entities[$key],
                   "glpiItemType" => $glpiItemsTypes[$key],
                   "ocsItemType" => $ocsItemsTypes[$key],
                   "itemName" => $itemsNames[$key],
                   "itemDescription" => $itemsDescription[$key],
-                  "itemIp" => $itempsIp[$key]);
+                  "itemIp" => $itempsIp[$key]];
             } else {
-               $objectToImport[] = array("macAdress" => $mac,
+               $objectToImport[] = ["macAdress" => $mac,
                   "entity" => $entities[$key],
                   "glpiItemType" => $glpiItemsTypes[$key],
                   "itemName" => $itemsNames[$key],
                   "itemDescription" => $itemsDescription[$key],
-                  "itemIp" => $itempsIp[$key]);
+                  "itemIp" => $itempsIp[$key]];
             }
          }
       } else {
@@ -1288,20 +1260,20 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                $ent = $eval;
             }
             if (!empty($ocsItemsTypes)) {
-               $objectToImport[] = array("macAdress" => $mac,
+               $objectToImport[] = ["macAdress" => $mac,
                   "entity" => $ent,
                   "glpiItemType" => $glpiItemsTypes[$key],
                   "ocsItemType" => $ocsItemsTypes[$key],
                   "itemName" => $itemsNames[$key],
                   "itemDescription" => $itemsDescription[$key],
-                  "itemIp" => $itempsIp[$key]);
+                  "itemIp" => $itempsIp[$key]];
             } else {
-               $objectToImport[] = array("macAdress" => $mac,
+               $objectToImport[] = ["macAdress" => $mac,
                   "entity" => $ent,
                   "glpiItemType" => $glpiItemsTypes[$key],
                   "itemName" => $itemsNames[$key],
                   "itemDescription" => $itemsDescription[$key],
-                  "itemIp" => $itempsIp[$key]);
+                  "itemIp" => $itempsIp[$key]];
             }
          }
       }
@@ -1312,8 +1284,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param $status
     * @return string
     */
-   static function showPercentBar($status)
-   {
+   static function showPercentBar($status) {
       if (!is_numeric($status)) {
          return $status;
       }
@@ -1337,8 +1308,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param $action
     * @global type $CFG_GLPI
     */
-   static function showHardware($hardware, $lim, $start = 0, $ipAdress, $status, $subnet, $action)
-   {
+   static function showHardware($hardware, $lim, $start = 0, $ipAdress, $status, $subnet, $action) {
       global $CFG_GLPI, $DB;
 
       $output_type = Search::HTML_OUTPUT; //0
@@ -1350,9 +1320,9 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
 
       if ($status == "inventoried") {
          $status_name = __('Inventoried', 'ocsinventoryng');
-      } elseif ($status == "imported") {
+      } else if ($status == "imported") {
          $status_name = __('Imported / Linked', 'ocsinventoryng');
-      } elseif ($status == "noninventoried") {
+      } else if ($status == "noninventoried") {
          $status_name = __('Non Inventoried', 'ocsinventoryng');
       } else {
          $status_name = __('Identified', 'ocsinventoryng');
@@ -1363,7 +1333,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       echo "<h2>" . __('Subnet') . " " . $subnet_name . " (" . $ipAdress . ") - " . $status_name;
       echo "&nbsp;";
       $refresh = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php?" . $reload;
-      Html::showSimpleForm($refresh, 'refresh', _sx('button', 'Refresh'), array(), $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro.png");
+      Html::showSimpleForm($refresh, 'refresh', _sx('button', 'Refresh'), [], $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro.png");
       echo "</h2>";
       echo "</div>";
 
@@ -1437,12 +1407,12 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                      $iplist = "";
                      $ip = new IPAddress();
                      // Update IPAddress
-                     foreach ($DB->request('glpi_networkports', array('itemtype' => $hardware[$i]["itemtype"],
-                        'items_id' => $hardware[$i]["items_id"])) as $netname) {
-                        foreach ($DB->request('glpi_networknames', array('itemtype' => 'NetworkPort',
-                           'items_id' => $netname['id'])) as $dataname) {
-                           foreach ($DB->request('glpi_ipaddresses', array('itemtype' => 'NetworkName',
-                              'items_id' => $dataname['id'])) as $data) {
+                     foreach ($DB->request('glpi_networkports', ['itemtype' => $hardware[$i]["itemtype"],
+                        'items_id' => $hardware[$i]["items_id"]]) as $netname) {
+                        foreach ($DB->request('glpi_networknames', ['itemtype' => 'NetworkPort',
+                           'items_id' => $netname['id']]) as $dataname) {
+                           foreach ($DB->request('glpi_ipaddresses', ['itemtype' => 'NetworkName',
+                              'items_id' => $dataname['id']]) as $data) {
                               $ip->getFromDB($data['id']);
                               $iplist .= $ip->getName() . "<br>";
                            }
@@ -1471,7 +1441,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                break;
 
             case "noninventoried" :
-               $ocsTypes = array("id" => array(Dropdown::EMPTY_VALUE), "name" => array(Dropdown::EMPTY_VALUE));
+               $ocsTypes = ["id" => [Dropdown::EMPTY_VALUE], "name" => [Dropdown::EMPTY_VALUE]];
                $link = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
                $target = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php" . $backValues;
                $macConstructor = "";
@@ -1508,11 +1478,11 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo Search::showHeaderItem($output_type, __('&nbsp;'), $header_num);
                echo Search::showEndLine($output_type);
                $row_num = 1;
-               $ocstypes = array();
+               $ocstypes = [];
                foreach ($ocsTypes["name"] as $items) {
                   $ocstypes[$items] = $items;
                }
-               $itemstypes = array(Dropdown::EMPTY_VALUE);
+               $itemstypes = [Dropdown::EMPTY_VALUE];
                foreach (self::$hardwareItemTypes as $items) {
                   $class = getItemForItemtype($items);
                   $itemstypes[$items] = $class->getTypeName();
@@ -1546,7 +1516,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                         echo "<td><input type=\"text\" name='itemsname[" . $i . "]' value=\"\"></td>";
                         if (Session::isMultiEntitiesMode()) {
                            echo "<td>";
-                           Entity::dropdown(array('name' => "entities[$i]", 'entity' => $_SESSION["glpiactiveentities"]));
+                           Entity::dropdown(['name' => "entities[$i]", 'entity' => $_SESSION["glpiactiveentities"]]);
                            echo "</td>";
                         }
 
@@ -1561,14 +1531,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                         $mynamei = "itemtype";
                         $myname = "tolink_items[" . $i . "]";
 
-                        $rand = Dropdown::showItemTypes($mynamei, self::$hardwareItemTypes, array('rand' => $mtrand));
+                        $rand = Dropdown::showItemTypes($mynamei, self::$hardwareItemTypes, ['rand' => $mtrand]);
 
-
-                        $p = array('itemtype' => '__VALUE__',
+                        $p = ['itemtype' => '__VALUE__',
                            'entity_restrict' => $_SESSION["glpiactiveentities"],
                            'id' => $i,
                            'rand' => $rand,
-                           'myname' => $myname);
+                           'myname' => $myname];
                         //print_r($p);
                         Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/ajax/dropdownitems.php", $p);
                         echo "<span id='results_$mynamei$rand'>\n";
@@ -1632,7 +1601,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo Search::showHeaderItem($output_type, __('&nbsp;'), $header_num);
                echo Search::showEndLine($output_type);
                $row_num = 1;
-               $itemstypes = array(Dropdown::EMPTY_VALUE);
+               $itemstypes = [Dropdown::EMPTY_VALUE];
                foreach (self::$hardwareItemTypes as $items) {
                   $class = getItemForItemtype($items);
                   $itemstypes[$items] = $class->getTypeName();
@@ -1660,7 +1629,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                      if ($action == "import") {
                         if (Session::isMultiEntitiesMode()) {
                            echo "<td>";
-                           Entity::dropdown(array('name' => "entities[$i]", 'entity' => $_SESSION["glpiactiveentities"]));
+                           Entity::dropdown(['name' => "entities[$i]", 'entity' => $_SESSION["glpiactiveentities"]]);
                            echo "</td>";
                         }
 
@@ -1676,14 +1645,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                         $mynamei = "itemtype";
                         $myname = "tolink_items[" . $i . "]";
 
-                        $rand = Dropdown::showItemTypes($mynamei, self::$hardwareItemTypes, array('rand' => $mtrand));
+                        $rand = Dropdown::showItemTypes($mynamei, self::$hardwareItemTypes, ['rand' => $mtrand]);
 
-
-                        $p = array('itemtype' => '__VALUE__',
+                        $p = ['itemtype' => '__VALUE__',
                            'entity_restrict' => $_SESSION["glpiactiveentities"],
                            'id' => $i,
                            'rand' => $rand,
-                           'myname' => $myname);
+                           'myname' => $myname];
 
                         Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/ajax/dropdownitems.php", $p);
                         echo "<span id='results_$mynamei$rand'>\n";
@@ -1726,9 +1694,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param $macAdresses
     * @return array with the keys(positions)
     */
-   static function getMacAdressKeyVal($macAdresses)
-   {
-      $keys = array();
+   static function getMacAdressKeyVal($macAdresses) {
+      $keys = [];
       foreach ($macAdresses as $key => $val) {
          foreach ($val as $mac => $on) {
             $keys[$key] = $mac;

@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -41,10 +41,9 @@ class PluginOcsinventoryngNotificationTargetNotImportedcomputer extends Notifica
    /**
     * @return array
     */
-   function getEvents()
-   {
-      return array('not_imported' => __('Computers not imported by automatic actions',
-         'ocsinventoryng'));
+   function getEvents() {
+      return ['not_imported' => __('Computers not imported by automatic actions',
+         'ocsinventoryng')];
    }
 
 
@@ -52,15 +51,14 @@ class PluginOcsinventoryngNotificationTargetNotImportedcomputer extends Notifica
     * @param $event
     * @param array $options
     */
-   function getDatasForTemplate($event, $options = array())
-   {
+   function getDatasForTemplate($event, $options = []) {
       global $CFG_GLPI;
 
       $this->datas['##notimported.entity##'] = Dropdown::getDropdownName('glpi_entities',
          $options['entities_id']);
 
       foreach ($options['notimported'] as $id => $item) {
-         $tmp = array();
+         $tmp = [];
 
          $tmp['##notimported.name##'] = $item['name'];
          $tmp['##notimported.serial##'] = $item['serial'];
@@ -89,10 +87,9 @@ class PluginOcsinventoryngNotificationTargetNotImportedcomputer extends Notifica
    /**
     *
     */
-   function getTags()
-   {
+   function getTags() {
 
-      $tags = array('notimported.id' => __('ID'),
+      $tags = ['notimported.id' => __('ID'),
          'notimported.url' => __('Web link'),
          'notimported.tag' => __('OCSNG TAG', 'ocsinventoryng'),
          'notimported.name' => __('Name'),
@@ -101,11 +98,11 @@ class PluginOcsinventoryngNotificationTargetNotImportedcomputer extends Notifica
          'notimported.ocsid' => __('OCSNG ID', 'ocsinventoryng'),
          'notimported.deviceid' => __('Device ID', 'ocsinventoryng'),
          'notimported.reason' => __('Reason of rejection'),
-         'notimported.serial' => __('Serial number'));
+         'notimported.serial' => __('Serial number')];
 
       foreach ($tags as $tag => $label) {
-         $this->addTagToList(array('tag' => $tag, 'label' => $label,
-            'value' => true));
+         $this->addTagToList(['tag' => $tag, 'label' => $label,
+            'value' => true]);
       }
       asort($this->tag_descriptions);
    }

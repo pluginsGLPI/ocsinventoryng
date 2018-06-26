@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -45,7 +45,7 @@ if (isset ($_POST["purge"])) {
    $ocs->delete($_POST);
    $ocs->redirectToList();
 
-//Update server
+   //Update server
 } else if (isset ($_POST["update"])
    || isset ($_POST["updateSNMP"])
 ) {
@@ -53,7 +53,7 @@ if (isset ($_POST["purge"])) {
    $ocs->update($_POST);
    Html::back();
 
-//Add new server
+   //Add new server
 } else if (isset ($_POST["add"])) {
    $ocs->check(-1, CREATE, $_POST);
    $newID = $ocs->add($_POST);
@@ -62,7 +62,7 @@ if (isset ($_POST["purge"])) {
    }
    Html::back();
 
-//Other
+   //Other
 } else if (isset ($_POST["force_checksum"])) {
    $ocs->check($_POST['id'], UPDATE);
    $_POST['checksum'] = 0;

@@ -55,7 +55,7 @@ if (isset($_GET["ip"])
    }
 
    $subnet = PluginOcsinventoryngIpdiscoverOcslink::getSubnetIDbyIP($ipAdress);
-   $hardware = array();
+   $hardware = [];
    $knownMacAdresses = $ip->getKnownMacAdresseFromGlpi();
    if (isset($status)) {
       $hardware = $ip->getHardware($ipAdress, $ocsServerId, $status, $knownMacAdresses);
@@ -89,7 +89,7 @@ if (isset($_POST["Import"])
       $itemsNames = $_POST["itemsname"];
       $itemsDescription = $_POST["itemsdescription"];
       $itemsIp = $_POST["itemsip"];
-      $entities = array();
+      $entities = [];
 
       if (isset($_POST["entities"])) {
          $entities = $_POST["entities"];
@@ -167,7 +167,7 @@ if (isset($_POST["Import"])
       $itemsDescription = $_POST["itemsdescription"];
       $ocsItemstypes = $_POST["ocsitemstype"];
       $itemsIp = $_POST["itemsip"];
-      $entities = array();
+      $entities = [];
 
       if (isset($_POST["entities"])) {
          $entities = $_POST["entities"];
@@ -240,8 +240,8 @@ if (isset($_POST["Import"])
       $itemtypes = $_POST["tolink_itemtype"];
       $items_id = $_POST["tolink_items"];
       $macAdresses = $_POST["mactoimport"];
-      $itemsDescription = (isset($_POST["itemsdescription"]) ? $_POST["itemsdescription"] : array());
-      $ocsItemstypes = (isset($_POST["ocsitemstype"]) ? $_POST["ocsitemstype"] : array());
+      $itemsDescription = (isset($_POST["itemsdescription"]) ? $_POST["itemsdescription"] : []);
+      $ocsItemstypes = (isset($_POST["ocsitemstype"]) ? $_POST["ocsitemstype"] : []);
 
       $ip->linkIpDiscover($_SESSION["plugin_ocsinventoryng_ocsservers_id"], $itemtypes, $items_id, $macAdresses, $ocsItemstypes, $itemsDescription, $_POST["subnet"], 0);
    }

@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
    function cleanDBonPurge() {
 
       $self = new self();
-      $self->deleteByCriteria(array('computers_id' => $this->fields['id']));
+      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
 
    }
 
@@ -111,7 +111,7 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
 
       echo "<div class='spaced center'>";
 
-      if ($result = $DB->request('glpi_plugin_ocsinventoryng_winupdates', array('computers_id' => $ID))) {
+      if ($result = $DB->request('glpi_plugin_ocsinventoryng_winupdates', ['computers_id' => $ID])) {
          echo "<table class='tab_cadre_fixehov'>";
          $colspan = 5;
          echo "<tr class='noHover'><th colspan='$colspan'>" . self::getTypeName($result->numrows()) .

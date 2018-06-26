@@ -10,7 +10,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -50,7 +50,7 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
     */
    static function getMenuContent() {
 
-      $menu                    = array();
+      $menu                    = [];
       $menu['title']           = self::getMenuName();
       $menu['page']            = "/plugins/ocsinventoryng/front/ocsng.php";
       $menu['links']['search'] = "/plugins/ocsinventoryng/front/ocsng.php";
@@ -68,7 +68,6 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
       $menu['options']['ocsserver']['page']            = '/plugins/ocsinventoryng/front/ocsserver.php';
       $menu['options']['ocsserver']['links']['add']    = '/plugins/ocsinventoryng/front/ocsserver.form.php';
       $menu['options']['ocsserver']['links']['search'] = '/plugins/ocsinventoryng/front/ocsserver.php';
-
 
       // Import
       $menu['options']['import']['title'] = __s('Import new computers', 'ocsinventoryng');
@@ -166,7 +165,6 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
 
                $ong[2] = __('IPDiscover Import', 'ocsinventoryng');
 
-
                //if (isset($_POST["plugin_ocsinventoryng_ocsservers_id"])) {
                //   $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = $_POST["plugin_ocsinventoryng_ocsservers_id"];
                //} else {
@@ -188,9 +186,9 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
                   }
                }
             } else {
-               $ong = array();
+               $ong = [];
                echo "<div align='center'>";
-               echo Html::image($CFG_GLPI["root_doc"] . "/pics/warning.png", array('alt' => __('Warning')));
+               echo Html::image($CFG_GLPI["root_doc"] . "/pics/warning.png", ['alt' => __('Warning')]);
                echo "<br>";
                echo "<div class='red b'>";
                echo __('No OCSNG server defined', 'ocsinventoryng');
@@ -248,9 +246,9 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
     *
     * @return array
     */
-   function defineTabs($options = array()) {
+   function defineTabs($options = []) {
 
-      $ong = array();
+      $ong = [];
 
       $this->addStandardTab(__CLASS__, $ong, $options);
 

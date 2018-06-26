@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the GLPI - Ocsinventoryng plugin package.
 # 
 # Translators:
+# Pieter Liekens <pieter.liekens@sint-gillis-waas.be>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-05 12:06+0100\n"
-"PO-Revision-Date: 2018-02-05 11:08+0000\n"
-"Last-Translator: Amandine Manceau\n"
+"PO-Revision-Date: 2018-04-03 15:07+0000\n"
+"Last-Translator: Pieter Liekens <pieter.liekens@sint-gillis-waas.be>\n"
 "Language-Team: Dutch (Netherlands) (http://www.transifex.com/yllen/GLPI_ocsinventoryng/language/nl_NL/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,7 +29,7 @@ msgstr ""
 
 #: hook.php:1547
 msgid "Restart import"
-msgstr ""
+msgstr "Import herstarten"
 
 #: hook.php:1548
 msgid "Import in the entity"
@@ -36,19 +37,19 @@ msgstr ""
 
 #: hook.php:1553
 msgid "Delete computer in OCSNG"
-msgstr ""
+msgstr "Verwijder de computer uit OCSNG"
 
 #: hook.php:1565
 msgid "Force synchronization OCSNG"
-msgstr ""
+msgstr "Forceer synchronisatie OCSNG"
 
 #: hook.php:1567
 msgid "Lock fields"
-msgstr ""
+msgstr "Blokkeer velden"
 
 #: hook.php:1569
 msgid "Unlock fields"
-msgstr ""
+msgstr "Deblokkeer velden"
 
 #: hook.php:1580
 msgid "Update networkport types"
@@ -66,7 +67,7 @@ msgstr ""
 
 #: hook.php:1605 hook.php:1716 inc/ocslink.class.php:112
 msgid "GLPI import date"
-msgstr ""
+msgstr "GLPI importeer datum"
 
 #: hook.php:1612 inc/ipdiscoverocslink.class.php:1390
 #: inc/notimportedcomputer.class.php:93 inc/notimportedcomputer.class.php:288
@@ -76,7 +77,7 @@ msgstr "Datum laatste OCS bijwerking in GLPI"
 
 #: hook.php:1620 inc/ocslink.class.php:149 inc/ocslink.class.php:357
 msgid "Automatic update OCSNG"
-msgstr ""
+msgstr "Automatische update OCSNG"
 
 #: hook.php:1626 inc/notimportedcomputer.class.php:84
 #: inc/notimportedcomputer.class.php:258 inc/ocslink.class.php:109
@@ -98,11 +99,11 @@ msgstr ""
 
 #: hook.php:1646 inc/ocslink.class.php:125
 msgid "Last OCSNG connection date"
-msgstr ""
+msgstr "Laatste connectie OCSNG"
 
 #: hook.php:1653 inc/ocslink.class.php:132
 msgid "IP Source"
-msgstr ""
+msgstr "Bron IP"
 
 #: hook.php:1660 inc/ocslink.class.php:162 inc/ocslink.class.php:250
 #: inc/ocslink.class.php:364 inc/ocsserver.class.php:876
@@ -134,11 +135,11 @@ msgstr[1] ""
 
 #: hook.php:1697 inc/proxysetting.class.php:123
 msgid "Proxy enabled"
-msgstr ""
+msgstr "Proxy ingeschakeld"
 
 #: hook.php:1705 inc/proxysetting.class.php:125
 msgid "Proxy address"
-msgstr ""
+msgstr "Proxy adres"
 
 #: hook.php:1716 inc/menu.class.php:186 inc/snmpocslink.class.php:79
 msgid "SNMP Import"
@@ -158,15 +159,15 @@ msgstr ""
 
 #: hook.php:2153
 msgid "Import refused"
-msgstr ""
+msgstr "Import geweigerd"
 
 #: hook.php:2157
 msgid "New computer created in GLPI"
-msgstr ""
+msgstr "Nieuwe computer aangemaakt in GLPI"
 
 #: hook.php:2169
 msgid "Link with computer"
-msgstr ""
+msgstr "Link met computer"
 
 #: hook.php:2393
 msgid "Locked field"
@@ -188,20 +189,20 @@ msgstr ""
 #: inc/ocsserver.class.php:341 inc/ocsserver.class.php:342
 #: inc/ocsserver.class.php:343
 msgid "Automatic synchronization's configuration"
-msgstr ""
+msgstr "Automatische synchronisatie configuratie"
 
 #: front/config.form.php:56 front/config.php:46
 msgid "Please activate the plugin"
-msgstr ""
+msgstr "Activeer de plugin aub"
 
 #: front/deleted_equiv.php:41 front/deleted_equiv.php:51
 #: front/deleted_equiv.php:86
 msgid "Pc deleted"
-msgstr ""
+msgstr "PC is verwijderd"
 
 #: front/deleted_equiv.php:45 front/deleted_equiv.php:76
 msgid "No new computers to delete"
-msgstr ""
+msgstr "Geen nieuwe computers om te verwijderen"
 
 #: front/deleted_equiv.php:49 front/deleted_equiv.php:84
 #: inc/menu.class.php:105 inc/ocsserver.class.php:544
@@ -213,7 +214,7 @@ msgstr ""
 #: inc/ocsserver.class.php:495 inc/ocsserver.class.php:496
 #: inc/thread.class.php:120 inc/thread.class.php:326
 msgid "Computers imported by automatic actions"
-msgstr ""
+msgstr "Geimporteerde computers door automatische actie"
 
 #: front/networkport.php:34 inc/menu.class.php:98 inc/networkport.class.php:49
 msgid "Unknown imported network port type"
@@ -242,7 +243,7 @@ msgstr ""
 
 #: front/thread.form.php:34
 msgid "Information about the script"
-msgstr ""
+msgstr "Informatie over het script"
 
 #: front/thread.php:40 inc/thread.class.php:314
 msgid "Processes execution of automatic actions"
@@ -254,7 +255,7 @@ msgstr ""
 
 #: inc/config.class.php:139
 msgid "Show processes where nothing was changed"
-msgstr ""
+msgstr "Toon processenen waar niets is veranderd"
 
 #: inc/config.class.php:148
 msgid "Authorize the OCSNG update"
@@ -290,7 +291,7 @@ msgstr ""
 
 #: inc/config.class.php:234 inc/thread.class.php:405
 msgid "All servers"
-msgstr ""
+msgstr "Alle servers"
 
 #: inc/dashboard.class.php:62 inc/dashboard.class.php:98
 #: inc/dashboard.class.php:107
@@ -312,7 +313,7 @@ msgstr ""
 
 #: inc/dashboard.class.php:178
 msgid "Without agent"
-msgstr ""
+msgstr "Zonder agent"
 
 #: inc/detail.class.php:46 inc/detail.class.php:169
 #: inc/notimportedcomputer.class.php:50 inc/notimportedcomputer.class.php:239
@@ -323,11 +324,11 @@ msgstr[1] ""
 
 #: inc/detail.class.php:61
 msgid "Process time"
-msgstr ""
+msgstr "Proces tijd"
 
 #: inc/detail.class.php:71
 msgid "Process"
-msgstr ""
+msgstr "Proces"
 
 #: inc/detail.class.php:80 inc/thread.class.php:116
 msgid "Thread"
@@ -335,30 +336,30 @@ msgstr ""
 
 #: inc/detail.class.php:85
 msgid "Rules checked"
-msgstr ""
+msgstr "Regels aangeduid"
 
 #: inc/detail.class.php:173 inc/ocsserver.class.php:7595
 msgid "Computers imported"
-msgstr ""
+msgstr "Geïmporteerde computers"
 
 #: inc/detail.class.php:176 inc/ocsserver.class.php:7597
 #: inc/thread.class.php:122 inc/thread.class.php:328
 msgid "Computers linked"
-msgstr ""
+msgstr "Gelinkte computers"
 
 #: inc/detail.class.php:179 inc/ocsserver.class.php:7598
 #: inc/thread.class.php:125 inc/thread.class.php:330
 msgid "Computers not updated"
-msgstr ""
+msgstr "Computers die niet bijgewerkt zijn"
 
 #: inc/detail.class.php:182 inc/ocsserver.class.php:7596
 #: inc/thread.class.php:121 inc/thread.class.php:327
 msgid "Computers synchronized"
-msgstr ""
+msgstr "Gesynchroniseerde computers"
 
 #: inc/detail.class.php:185 inc/thread.class.php:126 inc/thread.class.php:331
 msgid "Computers not unique"
-msgstr ""
+msgstr "Niet unieke computers"
 
 #: inc/ipdiscoverocslink.class.php:49 inc/menu.class.php:126
 #: inc/menu.class.php:167
@@ -388,47 +389,47 @@ msgstr ""
 
 #: inc/ipdiscoverocslink.class.php:408
 msgid "All Subnets"
-msgstr ""
+msgstr "Alle subnetten"
 
 #: inc/ipdiscoverocslink.class.php:409
 msgid "Known Subnets"
-msgstr ""
+msgstr "Gekende subnetten"
 
 #: inc/ipdiscoverocslink.class.php:410
 msgid "Unknown Subnets"
-msgstr ""
+msgstr "Niet gekende subnetten"
 
 #: inc/ipdiscoverocslink.class.php:763 inc/ipdiscoverocslink.class.php:1356
 msgid "Non Inventoried"
-msgstr ""
+msgstr "Niet geïnventariseerd"
 
 #: inc/ipdiscoverocslink.class.php:764 inc/ipdiscoverocslink.class.php:1352
 msgid "Inventoried"
-msgstr ""
+msgstr "Geïnventariseerd"
 
 #: inc/ipdiscoverocslink.class.php:765 inc/ipdiscoverocslink.class.php:1358
 msgid "Identified"
-msgstr ""
+msgstr "Geïdentificeerd"
 
 #: inc/ipdiscoverocslink.class.php:766 inc/ipdiscoverocslink.class.php:1354
 msgid "Imported / Linked"
-msgstr ""
+msgstr "Geïmporteerd / Gelinkt"
 
 #: inc/ipdiscoverocslink.class.php:850 inc/menu.class.php:130
 msgid "Modify Subnet"
-msgstr ""
+msgstr "Wijzig subnet"
 
 #: inc/ipdiscoverocslink.class.php:858
 msgid "Subnet Name"
-msgstr ""
+msgstr "Subnet naam"
 
 #: inc/ipdiscoverocslink.class.php:866 inc/ipdiscoverocslink.class.php:885
 msgid "Choose ID"
-msgstr ""
+msgstr "Kies ID"
 
 #: inc/ipdiscoverocslink.class.php:1069
 msgid "Unable to add. an object with same MAC address already exists."
-msgstr ""
+msgstr "Onmogelijk om toe te voegen. Er bestaat reeds een object met hetzelfde MAC adres."
 
 #: inc/ipdiscoverocslink.class.php:1378
 msgid "No new IPDiscover device to import"
@@ -440,7 +441,7 @@ msgstr ""
 #: inc/snmpocslink.class.php:2808 inc/snmpocslink.class.php:2837
 msgctxt "button"
 msgid "Delete link"
-msgstr ""
+msgstr "Verwijder link"
 
 #: inc/ipdiscoverocslink.class.php:1424 inc/ocslink.class.php:218
 #: inc/ocslink.class.php:275 inc/ocsserver.class.php:3863
@@ -456,21 +457,21 @@ msgstr "Datum importeren in GLPI"
 #: inc/snmpocslink.class.php:2478 inc/snmpocslink.class.php:2651
 msgctxt "button"
 msgid "Link"
-msgstr ""
+msgstr "Link"
 
 #: inc/ipdiscoverocslink.class.php:1489 inc/ipdiscoverocslink.class.php:1595
 #: inc/ipdiscoverocslink.class.php:1614 inc/ipdiscoverocslink.class.php:1711
 msgctxt "button"
 msgid "Delete from OCSNG"
-msgstr ""
+msgstr "Verwijder van OCSNG"
 
 #: inc/ipdiscoverocslink.class.php:1495
 msgid "DNS"
-msgstr ""
+msgstr "DNS"
 
 #: inc/ipdiscoverocslink.class.php:1497 inc/ipdiscoverocslink.class.php:1618
 msgid "OCS Type"
-msgstr ""
+msgstr "OCS Type"
 
 #: inc/ipdiscoverocslink.class.php:1504 inc/ipdiscoverocslink.class.php:1628
 msgid "GLPI Type"
@@ -479,12 +480,12 @@ msgstr ""
 #: inc/ipdiscoverocslink.class.php:1506 inc/ipdiscoverocslink.class.php:1630
 #: inc/ocsserver.class.php:4531 inc/snmpocslink.class.php:2500
 msgid "Item to link"
-msgstr ""
+msgstr "Item om te linken"
 
 #: inc/menu.class.php:67 inc/ocsserver.class.php:331
 #: inc/ocsserver.class.php:332
 msgid "Configuration of OCSNG server"
-msgstr ""
+msgstr "Configuratie van OCSNG Server"
 
 #: inc/menu.class.php:74 inc/ocsserver.class.php:456
 #: inc/ocsserver.class.php:457 inc/ocsserver.class.php:458
@@ -501,7 +502,7 @@ msgstr "Synchronisatie van de reeds geïmporteerde computers"
 #: inc/ocsserver.class.php:511 inc/ocsserver.class.php:512
 #: inc/ocsserver.class.php:4357
 msgid "Link new OCSNG computers to existing GLPI computers"
-msgstr ""
+msgstr "Link nieuwe OCSNG computers met bestaande GLPI computers"
 
 #: inc/menu.class.php:86 inc/ocsserver.class.php:468
 #: inc/ocsserver.class.php:469 inc/ocsserver.class.php:470
@@ -510,7 +511,7 @@ msgstr ""
 
 #: inc/menu.class.php:114
 msgid "Import new snmp devices"
-msgstr ""
+msgstr "Importeer nieuw snmp apparaat"
 
 #: inc/menu.class.php:118 inc/snmpocslink.class.php:436
 #: inc/snmpocslink.class.php:437 inc/snmpocslink.class.php:438
@@ -528,7 +529,7 @@ msgstr ""
 
 #: inc/menu.class.php:165
 msgid "Inventory Import"
-msgstr ""
+msgstr "Importeer Inventaris"
 
 #: inc/menu.class.php:196 inc/ocsserver.class.php:5657
 msgid "No OCSNG server defined"
@@ -536,11 +537,11 @@ msgstr "Geen OCS server(s) gedefinieerd"
 
 #: inc/menu.class.php:198
 msgid "You must to configure a OCSNG server"
-msgstr ""
+msgstr "Je moet een OCSNG server configureren"
 
 #: inc/menu.class.php:200
 msgid "Add a OCSNG server"
-msgstr ""
+msgstr "Voeg een OCSNG server toe"
 
 #: inc/networkport.class.php:432 inc/networkport.class.php:466
 #: inc/networkporttype.class.php:168
@@ -561,7 +562,7 @@ msgstr ""
 
 #: inc/networkport.class.php:542
 msgid "empty"
-msgstr ""
+msgstr "leeg"
 
 #: inc/networkport.class.php:599
 msgid "No unknown network port type from OCS !"
@@ -603,7 +604,7 @@ msgstr ""
 
 #: inc/networkporttype.class.php:225 inc/networkporttype.class.php:227
 msgid "Create"
-msgstr ""
+msgstr "Maak"
 
 #: inc/networkshare.class.php:43 inc/ocsserver.class.php:908
 msgid "Network shares"
@@ -611,7 +612,7 @@ msgstr ""
 
 #: inc/networkshare.class.php:122 inc/registrykey.class.php:99
 msgid "Path"
-msgstr ""
+msgstr "Pad"
 
 #: inc/networkshare.class.php:126
 msgid "Quota"
@@ -645,7 +646,7 @@ msgstr ""
 
 #: inc/notimportedcomputer.class.php:65
 msgid "Verified rules"
-msgstr ""
+msgstr "Gecontroleerde regels"
 
 #: inc/notimportedcomputer.class.php:431
 msgid "Can't affect an entity"
@@ -682,7 +683,7 @@ msgstr ""
 #: inc/ocslink.class.php:190 inc/ocslink.class.php:383
 msgctxt "button"
 msgid "Force synchronization"
-msgstr ""
+msgstr "Forceer synchronisatie"
 
 #: inc/ocslink.class.php:213 inc/snmpocslink.class.php:489
 #: inc/snmpocslink.class.php:661
@@ -692,17 +693,17 @@ msgstr ""
 #: inc/ocslink.class.php:214 inc/snmpocslink.class.php:490
 #: inc/snmpocslink.class.php:664
 msgid "Imported object"
-msgstr ""
+msgstr "Geïmporteerd object"
 
 #: inc/ocslink.class.php:216 inc/snmpocslink.class.php:492
 #: inc/snmpocslink.class.php:666
 msgid "Linked object"
-msgstr ""
+msgstr "Gelinkt object"
 
 #: inc/ocslink.class.php:223 inc/snmpocslink.class.php:672
 msgctxt "button"
 msgid "Force SNMP synchronization"
-msgstr ""
+msgstr "Forceer SNMP synchronisatie"
 
 #: inc/ocslink.class.php:247 inc/snmpocslink.class.php:511
 #: inc/snmpocslink.class.php:698 inc/snmpocslink.class.php:2816
@@ -1758,11 +1759,11 @@ msgstr ""
 
 #: inc/snmpocslink.class.php:1054
 msgid "Printer Memory"
-msgstr ""
+msgstr "Printer Geheugen"
 
 #: inc/snmpocslink.class.php:1711
 msgid "Computer Memory"
-msgstr ""
+msgstr "Computer Geheugen"
 
 #: inc/snmpocslink.class.php:2264
 msgid "Filter SNMP Objects list"
@@ -1925,15 +1926,15 @@ msgstr ""
 
 #: inc/winupdate.class.php:171
 msgid "Automatically download and schedule installation"
-msgstr ""
+msgstr "Automatisch downloaden en installatie plannen"
 
 #: inc/winupdate.class.php:174
 msgid "Automatically download and notify of installation"
-msgstr ""
+msgstr "Automatisch downloaden en verwittigen van installatie"
 
 #: inc/winupdate.class.php:177
 msgid "Notify before download"
-msgstr ""
+msgstr "Verwittig voor het downloaden"
 
 #: inc/winupdate.class.php:180
 msgid "Disables AU"
@@ -1941,7 +1942,7 @@ msgstr ""
 
 #: inc/winuser.class.php:125
 msgid "Disabled"
-msgstr ""
+msgstr "Uitgeschakeld"
 
 #: inc/winuser.class.php:126
 msgid "SID"
