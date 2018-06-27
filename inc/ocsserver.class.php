@@ -6411,10 +6411,10 @@ JAVASCRIPT;
                   $disk['device']         = $logical_drive['FILESYSTEM'];
                   $disk['filesystems_id'] = Dropdown::importExternal('Filesystem', $logical_drive["TYPE"]);
                } else if (in_array($logical_drive['FILESYSTEM'], ['ext2', 'ext3', 'ext4', 'ffs',
-                                                                       'fuseblk', 'fusefs', 'hfs', 'jfs',
-                                                                       'jfs2', 'Journaled HFS+', 'nfs',
-                                                                       'smbfs', 'reiserfs', 'vmfs', 'VxFS',
-                                                                       'ufs', 'xfs', 'zfs'])) {
+                                                                  'fuseblk', 'fusefs', 'hfs', 'jfs',
+                                                                  'jfs2', 'Journaled HFS+', 'nfs',
+                                                                  'ocfs2', 'smbfs', 'reiserfs', 'vmfs',
+                                                                  'VxFS', 'ufs', 'xfs', 'zfs'])) {
                   // Try to detect mount point : OCS database is dirty
                   $disk['mountpoint'] = $logical_drive['VOLUMN'];
                   $disk['device']     = $logical_drive['TYPE'];
