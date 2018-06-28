@@ -42,7 +42,7 @@ function plugin_ocsinventoryng_install() {
        && !$DB->tableExists("ocs_glpi_ocsservers")) {
 
       $install = true;
-      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.4.3-empty.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.4.4-empty.sql");
 
       $migration->createRule(['sub_type'     => 'RuleImportComputer',
                               'entities_id'  => 0,
@@ -1223,14 +1223,24 @@ function plugin_ocsinventoryng_install() {
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_ocsservers')
        && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'importsnmp_computerdisks')) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `importsnmp_computerdisks` TINYINT(1) NOT NULL DEFAULT '0';";
+               ADD `importsnmp_computerdisks` tinyint(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.4.4 update table glpi_plugin_ocsinventoryng_ocsservers add importsnmp_computerdisks");
 
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `linksnmp_computerdisks` TINYINT(1) NOT NULL DEFAULT '0';";
+               ADD `linksnmp_computerdisks` tinyint(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.4.4 update table glpi_plugin_ocsinventoryng_ocsservers add linksnmp_computerdisks");
    }
 
+   if(!$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'history_plugins')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `history_plugins` tinyint(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.4.4 add history_plugins in glpi_plugin_ocsinventoryng_ocsservers");
+   }
+   if(!$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'checksum_plugins')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+                ADD `checksum_plugins` int(11) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.4.4 add checksum_plugins in glpi_plugin_ocsinventoryng_ocsservers");
+   }
    /******************* Migration 1.4.4 *******************/
 
    $cron = new CronTask();

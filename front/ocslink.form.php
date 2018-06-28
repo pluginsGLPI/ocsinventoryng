@@ -39,8 +39,7 @@ if (isset($_POST["force_ocs_resynch"])) {
    $ocsservers_id = PluginOcsinventoryngOcsServer::getByMachineID($_POST["id"]);
    //Update the computer
    $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
-   $dohistory = (isset($cfg_ocs['dohistory']) ? $cfg_ocs['dohistory'] : false);
-   PluginOcsinventoryngOcsServer::updateComputer($_POST["resynch_id"], $ocsservers_id, $dohistory, 1);
+   PluginOcsinventoryngOcsServer::updateComputer($_POST["resynch_id"], $ocsservers_id, 1);
    Html::back();
 } else if (isset ($_POST["update"])) {
    $link = new PluginOcsinventoryngOcslink();

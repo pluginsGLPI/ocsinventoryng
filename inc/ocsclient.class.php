@@ -370,15 +370,6 @@ abstract class PluginOcsinventoryngOcsClient {
     */
    public function getComputer($id, $options = []) {
 
-      //if (!isset($options['COMPLETE'])) {
-      //   $options['COMPLETE'] = 0;
-      //}
-
-      //if (!isset($options['FILTER'])) {
-      //   $options['FILTER'] = array();
-      //}
-
-      //$options['FILTER']['IDS'] = array($id);
       $result = $this->getComputers($options, $id);
 
       if (!isset($result['TOTAL_COUNT']) || $result['TOTAL_COUNT'] < 1 || empty($result['COMPUTERS'])) {
