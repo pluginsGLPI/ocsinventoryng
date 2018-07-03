@@ -54,8 +54,9 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
     */
    function getFromDBbyOcsServerIDAndGlpiColumn($plugin_ocsinventoryng_ocsservers_id, $glpi_column) {
       $table = $this->getTable();
-      return $this->getFromDBByQuery("WHERE `$table`.`plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id 
-                                      AND `$table`.`glpi_column` = '$glpi_column'");
+      $field_server = "`$table`.`plugin_ocsinventoryng_ocsservers_id`";
+      $field_column = "`$table`.`glpi_column`";
+      return $this->getFromDBByCrit([$field_server => $plugin_ocsinventoryng_ocsservers_id, $field_column => $glpi_column]);
 
    }
 
@@ -71,7 +72,8 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
 
       $infocom  = new Infocom();
       $use_date = substr($date, 0, 10);
-      if ($infocom->getFromDBByQuery("WHERE `items_id` = $computers_id AND `itemtype` = 'Computer'")) {
+
+      if ($infocom->getFromDBByCrit(['items_id' => $computers_id, 'itemtype' => 'Computer'])) {
          if (empty($infocom->fields['use_date'])
              || $infocom->fields['use_date'] == 'NULL') {
             //add use_date

@@ -896,7 +896,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
 
       $mac     = $ipDiscoveryObject["macAdress"];
       $netPort = new NetworkPort();
-      $netPort->getFromDBByQuery("WHERE `mac` = '$mac' ");
+      $netPort->getFromDBByCrit(['mac' => $mac]);
       if (count($netPort->fields) < 1) {
 
          $input = [

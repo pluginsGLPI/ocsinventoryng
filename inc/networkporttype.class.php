@@ -90,7 +90,7 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
             $query .= " AND `TYPEMIB` = '" . $this->fields['OCS_TYPEMIB'] . "'";
          }
          foreach ($DB->request($query) as $line) {
-            if ($networkport->getFromDBByQuery("WHERE `id`= " . $line['id'])) {
+            if ($networkport->getFromDBByCrit(['id' => $line['id']])) {
                $networkport->transformAccordingTypes();
             }
          }
@@ -229,16 +229,21 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
       $TYPE    = (empty($fields['TYPE']) ? '' : $fields['TYPE']);
 
       // First, try with TYPE AND TYPE MIB
-      if ($this->getFromDBByQuery("WHERE `OCS_TYPE`='$TYPE' AND `OCS_TYPEMIB`='$TYPEMIB'")) {
+
+
+      if ($this->getFromDBByCrit(['OCS_TYPE'    => $TYPE,
+                                  'OCS_TYPEMIB' => $TYPEMIB])) {
          return true;
       }
 
       // Else, try with TYPE and wildcard as Type MIB
-      if ($this->getFromDBByQuery("WHERE `OCS_TYPE`='$TYPE' AND `OCS_TYPEMIB`='*'")) {
+      if ($this->getFromDBByCrit(['OCS_TYPE'    => $TYPE,
+                                  'OCS_TYPEMIB' => '*'])) {
          return true;
       }
 
       // Endly, return the default element
-      return $this->getFromDBByQuery("WHERE `OCS_TYPE`='*' AND `OCS_TYPEMIB`='*'");
+      return $this->getFromDBByCrit(['OCS_TYPE'    => '*',
+                                     'OCS_TYPEMIB' => '*']);
    }
 }

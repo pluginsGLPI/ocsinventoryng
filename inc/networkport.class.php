@@ -114,8 +114,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          $network_port->getFromDB($networkports_id);
          if ((!$check_name) && ($network_port->fields['name'] != $name)) {
             $port_input = ['id'         => $network_port->getID(),
-                                'name'       => $name,
-                                'is_dynamic' => 1];
+                           'name'       => $name,
+                           'is_dynamic' => 1];
             $network_port->update($port_input);
          }
          if (($network_port->fields['instantiation_type'] != $instantiation_type)
@@ -154,12 +154,12 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       } else {
          $names = $DB->request($query);
          if ($names->numrows() == 0) {
-            $name_input = ['itemtype'    => 'NetworkPort',
-                           'items_id'    => $networkports_id,
-                           'is_dynamic'  => 1,
-                           'is_deleted'  => 0,
-                           '_no_history' => !$dohistory,
-                           'name'        => 'OCS-INVENTORY-NG'];
+            $name_input      = ['itemtype'    => 'NetworkPort',
+                                'items_id'    => $networkports_id,
+                                'is_dynamic'  => 1,
+                                'is_deleted'  => 0,
+                                '_no_history' => !$dohistory,
+                                'name'        => 'OCS-INVENTORY-NG'];
             $networknames_id = $network_name->add($name_input);
          } else {
             $line            = $names->next();
@@ -201,25 +201,25 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                       AND `entities_id`= $entities_id ";
 
          //To avoid the "Invalid gateway address" error message when adding a gateway to 0.0.0.0
-         if($gateway != '0.0.0.0') {
+         if ($gateway != '0.0.0.0') {
             $condition .= "AND `gateway` = '$gateway'";
          }
 
          if (countElementsInTable('glpi_ipnetworks', $condition) == 0) {
 
-            $input                    = [
+            $input = [
                'name'        => $subnet . '/' .
                                 $mask . ' - ' .
                                 $gateway,
                'network'     => $subnet . ' / ' .
                                 $mask,
-//               'gateway'     => $gateway,
+               //               'gateway'     => $gateway,
                'addressable' => 1,
                'entities_id' => $entities_id
             ];
 
-            if($gateway != '0.0.0.0') {
-               $input['gateway']     = $gateway;
+            if ($gateway != '0.0.0.0') {
+               $input['gateway'] = $gateway;
             }
 
             $IPNetwork->networkUpdate = true;
@@ -230,11 +230,11 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       if ($ips) {
          foreach ($ips as $ip) {
             $ip_input = ['name'        => $ip,
-                              'itemtype'    => 'NetworkName',
-                              'items_id'    => $networknames_id,
-                              '_no_history' => !$dohistory,
-                              'is_dynamic'  => 1,
-                              'is_deleted'  => 0];
+                         'itemtype'    => 'NetworkName',
+                         'items_id'    => $networknames_id,
+                         '_no_history' => !$dohistory,
+                         'is_dynamic'  => 1,
+                         'is_deleted'  => 0];
             $ip_address->add($ip_input);
          }
       }
@@ -243,6 +243,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
    }
 
    // importNetwork
+
    /**
     * @param $cfg_ocs
     * @param $ocsComputer
@@ -269,8 +270,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       $network_ports  = [];
       $network_ifaces = [];
       foreach ($ocsNetworks as $line) {
-         $line    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
-         $mac     = $line['MACADDR'];
+         $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
+         $mac  = $line['MACADDR'];
 
          if (!isset($network_ports[$mac])) {
             $network_ports[$mac] = ['virtual' => []];
@@ -291,9 +292,9 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          }
 
          $values = ['name'   => $name,
-                         'type'   => (array_push($network_ifaces, $networkport_type) - 1),
-                         'ip'     => $ip,
-                         'result' => $line];
+                    'type'   => (array_push($network_ifaces, $networkport_type) - 1),
+                    'ip'     => $ip,
+                    'result' => $line];
 
          // Virtual dev can be :
          //    1°) specifically defined from OCS
@@ -328,8 +329,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             if ($item_device->isNewItem()) {
                $deviceNetworkCard = new DeviceNetworkCard();
                $device_input      = ['designation' => $main['name'],
-                                          'bandwidth'   => $type->fields['speed'],
-                                          'entities_id' => $entities_id];
+                                     'bandwidth'   => $type->fields['speed'],
+                                     'entities_id' => $entities_id];
 
                $net_id = $deviceNetworkCard->import($device_input);
 
@@ -356,7 +357,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             } else {
                $inst_input = $type->fields;
                foreach (['id', 'name', 'OCS_TYPE', 'OCS_TYPEMIB',
-                              'instantiation_type', 'comment'] as $field) {
+                         'instantiation_type', 'comment'] as $field) {
                   unset($inst_input[$field]);
                }
             }
@@ -680,7 +681,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          case "plugin_ocsinventoryng_update_networkport_type":
             $networkport = new PluginOcsinventoryngNetworkPort();
             foreach ($ids as $id) {
-               if ($networkport->getFromDBByQuery("WHERE `networkports_id` = '$id'")) {
+               if ($networkport->getFromDBByCrit(['networkports_id' => $id])) {
                   if ($networkport->transformAccordingTypes()) {
                      $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                   } else {

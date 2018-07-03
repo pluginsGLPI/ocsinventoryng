@@ -283,7 +283,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     **/
    function getFromDBforComputer($ID) {
 
-      if ($this->getFromDBByQuery("WHERE `" . $this->getTable() . "`.`computers_id` = $ID")) {
+      $field = "`" . $this->getTable() . "`.`computers_id`";
+      if ($this->getFromDBByCrit([$field => $ID])) {
          return true;
       }
       return false;

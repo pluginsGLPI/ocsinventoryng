@@ -57,8 +57,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
 
       if (in_array($item->getType(), self::$snmptypes)
           && $this->canView()) {
-         if ($this->getFromDBByQuery("WHERE `items_id` = " . $item->getID() . " 
-                                       AND `itemtype` = '" . $item->getType() . "'")) {
+         if ($this->getFromDBByCrit(['items_id' => $item->getID(), 'itemtype' => $item->getType()])) {
             return __('OCSNG SNMP', 'ocsinventoryng');
          }
       } else if ($item->getType() == "PluginOcsinventoryngOcsServer") {
@@ -809,7 +808,7 @@ JAVASCRIPT;
       PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
 
       //Check it machine is already present AND was imported by OCS AND still present in GLPI
-      $query = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`id`
+      $query                                      = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`id`
              FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
              WHERE `ocs_id` = '$ocsid'
                    AND `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
@@ -1078,9 +1077,7 @@ JAVASCRIPT;
          $mac = $ocsSnmp['META']['MACADDR'];
 
          $np = new NetworkPort();
-         $np->getFromDBByQuery("WHERE `mac` LIKE '$mac' 
-                                 AND `items_id` = $id_printer 
-                                 AND `itemtype` LIKE '$itemtype' ");
+         $np->getFromDBByCrit(['mac' => $mac, 'items_id' => $id_printer, 'itemtype' => $itemtype]);
 
          if (count($np->fields) < 1) {
 
@@ -1368,9 +1365,7 @@ JAVASCRIPT;
                                 'itemtype' => $itemtype], 1);
 
          $np = new NetworkPort();
-         $np->getFromDBByQuery("WHERE `mac` LIKE '$mac' 
-                                 AND `items_id` = '$id_network' 
-                                 AND `itemtype` LIKE '$itemtype'");
+         $np->getFromDBByCrit(['mac' => $mac, 'items_id' => $id_network, 'itemtype' => $itemtype]);
          if (count($np->fields) < 1) {
 
             $item   = new $itemtype();
@@ -1407,10 +1402,7 @@ JAVASCRIPT;
                $mac_dest          = self::addMacSeparator($net['DEVICENAME']);
 
                $np = new NetworkPort();
-               $np->getFromDBByQuery("WHERE `mac` LIKE '$mac' 
-                                       AND `items_id` = '$id_network' 
-                                       AND `itemtype` LIKE '$itemtype' 
-                                       AND `instantiation_type` = 'NetworkPortEthernet' ");
+               $np->getFromDBByCrit(['mac' => $mac, 'items_id' => $id_network, 'itemtype' => $itemtype, 'instantiation_type' => 'NetworkPortEthernet']);
                if (count($np->fields) < 1) {
 
                   $item   = new $itemtype();
@@ -1435,7 +1427,7 @@ JAVASCRIPT;
 
                $link    = new NetworkPort_NetworkPort();
                $np_dest = new NetworkPort();
-               $np_dest->getFromDBByQuery("WHERE `mac` LIKE '$mac_dest' ");
+               $np_dest->getFromDBByCrit(['mac' => $mac_dest]);
                if (count($np_dest->fields) > 0) {
 
                   $link_input = ['networkports_id_1' => $np_src,
@@ -1798,7 +1790,7 @@ JAVASCRIPT;
          $mac = $ocsSnmp['META']['MACADDR'];
 
          $np = new NetworkPort();
-         $np->getFromDBByQuery("WHERE `mac` LIKE '$mac' AND `items_id` = '$id_item' AND `itemtype` LIKE '$itemtype' ");
+         $np->getFromDBByCrit(['mac' => $mac, 'items_id' => $id_item, 'itemtype' => $itemtype]);
          if (count($np->fields) < 1) {
 
             $item   = new $itemtype();
@@ -2010,7 +2002,7 @@ JAVASCRIPT;
          $mac = $ocsSnmp['META']['MACADDR'];
 
          $np = new NetworkPort();
-         $np->getFromDBByQuery("WHERE `mac` LIKE '$mac' AND `items_id` = '$id_item' AND `itemtype` LIKE '$itemtype' ");
+         $np->getFromDBByCrit(['mac' => $mac, 'items_id' => $id_item, 'itemtype' => $itemtype]);
          if (count($np->fields) < 1) {
 
             $item   = new $itemtype();
@@ -2599,8 +2591,9 @@ JAVASCRIPT;
     * @return itemtype
     */
    function getFromDBbyName($itemtype, $name) {
-      $item = getItemForItemtype($itemtype);
-      $item->getFromDBByQuery("WHERE `" . getTableForItemType($itemtype) . "`.`name` = '$name' ");
+      $item  = getItemForItemtype($itemtype);
+      $field = "`" . getTableForItemType($itemtype) . "`.`name`";
+      $item->getFromDBByCrit([$field => $name]);
       return $item;
    }
 

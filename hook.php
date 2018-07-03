@@ -35,14 +35,14 @@ function plugin_ocsinventoryng_install() {
 
    include_once(GLPI_ROOT . "/plugins/ocsinventoryng/inc/profile.class.php");
 
-   $migration = new Migration(140);
+   $migration = new Migration(150);
 
    if (!$DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers_profiles")
        && !$DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
        && !$DB->tableExists("ocs_glpi_ocsservers")) {
 
       $install = true;
-      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.4.4-empty.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.5.0-empty.sql");
 
       $migration->createRule(['sub_type'     => 'RuleImportComputer',
                               'entities_id'  => 0,

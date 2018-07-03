@@ -176,19 +176,22 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
       return true;
    }
 
-   /**
-    * @return \an|array
-    */
-   function getSearchOptions() {
+   function rawSearchOptions() {
 
       $tab = [];
 
-      $tab['common'] = self::getTypeName(2);
+      $tab[] = [
+         'id'   => 'common',
+         'name' => self::getTypeName(2)
+      ];
 
-      $tab[1]['table']    = $this->getTable();
-      $tab[1]['field']    = 'id';
-      $tab[1]['name']     = __('ID');
-      $tab[1]['datatype'] = 'integer';
+      $tab[] = [
+         'id'       => '1',
+         'table'    => $this->getTable(),
+         'field'    => 'id',
+         'name'     => __('ID'),
+         'datatype' => 'number'
+      ];
 
       return $tab;
    }

@@ -160,17 +160,16 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    function OcsTableExists($tablename) {
 
       // Get a list of tables contained within the database.
-      $result = $this->db->list_tables("%" . $tablename . "%");
+      $result = $this->db->listTables("%$tablename%");
 
-      if ($rcount = $this->db->numrows($result)) {
-         while ($data = $this->db->fetch_row($result)) {
-            if ($data[0] === $tablename) {
+      if (count($result)) {
+         while ($data = $result->next()) {
+            if ($data['TABLE_NAME'] === $tablename) {
                return true;
             }
          }
       }
 
-      $this->db->free_result($result);
       return false;
    }
 
