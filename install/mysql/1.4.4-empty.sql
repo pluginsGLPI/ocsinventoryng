@@ -88,6 +88,8 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `import_teamviewer` tinyint(1) NOT NULL DEFAULT '0',
   `import_osinstall` TINYINT(1) NOT NULL DEFAULT '0',
   `import_networkshare` TINYINT(1) NOT NULL DEFAULT '0',
+  `import_runningprocess` TINYINT(1) NOT NULL DEFAULT '0',
+  `import_service` TINYINT(1) NOT NULL DEFAULT '0',
   `import_os_serial` tinyint(1) NOT NULL DEFAULT '1',
   `import_ip` tinyint(1) NOT NULL DEFAULT '1',
   `import_disk` tinyint(1) NOT NULL DEFAULT '1',
@@ -191,7 +193,6 @@ DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_winupdates`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_winupdates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `computers_id` int(11) NOT NULL DEFAULT '0',
-  `entities_id` int(11) NOT NULL DEFAULT '0',
   `auoptions` int(11) NOT NULL DEFAULT '0',
   `scheduleinstalldate` datetime DEFAULT NULL,
   `lastsuccesstime` datetime DEFAULT NULL,
@@ -207,7 +208,6 @@ DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_osinstalls`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_osinstalls` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `computers_id` INT(11) NOT NULL DEFAULT '0',
-  `entities_id` int(11) NOT NULL DEFAULT '0',
   `build_version` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `install_date` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `codeset` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -225,7 +225,6 @@ DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_proxysettings`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_proxysettings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `computers_id` int(11) NOT NULL DEFAULT '0',
-  `entities_id` int(11) NOT NULL DEFAULT '0',
   `user` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `enabled` int(11) NOT NULL DEFAULT '0',
   `autoconfigurl` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -241,7 +240,6 @@ DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_networkshares`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_networkshares` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `computers_id` INT(11) NOT NULL DEFAULT '0',
-  `entities_id` INT(11) NOT NULL DEFAULT '0',
   `drive` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `path` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `size` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -257,7 +255,6 @@ DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_winusers`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_winusers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `computers_id` int(11) NOT NULL DEFAULT '0',
-  `entities_id` int(11) NOT NULL DEFAULT '0',
   `name` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `type` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `description` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -273,7 +270,6 @@ DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_teamviewers`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_teamviewers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `computers_id` int(11) NOT NULL DEFAULT '0',
-  `entities_id` int(11) NOT NULL DEFAULT '0',
   `twid` varchar(255) DEFAULT NULL,
   `version` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
