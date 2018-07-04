@@ -45,10 +45,8 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
 
       $key = array_pop($_SESSION["ocs_update"]['computers']);
       $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-      $dohistory = (isset($cfg_ocs['dohistory']) ? $cfg_ocs['dohistory'] : false);
       $action = PluginOcsinventoryngOcsServer::updateComputer($key,
-         $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-         $dohistory);
+         $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
       PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_update"]['statistics'],
          $action['status']);
       PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_update"]['statistics']);

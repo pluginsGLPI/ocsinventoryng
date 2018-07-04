@@ -1,9 +1,8 @@
 <?php
 /*
- * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
- ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2016 by the ocsinventoryng Development Team.
+ Ocsinventoryng plugin for GLPI
+ Copyright (C) 2015-2018 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -34,8 +33,7 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginOcsinventoryngOcsserver_Profile
  */
-class PluginOcsinventoryngOcsserver_Profile extends CommonDBTM
-{
+class PluginOcsinventoryngOcsserver_Profile extends CommonDBTM {
 
 
    static $rightname = "profile";

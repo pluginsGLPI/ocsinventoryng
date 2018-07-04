@@ -82,7 +82,7 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
                 LEFT JOIN `glpi_computers`
                        ON `glpi_computers`.`id`=`glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`
                 WHERE `glpi_computers`.`id` IS NULL
-                      AND `plugin_ocsinventoryng_ocsservers_id`='$ocsservers_id'";
+                      AND `plugin_ocsinventoryng_ocsservers_id`=$ocsservers_id";
 
       $result = $DB->query($query);
       if ($DB->numrows($result) > 0) {
@@ -92,7 +92,7 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
             if (isset($_GET['clean'])) {
                $query2 = "DELETE
                           FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                          WHERE `id` = '" . $data['id'] . "'";
+                          WHERE `id` = " . $data['id'];
                if ($DB->query($query2)) {
                   $nbdel++;
                }
@@ -127,7 +127,7 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
       echo "+ Search links with no computer in OCS\n";
       $query = "SELECT `id`, `ocsid`, `ocs_deviceid`
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                WHERE `plugin_ocsinventoryng_ocsservers_id` = '$ocsservers_id'";
+                WHERE `plugin_ocsinventoryng_ocsservers_id` = $ocsservers_id";
 
       $result = $DB->query($query);
       $nb = $DB->numrows($result);
@@ -142,7 +142,7 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
                if (isset($_GET['clean'])) {
                   $query_del = "DELETE
                                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                                WHERE `id` = '" . $data["id"] . "'";
+                                WHERE `id` = " . $data["id"];
                   if ($DB->query($query_del)) {
                      $nbdel++;
                   }
@@ -170,7 +170,7 @@ if (isset($_GET['dup'])) {
       $query2 = "SELECT `id`, `plugin_ocsinventoryng_ocsservers_id`,
                         `ocsid`, `ocs_deviceid`, `computers_id`, `last_update`
                  FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                 WHERE `computers_id` = '" . $data['computers_id'] . "'
+                 WHERE `computers_id` = " . $data['computers_id'] ."
                  ORDER BY `last_update`";
       $i = 1;
       foreach ($DB->request($query2) as $data2) {
@@ -182,7 +182,7 @@ if (isset($_GET['dup'])) {
             if (isset($_GET['clean'])) {
                $query_del = "DELETE
                              FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                             WHERE `id` = '" . $data2["id"] . "'";
+                             WHERE `id` = " . $data2["id"];
                if ($DB->query($query_del)) {
                   $nbdel++;
                }

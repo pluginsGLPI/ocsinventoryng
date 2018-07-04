@@ -58,7 +58,8 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
 
       switch ($name) {
          case "CheckRuleImportEntity" :
-            return ['description' => __('OCSNG', 'ocsinventoryng') . " - " . __('Alerts on computers that no longer respond the rules for assigning an item to an entity', 'ocsinventoryng')];
+            return ['description' => __('OCSNG', 'ocsinventoryng') . " - " .
+                                     __('Alerts on computers that no longer respond the rules for assigning an item to an entity', 'ocsinventoryng')];
       }
    }
 
@@ -91,7 +92,8 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
 
       $cron_status                         = 0;
       $plugin_ocsinventoryng_ocsservers_id = 0;
-      foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1 AND `use_checkruleimportentity` = 1") as $config) {
+      foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1 
+                              AND `use_checkruleimportentity` = 1") as $config) {
          $plugin_ocsinventoryng_ocsservers_id   = $config["id"];
          $plugin_ocsinventoryng_ocsservers_name = $config["name"];
 
@@ -108,7 +110,7 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
                if (NotificationEvent::raiseEvent("CheckRuleImportEntity",
                                                  new PluginOcsinventoryngRuleImportEntity(),
                                                  ['entities_id' => $entities_id,
-                                                       'items'       => $items])) {
+                                                  'items'       => $items])) {
 
                   $cron_status = 1;
                   if ($task) {
@@ -152,7 +154,8 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
 
       foreach ($computers as $computer) {
          $computer['_source'] = 'ocsinventoryng';
-         $fields              = $ruleCollection->processAllRules($computer, $fields, ['ocsid' => $computer['ocsid']]);
+         $fields              = $ruleCollection->processAllRules($computer, $fields,
+                                                                 ['ocsid' => $computer['ocsid']]);
 
          //case pc matched with a rule
          if (isset($fields['_ruleid'])) {

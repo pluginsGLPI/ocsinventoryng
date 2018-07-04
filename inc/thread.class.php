@@ -31,8 +31,7 @@
 /**
  * Class PluginOcsinventoryngThread
  */
-class PluginOcsinventoryngThread extends CommonDBTM
-{
+class PluginOcsinventoryngThread extends CommonDBTM {
 
    static $rightname = "plugin_ocsinventoryng";
 
@@ -333,12 +332,10 @@ class PluginOcsinventoryngThread extends CommonDBTM
                || ($thread["status"] != PLUGIN_OCSINVENTORYNG_STATE_FINISHED)
                || (!$config->fields["is_displayempty"]
                   && ($thread["total_machines"] > 0)
-                  && ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED))
-            ) {
+                  && ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED))) {
 
                if ($thread["DoStat"]
-                  && ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED)
-               ) {
+                  && ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED)) {
                   $imported_number->AddValue($thread["imported_machines"]);
                   $synchronized_number->AddValue($thread["synchronized_machines"]);
                   $linked_number->AddValue($thread["linked_machines"]);

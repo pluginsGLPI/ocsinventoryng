@@ -190,11 +190,11 @@ function plugin_init_ocsinventoryng() {
 function plugin_version_ocsinventoryng() {
 
    return ['name'           => "OCS Inventory NG",
-                'version'        => '1.4.4',
+                'version'        => '1.5.0',
                 'author'         => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
                 'license'        => 'GPLv2+',
                 'homepage'       => 'https://github.com/pluginsGLPI/ocsinventoryng',
-                'minGlpiVersion' => '9.2'];
+                'minGlpiVersion' => '9.3'];
 
 }
 
@@ -204,8 +204,8 @@ function plugin_version_ocsinventoryng() {
  **/
 function plugin_ocsinventoryng_check_prerequisites() {
 
-   if (version_compare(GLPI_VERSION, '9.2', 'lt') || version_compare(GLPI_VERSION, '9.3', 'ge')) {
-      echo "This plugin requires GLPI >= 9.2";
+   if (version_compare(GLPI_VERSION, '9.3', 'lt') || version_compare(GLPI_VERSION, '9.4', 'ge')) {
+      echo "This plugin requires GLPI >= 9.3";
       return false;
    }
    return true;

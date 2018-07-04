@@ -156,7 +156,8 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
       switch ($item->getType()) {
          case __CLASS__ :
 
-            $ocsServers = getAllDatasFromTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
+            $ocsServers = getAllDatasFromTable('glpi_plugin_ocsinventoryng_ocsservers',
+                                               "`is_active`= 1");
             if (!empty($ocsServers)) {
 
                $ong[0] = __('Server Setup', 'ocsinventoryng');
@@ -172,8 +173,7 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
                //}
 
                if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
-                   && $_SESSION["plugin_ocsinventoryng_ocsservers_id"] > 0
-               ) {
+                   && $_SESSION["plugin_ocsinventoryng_ocsservers_id"] > 0) {
                   if (PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
 
                      $ocsClient = new PluginOcsinventoryngOcsServer();

@@ -62,9 +62,10 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    public function getComputerRule($id, $tables = []) {
       $computers = [];
 
-      $query = "SELECT `hardware`.*,`accountinfo`.`TAG` FROM `hardware`
-            INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
-            WHERE `hardware`.`ID` = $id";
+      $query = "SELECT `hardware`.*,`accountinfo`.`TAG` 
+                FROM `hardware`
+               INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
+               WHERE `hardware`.`ID` = $id";
 
       $request = $this->db->query($query);
       while ($meta = $this->db->fetch_assoc($request)) {
@@ -79,7 +80,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          $computers["META"]["UUID"]     = $meta["UUID"];
       }
 
-      $query   = "SELECT * FROM `hardware` WHERE `ID` = $id";
+      $query   = "SELECT * 
+                  FROM `hardware` 
+                  WHERE `ID` = $id";
       $request = $this->db->query($query);
       while ($hardware = $this->db->fetch_assoc($request)) {
 
@@ -90,7 +93,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       foreach ($tables as $table) {
 
          if ($table == "accountinfo") {
-            $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` = $id";
+            $query   = "SELECT * FROM `accountinfo` WHERE `HARDWARE_ID` = $id";
             $request = $this->db->query($query);
             while ($accountinfo = $this->db->fetch_assoc($request)) {
                foreach ($accountinfo as $column => $value) {
@@ -99,13 +102,17 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
                      if (self::OcsTableExists("accountinfo_config")) {
                         $col            = $colnumb['1'];
-                        $query          = "SELECT ID,NAME FROM accountinfo_config WHERE ID = '" . $col . "'";
+                        $query          = "SELECT `ID`, `NAME` 
+                                            FROM `accountinfo_config`
+                                           WHERE `ID` = $col";
                         $requestcolname = $this->db->query($query);
                         $colname        = $this->db->fetch_assoc($requestcolname);
                         if ($colname['NAME'] != "") {
                            if (!is_null($value)) {
                               $name         = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" . Toolbox::addslashes_deep($value);
-                              $query        = "SELECT TVALUE,NAME FROM config WHERE NAME = '" . $name . "'";
+                              $query        = "SELECT `TVALUE`, `NAME` 
+                                                FROM `config` 
+                                                WHERE `NAME` = '" . $name . "'";
                               $requestvalue = $this->db->query($query);
                               $custom_value = $this->db->fetch_assoc($requestvalue);
                               if (isset($custom_value['TVALUE'])) {
@@ -126,7 +133,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
             }
          } else if ($table != "hardware") {
             if (self::OcsTableExists($table) && $table != "glpi_plugin_ocsinventoryng_ocsservers") {
-               $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` = $id";
+               $query   = "SELECT * 
+                          FROM `" . $table . "` 
+                          WHERE `HARDWARE_ID` = $id";
                $request = $this->db->query($query);
                while ($computer = $this->db->fetch_assoc($request)) {
                   if ($table == 'networks') {
@@ -151,17 +160,16 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    function OcsTableExists($tablename) {
 
       // Get a list of tables contained within the database.
-      $result = $this->db->list_tables("%" . $tablename . "%");
+      $result = $this->db->listTables("%$tablename%");
 
-      if ($rcount = $this->db->numrows($result)) {
-         while ($data = $this->db->fetch_row($result)) {
-            if ($data[0] === $tablename) {
+      if (count($result)) {
+         while ($data = $result->next()) {
+            if ($data['TABLE_NAME'] === $tablename) {
                return true;
             }
          }
       }
 
-      $this->db->free_result($result);
       return false;
    }
 
@@ -182,34 +190,34 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
       $OCS_MAP  = self::getOcsMap();
       $DATA_MAP = [];
-      foreach ($OCS_MAP as $table => $value) {
-
-         if ($table == "dico_soft") {
-            continue;
-         }
-         if ($table == "hardware") {
-            $DATA_MAP[$table] = $value;
-         }
-         if (isset($value['checksum'])) {
-            $check = $value['checksum'];
-            if ($check & $checksum) {
-               $DATA_MAP[$table] = $value;
-            }
-         } else if (isset($value['wanted'])) {
-            $check = $value['wanted'];
-            if ($wanted & self::WANTED_ACCOUNTINFO) {
-               $DATA_MAP[$table] = $value;
-            }
-         } else if (isset($value['plugins'])) {
-            $check = $value['plugins'];
-            if (self::OcsTableExists($table) && (($check & $plugins) || $plugins == self::PLUGINS_ALL)) {
-               $DATA_MAP[$table] = $value;
-            }
-         }
-      }
 
       if ($complete > 0) {
          $DATA_MAP = $OCS_MAP;
+      } else {
+         foreach ($OCS_MAP as $table => $value) {
+            if ($table == "dico_soft") {
+               continue;
+            }
+            if ($table == "hardware") {
+               $DATA_MAP[$table] = $value;
+            }
+            if (isset($value['checksum'])) {
+               $check = $value['checksum'];
+               if ($check & $checksum) {
+                  $DATA_MAP[$table] = $value;
+               }
+            } else if (isset($value['wanted'])) {
+               $check = $value['wanted'];
+               if ($wanted & self::WANTED_ACCOUNTINFO) {
+                  $DATA_MAP[$table] = $value;
+               }
+            } else if (isset($value['plugins'])) {
+               $check = $value['plugins'];
+               if (self::OcsTableExists($table) && (($check & $plugins) || $plugins == self::PLUGINS_ALL)) {
+                  $DATA_MAP[$table] = $value;
+               }
+            }
+         }
       }
 
       $version = $this->getConfig("GUI_VERSION");
@@ -227,47 +235,57 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
             $check = $value['plugins'];
          }
          $multi = $value['multi'];
-         if ($table == "accountinfo") {
-            if (($wanted & self::WANTED_ACCOUNTINFO) || $complete > 0) {
-               $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-               $request = $this->db->query($query);
-               while ($accountinfo = $this->db->fetch_assoc($request)) {
-                  foreach ($accountinfo as $column => $value) {
-                     if (preg_match('/fields_\d+/', $column, $matches)) {
-                        $colnumb = explode("fields_", $matches['0']);
 
-                        if (self::OcsTableExists("accountinfo_config")) {
-                           $col            = $colnumb['1'];
-                           $query          = "SELECT ID,NAME FROM accountinfo_config WHERE ID = '" . $col . "'";
-                           $requestcolname = $this->db->query($query);
-                           $colname        = $this->db->fetch_assoc($requestcolname);
-                           if ($colname['NAME'] != "") {
-                              if (!is_null($value)) {
-                                 $name = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" . Toolbox::addslashes_deep($value);
-                                 $query        = "SELECT TVALUE,NAME FROM config WHERE NAME = '" . $name . "'";
-                                 $requestvalue = $this->db->query($query);
-                                 $custom_value = $this->db->fetch_assoc($requestvalue);
-                                 if (isset($custom_value['TVALUE'])) {
-                                    $accountinfo[$column] = $custom_value['TVALUE'];
+         switch ($table) {
+            case "accountinfo" :
+               if (($wanted & self::WANTED_ACCOUNTINFO) || $complete > 0) {
+                  $query   = "SELECT * 
+                              FROM `accountinfo` 
+                              WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                  $request = $this->db->query($query);
+                  while ($accountinfo = $this->db->fetch_assoc($request)) {
+                     foreach ($accountinfo as $column => $value) {
+                        if (preg_match('/fields_\d+/', $column, $matches)) {
+                           $colnumb = explode("fields_", $matches['0']);
+
+                           if (self::OcsTableExists("accountinfo_config")) {
+                              $col            = $colnumb['1'];
+                              $query          = "SELECT `ID`,`NAME` 
+                                                  FROM `accountinfo_config`
+                                                  WHERE `ID` = $col";
+                              $requestcolname = $this->db->query($query);
+                              $colname        = $this->db->fetch_assoc($requestcolname);
+                              if ($colname['NAME'] != "") {
+                                 if (!is_null($value)) {
+                                    $name         = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" .
+                                                    Toolbox::addslashes_deep($value);
+                                    $query        = "SELECT `TVALUE`, `NAME`
+                                                    FROM `config` 
+                                                    WHERE `NAME` = '" . $name . "'";
+                                    $requestvalue = $this->db->query($query);
+                                    $custom_value = $this->db->fetch_assoc($requestvalue);
+                                    if (isset($custom_value['TVALUE'])) {
+                                       $accountinfo[$column] = $custom_value['TVALUE'];
+                                    }
                                  }
                               }
                            }
                         }
                      }
-                  }
-                  $accountinfomap = $this->getAccountInfoColumns();
-                  foreach ($accountinfo as $key => $value) {
-                     unset($accountinfo[$key]);
-                     $accountinfo[$accountinfomap[$key]] = $value;
-                  }
-                  if ($multi) {
-                     $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)][] = $accountinfo;
-                  } else {
-                     $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)] = $accountinfo;
+                     $accountinfomap = $this->getAccountInfoColumns();
+                     foreach ($accountinfo as $key => $value) {
+                        unset($accountinfo[$key]);
+                        $accountinfo[$accountinfomap[$key]] = $value;
+                     }
+                     if ($multi) {
+                        $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)][] = $accountinfo;
+                     } else {
+                        $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)] = $accountinfo;
+                     }
                   }
                }
-            }
-         } else if ($table == "softwares") {
+               break;
+            case "softwares" :
             if (($check & $checksum) || $complete > 0) {
 
                if (self::WANTED_DICO_SOFT & $wanted) {
@@ -288,8 +306,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                                         `softwares`.`BITSWIDTH`";
                   }
                   $query .= "FROM `softwares`
-                                        INNER JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
-                                        WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                            INNER JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
+                            WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                } else {
                   $query = "SELECT
                                         `softwares`.`NAME`,
@@ -308,7 +326,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                                   `softwares`.`BITSWIDTH`";
                   }
                   $query .= "FROM `softwares`
-                                        WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                             WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                }
 
                $request = $this->db->query($query);
@@ -316,17 +334,18 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                   $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
                }
             }
-         } else if ($table == "registry") {
+            break;
+            case "registry" :
 
             if (($check & $checksum) || $complete > 0) {
                $query   = "SELECT `registry`.`NAME` AS name,
-                          `registry`.`REGVALUE` AS regvalue,
-                          `registry`.`HARDWARE_ID` AS HARDWARE_ID,
-                          `regconfig`.`REGTREE` AS regtree,
-                          `regconfig`.`REGKEY` AS regkey
-                   FROM `registry`
-                   LEFT JOIN `regconfig` ON (`registry`.`NAME` = `regconfig`.`NAME`)
-                   WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                                   `registry`.`REGVALUE` AS regvalue,
+                                   `registry`.`HARDWARE_ID` AS HARDWARE_ID,
+                                   `regconfig`.`REGTREE` AS regtree,
+                                   `regconfig`.`REGKEY` AS regkey
+                         FROM `registry`
+                         LEFT JOIN `regconfig` ON (`registry`.`NAME` = `regconfig`.`NAME`)
+                         WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                $request = $this->db->query($query);
                while ($reg = $this->db->fetch_assoc($request)) {
                   if ($multi) {
@@ -336,182 +355,99 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                   }
                }
             }
-         } else if (self::OcsTableExists("securitycenter") && $table == "securitycenter") {
-
-            if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
-               $query   = "SELECT `securitycenter`.`SCV` AS scv,
-                          `securitycenter`.`CATEGORY` AS category,
-                          `securitycenter`.`HARDWARE_ID` AS HARDWARE_ID,
-                          `securitycenter`.`COMPANY` AS company,
-                          `securitycenter`.`PRODUCT` AS product,
-                          `securitycenter`.`VERSION` AS version,
-                          `securitycenter`.`ENABLED` AS enabled,
-                          `securitycenter`.`UPTODATE` AS uptodate
-                   FROM `securitycenter`
-                   WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-               $request = $this->db->query($query);
-               while ($av = $this->db->fetch_assoc($request)) {
-                  if ($multi) {
-                     $computers[$av['HARDWARE_ID']][strtoupper($table)][] = $av;
-                  } else {
-                     $computers[$av['HARDWARE_ID']][strtoupper($table)] = $av;
-                  }
-               }
-            }
-         } else if (self::OcsTableExists("uptime") && $table == "uptime") {
-
-            if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
-               $query   = "SELECT `uptime`.`TIME` AS time,
-                          `uptime`.`HARDWARE_ID` AS HARDWARE_ID
-                   FROM `uptime`
-                   WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-               $request = $this->db->query($query);
-               while ($up = $this->db->fetch_assoc($request)) {
-                  $computers[$up['HARDWARE_ID']][strtoupper($table)] = $up;
-               }
-            }
-         } else if (self::OcsTableExists("officepack") && $table == "officepack") {
-
-            $query   = "SELECT `officepack`.* FROM `hardware`
-            INNER JOIN `officepack` ON (`hardware`.`id` = `officepack`.`HARDWARE_ID`)
-            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ")
-            AND `INSTALL`";
-            $request = $this->db->query($query);
-            while ($meta = $this->db->fetch_assoc($request)) {
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["OFFICEVERSION"] = $meta["OFFICEVERSION"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PRODUCT"]       = $meta["PRODUCT"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["OFFICEKEY"]     = $meta["OFFICEKEY"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["NOTE"]          = $meta["NOTE"];
-
-            }
-
-         } else if (self::OcsTableExists("winupdatestate") && $table == "winupdatestate") {
-
-            $query   = "SELECT `winupdatestate`.* FROM `hardware`
-            INNER JOIN `winupdatestate` ON (`hardware`.`id` = `winupdatestate`.`HARDWARE_ID`)
-            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") ";
-            $request = $this->db->query($query);
-            while ($meta = $this->db->fetch_assoc($request)) {
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["AUOPTIONS"]            = $meta["AUOPTIONS"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SCHEDULEDINSTALLDATE"] = $meta["SCHEDULEDINSTALLDATE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["LASTSUCCESSTIME"]      = $meta["LASTSUCCESSTIME"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DETECTSUCCESSTIME"]    = $meta["DETECTSUCCESSTIME"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DOWNLOADSUCCESSTIME"]  = $meta["DOWNLOADSUCCESSTIME"];
-
-            }
-
-         } else if (self::OcsTableExists("osinstall") && $table == "osinstall") {
-
-            $query   = "SELECT `osinstall`.* FROM `hardware`
-            INNER JOIN `osinstall` ON (`hardware`.`id` = `osinstall`.`HARDWARE_ID`)
-            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") ";
-            $request = $this->db->query($query);
-            while ($meta = $this->db->fetch_assoc($request)) {
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["BUILDVER"]    = $meta["BUILDVER"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["INSTDATE"]    = $meta["INSTDATE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["CODESET"]     = $meta["CODESET"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["COUNTRYCODE"] = $meta["COUNTRYCODE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["OSLANGUAGE"]  = $meta["OSLANGUAGE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["CURTIMEZONE"] = $meta["CURTIMEZONE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["LOCALE"]      = $meta["LOCALE"];
-
-            }
-
-         } else if (self::OcsTableExists("networkshare") && $table == "networkshare") {
-
-            $query   = "SELECT `networkshare`.* FROM `hardware`
-            INNER JOIN `networkshare` ON (`hardware`.`id` = `networkshare`.`HARDWARE_ID`)
-            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") ";
-            $request = $this->db->query($query);
-            while ($meta = $this->db->fetch_assoc($request)) {
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DRIVE"]    = $meta["DRIVE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PATH"]    = $meta["PATH"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SIZE"]     = $meta["SIZE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["FREESPACE"] = $meta["FREESPACE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["QUOTA"]  = $meta["QUOTA"];
-            }
-
-         } else if (self::OcsTableExists("runningprocess") && $table == "runningprocess") {
-
-            $query   = "SELECT `runningprocess`.* FROM `hardware`
-            INNER JOIN `runningprocess` ON (`hardware`.`id` = `runningprocess`.`HARDWARE_ID`)
-            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") ";
-            $request = $this->db->query($query);
-            while ($meta = $this->db->fetch_assoc($request)) {
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["CPUUSAGE"]      = $meta["CPUUSAGE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["TTY"]           = $meta["TTY"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["STARTED"]       = $meta["STARTED"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["VIRTUALMEMORY"] = $meta["VIRTUALMEMORY"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PROCESSNAME"]   = $meta["PROCESSNAME"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PROCESSID"]     = $meta["PROCESSID"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["USERNAME"]      = $meta["USERNAME"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["PROCESSMEMORY"] = $meta["PROCESSMEMORY"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["COMMANDLINE"]   = $meta["COMMANDLINE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["DESCRIPTION"]   = $meta["DESCRIPTION"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["COMPANY"]       = $meta["COMPANY"];
-            }
-
-         } else if (self::OcsTableExists("service") && $table == "service") {
-
-            $query   = "SELECT `service`.* FROM `hardware`
-            INNER JOIN `service` ON (`hardware`.`id` = `service`.`HARDWARE_ID`)
-            WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") ";
-            $request = $this->db->query($query);
-            while ($meta = $this->db->fetch_assoc($request)) {
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCNAME"]         = $meta["SVCNAME"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCDN"]           = $meta["SVCDN"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSTATE"]        = $meta["SVCSTATE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCDESC"]         = $meta["SVCDESC"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSTARTMODE"]    = $meta["SVCSTARTMODE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCPATH"]         = $meta["SVCPATH"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSTARTNAME"]    = $meta["SVCSTARTNAME"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCEXITCODE"]     = $meta["SVCEXITCODE"];
-               $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']]["SVCSPECEXITCODE"] = $meta["SVCSPECEXITCODE"];
-            }
-
-         } else if ($table == "hardware") {
-
-            $query   = "SELECT `hardware`.*,`accountinfo`.`TAG` FROM `hardware`
-            INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
-            WHERE `ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
-            while ($meta = $this->db->fetch_assoc($request)) {
-               $computers[$meta['ID']]["META"]["ID"]       = $meta["ID"];
-               $computers[$meta['ID']]["META"]["CHECKSUM"] = $meta["CHECKSUM"];
-               $computers[$meta['ID']]["META"]["DEVICEID"] = $meta["DEVICEID"];
-               $computers[$meta['ID']]["META"]["LASTCOME"] = $meta["LASTCOME"];
-               $computers[$meta['ID']]["META"]["LASTDATE"] = $meta["LASTDATE"];
-               $computers[$meta['ID']]["META"]["NAME"]     = $meta["NAME"];
-               $computers[$meta['ID']]["META"]["TAG"]      = $meta["TAG"];
-               $computers[$meta['ID']]["META"]["USERID"]   = $meta["USERID"];
-               $computers[$meta['ID']]["META"]["UUID"]     = $meta["UUID"];
-            }
-
-            if (($check & $checksum) || $complete > 0) {
-               $query   = "SELECT * FROM `" . $table . "` WHERE `ID` IN (" . implode(',', $ids) . ")";
-               $request = $this->db->query($query);
-               while ($hardware = $this->db->fetch_assoc($request)) {
-                  if ($multi) {
-                     $computers[$hardware['ID']][strtoupper($table)][] = $hardware;
-                  } else {
-                     $computers[$hardware['ID']][strtoupper($table)] = $hardware;
-                  }
-               }
-            }
-         } else {
+            break;
+               //plugins
+            case "securitycenter" :
+            case "uptime" :
+            case "winupdatestate":
+            case "teamviewer":
+            case "navigatorproxysetting":
+            case "winusers":
+            case "osinstall":
+            case "networkshare" :
+            case "service":
+            case "runningprocess" :
             if (self::OcsTableExists($table)) {
-               if (($check & $checksum) || $complete > 0) {
-                  $query   = "SELECT * FROM `" . $table . "` WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+               if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
+                  $query   = "SELECT * 
+                             FROM `$table` 
+                             WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                   $request = $this->db->query($query);
-                  while ($computer = $this->db->fetch_assoc($request)) {
+                  while ($plugin = $this->db->fetch_assoc($request)) {
                      if ($multi) {
-                        $computers[$computer['HARDWARE_ID']][strtoupper($table)][] = $computer;
+                        $computers[$plugin['HARDWARE_ID']][strtoupper($table)][$plugin['ID']] = $plugin;
                      } else {
-                        $computers[$computer['HARDWARE_ID']][strtoupper($table)] = $computer;
+                        $computers[$plugin['HARDWARE_ID']][strtoupper($table)] = $plugin;
                      }
                   }
                }
             }
+            break;
+            //plugin officepack
+            case "officepack" :
+               if (self::OcsTableExists("officepack")) {
+                  if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
+                     $query   = "SELECT `ID`, `HARDWARE_ID`, `OFFICEVERSION`, `PRODUCT`, `OFFICEKEY`, `NOTE`
+                              FROM `officepack`
+                              WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")
+                              AND `INSTALL` = 1";
+                     $request = $this->db->query($query);
+                     while ($meta = $this->db->fetch_assoc($request)) {
+                        $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']] = $meta;
+                     }
+                  }
+               }
+               break;
+               break;
+            case "hardware" :
+               $query   = "SELECT `hardware`.*,`accountinfo`.`TAG` 
+                          FROM `hardware`
+                          INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
+                          WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ")";
+               $request = $this->db->query($query);
+               while ($meta = $this->db->fetch_assoc($request)) {
+                  $computers[$meta['ID']]["META"]["ID"]       = $meta["ID"];
+                  $computers[$meta['ID']]["META"]["CHECKSUM"] = $meta["CHECKSUM"];
+                  $computers[$meta['ID']]["META"]["DEVICEID"] = $meta["DEVICEID"];
+                  $computers[$meta['ID']]["META"]["LASTCOME"] = $meta["LASTCOME"];
+                  $computers[$meta['ID']]["META"]["LASTDATE"] = $meta["LASTDATE"];
+                  $computers[$meta['ID']]["META"]["NAME"]     = $meta["NAME"];
+                  $computers[$meta['ID']]["META"]["TAG"]      = $meta["TAG"];
+                  $computers[$meta['ID']]["META"]["USERID"]   = $meta["USERID"];
+                  $computers[$meta['ID']]["META"]["UUID"]     = $meta["UUID"];
+               }
+
+               if (($check & $checksum) || $complete > 0) {
+                  $query   = "SELECT * 
+                              FROM `" . $table . "` 
+                              WHERE `ID` IN (" . implode(',', $ids) . ")";
+                  $request = $this->db->query($query);
+                  while ($hardware = $this->db->fetch_assoc($request)) {
+                     if ($multi) {
+                        $computers[$hardware['ID']][strtoupper($table)][] = $hardware;
+                     } else {
+                        $computers[$hardware['ID']][strtoupper($table)] = $hardware;
+                     }
+                  }
+               }
+               break;
+            default :
+               if (self::OcsTableExists($table)) {
+                  if (($check & $checksum) || $complete > 0) {
+                     $query   = "SELECT * 
+                             FROM `" . $table . "` 
+                             WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                     $request = $this->db->query($query);
+                     while ($computer = $this->db->fetch_assoc($request)) {
+                        if ($multi) {
+                           $computers[$computer['HARDWARE_ID']][strtoupper($table)][] = $computer;
+                        } else {
+                           $computers[$computer['HARDWARE_ID']][strtoupper($table)] = $computer;
+                        }
+                     }
+                  }
+               }
+               break;
          }
       }
 
@@ -529,105 +465,135 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       $snmp = [];
 
       // Check for basics snmp infos
-      $query   = "SELECT * FROM `snmp` WHERE `ID` IN (" . implode(',', $ids) . ")";
+      $query   = "SELECT * 
+                  FROM `snmp` 
+                  WHERE `ID` IN (" . implode(',', $ids) . ")";
       $request = $this->db->query($query);
       while ($snmp_request = $this->db->fetch_assoc($request)) {
          $snmp[$snmp_request['ID']]['META'] = $snmp_request;
       }
       if ($complete) {
          // Printers infos
-         $query   = "SELECT * FROM `snmp_printers` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $query   = "SELECT * 
+                      FROM `snmp_printers`
+                      WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
          $request = $this->db->query($query);
          while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['PRINTER'][] = $snmp_request;
          }
 
          // Cartridges
-         $query   = "SELECT * FROM `snmp_cartridges` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $query   = "SELECT * 
+                    FROM `snmp_cartridges` 
+                    WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
          $request = $this->db->query($query);
          while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['CARTRIDGES'][] = $snmp_request;
          }
 
          // Switches
-         $query   = "SELECT * FROM `snmp_switchs` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $query   = "SELECT * 
+                    FROM `snmp_switchs` 
+                    WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
          $request = $this->db->query($query);
          while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['SWITCH'][] = $snmp_request;
          }
 
          // cards
-         $query   = "SELECT * FROM `snmp_cards` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $query   = "SELECT * 
+                    FROM `snmp_cards` 
+                    WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
          $request = $this->db->query($query);
          while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['CARDS'][] = $snmp_request;
          }
 
          // Powersupplies
-         $query   = "SELECT * FROM `snmp_powersupplies` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $query   = "SELECT * 
+                    FROM `snmp_powersupplies` 
+                    WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
          $request = $this->db->query($query);
          while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['POWERSUPPLIES'][] = $snmp_request;
          }
 
          // Firewall
-         $query   = "SELECT * FROM `snmp_firewalls` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $query   = "SELECT * 
+                    FROM `snmp_firewalls` 
+                    WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
          $request = $this->db->query($query);
          while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['FIREWALLS'][] = $snmp_request;
          }
 
          // Fans
-         $query   = "SELECT * FROM `snmp_fans` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $query   = "SELECT * 
+                    FROM `snmp_fans` 
+                    WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
          $request = $this->db->query($query);
          while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['FANS'][] = $snmp_request;
          }
 
          // Trays
-         $query   = "SELECT * FROM `snmp_trays` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $query   = "SELECT * 
+                    FROM `snmp_trays` 
+                    WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
          $request = $this->db->query($query);
          while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['TRAYS'][] = $snmp_request;
          }
 
          //memories
-         $query   = "SELECT * FROM `snmp_memories` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $query   = "SELECT * 
+                    FROM `snmp_memories` 
+                    WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
          $request = $this->db->query($query);
          while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['MEMORIES'][] = $snmp_request;
          }
 
          //cpus
-         $query   = "SELECT * FROM `snmp_cpus` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $query   = "SELECT * 
+                    FROM `snmp_cpus` 
+                    WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
          $request = $this->db->query($query);
          while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['CPU'][] = $snmp_request;
          }
 
          //networks
-         $query   = "SELECT * FROM `snmp_networks` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $query   = "SELECT * 
+                    FROM `snmp_networks` 
+                    WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
          $request = $this->db->query($query);
          while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['NETWORKS'][] = $snmp_request;
          }
 
          //virtualmachines
-         $query   = "SELECT * FROM `snmp_virtualmachines` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $query   = "SELECT * 
+                    FROM `snmp_virtualmachines` 
+                    WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
          $request = $this->db->query($query);
          while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['VIRTUALMACHINES'][] = $snmp_request;
          }
 
          //softwares
-         $query   = "SELECT * FROM `snmp_softwares` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $query   = "SELECT * 
+                    FROM `snmp_softwares` 
+                    WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
          $request = $this->db->query($query);
          while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['SOFTWARES'][] = $snmp_request;
          }
 
          //drives
-         $query   = "SELECT * FROM `snmp_drives` WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
+         $query   = "SELECT * 
+                    FROM `snmp_drives` 
+                    WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
          $request = $this->db->query($query);
          while ($snmp_request = $this->db->fetch_assoc($request)) {
             $snmp[$snmp_request['SNMP_ID']]['COMPUTERDISKS'][] = $snmp_request;
@@ -695,8 +661,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     * @param int $id
     */
    public function updateBios($ssn, $id) {
-      $query = "UPDATE `bios` SET `SSN` = '" . $ssn . "'" . " WHERE `HARDWARE_ID` = '" . $id . "'";
-      $this->db->query($query);
+      $this->db->query("UPDATE `bios` SET `SSN` = '" . $ssn . "'" . " WHERE `HARDWARE_ID` = $id");
    }
 
    /**
@@ -706,8 +671,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     * @param int $id
     */
    public function updateTag($tag, $id) {
-      $query = "UPDATE `accountinfo` SET `TAG` = '" . $tag . "' WHERE `HARDWARE_ID` = '" . $id . "'";
-      $this->db->query($query);
+      $this->db->query("UPDATE `accountinfo` SET `TAG` = '" . $tag . "' WHERE `HARDWARE_ID` = $id");
    }
 
    /**
@@ -852,7 +816,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
       if ($this->db->numrows($request)) {
 
-         $count = $this->db->numrows($request);
          while ($hardwareid = $this->db->fetch_assoc($request)) {
             $hardwareids[] = $hardwareid['ID'];
          }
@@ -869,6 +832,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     * @see PluginOcsinventoryngOcsClient::getComputers()
     *
     * @param array $options
+    * @param int $id
     *
     * @return array
     */
@@ -982,26 +946,25 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          } else {
             $where_checksum = "";
          }
-         $where_condition = $where_ids . $where_exclude_ids . $where_deviceids . $where_exclude_deviceids . $where_tags . $where_exclude_tags . $where_checksum . $where_since . $where_before;
+         $where_condition = $where_ids . $where_exclude_ids . $where_deviceids .
+                            $where_exclude_deviceids . $where_tags . $where_exclude_tags .
+                            $where_checksum . $where_since . $where_before;
       } else {
          $where_condition = "";
       }
 
-      /*$query = "SELECT * FROM `hardware`, `accountinfo`
-                        WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
-                        AND `hardware`.`ID` = `accountinfo`.`HARDWARE_ID`
-                        $where_condition";*/
       if ($id > 0) {
-         $query = "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` FROM `hardware`
-                           WHERE `hardware`.`ID` = $id
-                           $where_condition";
+         $query = "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` 
+                  FROM `hardware`
+                     WHERE `hardware`.`ID` = $id
+                     $where_condition";
       } else {
-         $query = "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` FROM `hardware`, `accountinfo`
-                           WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
-                           AND `hardware`.`ID` = `accountinfo`.`HARDWARE_ID`
-                           $where_condition
-                           ORDER BY $order
-                           $max_records $offset";
+         $query = "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` 
+                  FROM `hardware`, `accountinfo`
+                     WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
+                     AND `hardware`.`ID` = `accountinfo`.`HARDWARE_ID` $where_condition
+                     ORDER BY $order
+                     $max_records $offset";
       }
       $request = $this->db->query($query);
 
@@ -1080,7 +1043,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     * @param string $tvalue
     */
    public function setConfig($key, $ivalue, $tvalue) {
-      $query = "UPDATE `config` SET `IVALUE` = '" . $ivalue . "', `TVALUE` = '" . $this->db->escape($tvalue) . "' WHERE `NAME` = '" . $this->db->escape($key) . "'";
+      $query = "UPDATE `config` 
+                SET `IVALUE` = '" . $ivalue . "', `TVALUE` = '" . $this->db->escape($tvalue) . "' 
+                WHERE `NAME` = '" . $this->db->escape($key) . "'";
       $this->db->query($query);
    }
 
@@ -1091,7 +1056,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     * @param int $id
     */
    public function setChecksum($checksum, $id) {
-      $query = "UPDATE `hardware` SET `CHECKSUM` = '" . $checksum . "' WHERE `ID` = '" . $id . "'";
+      $query = "UPDATE `hardware` SET `CHECKSUM` = $checksum WHERE `ID` = $id";
       $this->db->query($query);
    }
 
@@ -1103,7 +1068,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     * @return int
     */
    public function getChecksum($id) {
-      $query    = "SELECT `CHECKSUM` FROM `hardware` WHERE `ID` = '" . $id . "'";
+      $query    = "SELECT `CHECKSUM` FROM `hardware` WHERE `ID` = $id";
       $checksum = $this->db->query($query);
       $res      = $this->db->fetch_assoc($checksum);
       return $res["CHECKSUM"];
@@ -1118,11 +1083,11 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     * @return array
     */
    public function getComputersToUpdate($cfg_ocs, $max_date) {
-      $query = "SELECT *
-                       FROM `hardware`
-                       INNER JOIN `accountinfo` ON (`hardware`.`ID` = `accountinfo`.`HARDWARE_ID`)
-                       WHERE ((`hardware`.`CHECKSUM` & " . $cfg_ocs["checksum"] . ") > '0'
-                              OR `hardware`.`LASTDATE` > '$max_date') ";
+      $query = "SELECT `hardware`.`ID`
+              FROM `hardware`
+              INNER JOIN `accountinfo` ON (`hardware`.`ID` = `accountinfo`.`HARDWARE_ID`)
+              WHERE ((`hardware`.`CHECKSUM` & " . $cfg_ocs["checksum"] . ") > 0
+                     OR `hardware`.`LASTDATE` > '2018-06-07 08:45:00') ";
 
       // workaround to avoid duplicate when synchro occurs during an inventory
       // "after" insert in ocsweb.hardware  and "before" insert in ocsweb.deleted_equiv
@@ -1134,7 +1099,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       }
 
       $query .= " ORDER BY `hardware`.`LASTDATE` ASC
-                        LIMIT " . intval($cfg_ocs["cron_sync_number"]);
+                  LIMIT " . intval($cfg_ocs["cron_sync_number"]);
 
       $res  = $this->db->query($query);
       $data = [];
@@ -1164,6 +1129,11 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       return $data;
    }
 
+   /**
+    * @param $id
+    *
+    * @return bool
+    */
    public function getIfOCSComputersExists($id) {
       $query = "SELECT `ID`
                     FROM `hardware`
@@ -1183,10 +1153,10 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
       $config = $this->getConfig("GUI_REPORT_AGIN_MACH");
       $delay  = $config['IVALUE'];
-      $query  = "SELECT id from hardware 
+      $query  = "SELECT `id` from `hardware` 
                      WHERE ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) 
                      AND ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) 
-                     AND deviceid <> '_SYSTEMGROUP_' AND deviceid <> '_DOWNLOADGROUP_'";
+                     AND `deviceid` <> '_SYSTEMGROUP_' AND `deviceid` <> '_DOWNLOADGROUP_'";
       $res    = $this->db->query($query);
       $data   = [];
 
@@ -1210,7 +1180,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       foreach ($agents as $key => $val) {
          foreach ($val as $k => $agent) {
 
-            $query = "SELECT deviceid,name,IPADDR,OSNAME FROM hardware WHERE id='" . $agent . "' ";
+            $query = "SELECT `deviceid`, `name` , `IPADDR`, `OSNAME` 
+                      FROM `hardware` 
+                      WHERE `id` = $agent";
 
             $res = $this->db->query($query);
 
@@ -1221,56 +1193,56 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                   if ($did) {
 
                      $tables = ["accesslog",
-                                     "accountinfo",
-                                     "bios",
-                                     "controllers",
-                                     "devices",
-                                     "download_history",
-                                     "download_servers",
-                                     "drives",
-                                     "groups",
-                                     "groups_cache",
-                                     "inputs",
-                                     "itmgmt_comments",
-                                     "javainfo",
-                                     "journallog",
-                                     "locks",
-                                     "memories",
-                                     "modems",
-                                     "monitors",
-                                     "networks",
-                                     "ports",
-                                     "printers",
-                                     "registry",
-                                     "securitycenter",
-                                     "uptime",
-                                     "officepack",
-                                     "winupdatestate",
-                                     "slots",
-                                     "softwares",
-                                     "sounds",
-                                     "storages",
-                                     "videos",
-                                     "virtualmachines",
-                                     "cpus",
-                                     "sim"
+                                "accountinfo",
+                                "bios",
+                                "controllers",
+                                "devices",
+                                "download_history",
+                                "download_servers",
+                                "drives",
+                                "groups",
+                                "groups_cache",
+                                "inputs",
+                                "itmgmt_comments",
+                                "javainfo",
+                                "journallog",
+                                "locks",
+                                "memories",
+                                "modems",
+                                "monitors",
+                                "networks",
+                                "ports",
+                                "printers",
+                                "registry",
+                                "securitycenter",
+                                "uptime",
+                                "officepack",
+                                "winupdatestate",
+                                "slots",
+                                "softwares",
+                                "sounds",
+                                "storages",
+                                "videos",
+                                "virtualmachines",
+                                "cpus",
+                                "sim"
                      ];
                      if (isset($tables) and is_array($tables)) {
                         foreach ($tables as $table) {
                            if (self::OcsTableExists($table)) {
-                              $sql = "DELETE FROM $table WHERE HARDWARE_ID='" . $agent . "'";
+                              $sql = "DELETE FROM `$table` WHERE `HARDWARE_ID` = $agent";
                               $this->db->query($sql);
                            }
                         }
                      }
-                     $sql = "DELETE FROM download_enable WHERE SERVER_ID='" . $agent . "'";
+                     $sql = "DELETE FROM `download_enable` WHERE `SERVER_ID` = $agent";
                      $this->db->query($sql);
 
-                     $sql = "DELETE FROM hardware WHERE id='" . $agent . "'";
+                     $sql = "DELETE FROM `hardware` WHERE `id` = $agent";
                      $this->db->query($sql);
 
                      //Deleted computers tracking
-                     $sql = "INSERT INTO deleted_equiv(DELETED,EQUIVALENT) VALUES('$did','NULL')";
+                     $sql = "INSERT INTO `deleted_equiv` (`DELETED`,`EQUIVALENT`) VALUES('$did','NULL')";
                      $this->db->query($sql);
                      $i++;
                   }
@@ -1287,15 +1259,15 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    public function getDeletedComputers() {
 
       if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
-         $query                                  = "SELECT COUNT( * ) FROM `deleted_equiv`";
+         $query                                  = "SELECT COUNT(*) FROM `deleted_equiv`";
          $total_count                            = $this->db->query($query);
          $total                                  = $this->db->fetch_row($total_count);
          $_SESSION["ocs_deleted_equiv"]["total"] = intval($total['0']);
       }
       $count   = 0;
       $query   = "SELECT `DATE`,`DELETED`,`EQUIVALENT` 
-                     FROM `deleted_equiv` ORDER BY `DATE`,`EQUIVALENT` 
-                     LIMIT 300";
+                  FROM `deleted_equiv` ORDER BY `DATE`,`EQUIVALENT` 
+                  LIMIT 300";
       $deleted = $this->db->query($query);
       while ($del = $this->db->fetch_assoc($deleted)) {
          $computers[] = $del;
@@ -1396,7 +1368,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          $filters = $options['FILTER'];
          if (isset($filters['IDS']) and $filters['IDS']) {
             $ids       = $filters['IDS'];
-            $where_ids = " AND snmp.ID IN (";
+            $where_ids = " AND `snmp`.`ID` IN (";
             $where_ids .= join(',', $ids);
             $where_ids .= ") ";
          } else {
@@ -1405,7 +1377,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
          if (isset($filters['EXCLUDE_IDS']) and $filters['EXCLUDE_IDS']) {
             $exclude_ids       = $filters['EXCLUDE_IDS'];
-            $where_exclude_ids = " AND snmp.ID NOT IN (";
+            $where_exclude_ids = " AND `snmp`.`ID` NOT IN (";
             $where_exclude_ids .= join(',', $exclude_ids);
             $where_exclude_ids .= ") ";
          } else {
@@ -1413,7 +1385,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          }
          if (isset($filters['DEVICEIDS']) and $filters['DEVICEIDS']) {
             $deviceids       = $filters['DEVICEIDS'];
-            $where_deviceids = " AND snmp.SNMPDEVICEID IN ('";
+            $where_deviceids = " AND `snmp`.`SNMPDEVICEID` IN ('";
             $where_deviceids .= join('\',\'', $deviceids);
             $where_deviceids .= "') ";
          } else {
@@ -1422,7 +1394,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
          if (isset($filters['EXCLUDE_DEVICEIDS']) and $filters['EXCLUDE_DEVICEIDS']) {
             $exclude_deviceids       = $filters['EXCLUDE_DEVICEIDS'];
-            $where_exclude_deviceids = " AND snmp.SNMPDEVICEID NOT IN (";
+            $where_exclude_deviceids = " AND `snmp`.`SNMPDEVICEID` NOT IN (";
             $where_exclude_deviceids .= join(',', $exclude_deviceids);
             $where_exclude_deviceids .= ") ";
          } else {
@@ -1451,7 +1423,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
          if (isset($filters['CHECKSUM']) and $filters['CHECKSUM']) {
             $checksum       = $filters['CHECKSUM'];
-            $where_checksum = " AND ('" . $checksum . "' & snmp.CHECKSUM) ";
+            $where_checksum = " AND ('" . $checksum . "' & `snmp`.`CHECKSUM`) ";
          } else {
             $where_checksum = "";
          }
@@ -1460,21 +1432,23 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          $where_condition = "";
       }
 
-      $query   = "SELECT DISTINCT snmp.ID FROM snmp, snmp_accountinfo
-                        WHERE snmp.SNMPDEVICEID NOT LIKE '\\_%'
-                        AND snmp.ID = snmp_accountinfo.SNMP_ID
-                        $where_condition";
+      $query   = "SELECT DISTINCT `snmp`.`ID` 
+                  FROM `snmp`, `snmp_accountinfo`
+                        WHERE `snmp`.`SNMPDEVICEID` NOT LIKE '\\_%'
+                        AND `snmp`.`ID` = `snmp_accountinfo`.`SNMP_ID` ";
+      $query   .= $where_condition;
       $request = $this->db->query($query);
 
       if ($this->db->numrows($request)) {
 
          $count   = $this->db->numrows($request);
-         $query   = "SELECT DISTINCT snmp.ID, snmp.NAME FROM snmp, snmp_accountinfo
-                           WHERE snmp.SNMPDEVICEID NOT LIKE '\\_%'
-                           AND snmp.ID = snmp_accountinfo.SNMP_ID
-                           $where_condition
-                           ORDER BY $order
-                           $max_records  $offset";
+         $query   = "SELECT DISTINCT `snmp`.`ID`, `snmp`.`NAME` 
+                      FROM `snmp`, `snmp_accountinfo`
+                           WHERE `snmp`.`SNMPDEVICEID` NOT LIKE '\\_%'
+                           AND `snmp`.`ID` = `snmp_accountinfo`.`SNMP_ID`";
+         $query   .= $where_condition;
+         $query   .= "ORDER BY $order
+                     $max_records  $offset";
          $request = $this->db->query($query);
          $this->getAccountInfoColumns();
          while ($snmpid = $this->db->fetch_assoc($request)) {

@@ -31,12 +31,11 @@
 /**
  * Class PluginOcsinventoryngServer
  */
-class PluginOcsinventoryngServer extends CommonDBTM
-{
-
+class PluginOcsinventoryngServer extends CommonDBTM {
 
    /**
     * @param $id
+    *
     * @return bool
     */
    function getFromDBbyOcsServer($id) {
@@ -44,7 +43,7 @@ class PluginOcsinventoryngServer extends CommonDBTM
 
       $query = "SELECT *
                 FROM `" . $this->getTable() . "`
-                WHERE `plugin_ocsinventoryng_ocsservers_id` = '$id'";
+                WHERE `plugin_ocsinventoryng_ocsservers_id` = $id";
 
       if ($result = $DB->query($query)) {
          if ($DB->numrows($result) != 1) {

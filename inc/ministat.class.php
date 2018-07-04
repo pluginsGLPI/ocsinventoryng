@@ -31,8 +31,7 @@
 /**
  * Class PluginOcsinventoryngMiniStat
  */
-class PluginOcsinventoryngMiniStat
-{
+class PluginOcsinventoryngMiniStat {
 
    /**
     * @var int
@@ -109,7 +108,7 @@ class PluginOcsinventoryngMiniStat
          $this->Nb++;
       } else {
          $this->Min = $this->Max = $this->Tot = $Value;
-         $this->Nb = 1;
+         $this->Nb  = 1;
       }
    }
 

@@ -67,7 +67,7 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
             $nb = 0;
             if ($_SESSION['glpishow_count_on_tabs']) {
                $nb = countElementsInTable('glpi_plugin_ocsinventoryng_networkshares',
-                                          "computers_id = '" . $item->getID() . "'");
+                                          "computers_id = " . $item->getID());
             }
             return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
          }
@@ -106,7 +106,6 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
           || !$comp->can($ID, READ)) {
          return false;
       }
-      $canedit = $comp->canEdit($ID);
 
       echo "<div class='spaced center'>";
 

@@ -31,8 +31,7 @@
 /**
  * Class PluginOcsinventoryngOcsSoapClient
  */
-class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
-{
+class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
    /**
     * @var SoapClient
     */
@@ -40,6 +39,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
    /**
     * PluginOcsinventoryngOcsSoapClient constructor.
+    *
     * @param $id
     * @param $url
     * @param $user
@@ -49,13 +49,13 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
       parent::__construct($id);
 
       $options = [
-         'location' => "$url/ocsinterface",
-         'uri' => "$url/Apache/Ocsinventory/Interface",
-         'login' => $user,
-         'password' => $pass,
-         'trace' => true,
+         'location'     => "$url/ocsinterface",
+         'uri'          => "$url/Apache/Ocsinventory/Interface",
+         'login'        => $user,
+         'password'     => $pass,
+         'trace'        => true,
          'soap_version' => SOAP_1_1,
-         'exceptions' => 0
+         'exceptions'   => 0
       ];
 
       $this->soapClient = new SoapClient(null, $options);
@@ -70,7 +70,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @param string $field
-    * @param mixed $value
+    * @param mixed  $value
+    *
     * @return array
     */
    public function searchComputers($field, $value) {
@@ -82,13 +83,13 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
       if (count($computerObjs) > 0) {
          foreach ($computerObjs as $obj) {
             $computers [] = [
-               'ID' => (int)$obj->DATABASEID,
+               'ID'       => (int)$obj->DATABASEID,
                'CHECKSUM' => (int)$obj->CHECKSUM,
                'DEVICEID' => (string)$obj->DEVICEID,
                'LASTCOME' => (string)$obj->LASTCOME,
                'LASTDATE' => (string)$obj->LASTDATE,
-               'NAME' => (string)$obj->NAME,
-               'TAG' => (string)$obj->TAG
+               'NAME'     => (string)$obj->NAME,
+               'TAG'      => (string)$obj->TAG
             ];
          }
       }
@@ -97,27 +98,29 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::getComputers()
+    *
     * @param array $options
+    *
     * @return array
     */
-   public function getComputers($options) {
-      $offset = $originalOffset = isset($options['OFFSET']) ? (int)$options['OFFSET'] : 0;
+   public function getComputers($options, $id = 0) {
+      $offset     = $originalOffset = isset($options['OFFSET']) ? (int)$options['OFFSET'] : 0;
       $maxRecords = isset($options['MAX_RECORDS']) ? (int)$options['MAX_RECORDS'] : null;
-      $checksum = isset($options['CHECKSUM']) ? (int)$options['CHECKSUM'] : 131071;
-      $wanted = isset($options['WANTED']) ? (int)$options['WANTED'] : 131071;
+      $checksum   = isset($options['CHECKSUM']) ? (int)$options['CHECKSUM'] : 131071;
+      $wanted     = isset($options['WANTED']) ? (int)$options['WANTED'] : 131071;
       $asking_for = isset($options['"ASKING_FOR"']) ? $options['ASKING_FOR'] : "INVENTORY";
-      $engine = isset($options['"ENGINE"']) ? $options['ENGINE'] : "FIRST";
+      $engine     = isset($options['"ENGINE"']) ? $options['ENGINE'] : "FIRST";
 
       $originalEnd = isset($options['MAX_RECORDS']) ? $originalOffset + $maxRecords : null;
-      $ocsMap = $this->getOcsMap();
+      $ocsMap      = $this->getOcsMap();
 
       $computers = [];
 
       do {
-         $options['ENGINE'] = $engine;
+         $options['ENGINE']     = $engine;
          $options['ASKING_FOR'] = $asking_for;
-         $options['CHECKSUM'] = $checksum;
-         $options['OFFSET'] = $offset;
+         $options['CHECKSUM']   = $checksum;
+         $options['OFFSET']     = $offset;
          if (!is_null($maxRecords)) {
             $options['MAX_RECORDS'] = $maxRecords;
          }
@@ -137,18 +140,18 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
                $computer = [
                   'META' => [
-                     'ID' => (int)$meta->DATABASEID,
+                     'ID'       => (int)$meta->DATABASEID,
                      'CHECKSUM' => (int)$meta->CHECKSUM,
                      'DEVICEID' => (string)$meta->DEVICEID,
                      'LASTCOME' => (string)$meta->LASTCOME,
                      'LASTDATE' => (string)$meta->LASTDATE,
-                     'NAME' => (string)$meta->NAME,
-                     'TAG' => (string)$meta->TAG
+                     'NAME'     => (string)$meta->NAME,
+                     'TAG'      => (string)$meta->TAG
                   ]
                ];
 
                foreach ($obj->children() as $sectionName => $sectionObj) {
-                  $section = [];
+                  $section          = [];
                   $special_sections = ['ACCOUNTINFO', 'DICO_SOFT'];
                   foreach ($sectionObj as $key => $val) {
                      if (in_array($sectionName, $special_sections)) {
@@ -178,7 +181,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
          }
          $totalCount = (int)$computerObjs['TOTAL_COUNT'];
          $maxRecords = (int)$computerObjs['MAX_RECORDS'];
-         $offset += $maxRecords;
+         $offset     += $maxRecords;
 
          // We can't load more records than there is in ocs
          $end = (is_null($originalEnd) or $originalEnd > $totalCount) ? $totalCount : $originalEnd;
@@ -191,14 +194,15 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
       //toolbox::logdebug($computers);
       return [
          'TOTAL_COUNT' => $totalCount,
-         'COMPUTERS' => $computers
+         'COMPUTERS'   => $computers
       ];
    }
 
    /**
-    * @param $ids
+    * @param     $ids
     * @param int $checksum
     * @param int $wanted
+    *
     * @return array
     */
    public function getComputerSections($ids, $checksum = self::CHECKSUM_ALL, $wanted = self::WANTED_ALL) {
@@ -208,7 +212,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
       $computers = [];
       foreach ($computerObjs as $obj) {
-         $id = (int)$obj['ID'];
+         $id       = (int)$obj['ID'];
          $computer = [];
 
          foreach ($obj as $sectionName => $sectionObj) {
@@ -243,7 +247,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     *            'EXCLUDE_IDS' => array(int),      // list of computer ids to exclude
     *            'TAGS' => array(string),         // list of computer tags to select
     *            'EXCLUDE_TAGS' => array(string),   // list of computer tags to exclude
-    *            'CHECKSUM' => int               // filter which sections have been modified (see CHECKSUM_* constants)
+    *            'CHECKSUM' => int               // filter which sections have been modified (see
+    *    CHECKSUM_* constants)
     *         ),
     *         'DISPLAY' => array(      // select which sections of the computers to return
     *            'CHECKSUM' => int,   // inventory sections to return (see CHECKSUM_* constants)
@@ -253,7 +258,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     *
     * @return array List of snmp devices :
     *      array (
-    *         'TOTAL_COUNT' => int, // the total number of computers for this query (without taking OFFSET and MAX_RECORDS into account)
+    *         'TOTAL_COUNT' => int, // the total number of computers for this query (without taking
+    *    OFFSET and MAX_RECORDS into account)
     *         'SNMP' => array (
     *            array (
     *               'META' => array(
@@ -282,14 +288,16 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::getConfig()
+    *
     * @param string $key
+    *
     * @return array|bool|mixed
     */
    public function getConfig($key) {
       $xml = $this->callSoap('ocs_config_V2', $key);
       if (!is_soap_fault($xml)) {
          $configObj = simplexml_load_string($xml);
-         $config = [
+         $config    = [
             'IVALUE' => (int)$configObj->IVALUE,
             'TVALUE' => (string)$configObj->TVALUE
          ];
@@ -300,8 +308,9 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::setConfig()
+    *
     * @param string $key
-    * @param int $ivalue
+    * @param int    $ivalue
     * @param string $tvalue
     */
    public function setConfig($key, $ivalue, $tvalue) {
@@ -316,7 +325,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
     * Gets the array of computers to update with cron
     *
     * @param array $cfg_ocs Server confifguration
-    * @param $max_date
+    * @param       $max_date
+    *
     * @return array $data the computers to update
     */
    public function getComputersToUpdate($cfg_ocs, $max_date) {
@@ -351,8 +361,9 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
    }
 
    /**
-    * @param $deleted
+    * @param      $deleted
     * @param null $equiv
+    *
     * @return mixed|void
     */
    public function removeDeletedComputers($deleted, $equiv = null) {
@@ -378,8 +389,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
    /**
     * Get the old agents without inventory in ocsinventory
     *
-    * @return array The list of deleted computers : (DELETED contains the id or deviceid of the computer and equivalent and EQUIV contains the new id if the computer was marged)
-    *      array (
+    * @return array The list of deleted computers : (DELETED contains the id or deviceid of the
+    *    computer and equivalent and EQUIV contains the new id if the computer was marged) array (
     *         'DELETED' => 'EQUIV'
     *      )
     */
@@ -405,6 +416,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @param int $id
+    *
     * @return int
     */
    public function getChecksum($id) {
@@ -415,14 +427,16 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::getAccountInfoColumns()
+    *
     * @param $table
+    *
     * @return array
     */
    public function getAccountInfoColumns($table) {
       $xml = $this->callSoap('_get_account_fields_V1', new PluginOcsinventoryngOcsSoapRequest());
       $res = [
          'HARDWARE_ID' => 'HARDWARE_ID',
-         'TAG' => 'TAG'
+         'TAG'         => 'TAG'
       ];
       $res = array_merge($res, (array)$xml);
       return $res;
@@ -437,6 +451,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::updateBios()
+    *
     * @param int $ssn
     * @param int $id
     */
@@ -446,6 +461,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
 
    /**
     * @see PluginOcsinventoryngOcsClient::updateTag()
+    *
     * @param int $tag
     * @param int $id
     */
@@ -541,7 +557,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
    /**
     *
     * @param string $method
-    * @param mixed $request
+    * @param mixed  $request
+    *
     * @return mixed
     */
    private function callSoap($method, $request) {
@@ -549,9 +566,9 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient
          $res = $this->soapClient->$method($request->toXml());
       } else if (is_array($request)) {
          $res = call_user_func_array([
-            $this->soapClient,
-            $method
-         ], $request);
+                                        $this->soapClient,
+                                        $method
+                                     ], $request);
       } else {
          $res = $this->soapClient->$method($request);
       }

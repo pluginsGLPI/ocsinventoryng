@@ -31,6 +31,9 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
+/**
+ * Class PluginOcsinventoryngOsinstall
+ */
 class PluginOcsinventoryngOsinstall extends CommonDBChild {
 
    // From CommonDBChild
@@ -61,7 +64,8 @@ class PluginOcsinventoryngOsinstall extends CommonDBChild {
 
       $item     = $params['item'];
       $computer = new Computer();
-      if ($item->getField('itemtype') == 'Computer' && $computer->getFromDB($item->getField('items_id'))) {
+      if ($item->getField('itemtype') == 'Computer'
+          && $computer->getFromDB($item->getField('items_id'))) {
          $plugin_ocsinventoryng_ocsservers_id = PluginOcsinventoryngOcslink::getOCSServerForItem($computer);
          if ($plugin_ocsinventoryng_ocsservers_id > 0) {
             PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
@@ -70,9 +74,9 @@ class PluginOcsinventoryngOsinstall extends CommonDBChild {
             if (//               ($item->getType() == 'Item_OperatingSystem')
                 //             && Computer::canView()
             //                &&
-            $cfg_ocs["import_osinstall"]
-            ) {
-               if ($result = $DB->request('glpi_plugin_ocsinventoryng_osinstalls', ['computers_id' => $computer->getID()])) {
+            $cfg_ocs["import_osinstall"]) {
+               if ($result = $DB->request('glpi_plugin_ocsinventoryng_osinstalls',
+                                          ['computers_id' => $computer->getID()])) {
                   echo "<table class='tab_cadre_fixe'>";
                   $colspan = 4;
                   echo "<tr class='noHover'><th colspan='$colspan'>" . self::getTypeName($result->numrows()) .
