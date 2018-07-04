@@ -223,6 +223,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             }
 
             $IPNetwork->networkUpdate = true;
+            Toolbox::logdebug($input);
             $IPNetwork->add($input, [], !$dohistory);
          }
       }
@@ -317,16 +318,23 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $type = $network_ifaces[$main['type']];
             // First search for the Network Card
             $item_device = new Item_DeviceNetworkCard();
-            $item_device->getFromDBByQuery(
-               "INNER JOIN `glpi_devicenetworkcards`
+
+            $query    = "SELECT `glpi_items_devicenetworkcards`.`id`
+                                     FROM `glpi_items_devicenetworkcards`
+                                     INNER JOIN `glpi_devicenetworkcards`
                                ON (`glpi_devicenetworkcards`.`designation`='" . $main['name'] . "')
                         WHERE `glpi_items_devicenetworkcards`.`itemtype`='Computer'
                            AND `glpi_items_devicenetworkcards`.`items_id`='$computers_id'
                            AND `glpi_items_devicenetworkcards`.`mac`='$mac'
                            AND `glpi_items_devicenetworkcards`.`devicenetworkcards_id`=
-                               `glpi_devicenetworkcards`.`id`");
+                               `glpi_devicenetworkcards`.`id`";
+            $item_net = $DB->request($query);
+
+
             // If not found, then, create it
-            if ($item_device->isNewItem()) {
+            if ($item_net->numrows() == 0
+               //$item_device->isNewItem()
+            ) {
                $deviceNetworkCard = new DeviceNetworkCard();
                $device_input      = ['designation' => $main['name'],
                                      'bandwidth'   => $type->fields['speed'],
@@ -346,6 +354,10 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                }
             }
             if (!$item_device->isNewItem()) {
+
+               foreach ($item_net as $net) {
+                  $item_device->getFromDB($net['id']);
+               }
                $already_known_ifaces[] = $item_device->getID();
             }
 
