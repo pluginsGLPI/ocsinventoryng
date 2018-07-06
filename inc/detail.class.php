@@ -37,56 +37,87 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
    /**
     * @return array
     */
-   function getSearchOptions() {
+   function rawSearchOptions() {
 
       $tab = [];
 
-      $tab['common'] = _n('Computer not imported', 'Computers not imported', 2,
-                          'ocsinventoryng');
+      $tab[] = [
+         'id'   => 'common',
+         'name' => _n('Computer not imported', 'Computers not imported', 2,
+                      'ocsinventoryng')
+      ];
 
-      $tab[1]['table']    = $this->getTable();
-      $tab[1]['field']    = 'ocsid';
-      $tab[1]['name']     = __('ID');
-      $tab[1]['datatype'] = 'integer';
+      $tab[] = [
+         'id'       => '1',
+         'table'    => $this->getTable(),
+         'field'    => 'ocsid',
+         'name'     => __('OCSNG ID', 'ocsinventoryng'),
+         'datatype' => 'integer'
+      ];
 
-      $tab[2]['table']      = $this->getTable();
-      $tab[2]['field']      = 'plugin_ocsinventoryng_ocsservers_id';
-      $tab[2]['name']       = __('Server');
-      $tab[2]['searchtype'] = 'equals';
+      $tab[] = [
+         'id'         => '2',
+         'table'      => 'glpi_plugin_ocsinventoryng_ocsservers',
+         'field'      => 'name',
+         'name'       => __('Server'),
+         'searchtype' => 'equals'
+      ];
 
-      $tab[3]['table']    = $this->getTable();
-      $tab[3]['field']    = 'process_time';
-      $tab[3]['name']     = __('Process time', 'ocsinventoryng');
-      $tab[3]['datatype'] = 'datetime';
+      $tab[] = [
+         'id'       => '3',
+         'table'    => $this->getTable(),
+         'field'    => 'process_time',
+         'name'     => __('Process time', 'ocsinventoryng'),
+         'datatype' => 'datetime'
+      ];
 
-      $tab[4]['table']      = $this->getTable();
-      $tab[4]['field']      = 'action';
-      $tab[4]['name']       = __('Action type');
-      $tab[4]['searchtype'] = 'equals';
+      $tab[] = [
+         'id'         => '4',
+         'table'      => $this->getTable(),
+         'field'      => 'action',
+         'name'       => __('Action type'),
+         'searchtype' => 'equals'
+      ];
 
-      $tab[5]['table']    = 'glpi_plugin_ocsinventoryng_threads';
-      $tab[5]['field']    = 'processid';
-      $tab[5]['name']     = __('Process', 'ocsinventoryng');
-      $tab[5]['datatype'] = 'integer';
+      $tab[] = [
+         'id'       => '5',
+         'table'    => 'glpi_plugin_ocsinventoryng_threads',
+         'field'    => 'processid',
+         'name'     => __('Process', 'ocsinventoryng'),
+         'datatype' => 'integer'
+      ];
 
-      $tab[6]['table'] = $this->getTable();
-      $tab[6]['field'] = 'computers_id';
-      $tab[6]['name']  = _n('Computer', 'Computers', 1);
+      $tab[] = [
+         'id'    => '6',
+         'table' => $this->getTable(),
+         'field' => 'computers_id',
+         'name'  => _n('Computer', 'Computers', 1)
+      ];
 
-      $tab[7]['table']    = $this->getTable();
-      $tab[7]['field']    = 'threadid';
-      $tab[7]['name']     = __('Thread', 'ocsinventoryng');
-      $tab[7]['datatype'] = 'integer';
+      $tab[] = [
+         'id'       => '7',
+         'table'    => $this->getTable(),
+         'field'    => 'threadid',
+         'name'     => __('Thread', 'ocsinventoryng'),
+         'datatype' => 'integer'
+      ];
 
-      $tab[8]['table']    = $this->getTable();
-      $tab[8]['field']    = 'rules_id';
-      $tab[8]['name']     = __('Rules checked', 'ocsinventoryng');
-      $tab[8]['datatype'] = 'text';
+      $tab[] = [
+         'id'       => '8',
+         'table'    => $this->getTable(),
+         'field'    => 'rules_id',
+         'name'     => __('Rules checked', 'ocsinventoryng'),
+         'datatype' => 'text'
+      ];
 
-      $tab[80]['table']      = 'glpi_entities';
-      $tab[80]['field']      = 'completename';
-      $tab[80]['name']       = __('Entity');
-      $tab[80]['searchtype'] = 'equals';
+      $tab[] = [
+         'id'         => '80',
+         'table'      => 'glpi_entities',
+         'field'      => 'completename',
+         'name'       => __('Entity'),
+         'datatype'   => 'dropdown',
+         'searchtype' => 'equals'
+      ];
 
       return $tab;
    }

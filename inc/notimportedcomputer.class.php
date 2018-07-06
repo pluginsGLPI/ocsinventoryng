@@ -224,79 +224,111 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
    /**
     * @return array
     */
-   function getSearchOptions() {
+   function rawSearchOptions() {
 
       $tab = [];
 
-      $tab['common'] = _n('Computer not imported', 'Computers not imported', 2,
-                          'ocsinventoryng');
+      $tab[] = [
+         'id'   => 'common',
+         'name' => _n('Computer not imported', 'Computers not imported', 2,
+                      'ocsinventoryng')
+      ];
 
-      $tab[1]['table']     = $this->getTable();
-      $tab[1]['field']     = 'ocsid';
-      $tab[1]['linkfield'] = '';
-      $tab[1]['name']      = __('OCSNG ID', 'ocsinventoryng');
+      $tab[] = [
+         'id'       => '1',
+         'table'    => $this->getTable(),
+         'field'    => 'ocsid',
+         'name'     => __('OCSNG ID', 'ocsinventoryng'),
+         'datatype' => 'integer'
+      ];
 
-      $tab[2]['table']         = $this->getTable();
-      $tab[2]['field']         = 'name';
-      $tab[2]['linkfield']     = '';
-      $tab[2]['name']          = __('OCSNG name', 'ocsinventoryng');
-      $tab[2]['datatype']      = 'itemlink';
-      $tab[2]['itemlink_type'] = $this->getType();
-      $tab[2]['massiveaction'] = false;
+      $tab[] = [
+         'id'            => '2',
+         'table'         => $this->getTable(),
+         'field'         => 'name',
+         'name'          => __('OCSNG name', 'ocsinventoryng'),
+         'datatype'      => 'itemlink',
+         'massiveaction' => false,
+         'itemlink_type' => $this->getType()
+      ];
 
-      $tab[3]['table']     = $this->getTable();
-      $tab[3]['field']     = 'useragent';
-      $tab[3]['linkfield'] = '';
-      $tab[3]['name']      = __('Inventory agent', 'ocsinventoryng');
+      $tab[] = [
+         'id'       => '3',
+         'table'    => $this->getTable(),
+         'field'    => 'useragent',
+         'name'     => __('Inventory agent', 'ocsinventoryng'),
+         'datatype' => 'number'
+      ];
 
-      $tab[4]['table']     = $this->getTable();
-      $tab[4]['field']     = 'ocs_deviceid';
-      $tab[4]['linkfield'] = '';
-      $tab[4]['name']      = __('Device ID', 'ocsinventoryng');
+      $tab[] = [
+         'id'       => '4',
+         'table'    => $this->getTable(),
+         'field'    => 'ocs_deviceid',
+         'name'     => __('Device ID', 'ocsinventoryng'),
+         'datatype' => 'number'
+      ];
 
-      $tab[5]['table']     = 'glpi_plugin_ocsinventoryng_ocsservers';
-      $tab[5]['field']     = 'name';
-      $tab[5]['linkfield'] = 'plugin_ocsinventoryng_ocsservers_id';
-      $tab[5]['name']      = __('Server');
+      $tab[] = [
+         'id'        => '5',
+         'table'     => 'glpi_plugin_ocsinventoryng_ocsservers',
+         'field'     => 'name',
+         'name'      => __('Server'),
+         'linkfield' => 'plugin_ocsinventoryng_ocsservers_id'
+      ];
 
-      $tab[6]['table']     = $this->getTable();
-      $tab[6]['field']     = 'tag';
-      $tab[6]['linkfield'] = '';
-      $tab[6]['name']      = __('OCSNG TAG', 'ocsinventoryng');
+      $tab[] = [
+         'id'    => '6',
+         'table' => $this->getTable(),
+         'field' => 'tag',
+         'name'  => __('OCSNG TAG', 'ocsinventoryng'),
+      ];
 
-      $tab[7]['table']     = $this->getTable();
-      $tab[7]['field']     = 'ipaddr';
-      $tab[7]['linkfield'] = '';
-      $tab[7]['name']      = __('IP');
+      $tab[] = [
+         'id'    => '7',
+         'table' => $this->getTable(),
+         'field' => 'ipaddr',
+         'name'  => __('IP'),
+      ];
 
-      $tab[8]['table']     = $this->getTable();
-      $tab[8]['field']     = 'domain';
-      $tab[8]['linkfield'] = '';
-      $tab[8]['name']      = __('Domain');
+      $tab[] = [
+         'id'    => '8',
+         'table' => $this->getTable(),
+         'field' => 'domain',
+         'name'  => __('Domain'),
+      ];
 
-      $tab[9]['table']     = $this->getTable();
-      $tab[9]['field']     = 'last_inventory';
-      $tab[9]['linkfield'] = '';
-      $tab[9]['name']      = __('Last OCSNG inventory date', 'ocsinventoryng');
-      $tab[9]['datatype']  = 'datetime';
+      $tab[] = [
+         'id'       => '9',
+         'table'    => $this->getTable(),
+         'field'    => 'last_inventory',
+         'name'     => __('Last OCSNG inventory date', 'ocsinventoryng'),
+         'datatype' => 'datetime'
+      ];
 
-      $tab[10]['table']     = $this->getTable();
-      $tab[10]['field']     = 'reason';
-      $tab[10]['linkfield'] = '';
-      $tab[10]['name']      = __('Reason of rejection');
+      $tab[] = [
+         'id'    => '10',
+         'table' => $this->getTable(),
+         'field' => 'reason',
+         'name'  => __('Reason of rejection'),
+      ];
 
-      $tab[11]['table']     = $this->getTable();
-      $tab[11]['field']     = 'serial';
-      $tab[11]['linkfield'] = '';
-      $tab[11]['name']      = __('Serial number');
+      $tab[] = [
+         'id'    => '11',
+         'table' => $this->getTable(),
+         'field' => 'serial',
+         'name'  => __('Serial number'),
+      ];
 
-      $tab[80]['table'] = 'glpi_entities';
-      $tab[80]['field'] = 'completename';
-      $tab[80]['name']  = __('Entity');
+      $tab[] = [
+         'id'       => '80',
+         'table'    => 'glpi_entities',
+         'field'    => 'completename',
+         'name'     => __('Entity'),
+         'datatype' => 'dropdown'
+      ];
 
       return $tab;
    }
-
 
    /**
     * @param $ocsservers_id

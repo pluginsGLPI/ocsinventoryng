@@ -223,7 +223,6 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             }
 
             $IPNetwork->networkUpdate = true;
-            Toolbox::logdebug($input);
             $IPNetwork->add($input, [], !$dohistory);
          }
       }
