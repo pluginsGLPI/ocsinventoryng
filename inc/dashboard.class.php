@@ -201,17 +201,19 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                      }
                  );
                       </script>";
-            if (!$nb) {
+
+            $canvas = true;
+            if ($nb < 1) {
+               $canvas = false;
                $graph .= __('No data available', 'mydashboard');
             }
-
             $params    = ["widgetId"  => $widgetId,
                           "name"      => 'LastSynchroChart',
                           "onsubmit"  => false,
                           "opt"       => [],
                           "criterias" => [],
-                          "export"    => true,
-                          "canvas"    => true,
+                          "export"    => $canvas,
+                          "canvas"    => $canvas,
                           "nb"        => $nb];
             $graph     .= PluginMydashboardHelper::getGraphHeader($params);
             $widget->setWidgetHtmlContent(
@@ -219,7 +221,6 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
             );
 
             return $widget;
-
             break;
 
          case $this->getType() . "2":
@@ -368,19 +369,18 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                  );
                 
              </script>";
-
-            if (!$nb) {
+            $canvas = true;
+            if ($nb < 1) {
+               $canvas = false;
                $graph .= __('No data available', 'mydashboard');
             }
-
-
             $params    = ["widgetId"  => $widgetId,
                           "name"      => 'InventoryTypePieChart',
                           "onsubmit"  => false,
                           "opt"       => [],
                           "criterias" => [],
-                          "export"    => true,
-                          "canvas"    => true,
+                          "export"    => $canvas,
+                          "canvas"    => $canvas,
                           "nb"        => $nb];
             $graph     .= PluginMydashboardHelper::getGraphHeader($params);
             $widget->setWidgetHtmlContent(
@@ -388,7 +388,6 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
             );
 
             return $widget;
-
             break;
       }
    }
