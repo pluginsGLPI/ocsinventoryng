@@ -3224,45 +3224,45 @@ JAVASCRIPT;
                   }
                }
                if ($bios && isset($ocsComputer['BIOS'])) {
-                  self::updateDevices("Item_DeviceFirmware", $line['computers_id'], $ocsComputer['BIOS'], $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DeviceFirmware", $line['computers_id'], $ocsComputer['BIOS'], $cfg_ocs, $import_device);
                }
                if ($memories && isset($ocsComputer['MEMORIES'])) {
-                  self::updateDevices("Item_DeviceMemory", $line['computers_id'], $ocsComputer['MEMORIES'], $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DeviceMemory", $line['computers_id'], $ocsComputer['MEMORIES'], $cfg_ocs, $import_device);
                }
                if ($storages && isset($ocsComputer['STORAGES'])) {
                   if (isset($storages["hdd"]) && $storages["hdd"]) {
-                     self::updateDevices("Item_DeviceHardDrive", $line['computers_id'], $ocsComputer['STORAGES'], $cfg_ocs, $import_device, '');
+                     self::updateDevices("Item_DeviceHardDrive", $line['computers_id'], $ocsComputer['STORAGES'], $cfg_ocs, $import_device);
                   }
                   if (isset($storages["drive"]) && $storages["drive"]) {
-                     self::updateDevices("Item_DeviceDrive", $line['computers_id'], $ocsComputer['STORAGES'], $cfg_ocs, $import_device, '');
+                     self::updateDevices("Item_DeviceDrive", $line['computers_id'], $ocsComputer['STORAGES'], $cfg_ocs, $import_device);
                   }
                }
                if ($cpus && isset($ocsComputer['CPUS'])) {
-                  self::updateDevices("Item_DeviceProcessor", $line['computers_id'], $ocsComputer['CPUS'], $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DeviceProcessor", $line['computers_id'], $ocsComputer['CPUS'], $cfg_ocs, $import_device);
                }
                if ($videos && isset($ocsComputer['VIDEOS'])) {
-                  self::updateDevices("Item_DeviceGraphicCard", $line['computers_id'], $ocsComputer['VIDEOS'], $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DeviceGraphicCard", $line['computers_id'], $ocsComputer['VIDEOS'], $cfg_ocs, $import_device);
                }
                if ($mb && isset($ocsComputer['BIOS'])) {
-                  self::updateDevices("Item_DeviceMotherboard", $line['computers_id'], $ocsComputer['BIOS'], $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DeviceMotherboard", $line['computers_id'], $ocsComputer['BIOS'], $cfg_ocs, $import_device);
                }
                if ($controllers && isset($ocsComputer['CONTROLLERS'])) {
-                  self::updateDevices("Item_DeviceControl", $line['computers_id'], $ocsComputer['CONTROLLERS'], $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DeviceControl", $line['computers_id'], $ocsComputer['CONTROLLERS'], $cfg_ocs, $import_device);
                }
                if ($sounds && isset($ocsComputer['SOUNDS'])) {
-                  self::updateDevices("Item_DeviceSoundCard", $line['computers_id'], $ocsComputer['SOUNDS'], $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DeviceSoundCard", $line['computers_id'], $ocsComputer['SOUNDS'], $cfg_ocs, $import_device);
                }
                if ($networks && isset($ocsComputer['NETWORKS'])) {
-                  self::updateDevices("Item_DeviceNetworkCard", $line['computers_id'], $ocsComputer['NETWORKS'], $cfg_ocs, $import_device, []);
+                  self::updateDevices("Item_DeviceNetworkCard", $line['computers_id'], $ocsComputer['NETWORKS'], $cfg_ocs, $import_device);
                }
                if ($modems && isset($ocsComputer['MODEMS'])) {
-                  self::updateDevices("Item_DevicePci", $line['computers_id'], $ocsComputer, $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DevicePci", $line['computers_id'], $ocsComputer, $cfg_ocs, $import_device);
                }
                if ($slots && isset($ocsComputer['SLOTS'])) {
-                  self::updateDevices("Item_DevicePci", $line['computers_id'], $ocsComputer, $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DevicePci", $line['computers_id'], $ocsComputer, $cfg_ocs, $import_device);
                }
                if ($ports && isset($ocsComputer['PORTS'])) {
-                  self::updateDevices("Item_DevicePci", $line['computers_id'], $ocsComputer, $cfg_ocs, $import_device, '');
+                  self::updateDevices("Item_DevicePci", $line['computers_id'], $ocsComputer, $cfg_ocs, $import_device);
                }
                if ($monitors && isset($ocsComputer["MONITORS"])) {
                   self::importMonitor($cfg_ocs, $line['computers_id'], $plugin_ocsinventoryng_ocsservers_id, $ocsComputer["MONITORS"], $comp->fields["entities_id"]);
@@ -3580,7 +3580,7 @@ JAVASCRIPT;
             }
          }
 
-         if (count($updates)) {
+         if ($updates > 0) {
             self::resetOS($options['computers_id'], "OperatingSystem", $options['cfg_ocs']);
             //            $updates["id"] = $options['computers_id'];
             //         $ops['fields']["entities_id"] = $p['entities_id'];
@@ -4920,14 +4920,13 @@ JAVASCRIPT;
     * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
     * @param $cfg_ocs array : ocs config
     * @param $import_device array : already imported devices
-    * @param $import_ip array : already imported ip
     *
     * @return Nothing .
     * @internal param int $ocsid : ocs computer id (ID).
     * @internal param bool $dohistory : log changes?
     *
     */
-   static function updateDevices($devicetype, $computers_id, $ocsComputer, $cfg_ocs, $import_device, $import_ip) {
+   static function updateDevices($devicetype, $computers_id, $ocsComputer, $cfg_ocs, $import_device) {
       $prevalue = $devicetype . self::FIELD_SEPARATOR;
       $do_clean = false;
       $comp     = new Computer();
@@ -5385,18 +5384,6 @@ JAVASCRIPT;
          }
       }
 
-      //TODO Import IP
-      if ($do_clean && count($import_ip) && $devicetype == "Item_DeviceNetworkCard") {
-         foreach ($import_ip as $key => $val) {
-            if ($key > 0) {
-               $netport = new NetworkPort();
-               $netport->delete(['id'          => $key,
-                                      '_no_history' => !$cfg_ocs['history_network']], 0, $cfg_ocs['history_network']);
-            }
-         }
-      }
-      //Alimentation
-      //Carte mere
    }
 
    /**
