@@ -119,17 +119,26 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
 
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
-            function form_init_all(form, value) {
+            function form_init_all(value) {
+                if(value != -1) {
                   var selects = $("form[id='formsnmpconfig'] select");
+
                   $.each(selects, function(index, select){
-                  $(select).select2('val', value);
-               });
+                     if (select.name != "init_all") {
+                       $(select).select2('val', value);
+                     }
+                  });
+               }
             }
          </script>
 JAVASCRIPT;
-      Dropdown::showYesNo('init_all', 0, -1, [
+      $values = [-1 => Dropdown::EMPTY_VALUE,
+                 0  => __('No'),
+                 1  => __('Yes')];
+
+      Dropdown::showFromArray('init_all', $values, [
          'width'     => '10%',
-         'on_change' => "form_init_all(this.form, this.selectedIndex);"
+         'on_change' => "form_init_all(this.value);"
       ]);
       echo "</th></tr>";
 
