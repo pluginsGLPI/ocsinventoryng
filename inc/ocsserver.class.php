@@ -3575,7 +3575,7 @@ JAVASCRIPT;
             }
          }
 
-         if (count($updates)) {
+         if ($updates > 0) {
             self::resetOS($options['computers_id'], "OperatingSystem", $options['cfg_ocs']);
 
             $device = new Item_OperatingSystem();
@@ -5837,8 +5837,9 @@ JAVASCRIPT;
    static function resetDisks($glpi_computers_id, $cfg_ocs) {
 
       $dd = new Item_Disk();
-      $dd->deleteByCriteria(['computers_id' => $glpi_computers_id,
-                             'is_dynamic'   => 1], 1, $cfg_ocs['history_drives']);
+      $dd->deleteByCriteria(['items_id'   => $glpi_computers_id,
+                             'itemtype'   => 'Computer',
+                             'is_dynamic' => 1], 1, $cfg_ocs['history_drives']);
 
    }
 
@@ -8164,7 +8165,7 @@ JAVASCRIPT;
                     WHERE `itemtype`='Printer'
                        AND `computers_id`= $computers_id
                        AND `is_dynamic` = 1
-                       AND `is_deleted` =0";
+                       AND `is_deleted` = 0 ";
       if (!empty($already_processed)) {
          $query .= "AND `items_id` NOT IN (" . implode(',', $already_processed) . ")";
       }
@@ -8320,7 +8321,7 @@ JAVASCRIPT;
                 WHERE `itemtype`='Peripheral'
                    AND `computers_id`=$computers_id
                    AND `is_dynamic` = 1
-                   AND `is_deleted` = 0";
+                   AND `is_deleted` = 0 ";
       if (!empty($already_processed)) {
          $query .= "AND `items_id` NOT IN (" . implode(',', $already_processed) . ")";
       }
