@@ -5356,6 +5356,21 @@ JAVASCRIPT;
    }
 
    /**
+    * get true if the server is active
+    *
+    * @param $serverID
+    *
+    * @return bool
+    */
+   static function serverIsActive($serverID) {
+      $ocsserver = new self();
+      if ($ocsserver->getFromDB($serverID)) {
+         return $ocsserver->isActive();
+      }
+      return false;
+   }
+
+   /**
     * Delete old devices settings
     *
     * @param $glpi_computers_id integer : glpi computer id.
