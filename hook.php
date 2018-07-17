@@ -1234,12 +1234,7 @@ function plugin_ocsinventoryng_install() {
    if(!$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'history_plugins')) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
                ADD `history_plugins` tinyint(1) NOT NULL DEFAULT '0';";
-      $DB->queryOrDie($query, "1.4.4 add history_plugins in glpi_plugin_ocsinventoryng_ocsservers");
-   }
-   if(!$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'checksum_plugins')) {
-      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-                ADD `checksum_plugins` int(11) NOT NULL DEFAULT '0';";
-      $DB->queryOrDie($query, "1.4.4 add checksum_plugins in glpi_plugin_ocsinventoryng_ocsservers");
+      $DB->queryOrDie($query, "1.50 add history_plugins in glpi_plugin_ocsinventoryng_ocsservers");
    }
    /******************* Migration 1.4.4 *******************/
 
