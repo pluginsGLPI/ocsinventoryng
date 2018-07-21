@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-04 08:32+0200\n"
-"PO-Revision-Date: 2018-07-04 06:33+0000\n"
+"POT-Creation-Date: 2018-07-17 14:59+0200\n"
+"PO-Revision-Date: 2018-07-17 13:00+0000\n"
 "Last-Translator: Amandine Manceau\n"
 "Language-Team: Czech (Czech Republic) (http://www.transifex.com/yllen/GLPI_ocsinventoryng/language/cs_CZ/)\n"
 "MIME-Version: 1.0\n"
@@ -21,117 +21,118 @@ msgstr ""
 "Language: cs_CZ\n"
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n <= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: hook.php:1455 front/notimportedcomputer.php:34 inc/menu.class.php:93
-#: inc/notificationtargetnotimportedcomputer.class.php:45
-#: inc/notificationtargetnotimportedcomputer.class.php:96
-#: inc/ocsserver.class.php:522 inc/ocsserver.class.php:523
-#: inc/ocsserver.class.php:524 inc/thread.class.php:118
-#: inc/thread.class.php:321
+#: hook.php:1439 front/notimportedcomputer.php:34 inc/menu.class.php:93
+#: inc/notificationtargetnotimportedcomputer.class.php:43
+#: inc/notificationtargetnotimportedcomputer.class.php:94
+#: inc/ocsserver.class.php:549 inc/ocsserver.class.php:550
+#: inc/ocsserver.class.php:551 inc/thread.class.php:117
+#: inc/thread.class.php:320
 msgid "Computers not imported by automatic actions"
 msgstr "Počítače nenaimportované pomocí automatických akcí"
 
-#: hook.php:1544
+#: hook.php:1529
 msgid "Restart import"
 msgstr "Spustit import znovu"
 
-#: hook.php:1545
+#: hook.php:1531
 msgid "Import in the entity"
 msgstr "Importovat v entitě"
 
-#: hook.php:1550
+#: hook.php:1537
 msgid "Delete computer in OCSNG"
 msgstr "Smazat počítač v OCSNG"
 
-#: hook.php:1562
+#: hook.php:1549
 msgid "Force synchronization OCSNG"
 msgstr "Vynutit OCSNG synchronizaci"
 
-#: hook.php:1564
+#: hook.php:1552
 msgid "Lock fields"
 msgstr "Uzamknout kolonky"
 
-#: hook.php:1566
+#: hook.php:1555
 msgid "Unlock fields"
 msgstr "Odemknout kolonky"
 
-#: hook.php:1577
+#: hook.php:1565
 msgid "Update networkport types"
 msgstr "Aktualizovat typy síťových portů"
 
-#: hook.php:1602 hook.php:1609 hook.php:1617 hook.php:1623 hook.php:1629
-#: hook.php:1636 hook.php:1643 hook.php:1650 hook.php:1657 hook.php:1666
-#: hook.php:1675 hook.php:1684 hook.php:1694 hook.php:1702 hook.php:1709
-#: hook.php:1716 hook.php:1727 inc/notimportedcomputer.class.php:636
-#: inc/ocslink.class.php:414 inc/ocsserver.class.php:7348
-#: inc/ocsserver.class.php:7351 inc/ocsserver.class.php:7354
-#: inc/profile.class.php:55 inc/ruleimportentity.class.php:61
-#: inc/thread.class.php:599
+#: hook.php:1590 hook.php:1597 hook.php:1605 hook.php:1611 hook.php:1617
+#: hook.php:1624 hook.php:1631 hook.php:1638 hook.php:1645 hook.php:1654
+#: hook.php:1663 hook.php:1672 hook.php:1682 hook.php:1690 hook.php:1697
+#: hook.php:1704 hook.php:1715 inc/notimportedcomputer.class.php:671
+#: inc/ocslink.class.php:406 inc/ocsserver.class.php:7009
+#: inc/ocsserver.class.php:7013 inc/ocsserver.class.php:7017
+#: inc/profile.class.php:54 inc/ruleimportentity.class.php:61
+#: inc/thread.class.php:596
 msgid "OCSNG"
 msgstr "OCSNG"
 
-#: hook.php:1602 hook.php:1727 inc/ocslink.class.php:112
+#: hook.php:1590 hook.php:1715 inc/ocslink.class.php:107
 msgid "GLPI import date"
 msgstr "Datum importu do GLPI"
 
-#: hook.php:1609 inc/ipdiscoverocslink.class.php:1360
-#: inc/notimportedcomputer.class.php:91 inc/notimportedcomputer.class.php:280
-#: inc/ocslink.class.php:107 inc/ocsserver.class.php:4105
+#: hook.php:1597 inc/ipdiscoverocslink.class.php:1265
+#: inc/notimportedcomputer.class.php:91 inc/notimportedcomputer.class.php:304
+#: inc/ocslink.class.php:102 inc/ocsserver.class.php:4076
 msgid "Last OCSNG inventory date"
 msgstr "Datum poslední inventarizace v OCSNG"
 
-#: hook.php:1617 inc/ocslink.class.php:148 inc/ocslink.class.php:355
+#: hook.php:1605 inc/ocslink.class.php:142 inc/ocslink.class.php:348
 msgid "Automatic update OCSNG"
 msgstr "Automatická aktualizace OCSNG"
 
-#: hook.php:1623 inc/notimportedcomputer.class.php:82
-#: inc/notimportedcomputer.class.php:250 inc/ocslink.class.php:109
+#: hook.php:1611 inc/notimportedcomputer.class.php:82
+#: inc/notimportedcomputer.class.php:259 inc/ocslink.class.php:104
 msgid "Inventory agent"
 msgstr "Agent pro inventarizaci"
 
-#: hook.php:1629 hook.php:1892 hook.php:1945
-#: inc/notificationtargetnotimportedcomputer.class.php:94
-#: inc/notimportedcomputer.class.php:79 inc/notimportedcomputer.class.php:265
-#: inc/ocslink.class.php:139 inc/ocslink.class.php:348
-#: inc/ocsserver.class.php:4106 inc/ocsserver.class.php:4519
+#: hook.php:1617 hook.php:1880 hook.php:1933
+#: inc/notificationtargetnotimportedcomputer.class.php:92
+#: inc/notimportedcomputer.class.php:79 inc/notimportedcomputer.class.php:283
+#: inc/ocslink.class.php:134 inc/ocslink.class.php:341
+#: inc/ocsserver.class.php:4077 inc/ocsserver.class.php:4491
 msgid "OCSNG TAG"
 msgstr "OCSNG ŠTÍTEK"
 
-#: hook.php:1636 inc/notificationtargetnotimportedcomputer.class.php:98
-#: inc/notimportedcomputer.class.php:66 inc/notimportedcomputer.class.php:237
+#: hook.php:1624 inc/detail.class.php:54
+#: inc/notificationtargetnotimportedcomputer.class.php:96
+#: inc/notimportedcomputer.class.php:66 inc/notimportedcomputer.class.php:241
 msgid "OCSNG ID"
 msgstr "OCSNG IDENTIFIKÁTOR"
 
-#: hook.php:1643 inc/ocslink.class.php:125
+#: hook.php:1631 inc/ocslink.class.php:120
 msgid "Last OCSNG connection date"
 msgstr "Datum posledního připojení k OCSNG"
 
-#: hook.php:1650 inc/ocslink.class.php:132
+#: hook.php:1638 inc/ocslink.class.php:127
 msgid "IP Source"
 msgstr "Zdroj IP adresy"
 
-#: hook.php:1657 inc/ocslink.class.php:161 inc/ocslink.class.php:249
-#: inc/ocslink.class.php:362 inc/ocsserver.class.php:874
-#: inc/snmpocslink.class.php:513 inc/snmpocslink.class.php:694
+#: hook.php:1645 inc/ocslink.class.php:155 inc/ocslink.class.php:242
+#: inc/ocslink.class.php:355 inc/ocsserver.class.php:910
+#: inc/snmpocslink.class.php:516 inc/snmpocslink.class.php:697
 msgid "Uptime"
 msgstr "Doba běhu (uptime)"
 
-#: hook.php:1666 hook.php:1675 inc/ocsserver.class.php:829
-#: inc/registrykey.class.php:48 inc/registrykey.class.php:114
+#: hook.php:1654 hook.php:1663 inc/ocsserver.class.php:865
+#: inc/registrykey.class.php:48 inc/registrykey.class.php:116
 msgid "Registry"
 msgstr "Registry"
 
-#: hook.php:1667 inc/registrykey.class.php:98
+#: hook.php:1655 inc/registrykey.class.php:100
 msgid "Key/Value"
 msgstr "Klíč/hodnota"
 
-#: hook.php:1676 inc/notimportedcomputer.class.php:242
+#: hook.php:1664 inc/notimportedcomputer.class.php:249
 msgid "OCSNG name"
 msgstr "Název v OCSNG"
 
-#: hook.php:1684 hook.php:1902 hook.php:1938 inc/config.class.php:113
-#: inc/ocsserver.class.php:117 inc/ocsserver.class.php:323
-#: inc/ocsserver.class.php:434 inc/profile.class.php:308
-#: inc/thread.class.php:44
+#: hook.php:1672 hook.php:1890 hook.php:1926 inc/config.class.php:113
+#: inc/ocsserver.class.php:117 inc/ocsserver.class.php:350
+#: inc/ocsserver.class.php:461 inc/profile.class.php:256
+#: inc/thread.class.php:43
 msgid "OCSNG server"
 msgid_plural "OCSNG servers"
 msgstr[0] "OCSNG server"
@@ -139,29 +140,29 @@ msgstr[1] "OCSNG servery"
 msgstr[2] "OCSNG serverů"
 msgstr[3] "OCSNG servery"
 
-#: hook.php:1694 inc/proxysetting.class.php:123
+#: hook.php:1682 inc/proxysetting.class.php:127
 msgid "Proxy enabled"
 msgstr "Proxy zapnuto"
 
-#: hook.php:1702 inc/proxysetting.class.php:125
+#: hook.php:1690 inc/proxysetting.class.php:129
 msgid "Proxy address"
 msgstr "Adresa proxy"
 
-#: hook.php:1709 inc/service.class.php:117
+#: hook.php:1697 inc/service.class.php:121
 msgid "Name of the service"
 msgstr "Název služby"
 
-#: hook.php:1716 inc/runningprocess.class.php:121
+#: hook.php:1704 inc/runningprocess.class.php:125
 msgid "Process name"
 msgstr "Název procesu"
 
-#: hook.php:1727 inc/menu.class.php:184 inc/snmpocslink.class.php:78
+#: hook.php:1715 inc/menu.class.php:184 inc/snmpocslink.class.php:73
 msgid "SNMP Import"
 msgstr "SNMP import"
 
-#: hook.php:1980 inc/ocslink.class.php:54 inc/ocslink.class.php:337
-#: inc/ocslink.class.php:479 inc/ocslink.class.php:492
-#: inc/ocslink.class.php:505 inc/ocslink.class.php:711
+#: hook.php:1968 inc/ocslink.class.php:51 inc/ocslink.class.php:330
+#: inc/ocslink.class.php:470 inc/ocslink.class.php:483
+#: inc/ocslink.class.php:496 inc/ocslink.class.php:699
 msgid "OCSNG link"
 msgid_plural "OCSNG links"
 msgstr[0] "OCSNG odkaz"
@@ -169,23 +170,23 @@ msgstr[1] "OCSNG odkazy"
 msgstr[2] "OCSNG odkazů"
 msgstr[3] "OCSNG odkazy"
 
-#: hook.php:2160
+#: hook.php:2148
 msgid "Link possible"
 msgstr "Propojení je možné"
 
-#: hook.php:2164
+#: hook.php:2152
 msgid "Import refused"
 msgstr "Import odmítnut"
 
-#: hook.php:2168
+#: hook.php:2156
 msgid "New computer created in GLPI"
 msgstr "Nový počítač vytvořený v GLPI"
 
-#: hook.php:2180
+#: hook.php:2168
 msgid "Link with computer"
 msgstr "Propojení s počítačem"
 
-#: hook.php:2404
+#: hook.php:2392
 msgid "Locked field"
 msgid_plural "Locked fields"
 msgstr[0] "Zamknutá kolonka"
@@ -193,19 +194,19 @@ msgstr[1] "Zamknuté kolonky"
 msgstr[2] "Zamknutých kolonek"
 msgstr[3] "Zamknuté kolonky"
 
-#: hook.php:2417
+#: hook.php:2405
 msgid "You don't use locks - See setup for activate them"
 msgstr "Nepoužíváte zámky – pro jejich aktivaci přejděte do nastavení"
 
-#: hook.php:2643
+#: hook.php:2631
 msgid ""
 "The startup date field is locked by ocsinventoryng please unlock it before "
 "update."
 msgstr "Datum začátku je uzamčeno ocsinventoryng – před aktualizací ho odemkněte"
 
 #: front/config.form.php:49 inc/config.class.php:47 inc/config.class.php:119
-#: inc/ocsserver.class.php:340 inc/ocsserver.class.php:341
-#: inc/ocsserver.class.php:342
+#: inc/ocsserver.class.php:367 inc/ocsserver.class.php:368
+#: inc/ocsserver.class.php:369
 msgid "Automatic synchronization's configuration"
 msgstr "Nastavení automatické synchronizace"
 
@@ -223,18 +224,18 @@ msgid "No new computers to delete"
 msgstr "Žádný nový počítač ke smazání"
 
 #: front/deleted_equiv.php:49 front/deleted_equiv.php:84
-#: inc/menu.class.php:104 inc/ocsserver.class.php:543
-#: inc/ocsserver.class.php:544 inc/ocsserver.class.php:545
+#: inc/menu.class.php:104 inc/ocsserver.class.php:570
+#: inc/ocsserver.class.php:571 inc/ocsserver.class.php:572
 msgid "Clean OCSNG deleted computers"
 msgstr "Vyčistit počítač smazané v OCSNG"
 
-#: front/detail.php:34 inc/menu.class.php:89 inc/ocsserver.class.php:493
-#: inc/ocsserver.class.php:494 inc/ocsserver.class.php:495
-#: inc/thread.class.php:115 inc/thread.class.php:318
+#: front/detail.php:34 inc/menu.class.php:89 inc/ocsserver.class.php:520
+#: inc/ocsserver.class.php:521 inc/ocsserver.class.php:522
+#: inc/thread.class.php:114 inc/thread.class.php:317
 msgid "Computers imported by automatic actions"
 msgstr "Počítače naimportované pomocí automatických akcí"
 
-#: front/networkport.php:34 inc/menu.class.php:97 inc/networkport.class.php:49
+#: front/networkport.php:34 inc/menu.class.php:97 inc/networkport.class.php:47
 msgid "Unknown imported network port type"
 msgid_plural "Unknown imported network ports types"
 msgstr[0] "Neznámý typ importovaného síťového portu"
@@ -242,14 +243,14 @@ msgstr[1] "Neznámé typy importovaných síťových portů"
 msgstr[2] "Neznámých typů importovaných síťových portů"
 msgstr[3] "Neznámé typy importovaných síťových portů"
 
-#: front/ocsng.clean.php:53 inc/menu.class.php:108 inc/ocsserver.class.php:551
-#: inc/ocsserver.class.php:552 inc/ocsserver.class.php:553
-#: inc/ocsserver.class.php:3838 inc/profile.class.php:320
+#: front/ocsng.clean.php:53 inc/menu.class.php:108 inc/ocsserver.class.php:578
+#: inc/ocsserver.class.php:579 inc/ocsserver.class.php:580
+#: inc/ocsserver.class.php:3809 inc/profile.class.php:268
 msgid "Clean links between GLPI and OCSNG"
 msgstr "Vyčistit propojení mezi GLPI a OCSNG"
 
 #: front/ocsng.import.php:86 front/ocsngsnmp.import.php:86
-#: inc/ocsserver.class.php:846
+#: inc/ocsserver.class.php:882
 msgid "No import: the plugin will not import these elements"
 msgstr "Žádný import: zásuvný modul nebude tyto prvky importovat"
 
@@ -257,7 +258,7 @@ msgstr "Žádný import: zásuvný modul nebude tyto prvky importovat"
 msgid "Successful link"
 msgstr "Úspěšné propojení"
 
-#: front/ocsngsnmp.sync.php:79 front/ocsng.sync.php:65
+#: front/ocsngsnmp.sync.php:79 front/ocsng.sync.php:63
 msgid "No synchronization: the plugin will not synchronize these elements"
 msgstr "Žádná synchronizace: zásuvný modul nebude tyto prvky importovat"
 
@@ -265,7 +266,7 @@ msgstr "Žádná synchronizace: zásuvný modul nebude tyto prvky importovat"
 msgid "Information about the script"
 msgstr "Informace o skriptu"
 
-#: front/thread.php:41 inc/thread.class.php:306
+#: front/thread.php:41 inc/thread.class.php:305
 msgid "Processes execution of automatic actions"
 msgstr "Spuštění procesů automatických akcí"
 
@@ -311,40 +312,40 @@ msgctxt "button"
 msgid "Unlock"
 msgstr "Odemknout"
 
-#: inc/config.class.php:234 inc/thread.class.php:397
+#: inc/config.class.php:234 inc/thread.class.php:394
 msgid "All servers"
 msgstr "Všechny servery"
 
-#: inc/dashboard.class.php:59 inc/dashboard.class.php:103
+#: inc/dashboard.class.php:59 inc/dashboard.class.php:104
 msgid "Last synchronization of computers by month"
 msgstr "Minulá synchronizace počítačů podle měsíců"
 
-#: inc/dashboard.class.php:60 inc/dashboard.class.php:296
+#: inc/dashboard.class.php:60 inc/dashboard.class.php:312
 msgid "Detail of imported computers"
 msgstr "Podrobnosti o importovaných počítačích"
 
-#: inc/dashboard.class.php:109
+#: inc/dashboard.class.php:110
 msgid "Computers number"
-msgstr ""
+msgstr "Počet počítačů"
 
-#: inc/dashboard.class.php:204 inc/dashboard.class.php:358
+#: inc/dashboard.class.php:208 inc/dashboard.class.php:375
 msgid "No data available"
-msgstr ""
+msgstr "Nejsou k dispozici žádná data"
 
-#: inc/dashboard.class.php:243
+#: inc/dashboard.class.php:248
 msgid "OCS Inventory NG"
 msgstr "OCS Inventory NG"
 
-#: inc/dashboard.class.php:263
+#: inc/dashboard.class.php:271
 msgid "Fusion Inventory"
 msgstr "Fusion Inventory"
 
-#: inc/dashboard.class.php:291
+#: inc/dashboard.class.php:307
 msgid "Without agent"
 msgstr "Bez agenta"
 
-#: inc/detail.class.php:45 inc/detail.class.php:164
-#: inc/notimportedcomputer.class.php:49 inc/notimportedcomputer.class.php:231
+#: inc/detail.class.php:46 inc/detail.class.php:194
+#: inc/notimportedcomputer.class.php:49 inc/notimportedcomputer.class.php:233
 msgid "Computer not imported"
 msgid_plural "Computers not imported"
 msgstr[0] "Nenaimportovaný počítač"
@@ -352,190 +353,189 @@ msgstr[1] "Nenaimportované počítače"
 msgstr[2] "Nenaimportovaných počítačů"
 msgstr[3] "Nenaimportované počítače"
 
-#: inc/detail.class.php:60
+#: inc/detail.class.php:70
 msgid "Process time"
 msgstr "Doba zpracování procesu"
 
-#: inc/detail.class.php:70
+#: inc/detail.class.php:86
 msgid "Process"
 msgstr "Proces"
 
-#: inc/detail.class.php:79 inc/thread.class.php:111
+#: inc/detail.class.php:101 inc/thread.class.php:110
 msgid "Thread"
 msgstr "Vlákno"
 
-#: inc/detail.class.php:84
+#: inc/detail.class.php:109
 msgid "Rules checked"
 msgstr "Pravidla zkontrolována"
 
-#: inc/detail.class.php:168 inc/ocsserver.class.php:7585
+#: inc/detail.class.php:198 inc/ocsserver.class.php:7251
 msgid "Computers imported"
 msgstr "Naimportované počítače"
 
-#: inc/detail.class.php:171 inc/ocsserver.class.php:7587
-#: inc/thread.class.php:117 inc/thread.class.php:320
+#: inc/detail.class.php:201 inc/ocsserver.class.php:7253
+#: inc/thread.class.php:116 inc/thread.class.php:319
 msgid "Computers linked"
 msgstr "Propojené počítače"
 
-#: inc/detail.class.php:174 inc/ocsserver.class.php:7588
-#: inc/thread.class.php:120 inc/thread.class.php:322
+#: inc/detail.class.php:204 inc/ocsserver.class.php:7254
+#: inc/thread.class.php:119 inc/thread.class.php:321
 msgid "Computers not updated"
 msgstr "Nezaktualizované počítače"
 
-#: inc/detail.class.php:177 inc/ocsserver.class.php:7586
-#: inc/thread.class.php:116 inc/thread.class.php:319
+#: inc/detail.class.php:207 inc/ocsserver.class.php:7252
+#: inc/thread.class.php:115 inc/thread.class.php:318
 msgid "Computers synchronized"
 msgstr "Synchronizované počítače"
 
-#: inc/detail.class.php:180 inc/thread.class.php:121 inc/thread.class.php:323
+#: inc/detail.class.php:210 inc/thread.class.php:120 inc/thread.class.php:322
 msgid "Computers not unique"
 msgstr "Počítače, které se opakují"
 
 #: inc/ipdiscoverocslink.class.php:48 inc/menu.class.php:125
-#: inc/menu.class.php:166
+#: inc/menu.class.php:167
 msgid "IPDiscover Import"
 msgstr "Import IPDiscover"
 
-#: inc/ipdiscoverocslink.class.php:338 inc/ocsserver.class.php:277
-#: inc/ocsserver.class.php:391 inc/ocsserver.class.php:5627
-#: inc/ocsserver.class.php:5648 inc/snmpocslink.class.php:371
+#: inc/ipdiscoverocslink.class.php:346 inc/ocsserver.class.php:304
+#: inc/ocsserver.class.php:418 inc/snmpocslink.class.php:373
 msgid "Choice of an OCSNG server"
 msgstr "Vybrat server OCSNG"
 
-#: inc/ipdiscoverocslink.class.php:359 inc/ocsserver.class.php:299
-#: inc/ocsserver.class.php:411 inc/snmpocslink.class.php:392
+#: inc/ipdiscoverocslink.class.php:369 inc/ocsserver.class.php:326
+#: inc/ocsserver.class.php:438 inc/snmpocslink.class.php:395
 msgid ""
 "If you not find your OCSNG server in this dropdown, please check if your "
 "profile can access it !"
 msgstr "Pokud v tomto seznamu nenaleznete svůj OCSNG server, zkontrolujte zda je server přístupný vašemu profilu!"
 
-#: inc/ipdiscoverocslink.class.php:384
+#: inc/ipdiscoverocslink.class.php:394
 msgid "Import IPDiscover"
 msgstr "Importovat IPDiscover"
 
-#: inc/ipdiscoverocslink.class.php:387
+#: inc/ipdiscoverocslink.class.php:397
 msgid "Link IPDiscover"
 msgstr "Propojit IPDiscover"
 
-#: inc/ipdiscoverocslink.class.php:395
+#: inc/ipdiscoverocslink.class.php:405
 msgid "All Subnets"
 msgstr "Všechny podsítě"
 
-#: inc/ipdiscoverocslink.class.php:396
+#: inc/ipdiscoverocslink.class.php:406
 msgid "Known Subnets"
 msgstr "Známé podsítě"
 
-#: inc/ipdiscoverocslink.class.php:397
+#: inc/ipdiscoverocslink.class.php:407
 msgid "Unknown Subnets"
 msgstr "Neznámé podsítě"
 
-#: inc/ipdiscoverocslink.class.php:743 inc/ipdiscoverocslink.class.php:1326
+#: inc/ipdiscoverocslink.class.php:673 inc/ipdiscoverocslink.class.php:1230
 msgid "Non Inventoried"
 msgstr "Nezinventarizováno"
 
-#: inc/ipdiscoverocslink.class.php:744 inc/ipdiscoverocslink.class.php:1322
+#: inc/ipdiscoverocslink.class.php:674 inc/ipdiscoverocslink.class.php:1226
 msgid "Inventoried"
 msgstr "Zinventarizováno"
 
-#: inc/ipdiscoverocslink.class.php:745 inc/ipdiscoverocslink.class.php:1328
+#: inc/ipdiscoverocslink.class.php:675 inc/ipdiscoverocslink.class.php:1232
 msgid "Identified"
 msgstr "Identifikováno"
 
-#: inc/ipdiscoverocslink.class.php:746 inc/ipdiscoverocslink.class.php:1324
+#: inc/ipdiscoverocslink.class.php:676 inc/ipdiscoverocslink.class.php:1228
 msgid "Imported / Linked"
 msgstr "Importováno/propojeno"
 
-#: inc/ipdiscoverocslink.class.php:829 inc/menu.class.php:129
+#: inc/ipdiscoverocslink.class.php:770 inc/menu.class.php:129
 msgid "Modify Subnet"
 msgstr "Upravit podsíť"
 
-#: inc/ipdiscoverocslink.class.php:837
+#: inc/ipdiscoverocslink.class.php:778
 msgid "Subnet Name"
 msgstr "Název podsítě"
 
-#: inc/ipdiscoverocslink.class.php:845 inc/ipdiscoverocslink.class.php:864
+#: inc/ipdiscoverocslink.class.php:786 inc/ipdiscoverocslink.class.php:805
 msgid "Choose ID"
 msgstr "Zvolte identifikátor"
 
-#: inc/ipdiscoverocslink.class.php:1046
+#: inc/ipdiscoverocslink.class.php:964
 msgid "Unable to add. an object with same MAC address already exists."
 msgstr "Nedaří se přidat objekt se stejnou MAC adresou, která už existuje."
 
-#: inc/ipdiscoverocslink.class.php:1348
+#: inc/ipdiscoverocslink.class.php:1253
 msgid "No new IPDiscover device to import"
 msgstr "Žádné nové zařízení k importu z IPDiscover"
 
-#: inc/ipdiscoverocslink.class.php:1387 inc/ipdiscoverocslink.class.php:1438
-#: inc/ocslink.class.php:387 inc/ocsserver.class.php:4503
-#: inc/ocsserver.class.php:4702 inc/snmpocslink.class.php:520
-#: inc/snmpocslink.class.php:2864 inc/snmpocslink.class.php:2893
+#: inc/ipdiscoverocslink.class.php:1292 inc/ipdiscoverocslink.class.php:1343
+#: inc/ocslink.class.php:380 inc/ocsserver.class.php:4475
+#: inc/ocsserver.class.php:4674 inc/snmpocslink.class.php:523
+#: inc/snmpocslink.class.php:2710 inc/snmpocslink.class.php:2739
 msgctxt "button"
 msgid "Delete link"
 msgstr "Smazat odkaz"
 
-#: inc/ipdiscoverocslink.class.php:1394 inc/ocslink.class.php:217
-#: inc/ocslink.class.php:274 inc/ocsserver.class.php:3858
-#: inc/ocsserver.class.php:4104 inc/snmpocslink.class.php:493
-#: inc/snmpocslink.class.php:656 inc/snmpocslink.class.php:794
-#: inc/snmpocslink.class.php:2871
+#: inc/ipdiscoverocslink.class.php:1299 inc/ocslink.class.php:210
+#: inc/ocslink.class.php:266 inc/ocsserver.class.php:3829
+#: inc/ocsserver.class.php:4075 inc/snmpocslink.class.php:496
+#: inc/snmpocslink.class.php:659 inc/snmpocslink.class.php:796
+#: inc/snmpocslink.class.php:2717
 msgid "Import date in GLPI"
 msgstr "Importovat data do GLPI"
 
-#: inc/ipdiscoverocslink.class.php:1456 inc/ipdiscoverocslink.class.php:1561
-#: inc/ipdiscoverocslink.class.php:1580 inc/ipdiscoverocslink.class.php:1676
-#: inc/ocsserver.class.php:4501 inc/ocsserver.class.php:4700
-#: inc/snmpocslink.class.php:2538 inc/snmpocslink.class.php:2709
+#: inc/ipdiscoverocslink.class.php:1361 inc/ipdiscoverocslink.class.php:1466
+#: inc/ipdiscoverocslink.class.php:1485 inc/ipdiscoverocslink.class.php:1581
+#: inc/ocsserver.class.php:4473 inc/ocsserver.class.php:4672
+#: inc/snmpocslink.class.php:2380 inc/snmpocslink.class.php:2552
 msgctxt "button"
 msgid "Link"
 msgstr "Odkaz"
 
-#: inc/ipdiscoverocslink.class.php:1459 inc/ipdiscoverocslink.class.php:1564
-#: inc/ipdiscoverocslink.class.php:1583 inc/ipdiscoverocslink.class.php:1679
+#: inc/ipdiscoverocslink.class.php:1364 inc/ipdiscoverocslink.class.php:1469
+#: inc/ipdiscoverocslink.class.php:1488 inc/ipdiscoverocslink.class.php:1584
 msgctxt "button"
 msgid "Delete from OCSNG"
 msgstr "Vymazat z OCSNG"
 
-#: inc/ipdiscoverocslink.class.php:1465
+#: inc/ipdiscoverocslink.class.php:1370
 msgid "DNS"
 msgstr "DNS"
 
-#: inc/ipdiscoverocslink.class.php:1467 inc/ipdiscoverocslink.class.php:1587
+#: inc/ipdiscoverocslink.class.php:1372 inc/ipdiscoverocslink.class.php:1492
 msgid "OCS Type"
 msgstr "OCS typ"
 
-#: inc/ipdiscoverocslink.class.php:1474 inc/ipdiscoverocslink.class.php:1597
+#: inc/ipdiscoverocslink.class.php:1379 inc/ipdiscoverocslink.class.php:1502
 msgid "GLPI Type"
 msgstr "GLPI typ"
 
-#: inc/ipdiscoverocslink.class.php:1476 inc/ipdiscoverocslink.class.php:1599
-#: inc/ocsserver.class.php:4526 inc/snmpocslink.class.php:2560
+#: inc/ipdiscoverocslink.class.php:1381 inc/ipdiscoverocslink.class.php:1504
+#: inc/ocsserver.class.php:4498 inc/snmpocslink.class.php:2402
 msgid "Item to link"
 msgstr "Položka kterou propojit"
 
-#: inc/menu.class.php:67 inc/ocsserver.class.php:330
-#: inc/ocsserver.class.php:331
+#: inc/menu.class.php:67 inc/ocsserver.class.php:357
+#: inc/ocsserver.class.php:358
 msgid "Configuration of OCSNG server"
 msgstr "Nastavení OCSNG serveru"
 
-#: inc/menu.class.php:73 inc/ocsserver.class.php:455
-#: inc/ocsserver.class.php:456 inc/ocsserver.class.php:457
-#: inc/ocsserver.class.php:4350
+#: inc/menu.class.php:73 inc/ocsserver.class.php:482
+#: inc/ocsserver.class.php:483 inc/ocsserver.class.php:484
+#: inc/ocsserver.class.php:4321
 msgid "Import new computers"
 msgstr "Importovat nové počítače"
 
-#: inc/menu.class.php:77 inc/ocsserver.class.php:481
-#: inc/ocsserver.class.php:482 inc/ocsserver.class.php:483
+#: inc/menu.class.php:77 inc/ocsserver.class.php:508
+#: inc/ocsserver.class.php:509 inc/ocsserver.class.php:510
 msgid "Synchronize computers already imported"
 msgstr "Synchronizovat už naimportované počítače"
 
-#: inc/menu.class.php:81 inc/ocsserver.class.php:509
-#: inc/ocsserver.class.php:510 inc/ocsserver.class.php:511
-#: inc/ocsserver.class.php:4352
+#: inc/menu.class.php:81 inc/ocsserver.class.php:536
+#: inc/ocsserver.class.php:537 inc/ocsserver.class.php:538
+#: inc/ocsserver.class.php:4323
 msgid "Link new OCSNG computers to existing GLPI computers"
 msgstr "Propojit nové počítače z OCSNG s existujícími počítači v GLPI"
 
-#: inc/menu.class.php:85 inc/ocsserver.class.php:467
-#: inc/ocsserver.class.php:468 inc/ocsserver.class.php:469
+#: inc/menu.class.php:85 inc/ocsserver.class.php:494
+#: inc/ocsserver.class.php:495 inc/ocsserver.class.php:496
 msgid "Scripts execution of automatic actions"
 msgstr "Skripty spouštějící automatické akce"
 
@@ -543,25 +543,25 @@ msgstr "Skripty spouštějící automatické akce"
 msgid "Import new snmp devices"
 msgstr "Importovat nová snmp zařízení"
 
-#: inc/menu.class.php:117 inc/snmpocslink.class.php:436
-#: inc/snmpocslink.class.php:437 inc/snmpocslink.class.php:438
+#: inc/menu.class.php:117 inc/snmpocslink.class.php:439
+#: inc/snmpocslink.class.php:440 inc/snmpocslink.class.php:441
 msgid "Synchronize snmp devices already imported"
 msgstr "Synchronizovat už naimportovaná snmp zařízení"
 
-#: inc/menu.class.php:121 inc/snmpocslink.class.php:428
-#: inc/snmpocslink.class.php:429 inc/snmpocslink.class.php:430
+#: inc/menu.class.php:121 inc/snmpocslink.class.php:431
+#: inc/snmpocslink.class.php:432 inc/snmpocslink.class.php:433
 msgid "Link SNMP devices to existing GLPI objects"
 msgstr "Propojit SNMP zařízení k existujícím GLPI objektům"
 
-#: inc/menu.class.php:162
+#: inc/menu.class.php:163
 msgid "Server Setup"
 msgstr "Nastavení serveru"
 
-#: inc/menu.class.php:164
+#: inc/menu.class.php:165
 msgid "Inventory Import"
 msgstr "Import inventáře"
 
-#: inc/menu.class.php:194 inc/ocsserver.class.php:5651
+#: inc/menu.class.php:194
 msgid "No OCSNG server defined"
 msgstr "Není určen žádný OCSNG server"
 
@@ -573,32 +573,32 @@ msgstr "Je třeba nastavit OCSNG server"
 msgid "Add a OCSNG server"
 msgstr "Přidat OCSNG server"
 
-#: inc/networkport.class.php:432 inc/networkport.class.php:466
-#: inc/networkporttype.class.php:162
+#: inc/networkport.class.php:456 inc/networkport.class.php:490
+#: inc/networkporttype.class.php:159
 msgid "OCS TYPE"
 msgstr "OCS TYP"
 
-#: inc/networkport.class.php:434 inc/networkport.class.php:467
+#: inc/networkport.class.php:458 inc/networkport.class.php:491
 msgid "OCS MIB TYPE"
 msgstr "OCS MIB TYP"
 
-#: inc/networkport.class.php:439
+#: inc/networkport.class.php:463
 msgid "Create an entry for defining this type"
 msgstr "Vytvoření položky pro definování tohoto typu"
 
-#: inc/networkport.class.php:468
+#: inc/networkport.class.php:492
 msgid "Create a mapping"
 msgstr "Vytvořit mapování"
 
-#: inc/networkport.class.php:542
+#: inc/networkport.class.php:566
 msgid "empty"
 msgstr "prázdné"
 
-#: inc/networkport.class.php:599
+#: inc/networkport.class.php:623
 msgid "No unknown network port type from OCS !"
 msgstr "Žádný neznámý typ síťového portu z OCS!"
 
-#: inc/networkporttype.class.php:48
+#: inc/networkporttype.class.php:47
 msgid "Network port type"
 msgid_plural "Network port types"
 msgstr[0] "Typ síťového portu"
@@ -606,43 +606,43 @@ msgstr[1] "Typy síťových portů"
 msgstr[2] "Typů síťových portů"
 msgstr[3] "Typy síťových portů"
 
-#: inc/networkporttype.class.php:130
+#: inc/networkporttype.class.php:127
 msgid "Any kind"
 msgstr "Libovolný druh"
 
-#: inc/networkporttype.class.php:165
+#: inc/networkporttype.class.php:162
 msgid "OCS TYPE MIB"
 msgstr "OCS TYP MIB"
 
-#: inc/networkporttype.class.php:168
+#: inc/networkporttype.class.php:165
 msgid "Corresponding Network Port type"
 msgstr "Odpovídající typ síťového portu"
 
-#: inc/networkporttype.class.php:171
+#: inc/networkporttype.class.php:168
 msgid "Ethernet medium type"
 msgstr "Typ ethernetového média"
 
-#: inc/networkporttype.class.php:174
+#: inc/networkporttype.class.php:171
 msgid "Ethernet medium speed"
 msgstr "Rychlost ethernetu"
 
-#: inc/networkporttype.class.php:177
+#: inc/networkporttype.class.php:174
 msgid "Wifi card Version"
 msgstr "Verze Wifi karty"
 
-#: inc/networkporttype.class.php:183
+#: inc/networkporttype.class.php:180
 msgid "Transform unknown ports that match"
 msgstr "Přetvořit odpovídající neznámé porty"
 
-#: inc/networkporttype.class.php:218 inc/networkporttype.class.php:220
+#: inc/networkporttype.class.php:216 inc/networkporttype.class.php:218
 msgid "Create"
 msgstr "Vytvořit"
 
-#: inc/networkshare.class.php:43 inc/ocsserver.class.php:905
+#: inc/networkshare.class.php:43 inc/ocsserver.class.php:941
 msgid "Network shares"
 msgstr "Síťová sdílení"
 
-#: inc/networkshare.class.php:122 inc/registrykey.class.php:97
+#: inc/networkshare.class.php:122 inc/registrykey.class.php:99
 msgid "Path"
 msgstr "Cesta"
 
@@ -650,8 +650,8 @@ msgstr "Cesta"
 msgid "Quota"
 msgstr "Kvóta"
 
-#: inc/notificationtargetnotimportedcomputer.class.php:99
-#: inc/notimportedcomputer.class.php:73 inc/notimportedcomputer.class.php:255
+#: inc/notificationtargetnotimportedcomputer.class.php:97
+#: inc/notimportedcomputer.class.php:73 inc/notimportedcomputer.class.php:267
 msgid "Device ID"
 msgstr "Identifikátor zařízení"
 
@@ -668,11 +668,11 @@ msgstr "Prvky které neodpovídají pravidlu automatickými akcemi"
 msgid "Verification of assignment rules for entities and locations"
 msgstr "Ověření pravidel přiřazení pro entity a umístění"
 
-#: inc/notificationtargetruleimportentity.class.php:83
+#: inc/notificationtargetruleimportentity.class.php:86
 msgid "No rules match"
 msgstr "Žádná shoda s pravidly"
 
-#: inc/notificationtargetruleimportentity.class.php:124
+#: inc/notificationtargetruleimportentity.class.php:129
 msgid "Data error"
 msgstr "Chyba dat"
 
@@ -680,103 +680,103 @@ msgstr "Chyba dat"
 msgid "Verified rules"
 msgstr "Ověřená pravidla"
 
-#: inc/notimportedcomputer.class.php:418
+#: inc/notimportedcomputer.class.php:452
 msgid "Can't affect an entity"
 msgstr "Nemůže ovlivnit entitu"
 
-#: inc/notimportedcomputer.class.php:421
+#: inc/notimportedcomputer.class.php:455
 msgid "Unicity criteria not verified"
 msgstr "Kritéria jednoznačnosti nebyla ověřena"
 
-#: inc/notimportedcomputer.class.php:424
+#: inc/notimportedcomputer.class.php:458
 msgid "Import refused by rule"
 msgstr "Import odmítnut kvůli pravidlu"
 
-#: inc/notimportedcomputer.class.php:441
+#: inc/notimportedcomputer.class.php:475
 msgid "Actions to be made on the computer"
 msgstr "Akce, které mají být na počítači provedeny"
 
-#: inc/notimportedcomputer.class.php:608
+#: inc/notimportedcomputer.class.php:642
 msgid "Send OCSNG not imported computers alert failed"
 msgstr "Poslat upozornění v případě, že se nepodařilo naimportovat nějaké počítače z OCSNG"
 
-#: inc/notimportedcomputer.class.php:636
+#: inc/notimportedcomputer.class.php:672
 msgid "Not imported computers alert"
 msgstr "Žádné várování importovaných počítačů"
 
-#: inc/ocslink.class.php:105
+#: inc/ocslink.class.php:100
 msgid "OCS Inventory NG Import informations"
 msgstr "Informace o importu OCS Inventory NG"
 
-#: inc/ocslink.class.php:180
+#: inc/ocslink.class.php:173
 msgid "OCS NG Interface"
 msgstr "Rozhraní OCS NG"
 
-#: inc/ocslink.class.php:189 inc/ocslink.class.php:381
+#: inc/ocslink.class.php:182 inc/ocslink.class.php:374
 msgctxt "button"
 msgid "Force synchronization"
 msgstr "Vynutit synchronizaci"
 
-#: inc/ocslink.class.php:212 inc/snmpocslink.class.php:488
-#: inc/snmpocslink.class.php:654
+#: inc/ocslink.class.php:205 inc/snmpocslink.class.php:491
+#: inc/snmpocslink.class.php:657
 msgid "OCS Inventory NG SNMP Import informations"
 msgstr "Informace o importu SNMP z OCS Inventory NG"
 
-#: inc/ocslink.class.php:213 inc/snmpocslink.class.php:489
-#: inc/snmpocslink.class.php:657
+#: inc/ocslink.class.php:206 inc/snmpocslink.class.php:492
+#: inc/snmpocslink.class.php:660
 msgid "Imported object"
 msgstr "Importovaný objekt"
 
-#: inc/ocslink.class.php:215 inc/snmpocslink.class.php:491
-#: inc/snmpocslink.class.php:659
+#: inc/ocslink.class.php:208 inc/snmpocslink.class.php:494
+#: inc/snmpocslink.class.php:662
 msgid "Linked object"
 msgstr "Propojený objekt"
 
-#: inc/ocslink.class.php:222 inc/snmpocslink.class.php:665
+#: inc/ocslink.class.php:215 inc/snmpocslink.class.php:668
 msgctxt "button"
 msgid "Force SNMP synchronization"
 msgstr "Vynutit synchronizaci SNMP"
 
-#: inc/ocslink.class.php:246 inc/snmpocslink.class.php:510
-#: inc/snmpocslink.class.php:691 inc/snmpocslink.class.php:2872
+#: inc/ocslink.class.php:239 inc/snmpocslink.class.php:513
+#: inc/snmpocslink.class.php:694 inc/snmpocslink.class.php:2718
 msgid "Last OCSNG SNMP inventory date"
 msgstr "Datum minulé SNMP inventury z OCSNG"
 
-#: inc/ocslink.class.php:272 inc/snmpocslink.class.php:792
+#: inc/ocslink.class.php:264 inc/snmpocslink.class.php:794
 msgid "OCS Inventory NG IPDiscover Import informations"
 msgstr "Informace o importu z IPDiscover OCS Inventory NG"
 
-#: inc/ocslink.class.php:341
+#: inc/ocslink.class.php:334
 msgid "OCSNG DEVICE ID"
 msgstr "Identifikátor zařízení v OCSNG"
 
-#: inc/ocslink.class.php:450 inc/ocslink.class.php:482
-#: inc/ocslink.class.php:495 inc/ocslink.class.php:508
+#: inc/ocslink.class.php:442 inc/ocslink.class.php:473
+#: inc/ocslink.class.php:486 inc/ocslink.class.php:499
 msgid "No computer found into OCSNG Database"
 msgstr "V databázi OCSNG nebyl nalezen žádný počítač"
 
-#: inc/ocslink.class.php:460
+#: inc/ocslink.class.php:451
 msgid "Checksum test"
 msgstr "Zkouška kontrolního součtu"
 
-#: inc/ocslink.class.php:767
+#: inc/ocslink.class.php:755
 msgid "Imported from OCSNG"
 msgstr "Naimportován z OCSNG"
 
-#: inc/ocslink.class.php:771
+#: inc/ocslink.class.php:759
 msgid "Deleted in OCSNG"
 msgstr "Smazáno v OCSNG"
 
-#: inc/ocslink.class.php:775
+#: inc/ocslink.class.php:763
 msgid "Linked with an OCSNG computer"
 msgstr "Spojeno s počítačem OCSNG"
 
-#: inc/ocslink.class.php:779
+#: inc/ocslink.class.php:767
 #, php-format
 msgid "The OCSNG ID of the computer changed from %1$s to %2$s"
 msgstr "OCSNG identifikátor počítače se změnil z %1$s na %2$s"
 
-#: inc/ocslink.class.php:784
+#: inc/ocslink.class.php:772
 #, php-format
 msgid "The OCSNG TAG of the computer changed from %1$s to %2$s"
 msgstr "OCSNG TAG počítače se změnil z %1$s na %2$s"
@@ -785,11 +785,11 @@ msgstr "OCSNG TAG počítače se změnil z %1$s na %2$s"
 msgid "Datas to import"
 msgstr "Data k importu"
 
-#: inc/ocsserver.class.php:138 inc/ocsserver.class.php:1163
+#: inc/ocsserver.class.php:138 inc/ocsserver.class.php:1214
 msgid "Import options"
 msgstr "Volby importu"
 
-#: inc/ocsserver.class.php:139 inc/ocsserver.class.php:1058
+#: inc/ocsserver.class.php:139 inc/ocsserver.class.php:1103
 msgid "General history"
 msgstr "Obecná historie"
 
@@ -797,694 +797,698 @@ msgstr "Obecná historie"
 msgid "OCSNG console"
 msgstr "OCSNG konzole"
 
-#: inc/ocsserver.class.php:246
+#: inc/ocsserver.class.php:261
 msgid "Expert sync mode"
 msgstr "Expertní režim synchronizace"
 
-#: inc/ocsserver.class.php:251 inc/ocsserver.class.php:1319
+#: inc/ocsserver.class.php:269 inc/ocsserver.class.php:1370
 msgid "Database in UTF8"
 msgstr "Databáze v UTF8"
 
-#: inc/ocsserver.class.php:332
+#: inc/ocsserver.class.php:359
 #, php-format
 msgid "Configuration of OCSNG server %s"
 msgstr "Nastavení OCSNG serveru %s"
 
-#: inc/ocsserver.class.php:352
+#: inc/ocsserver.class.php:379
 msgid "Setup rules engine"
 msgstr "Nastavit engine pravidel"
 
-#: inc/ocsserver.class.php:359
+#: inc/ocsserver.class.php:386
 msgid "Setup rules for choose entity on items import"
 msgstr "Nastavit pravidla pro volbu entity při importu položek"
 
-#: inc/ocsserver.class.php:366
+#: inc/ocsserver.class.php:393
 msgid "Setup rules for select criteria for items link"
 msgstr "Nastavit pravidla pro výběr kritérií pro propojení položek"
 
-#: inc/ocsserver.class.php:439
+#: inc/ocsserver.class.php:466
 msgid "See Setup : Datas to import before"
 msgstr "Viz nastavení: data pro import před"
 
-#: inc/ocsserver.class.php:531
+#: inc/ocsserver.class.php:558
 msgid ""
 "The selected server is not active. Import and synchronisation is not "
 "available"
 msgstr "Vybraný server není aktivní. Import a synchronizace není k dispozici"
 
-#: inc/ocsserver.class.php:628 inc/ocsserver.class.php:633
+#: inc/ocsserver.class.php:663 inc/ocsserver.class.php:668
 msgid "General information"
 msgstr "Obecné informace"
 
-#: inc/ocsserver.class.php:633
+#: inc/ocsserver.class.php:669
 msgid "Warning : the import entity rules depends on selected fields"
 msgstr "Varování: pravidla importovaní entit závisí na vybraných kolonkách"
 
-#: inc/ocsserver.class.php:650 inc/ocsserver.class.php:656
-#: inc/ocsserver.class.php:661 inc/ocsserver.class.php:667
+#: inc/ocsserver.class.php:686 inc/ocsserver.class.php:692
+#: inc/ocsserver.class.php:697 inc/ocsserver.class.php:703
 msgid "Depends on Bios import"
 msgstr "Závisí na importování BIOS/UEFI"
 
-#: inc/ocsserver.class.php:694
+#: inc/ocsserver.class.php:730
 msgid "User informations"
 msgstr "Informace o uživateli"
 
-#: inc/ocsserver.class.php:700
+#: inc/ocsserver.class.php:736
 msgid "Affect user from contact"
 msgstr "Uživatel kterého se týká z kontaktu"
 
-#: inc/ocsserver.class.php:703 inc/ocsserver.class.php:709
-#: inc/ocsserver.class.php:714
+#: inc/ocsserver.class.php:739 inc/ocsserver.class.php:745
+#: inc/ocsserver.class.php:750
 msgid "Depends on contact import"
 msgstr "Závisí na importu kontaktu"
 
-#: inc/ocsserver.class.php:706
+#: inc/ocsserver.class.php:742
 msgid "Affect user location by default"
 msgstr "Umístění uživatele kterého se týká ve výchozím stavu"
 
-#: inc/ocsserver.class.php:711
+#: inc/ocsserver.class.php:747
 msgid "Affect first group of user by default"
 msgstr "Ve výchozím stavu se týká první skupiny uživatele"
 
-#: inc/ocsserver.class.php:732
+#: inc/ocsserver.class.php:768
 msgid "After 7006 version of OCS Inventory NG"
 msgstr "Po verzi 7006 OCS Inventory NG"
 
-#: inc/ocsserver.class.php:769
+#: inc/ocsserver.class.php:805
 msgid "After 7009 version of OCS Inventory NG && Depends on Bios import"
 msgstr "Po verzi 7009 OCS Inventory NG && závisí na importu BIOS/UEFI"
 
-#: inc/ocsserver.class.php:784 inc/ocsserver.class.php:789
+#: inc/ocsserver.class.php:820 inc/ocsserver.class.php:825
 msgid "Linked objects"
 msgstr "Propojené objekty"
 
-#: inc/ocsserver.class.php:792 inc/ocsserver.class.php:796
+#: inc/ocsserver.class.php:828 inc/ocsserver.class.php:832
 msgid "Global import"
 msgstr "Globální import"
 
-#: inc/ocsserver.class.php:793 inc/ocsserver.class.php:797
-#: inc/ocsserver.class.php:822
+#: inc/ocsserver.class.php:829 inc/ocsserver.class.php:833
+#: inc/ocsserver.class.php:858
 msgid "Unit import"
 msgstr "Import jednotky"
 
-#: inc/ocsserver.class.php:798
+#: inc/ocsserver.class.php:834
 msgid "Unit import on serial number"
 msgstr "Import jednotky se sériovým číslem"
 
-#: inc/ocsserver.class.php:799
+#: inc/ocsserver.class.php:835
 msgid "Unit import serial number only"
 msgstr "Import jednotky pouze sériového čísla"
 
-#: inc/ocsserver.class.php:847
+#: inc/ocsserver.class.php:883
 msgid ""
 "Global import: everything is imported but the material is globally managed "
 "(without duplicate)"
 msgstr "Globální import: vše je naimportováno, ale materiál je globálně spravován (bez duplicit)"
 
-#: inc/ocsserver.class.php:848
+#: inc/ocsserver.class.php:884
 msgid "Unit import: everything is imported as it is"
 msgstr "Jednotný import: všechno je naimportováno tak jak je"
 
-#: inc/ocsserver.class.php:856 inc/ocsserver.class.php:861
+#: inc/ocsserver.class.php:892 inc/ocsserver.class.php:897
 msgid "OCS Inventory NG plugins"
 msgstr "Zásuvné moduly OCS Inventory NG"
 
-#: inc/ocsserver.class.php:863
+#: inc/ocsserver.class.php:899
 msgid "Microsoft Office licenses"
 msgstr "Licence Microsoft Office"
 
-#: inc/ocsserver.class.php:866
+#: inc/ocsserver.class.php:902
 msgid ""
 "Depends on software import and OfficePack Plugin for (https://github.com"
 "/PluginsOCSInventory-NG/officepack) OCSNG must be installed"
 msgstr "Závisí na importu software a zásuvném modulu OfficePack (https://github.com/PluginsOCSInventory-NG/officepack), nainstalovaném v OCSNG"
 
-#: inc/ocsserver.class.php:867
+#: inc/ocsserver.class.php:903
 msgid "Antivirus"
 msgstr "Antivirus"
 
-#: inc/ocsserver.class.php:870
+#: inc/ocsserver.class.php:906
 msgid ""
 "Security Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/security) must be installed"
 msgstr "Je třeba, aby byl v OCSNG nainstalovaný zásuvný modul Zabezpečení (https://github.com/PluginsOCSInventory-NG/security)"
 
-#: inc/ocsserver.class.php:877
+#: inc/ocsserver.class.php:913
 msgid ""
 "Uptime Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/uptime) "
 "must be installed"
 msgstr "Je třeba, aby byl v OCSNG nainstalovaný zásuvný modul Uptime (https://github.com/PluginsOCSInventory-NG/uptime)"
 
-#: inc/ocsserver.class.php:878
+#: inc/ocsserver.class.php:914
 msgid "Windows Update State"
 msgstr "Stav Windows Update"
 
-#: inc/ocsserver.class.php:881
+#: inc/ocsserver.class.php:917
 msgid ""
 "Winupdate Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/winupdate) must be installed"
 msgstr "Je třeba, aby byl v OCSNG nainstalovaný zásuvný modul Winupdate (https://github.com/PluginsOCSInventory-NG/winupdate)"
 
-#: inc/ocsserver.class.php:884
+#: inc/ocsserver.class.php:920
 msgid "Teamviewer"
 msgstr "Teamviewer"
 
-#: inc/ocsserver.class.php:887
+#: inc/ocsserver.class.php:923
 msgid ""
 "Teamviewer Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/teamviewer) must be installed"
 msgstr "Je třeba, aby byl v OCSNG nainstalovaný zásuvný modul pro Teamviewer (https://github.com/PluginsOCSInventory-NG/security)"
 
-#: inc/ocsserver.class.php:888 inc/proxysetting.class.php:43
+#: inc/ocsserver.class.php:924 inc/proxysetting.class.php:46
 msgid "Proxy Settings"
 msgstr "Nastavení proxy"
 
-#: inc/ocsserver.class.php:891
+#: inc/ocsserver.class.php:927
 msgid ""
 "Navigator Proxy Setting Plugin for OCSNG (https://github.com"
 "/PluginsOCSInventory-NG/navigatorproxysetting) must be installed"
 msgstr "Je třeba, aby byl v OCSNG nainstalovaný zásuvný modul Nastavení Navigator Proxy (https://github.com/PluginsOCSInventory-NG/navigatorproxysetting)"
 
-#: inc/ocsserver.class.php:894 inc/winuser.class.php:43
+#: inc/ocsserver.class.php:930 inc/winuser.class.php:46
 msgid "Windows Users"
 msgstr "Uživatelé Windows"
 
-#: inc/ocsserver.class.php:897
+#: inc/ocsserver.class.php:933
 msgid ""
 "Winusers Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/winusers) must be installed"
 msgstr "Je třeba, aby byl v OCSNG nainstalovaný zásuvný modul Winusers (https://github.com/PluginsOCSInventory-NG/winusers)"
 
-#: inc/ocsserver.class.php:899 inc/osinstall.class.php:43
+#: inc/ocsserver.class.php:935 inc/osinstall.class.php:46
 msgid "OS Informations"
 msgstr "Informace o operačním systému"
 
-#: inc/ocsserver.class.php:902
+#: inc/ocsserver.class.php:938
 msgid ""
 "OSInstall Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/osinstall) must be installed"
 msgstr "Je třeba, aby byl v OCSNG nainstalovaný zásuvný modul OSInstall (https://github.com/PluginsOCSInventory-NG/osinstall)"
 
-#: inc/ocsserver.class.php:908
+#: inc/ocsserver.class.php:944
 msgid ""
 "Networkshare Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/networkshare) must be installed"
 msgstr "Je třeba, aby byl v OCSNG nainstalovaný zásuvný modul Networkshare (https://github.com/PluginsOCSInventory-NG/networkshare)"
 
-#: inc/ocsserver.class.php:910 inc/service.class.php:43
+#: inc/ocsserver.class.php:946 inc/service.class.php:46
 msgid "Service"
 msgstr "Služba"
 
-#: inc/ocsserver.class.php:913
+#: inc/ocsserver.class.php:949
 msgid ""
 "Service Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/services) must be installed"
 msgstr "Je třeba, aby byl v OCSNG nainstalovaný zásuvný modul Service (https://github.com/PluginsOCSInventory-NG/services)"
 
-#: inc/ocsserver.class.php:916 inc/runningprocess.class.php:43
+#: inc/ocsserver.class.php:952 inc/runningprocess.class.php:46
 msgid "Running Process"
 msgstr "Spuštěný proces"
 
-#: inc/ocsserver.class.php:919
+#: inc/ocsserver.class.php:955
 msgid ""
 "Running Process Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/runningProcess) must be installed"
 msgstr "Je třeba, aby byl v OCSNG nainstalovaný zásuvný modul Running Process (https://github.com/PluginsOCSInventory-NG/runningProcess)"
 
-#: inc/ocsserver.class.php:928 inc/ocsserver.class.php:932
+#: inc/ocsserver.class.php:964 inc/ocsserver.class.php:968
 msgid "OCSNG administrative information"
 msgstr "Administrativní informace OCSNG"
 
-#: inc/ocsserver.class.php:1062
+#: inc/ocsserver.class.php:1107
 msgid "Do history"
 msgstr "Dělat historii"
 
-#: inc/ocsserver.class.php:1066
+#: inc/ocsserver.class.php:1111
 msgid "System history"
 msgstr "Historie systém"
 
-#: inc/ocsserver.class.php:1082
+#: inc/ocsserver.class.php:1127
 msgid "Bios history"
 msgstr "Historie BIOS/UEFI"
 
-#: inc/ocsserver.class.php:1099
+#: inc/ocsserver.class.php:1144
 msgid "Devices history"
 msgstr "Historie zařízení"
 
-#: inc/ocsserver.class.php:1103
+#: inc/ocsserver.class.php:1148
 msgid "Volumes history"
 msgstr "Historie svazků"
 
-#: inc/ocsserver.class.php:1107
+#: inc/ocsserver.class.php:1152
 msgid "Network history"
 msgstr "Historie sítě"
 
-#: inc/ocsserver.class.php:1111
+#: inc/ocsserver.class.php:1156
 msgid "Monitor connection history"
 msgstr "Historie připojení monitorů"
 
-#: inc/ocsserver.class.php:1115
+#: inc/ocsserver.class.php:1160
 msgid "Printer connection history"
 msgstr "Historie připojení tiskárny"
 
-#: inc/ocsserver.class.php:1119
+#: inc/ocsserver.class.php:1164
 msgid "Peripheral connection history"
 msgstr "Historie připojení periferie"
 
-#: inc/ocsserver.class.php:1123
+#: inc/ocsserver.class.php:1168
 msgid "Software connection history"
 msgstr "Historie spojení software"
 
-#: inc/ocsserver.class.php:1127
+#: inc/ocsserver.class.php:1172
 msgid "Virtual machines history"
 msgstr "Historie virtuálních strojů"
 
-#: inc/ocsserver.class.php:1131
+#: inc/ocsserver.class.php:1176
 msgid "Administrative infos history"
 msgstr "Historie administrativních informací"
 
-#: inc/ocsserver.class.php:1158
+#: inc/ocsserver.class.php:1180
+msgid "Plugins history"
+msgstr ""
+
+#: inc/ocsserver.class.php:1209
 msgid "Web address of the OCSNG console"
 msgstr "Webová adresa konzole OCSNG"
 
-#: inc/ocsserver.class.php:1166
+#: inc/ocsserver.class.php:1217
 msgid "Limit the import to the following tags (separator $, nothing for all)"
 msgstr "Omezit import následujících příznaků (oddělovač $, nic pro všechny)"
 
-#: inc/ocsserver.class.php:1171
+#: inc/ocsserver.class.php:1222
 msgid "Exclude the following tags (separator $, nothing for all)"
 msgstr "Vynechat následující příznaky (oddělovač $, zrušit vše)"
 
-#: inc/ocsserver.class.php:1176
+#: inc/ocsserver.class.php:1227
 msgid "Default status"
 msgstr "Výchozí stav"
 
-#: inc/ocsserver.class.php:1182
+#: inc/ocsserver.class.php:1233
 msgid "Behavior when disconnecting"
 msgstr "Chování při odpojení"
 
-#: inc/ocsserver.class.php:1183
+#: inc/ocsserver.class.php:1234
 msgid "Preserve link"
 msgstr "Zachovat odkaz"
 
-#: inc/ocsserver.class.php:1184
+#: inc/ocsserver.class.php:1235
 msgid "Put the link in dustbin and add a lock"
 msgstr "Umístit odkaz do Koše a přidat zámek"
 
-#: inc/ocsserver.class.php:1185
+#: inc/ocsserver.class.php:1236
 msgid "Delete  the link permanently"
 msgstr "Smazat propojení natrvalo"
 
-#: inc/ocsserver.class.php:1188
+#: inc/ocsserver.class.php:1239
 msgid ""
 "Define the action to do on link with other objects when computer is "
 "disconnecting from them"
 msgstr "Určit akci kterou udělat na propojení s ostatními objekty při odpojování počítače od nich"
 
-#: inc/ocsserver.class.php:1191 inc/ocsserver.class.php:8883
+#: inc/ocsserver.class.php:1242 inc/ocsserver.class.php:8518
 msgid "Use the OCSNG software dictionary"
 msgstr "Použít slovník software OCSNG"
 
-#: inc/ocsserver.class.php:1195
+#: inc/ocsserver.class.php:1246
 msgid ""
 "If Use the OCSNG software dictionary parameter is checked, no software will "
 "be imported before you setup them into OCS"
 msgstr "Pokud je zaškrtnutý parametr „Použít číselník software z OCSNG“, nebude naimportován žádný software dokud ho nenastavíte v OCS"
 
-#: inc/ocsserver.class.php:1199
+#: inc/ocsserver.class.php:1250
 msgid "Number of items to synchronize via the automatic OCSNG action"
 msgstr "Počet položek pro synchronizaci pomocí automatizované akce OCSNG"
 
-#: inc/ocsserver.class.php:1207
+#: inc/ocsserver.class.php:1258
 msgid ""
 "The automatic task ocsng is launched only if server is not in expert mode"
 msgstr "Automatická úloha ocsng je spuštěna pouze pokud server není v expertním režimu"
 
-#: inc/ocsserver.class.php:1208
+#: inc/ocsserver.class.php:1259
 msgid ""
 "The automatic task ocsng only synchronize existant computers, it doesn't "
 "import new computers"
 msgstr "Automatická úloha ocsng synchronizuje pouze existující počítače, neimportuje nové"
 
-#: inc/ocsserver.class.php:1209
+#: inc/ocsserver.class.php:1260
 msgid ""
 "If you want to import new computers, disable this parameter, change to "
 "expert mode and use script from system"
 msgstr "Pokud chcete importovat nové počítače, vypněte tento parametr, přepněte na expertní režim a použijte skript ze systému"
 
-#: inc/ocsserver.class.php:1213
+#: inc/ocsserver.class.php:1264
 msgid "Behavior to the deletion of a computer in OCSNG"
 msgstr "Chování při smazání počítače v OCSNG"
 
-#: inc/ocsserver.class.php:1218
+#: inc/ocsserver.class.php:1269
 #, php-format
 msgid "Change to state %s"
 msgstr "Změnit na stav %s"
 
-#: inc/ocsserver.class.php:1261
+#: inc/ocsserver.class.php:1312
 msgid "Database"
 msgstr "Databáze"
 
-#: inc/ocsserver.class.php:1266
+#: inc/ocsserver.class.php:1317
 msgid "Standard (allow manual actions)"
 msgstr "Standardní (umožňuje ruční akce)"
 
-#: inc/ocsserver.class.php:1267
+#: inc/ocsserver.class.php:1318
 msgid "Expert (Fully automatic, for large configuration)"
 msgstr "Expertní (plně automatická, pro velká nastavení)"
 
-#: inc/ocsserver.class.php:1271
+#: inc/ocsserver.class.php:1322
 msgid "Connection type"
 msgstr "Typ spojení"
 
-#: inc/ocsserver.class.php:1295
+#: inc/ocsserver.class.php:1346
 msgctxt "button"
 msgid "Reload Checksum"
 msgstr "Znovu načíst kontrolní součet"
 
-#: inc/ocsserver.class.php:1302 inc/ocsserver.class.php:8881
+#: inc/ocsserver.class.php:1353 inc/ocsserver.class.php:8516
 msgid "Host"
 msgstr "Hostitel"
 
-#: inc/ocsserver.class.php:1305
+#: inc/ocsserver.class.php:1356
 msgid "Like http://127.0.0.1 for SOAP method"
 msgstr "Jako http://127.0.0.1 pro metodu SOAP"
 
-#: inc/ocsserver.class.php:1307
+#: inc/ocsserver.class.php:1358
 msgid "Synchronisation method"
 msgstr "Metoda synchronizace"
 
-#: inc/ocsserver.class.php:1342
+#: inc/ocsserver.class.php:1393
 msgid "Use automatic action for clean old agents & drop from OCSNG software"
 msgstr "Použít automatickou akci pro vyčištění starých agentů a zahození z OCSNG"
 
-#: inc/ocsserver.class.php:1368
+#: inc/ocsserver.class.php:1419
 msgid "Use automatic action restore deleted computer"
 msgstr "Použít automatickou akci obnovit smazaný počítač"
 
-#: inc/ocsserver.class.php:1384
+#: inc/ocsserver.class.php:1435
 msgid ""
 "Number of days for the restoration of computers from the date of last "
 "inventory"
 msgstr "Počet dnů pro obnovení počítačů z data minulé inventury"
 
-#: inc/ocsserver.class.php:1393
+#: inc/ocsserver.class.php:1444
 msgid "Use automatic action to check entity assignment rules"
 msgstr "Použít automatické akce pro kontrolu pravidel přiřazení entity"
 
-#: inc/ocsserver.class.php:1395
+#: inc/ocsserver.class.php:1446
 msgid ""
 "Use automatic action to check and send a notification for machines that no "
 "longer respond the entity and location assignment rules"
 msgstr "Použít automatickou akci pro kontrolu a poslání oznámení ohledně strojů které už neodpovídají pravidlům pro přiřazení entity a umístění"
 
-#: inc/ocsserver.class.php:1403
+#: inc/ocsserver.class.php:1454
 msgid "Use automatic locks"
 msgstr "Automaticky zamykat"
 
-#: inc/ocsserver.class.php:1433
+#: inc/ocsserver.class.php:1484
 msgid "Purge computers in OCSNG"
 msgstr "Odstranit počítače z OCSNG"
 
-#: inc/ocsserver.class.php:1436
+#: inc/ocsserver.class.php:1487
 msgid "Delete computers"
 msgstr "Smazat počítače"
 
-#: inc/ocsserver.class.php:1459
+#: inc/ocsserver.class.php:1510
 msgid "Connecting to the database"
 msgstr "Připojování k databázi"
 
-#: inc/ocsserver.class.php:1463
+#: inc/ocsserver.class.php:1514
 msgid "Connection to the database failed"
 msgstr "Připojení k databázi se nezdařilo"
 
-#: inc/ocsserver.class.php:1465
+#: inc/ocsserver.class.php:1516
 msgid "Invalid OCSNG Version: RC3 is required"
 msgstr "Neplatná verze OCSNG: vyžadována verze RC3"
 
-#: inc/ocsserver.class.php:1467
+#: inc/ocsserver.class.php:1518
 msgid "Invalid OCSNG configuration (TRACE_DELETED must be active)"
 msgstr "Neplatné nastavení OCSNG (je potřeba aktivovat TRACE_DELETED)"
 
-#: inc/ocsserver.class.php:1476
+#: inc/ocsserver.class.php:1527
 msgid "Connection to database successful"
 msgstr "Úspěšné připojení k databázi"
 
-#: inc/ocsserver.class.php:1478
+#: inc/ocsserver.class.php:1529
 msgid "Valid OCSNG configuration and version"
 msgstr "Platná verze a nastavení OCSNG"
 
-#: inc/ocsserver.class.php:1599
+#: inc/ocsserver.class.php:1648
 msgid "Unable to add. The OCSNG server already exists."
 msgstr "Není možné přidat. Tento OCSNG server už existuje."
 
-#: inc/ocsserver.class.php:1973
+#: inc/ocsserver.class.php:2010
 #, php-format
 msgid "Unable to link this computer, Serial number is blacklisted (%d)"
 msgstr "Není možné propojit tento počítač, sériové číslo se nachází na seznamu vyloučených (%d)"
 
-#: inc/ocsserver.class.php:1980
+#: inc/ocsserver.class.php:2017
 #, php-format
 msgid "Unable to link this computer, UUID is blacklisted (%d)"
 msgstr "Není možné propojit tento počítač, neopakující se identifikátor je zařazen na seznamu vyloučených (%d)"
 
 #. TRANS: %s is the OCS id
-#: inc/ocsserver.class.php:2133
+#: inc/ocsserver.class.php:2172
 #, php-format
 msgid ""
 "Unable to import, GLPI computer is already related to an element of OCSNG "
 "(%d)"
 msgstr "Nelze importovat, počítač v GLPI je už spojen s položkou v OCSNG (%d)"
 
-#: inc/ocsserver.class.php:2503 inc/ocsserver.class.php:3434
+#: inc/ocsserver.class.php:2546 inc/ocsserver.class.php:3453
 msgid "Swap"
 msgstr "Swap"
 
-#: inc/ocsserver.class.php:3859
+#: inc/ocsserver.class.php:3830
 msgid "Existing in GLPI"
 msgstr "Existující v GLPI"
 
-#: inc/ocsserver.class.php:3860
+#: inc/ocsserver.class.php:3831
 msgid "Existing in OCSNG"
 msgstr "Existující v OCSNG"
 
-#: inc/ocsserver.class.php:3902
+#: inc/ocsserver.class.php:3873
 msgid "No item to clean"
 msgstr "Žádná položka k vyčištění"
 
-#: inc/ocsserver.class.php:3991 inc/ocsserver.class.php:4155
-#: inc/ocsserver.class.php:4162
+#: inc/ocsserver.class.php:3962 inc/ocsserver.class.php:4126
+#: inc/ocsserver.class.php:4133
 msgid "No new computer to be updated"
 msgstr "Žádný nový počítač k aktualizaci"
 
-#: inc/ocsserver.class.php:4082
+#: inc/ocsserver.class.php:4053
 msgid "Computers updated in OCSNG"
 msgstr "Počítače aktualizovány v OCSNG"
 
-#: inc/ocsserver.class.php:4099 inc/ocsserver.class.php:4140
-#: inc/snmpocslink.class.php:2862 inc/snmpocslink.class.php:2891
+#: inc/ocsserver.class.php:4070 inc/ocsserver.class.php:4111
+#: inc/snmpocslink.class.php:2708 inc/snmpocslink.class.php:2737
 msgctxt "button"
 msgid "Synchronize"
 msgstr "Synchronizovat"
 
-#: inc/ocsserver.class.php:4102 inc/ocsserver.class.php:4151
+#: inc/ocsserver.class.php:4073 inc/ocsserver.class.php:4122
 msgid "Update computers"
 msgstr "Aktualizovat počítače"
 
-#: inc/ocsserver.class.php:4450 inc/snmpocslink.class.php:2499
+#: inc/ocsserver.class.php:4421 inc/snmpocslink.class.php:2341
 msgid ""
 "Caution! The imported data (see your configuration) will overwrite the "
 "existing one"
 msgstr "Pozor! Importovaná data (viz nastavení) přepíšou ta stávající"
 
-#: inc/ocsserver.class.php:4465
+#: inc/ocsserver.class.php:4437
 msgid "Manual import mode"
 msgstr "Režim ručního importu"
 
-#: inc/ocsserver.class.php:4468
+#: inc/ocsserver.class.php:4440
 msgid "Disable preview"
 msgstr "Vypnout náhled"
 
-#: inc/ocsserver.class.php:4470
+#: inc/ocsserver.class.php:4442
 msgid "Enable preview"
 msgstr "Zapnout náhled"
 
-#: inc/ocsserver.class.php:4474 inc/ocsserver.class.php:4686
+#: inc/ocsserver.class.php:4446 inc/ocsserver.class.php:4658
 msgid "Check first that duplicates have been correctly managed in OCSNG"
 msgstr "Nejprve zkontrolujte, zda jsou v OCSNG duplicity správně řízeny"
 
-#: inc/ocsserver.class.php:4506 inc/ocsserver.class.php:4705
-#: inc/snmpocslink.class.php:2535 inc/snmpocslink.class.php:2706
+#: inc/ocsserver.class.php:4478 inc/ocsserver.class.php:4677
+#: inc/snmpocslink.class.php:2377 inc/snmpocslink.class.php:2549
 msgctxt "button"
 msgid "Import"
 msgstr "Import"
 
-#: inc/ocsserver.class.php:4521
+#: inc/ocsserver.class.php:4493
 msgid "Match the rule ?"
 msgstr "Stejné pravidlo?"
 
-#: inc/ocsserver.class.php:4523
+#: inc/ocsserver.class.php:4495
 msgid "Target location"
 msgstr "Cílové umístění"
 
-#: inc/ocsserver.class.php:4561
+#: inc/ocsserver.class.php:4533
 msgid "Blacklisted serial number"
 msgstr "Sériové číslo nacházející se na seznamu vyloučených"
 
-#: inc/ocsserver.class.php:4573
+#: inc/ocsserver.class.php:4545
 msgid "Blacklisted UUID"
 msgstr "Nikde se neopakující identifikátor (UUID) nacházející se na seznamu vyloučených"
 
-#: inc/ocsserver.class.php:4592
+#: inc/ocsserver.class.php:4564
 msgid "Blacklisted MAC"
 msgstr "MAC adresa nacházející se na seznamu vyloučených"
 
-#: inc/ocsserver.class.php:4602
+#: inc/ocsserver.class.php:4574
 msgid "Blacklisted IP"
 msgstr "IP adresa nacházející se na seznamu vyloučených"
 
-#: inc/ocsserver.class.php:4684
+#: inc/ocsserver.class.php:4656
 msgid "Warning ! This computer is already linked with another OCS computer."
 msgstr "Varování! Tento počítač už je propojen s jiným počítačem v OCS."
 
-#: inc/ocsserver.class.php:4723 inc/ocsserver.class.php:4738
-#: inc/ocsserver.class.php:4752
+#: inc/ocsserver.class.php:4695 inc/ocsserver.class.php:4710
+#: inc/ocsserver.class.php:4724
 msgid "No new computer to be imported"
 msgstr "Žádný nový počítač k importu"
 
-#: inc/ocsserver.class.php:6771
+#: inc/ocsserver.class.php:6509
 msgid "Software deleted by OCSNG synchronization"
 msgstr "Software smazaný synchronizací s OCSNG"
 
-#: inc/ocsserver.class.php:7348
+#: inc/ocsserver.class.php:7010
 msgid "Launch OCSNG synchronization script"
 msgstr "Spustit skript pro synchronizaci s OCSNG"
 
-#: inc/ocsserver.class.php:7351
+#: inc/ocsserver.class.php:7014
 msgid "Clean old agents & drop from OCSNG software"
 msgstr "Vyčistit staré agenty a zahodit je v OCSNG"
 
-#: inc/ocsserver.class.php:7354
+#: inc/ocsserver.class.php:7018
 msgid "Restore computers from the date of last inventory"
 msgstr "Obnovit počítače z data minulé inventury"
 
-#: inc/ocsserver.class.php:7399
+#: inc/ocsserver.class.php:7064
 msgid "Clean old agents OK"
 msgstr "Vyčištění starých agentů se podařilo"
 
-#: inc/ocsserver.class.php:7402
+#: inc/ocsserver.class.php:7067
 msgid "Clean old agents failed"
 msgstr "Vyčištění starých agentů se nezdařilo"
 
-#: inc/ocsserver.class.php:7414
+#: inc/ocsserver.class.php:7079
 msgid "Delete computers OK"
 msgstr "Mazání počítačů se podařilo"
 
-#: inc/ocsserver.class.php:7417
+#: inc/ocsserver.class.php:7082
 msgid "Delete computers failed"
 msgstr "Mazání počítačů se nezdařil"
 
-#: inc/ocsserver.class.php:7483
+#: inc/ocsserver.class.php:7148
 msgid "Restore computers OK"
 msgstr "Obnovení počítačů se podařilo"
 
-#: inc/ocsserver.class.php:7486
+#: inc/ocsserver.class.php:7151
 msgid "Restore computers failed"
 msgstr "Obnovení počítačů se nezdařilo"
 
-#: inc/ocsserver.class.php:7512
+#: inc/ocsserver.class.php:7178
 msgid "Launch OCSNG synchronization script from server"
 msgstr "Spustit ze serveru skript pro synchronizaci s OCSNG"
 
-#: inc/ocsserver.class.php:7589
+#: inc/ocsserver.class.php:7255
 msgid "Computers don't check any rule"
 msgstr "Počítače nezkontrolované žádným pravidlem"
 
-#: inc/ocsserver.class.php:7590
+#: inc/ocsserver.class.php:7256
 msgid "Duplicate computers"
 msgstr "Duplicitní počítače"
 
-#: inc/ocsserver.class.php:7591
+#: inc/ocsserver.class.php:7257
 msgid "Computers whose import is refused by a rule"
 msgstr "Počítače, u kterých byl import odmítnut pravidlem"
 
-#: inc/ocsserver.class.php:7593
+#: inc/ocsserver.class.php:7259
 msgid "SNMP objects imported"
 msgstr "SNMP objektů importováno"
 
-#: inc/ocsserver.class.php:7594
+#: inc/ocsserver.class.php:7260
 msgid "SNMP objects synchronized"
 msgstr "SNMP objektů synchronizováno"
 
-#: inc/ocsserver.class.php:7595
+#: inc/ocsserver.class.php:7261
 msgid "SNMP objects linked"
 msgstr "SNMP objektů připojeno"
 
-#: inc/ocsserver.class.php:7596
+#: inc/ocsserver.class.php:7262
 msgid "SNMP objects not updated"
 msgstr "SNMP objektů neaktualizováno"
 
-#: inc/ocsserver.class.php:7597
+#: inc/ocsserver.class.php:7263
 msgid "SNMP objects not imported"
 msgstr "SNMP objektů nenaimportováno"
 
-#: inc/ocsserver.class.php:7600
+#: inc/ocsserver.class.php:7266
 msgid "IPDISCOVER objects imported"
 msgstr "Objekty z IPDiscover importovány"
 
-#: inc/ocsserver.class.php:7601
+#: inc/ocsserver.class.php:7267
 msgid "IPDISCOVER objects synchronized"
 msgstr "Objekty z IPDiscover synchronizovány"
 
-#: inc/ocsserver.class.php:7602
+#: inc/ocsserver.class.php:7268
 msgid "IPDISCOVER objects not updated"
 msgstr "Objekty z IPDiscover neaktualizovány"
 
-#: inc/ocsserver.class.php:7603
+#: inc/ocsserver.class.php:7269
 msgid "IPDISCOVER objects not imported"
 msgstr "Objekty z IPDiscover nenaimporotovány"
 
-#: inc/ocsserver.class.php:7701
+#: inc/ocsserver.class.php:7367
 msgid "Statistics of the OCSNG SNMP import"
 msgstr "Statistiky importu SNMP z OCSNG"
 
-#: inc/ocsserver.class.php:7703
+#: inc/ocsserver.class.php:7369
 msgid "Statistics of the OCSNG IPDISCOVER import"
 msgstr "Statistiky IPDiscover importu z OCSNG"
 
-#: inc/ocsserver.class.php:7705
+#: inc/ocsserver.class.php:7371
 msgid "Statistics of the OCSNG link"
 msgstr "Statistiky OCSNG odkazu"
 
-#: inc/osinstall.class.php:85
+#: inc/osinstall.class.php:92
 msgid "Build version"
 msgstr "Verze sestavení"
 
-#: inc/osinstall.class.php:87
+#: inc/osinstall.class.php:94
 msgid "Installation date"
 msgstr "Datum instalace"
 
-#: inc/osinstall.class.php:92
+#: inc/osinstall.class.php:99
 msgid "Codeset"
 msgstr "Znaková sada"
 
-#: inc/osinstall.class.php:94
+#: inc/osinstall.class.php:101
 msgid "Country code"
 msgstr "Kód země"
 
-#: inc/osinstall.class.php:99
+#: inc/osinstall.class.php:106
 msgid "OS Language"
 msgstr "Jazyk operačního systému"
 
-#: inc/osinstall.class.php:101
+#: inc/osinstall.class.php:108
 msgid "Current Timezone"
 msgstr "Stávající časová zóna"
 
-#: inc/osinstall.class.php:106
+#: inc/osinstall.class.php:113
 msgid "Locale"
 msgstr "Místní a jazyková nastavení"
 
-#: inc/profile.class.php:217
+#: inc/profile.class.php:166
 msgid "Allowed OCSNG server"
 msgid_plural "Allowed OCSNG servers"
 msgstr[0] "Povolený OCSNG server"
@@ -1492,27 +1496,27 @@ msgstr[1] "Povolené OCSNG servery"
 msgstr[2] "Povolených OCSNG serverů"
 msgstr[3] "Povolené OCSNG servery"
 
-#: inc/profile.class.php:311
+#: inc/profile.class.php:259
 msgid "Manually synchronization"
 msgstr "Ruční synchronizace"
 
-#: inc/profile.class.php:316
+#: inc/profile.class.php:264
 msgid "See information"
 msgstr "Viz informace"
 
-#: inc/profile.class.php:325
+#: inc/profile.class.php:273
 msgid "Import computer"
 msgstr "Importovat počítač"
 
-#: inc/profile.class.php:330
+#: inc/profile.class.php:278
 msgid "Link computer"
 msgstr "Připojit počítač"
 
-#: inc/proxysetting.class.php:124
+#: inc/proxysetting.class.php:128
 msgid "Auto Config URL"
 msgstr "URL adresa automatického nastavení"
 
-#: inc/proxysetting.class.php:126
+#: inc/proxysetting.class.php:130
 msgid "Proxy exceptions"
 msgstr "Výjimky proxy"
 
@@ -1525,461 +1529,461 @@ msgstr[1] "%d klíče registru nalezeny"
 msgstr[2] "%d klíčů registru nalezeno"
 msgstr[3] "%d klíče registru nalezeny"
 
-#: inc/registrykey.class.php:96
+#: inc/registrykey.class.php:98
 msgid "Hive"
 msgstr "Soubor s registrem (hive)"
 
-#: inc/registrykey.class.php:116
+#: inc/registrykey.class.php:118
 msgid "No key found in registry"
 msgstr "Žádný klíč nebyl v registru nalezen"
 
-#: inc/ruleimportentity.class.php:61
+#: inc/ruleimportentity.class.php:62
 msgid ""
 "Alerts on computers that no longer respond the rules for assigning an item "
 "to an entity"
 msgstr "Upozorňovat na počítače které už neodpovídají pravidlům pro přiřazení položky k entitě"
 
-#: inc/ruleimportentity.class.php:104
+#: inc/ruleimportentity.class.php:106
 #, php-format
 msgid "Items that do not meet the allocation rules for the entity %s: %s"
 msgstr "Položky které nesplňují pravidla přiřazení pro entitu %s: %s"
 
-#: inc/runningprocess.class.php:122
+#: inc/runningprocess.class.php:126
 msgid "Process ID"
 msgstr "Identifikátor procesu"
 
-#: inc/runningprocess.class.php:124
+#: inc/runningprocess.class.php:128
 msgid "Process memory"
 msgstr "Paměť procesu"
 
-#: inc/runningprocess.class.php:125
+#: inc/runningprocess.class.php:129
 msgid "Command line"
 msgstr "Příkazový řádek"
 
-#: inc/runningprocess.class.php:127
+#: inc/runningprocess.class.php:131
 msgid "Company"
 msgstr "Společnost"
 
-#: inc/service.class.php:118
+#: inc/service.class.php:122
 msgid "Full name"
 msgstr "Úplný název"
 
-#: inc/service.class.php:119
+#: inc/service.class.php:123
 msgid "Service Status"
 msgstr "Stav služby"
 
-#: inc/service.class.php:121
+#: inc/service.class.php:125
 msgid "Start type"
 msgstr "Typ spuštění"
 
-#: inc/service.class.php:122
+#: inc/service.class.php:126
 msgid "Access path"
 msgstr "Popis přístupového umístění"
 
-#: inc/service.class.php:123
+#: inc/service.class.php:127
 msgid "Session"
 msgstr "Sezení"
 
-#: inc/service.class.php:124
+#: inc/service.class.php:128
 msgid "Exit code"
 msgstr "Návratový kód"
 
-#: inc/service.class.php:125
+#: inc/service.class.php:129
 msgid "Spec Exit code"
 msgstr "Spec návrat. kód"
 
-#: inc/snmpocslink.class.php:65
+#: inc/snmpocslink.class.php:61
 msgid "OCSNG SNMP"
 msgstr "OCSNG SNMP"
 
-#: inc/snmpocslink.class.php:165 inc/snmpocslink.class.php:168
+#: inc/snmpocslink.class.php:170 inc/snmpocslink.class.php:173
 msgid "General SNMP import options"
 msgstr "Obecné volby SNMP importu"
 
-#: inc/snmpocslink.class.php:170
+#: inc/snmpocslink.class.php:175
 msgid "Import SNMP name"
 msgstr "Importovat SNMP název"
 
-#: inc/snmpocslink.class.php:174
+#: inc/snmpocslink.class.php:179
 msgid "Import SNMP serial"
 msgstr "Importovat SNMP sériové číslo"
 
-#: inc/snmpocslink.class.php:178
+#: inc/snmpocslink.class.php:183
 msgid "Import SNMP comment"
 msgstr "Importovat SNMP komentář"
 
-#: inc/snmpocslink.class.php:182
+#: inc/snmpocslink.class.php:187
 msgid "Import SNMP contact"
 msgstr "Importovat SNMP kontakt"
 
-#: inc/snmpocslink.class.php:186
+#: inc/snmpocslink.class.php:191
 msgid "Import SNMP location"
 msgstr "Importovat SNMP umístění"
 
-#: inc/snmpocslink.class.php:190
+#: inc/snmpocslink.class.php:195
 msgid "Import SNMP domain"
 msgstr "Importovat SNMP doménu"
 
-#: inc/snmpocslink.class.php:194
+#: inc/snmpocslink.class.php:199
 msgid "Import SNMP manufacturer"
 msgstr "Importovat SNMP výrobce"
 
-#: inc/snmpocslink.class.php:198 inc/snmpocslink.class.php:286
+#: inc/snmpocslink.class.php:203 inc/snmpocslink.class.php:291
 msgid "Create network port"
 msgstr "Vytvořit síťový port"
 
-#: inc/snmpocslink.class.php:202
+#: inc/snmpocslink.class.php:207
 msgid "Computer SNMP import options"
 msgstr "Předvolby SNMP importu počítače"
 
-#: inc/snmpocslink.class.php:204
+#: inc/snmpocslink.class.php:209
 msgid "Import SNMP network cards"
 msgstr "Importovat SNMP síťovou kartu"
 
-#: inc/snmpocslink.class.php:207
+#: inc/snmpocslink.class.php:212
 msgid "Import SNMP memory"
 msgstr "Importovat SNMP operační paměť"
 
-#: inc/snmpocslink.class.php:211
+#: inc/snmpocslink.class.php:216
 msgid "Import SNMP processors"
 msgstr "Importovat SNMP procesory"
 
-#: inc/snmpocslink.class.php:214
+#: inc/snmpocslink.class.php:219
 msgid "Import SNMP softwares"
 msgstr "Importovat SNMP software"
 
-#: inc/snmpocslink.class.php:218
+#: inc/snmpocslink.class.php:223
 msgid "Import SNMP virtual machines"
 msgstr "Importovat SNMP virtuální stroje"
 
-#: inc/snmpocslink.class.php:220
+#: inc/snmpocslink.class.php:225
 msgid "Import SNMP volumes"
-msgstr ""
+msgstr "Importovat SNMP svazky"
 
-#: inc/snmpocslink.class.php:224
+#: inc/snmpocslink.class.php:229
 msgid "Printer SNMP import options"
 msgstr "Předvolby importu SNMP tiskárny"
 
-#: inc/snmpocslink.class.php:226
+#: inc/snmpocslink.class.php:231
 msgid "Import SNMP last pages counter"
 msgstr "Importovat SNMP počítadlo stran"
 
-#: inc/snmpocslink.class.php:229
+#: inc/snmpocslink.class.php:234
 msgid "Import SNMP printer memory"
 msgstr "Importovat SNMP paměť tiskárny"
 
-#: inc/snmpocslink.class.php:233
+#: inc/snmpocslink.class.php:238
 msgid "Networking SNMP import options"
 msgstr "Předvolby importu SNMP sítě"
 
-#: inc/snmpocslink.class.php:235
+#: inc/snmpocslink.class.php:240
 msgid "Import SNMP firmware"
 msgstr "Importovat SNMP firmware"
 
-#: inc/snmpocslink.class.php:239
+#: inc/snmpocslink.class.php:244
 msgid "Import SNMP Power supplies"
 msgstr "Importovat SNMP napájecí zdroje"
 
-#: inc/snmpocslink.class.php:243
+#: inc/snmpocslink.class.php:248
 msgid "Import SNMP Fans"
 msgstr "Importovat SNMP ventilátory"
 
-#: inc/snmpocslink.class.php:251 inc/snmpocslink.class.php:256
+#: inc/snmpocslink.class.php:256 inc/snmpocslink.class.php:261
 msgid "General SNMP link options"
 msgstr "Obecné předvolby SNMP odkazu"
 
-#: inc/snmpocslink.class.php:258
+#: inc/snmpocslink.class.php:263
 msgid "Link SNMP name"
 msgstr "Propojit název ze SNMP"
 
-#: inc/snmpocslink.class.php:262
+#: inc/snmpocslink.class.php:267
 msgid "Link SNMP serial"
 msgstr "Propojit sériové číslo ze SNMP"
 
-#: inc/snmpocslink.class.php:266
+#: inc/snmpocslink.class.php:271
 msgid "Link SNMP comment"
 msgstr "Propojit komentář ze SNMP"
 
-#: inc/snmpocslink.class.php:270
+#: inc/snmpocslink.class.php:275
 msgid "Link SNMP contact"
 msgstr "Propojit kontakt ze SNMP"
 
-#: inc/snmpocslink.class.php:274
+#: inc/snmpocslink.class.php:279
 msgid "Link SNMP location"
 msgstr "Propojit umístění ze SNMP"
 
-#: inc/snmpocslink.class.php:278
+#: inc/snmpocslink.class.php:283
 msgid "Link SNMP domain"
 msgstr "Propojit doménu ze SNMP"
 
-#: inc/snmpocslink.class.php:282
+#: inc/snmpocslink.class.php:287
 msgid "Link SNMP manufacturer"
 msgstr "Propojit výrobce ze SNMP"
 
-#: inc/snmpocslink.class.php:290
+#: inc/snmpocslink.class.php:295
 msgid "Computer SNMP link options"
 msgstr "Předvolby propojení ze SNMP pro počítač"
 
-#: inc/snmpocslink.class.php:292
+#: inc/snmpocslink.class.php:297
 msgid "Link SNMP network cards"
 msgstr "Propojit síťové karty ze SNMP"
 
-#: inc/snmpocslink.class.php:295
+#: inc/snmpocslink.class.php:300
 msgid "Link SNMP memory"
 msgstr "Propojit operační paměť ze SNMP"
 
-#: inc/snmpocslink.class.php:299
+#: inc/snmpocslink.class.php:304
 msgid "Link SNMP processors"
 msgstr "Propojit procesory ze SNMP"
 
-#: inc/snmpocslink.class.php:302
+#: inc/snmpocslink.class.php:307
 msgid "Link SNMP softwares"
 msgstr "Propojit software ze SNMP"
 
-#: inc/snmpocslink.class.php:306
+#: inc/snmpocslink.class.php:311
 msgid "Link SNMP virtual machines"
 msgstr "Propojit virtuální stroje ze SNMP"
 
-#: inc/snmpocslink.class.php:308
+#: inc/snmpocslink.class.php:313
 msgid "Link SNMP volumes"
-msgstr ""
+msgstr "Připojit SNMP svazky"
 
-#: inc/snmpocslink.class.php:312
+#: inc/snmpocslink.class.php:317
 msgid "Printer SNMP link options"
 msgstr "Předvolby propojení ze SNMP pro tiskárnu"
 
-#: inc/snmpocslink.class.php:314
+#: inc/snmpocslink.class.php:319
 msgid "Link SNMP last pages counter"
 msgstr "Propojit počítadlo stran ze SNMP"
 
-#: inc/snmpocslink.class.php:317
+#: inc/snmpocslink.class.php:322
 msgid "Link SNMP printer memory"
 msgstr "Propojit paměť tiskárny ze SNMP"
 
-#: inc/snmpocslink.class.php:321
+#: inc/snmpocslink.class.php:326
 msgid "Networking SNMP link options"
 msgstr "Předvolby propojování ze SNMP pro síť"
 
-#: inc/snmpocslink.class.php:323
+#: inc/snmpocslink.class.php:328
 msgid "Link SNMP firmware"
 msgstr "Propojit firmware ze SNMP"
 
-#: inc/snmpocslink.class.php:327
+#: inc/snmpocslink.class.php:332
 msgid "Link SNMP Power supplies"
 msgstr "Propojit napájecí zdroje ze SNMP"
 
-#: inc/snmpocslink.class.php:331
+#: inc/snmpocslink.class.php:336
 msgid "Link SNMP Fans"
 msgstr "Propojit ventilátory ze SNMP"
 
-#: inc/snmpocslink.class.php:417
+#: inc/snmpocslink.class.php:420
 msgid "OCSNG SNMP import"
 msgstr "Import SNMP informací z OCSNG"
 
-#: inc/snmpocslink.class.php:420
+#: inc/snmpocslink.class.php:423
 msgid "See Setup : SNMP Import before"
 msgstr "Viz nastavení: SNMP import před"
 
-#: inc/snmpocslink.class.php:446 inc/snmpocslink.class.php:447
-#: inc/snmpocslink.class.php:448 inc/snmpocslink.class.php:2391
+#: inc/snmpocslink.class.php:449 inc/snmpocslink.class.php:450
+#: inc/snmpocslink.class.php:451 inc/snmpocslink.class.php:2236
 msgid "Import new SNMP devices"
 msgstr "Importovat nová SNMP zařízení"
 
-#: inc/snmpocslink.class.php:717
+#: inc/snmpocslink.class.php:720
 msgid "Cartridges informations"
 msgstr "Informace o náplních"
 
-#: inc/snmpocslink.class.php:752
+#: inc/snmpocslink.class.php:755
 msgid "Trays informations"
 msgstr "Informace o zásobnících papíru"
 
-#: inc/snmpocslink.class.php:1041
+#: inc/snmpocslink.class.php:1014
 msgid "Printer Memory"
 msgstr "Paměť tiskárny"
 
-#: inc/snmpocslink.class.php:1691
+#: inc/snmpocslink.class.php:1531
 msgid "Computer Memory"
 msgstr "Paměť počítače"
 
-#: inc/snmpocslink.class.php:2325
+#: inc/snmpocslink.class.php:2169
 msgid "Filter SNMP Objects list"
 msgstr "Filtrovat seznam SNMP objektů"
 
-#: inc/snmpocslink.class.php:2328
+#: inc/snmpocslink.class.php:2172
 msgid "By itemtype"
 msgstr "Dle typu položky"
 
-#: inc/snmpocslink.class.php:2334
+#: inc/snmpocslink.class.php:2178
 msgid "By IP"
 msgstr "Dle IP adresy"
 
-#: inc/snmpocslink.class.php:2393
+#: inc/snmpocslink.class.php:2238
 msgid "Import new SNMP devices into glpi"
 msgstr "Importovat nová SNMP zařízení do GLPI"
 
-#: inc/snmpocslink.class.php:2552
+#: inc/snmpocslink.class.php:2394
 msgid "Contact SNMP"
 msgstr "Kontakt ze SNMP"
 
-#: inc/snmpocslink.class.php:2553
+#: inc/snmpocslink.class.php:2395
 msgid "Location SNMP"
 msgstr "Umístění ze SNMP"
 
-#: inc/snmpocslink.class.php:2554
+#: inc/snmpocslink.class.php:2396
 msgid "Type SNMP"
 msgstr "Typ ze SNMP"
 
-#: inc/snmpocslink.class.php:2557
+#: inc/snmpocslink.class.php:2399
 msgid "Item type to create"
 msgstr "Typ položky kterou vytvořit"
 
-#: inc/snmpocslink.class.php:2728 inc/snmpocslink.class.php:2738
-#: inc/snmpocslink.class.php:2747
+#: inc/snmpocslink.class.php:2571 inc/snmpocslink.class.php:2581
+#: inc/snmpocslink.class.php:2590
 msgid "No new SNMP device to be imported"
 msgstr "Žádné nové SNMP zařízení k importu"
 
-#: inc/snmpocslink.class.php:2786 inc/snmpocslink.class.php:2908
-#: inc/snmpocslink.class.php:2911
+#: inc/snmpocslink.class.php:2632 inc/snmpocslink.class.php:2754
+#: inc/snmpocslink.class.php:2757
 msgid "No new SNMP device to be updated"
 msgstr "Žádné nové SNMP zařízení k aktualizaci"
 
-#: inc/snmpocslink.class.php:2849
+#: inc/snmpocslink.class.php:2695
 msgid "Snmp device updated in OCSNG"
 msgstr "SNMP zařízení aktualizovaná v OCSNG"
 
-#: inc/snmpocslink.class.php:2868
+#: inc/snmpocslink.class.php:2714
 msgid "GLPI Object"
 msgstr "GLPI objekt"
 
-#: inc/snmpocslink.class.php:2870
+#: inc/snmpocslink.class.php:2716
 msgid "OCS SNMP device"
 msgstr "OCS SNMP zařízení"
 
-#: inc/snmpocslink.class.php:2904
+#: inc/snmpocslink.class.php:2750
 msgid "Update SNMP device"
 msgstr "Aktualizovat SNMP zařízení"
 
-#: inc/teamviewer.class.php:45
+#: inc/teamviewer.class.php:48
 msgid "Teamviewer access"
 msgstr "Teamviwer přístup"
 
-#: inc/teamviewer.class.php:123
+#: inc/teamviewer.class.php:127
 msgid "Teamviewer ID"
 msgstr "Teamviewer identifikátor"
 
-#: inc/teamviewer.class.php:175 inc/teamviewer.class.php:232
+#: inc/teamviewer.class.php:179 inc/teamviewer.class.php:241
 msgid "Teamviewer direct access"
 msgstr "Teamviewer přímý přístup"
 
-#: inc/thread.class.php:72
+#: inc/thread.class.php:71
 msgid "Back to processes list"
 msgstr "Zpět na seznam procesů"
 
-#: inc/thread.class.php:108
+#: inc/thread.class.php:107
 msgid "Process information"
 msgstr "Informace o procesu"
 
-#: inc/thread.class.php:113 inc/thread.class.php:316
+#: inc/thread.class.php:112 inc/thread.class.php:315
 msgid "Beginning date of execution"
 msgstr "Počáteční datum spuštění"
 
-#: inc/thread.class.php:114 inc/thread.class.php:317
+#: inc/thread.class.php:113 inc/thread.class.php:316
 msgid "Ending date of execution"
 msgstr "Konečné datum spuštění"
 
-#: inc/thread.class.php:122 inc/thread.class.php:324
+#: inc/thread.class.php:121 inc/thread.class.php:323
 msgid "Computers refused"
 msgstr "Odmítnuté počítače"
 
-#: inc/thread.class.php:123 inc/thread.class.php:325
+#: inc/thread.class.php:122 inc/thread.class.php:324
 msgid "Process time execution"
 msgstr "Doba zpracování procesu"
 
-#: inc/thread.class.php:124
+#: inc/thread.class.php:123
 msgid "Total of computers to be treated"
 msgstr "Celkový počet počítačů ke zpracování"
 
-#: inc/thread.class.php:125
+#: inc/thread.class.php:124
 msgid "performed percentage"
 msgstr "provedeno procent"
 
-#: inc/thread.class.php:181
+#: inc/thread.class.php:180
 msgid "Total of treated computers"
 msgstr "Celkem zpracovaných počítačů"
 
-#: inc/thread.class.php:308
+#: inc/thread.class.php:307
 msgid "See all servers"
 msgstr "Zobrazit všechny servery"
 
-#: inc/thread.class.php:315
+#: inc/thread.class.php:314
 msgid "Number of threads"
 msgstr "Počet vláken"
 
-#: inc/thread.class.php:446
+#: inc/thread.class.php:443
 msgid "Maximum"
 msgstr "Maximum"
 
 #. TRANS: means computers by second
-#: inc/thread.class.php:489
+#: inc/thread.class.php:486
 msgid "pc/s"
 msgstr "počítačů/sek."
 
-#: inc/thread.class.php:599
+#: inc/thread.class.php:596
 msgid "Clean processes"
 msgstr "Vyčistit procesy"
 
-#: inc/thread.class.php:600
+#: inc/thread.class.php:597
 msgid "Delete processes after"
 msgstr "Smazat procesy"
 
-#: inc/winupdate.class.php:43
+#: inc/winupdate.class.php:46
 msgid "Windows Updates"
 msgstr "Aktualizace Windows"
 
-#: inc/winupdate.class.php:122
+#: inc/winupdate.class.php:125
 msgid "AU Options"
 msgstr "Předvolby aut. aktualizací"
 
-#: inc/winupdate.class.php:123
+#: inc/winupdate.class.php:126
 msgid "Schedule Install Date"
 msgstr "Naplánovat datum instalace"
 
-#: inc/winupdate.class.php:124
+#: inc/winupdate.class.php:127
 msgid "Last Success Time"
 msgstr "Okamžik posledního úspěchu"
 
-#: inc/winupdate.class.php:125
+#: inc/winupdate.class.php:128
 msgid "Detect Success Time"
 msgstr "Zjistit okamžik úspěchu"
 
-#: inc/winupdate.class.php:126
+#: inc/winupdate.class.php:129
 msgid "Download Success Time"
 msgstr "Stáhnout si okamžik úspěchu"
 
-#: inc/winupdate.class.php:168
+#: inc/winupdate.class.php:171
 msgid "Automatic Updates is required and users can configure it"
 msgstr "Je třeba automatických aktualizací a uživatelé si je mohou nastavit"
 
-#: inc/winupdate.class.php:171
+#: inc/winupdate.class.php:174
 msgid "Automatically download and schedule installation"
 msgstr "Automaticky stáhnout a naplánovat instalaci"
 
-#: inc/winupdate.class.php:174
+#: inc/winupdate.class.php:177
 msgid "Automatically download and notify of installation"
 msgstr "Automaticky stáhnout a upozornit na instalaci"
 
-#: inc/winupdate.class.php:177
+#: inc/winupdate.class.php:180
 msgid "Notify before download"
 msgstr "Upozornit před stažením"
 
-#: inc/winupdate.class.php:180
+#: inc/winupdate.class.php:183
 msgid "Disables AU"
 msgstr "Vypnout automatické aktualizace"
 
-#: inc/winuser.class.php:125
+#: inc/winuser.class.php:129
 msgid "Disabled"
 msgstr "Vypnuto"
 
-#: inc/winuser.class.php:126
+#: inc/winuser.class.php:130
 msgid "SID"
 msgstr "Identifikátor zabezpečení (SID)"

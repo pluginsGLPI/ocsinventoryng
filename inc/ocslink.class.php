@@ -88,7 +88,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
              && Session::haveRight("plugin_ocsinventoryng_link", READ)) {
             $query = "SELECT *
                       FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                      WHERE `computers_id` = $items_id" .
+                      WHERE `computers_id` = $items_id " .
                      getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
 
             $result = $DB->query($query);
@@ -786,9 +786,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       global $DB;
 
       $query = "SELECT *
-                      FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                      WHERE `computers_id` = " . $item->getID() .
-               getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
+                FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                WHERE `computers_id` = " . $item->getID() ." ".
+            getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
 
       $result = $DB->query($query);
       if ($DB->numrows($result) > 0) {

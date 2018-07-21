@@ -190,11 +190,11 @@ function plugin_init_ocsinventoryng() {
 function plugin_version_ocsinventoryng() {
 
    return ['name'           => "OCS Inventory NG",
-                'version'        => '1.5.0',
-                'author'         => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
-                'license'        => 'GPLv2+',
-                'homepage'       => 'https://github.com/pluginsGLPI/ocsinventoryng',
-                'minGlpiVersion' => '9.3'];
+           'version'        => '1.5.0',
+           'author'         => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
+           'license'        => 'GPLv2+',
+           'homepage'       => 'https://github.com/pluginsGLPI/ocsinventoryng',
+           'minGlpiVersion' => '9.3'];
 
 }
 

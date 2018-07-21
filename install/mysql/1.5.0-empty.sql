@@ -167,6 +167,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `history_software` tinyint(1) NOT NULL DEFAULT '1',
   `history_vm` tinyint(1) NOT NULL DEFAULT '1',
   `history_admininfos` tinyint(1) NOT NULL DEFAULT '1',
+  `history_plugins` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `date_mod` (`date_mod`),
   KEY `is_active` (`is_active`),

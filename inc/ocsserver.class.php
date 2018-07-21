@@ -605,25 +605,33 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
-            function form_init_all(form, value) {
-               var selects = $("form[id='formconfig'] select");
+            function form_init_all(value) {
+                if(value != -1) {
+                  var selects = $("form[id='formconfig'] select");
 
-               $.each(selects, function(index, select){
-                  if (select.name != "import_otherserial"
-                        && select.name != "import_location"
-                           && select.name != "import_group"
-                              && select.name != "import_contact_num"
-                                 && select.name != "import_use_date"
-                                    && select.name != "import_network") {
-                    $(select).select2('val', value);
-                  }
-               });
+                  $.each(selects, function(index, select){
+                     if (select.name != "init_all"
+                         && select.name != "import_otherserial"
+                           && select.name != "import_location"
+                              && select.name != "import_group"
+                                 && select.name != "import_contact_num"
+                                    && select.name != "import_use_date"
+                                       && select.name != "import_network") {
+                       $(select).select2('val', value);
+                     }
+                  });
+               }
             }
          </script>
 JAVASCRIPT;
-      Dropdown::showYesNo('init_all', 0, -1, [
+
+      $values = [-1 => Dropdown::EMPTY_VALUE,
+                 0  => __('No'),
+                 1  => __('Yes')];
+
+      Dropdown::showFromArray('init_all', $values, [
          'width'     => '10%',
-         'on_change' => "form_init_all(this.form, this.selectedIndex);"
+         'on_change' => "form_init_all(this.value);"
       ]);
       echo "</th></tr>";
 
@@ -657,7 +665,8 @@ JAVASCRIPT;
       echo "<div>";
       echo "<table class='tab_cadre' width='100%'>";
       echo "<tr class='tab_bg_2'>";
-      echo "<th colspan='4'><input type='hidden' name='id' value='$ID'>" . __('General information', 'ocsinventoryng') . "<br><span style='color:red;'>" . __('Warning : the import entity rules depends on selected fields', 'ocsinventoryng') . "</span>\n";
+      echo "<th colspan='4'><input type='hidden' name='id' value='$ID'>" . __('General information', 'ocsinventoryng') .
+           "<br><span style='color:red;'>" . __('Warning : the import entity rules depends on selected fields', 'ocsinventoryng') . "</span>\n";
       echo "</th></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Name') . "</td>\n<td>";
@@ -1067,19 +1076,28 @@ JAVASCRIPT;
 
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
-            function form_init_all(form, value) {
-               var selects = $("form[id='historyconfig'] select");
+            function form_init_all(value) {
+                if(value != -1) {
+                  var selects = $("form[id='historyconfig'] select");
 
-               $.each(selects, function(index, select){
-                    $(select).select2('val', value);
-               });
+                  $.each(selects, function(index, select){
+                     if (select.name != "init_all") {
+                       $(select).select2('val', value);
+                     }
+                  });
+               }
             }
          </script>
 JAVASCRIPT;
-      Dropdown::showYesNo('init_all', 0, -1, [
+      $values = [-1 => Dropdown::EMPTY_VALUE,
+                 0  => __('No'),
+                 1  => __('Yes')];
+
+      Dropdown::showFromArray('init_all', $values, [
          'width'     => '10%',
-         'on_change' => "form_init_all(this.form, this.selectedIndex);"
+         'on_change' => "form_init_all(this.value);"
       ]);
+
       echo "</th></tr>";
       echo "<tr>
       <th colspan='4'><input type='hidden' name='id' value='$ID'>" . __('General history', 'ocsinventoryng') .
@@ -1303,8 +1321,8 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_1'>";
       echo "<td class='center'>" . __('Connection type', 'ocsinventoryng') . "</td>";
       echo "<td id='conn_type_container'>";
-      Dropdown::showFromArray('conn_type', $conn_type_values, ['value'     => $this->fields['conn_type'],
-                                                               'on_change' => "form_init_all(this.form, this.selectedIndex);"]);
+      Dropdown::showFromArray('conn_type', $conn_type_values,
+                              ['value'     => $this->fields['conn_type']]);
       echo "</td>";
       echo "<td class='center'>" . __("Active") . "</td>";
       echo "<td>";
@@ -3557,7 +3575,7 @@ JAVASCRIPT;
             }
          }
 
-         if (count($updates)) {
+         if ($updates > 0) {
             self::resetOS($options['computers_id'], "OperatingSystem", $options['cfg_ocs']);
 
             $device = new Item_OperatingSystem();
@@ -5356,6 +5374,21 @@ JAVASCRIPT;
    }
 
    /**
+    * get true if the server is active
+    *
+    * @param $serverID
+    *
+    * @return bool
+    */
+   static function serverIsActive($serverID) {
+      $ocsserver = new self();
+      if ($ocsserver->getFromDB($serverID)) {
+         return $ocsserver->isActive();
+      }
+      return false;
+   }
+
+   /**
     * Delete old devices settings
     *
     * @param $glpi_computers_id integer : glpi computer id.
@@ -5804,8 +5837,9 @@ JAVASCRIPT;
    static function resetDisks($glpi_computers_id, $cfg_ocs) {
 
       $dd = new Item_Disk();
-      $dd->deleteByCriteria(['computers_id' => $glpi_computers_id,
-                             'is_dynamic'   => 1], 1, $cfg_ocs['history_drives']);
+      $dd->deleteByCriteria(['items_id'   => $glpi_computers_id,
+                             'itemtype'   => 'Computer',
+                             'is_dynamic' => 1], 1, $cfg_ocs['history_drives']);
 
    }
 
@@ -8131,7 +8165,7 @@ JAVASCRIPT;
                     WHERE `itemtype`='Printer'
                        AND `computers_id`= $computers_id
                        AND `is_dynamic` = 1
-                       AND `is_deleted` =0";
+                       AND `is_deleted` = 0 ";
       if (!empty($already_processed)) {
          $query .= "AND `items_id` NOT IN (" . implode(',', $already_processed) . ")";
       }
@@ -8287,7 +8321,7 @@ JAVASCRIPT;
                 WHERE `itemtype`='Peripheral'
                    AND `computers_id`=$computers_id
                    AND `is_dynamic` = 1
-                   AND `is_deleted` = 0";
+                   AND `is_deleted` = 0 ";
       if (!empty($already_processed)) {
          $query .= "AND `items_id` NOT IN (" . implode(',', $already_processed) . ")";
       }
