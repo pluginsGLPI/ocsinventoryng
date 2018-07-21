@@ -108,7 +108,7 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
             $tabsyncset = json_encode($tabsyncdates);
 
             $nbcomputers = __('Computers number', 'ocsinventoryng');
-
+            $nbcomputers = addslashes($nbcomputers);
             $graph = "<script type='text/javascript'>
                      var barsynchChartData = {
                              datasets: [{
