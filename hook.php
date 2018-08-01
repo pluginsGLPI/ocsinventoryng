@@ -262,9 +262,6 @@ function plugin_ocsinventoryng_install() {
       $DB->queryOrDie($query, "1.1.0 add table glpi_plugin_ocsinventoryng_items_devicebiosdatas");
    }
 
-   PluginOcsinventoryngProfile::initProfile();
-   PluginOcsinventoryngProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
-
    if ($DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
        && $DB->tableExists("glpi_plugin_ocsinventoryng_profiles")
        && (countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1") == 1)) {
@@ -1111,7 +1108,7 @@ function plugin_ocsinventoryng_install() {
       }
    }
    $migration->dropTable("glpi_plugin_ocsinventoryng_devicebiosdatas");
-   $migration->dropTable("glpi_plugin_ocsinventoryng_items_devicebios");
+   $migration->dropTable("glpi_plugin_ocsinventoryng_items_devicebiosdatas");
 
    /******************* Migration 1.4.3 *******************/
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_ocsservers')
@@ -1277,6 +1274,9 @@ function plugin_ocsinventoryng_install() {
    foreach ($tables_mass as $table_mass) {
       $DB->query("DROP TABLE IF EXISTS `$table_mass`;");
    }
+
+   PluginOcsinventoryngProfile::initProfile();
+   PluginOcsinventoryngProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
 
    return true;
 }
