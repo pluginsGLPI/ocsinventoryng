@@ -1186,7 +1186,6 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @return string
     */
    static function showPercentBar($status) {
-      Toolbox::logDebug($status);
       if (!is_numeric($status)) {
          return $status;
       }
