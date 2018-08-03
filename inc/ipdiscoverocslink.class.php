@@ -301,7 +301,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM {
          return [];
       } else {
          $macAdresses  = self::parseArrayToString($knownMacAdresses);
-         $percentQuery = " SELECT * from (select inv.RSX as IP, inv.c as 'INVENTORIED', non_ident.c as 'NON_INVENTORIED', ipdiscover.c as 'IPDISCOVER', ident.c as 'IDENTIFIED', inv.name as 'NAME', CASE WHEN ident.c IS NULL and ipdiscover.c IS NULL THEN 100 WHEN ident.c IS NULL THEN 0 WHEN non_ident.c IS NULL THEN 0 ELSE round(100-(non_ident.c*100/(ident.c+non_ident.c)), 1) END as 'PERCENT' 
+         $percentQuery = " SELECT * from (select inv.RSX as IP, inv.c as 'INVENTORIED', non_ident.c as 'NON_INVENTORIED', ipdiscover.c as 'IPDISCOVER', ident.c as 'IDENTIFIED', inv.name as 'NAME', CASE WHEN ident.c IS NULL and ipdiscover.c IS NULL THEN 100 WHEN non_ident.c IS NULL and ipdiscover.c IS NOT NULL THEN 100 WHEN ident.c IS NULL THEN round(inv.c * 100 / (non_ident.c + inv.c),1) ELSE round((inv.c + ident.c) * 100 / (non_ident.c + inv.c),1) END as 'PERCENT' 
 from (SELECT COUNT(DISTINCT hardware_id) as c, 'IPDISCOVER' as TYPE, tvalue as RSX FROM devices WHERE name = 'IPDISCOVER' and tvalue in (" . $Nets . ")
 GROUP BY tvalue) ipdiscover 
 right join 
@@ -1186,6 +1186,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @return string
     */
    static function showPercentBar($status) {
+      Toolbox::logDebug($status);
       if (!is_numeric($status)) {
          return $status;
       }
