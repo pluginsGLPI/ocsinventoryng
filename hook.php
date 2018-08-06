@@ -1159,9 +1159,9 @@ function plugin_ocsinventoryng_install() {
        && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_user')) {
 
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `import_user` tinyint(1) NOT NULL DEFAULT '1',
-               ADD `import_user_location` tinyint(1) NOT NULL DEFAULT '1',
-               ADD `import_user_group` tinyint(1) NOT NULL DEFAULT '1';";
+               ADD `import_user` TINYINT(1) NOT NULL DEFAULT '1',
+               ADD `import_user_location` TINYINT(1) NOT NULL DEFAULT '1',
+               ADD `import_user_group` TINYINT(1) NOT NULL DEFAULT '1';";
       $DB->queryOrDie($query, "1.4.3 update table glpi_plugin_ocsinventoryng_ocsservers add user fields");
    }
    /******************* Migration 1.4.3 *******************/
@@ -1220,17 +1220,17 @@ function plugin_ocsinventoryng_install() {
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_ocsservers')
        && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'importsnmp_computerdisks')) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `importsnmp_computerdisks` tinyint(1) NOT NULL DEFAULT '0';";
+               ADD `importsnmp_computerdisks` TINYINT(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.4.4 update table glpi_plugin_ocsinventoryng_ocsservers add importsnmp_computerdisks");
 
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `linksnmp_computerdisks` tinyint(1) NOT NULL DEFAULT '0';";
+               ADD `linksnmp_computerdisks` TINYINT(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.4.4 update table glpi_plugin_ocsinventoryng_ocsservers add linksnmp_computerdisks");
    }
 
-   if(!$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'history_plugins')) {
+   if (!$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'history_plugins')) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
-               ADD `history_plugins` tinyint(1) NOT NULL DEFAULT '0';";
+               ADD `history_plugins` TINYINT(1) NOT NULL DEFAULT '0';";
       $DB->queryOrDie($query, "1.50 add history_plugins in glpi_plugin_ocsinventoryng_ocsservers");
    }
    /******************* Migration 1.4.4 *******************/
@@ -1519,18 +1519,18 @@ function plugin_ocsinventoryng_MassiveActions($type) {
 
    switch ($type) {
       case 'PluginOcsinventoryngNotimportedcomputer' :
-         $actions                                                                                                                          = [];
+         $actions                                      = [];
          $actions['PluginOcsinventoryngNotimportedcomputer' . MassiveAction::CLASS_ACTION_SEPARATOR .
                   "plugin_ocsinventoryng_replayrules"] = __("Restart import", 'ocsinventoryng');
          $actions['PluginOcsinventoryngNotimportedcomputer' . MassiveAction::CLASS_ACTION_SEPARATOR .
                   "plugin_ocsinventoryng_import"]      = __("Import in the entity",
-                                                                                                                                                'ocsinventoryng');
+                                                            'ocsinventoryng');
 
          $plugin = new Plugin;
          if ($plugin->isActivated("uninstall")) {
             $actions['PluginOcsinventoryngNotimportedcomputer' . MassiveAction::CLASS_ACTION_SEPARATOR .
                      "plugin_ocsinventoryng_delete"] = __('Delete computer in OCSNG',
-                                                                                                                                              'ocsinventoryng');
+                                                          'ocsinventoryng');
          }
          return $actions;
 
@@ -1540,15 +1540,19 @@ function plugin_ocsinventoryng_MassiveActions($type) {
 
             return [// Specific one
                     'PluginOcsinventoryngOcsServer' . MassiveAction::CLASS_ACTION_SEPARATOR .
+                    "plugin_ocsinventoryng_launch_ocsng_update"
+                                                               => __('Launch synchronization',
+                                                                     'ocsinventoryng'),
+                    'PluginOcsinventoryngOcsServer' . MassiveAction::CLASS_ACTION_SEPARATOR .
                     "plugin_ocsinventoryng_force_ocsng_update"
-                                                                                                                                         => __('Force synchronization OCSNG',
-                                                                                                                                               'ocsinventoryng'),
+                                                               => __('Force full import',
+                                                                     'ocsinventoryng'),
                     'PluginOcsinventoryngOcsServer' . MassiveAction::CLASS_ACTION_SEPARATOR .
                     "plugin_ocsinventoryng_lock_ocsng_field"   => __('Lock fields',
-                                                                                                                                               'ocsinventoryng'),
+                                                                     'ocsinventoryng'),
                     'PluginOcsinventoryngOcsServer' . MassiveAction::CLASS_ACTION_SEPARATOR .
                     "plugin_ocsinventoryng_unlock_ocsng_field" => __('Unlock fields',
-                                                                                                                                               'ocsinventoryng')];
+                                                                     'ocsinventoryng')];
 
          }
          break;

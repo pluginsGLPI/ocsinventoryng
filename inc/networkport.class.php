@@ -105,7 +105,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          }
          $inst_input['networkports_id'] = $networkports_id;
          $instantiation                 = $network_port->getInstantiation();
-         $instantiation->update($inst_input);
+         $instantiation->update($inst_input, $dohistory);
          unset($instantiation);
 
       } else {
@@ -116,7 +116,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $port_input = ['id'         => $network_port->getID(),
                            'name'       => $name,
                            'is_dynamic' => 1];
-            $network_port->update($port_input);
+            $network_port->update($port_input, $dohistory);
          }
          if (($network_port->fields['instantiation_type'] != $instantiation_type)
              && ($network_port->fields['is_dynamic'] == 1)) {
@@ -130,7 +130,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $instantiation                 = $network_port->getInstantiation();
             $inst_input['id']              = $instantiation->getID();
             $inst_input['networkports_id'] = $network_port->getID();
-            $instantiation->update($inst_input);
+            $instantiation->update($inst_input, $dohistory);
             unset($instantiation);
          }
       }
@@ -342,14 +342,32 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                $net_id = $deviceNetworkCard->import($device_input);
 
                if ($net_id) {
-                  $item_device->add(['items_id'              => $computers_id,
-                                     'itemtype'              => 'Computer',
-                                     'entities_id'           => $entities_id,
-                                     'devicenetworkcards_id' => $net_id,
-                                     'mac'                   => $mac,
-                                     '_no_history'           => !$cfg_ocs['history_network'],
-                                     'is_dynamic'            => 1,
-                                     'is_deleted'            => 0]);
+                  if ($item_device->getFromDBByCrit(['items_id'              => $computers_id,
+                                                     'itemtype'              => 'Computer',
+                                                     'entities_id'           => $entities_id,
+                                                     'devicenetworkcards_id' => $net_id,
+                                                     'mac'                   => $mac,
+                                                     'is_dynamic'            => 1,
+                                                     'is_deleted'            => 0])) {
+                     $item_device->update(['id'                    => $item_device->getID(),
+                                           'items_id'              => $computers_id,
+                                           'itemtype'              => 'Computer',
+                                           'entities_id'           => $entities_id,
+                                           'devicenetworkcards_id' => $net_id,
+                                           'mac'                   => $mac,
+                                           '_no_history'           => !$cfg_ocs['history_devices'],
+                                           'is_dynamic'            => 1,
+                                           'is_deleted'            => 0], $cfg_ocs['history_devices']);
+                  } else {
+                     $item_device->add(['items_id'              => $computers_id,
+                                        'itemtype'              => 'Computer',
+                                        'entities_id'           => $entities_id,
+                                        'devicenetworkcards_id' => $net_id,
+                                        'mac'                   => $mac,
+                                        '_no_history'           => !$cfg_ocs['history_devices'],
+                                        'is_dynamic'            => 1,
+                                        'is_deleted'            => 0], [], $cfg_ocs['history_devices']);
+                  }
                }
             }
             if (!$item_device->isNewItem()) {

@@ -81,6 +81,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       $target = Toolbox::getItemTypeFormURL(__CLASS__);
 
       if (in_array($item->getType(), ['Computer'])) {
+
          $items_id = $item->getField('id');
 
          if (!empty($items_id)
@@ -96,7 +97,12 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                $data = $DB->fetch_assoc($result);
 
                if (count($data)) {
+
+                  // Manage locks pictures
+                  self::showLockIcon($item->getField('id'), $data);
+
                   $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
+
                   echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG Import informations', 'ocsinventoryng') . "</th>";
 
                   echo "<tr class='tab_bg_1'><td>" . __('Last OCSNG inventory date', 'ocsinventoryng');
@@ -167,25 +173,37 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   //If have write right on OCS and ocsreports url is not empty in OCS config
                   if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
                       && ($ocs_config["ocs_url"] != '')) {
-                     echo "<td colspan='2' class='center'>";
+                     echo "<td class='center'>";
                      echo PluginOcsinventoryngOcsServer::getComputerLinkToOcsConsole($ocs_config['id'],
                                                                                      $data["ocsid"],
                                                                                      __('OCS NG Interface', 'ocsinventoryng'));
                      echo "</td>";
                   } else {
-                     echo "<td colspan='2'></td>";
+                     echo "<td></td>";
                   }
 
                   if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
                      echo "<td class='center' colspan='2'>";
-                     Html::showSimpleForm($target, 'force_ocs_resynch',
-                                          _sx('button', 'Force synchronization', 'ocsinventoryng'),
+                     Html::showSimpleForm($target, 'launch_ocs_resynch',
+                                          _sx('button', 'Launch synchronization', 'ocsinventoryng'),
                                           ['id'         => $items_id,
                                            'resynch_id' => $data["id"]]);
                      echo "</td>";
 
                   } else {
-                     echo "<td colspan='2'></td>";
+                     echo "<td></td>";
+                  }
+
+                  if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
+                     echo "<td class='center' colspan='2'>";
+                     Html::showSimpleForm($target, 'force_ocs_resynch',
+                                          _sx('button', 'Force full import', 'ocsinventoryng'),
+                                          ['id'         => $items_id,
+                                           'resynch_id' => $data["id"]]);
+                     echo "</td>";
+
+                  } else {
+                     echo "<td></td>";
                   }
                   echo "</tr>";
                }
@@ -224,12 +242,12 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                   $linked_ids [] = $data['ocs_id'];
                   $ocsClient     = PluginOcsinventoryngOcsServer::getDBocs($data['plugin_ocsinventoryng_ocsservers_id']);
-                  $ocsResult = $ocsClient->getSnmp([
-                                                      'MAX_RECORDS' => 1,
-                                                      'FILTER'      => [
-                                                         'IDS' => $linked_ids,
-                                                      ]
-                                                   ]);
+                  $ocsResult     = $ocsClient->getSnmp([
+                                                          'MAX_RECORDS' => 1,
+                                                          'FILTER'      => [
+                                                             'IDS' => $linked_ids,
+                                                          ]
+                                                       ]);
                   if (isset($ocsResult['SNMP'])) {
                      if (count($ocsResult['SNMP']) > 0) {
                         foreach ($ocsResult['SNMP'] as $snmp) {
@@ -305,6 +323,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       $target = Toolbox::getItemTypeFormURL(__CLASS__);
 
       if (in_array($item->getType(), ['Computer'])) {
+
          $items_id = $item->getField('id');
 
          if (!empty($items_id)
@@ -370,17 +389,20 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                      echo "<td class='center'>";
                      echo "<input type='hidden' name='resynch_id' value='" . $data["id"] . "'>";
+                     echo "<input class=submit type='submit' name='launch_ocs_resynch' value=\"" .
+                          _sx('button', 'Launch synchronization', 'ocsinventoryng') . "\">";
+                     echo "</td>";
+
+                     echo "<td class='center'>";
+                     echo "<input type='hidden' name='resynch_id' value='" . $data["id"] . "'>";
                      echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
-                          _sx('button', 'Force synchronization', 'ocsinventoryng') . "\">";
+                          _sx('button', 'Force full import', 'ocsinventoryng') . "\">";
                      echo "</td>";
 
                      echo "<td class='center'>";
                      echo "<input type='hidden' name='items_id' value='" . $items_id . "'>";
                      echo "<input class=submit type='submit' name='delete_link' value=\"" .
                           _sx('button', 'Delete link', 'ocsinventoryng') . "\">";
-                     echo "</td>";
-
-                     echo "<td>";
                      echo "</td>";
 
                      echo "</tr>";
@@ -405,7 +427,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                      echo "<tr>";
                      echo "<th colspan='2'>" . __('DEBUG') . " " . __('OCSNG', "ocsinventoryng") . "</th>";
                      echo "</tr>";
-                     if (count($computer) > 0) {
+                     if (is_array($computer) && count($computer) > 0) {
                         foreach ($computer as $key => $val) {
                            echo "<tr class='tab_bg_1'>";
                            echo "<td>";
@@ -787,8 +809,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
       $query = "SELECT *
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                WHERE `computers_id` = " . $item->getID() ." ".
-            getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
+                WHERE `computers_id` = " . $item->getID() . " " .
+               getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
 
       $result = $DB->query($query);
       if ($DB->numrows($result) > 0) {
@@ -800,6 +822,70 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          }
 
          return false;
+      }
+   }
+
+   /**
+    * Display lock icon in main item form
+    *
+    * @param string $itemtype
+    */
+   static function showLockIcon($computers_id, $data) {
+      global $CFG_GLPI;
+
+      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
+      if ($cfg_ocs["use_locks"]) {
+         if (isset($computers_id)
+             && $computers_id > 0) {
+            $locks = PluginOcsinventoryngOcsServer::getLocksForComputer($computers_id);
+            $text  = __('Unlock field and import OCSNG data', 'ocsinventoryng');
+            foreach ($locks as $field) {
+               if ($field == "contact"
+                   || $field == "contact_num"
+                   || $field == "serial"
+                   || $field == "name"
+                   || $field == "otherserial"
+                   || $field == "license_number"
+                   || $field == "use_date"
+               ) {
+                  $js = '$("input[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fa fa-lock\"></i>");';
+               } else if ($field == "comment") {
+                  $js = '$("textarea[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fa fa-lock\"></i>");';
+               } else {
+                  $js = '$("select[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fa fa-lock\"></i>");';
+               }
+               $rootdoc = $CFG_GLPI["root_doc"];
+               $plugin_ocsinventoryng_ocsservers_id = $data['plugin_ocsinventoryng_ocsservers_id'];
+               $js      .= '
+            $(document).ready(function() {
+               $(".lockfield' . $field . '").click(function(e) {
+                  lastClickedElement = e.target;
+                  var check = confirm("' . $text . ' ?");
+                  var lock_data = {
+                  "field" : "' . $field . '",
+                  "computers_id" : "' . $computers_id . '",
+                  "plugin_ocsinventoryng_ocsservers_id" : "' . $plugin_ocsinventoryng_ocsservers_id . '",
+                  "ocsid" : "' . $data['ocsid'] . '",
+                  "ocs_linkid" : "' . $data['id'] . '",
+                  "update_lock" : "update_lock",                 
+                  };
+                 if (check) {
+                        $.ajax({
+                        type: "POST",
+                        url: "' . $rootdoc . '/plugins/ocsinventoryng/ajax/updatelock.php",
+                        data:lock_data,
+                        success: function(){
+                           window.location.reload();
+                        },
+                     });
+                 } else {
+                     return false;
+                 }
+             });
+           });';
+               echo Html::scriptBlock($js);
+            }
+         }
       }
    }
 }
