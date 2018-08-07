@@ -364,8 +364,8 @@ JAVASCRIPT;
    static function snmpMenu($plugin_ocsinventoryng_ocsservers_id) {
       global $CFG_GLPI, $DB;
       $ocsservers = [];
-
-      $numberActiveServers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`= 1");
+      $dbu = new DbUtils();
+      $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`= 1");
       if ($numberActiveServers > 0) {
          echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
                 method='post'>";
@@ -1027,7 +1027,8 @@ JAVASCRIPT;
             $CompDevice = new Item_DeviceMemory();
 
             if ($cfg_ocs['history_devices']) {
-               $table = getTableForItemType("Item_DeviceMemory");
+               $dbu = new DbUtils();
+               $table = $dbu->getTableForItemType("Item_DeviceMemory");
                $query = "DELETE
                             FROM `$table`
                             WHERE `items_id` = $id_printer 
@@ -1129,7 +1130,7 @@ JAVASCRIPT;
       global $DB;
 
       $snmpDevice = new $itemtype();
-
+      $dbu = new DbUtils();
       $input = [
          "is_dynamic"   => 1,
          "entities_id"  => (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0),
@@ -1263,7 +1264,7 @@ JAVASCRIPT;
                $CompDevice = new Item_DevicePowerSupply();
 
                if ($cfg_ocs['history_devices']) {
-                  $table = getTableForItemType("Item_DevicePowerSupply");
+                  $table = $dbu->getTableForItemType("Item_DevicePowerSupply");
                   $query = "DELETE
                             FROM `" . $table . "`
                             WHERE `items_id` = $id_network
@@ -1308,7 +1309,8 @@ JAVASCRIPT;
             if ($device_id) {
                $CompDevice = new Item_DevicePci();
                if ($cfg_ocs['history_devices']) {
-                  $table = getTableForItemType("Item_DevicePci");
+                  $dbu = new DbUtils();
+                  $table = $dbu->getTableForItemType("Item_DevicePci");
                   $query = "DELETE
                             FROM `" . $table . "`
                             WHERE `items_id` = $id_network
@@ -1472,7 +1474,7 @@ JAVASCRIPT;
       global $DB;
 
       $snmpDevice = new $itemtype();
-
+      $dbu = new DbUtils();
       $input = [
          "is_dynamic"  => 1,
          "entities_id" => (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0)
@@ -1543,7 +1545,7 @@ JAVASCRIPT;
          if ($device_id) {
             $CompDevice = new Item_DeviceMemory();
             if ($cfg_ocs['history_devices']) {
-               $table = getTableForItemType("Item_DeviceMemory");
+               $table = $dbu->getTableForItemType("Item_DeviceMemory");
                $query = "DELETE
                             FROM `" . $table . "`
                             WHERE `items_id` = '" . $id_item . "'
@@ -1571,7 +1573,7 @@ JAVASCRIPT;
           && count($ocsSnmp['NETWORKS']) > 0) {
          $CompDevice = new Item_DeviceNetworkCard();
          if ($cfg_ocs['history_devices']) {
-            $table = getTableForItemType("Item_DeviceNetworkCard");
+            $table = $dbu->getTableForItemType("Item_DeviceNetworkCard");
             $query = "DELETE
                       FROM `" . $table . "`
                       WHERE `items_id` = '" . $id_item . "'
@@ -1642,7 +1644,7 @@ JAVASCRIPT;
           && count($ocsSnmp['CPU']) > 0) {
          $CompDevice = new Item_DeviceProcessor();
          if ($cfg_ocs['history_devices']) {
-            $table = getTableForItemType("Item_DeviceProcessor");
+            $table = $dbu->getTableForItemType("Item_DeviceProcessor");
             $query = "DELETE
                             FROM `" . $table . "`
                             WHERE `items_id` = '" . $id_item . "'
@@ -2426,8 +2428,8 @@ JAVASCRIPT;
                   if (!$tolinked) {
                      echo "<td width='15%'>";
                      $value = false;
-
-                     if (getItemForItemtype($tab["type"])) {
+                     $dbu = new DbUtils();
+                     if ($dbu->getItemForItemtype($tab["type"])) {
                         $value = $tab["type"];
                      }
                      $type = "toimport_itemtype[" . $tab["id"] . "]";
@@ -2488,8 +2490,8 @@ JAVASCRIPT;
                        } */
 
                      $value = false;
-
-                     if (getItemForItemtype($tab["type"])) {
+                     $dbu = new DbUtils();
+                     if ($dbu->getItemForItemtype($tab["type"])) {
                         $type            = $tab["type"];
                         $options['name'] = "tolink_items[" . $tab["id"] . "]";
                         $used            = [];
@@ -2600,8 +2602,9 @@ JAVASCRIPT;
     * @return itemtype
     */
    function getFromDBbyName($itemtype, $name) {
-      $item  = getItemForItemtype($itemtype);
-      $field = "`" . getTableForItemType($itemtype) . "`.`name`";
+      $dbu = new DbUtils();
+      $item  = $dbu->getItemForItemtype($itemtype);
+      $field = "`" . $dbu->getTableForItemType($itemtype) . "`.`name`";
       $item->getFromDBByCrit([$field => $name]);
       return $item;
    }

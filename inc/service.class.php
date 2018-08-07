@@ -70,7 +70,8 @@ class PluginOcsinventoryngService extends CommonDBChild {
              && $cfg_ocs["import_service"]) {
             $nb = 0;
             if ($_SESSION['glpishow_count_on_tabs']) {
-               $nb = countElementsInTable('glpi_plugin_ocsinventoryng_services',
+               $dbu = new DbUtils();
+               $nb = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_services',
                                           "computers_id = " . $item->getID());
             }
             return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);

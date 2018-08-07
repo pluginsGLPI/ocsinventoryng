@@ -204,8 +204,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          if ($gateway != '0.0.0.0') {
             $condition .= "AND `gateway` = '$gateway'";
          }
-
-         if (countElementsInTable('glpi_ipnetworks', $condition) == 0) {
+         $dbu = new DbUtils();
+         if ($dbu->countElementsInTable('glpi_ipnetworks', $condition) == 0) {
 
             $input = [
                'name'        => $subnet . '/' .

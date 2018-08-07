@@ -139,14 +139,20 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "<td> " . __('Show processes where nothing was changed', 'ocsinventoryng') . " </td><td>";
       Dropdown::showYesNo("is_displayempty", $this->fields["is_displayempty"]);
       echo "</td>";
-      echo "<td rowspan='3' class='middle right'> " . __('Comments') . "</td>";
-      echo "<td class='center middle' rowspan='3'>";
+      echo "<td rowspan='4' class='middle right'> " . __('Comments') . "</td>";
+      echo "<td class='center middle' rowspan='4'>";
       echo "<textarea cols='40' rows='5' name='comment' >" . $this->fields["comment"] . "</textarea>";
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td> " . __('Authorize the OCSNG update', 'ocsinventoryng') . " </td><td>";
       Dropdown::showYesNo('allow_ocs_update', $this->fields['allow_ocs_update']);
+      echo "</td>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1'>";
+      echo "<td> " . __('Log imported computers', 'ocsinventoryng') . " </td><td>";
+      Dropdown::showYesNo('log_imported_computers', $this->fields['log_imported_computers']);
       echo "</td>";
       echo "</tr>";
 
@@ -255,6 +261,15 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       return $config->fields['allow_ocs_update'];
    }
 
+   /**
+    * @return mixed
+    */
+   static function logProcessedComputers() {
+
+      $config = new PluginOcsinventoryngConfig();
+      $config->getFromDB(1);
+      return $config->fields['log_imported_computers'];
+   }
 
    /**
     * Display debug information for current object

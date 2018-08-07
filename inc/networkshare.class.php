@@ -67,7 +67,8 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
              && $cfg_ocs["import_networkshare"]) {
             $nb = 0;
             if ($_SESSION['glpishow_count_on_tabs']) {
-               $nb = countElementsInTable('glpi_plugin_ocsinventoryng_networkshares',
+               $dbu = new DbUtils();
+               $nb = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_networkshares',
                                           "computers_id = " . $item->getID());
             }
             return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);

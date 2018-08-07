@@ -36,7 +36,7 @@ function plugin_ocsinventoryng_install() {
    include_once(GLPI_ROOT . "/plugins/ocsinventoryng/inc/profile.class.php");
 
    $migration = new Migration(150);
-
+   $dbu = new DbUtils();
    if (!$DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers_profiles")
        && !$DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
        && !$DB->tableExists("ocs_glpi_ocsservers")) {
@@ -117,7 +117,7 @@ function plugin_ocsinventoryng_install() {
       // creation de la table glpi_plugin_ocsinventoryng_profiles vide
       If ($DB->tableExists("ocs_glpi_profiles")
           && ($DB->tableExists('ocs_glpi_ocsservers')
-              && countElementsInTable('ocs_glpi_ocsservers') > 0)) {
+              && $dbu->countElementsInTable('ocs_glpi_ocsservers') > 0)) {
 
          $query = "INSERT INTO `glpi_plugin_ocsinventoryng_profiles`
                           (`profiles_id`, `ocsng`, `sync_ocsng`, `view_ocsng`, `clean_ocsng`,
@@ -264,7 +264,7 @@ function plugin_ocsinventoryng_install() {
 
    if ($DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
        && $DB->tableExists("glpi_plugin_ocsinventoryng_profiles")
-       && (countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1") == 1)) {
+       && ($dbu->countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1") == 1)) {
 
       foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers") as $server) {
          foreach ($DB->request("glpi_plugin_ocsinventoryng_profiles",
@@ -475,7 +475,7 @@ function plugin_ocsinventoryng_install() {
       $migration->addField("glpi_plugin_massocsimport_threads", "entities_id", 'integer');
       $migration->addField("glpi_plugin_massocsimport_threads", "rules_id", 'integer');
 
-      foreach (getAllDatasFromTable('glpi_plugin_massocsimport_threads') as $thread) {
+      foreach ($dbu->getAllDataFromTable('glpi_plugin_massocsimport_threads') as $thread) {
          if (is_null($thread['rules_id']) || $thread['rules_id'] == '') {
             $rules_id = 0;
          } else {
@@ -523,7 +523,7 @@ function plugin_ocsinventoryng_install() {
 
       $DB->query($query) or die($DB->error());
 
-      foreach (getAllDatasFromTable('glpi_plugin_massocsimport_configs') as $thread) {
+      foreach ($dbu->getAllDataFromTable('glpi_plugin_massocsimport_configs') as $thread) {
 
          $query = "INSERT INTO `glpi_plugin_ocsinventoryng_configs`
                    VALUES('" . $thread['id'] . "',
@@ -560,7 +560,7 @@ function plugin_ocsinventoryng_install() {
 
       $DB->queryOrDie($query, $DB->error());
 
-      foreach (getAllDatasFromTable('glpi_plugin_massocsimport_details') as $thread) {
+      foreach ($dbu->getAllDataFromTable('glpi_plugin_massocsimport_details') as $thread) {
 
          $query = "INSERT INTO `glpi_plugin_ocsinventoryng_details`
                    VALUES ('" . $thread['id'] . "',
@@ -621,7 +621,7 @@ function plugin_ocsinventoryng_install() {
       $DB->queryOrDie($query, $DB->error());
 
       if ($DB->tableExists("glpi_plugin_massocsimport_notimported")) {
-         foreach (getAllDatasFromTable('glpi_plugin_massocsimport_notimported') as $thread) {
+         foreach ($dbu->getAllDataFromTable('glpi_plugin_massocsimport_notimported') as $thread) {
 
             $query = "INSERT INTO `glpi_plugin_ocsinventoryng_notimportedcomputers`
                       VALUES ('" . $thread['id'] . "', '" . $thread['entities_id'] . "',
@@ -652,7 +652,7 @@ function plugin_ocsinventoryng_install() {
 
       $DB->query($query) or die($DB->error());
 
-      foreach (getAllDatasFromTable('glpi_plugin_massocsimport_servers') as $thread) {
+      foreach ($dbu->getAllDataFromTable('glpi_plugin_massocsimport_servers') as $thread) {
 
          $query = "INSERT INTO `glpi_plugin_ocsinventoryng_servers`
                           (`id` ,`ocsservers_id` ,`max_ocsid` ,`max_glpidate`)
@@ -1081,7 +1081,7 @@ function plugin_ocsinventoryng_install() {
    /*1.4.0*/
    include_once(GLPI_ROOT . "/inc/devicefirmware.class.php");
    include_once(GLPI_ROOT . "/inc/item_devicefirmware.class.php");
-   foreach (getAllDatasFromTable('glpi_plugin_ocsinventoryng_devicebiosdatas') as $ocsbios) {
+   foreach ($dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_devicebiosdatas') as $ocsbios) {
 
       $DeviceBios               = new DeviceFirmware();
       $bios["designation"]      = addslashes($ocsbios["designation"]);
@@ -1097,7 +1097,7 @@ function plugin_ocsinventoryng_install() {
       $bios_id = $DeviceBios->import($bios);
 
       $condition = "`plugin_ocsinventoryng_devicebiosdatas_id` = " . $ocsbios["id"];
-      foreach (getAllDatasFromTable('glpi_plugin_ocsinventoryng_items_devicebiosdatas', $condition) as $item_bios) {
+      foreach ($dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_items_devicebiosdatas', $condition) as $item_bios) {
          $CompDevice = new Item_DeviceFirmware();
          $CompDevice->add(['items_id'           => $item_bios['items_id'],
                            'itemtype'           => $item_bios['itemtype'],
@@ -1228,12 +1228,28 @@ function plugin_ocsinventoryng_install() {
       $DB->queryOrDie($query, "1.4.4 update table glpi_plugin_ocsinventoryng_ocsservers add linksnmp_computerdisks");
    }
 
+   /******************* Migration 1.4.4 *******************/
+
+   /******************* Migration 1.5.0 *******************/
+
    if (!$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'history_plugins')) {
       $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
                ADD `history_plugins` TINYINT(1) NOT NULL DEFAULT '0';";
-      $DB->queryOrDie($query, "1.50 add history_plugins in glpi_plugin_ocsinventoryng_ocsservers");
+      $DB->queryOrDie($query, "1.5.0 add history_plugins in glpi_plugin_ocsinventoryng_ocsservers");
    }
-   /******************* Migration 1.4.4 *******************/
+
+   /******************* Migration 1.5.0 *******************/
+
+   /******************* Migration 1.5.1 *******************/
+
+   if (!$DB->fieldExists('glpi_plugin_ocsinventoryng_configs', 'log_imported_computers')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_configs` 
+               ADD `log_imported_computers` TINYINT(1) NOT NULL DEFAULT '0';";
+      $DB->queryOrDie($query, "1.5.1 add log_imported_computers in glpi_plugin_ocsinventoryng_configs");
+   }
+
+   /******************* Migration 1.5.1 *******************/
+
 
    $cron = new CronTask();
    if (!$cron->getFromDBbyName('PluginOcsinventoryngThread', 'CleanOldThreads')) {
@@ -1290,7 +1306,7 @@ function plugin_ocsinventoryng_uninstall() {
 
    include_once(GLPI_ROOT . "/plugins/ocsinventoryng/inc/profile.class.php");
    include_once(GLPI_ROOT . "/plugins/ocsinventoryng/inc/menu.class.php");
-
+   $dbu = new DbUtils();
    $tables = ["glpi_plugin_ocsinventoryng_ocsservers",
               "glpi_plugin_ocsinventoryng_ocslinks",
               "glpi_plugin_ocsinventoryng_ocsadmininfoslinks",
@@ -1375,14 +1391,14 @@ function plugin_ocsinventoryng_uninstall() {
    }
 
    $notification = new Notification();
-   foreach (getAllDatasFromTable($notification->getTable(),
+   foreach ($dbu->getAllDataFromTable($notification->getTable(),
                                  "`itemtype` IN ('PluginMassocsimportNotimported',
                       'PluginOcsinventoryngNotimportedcomputer',
                       'PluginOcsinventoryngRuleImportEntity')") as $data) {
       $notification->delete($data);
    }
    $template = new NotificationTemplate();
-   foreach (getAllDatasFromTable($template->getTable(),
+   foreach ($dbu->getAllDataFromTable($template->getTable(),
                                  "`itemtype` IN ('PluginMassocsimportNotimported',
                       'PluginOcsinventoryngNotimportedcomputer',
                       'PluginOcsinventoryngRuleImportEntity')") as $data) {
@@ -1646,6 +1662,13 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
             $sopt[10009]['massiveaction'] = false;
             $sopt[10009]['joinparams']    = ['jointype' => 'child'];
 
+            $sopt[10018]['table']         = 'glpi_plugin_ocsinventoryng_ocslinks';
+            $sopt[10018]['field']         = 'computer_update';
+            $sopt[10018]['name']          = __('OCSNG', 'ocsinventoryng') . " - " . _n('Lock', 'Locks', 2);
+            $sopt[10018]['datatype']      = 'string';
+            $sopt[10018]['massiveaction'] = false;
+            $sopt[10018]['joinparams']    = ['jointype' => 'child'];
+
             //$sopt['registry']           = __('Registry', 'ocsinventoryng');
 
             $sopt[10010]['table']         = 'glpi_plugin_ocsinventoryng_registrykeys';
@@ -1840,6 +1863,18 @@ function plugin_ocsinventoryng_giveItem($type, $id, $data, $num) {
 
       case "glpi_plugin_ocsinventoryng_notimportedcomputers.reason" :
          return PluginOcsinventoryngNotimportedcomputer::getReason($data[$num][0]['name']);
+
+      case "glpi_plugin_ocsinventoryng_ocslinks.computer_update" :
+         $locks           = PluginOcsinventoryngOcsServer::getLocksForComputer($data['id']);
+         $lockable_fields = PluginOcsinventoryngOcsServer::getLockableFields();
+         $listlocks       = " ";
+         if (is_array($locks) && count($locks)) {
+            foreach ($locks as $key => $val) {
+               $listlocks .= $lockable_fields[$val] . "<br>";
+            }
+         }
+         return $listlocks;
+
    }
    return '';
 }
@@ -2422,7 +2457,7 @@ function plugin_ocsinventoryng_unlockFields($params = []) {
    $computer->check($_POST['id'], UPDATE);
    if (isset($_POST["lockfield"]) && count($_POST["lockfield"])) {
       foreach ($_POST["lockfield"] as $key => $val) {
-         PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST["id"], $key, "computer_update", true);
+         PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST["id"], $key, true);
       }
    }
 }
@@ -2470,7 +2505,7 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration) {
 
    ini_set("memory_limit", "-1");
    ini_set("max_execution_time", "0");
-
+   $dbu = new DbUtils();
    $import = ['import_printer'    => 'Printer',
               'import_monitor'    => 'Monitor',
               'import_peripheral' => 'Peripheral'];
@@ -2478,7 +2513,8 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration) {
    foreach ($import as $field => $itemtype) {
       foreach ($DB->request('ocs_glpi_ocslinks', ['FIELDS' => ['computers_id', $field]]) as $data) {
          if ($DB->fieldExists('ocs_glpi_ocslinks', $field)) {
-            $import_field = importArrayFromDB($data[$field]);
+            $dbu          = new DbUtils();
+            $import_field = $dbu->importArrayFromDB($data[$field]);
 
             //If array is not empty
             if (!empty($import_field)) {
@@ -2501,7 +2537,8 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration) {
    foreach ($import as $field => $table) {
       if ($DB->fieldExists('ocs_glpi_ocslinks', $field)) {
          foreach ($DB->request('ocs_glpi_ocslinks', ['FIELDS' => ['computers_id', $field]]) as $data) {
-            $import_field = importArrayFromDB($data[$field]);
+            $dbu          = new DbUtils();
+            $import_field = $dbu->importArrayFromDB($data[$field]);
 
             //If array is not empty
             if (!empty($import_field)) {
@@ -2538,7 +2575,8 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration) {
    if ($DB->fieldExists('ocs_glpi_ocslinks', 'import_device')) {
       foreach ($DB->request('ocs_glpi_ocslinks', ['FIELDS' => ['computers_id', 'import_device']])
                as $data) {
-         $import_device = importArrayFromDB($data['import_device']);
+         $dbu           = new DbUtils();
+         $import_device = $dbu->importArrayFromDB($data['import_device']);
          if (!in_array('_version_078_', $import_device)) {
             $import_device = plugin_ocsinventoryng_migrateImportDevice($import_device);
          }
@@ -2563,7 +2601,7 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration) {
          }
          foreach ($devices as $type => $tmp) {
             //If array is not empty
-            $query_update = "UPDATE `" . getTableForItemType($type) . "`
+            $query_update = "UPDATE `" . $dbu->getTableForItemType($type) . "`
                              SET `is_dynamic`=1
                              WHERE `id` IN (" . implode(',', $tmp) . ")";
             $DB->query($query_update);
@@ -2617,7 +2655,8 @@ function plugin_ocsinventoryng_pre_item_update($item) {
          $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
          if ($cfg_ocs["use_locks"]) {
             $field_set        = false;
-            $computers_update = importArrayFromDB($ocslink->fields['computer_update']);
+            $dbu              = new DbUtils();
+            $computers_update = $dbu->importArrayFromDB($ocslink->fields['computer_update']);
             if (in_array('use_date', $computers_update)) {
                if (isset ($item->input["use_date"])
                    && $item->input["use_date"] != $item->fields["use_date"]
@@ -2652,11 +2691,13 @@ function plugin_ocsinventoryng_item_update($item) {
             $line    = $DB->fetch_assoc($result);
             $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($line["plugin_ocsinventoryng_ocsservers_id"]);
             if ($cfg_ocs["use_locks"]) {
-               $computer_updates = importArrayFromDB($line["computer_update"]);
+               $dbu              = new DbUtils();
+               $computer_updates = $dbu->importArrayFromDB($line["computer_update"]);
                //Add lock
                $computer_updates[] = "use_date";
+               $dbu                = new DbUtils();
                $query              = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                            SET `computer_update` = '" . addslashes(exportArrayToDB($computer_updates)) . "'
+                            SET `computer_update` = '" . addslashes($dbu->exportArrayToDB($computer_updates)) . "'
                             WHERE `computers_id` = '" . $item->fields['items_id'] . "'";
                $DB->query($query);
             }
@@ -2837,6 +2878,7 @@ function plugin_ocsinventoryng_upgrademassocsimport13to14() {
 function plugin_ocsinventoryng_upgrademassocsimport14to15() {
    global $DB;
 
+   $dbu = new DbUtils();
    $migration = new Migration(15);
 
    $migration->addField("glpi_plugin_massocsimport_threads", "not_unique_machines_number",
@@ -2850,7 +2892,7 @@ function plugin_ocsinventoryng_upgrademassocsimport14to15() {
 
    $migration->addField("glpi_plugin_massocsimport_notimported", "reason", 'integer');
 
-   if (!countElementsInTable('glpi_displaypreferences',
+   if (!$dbu->countElementsInTable('glpi_displaypreferences',
                              "`itemtype`='PluginMassocsimportNotimported'
                                AND `num`='10' AND `users_id`='0'")
    ) {

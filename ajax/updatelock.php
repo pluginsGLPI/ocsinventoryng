@@ -33,7 +33,7 @@ Session::checkLoginUser();
 if (isset($_POST['update_lock'])) {
    $comp = new Computer();
    if ($comp->getFromDB($_POST['computers_id'])) {
-      PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST['computers_id'], $_POST['field'], "computer_update", true);
+      PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST['computers_id'], $_POST['field'], true);
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($_POST['plugin_ocsinventoryng_ocsservers_id']);
       $cfg_ocs   = PluginOcsinventoryngOcsServer::getConfig($_POST['plugin_ocsinventoryng_ocsservers_id']);
       $options   = [

@@ -153,7 +153,8 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
     */
    static function countForItem(CommonDBTM $item) {
 
-      return countElementsInTable('glpi_plugin_ocsinventoryng_registrykeys',
+      $dbu = new DbUtils();
+      return $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_registrykeys',
                                   "`computers_id` = " . $item->getID());
    }
 

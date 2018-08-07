@@ -60,9 +60,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     **/
    static function showSimpleForChild(CommonDBTM $item) {
 
+      $dbu = new DbUtils();
       if ($item->isDynamic()
           && $item->isField('computers_id')
-          && countElementsInTable('glpi_plugin_ocsinventoryng_ocslinks',
+          && $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocslinks',
                                   "`computers_id`= " . $item->getField('computers_id')) > 0) {
          echo __('OCS Inventory NG');
       }
@@ -87,10 +88,11 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          if (!empty($items_id)
              && $item->fields["is_dynamic"]
              && Session::haveRight("plugin_ocsinventoryng_link", READ)) {
+            $dbu = new DbUtils();
             $query = "SELECT *
                       FROM `glpi_plugin_ocsinventoryng_ocslinks`
                       WHERE `computers_id` = $items_id " .
-                     getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
+                     $dbu->getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
 
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
@@ -329,11 +331,11 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          if (!empty($items_id)
              && $item->fields["is_dynamic"]
              && Session::haveRight("plugin_ocsinventoryng_link", READ)) {
-
+            $dbu = new DbUtils();
             $query = "SELECT *
                       FROM `glpi_plugin_ocsinventoryng_ocslinks`
                       WHERE `computers_id` = $items_id " .
-                     getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
+                     $dbu->getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
 
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
@@ -544,15 +546,17 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       $ocslink = new self();
       if ($item->fields["is_dynamic"]
           && $ocslink->getFromDBforComputer($item->getID())
-          && ($item->dohistory == 1)
           && (count($item->updates) > 1)
           && (!isset($item->input["_nolock"]))) {
 
          $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
          if ($cfg_ocs["use_locks"]) {
-
-            PluginOcsinventoryngOcsServer::mergeOcsArray($item->fields["id"], $item->updates,
-                                                         "computer_update");
+            foreach ($item->updates as $k => $field) {
+               if (!array_key_exists($field, PluginOcsinventoryngOcsServer::getLockableFields())) {
+                  unset($item->updates[$k]);
+               }
+            }
+            PluginOcsinventoryngOcsServer::mergeOcsArray($item->fields["id"], $item->updates);
          }
       }
       if (isset($item->input["_auto_update_ocs"])) {
@@ -583,8 +587,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
          if ($cfg_ocs["use_locks"]) {
 
-            PluginOcsinventoryngOcsServer::mergeOcsArray($item->fields["items_id"], $item->updates,
-                                                         "computer_update");
+            PluginOcsinventoryngOcsServer::mergeOcsArray($item->fields["items_id"], $item->updates);
          }
       }
    }
@@ -642,7 +645,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     **/
    static function purgeComputer_Item(Computer_Item $comp) {
       Global $DB;
-      if ($device = getItemForItemtype($comp->fields['itemtype'])) {
+      $dbu = new DbUtils();
+      if ($device = $dbu->getItemForItemtype($comp->fields['itemtype'])) {
          if ($device->getFromDB($comp->fields['items_id'])) {
 
             if (isset($comp->input['_ocsservers_id'])) {
@@ -806,11 +810,11 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     */
    static function getOCSServerForItem(CommonDBTM $item) {
       global $DB;
-
+      $dbu = new DbUtils();
       $query = "SELECT *
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `computers_id` = " . $item->getID() . " " .
-               getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
+               $dbu->getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
 
       $result = $DB->query($query);
       if ($DB->numrows($result) > 0) {
@@ -838,7 +842,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          if (isset($computers_id)
              && $computers_id > 0) {
             $locks = PluginOcsinventoryngOcsServer::getLocksForComputer($computers_id);
-            $text  = __('Unlock field and import OCSNG data', 'ocsinventoryng');
+            
+            $text = __('Unlock field and import OCSNG data', 'ocsinventoryng');
             foreach ($locks as $field) {
                if ($field == "contact"
                    || $field == "contact_num"
@@ -854,9 +859,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                } else {
                   $js = '$("select[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fa fa-lock\"></i>");';
                }
-               $rootdoc = $CFG_GLPI["root_doc"];
+               $rootdoc                             = $CFG_GLPI["root_doc"];
                $plugin_ocsinventoryng_ocsservers_id = $data['plugin_ocsinventoryng_ocsservers_id'];
-               $js      .= '
+               $js                                  .= '
             $(document).ready(function() {
                $(".lockfield' . $field . '").click(function(e) {
                   lastClickedElement = e.target;

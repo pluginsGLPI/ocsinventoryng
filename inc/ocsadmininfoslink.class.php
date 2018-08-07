@@ -94,8 +94,9 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
          $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
          if ($cfg_ocs["use_locks"]) {
             $computer_updates[] = "use_date";
+            $dbu = new DbUtils();
             $query              = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                         SET `computer_update` = '" . addslashes(exportArrayToDB($computer_updates)) . "'
+                         SET `computer_update` = '" . addslashes($dbu->exportArrayToDB($computer_updates)) . "'
                          WHERE `computers_id` = $computers_id";
             $DB->query($query);
          }

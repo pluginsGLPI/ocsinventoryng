@@ -296,7 +296,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       //echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png' " .
       //"alt='OCS Inventory NG' title='OCS Inventory NG'>";
       //echo "</div>";
-      $numberActiveServers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
+      $dbu = new DbUtils();
+      $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
       if ($numberActiveServers > 0) {
          echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
                 method='post'>";
@@ -410,7 +411,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       global $CFG_GLPI, $DB;
       $name                = "";
       $ocsservers          = [];
-      $numberActiveServers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
+      $dbu = new DbUtils();
+      $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
       if ($numberActiveServers > 0) {
          echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
                 method='post'>";
@@ -1265,7 +1267,8 @@ JAVASCRIPT;
       echo "<td>";
       $actions[0] = Dropdown::EMPTY_VALUE;
       $actions[1] = __('Put in dustbin');
-      foreach (getAllDatasFromTable('glpi_states') as $state) {
+      $dbu = new DbUtils();
+      foreach ($dbu->getAllDataFromTable('glpi_states') as $state) {
          $actions['STATE_' . $state['id']] = sprintf(__('Change to state %s', 'ocsinventoryng'), $state['name']);
       }
       Dropdown::showFromArray('deleted_behavior', $actions, ['value' => $this->fields['deleted_behavior']]);
@@ -1497,7 +1500,8 @@ JAVASCRIPT;
     * @return boolean
     * */
    static function useMassImport() {
-      return countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', 'use_massimport');
+      $dbu = new DbUtils();
+      return $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', 'use_massimport');
    }
 
    /**
@@ -2489,8 +2493,8 @@ JAVASCRIPT;
       foreach ($ocs_fields_matching as $glpi_field => $ocs_field) {
          $ocs_section = $ocs_field[0];
          $ocs_field   = $ocs_field[1];
-
-         $table = getTableNameForForeignKeyField($glpi_field);
+         $dbu = new DbUtils();
+         $table = $dbu->getTableNameForForeignKeyField($glpi_field);
 
          $ocs_val = null;
          if (isset($ocs_fields[$ocs_section]) && is_array($ocs_fields[$ocs_section])) {
@@ -2506,10 +2510,10 @@ JAVASCRIPT;
 
             //Field is a foreing key
             if ($table != '') {
-               if (!($item = getItemForItemtype($table))) {
+               if (!($item = $dbu->getItemForItemtype($table))) {
                   continue;
                }
-               $itemtype        = getItemTypeForTable($table);
+               $itemtype        = $dbu->getItemTypeForTable($table);
                $external_params = [];
 
                foreach ($item->additional_fields_for_dictionnary as $field) {
@@ -2988,10 +2992,8 @@ JAVASCRIPT;
             if ($mixed_checksum) {
 
                // Get updates on computers
-               $computer_updates = importArrayFromDB($line["computer_update"]);
-               if (!in_array(self::IMPORT_TAG_078, $computer_updates)) {
-                  $computer_updates = self::migrateComputerUpdates($line["computers_id"], $computer_updates);
-               }
+               $dbu = new DbUtils();
+               $computer_updates = $dbu->importArrayFromDB($line["computer_update"]);
 
                $ocsCheck   = [];
                $ocsPlugins = [];
@@ -3379,6 +3381,10 @@ JAVASCRIPT;
             unset($updates);
             //Update TAG
             self::updateTag($line);
+            //force drop old locks
+            $locks = self::getLocksForComputer($line['computers_id']);
+            self::mergeOcsArray($line['computers_id'], $locks);
+
             // Update OCS Cheksum
             $oldChecksum = $ocsClient->getChecksum($line['ocsid']);
             $newchecksum = $oldChecksum - $mixed_checksum;
@@ -3461,7 +3467,6 @@ JAVASCRIPT;
          if (count($updates)) {
             $updates["id"]          = $options['computers_id'];
             $updates["entities_id"] = $options['entities_id'];
-            $updates["_nolock"]     = true;
             $comp                   = new Computer();
 
             $comp->update($updates, $options['dohistory']);
@@ -3667,7 +3672,6 @@ JAVASCRIPT;
             Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($compupdate));
             $compupdate["id"]          = $params['computers_id'];
             $compupdate["entities_id"] = $params['entities_id'];
-            $compupdate["_nolock"]     = true;
             $comp                      = new Computer();
             $comp->update($compupdate, $params['cfg_ocs']['history_bios']);
          }
@@ -3692,8 +3696,8 @@ JAVASCRIPT;
       $query = "SELECT `id`
                  FROM `glpi_groups`
                  WHERE `name` = '$value' ";
-
-      $query .= getEntitiesRestrictRequest(' AND ', 'glpi_groups', '',
+      $dbu = new DbUtils();
+      $query .= $dbu->getEntitiesRestrictRequest(' AND ', 'glpi_groups', '',
                                            $entities_id, true);
 
       $result = $DB->query($query);
@@ -3775,12 +3779,11 @@ JAVASCRIPT;
                              AND `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
                                     = $plugin_ocsinventoryng_ocsservers_id)";
 
-      getEntitiesRestrictRequest(" AND", "glpi_plugin_ocsinventoryng_ocslinks");
-
       if (count($ocs_missing)) {
          $query_glpi .= " OR `ocsid` IN ('" . implode("','", $ocs_missing) . "')";
       }
-      $query_glpi .= ") " . getEntitiesRestrictRequest(" AND", "glpi_plugin_ocsinventoryng_ocslinks");
+      $dbu = new DbUtils();
+      $query_glpi .= ") " . $dbu->getEntitiesRestrictRequest(" AND", "glpi_plugin_ocsinventoryng_ocslinks");
 
       $result_glpi = $DB->query($query_glpi);
 
@@ -4144,21 +4147,29 @@ JAVASCRIPT;
     *
     * @return bool
     */
-   static function mergeOcsArray($computers_id, $tomerge, $field) {
+   static function mergeOcsArray($computers_id, $tomerge) {
       global $DB;
 
-      $query = "SELECT `$field`
+      $query = "SELECT `computer_update`
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `computers_id` = $computers_id";
 
       if ($result = $DB->query($query)) {
          if ($DB->numrows($result)) {
-            $tab    = importArrayFromDB($DB->result($result, 0, 0));
+            $dbu = new DbUtils();
+            $tab    = $dbu->importArrayFromDB($DB->result($result, 0, 0));
+
+            foreach ($tab as $k => $field) {
+               if (!array_key_exists($field, PluginOcsinventoryngOcsServer::getLockableFields())) {
+                  unset($tab[$k]);
+               }
+            }
+
             $newtab = array_merge($tomerge, $tab);
             $newtab = array_unique($newtab);
-
+            $dbu = new DbUtils();
             $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                      SET `$field` = '" . addslashes(exportArrayToDB($newtab)) . "'
+                      SET `computer_update` = '" . addslashes($dbu->exportArrayToDB($newtab)) . "'
                       WHERE `computers_id` = $computers_id";
 
             if ($DB->query($query)) {
@@ -4177,10 +4188,10 @@ JAVASCRIPT;
     *
     * @return bool
     */
-   static function deleteInOcsArray($computers_id, $todel, $field, $is_value_to_del = false) {
+   static function deleteInOcsArray($computers_id, $todel, $is_value_to_del = false) {
       global $DB;
 
-      $query = "SELECT `$field`, `plugin_ocsinventoryng_ocsservers_id` 
+      $query = "SELECT `computer_update`, `plugin_ocsinventoryng_ocsservers_id` 
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `computers_id` = $computers_id";
 
@@ -4189,16 +4200,17 @@ JAVASCRIPT;
 
             $cfg_ocs = self::getConfig($DB->result($result, 0, "plugin_ocsinventoryng_ocsservers_id"));
             if ($cfg_ocs["use_locks"]) {
-
-               $tab = importArrayFromDB($DB->result($result, 0, $field));
+               $dbu = new DbUtils();
+               $tab = $dbu->importArrayFromDB($DB->result($result, 0, 'computer_update'));
 
                if ($is_value_to_del) {
                   $todel = array_search($todel, $tab);
                }
                if (isset($tab[$todel])) {
                   unset($tab[$todel]);
+                  $dbu = new DbUtils();
                   $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                            SET `$field` = '" . addslashes(exportArrayToDB($tab)) . "'
+                            SET `computer_update` = '" . addslashes($dbu->exportArrayToDB($tab)) . "'
                             WHERE `computers_id` = $computers_id";
                   if ($DB->query($query)) {
                      return true;
@@ -4218,12 +4230,13 @@ JAVASCRIPT;
     *
     * @return bool
     */
-   static function replaceOcsArray($computers_id, $newArray, $field, $lock = true) {
+   static function replaceOcsArray($computers_id, $newArray, $lock = true) {
       global $DB;
 
-      $newArray = addslashes(exportArrayToDB($newArray));
+      $dbu = new DbUtils();
+      $newArray = addslashes($dbu->exportArrayToDB($newArray));
 
-      $query = "SELECT `$field`, `plugin_ocsinventoryng_ocsservers_id` 
+      $query = "SELECT `computer_update`, `plugin_ocsinventoryng_ocsservers_id` 
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `computers_id` = $computers_id";
 
@@ -4234,7 +4247,7 @@ JAVASCRIPT;
             if ($lock && $cfg_ocs["use_locks"]) {
 
                $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                         SET `$field` = '" . $newArray . "'
+                         SET `computer_update` = '" . $newArray . "'
                          WHERE `computers_id` = $computers_id";
                $DB->query($query);
 
@@ -4266,15 +4279,16 @@ JAVASCRIPT;
             $cfg_ocs = self::getConfig($DB->result($result, 0, "plugin_ocsinventoryng_ocsservers_id"));
             if ($cfg_ocs["use_locks"]) {
 
-               $tab = importArrayFromDB($DB->result($result, 0, $field));
+               $dbu = new DbUtils();
+               $tab = $dbu->importArrayFromDB($DB->result($result, 0, $field));
 
                // Stripslashes because importArray get clean array
                foreach ($toadd as $key => $val) {
                   $tab[] = stripslashes($val);
                }
-
+               $dbu = new DbUtils();
                $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                         SET `$field` = '" . addslashes(exportArrayToDB($tab)) . "'
+                         SET `$field` = '" . addslashes($dbu->exportArrayToDB($tab)) . "'
                          WHERE `computers_id` = $computers_id";
                $DB->query($query);
 
@@ -4802,7 +4816,7 @@ JAVASCRIPT;
       }
 
       //Add the new tag as the first occurence in the array
-      self::replaceOcsArray($computers_id, $new_computer_update, "computer_update", false);
+      self::replaceOcsArray($computers_id, $new_computer_update, false);
       return $new_computer_update;
    }
 
@@ -6650,15 +6664,15 @@ JAVASCRIPT;
                                            $cfg_ocs['history_software']);
          // delete cause a getFromDB, so fields contains values
          $verid = $computer_softwareversion->getField('softwareversions_id');
-
-         if (countElementsInTable('glpi_computers_softwareversions', "softwareversions_id = '$verid'") == 0
-             && countElementsInTable('glpi_softwarelicenses', "softwareversions_id_buy = '$verid'") == 0) {
+         $dbu = new DbUtils();
+         if ($dbu->countElementsInTable('glpi_computers_softwareversions', "softwareversions_id = '$verid'") == 0
+             && $dbu->countElementsInTable('glpi_softwarelicenses', "softwareversions_id_buy = '$verid'") == 0) {
 
             $vers = new SoftwareVersion();
             if ($vers->getFromDB($verid)
-                && countElementsInTable('glpi_softwarelicenses',
+                && $dbu->countElementsInTable('glpi_softwarelicenses',
                                         "softwares_id = '" . $vers->fields['softwares_id'] . "'") == 0
-                && countElementsInTable('glpi_softwareversions',
+                && $dbu->countElementsInTable('glpi_softwareversions',
                                         "softwares_id = '" . $vers->fields['softwares_id'] . "'") == 1) {
                // 1 is the current to be removed
                $soft->putInTrash($vers->fields['softwares_id'],
@@ -6671,17 +6685,18 @@ JAVASCRIPT;
       }
 
       if ($officepack) {
+         $dbu = new DbUtils();
          $computer_softwarelicenses = new Computer_SoftwareLicense();
          foreach ($imported_licences as $id => $unused) {
             $computer_softwarelicenses->delete(['id' => $id], true, $cfg_ocs['history_software']);
             // delete cause a getFromDB, so fields contains values
             $verid = $computer_softwarelicenses->getField('softwareversions_id');
 
-            if (countElementsInTable('glpi_computers_softwarelicenses', "softwarelicenses_id = '$verid'") == 0) {
+            if ($dbu->countElementsInTable('glpi_computers_softwarelicenses', "softwarelicenses_id = '$verid'") == 0) {
 
                $vers = new SoftwareVersion();
                if ($vers->getFromDB($verid)
-                   && countElementsInTable('glpi_softwarelicenses',
+                   && $dbu->countElementsInTable('glpi_softwarelicenses',
                                            "softwares_id = '" . $vers->fields['softwares_id'] . "'") == 0) {
                   $soft = new Software();
                   $soft->delete(['id' => $vers->fields['softwares_id']], 1);
@@ -7624,11 +7639,12 @@ JAVASCRIPT;
    static private function getUserGroup($entity, $userid, $filter = '', $first = true) {
       global $DB;
 
+      $dbu = new DbUtils();
       $query = "SELECT `glpi_groups`.`id`
                 FROM `glpi_groups_users`
                 INNER JOIN `glpi_groups` ON (`glpi_groups`.`id` = `glpi_groups_users`.`groups_id`)
                 WHERE `glpi_groups_users`.`users_id` = " . $userid .
-               getEntitiesRestrictRequest(' AND ', 'glpi_groups', '', $entity, true);
+               $dbu->getEntitiesRestrictRequest(' AND ', 'glpi_groups', '', $entity, true);
 
       if ($filter) {
          $query .= "AND (" . $filter . ")";
@@ -7662,7 +7678,8 @@ JAVASCRIPT;
       if (isset($data['locations_id'])) {
          $computer = new Computer();
          $computer->getFromDB($line_links['computers_id']);
-         $ancestors = getAncestorsOf('glpi_entities', $computer->fields['entities_id']);
+         $dbu = new DbUtils();
+         $ancestors = $dbu->getAncestorsOf('glpi_entities', $computer->fields['entities_id']);
 
          $location = new Location();
          if ($location->getFromDB($data['locations_id'])) {
@@ -7692,7 +7709,8 @@ JAVASCRIPT;
       if (isset($data['groups_id'])) {
          $computer = new Computer();
          $computer->getFromDB($line_links['computers_id']);
-         $ancestors = getAncestorsOf('glpi_entities', $computer->fields['entities_id']);
+         $dbu = new DbUtils();
+         $ancestors = $dbu->getAncestorsOf('glpi_entities', $computer->fields['entities_id']);
 
          $group = new Group();
          if ($group->getFromDB($data['groups_id'])) {
@@ -7741,7 +7759,8 @@ JAVASCRIPT;
             // Print lock fields for OCSNG
             $lockable_fields = self::getLockableFields();
 
-            $locked = importArrayFromDB($data["computer_update"]);
+            $dbu = new DbUtils();
+            $locked = $dbu->importArrayFromDB($data["computer_update"]);
 
             if (!in_array(self::IMPORT_TAG_078, $locked)) {
                $locked = self::migrateComputerUpdates($ID, $locked);
@@ -7836,7 +7855,8 @@ JAVASCRIPT;
       $types = self::$types;
 
       foreach ($types as $key => $type) {
-         if (!($item = getItemForItemtype($type))) {
+         $dbu = new DbUtils();
+         if (!($item = $dbu->getItemForItemtype($type))) {
             continue;
          }
 
@@ -7863,7 +7883,7 @@ JAVASCRIPT;
               "otherserial" => __('Inventory number'),
               "comment"     => __('Comments'),
               "contact"     => __('Alternate username'),
-              "contact_num" => __('Alternate username number'),
+//              "contact_num" => __('Alternate username number'),
               "domains_id"  => __('Domain'),
               "users_id"    => __('User')];
    }
@@ -7878,8 +7898,7 @@ JAVASCRIPT;
 
    static function getRuleLockableFields() {
 
-      return ["networks_id"  => __('Network'),
-              "locations_id" => __('Location'),
+      return ["locations_id" => __('Location'),
               "groups_id"    => __('Group')];
    }
 
@@ -7895,7 +7914,8 @@ JAVASCRIPT;
 
    static function getAdministrativeInfosLockableFields() {
 
-      return ["use_date" => __('Startup date')];
+      return ["networks_id"  => __('Network'),
+              "use_date" => __('Startup date')];
    }
 
    /**
@@ -8657,17 +8677,17 @@ JAVASCRIPT;
             $input  = $ma->getInput();
             $fields = self::getLockableFields();
 
-            if ($_POST['field'] == 'all' || isset($fields[$_POST['field']])) {
+            if ($input['field'] == 'all' || isset($fields[$input['field']])) {
                foreach ($ids as $id) {
 
-                  if ($_POST['field'] == 'all') {
+                  if ($input['field'] == 'all') {
                      if (self::addToOcsArray($id, array_flip($fields), "computer_update")) {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                      } else {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
                      }
                   } else {
-                     if (self::addToOcsArray($id, [$_POST['field']], "computer_update")) {
+                     if (self::addToOcsArray($id, [$input['field']], "computer_update")) {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                      } else {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
@@ -8681,17 +8701,17 @@ JAVASCRIPT;
          case "plugin_ocsinventoryng_unlock_ocsng_field" :
             $input  = $ma->getInput();
             $fields = self::getLockableFields();
-            if ($_POST['field'] == 'all' || isset($fields[$_POST['field']])) {
+            if ($input['field'] == 'all' || isset($fields[$input['field']])) {
                foreach ($ids as $id) {
 
-                  if ($_POST['field'] == 'all') {
-                     if (self::replaceOcsArray($id, [], "computer_update")) {
+                  if ($input['field'] == 'all') {
+                     if (self::replaceOcsArray($id, [])) {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                      } else {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
                      }
                   } else {
-                     if (self::deleteInOcsArray($id, $_POST['field'], "computer_update", true)) {
+                     if (self::deleteInOcsArray($id, $input['field'],  true)) {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                      } else {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
@@ -8709,8 +8729,8 @@ JAVASCRIPT;
     * @internal param $width
     */
    function showSystemInformations() {
-
-      $ocsServers = getAllDatasFromTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`=1");
+      $dbu = new DbUtils();
+      $ocsServers = $dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`=1");
       if (!empty($ocsServers)) {
          echo "\n<tr class='tab_bg_2'><th>OCS Inventory NG</th></tr>\n";
 
@@ -8727,5 +8747,4 @@ JAVASCRIPT;
          }
       }
    }
-
 }

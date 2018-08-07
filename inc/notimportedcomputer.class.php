@@ -165,7 +165,8 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
       $message = [];
       if ($rule_list != '') {
          foreach (json_decode($rule_list, true) as $key => $value) {
-            if ($rule = getItemForItemtype($key)) {
+            $dbu = new DbUtils();
+            if ($rule = $dbu->getItemForItemtype($key)) {
 
                $rule = new $key();
                if ($rule->can($value, READ)) {
@@ -517,7 +518,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
             //If serial has been changed in order to import computer
             if (in_array('serial', $changes)) {
                PluginOcsinventoryngOcsServer::mergeOcsArray($result['computers_id'],
-                                                            ['serial'], "computer_update");
+                                                            ['serial']);
             }
 
             return true;
@@ -558,8 +559,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
             $notimported->delete(['id' => $params['id']]);
             //If serial has been changed in order to import computer
             if (in_array('serial', $changes)) {
-               PluginOcsinventoryngOcsServer::mergeOcsArray($params['id'], ['serial'],
-                                                            "computer_update");
+               PluginOcsinventoryngOcsServer::mergeOcsArray($params['id'], ['serial']);
             }
          }
       }

@@ -72,7 +72,8 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
              && $cfg_ocs["import_teamviewer"]) {
             $nb = 0;
             if ($_SESSION['glpishow_count_on_tabs']) {
-               $nb = countElementsInTable('glpi_plugin_ocsinventoryng_teamviewers',
+               $dbu = new DbUtils();
+               $nb = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_teamviewers',
                                           "computers_id = '" . $item->getID() . "'");
             }
             return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
@@ -154,7 +155,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
          echo "</table></br>";
 
          if ($result->numrows() != 0) {
-
+            $dbu = new DbUtils();
             $restrict = $comp->getEntityID();
             $query    = "SELECT `glpi_links`.`id`,
                        `glpi_links`.`link` AS link,
@@ -165,7 +166,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
                 INNER JOIN `glpi_links_itemtypes`
                      ON `glpi_links`.`id` = `glpi_links_itemtypes`.`links_id`
                 WHERE `glpi_links_itemtypes`.`itemtype`='PluginOcsinventoryngTeamviewer' " .
-                        getEntitiesRestrictRequest(" AND", "glpi_links", "entities_id",
+                        $dbu->getEntitiesRestrictRequest(" AND", "glpi_links", "entities_id",
                                                    $restrict, true) . "
                 ORDER BY name";
 
@@ -219,6 +220,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
             }
 
             $restrict = $comp->getEntityID();
+            $dbu = new DbUtils();
             $query    = "SELECT `glpi_links`.`id`,
                        `glpi_links`.`link` AS link,
                        `glpi_links`.`name` AS name ,
@@ -228,7 +230,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
                 INNER JOIN `glpi_links_itemtypes`
                      ON `glpi_links`.`id` = `glpi_links_itemtypes`.`links_id`
                 WHERE `glpi_links_itemtypes`.`itemtype`= 'PluginOcsinventoryngTeamviewer' " .
-                        getEntitiesRestrictRequest(" AND", "glpi_links", "entities_id",
+                        $dbu->getEntitiesRestrictRequest(" AND", "glpi_links", "entities_id",
                                                    $restrict, true) . "
                 ORDER BY name";
 

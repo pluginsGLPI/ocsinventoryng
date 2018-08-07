@@ -155,8 +155,8 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
 
       switch ($item->getType()) {
          case __CLASS__ :
-
-            $ocsServers = getAllDatasFromTable('glpi_plugin_ocsinventoryng_ocsservers',
+            $dbu = new DbUtils();
+            $ocsServers = $dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_ocsservers',
                                                "`is_active`= 1");
             if (!empty($ocsServers)) {
 

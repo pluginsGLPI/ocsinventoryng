@@ -338,7 +338,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       //echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png' " .
       //"alt='OCS Inventory NG' title='OCS Inventory NG'>";
       //echo "</div>";
-      $numberActiveServers = countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
+      $dbu = new DbUtils();
+      $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
       if ($numberActiveServers > 0) {
          echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
          method='post'>";
@@ -1306,8 +1307,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                      $row_num++;
                      $item_num = 1;
                      echo Search::showNewLine($output_type, $row_num % 2);
-
-                     $class = getItemForItemtype($hardware[$i]["itemtype"]);
+                     $dbu = new DbUtils();
+                     $class = $dbu->getItemForItemtype($hardware[$i]["itemtype"]);
                      $class->getFromDB($hardware[$i]["items_id"]);
                      $iplist = "";
                      $ip     = new IPAddress();
@@ -1389,7 +1390,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                }
                $itemstypes = [Dropdown::EMPTY_VALUE];
                foreach (self::$hardwareItemTypes as $items) {
-                  $class              = getItemForItemtype($items);
+                  $dbu = new DbUtils();
+                  $class              = $dbu->getItemForItemtype($items);
                   $itemstypes[$items] = $class->getTypeName();
                }
                for ($i = $start; $i < $lim + $start; $i++) {
@@ -1508,7 +1510,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                $row_num    = 1;
                $itemstypes = [Dropdown::EMPTY_VALUE];
                foreach (self::$hardwareItemTypes as $items) {
-                  $class              = getItemForItemtype($items);
+                  $dbu = new DbUtils();
+                  $class              = $dbu->getItemForItemtype($items);
                   $itemstypes[$items] = $class->getTypeName();
                }
                for ($i = $start; $i < $lim + $start; $i++) {

@@ -42,8 +42,8 @@ if (!$DB->tableExists($_POST['table'])) {
 }
 
 $itemtypeisplugin = isPluginItemType($_POST['itemtype']);
-
-if (!$item = getItemForItemtype($_POST['itemtype'])) {
+$dbu = new DbUtils();
+if (!$item = $dbu->getItemForItemtype($_POST['itemtype'])) {
    exit;
 }
 
@@ -56,7 +56,7 @@ if ($item->isEntityAssign()) {
 
    // allow opening ticket on recursive object (printer, software, ...)
    $recursive = $item->maybeRecursive();
-   $where = getEntitiesRestrictRequest("WHERE", $_POST['table'], '', $entity, $recursive);
+   $where = $dbu->getEntitiesRestrictRequest("WHERE", $_POST['table'], '', $entity, $recursive);
 
 } else {
    $where = "WHERE 1";

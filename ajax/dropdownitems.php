@@ -36,7 +36,8 @@ Session::checkLoginUser();
 // Make a select box
 if (isset($_POST["itemtype"])
 ) {
-   $table = getTableForItemType($_POST["itemtype"]);
+   $dbu = new DbUtils();
+   $table = $dbu->getTableForItemType($_POST["itemtype"]);
 
    $rand = mt_rand();
    if (isset($_POST["rand"])) {
