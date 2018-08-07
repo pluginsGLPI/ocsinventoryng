@@ -552,7 +552,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
          if ($cfg_ocs["use_locks"]) {
             foreach ($item->updates as $k => $field) {
-               if (!array_key_exists($field, PluginOcsinventoryngOcsServer::getLockableFields())) {
+               if (!array_key_exists($field, PluginOcsinventoryngOcsServer::getLockableFields($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"], $ocslink->fields["ocsid"]))) {
                   unset($item->updates[$k]);
                }
             }
@@ -842,7 +842,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          if (isset($computers_id)
              && $computers_id > 0) {
             $locks = PluginOcsinventoryngOcsServer::getLocksForComputer($computers_id);
-            
+            //print_r($locks);
             $text = __('Unlock field and import OCSNG data', 'ocsinventoryng');
             foreach ($locks as $field) {
                if ($field == "contact"
@@ -850,6 +850,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                    || $field == "serial"
                    || $field == "name"
                    || $field == "otherserial"
+                   || $field == "license_id"
+                   || $field == "contact_num"
                    || $field == "license_number"
                    || $field == "use_date"
                ) {

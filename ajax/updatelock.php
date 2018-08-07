@@ -56,13 +56,20 @@ if (isset($_POST['update_lock'])) {
                       'BIOS'                                => $ocsComputer['BIOS'],
       ];
 
-      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcsServer::getHardwareLockableFields())) {
+      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcsServer::getHardwareLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
          PluginOcsinventoryngOcsServer::setComputerHardware($params);
       }
-      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcsServer::getBiosLockableFields())) {
+      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcsServer::getBiosLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
          PluginOcsinventoryngOcsServer::updateComputerFromBios($params);
       }
-      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcsServer::getRuleLockableFields())) {
+      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcsServer::getOSLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
+         $params['check_history'] = true;
+         PluginOcsinventoryngOcsServer::updateComputerOS($params);
+      }
+      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcsServer::getAdministrativeInfosLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
+         PluginOcsinventoryngOcsServer::updateAdministrativeInfo($params);
+      }
+      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcsServer::getRuleLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id'], $_POST['ocsid']))) {
          $locations_id = 0;
          $groups_id    = 0;
          $contact      = (isset($ocsComputer['META']["USERID"])) ? $ocsComputer['META']["USERID"] : "";

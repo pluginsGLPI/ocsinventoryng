@@ -73,6 +73,20 @@ class PluginOcsinventoryngOsinstall extends CommonDBChild {
 
             PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
             $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+
+            // Manage locks pictures
+            $dbu = new DbUtils();
+            $items_id = $item->getField('items_id');
+            $query = "SELECT *
+                      FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                      WHERE `computers_id` = $items_id " .
+                     $dbu->getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
+
+            $result = $DB->query($query);
+            $data['ocsid'] = $DB->result($result, 0, "ocsid");
+            $data['id'] = $DB->result($result, 0, "id");
+            $data['plugin_ocsinventoryng_ocsservers_id'] = $plugin_ocsinventoryng_ocsservers_id;
+            PluginOcsinventoryngOcslink::showLockIcon($items_id, $data);
             // can exists for template
             if (//               ($item->getType() == 'Item_OperatingSystem')
                 //             && Computer::canView()
