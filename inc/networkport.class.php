@@ -196,13 +196,13 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
           && $subnet != '0.0.0.0') {
          $IPNetwork = new IPNetwork();
 
-         $condition = "`address`='" . $subnet . "'
-                      AND `netmask`='" . $mask . "'
-                      AND `entities_id`= $entities_id ";
+         $condition = ["address" => $subnet,
+                       "netmask" => $mask,
+                       "entities_id" => $entities_id];
 
          //To avoid the "Invalid gateway address" error message when adding a gateway to 0.0.0.0
          if ($gateway != '0.0.0.0') {
-            $condition .= "AND `gateway` = '$gateway'";
+            $condition["gateway"] = $gateway;
          }
          $dbu = new DbUtils();
          if ($dbu->countElementsInTable('glpi_ipnetworks', $condition) == 0) {

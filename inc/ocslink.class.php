@@ -63,8 +63,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       $dbu = new DbUtils();
       if ($item->isDynamic()
           && $item->isField('computers_id')
-          && $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocslinks',
-                                  "`computers_id`= " . $item->getField('computers_id')) > 0) {
+          && $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocslinks',["computers_id" => $item->getField('computers_id')]) > 0) {
          echo __('OCS Inventory NG');
       }
    }

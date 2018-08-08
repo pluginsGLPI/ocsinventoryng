@@ -297,7 +297,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       //"alt='OCS Inventory NG' title='OCS Inventory NG'>";
       //echo "</div>";
       $dbu                 = new DbUtils();
-      $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
+      $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', ["is_active" => 1]);
       if ($numberActiveServers > 0) {
          echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
                 method='post'>";
@@ -412,7 +412,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $name                = "";
       $ocsservers          = [];
       $dbu                 = new DbUtils();
-      $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`='1'");
+      $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', ["is_active" => 1]);
       if ($numberActiveServers > 0) {
          echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
                 method='post'>";
@@ -1501,7 +1501,7 @@ JAVASCRIPT;
     * */
    static function useMassImport() {
       $dbu = new DbUtils();
-      return $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', 'use_massimport');
+      return $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', ["use_massimport" => 1]);
    }
 
    /**
@@ -6666,15 +6666,15 @@ JAVASCRIPT;
          // delete cause a getFromDB, so fields contains values
          $verid = $computer_softwareversion->getField('softwareversions_id');
          $dbu   = new DbUtils();
-         if ($dbu->countElementsInTable('glpi_computers_softwareversions', "softwareversions_id = '$verid'") == 0
-             && $dbu->countElementsInTable('glpi_softwarelicenses', "softwareversions_id_buy = '$verid'") == 0) {
+         if ($dbu->countElementsInTable('glpi_computers_softwareversions', ["softwareversions_id" => $verid]) == 0
+             && $dbu->countElementsInTable('glpi_softwarelicenses', ["softwareversions_id_buy" => $verid]) == 0) {
 
             $vers = new SoftwareVersion();
             if ($vers->getFromDB($verid)
                 && $dbu->countElementsInTable('glpi_softwarelicenses',
-                                              "softwares_id = '" . $vers->fields['softwares_id'] . "'") == 0
+                                              ["softwares_id" => $vers->fields['softwares_id']]) == 0
                 && $dbu->countElementsInTable('glpi_softwareversions',
-                                              "softwares_id = '" . $vers->fields['softwares_id'] . "'") == 1) {
+                                              ["softwares_id" => $vers->fields['softwares_id']]) == 1) {
                // 1 is the current to be removed
                $soft->putInTrash($vers->fields['softwares_id'],
                                  __('Software deleted by OCSNG synchronization', 'ocsinventoryng'));
@@ -6693,12 +6693,12 @@ JAVASCRIPT;
             // delete cause a getFromDB, so fields contains values
             $verid = $computer_softwarelicenses->getField('softwareversions_id');
 
-            if ($dbu->countElementsInTable('glpi_computers_softwarelicenses', "softwarelicenses_id = '$verid'") == 0) {
+            if ($dbu->countElementsInTable('glpi_computers_softwarelicenses',["softwarelicenses_id" => $verid]) == 0) {
 
                $vers = new SoftwareVersion();
                if ($vers->getFromDB($verid)
                    && $dbu->countElementsInTable('glpi_softwarelicenses',
-                                                 "softwares_id = '" . $vers->fields['softwares_id'] . "'") == 0) {
+                                                 ["softwares_id" => $vers->fields['softwares_id']]) == 0) {
                   $soft = new Software();
                   $soft->delete(['id' => $vers->fields['softwares_id']], 1);
                }
@@ -8000,7 +8000,6 @@ JAVASCRIPT;
          } else if (isset($data['locations_id']) && $data['locations_id'] > 0) {
             $locks["locations_id"] = __('Location');
          }
-         Toolbox::logDebug($locks);
       } else {
          $locks = ["locations_id" => __('Location'),
                    "groups_id"    => __('Group')];
@@ -8897,7 +8896,7 @@ JAVASCRIPT;
     */
    function showSystemInformations() {
       $dbu        = new DbUtils();
-      $ocsServers = $dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_ocsservers', "`is_active`=1");
+      $ocsServers = $dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_ocsservers', ["is_active" => 1]);
       if (!empty($ocsServers)) {
          echo "\n<tr class='tab_bg_2'><th>OCS Inventory NG</th></tr>\n";
 

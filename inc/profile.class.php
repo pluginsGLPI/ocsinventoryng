@@ -115,12 +115,11 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
       $profileRight = new ProfileRight();
       $dbu = new DbUtils();
       foreach ($rights as $right => $value) {
-         if ($dbu->countElementsInTable('glpi_profilerights',
-                                  "`profiles_id`='$profiles_id' AND `name`='$right'") && $drop_existing) {
+         if ($dbu->countElementsInTable('glpi_profilerights',["profiles_id" => $profiles_id, "name" => $right]) && $drop_existing) {
             $profileRight->deleteByCriteria(['profiles_id' => $profiles_id, 'name' => $right]);
          }
          if (!$dbu->countElementsInTable('glpi_profilerights',
-                                   "`profiles_id`='$profiles_id' AND `name`='$right'")) {
+                                         ["profiles_id" => $profiles_id, "name" => $right])) {
             $myright['profiles_id'] = $profiles_id;
             $myright['name']        = $right;
             $myright['rights']      = $value;
@@ -186,7 +185,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
       echo "<table width='100%'><tr class='tab_bg_1'><td>";
       $dbu = new DbUtils();
       $nbservers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers_profiles',
-                                        "`profiles_id` = " . $profiles_id);
+                                        ["profiles_id" => $profiles_id]);
 
       $query  = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`,
                        `glpi_plugin_ocsinventoryng_ocsservers`.`name`
@@ -358,7 +357,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
       //Add new rights in glpi_profilerights table
       foreach ($profile->getAllRights() as $data) {
          if ($dbu->countElementsInTable("glpi_profilerights",
-                                  "`name` = '" . $data['field'] . "'") == 0) {
+                                  ["name" => $data['field']]) == 0) {
             ProfileRight::addProfileRights([$data['field']]);
          }
       }

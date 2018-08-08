@@ -36,7 +36,7 @@ function plugin_ocsinventoryng_install() {
    include_once(GLPI_ROOT . "/plugins/ocsinventoryng/inc/profile.class.php");
 
    $migration = new Migration(150);
-   $dbu = new DbUtils();
+   $dbu       = new DbUtils();
    if (!$DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers_profiles")
        && !$DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
        && !$DB->tableExists("ocs_glpi_ocsservers")) {
@@ -264,7 +264,7 @@ function plugin_ocsinventoryng_install() {
 
    if ($DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
        && $DB->tableExists("glpi_plugin_ocsinventoryng_profiles")
-       && ($dbu->countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1") == 1)) {
+       && ($dbu->countElementsInTable("glpi_plugin_ocsinventoryng_ocsservers", ["is_active" => 1]) == 1)) {
 
       foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers") as $server) {
          foreach ($DB->request("glpi_plugin_ocsinventoryng_profiles",
@@ -1096,7 +1096,7 @@ function plugin_ocsinventoryng_install() {
 
       $bios_id = $DeviceBios->import($bios);
 
-      $condition = "`plugin_ocsinventoryng_devicebiosdatas_id` = " . $ocsbios["id"];
+      $condition = ["plugin_ocsinventoryng_devicebiosdatas_id" => $ocsbios["id"]] ;
       foreach ($dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_items_devicebiosdatas', $condition) as $item_bios) {
          $CompDevice = new Item_DeviceFirmware();
          $CompDevice->add(['items_id'           => $item_bios['items_id'],
@@ -1306,7 +1306,7 @@ function plugin_ocsinventoryng_uninstall() {
 
    include_once(GLPI_ROOT . "/plugins/ocsinventoryng/inc/profile.class.php");
    include_once(GLPI_ROOT . "/plugins/ocsinventoryng/inc/menu.class.php");
-   $dbu = new DbUtils();
+   $dbu    = new DbUtils();
    $tables = ["glpi_plugin_ocsinventoryng_ocsservers",
               "glpi_plugin_ocsinventoryng_ocslinks",
               "glpi_plugin_ocsinventoryng_ocsadmininfoslinks",
@@ -1392,14 +1392,14 @@ function plugin_ocsinventoryng_uninstall() {
 
    $notification = new Notification();
    foreach ($dbu->getAllDataFromTable($notification->getTable(),
-                                 "`itemtype` IN ('PluginMassocsimportNotimported',
+                                      "`itemtype` IN ('PluginMassocsimportNotimported',
                       'PluginOcsinventoryngNotimportedcomputer',
                       'PluginOcsinventoryngRuleImportEntity')") as $data) {
       $notification->delete($data);
    }
    $template = new NotificationTemplate();
    foreach ($dbu->getAllDataFromTable($template->getTable(),
-                                 "`itemtype` IN ('PluginMassocsimportNotimported',
+                                      "`itemtype` IN ('PluginMassocsimportNotimported',
                       'PluginOcsinventoryngNotimportedcomputer',
                       'PluginOcsinventoryngRuleImportEntity')") as $data) {
       $template->delete($data);
@@ -2505,7 +2505,7 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration) {
 
    ini_set("memory_limit", "-1");
    ini_set("max_execution_time", "0");
-   $dbu = new DbUtils();
+   $dbu    = new DbUtils();
    $import = ['import_printer'    => 'Printer',
               'import_monitor'    => 'Monitor',
               'import_peripheral' => 'Peripheral'];
@@ -2878,7 +2878,7 @@ function plugin_ocsinventoryng_upgrademassocsimport13to14() {
 function plugin_ocsinventoryng_upgrademassocsimport14to15() {
    global $DB;
 
-   $dbu = new DbUtils();
+   $dbu       = new DbUtils();
    $migration = new Migration(15);
 
    $migration->addField("glpi_plugin_massocsimport_threads", "not_unique_machines_number",
@@ -2893,8 +2893,8 @@ function plugin_ocsinventoryng_upgrademassocsimport14to15() {
    $migration->addField("glpi_plugin_massocsimport_notimported", "reason", 'integer');
 
    if (!$dbu->countElementsInTable('glpi_displaypreferences',
-                             "`itemtype`='PluginMassocsimportNotimported'
-                               AND `num`='10' AND `users_id`='0'")
+                                   ["itemtype" => 'PluginMassocsimportNotimported',
+                                    "num"      => 10, "users_id" => 0])
    ) {
       $query = "INSERT INTO `glpi_displaypreferences`
                 (`itemtype`, `num`, `rank`, `users_id`)
