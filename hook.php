@@ -1391,17 +1391,16 @@ function plugin_ocsinventoryng_uninstall() {
    }
 
    $notification = new Notification();
+   $itemtypes= ['PluginMassocsimportNotimported',
+                'PluginOcsinventoryngNotimportedcomputer',
+                'PluginOcsinventoryngRuleImportEntity'];
    foreach ($dbu->getAllDataFromTable($notification->getTable(),
-                                      "`itemtype` IN ('PluginMassocsimportNotimported',
-                      'PluginOcsinventoryngNotimportedcomputer',
-                      'PluginOcsinventoryngRuleImportEntity')") as $data) {
+                                      ["itemtype" => $itemtypes]) as $data) {
       $notification->delete($data);
    }
    $template = new NotificationTemplate();
    foreach ($dbu->getAllDataFromTable($template->getTable(),
-                                      "`itemtype` IN ('PluginMassocsimportNotimported',
-                      'PluginOcsinventoryngNotimportedcomputer',
-                      'PluginOcsinventoryngRuleImportEntity')") as $data) {
+                                      ["itemtype" => $itemtypes]) as $data) {
       $template->delete($data);
    }
 
@@ -2894,7 +2893,8 @@ function plugin_ocsinventoryng_upgrademassocsimport14to15() {
 
    if (!$dbu->countElementsInTable('glpi_displaypreferences',
                                    ["itemtype" => 'PluginMassocsimportNotimported',
-                                    "num"      => 10, "users_id" => 0])
+                                    "num"      => 10,
+                                    "users_id" => 0])
    ) {
       $query = "INSERT INTO `glpi_displaypreferences`
                 (`itemtype`, `num`, `rank`, `users_id`)
