@@ -1632,7 +1632,7 @@ JAVASCRIPT;
          if ($item->getFromDB($id_item)) {
             $entity = $item->fields['entities_id'];
          }
-         PluginOcsinventoryngSoftware::updateSoftware($cfg_ocs, $id_item, $ocsSnmp, $entity, false);
+         PluginOcsinventoryngSoftware::updateSoftware($cfg_ocs, $id_item, $ocsSnmp, $entity, false, false);
 
       }
       if ($id_item > 0
@@ -1750,7 +1750,7 @@ JAVASCRIPT;
             $query = "SELECT `id`
                       FROM `glpi_computervirtualmachines`
                       WHERE `computers_id`= $id_item
-                         AND `is_dynamic` = 1";
+                         AND `is_dynamic` = 1 ";
             if (!empty($already_processed)) {
                $query .= "AND `id` NOT IN (" . implode(',', $already_processed) . ")";
             }
@@ -1824,7 +1824,7 @@ JAVASCRIPT;
          }
       }
 
-      $computerDisk = new ComputerDisk();
+      $computerDisk = new Item_Disk();
       if ($id_item > 0
           && isset($ocsSnmp['COMPUTERDISKS'])
           && (($cfg_ocs['importsnmp_computerdisks'] && $action == "add")
@@ -1897,7 +1897,7 @@ JAVASCRIPT;
       $query = "SELECT `id`
                 FROM `glpi_computerdisks`
                 WHERE `computers_id`= $id_item
-                   AND `is_dynamic` = 1";
+                   AND `is_dynamic` = 1 ";
       if (!empty($already_processed)) {
          $query .= "AND `id` NOT IN (" . implode(',', $already_processed) . ")";
       }

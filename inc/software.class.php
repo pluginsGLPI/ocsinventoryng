@@ -120,9 +120,9 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
          if (isset($software["PUBLISHER"])) {
             $manufacturer = Manufacturer::processName($software["PUBLISHER"]);
          }
-         $version     = $software['VERSION'];
-         $name        = $software['NAME'];
-         $installdate = $software['INSTALLDATE'];
+         $version     = isset($software['VERSION']) ? $software['VERSION'] : "";
+         $name        = isset($software['NAME']) ? $software['NAME'] : "";
+         $installdate = isset($software['INSTALLDATE']) ? $software['INSTALLDATE'] : "";
 
          //Software might be created in another entity, depending on the entity's configuration
          $target_entity = Entity::getUsedConfig('entities_id_software', $entity);
@@ -132,7 +132,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
          }
          $modified_name       = $name;
          $modified_version    = $version;
-         $version_comments    = $software['COMMENTS'];
+         $version_comments    = isset($software['COMMENTS']) ? $software['COMMENTS'] : "";
          $is_helpdesk_visible = null;
          if (!$cfg_ocs["use_soft_dict"]) {
             //Software dictionnary
@@ -266,7 +266,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
             // delete cause a getFromDB, so fields contains values
             $verid = $computer_softwarelicenses->getField('softwareversions_id');
 
-            if ($dbu->countElementsInTable('glpi_computers_softwarelicenses',["softwarelicenses_id" => $verid]) == 0) {
+            if ($dbu->countElementsInTable('glpi_computers_softwarelicenses', ["softwarelicenses_id" => $verid]) == 0) {
 
                $vers = new SoftwareVersion();
                if ($vers->getFromDB($verid)
