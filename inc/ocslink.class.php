@@ -555,7 +555,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   unset($item->updates[$k]);
                }
             }
-            PluginOcsinventoryngOcslink::mergeOcsArray($item->fields["id"], $item->updates);
+            self::mergeOcsArray($item->fields["id"], $item->updates);
          }
       }
       if (isset($item->input["_auto_update_ocs"])) {
@@ -586,11 +586,50 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
          if ($cfg_ocs["use_locks"]) {
 
-            PluginOcsinventoryngOcslink::mergeOcsArray($item->fields["items_id"], $item->updates);
+            self::mergeOcsArray($item->fields["items_id"], $item->updates);
          }
       }
    }
 
+   /**
+    * Update TAG information in glpi_plugin_ocsinventoryng_ocslinks table
+    *
+    * @param $line_links array : data from glpi_plugin_ocsinventoryng_ocslinks table
+    *
+    * @return string : current tag of computer on update
+    * @internal param array $line_ocs : data from ocs tables
+    *
+    */
+   static function updateTag($line_links) {
+      global $DB;
+
+      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($line_links["plugin_ocsinventoryng_ocsservers_id"]);
+
+      $computer = $ocsClient->getComputer($line_links["ocsid"]);
+
+      if ($computer) {
+         $data_ocs = Toolbox::addslashes_deep($computer["META"]);
+
+         if (isset($data_ocs["TAG"])
+             && isset($line_links["tag"])
+             && $data_ocs["TAG"] != $line_links["tag"]
+         ) {
+            $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                      SET `tag` = '" . $data_ocs["TAG"] . "'
+                      WHERE `id` = " . $line_links["id"];
+
+            if ($DB->query($query)) {
+               $changes[0] = '0';
+               $changes[1] = $line_links["tag"];
+               $changes[2] = $data_ocs["TAG"];
+
+               self::history($line_links["computers_id"], $changes,
+                                                    self::HISTORY_OCS_TAGCHANGED);
+               return $data_ocs["TAG"];
+            }
+         }
+      }
+   }
 
    /**
     * Update linked items of an item
@@ -622,6 +661,48 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       }
    }
 
+
+   /**
+    * Delete computers
+    *
+    * @param      $plugin_ocsinventoryng_ocsservers_id
+    * @param type $agents
+    *
+    * @return int
+    */
+   static function deleteComputers($plugin_ocsinventoryng_ocsservers_id, $agents) {
+
+      $ocslink  = new self();
+      $computer = new Computer();
+
+      $nb = 0;
+      foreach ($agents as $key => $val) {
+         foreach ($val as $k => $agent) {
+            //search for OCS links
+            if ($ocslink->getFromDBByCrit(['ocsid'                               => $agent,
+                                           'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id])) {
+               //search computer
+               if ($computer->getFromDB($ocslink->fields['computers_id'])) {
+                  if (!$computer->fields['is_deleted']) {
+                     $computer->fields['is_deleted'] = 1;
+                     $computer->fields['date_mod']   = $_SESSION['glpi_currenttime'];
+                     $computer->updateInDB(['is_deleted', 'date_mod']);
+                     //add history
+                     $changes[0] = 0;
+                     $changes[2] = "";
+                     $changes[1] = "";
+                     Log::history($ocslink->fields['computers_id'], 'Computer', $changes, 0,
+                                  Log::HISTORY_DELETE_ITEM);
+
+                     $nb += 1;
+                  }
+               }
+            }
+         }
+      }
+
+      return $nb;
+   }
 
    /**
     * if Computer deleted
@@ -1233,7 +1314,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
       $comp = new Computer();
       if ($comp->getFromDB($computers_id)) {
-         PluginOcsinventoryngOcslink::deleteInOcsArray($computers_id, $field, true);
+         self::deleteInOcsArray($computers_id, $field, true);
          $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
          $cfg_ocs   = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
@@ -1243,7 +1324,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             ]
          ];
 
-         $locks = PluginOcsinventoryngOcslink::getLocksForComputer($computers_id);
+         $locks = self::getLocksForComputer($computers_id);
 
          $ocsComputer = $ocsClient->getComputer($ocsid, $options);
          $params      = ['computers_id'                        => $computers_id,
@@ -1345,7 +1426,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       }
 
       //Add the new tag as the first occurence in the array
-      PluginOcsinventoryngOcslink::replaceOcsArray($computers_id, $new_computer_update, false);
+      self::replaceOcsArray($computers_id, $new_computer_update, false);
       return $new_computer_update;
    }
 }

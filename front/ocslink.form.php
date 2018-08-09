@@ -39,7 +39,7 @@ if (isset($_POST["launch_ocs_resynch"])) {
    $ocsservers_id = PluginOcsinventoryngOcsServer::getServerByComputerID($_POST["id"]);
    //Update the computer
    $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
-   PluginOcsinventoryngOcsProcess::updateComputer($_POST["resynch_id"], $ocsservers_id, 0);
+   PluginOcsinventoryngOcsProcess::synchronizeComputer($_POST["resynch_id"], $ocsservers_id, 0);
    Html::back();
 } else if (isset($_POST["force_ocs_resynch"])) {
    $computer = new Computer();
@@ -49,7 +49,7 @@ if (isset($_POST["launch_ocs_resynch"])) {
    $ocsservers_id = PluginOcsinventoryngOcsServer::getServerByComputerID($_POST["id"]);
    //Update the computer
    $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
-   PluginOcsinventoryngOcsProcess::updateComputer($_POST["resynch_id"], $ocsservers_id, 1);
+   PluginOcsinventoryngOcsProcess::synchronizeComputer($_POST["resynch_id"], $ocsservers_id, 1);
    Html::back();
 } else if (isset ($_POST["update"])) {
    $link = new PluginOcsinventoryngOcslink();

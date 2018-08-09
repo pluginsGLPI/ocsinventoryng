@@ -48,7 +48,7 @@ $timer = new Timer();
 $timer->start();
 
 $prof = new XHProf("OCS sync");
-PluginOcsinventoryngOcsServer::updateComputer($link->getID(), $link->getField('plugin_ocsinventoryng_ocsservers_id'), 1, 1);
+PluginOcsinventoryngOcsProcess::synchronizeComputer($link->getID(), $link->getField('plugin_ocsinventoryng_ocsservers_id'), 1, 1);
 unset($prof);
 
 printf("Done in %s\n", $timer->getTime());

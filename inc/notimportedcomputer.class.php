@@ -552,7 +552,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
          $notimported->getFromDB($params['id']);
          $changes = self::getOcsComputerInfos($notimported->fields);
 
-         if (PluginOcsinventoryngOcsServer::linkComputer($notimported->fields['ocsid'],
+         if (PluginOcsinventoryngOcsProcess::linkComputer($notimported->fields['ocsid'],
                                                          $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
                                                          $params['computers_id'])
          ) {

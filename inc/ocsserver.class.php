@@ -2813,7 +2813,7 @@ JAVASCRIPT;
                //action delete computers
 
                if (count($agents) > 0) {
-                  $nb = PluginOcsinventoryngOcsProcess::deleteComputers($plugin_ocsinventoryng_ocsservers_id, $agents);
+                  $nb = PluginOcsinventoryngOcslink::deleteComputers($plugin_ocsinventoryng_ocsservers_id, $agents);
                   if ($nb) {
                      $cron_status = 1;
                      if ($task) {
@@ -2954,7 +2954,7 @@ JAVASCRIPT;
                         $task->log(sprintf(__('%1$s: %2$s'), _n('Computer', 'Computer', 1),
                                            sprintf(__('%1$s (%2$s)'), $values["ocs_deviceid"], $values["id"])));
 
-                        PluginOcsinventoryngOcsProcess::updateComputer($values["id"], $plugin_ocsinventoryng_ocsservers_id);
+                        PluginOcsinventoryngOcsProcess::synchronizeComputer($values["id"], $plugin_ocsinventoryng_ocsservers_id);
 
                      }
                   }
