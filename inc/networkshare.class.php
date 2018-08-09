@@ -51,6 +51,53 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
    }
 
    /**
+    * Update config of the Networkshare
+    *
+    * This function erase old data and import the new ones about Networkshare
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $history_plugins boolean
+    */
+   static function updateNetworkshare($computers_id, $ocsComputer, $history_plugins) {
+
+      self::resetNetworkshare($computers_id, $history_plugins);
+
+      $ocsShares = new self();
+
+      //update data
+      foreach ($ocsComputer as $share) {
+
+         $sha   = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($share));
+         $input = [];
+
+         $input["computers_id"] = $computers_id;
+         $input["drive"]        = $sha["DRIVE"];
+         $input["path"]         = $sha["PATH"];
+         $input["size"]         = $sha["SIZE"];
+         $input["freespace"]    = $sha["FREESPACE"];
+         $input["quota"]        = $sha["QUOTA"];
+         $ocsShares->add($input, ['disable_unicity_check' => true], $history_plugins);
+      }
+
+   }
+
+
+   /**
+    * Delete old Networkshare entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    * @param $history_plugins boolean
+    *
+    */
+   static function resetNetworkshare($glpi_computers_id, $history_plugins) {
+
+      $share = new self();
+      $share->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $history_plugins);
+
+   }
+
+   /**
     * @see CommonGLPI::getTabNameForItem()
     **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {

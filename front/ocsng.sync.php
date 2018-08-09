@@ -45,11 +45,11 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
 
       $key = array_pop($_SESSION["ocs_update"]['computers']);
       $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-      $action = PluginOcsinventoryngOcsServer::updateComputer($key,
+      $action = PluginOcsinventoryngOcsProcess::updateComputer($key,
          $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-      PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_update"]['statistics'],
+      PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_update"]['statistics'],
          $action['status']);
-      PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_update"]['statistics']);
+      PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_update"]['statistics']);
       Html::displayProgressBar(400, $percent);
 
       Html::redirect($_SERVER['PHP_SELF']);
@@ -57,7 +57,7 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
    } else {
 
       if (isset($_SESSION["ocs_update"]['statistics'])) {
-         PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_update"]['statistics'], true);
+         PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_update"]['statistics'], true);
       } else {
          echo "<div class='center b red'>";
          echo __('No synchronization: the plugin will not synchronize these elements', 'ocsinventoryng');
@@ -78,7 +78,7 @@ if (!isset($_POST["update_ok"])) {
    if (!isset($_GET['start'])) {
       $_GET['start'] = 0;
    }
-   PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+   PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($display_list) {
       PluginOcsinventoryngOcsServer::showComputersToUpdate($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
          $_GET['check'], $_GET['start']);

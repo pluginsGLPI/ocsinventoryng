@@ -54,6 +54,51 @@ class PluginOcsinventoryngWinuser extends CommonDBChild {
    }
 
    /**
+    * Update config of the WinUsers
+    *
+    * This function erase old data and import the new ones about WinUser
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $history_plugins boolean
+    */
+   static function updateWinuser($computers_id, $ocsComputer, $history_plugins) {
+
+      self::resetWinuser($computers_id, $history_plugins);
+
+      $winusers = new self();
+      //update data
+      foreach ($ocsComputer as $wusers) {
+
+         $wuser                 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($wusers));
+         $input                 = [];
+         $input["computers_id"] = $computers_id;
+         if (!empty($wuser) && isset($wuser["NAME"])) {
+            $input["name"]        = $wuser["NAME"];
+            $input["type"]        = (isset($wuser["TYPE"]) ? $wuser["TYPE"] : '');
+            $input["description"] = (isset($wuser["TYPE"]) ? $wuser["DESCRIPTION"] : '');
+            $input["disabled"]    = (isset($wuser["TYPE"]) ? $wuser["DISABLED"] : '');
+            $input["sid"]         = (isset($wuser["TYPE"]) ? $wuser["SID"] : '');
+
+            $winusers->add($input, ['disable_unicity_check' => true], $history_plugins);
+         }
+      }
+   }
+
+   /**
+    * Delete old Winuser entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    * @param $history_plugins boolean
+    */
+   static function resetWinuser($glpi_computers_id, $history_plugins) {
+
+      $wuser = new self();
+      $wuser->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $history_plugins);
+
+   }
+
+   /**
     * @see CommonGLPI::getTabNameForItem()
     **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {

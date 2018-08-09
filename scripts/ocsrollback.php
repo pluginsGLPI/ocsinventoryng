@@ -112,7 +112,7 @@ $nb = $nbupd = 0;
 while ($event = $DB->fetch_array($res)) {
 
    if ($event["new_value"] > $maxid
-      && PluginOcsinventoryngOcsServer::getByMachineID($event["items_id"]) == $_GET["server"]
+      && PluginOcsinventoryngOcsServer::getServerByComputerID($event["items_id"]) == $_GET["server"]
       && $comp->getFromDB($event["items_id"])
    ) {
 

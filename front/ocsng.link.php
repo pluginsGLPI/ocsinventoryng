@@ -70,7 +70,7 @@ if (isset($_SESSION["ocs_link"])) {
       Html::displayProgressBar(400, $percent);
 
       $key = array_pop($_SESSION["ocs_link"]);
-      PluginOcsinventoryngOcsServer::linkComputer($key["ocsid"],
+      PluginOcsinventoryngOcsProcess::linkComputer($key["ocsid"],
          $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
          $key["computers_id"]);
       Html::redirect($_SERVER['PHP_SELF']);
@@ -90,7 +90,7 @@ if (!isset($_POST["import_ok"])) {
    if (!isset($_GET['start'])) {
       $_GET['start'] = 0;
    }
-   PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+   PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    PluginOcsinventoryngOcsServer::showComputersToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
       $_SESSION["change_import_mode"], $_GET['check'],
       $_GET['start'], $_SESSION['glpiactiveentities'],

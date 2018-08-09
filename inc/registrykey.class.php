@@ -60,6 +60,48 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
    }
 
 
+   /**
+    * Update config of the registry
+    *
+    * This function erase old data and import the new ones about registry (Microsoft OS after Windows 95)
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $history_plugins boolean
+    *
+    */
+   static function updateRegistry($computers_id, $ocsComputer, $history_plugins) {
+      //before update, delete all entries about $computers_id
+      self::resetRegistry($computers_id, $history_plugins);
+
+      $reg = new self();
+      //update data
+      foreach ($ocsComputer as $registry) {
+         $registry              = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($registry));
+         $input                 = [];
+         $input["computers_id"] = $computers_id;
+         $input["hive"]         = $registry["regtree"];
+         $input["value"]        = $registry["regvalue"];
+         $input["path"]         = $registry["regkey"];
+         $input["ocs_name"]     = $registry["name"];
+         $reg->add($input, ['disable_unicity_check' => true], $history_plugins);
+      }
+
+   }
+
+   /**
+    * Delete old registry entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    * @param $history_plugins boolean
+    *
+    * */
+   static function resetRegistry($glpi_computers_id, $history_plugins) {
+
+      $registry = new self();
+      $registry->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $history_plugins);
+   }
+
    /** Display registry values for a computer
     *
     * @param $ID integer : computer ID

@@ -56,6 +56,43 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
    }
 
    /**
+    * Update config of the Teamviewer
+    *
+    * This function erase old data and import the new ones about Teamviewer
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $history_plugins boolean
+    */
+   static function updateTeamviewer($computers_id, $ocsComputer, $history_plugins) {
+
+      self::resetTeamviewer($computers_id, $history_plugins);
+
+      $CompTeam              = new self();
+      $input                 = [];
+      $input["computers_id"] = $computers_id;
+      $input["version"]      = $ocsComputer["VERSION"];
+      $input["twid"]         = $ocsComputer["TWID"];
+
+      $CompTeam->add($input, ['disable_unicity_check' => true], $history_plugins);
+
+   }
+
+   /**
+    * Delete old Teamviewer entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    * @param $history_plugins boolean
+    *
+    */
+   static function resetTeamviewer($glpi_computers_id, $history_plugins) {
+
+      $team = new self();
+      $team->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $history_plugins);
+
+   }
+
+   /**
     * @see CommonGLPI::getTabNameForItem()
     **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {

@@ -245,7 +245,7 @@ function FirstPass($ocsservers_id) {
       // Handle ID changed or PC deleted in OCS.
       $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
       echo "\tManage delete items in OCS server #$ocsservers_id: \"" . $cfg_ocs["name"] . "\"\n";
-      PluginOcsinventoryngOcsServer::manageDeleted($ocsservers_id, false);
+      PluginOcsinventoryngOcsProcess::manageDeleted($ocsservers_id, false);
    } else {
       echo "*** Can't connect to OCS server #$ocsservers_id ***";
    }
@@ -404,13 +404,13 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
 
       echo ".";
       $entities_id = 0;
-      $action      = PluginOcsinventoryngOcsServer::processComputer($ID, $ocsServerId, 1);
-      PluginOcsinventoryngOcsServer::manageImportStatistics($fields, $action['status']);
+      $action      = PluginOcsinventoryngOcsProcess::processComputer($ID, $ocsServerId, 1);
+      PluginOcsinventoryngOcsProcess::manageImportStatistics($fields, $action['status']);
 
       switch ($action['status']) {
-         case PluginOcsinventoryngOcsServer::COMPUTER_NOT_UNIQUE :
-         case PluginOcsinventoryngOcsServer::COMPUTER_FAILED_IMPORT:
-         case PluginOcsinventoryngOcsServer::COMPUTER_LINK_REFUSED:
+         case PluginOcsinventoryngOcsProcess::COMPUTER_NOT_UNIQUE :
+         case PluginOcsinventoryngOcsProcess::COMPUTER_FAILED_IMPORT:
+         case PluginOcsinventoryngOcsProcess::COMPUTER_LINK_REFUSED:
             $notimport->logNotImported($ocsServerId, $ID, $action);
             break;
 

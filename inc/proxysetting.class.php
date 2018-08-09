@@ -54,6 +54,56 @@ class PluginOcsinventoryngProxysetting extends CommonDBChild {
    }
 
    /**
+    * Update config of the Proxysetting
+    *
+    * This function erase old data and import the new ones about Proxysetting
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $history_plugins boolean
+    */
+   static function updateProxysetting($computers_id, $ocsComputer, $history_plugins) {
+
+      self::resetProxysetting($computers_id, $history_plugins);
+
+      $ProxySetting = new self();
+
+      //update data
+      foreach ($ocsComputer as $prox) {
+
+         $proxy = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($prox));
+         $input = [];
+
+         $input["computers_id"] = $computers_id;
+         $input["user"]         = $proxy["USER"];
+         $input["enable"]       = $proxy["ENABLE"];
+         if (isset($ocsComputer["AUTOCONFIGURL"])) {
+            $input["autoconfigurl"] = $proxy["AUTOCONFIGURL"];
+         }
+         $input["address"] = $proxy["ADDRESS"];
+         if (isset($proxy["OVERRIDE"])) {
+            $input["override"] = $proxy["OVERRIDE"];
+         }
+         $ProxySetting->add($input, ['disable_unicity_check' => true], $history_plugins);
+      }
+
+   }
+
+   /**
+    * Delete old Proxysetting entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    * @param $history_plugins boolean
+    *
+    */
+   static function resetProxysetting($glpi_computers_id, $history_plugins) {
+
+      $proxy = new self();
+      $proxy->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $history_plugins);
+
+   }
+
+   /**
     * @see CommonGLPI::getTabNameForItem()
     **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {

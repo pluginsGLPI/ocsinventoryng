@@ -55,6 +55,52 @@ class PluginOcsinventoryngOsinstall extends CommonDBChild {
 
 
    /**
+    * Update config of the OSInstall
+    *
+    * This function erase old data and import the new ones about OSInstall
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $history_plugins boolean
+    */
+   static function updateOSInstall($computers_id, $ocsComputer, $history_plugins) {
+
+      self::resetOSInstall($computers_id, $history_plugins);
+
+      //update data
+      if (!empty($ocsComputer)) {
+
+         $os                     = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer));
+         $input                  = [];
+         $input["computers_id"]  = $computers_id;
+         $input["build_version"] = $os["BUILDVER"];
+         $input["install_date"]  = $os["INSTDATE"];
+         $input["codeset"]       = $os["CODESET"];
+         $input["countrycode"]   = $os["COUNTRYCODE"];
+         $input["oslanguage"]    = $os["OSLANGUAGE"];
+         $input["curtimezone"]   = $os["CURTIMEZONE"];
+         $input["locale"]        = $os["LOCALE"];
+         $osinstall              = new self();
+         $osinstall->add($input, ['disable_unicity_check' => true], $history_plugins);
+      }
+
+   }
+
+   /**
+    * Delete old osinstall entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    * @param $history_plugins boolean
+    *
+    */
+   static function resetOSInstall($glpi_computers_id, $history_plugins) {
+
+      $os = new self();
+      $os->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $history_plugins);
+
+   }
+
+   /**
     * Show
     *
     * @param $params

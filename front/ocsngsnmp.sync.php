@@ -63,9 +63,9 @@ if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
       $key = array_pop($_SESSION["ocs_updatesnmp"]['id']);
       $action = PluginOcsinventoryngSnmpOcslink::updateSnmp($key,
          $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-      PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_updatesnmp"]['statistics'],
+      PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_updatesnmp"]['statistics'],
          $action['status'], true);
-      PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false, true);
+      PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false, true);
       Html::displayProgressBar(400, $percent);
 
       Html::redirect($_SERVER['PHP_SELF']);
@@ -73,7 +73,7 @@ if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
    } else {
 
       if (isset($_SESSION["ocs_updatesnmp"]['statistics'])) {
-         PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false, true);
+         PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false, true);
       } else {
          echo "<div class='center b red'>";
          echo __('No synchronization: the plugin will not synchronize these elements', 'ocsinventoryng');
@@ -93,7 +93,7 @@ if (!isset($_POST["update_ok"])) {
    if (!isset($_GET['start'])) {
       $_GET['start'] = 0;
    }
-   //PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+   //PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($display_list) {
       PluginOcsinventoryngSnmpOcslink::showSnmpDeviceToUpdate($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
          $_GET['check'], $_GET['start']);

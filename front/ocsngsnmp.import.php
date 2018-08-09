@@ -72,15 +72,15 @@ if (isset($_SESSION["ocs_importsnmp"]["id"])) {
       $action = PluginOcsinventoryngSnmpOcslink::processSnmp($key,
          $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
          0, $params);
-      PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_importsnmp"]['statistics'],
+      PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_importsnmp"]['statistics'],
          $action['status'], true);
-      PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_importsnmp"]['statistics'], false, true);
+      PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_importsnmp"]['statistics'], false, true);
       Html::displayProgressBar(400, $percent);
       Html::redirect($_SERVER['PHP_SELF']);
    } else {
       //displayProgressBar(400, 100);
       if (isset($_SESSION["ocs_importsnmp"]['statistics'])) {
-         PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_importsnmp"]['statistics'], false, true);
+         PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_importsnmp"]['statistics'], false, true);
       } else {
          echo "<div class='center b red'>";
          echo __('No import: the plugin will not import these elements', 'ocsinventoryng');
@@ -104,7 +104,7 @@ if (!isset($_POST["import_ok"])) {
    if (isset($_SESSION["ocs_importsnmp"])) {
       unset($_SESSION["ocs_importsnmp"]);
    }
-   //PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+   //PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($display_list) {
       $values = $_GET;
       if (isset($_POST["search"])) {

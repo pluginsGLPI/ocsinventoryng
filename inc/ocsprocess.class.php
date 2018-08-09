@@ -1,0 +1,2315 @@
+<?php
+/*
+ * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
+  -------------------------------------------------------------------------
+ ocsinventoryng plugin for GLPI
+ Copyright (C) 2015-2016 by the ocsinventoryng Development Team.
+
+ https://github.com/pluginsGLPI/ocsinventoryng
+  -------------------------------------------------------------------------
+
+  LICENSE
+
+  This file is part of ocsinventoryng.
+
+ ocsinventoryng is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+ ocsinventoryng is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
+ */
+
+if (!defined('GLPI_ROOT')) {
+   die("Sorry. You can't access directly to this file");
+}
+
+/// OCS config class
+
+/**
+ * Class PluginOcsinventoryngOcsProcess
+ */
+class PluginOcsinventoryngOcsProcess extends CommonDBTM {
+
+   static $rightname = "plugin_ocsinventoryng";
+   // From CommonDBTM
+   public $dohistory = true;
+
+   // Class constants - OCSNG Flags on Checksum
+   // See Apache/Ocsinventory/Map.pm
+   const HARDWARE_FL        = 0;//1
+   const BIOS_FL            = 1;//2
+   const MEMORIES_FL        = 2;//4
+   const SLOTS_FL           = 3;//8
+   const REGISTRY_FL        = 4;//16
+   const CONTROLLERS_FL     = 5;//32
+   const MONITORS_FL        = 6;//64
+   const PORTS_FL           = 7;//128
+   const STORAGES_FL        = 8;//256
+   const DRIVES_FL          = 9;//512
+   const INPUTS_FL          = 10;//1024
+   const MODEMS_FL          = 11;//2048
+   const NETWORKS_FL        = 12;//4096
+   const PRINTERS_FL        = 13;//8192
+   const SOUNDS_FL          = 14;//16384
+   const VIDEOS_FL          = 15;//32768
+   const SOFTWARES_FL       = 16;//65536
+   const VIRTUALMACHINES_FL = 17; //131072
+   const CPUS_FL            = 18; //added into OCS2_1_VERSION_LIMIT - 262144
+
+   const SIMS_FL      = 19; //not used added into OCS2_1_VERSION_LIMIT - 524288
+   const BATTERIES_FL = 20; //not used  added into OCS2_2_VERSION_LIMIT - 1048576
+
+   const MAX_CHECKSUM = 524287;//262143;//With < 19 (with 20 : 2097151)
+
+   const FIELD_SEPARATOR = '$$$$$';
+   const IMPORT_TAG_078  = '_version_078_';
+
+   // Class constants - Update result
+   const COMPUTER_IMPORTED      = 0; //Computer is imported in GLPI
+   const COMPUTER_SYNCHRONIZED  = 1; //Computer is synchronized
+   const COMPUTER_LINKED        = 2; //Computer is linked to another computer already in GLPI
+   const COMPUTER_FAILED_IMPORT = 3; //Computer cannot be imported because it matches none of the rules
+   const COMPUTER_NOTUPDATED    = 4; //Computer should not be updated, nothing to do
+   const COMPUTER_NOT_UNIQUE    = 5; //Computer import is refused because it's not unique
+   const COMPUTER_LINK_REFUSED  = 6; //Computer cannot be imported because a rule denies its import
+   const LINK_RESULT_IMPORT     = 0;
+   const LINK_RESULT_NO_IMPORT  = 1;
+   const LINK_RESULT_LINK       = 2;
+
+   // Class constants - Update result
+   const SNMP_IMPORTED            = 10; //SNMP Object is imported in GLPI
+   const SNMP_SYNCHRONIZED        = 11; //SNMP is synchronized
+   const SNMP_LINKED              = 12; //SNMP is linked to another object already in GLPI
+   const SNMP_FAILED_IMPORT       = 13; //SNMP cannot be imported - no itemtype
+   const SNMP_NOTUPDATED          = 14; //SNMP should not be updated, nothing to do
+   const IPDISCOVER_IMPORTED      = 15; //IPDISCOVER Object is imported in GLPI
+   const IPDISCOVER_NOTUPDATED    = 16; //IPDISCOVER should not be updated, nothing to do
+   const IPDISCOVER_FAILED_IMPORT = 17; //IPDISCOVER cannot be imported - no itemtype
+   const IPDISCOVER_SYNCHRONIZED  = 18; //IPDISCOVER is synchronized
+
+   /**
+    *
+    * Encode data coming from OCS DB in utf8 is needed
+    * @since 1.0
+    *
+    * @param boolean $is_ocsdb_utf8 is OCS database declared as utf8 in GLPI configuration
+    * @param string  $value value to encode in utf8
+    *
+    * @return string value encoded in utf8
+    */
+   static function encodeOcsDataInUtf8($is_ocsdb_utf8, $value) {
+      if (!$is_ocsdb_utf8 && !Toolbox::seems_utf8($value)) {
+         return Toolbox::encodeInUtf8($value);
+      } else {
+         return $value;
+      }
+   }
+
+
+   /**
+    * @param      $plugin_ocsinventoryng_ocsservers_id
+    * @param bool $redirect
+    *
+    * @return bool
+    */
+   static function manageDeleted($plugin_ocsinventoryng_ocsservers_id, $redirect = true) {
+      global $DB;
+
+      if (!(PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)
+            && PluginOcsinventoryngOcsServer::checkVersion($plugin_ocsinventoryng_ocsservers_id))) {
+         return false;
+      }
+
+      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $deleted   = $ocsClient->getDeletedComputers();
+
+      //if (strpos($_SERVER['PHP_SELF'], "deleted_equiv.php") == true){
+      if (count($deleted)) {
+
+         foreach ($deleted as $del => $equiv) {
+            if (!empty($equiv) && $equiv != "NULL") { // New name ($equiv = VARCHAR)
+               // Get hardware due to bug of duplicates management of OCS
+               if (strpos($equiv, "-") !== false) {
+                  $res = $ocsClient->searchComputers('DEVICEID', $equiv);
+                  if (isset($res['COMPUTERS']) && count($res['COMPUTERS'])) {
+                     if (isset($res['COMPUTERS']['META']) && is_array(isset($res['COMPUTERS']['META']))) {
+                        $data  = end($res['COMPUTERS']['META']);
+                        $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                                        SET `ocsid` = '" . $data["ID"] . "',
+                                            `ocs_deviceid` = '" . $data["DEVICEID"] . "'
+                                        WHERE `ocs_deviceid` = '$del'
+                                              AND `plugin_ocsinventoryng_ocsservers_id`
+                                                      = $plugin_ocsinventoryng_ocsservers_id";
+                        $DB->query($query);
+                        $ocsClient->setChecksum($data['CHECKSUM'] | PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE, $data['ID']);
+                     }
+                     // } else {
+                     // We're damned ! no way to find new ID
+                     // TODO : delete ocslinks ?
+                  }
+               } else {
+                  $res = $ocsClient->searchComputers('ID', $equiv);
+                  if (isset($res['COMPUTERS']) && count($res['COMPUTERS'])) {
+
+                     $data  = $res['COMPUTERS'][$equiv]['META'];
+                     $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                                     SET `ocsid` = '" . $data["ID"] . "',
+                                         `ocs_deviceid` = '" . $data["DEVICEID"] . "'
+                                     WHERE `ocsid` = '$del'
+                                           AND `plugin_ocsinventoryng_ocsservers_id`
+                                                   = $plugin_ocsinventoryng_ocsservers_id";
+                     $DB->query($query);
+                     $ocsClient->setChecksum($data['CHECKSUM'] | PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE, $data['ID']);
+                  } else {
+                     // Not found, probably because ID change twice since previous sync
+                     // No way to found new DEVICEID
+                     $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                                     SET `ocsid` = '$equiv'
+                                     WHERE `ocsid` = '$del'
+                                           AND `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
+                     $DB->query($query);
+                     // for history, see below
+                     $data = ['ID' => $equiv];
+                  }
+               }
+               //foreach($ocs_deviceid as $deviceid => $equiv){
+               //$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+               //SET `ocsid` = '$equiv'
+               //WHERE `ocs_deviceid` = '$del'
+               //AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
+               //}
+               //TODO
+               //http://www.karlrixon.co.uk/writing/update-multiple-rows-with-different-values-and-a-single-sql-query/
+               if (isset($data)) {
+                  $sql_id = "SELECT `computers_id`
+                             FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                             WHERE `ocsid` = " . $data["ID"] . "
+                                   AND `plugin_ocsinventoryng_ocsservers_id`
+                                          = $plugin_ocsinventoryng_ocsservers_id";
+                  if ($res_id = $DB->query($sql_id)) {
+                     if ($DB->numrows($res_id) > 0) {
+                        //Add history to indicates that the ocsid changed
+                        $changes[0] = '0';
+                        //Old ocsid
+                        $changes[1] = $del;
+                        //New ocsid
+                        $changes[2] = $data["ID"];
+                        PluginOcsinventoryngOcslink::history($DB->result($res_id, 0, "computers_id"),
+                                                             $changes,
+                                                             PluginOcsinventoryngOcslink::HISTORY_OCS_IDCHANGED);
+                     }
+                  }
+               }
+            } else { // Deleted
+               $ocslinks_toclean = [];
+               if (strstr($del, "-")) {
+                  $link = "ocs_deviceid";
+               } else {
+                  $link = "ocsid";
+               }
+               $query = "SELECT *
+                               FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                               WHERE `" . $link . "` = '$del'
+                                     AND `plugin_ocsinventoryng_ocsservers_id`
+                                                = $plugin_ocsinventoryng_ocsservers_id";
+
+               if ($result = $DB->query($query)) {
+                  if ($DB->numrows($result) > 0) {
+                     $data                          = $DB->fetch_array($result);
+                     $ocslinks_toclean[$data['id']] = $data['id'];
+                  }
+               }
+               PluginOcsinventoryngOcslink::cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_toclean);
+            }
+            //Delete from deleted_equiv
+            if (!empty($equiv)) {
+               $ocsClient->removeDeletedComputers($del, $equiv);
+            } else {
+               $to_del[] = $del;
+            }
+         }
+         //Delete from deleted_equiv
+         if (!empty($to_del)) {
+            $ocsClient->removeDeletedComputers($to_del);
+         }
+         //If cron, no redirect
+         if ($redirect) {
+            if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != "") {
+               $redirection = $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING'];
+            } else {
+               $redirection = $_SERVER['PHP_SELF'];
+            }
+            Html::redirect($redirection);
+         }
+      } else {
+         $_SESSION['ocs_deleted_equiv']['computers_to_del']  = false;
+         $_SESSION['ocs_deleted_equiv']['computers_deleted'] = 0;
+      }
+      // New way to delete entry from deleted_equiv table
+      //} else if (count($deleted)) {
+      //   $message = sprintf(__('Please consider cleaning the deleted computers in OCSNG <a href="%s">Clean OCSNG datatabase </a>', 'ocsinventoryng'), $CFG_GLPI['root_doc']."/plugins/ocsinventoryng/front/deleted_equiv.php");
+      //   echo "<tr><th colspan='2'>";
+      //   Html::displayTitle($CFG_GLPI['root_doc']."/pics/warning.png", $message, $message);
+      //   echo "</th></tr>";
+      //}
+   }
+
+   /**
+    * Delete computers
+    *
+    * @param      $plugin_ocsinventoryng_ocsservers_id
+    * @param type $agents
+    *
+    * @return int
+    */
+   static function deleteComputers($plugin_ocsinventoryng_ocsservers_id, $agents) {
+
+      $ocslink  = new PluginOcsinventoryngOcslink();
+      $computer = new Computer();
+
+      $nb = 0;
+      foreach ($agents as $key => $val) {
+         foreach ($val as $k => $agent) {
+            //search for OCS links
+            if ($ocslink->getFromDBByCrit(['ocsid'                               => $agent,
+                                           'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id])) {
+               //search computer
+               if ($computer->getFromDB($ocslink->fields['computers_id'])) {
+                  if (!$computer->fields['is_deleted']) {
+                     $computer->fields['is_deleted'] = 1;
+                     $computer->fields['date_mod']   = $_SESSION['glpi_currenttime'];
+                     $computer->updateInDB(['is_deleted', 'date_mod']);
+                     //add history
+                     $changes[0] = 0;
+                     $changes[2] = "";
+                     $changes[1] = "";
+                     Log::history($ocslink->fields['computers_id'], 'Computer', $changes, 0,
+                                  Log::HISTORY_DELETE_ITEM);
+
+                     $nb += 1;
+                  }
+               }
+            }
+         }
+      }
+
+      return $nb;
+   }
+
+   /**
+    * Return field matching between OCS and GLPI
+    *
+    * @return array of glpifield => ocsfield
+    * */
+   static function getOcsFieldsMatching() {
+
+      // Manufacturer and Model both as text (for rules) and as id (for import)
+      return ['manufacturer'                    => ['BIOS', 'SMANUFACTURER'],
+              'manufacturers_id'                => ['BIOS', 'SMANUFACTURER'],
+              'license_number'                  => ['HARDWARE', 'WINPRODKEY'],
+              'license_id'                      => ['HARDWARE', 'WINPRODID'],
+              'operatingsystems_id'             => ['HARDWARE', 'OSNAME'],
+              'operatingsystemversions_id'      => ['HARDWARE', 'OSVERSION'],
+              'operatingsystemarchitectures_id' => ['HARDWARE', 'ARCH'],
+              'operatingsystemservicepacks_id'  => ['HARDWARE', 'OSCOMMENTS'],
+              'domains_id'                      => ['HARDWARE', 'WORKGROUP'],
+              'contact'                         => ['HARDWARE', 'USERID'],
+              'name'                            => ['META', 'NAME'],
+              'comment'                         => ['HARDWARE', 'DESCRIPTION'],
+              'serial'                          => ['BIOS', 'SSN'],
+              'model'                           => ['BIOS', 'SMODEL'],
+              'computermodels_id'               => ['BIOS', 'SMODEL'],
+              'TAG'                             => ['ACCOUNTINFO', 'TAG']
+      ];
+   }
+
+   /**
+    * @param array $ocs_fields
+    * @param       $cfg_ocs
+    * @param       $entities_id
+    * @param int   $locations_id
+    *
+    * @return array
+    */
+   static function getComputerInformations($ocs_fields = [], $cfg_ocs, $entities_id, $locations_id = 0, $groups_id = 0) {
+      $input               = [];
+      $input["is_dynamic"] = 1;
+
+      if ($cfg_ocs["states_id_default"] > 0) {
+         $input["states_id"] = $cfg_ocs["states_id_default"];
+      }
+
+      $input["entities_id"] = $entities_id;
+
+      if ($locations_id) {
+         $input["locations_id"] = $locations_id;
+      }
+
+      if ($groups_id) {
+         $input["groups_id"] = $groups_id;
+      }
+
+      $input['ocsid']      = $ocs_fields['META']['ID'];
+      $ocs_fields_matching = self::getOcsFieldsMatching();
+      foreach ($ocs_fields_matching as $glpi_field => $ocs_field) {
+         $ocs_section = $ocs_field[0];
+         $ocs_field   = $ocs_field[1];
+         $dbu         = new DbUtils();
+         $table       = $dbu->getTableNameForForeignKeyField($glpi_field);
+
+         $ocs_val = null;
+         if (isset($ocs_fields[$ocs_section]) && is_array($ocs_fields[$ocs_section])) {
+            if (array_key_exists($ocs_field, $ocs_fields[$ocs_section])) {
+               $ocs_val = $ocs_fields[$ocs_section][$ocs_field];
+            } else if (isset($ocs_fields[$ocs_section][0])
+                       && array_key_exists($ocs_field, $ocs_fields[$ocs_section][0])) {
+               $ocs_val = $ocs_fields[$ocs_section][0][$ocs_field];
+            }
+         }
+         if (!is_null($ocs_val)) {
+            $ocs_field = Toolbox::encodeInUtf8($ocs_field);
+
+            //Field is a foreing key
+            if ($table != '') {
+               if (!($item = $dbu->getItemForItemtype($table))) {
+                  continue;
+               }
+               $itemtype        = $dbu->getItemTypeForTable($table);
+               $external_params = [];
+
+               foreach ($item->additional_fields_for_dictionnary as $field) {
+                  $additional_ocs_section = $ocs_fields_matching[$field][0];
+                  $additional_ocs_field   = $ocs_fields_matching[$field][1];
+
+                  if (isset($ocs_fields[$additional_ocs_section][$additional_ocs_field])) {
+                     $external_params[$field] = $ocs_fields[$additional_ocs_section][$additional_ocs_field];
+                  } else if (isset($ocs_fields[$additional_ocs_section][0][$additional_ocs_field])) {
+                     $external_params[$field] = $ocs_fields[$additional_ocs_section][0][$additional_ocs_field];
+                  } else {
+                     $external_params[$field] = "";
+                  }
+               }
+
+               $input[$glpi_field] = Dropdown::importExternal($itemtype, $ocs_val, $entities_id, $external_params);
+            } else {
+               switch ($glpi_field) {
+                  case 'contact' :
+                     if ($users_id = User::getIDByField('name', $ocs_val)) {
+                        $input[$glpi_field] = $users_id;
+                     }
+                     break;
+
+                  case 'comment' :
+                     $input[$glpi_field] = '';
+                     if ($ocs_val && $ocs_val != NOT_AVAILABLE) {
+                        $input[$glpi_field] .= $ocs_val . "\r\n";
+                     }
+                     $input[$glpi_field] .= addslashes(sprintf(__('%1$s %2$s'), $input[$glpi_field], sprintf(__('%1$s: %2$s'), __('Swap', 'ocsinventoryng'), $ocs_fields['HARDWARE']['SWAP'])));
+                     break;
+
+                  default :
+                     $input[$glpi_field] = $ocs_val;
+                     break;
+               }
+            }
+         }
+      }
+      if (intval($cfg_ocs["import_general_name"]) == 0) {
+         unset($input["name"]);
+      }
+
+      if (intval($cfg_ocs["import_general_os"]) == 0) {
+         unset($input["operatingsystems_id"]);
+         unset($input["operatingsystemversions_id"]);
+         unset($input["operatingsystemservicepacks_id"]);
+         unset($input["operatingsystemarchitectures_id"]);
+      }
+
+      if (intval($cfg_ocs["import_os_serial"]) == 0) {
+         unset($input["license_number"]);
+         unset($input["license_id"]);
+      }
+
+      if (intval($cfg_ocs["import_general_serial"]) == 0) {
+         unset($input["serial"]);
+      }
+
+      if (intval($cfg_ocs["import_general_model"]) == 0) {
+         unset($input["model"]);
+         unset($input["computermodels_id"]);
+      }
+
+      if (intval($cfg_ocs["import_general_manufacturer"]) == 0) {
+         unset($input["manufacturer"]);
+         unset($input["manufacturers_id"]);
+      }
+
+      if (intval($cfg_ocs["import_general_type"]) == 0) {
+         unset($input["computertypes_id"]);
+      }
+
+      if (intval($cfg_ocs["import_general_comment"]) == 0) {
+         unset($input["comment"]);
+      }
+
+      if (intval($cfg_ocs["import_general_contact"]) == 0) {
+         unset($input["contact"]);
+         unset($input["users_id"]);
+      }
+
+      if (intval($cfg_ocs["import_general_domain"]) == 0) {
+         unset($input["domains_id"]);
+      }
+
+      return $input;
+   }
+
+   /**
+    * @param     $ocsid
+    * @param     $plugin_ocsinventoryng_ocsservers_id
+    * @param int $lock
+    * @param int $defaultentity
+    * @param int $defaultlocation
+    *
+    * @return array
+    */
+   static function processComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock = 0,
+                                   $defaultentity = -1, $defaultlocation = -1) {
+      global $DB;
+
+      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      //Check it machine is already present AND was imported by OCS AND still present in GLPI
+      $query  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`id`, `computers_id`, `ocsid`
+                FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                LEFT JOIN `glpi_computers`
+                     ON `glpi_computers`.`id`=`glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`
+                WHERE `glpi_computers`.`id` IS NOT NULL
+                      AND `ocsid` = '$ocsid'
+                      AND `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
+      $result = $DB->query($query);
+      if ($DB->numrows($result)) {
+         $datas = $DB->fetch_array($result);
+         //Return code to indicates that the machine was synchronized
+         //or only last inventory date changed
+         return self::updateComputer($datas["id"], $plugin_ocsinventoryng_ocsservers_id, 0);
+      }
+      return self::importComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock, $defaultentity,
+                                  $defaultlocation);
+
+   }
+
+   /**
+    * @param     $ocsid
+    * @param     $plugin_ocsinventoryng_ocsservers_id
+    * @param int $lock
+    * @param int $defaultentity
+    * @param int $defaultlocation
+    *
+    * @return array
+    */
+   static function importComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock = 0, $defaultentity = -1, $defaultlocation = -1) {
+      global $DB;
+
+      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+      $comp    = new Computer();
+
+      $rules_matched = [];
+      $ocsClient     = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $ocsClient->setChecksum(PluginOcsinventoryngOcsClient::CHECKSUM_ALL, $ocsid);
+
+      $ocsComputer = $ocsClient->getComputer($ocsid, [
+         'DISPLAY' => [
+            'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE | PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
+            'WANTED'   => PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO
+         ]
+      ]);
+
+      $locations_id = 0;
+      $groups_id    = 0;
+      $contact      = (isset($ocsComputer['META']["USERID"])) ? $ocsComputer['META']["USERID"] : "";
+      if (!empty($contact) && $cfg_ocs["import_general_contact"] > 0) {
+         $query  = "SELECT `id`
+                   FROM `glpi_users`
+                   WHERE `name` = '" . $contact . "';";
+         $result = $DB->query($query);
+
+         if ($DB->numrows($result) == 1) {
+            $user_id = $DB->result($result, 0, 0);
+            $user    = new User();
+            $user->getFromDB($user_id);
+            if ($cfg_ocs["import_user_location"] > 0) {
+               $locations_id = $user->fields["locations_id"];
+            }
+            if ($cfg_ocs["import_user_group"] > 0) {
+               $groups_id = self::getUserGroup(0, $user_id, '`is_itemgroup`', true);
+            }
+         }
+      }
+
+      //No entity or location predefined, check rules
+      if ($defaultentity == -1 && ($defaultlocation == -1 || $defaultlocation == 0)) {
+         //Try to affect computer to an entity
+         $rule = new RuleImportEntityCollection();
+         $data = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                         '_source'       => 'ocsinventoryng',
+                                         'locations_id'  => $locations_id,
+                                         'groups_id'     => $groups_id
+                                        ], [
+                                           'locations_id' => $locations_id,
+                                           'groups_id'    => $groups_id
+                                        ], ['ocsid' => $ocsid]);
+
+         if (isset($data['_ignore_import']) && $data['_ignore_import'] == 1) {
+            //ELSE Return code to indicates that the machine was not imported because it doesn't matched rules
+            return ['status'       => self::COMPUTER_LINK_REFUSED,
+                    'rule_matched' => $data['_ruleid']];
+         }
+      } else {
+         //An entity or a location has already been defined via the web interface
+         $data['entities_id']  = $defaultentity;
+         $data['locations_id'] = $defaultlocation;
+      }
+      //Try to match all the rules, return the first good one, or null if not rules matched
+      if (isset($data['entities_id']) && $data['entities_id'] >= 0) {
+         if ($lock) {
+            while (!$fp = self::setEntityLock($data['entities_id'])) {
+               sleep(1);
+            }
+         }
+
+         //Store rule that matched
+         if (isset($data['_ruleid'])) {
+            $rules_matched['RuleImportEntity'] = $data['_ruleid'];
+         }
+
+         if (!is_null($ocsComputer)) {
+
+            $computer = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer));
+
+            $locations_id = (isset($data['locations_id']) ? $data['locations_id'] : 0);
+            $groups_id    = (isset($data['groups_id']) ? $data['groups_id'] : 0);
+            $input        = self::getComputerInformations($computer, PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id),
+                                                          $data['entities_id'], $locations_id, $groups_id);
+            //Check if machine could be linked with another one already in DB
+            $rulelink = new RuleImportComputerCollection();
+
+            $params           = ['entities_id' => $data['entities_id'],
+                                 'plugin_ocsinventoryng_ocsservers_id'
+                                               => $plugin_ocsinventoryng_ocsservers_id,
+                                 'ocsid'       => $ocsid];
+            $rulelink_results = $rulelink->processAllRules(Toolbox::stripslashes_deep($input), [], $params);
+
+            //If at least one rule matched
+            //else do import as usual
+            if (isset($rulelink_results['action'])) {
+               $rules_matched['RuleImportComputer'] = $rulelink_results['_ruleid'];
+
+               switch ($rulelink_results['action']) {
+                  case self::LINK_RESULT_NO_IMPORT :
+                     return ['status'       => self::COMPUTER_LINK_REFUSED,
+                             'entities_id'  => $data['entities_id'],
+                             'rule_matched' => $rules_matched];
+
+                  case self::LINK_RESULT_LINK :
+                     if (is_array($rulelink_results['found_computers']) && count($rulelink_results['found_computers']) > 0) {
+
+                        foreach ($rulelink_results['found_computers'] as $tmp => $computers_id) {
+
+                           if (self::linkComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $computers_id)) {
+                              return ['status'       => self::COMPUTER_LINKED,
+                                      'entities_id'  => $data['entities_id'],
+                                      'rule_matched' => $rules_matched,
+                                      'computers_id' => $computers_id];
+                           }
+                        }
+                        break;
+                     }
+               }
+            }
+            //ADD IF NOT LINKED
+            $computers_id = $comp->add($input, ['unicity_error_message' => false]);
+            if ($computers_id) {
+               $ocsid      = $computer['META']['ID'];
+               $changes[0] = '0';
+               $changes[1] = "";
+               $changes[2] = $ocsid;
+               PluginOcsinventoryngOcslink::history($computers_id, $changes, PluginOcsinventoryngOcslink::HISTORY_OCS_IMPORT);
+
+               if ($idlink = self::ocsLink($computer['META']['ID'], $plugin_ocsinventoryng_ocsservers_id, $computers_id)) {
+                  self::updateComputer($idlink, $plugin_ocsinventoryng_ocsservers_id);
+               }
+
+               //Return code to indicates that the machine was imported
+               // var_dump("post",$_POST,"session",$_SESSION,"server",$_SERVER,"get",$_GET,"cookie",$_COOKIE,"request",$_REQUEST);
+               //die("lets see the things in post get session, cookie and reques");
+               return ['status'       => self::COMPUTER_IMPORTED,
+                       'entities_id'  => $data['entities_id'],
+                       'rule_matched' => $rules_matched,
+                       'computers_id' => $computers_id];
+            }
+            return ['status'       => self::COMPUTER_NOT_UNIQUE,
+                    'entities_id'  => $data['entities_id'],
+                    'rule_matched' => $rules_matched];
+         }
+
+         if ($lock) {
+            self::removeEntityLock($data['entities_id'], $fp);
+         }
+      }
+      //ELSE Return code to indicates that the machine was not imported because it doesn't matched rules
+      return ['status'       => self::COMPUTER_FAILED_IMPORT,
+              'rule_matched' => $rules_matched];
+   }
+
+   /**
+    * @param $ocsid
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param $computers_id
+    *
+    * @return bool
+    */
+   static function linkComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $computers_id) {
+      global $DB, $CFG_GLPI;
+
+      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $cfg_ocs   = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+
+      $query = "SELECT *
+                FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                WHERE `computers_id` = $computers_id";
+
+      $result          = $DB->query($query);
+      $ocs_id_change   = false;
+      $ocs_link_exists = false;
+      $numrows         = $DB->numrows($result);
+
+      // Already link - check if the OCS computer already exists
+      if ($numrows > 0) {
+         $ocs_link_exists = true;
+         $data            = $DB->fetch_assoc($result);
+
+         // Not found
+         if (!$ocsClient->getIfOCSComputersExists($data['ocsid'])) {
+            $idlink = $data["id"];
+            $query  = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                       SET `ocsid` = $ocsid
+                       WHERE `id` = " . $data["id"];
+
+            if ($DB->query($query)) {
+               $ocs_id_change = true;
+               //Add history to indicates that the ocsid changed
+               $changes[0] = '0';
+               //Old ocsid
+               $changes[1] = $data["ocsid"];
+               //New ocsid
+               $changes[2] = $ocsid;
+               PluginOcsinventoryngOcslink::history($computers_id, $changes, PluginOcsinventoryngOcslink::HISTORY_OCS_IDCHANGED);
+            }
+         }
+      }
+      $options     = [
+         "DISPLAY" => [
+            "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS,
+         ]
+      ];
+      $ocsComputer = $ocsClient->getComputer($ocsid, $options);
+
+      $serial       = (isset($ocsComputer['BIOS']["SSN"])) ? $ocsComputer['BIOS']["SSN"] : "";
+      $ssnblacklist = Blacklist::getSerialNumbers();
+      if (in_array($serial, $ssnblacklist)) {
+         Session::addMessageAfterRedirect(sprintf(__('Unable to link this computer, Serial number is blacklisted (%d)', 'ocsinventoryng'), $ocsid), false, ERROR);
+         return false;
+      }
+
+      $uuid          = (isset($ocsComputer['META']["UUID"])) ? $ocsComputer['META']["UUID"] : "";
+      $uuidblacklist = Blacklist::getUUIDs();
+      if (in_array($uuid, $uuidblacklist)) {
+         Session::addMessageAfterRedirect(sprintf(__('Unable to link this computer, UUID is blacklisted (%d)', 'ocsinventoryng'), $ocsid), false, ERROR);
+         return false;
+      }
+
+      // No ocs_link or ocs id change does not exists so can link
+      if ($ocs_id_change || !$ocs_link_exists) {
+         $ocsConfig = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+         // Set OCS checksum to max value
+         $ocsClient->setChecksum(PluginOcsinventoryngOcsClient::CHECKSUM_ALL, $ocsid);
+
+         if ($ocs_id_change || ($idlink = PluginOcsinventoryngOcslink::ocsLink($ocsid, $plugin_ocsinventoryng_ocsservers_id, $computers_id))) {
+
+            // automatic transfer computer
+            if (($CFG_GLPI['transfers_id_auto'] > 0) && Session::isMultiEntitiesMode()) {
+
+               // Retrieve data from glpi_plugin_ocsinventoryng_ocslinks
+               $ocsLink = new PluginOcsinventoryngOcslink();
+               $ocsLink->getFromDB($idlink);
+
+               if (count($ocsLink->fields)) {
+                  // Retrieve datas from OCS database
+                  $ocsComputer = $ocsClient->getComputer($ocsLink->fields['ocsid']);
+
+                  if (!is_null($ocsComputer)) {
+                     $ocsComputer = Toolbox::addslashes_deep($ocsComputer);
+                     self::transferComputer($ocsLink->fields);
+                  }
+               }
+            }
+            $comp = new Computer();
+            $comp->getFromDB($computers_id);
+            $input["id"]          = $computers_id;
+            $input["entities_id"] = $comp->fields['entities_id'];
+            $input["is_dynamic"]  = 1;
+            $input["_nolock"]     = true;
+
+            // Not already import from OCS / mark default state
+            if ((!$ocs_id_change && ($ocsConfig["states_id_default"] > 0))
+                || (!$comp->fields['is_dynamic']
+                    && ($ocsConfig["states_id_default"] > 0))) {
+               $input["states_id"] = $ocsConfig["states_id_default"];
+            }
+            $comp->update($input, $cfg_ocs['history_hardware']);
+            // Auto restore if deleted
+            if ($comp->fields['is_deleted']) {
+               $comp->restore(['id' => $computers_id]);
+            }
+
+            // Reset only if not in ocs id change case
+            $force = 0;
+            if (!$ocs_id_change) {
+
+               $changes[0] = '0';
+               $changes[1] = "";
+               $changes[2] = $ocsid;
+               PluginOcsinventoryngOcslink::history($computers_id, $changes, PluginOcsinventoryngOcslink::HISTORY_OCS_LINK);
+
+//               if ($ocsConfig["import_general_os"]
+//                   || $ocsConfig["import_os_serial"]) {
+//                  PluginOcsinventoryngOS::resetOS($computers_id, $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_device_processor"]) {
+//                  PluginOcsinventoryngDevice::resetDevices($computers_id, 'DeviceProcessor', $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_device_iface"]) {
+//                  PluginOcsinventoryngDevice::resetDevices($computers_id, 'DeviceNetworkCard', $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_device_memory"]) {
+//                  PluginOcsinventoryngDevice::resetDevices($computers_id, 'DeviceMemory', $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_device_hdd"]) {
+//                  PluginOcsinventoryngDevice::resetDevices($computers_id, 'DeviceHardDrive', $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_device_sound"]) {
+//                  PluginOcsinventoryngDevice::resetDevices($computers_id, 'DeviceSoundCard', $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_device_gfxcard"]) {
+//                  PluginOcsinventoryngDevice::resetDevices($computers_id, 'DeviceGraphicCard', $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_device_drive"]) {
+//                  PluginOcsinventoryngDevice::resetDevices($computers_id, 'DeviceDrive', $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_device_modem"]
+//                   || $ocsConfig["import_device_port"]
+//                   || $ocsConfig["import_device_slot"]
+//               ) {
+//                  PluginOcsinventoryngDevice::resetDevices($computers_id, 'DevicePci', $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_device_bios"]) {
+//                  PluginOcsinventoryngDevice::resetDevices($computers_id, 'DeviceFirmware', $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_device_motherboard"]) {
+//                  PluginOcsinventoryngDevice::resetDevices($computers_id, 'DeviceMotherboard', $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_device_controller"]) {
+//                  PluginOcsinventoryngDevice::resetDevices($computers_id, 'DeviceControl', $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_software"]) {
+//                  PluginOcsinventoryngSoftware::resetSoftwares($computers_id, $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_disk"]) {
+//                  PluginOcsinventoryngDisk::resetDisks($computers_id, $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_periph"]) {
+//                  PluginOcsinventoryngPeripheral::resetPeripherals($computers_id, $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_monitor"] == 1) { // Only reset monitor as global in unit management
+//                  PluginOcsinventoryngMonitor::resetMonitors($computers_id, $cfg_ocs);    // try to link monitor with existing
+//               }
+//               if ($ocsConfig["import_printer"]) {
+//                  PluginOcsinventoryngPrinter::resetPrinters($computers_id, $cfg_ocs);
+//               }
+//               if ($ocsConfig["import_registry"]) {
+//                  PluginOcsinventoryngRegistryKey::resetRegistry($computers_id, $cfg_ocs['history_plugins']);
+//               }
+//               if (!($ocsConfig['ocs_version'] < PluginOcsinventoryngOcsServer::OCS1_3_VERSION_LIMIT) && $ocsConfig["import_vms"]) {
+//                  PluginOcsinventoryngVirtualmachine::resetVirtualmachine($computers_id, $cfg_ocs['history_vm']);
+//               }
+//               if ($ocsConfig["import_antivirus"]) {
+//                  PluginOcsinventoryngAntivirus::resetAntivirus($computers_id, $cfg_ocs['history_plugins']);
+//               }
+//               if ($ocsConfig["import_winupdatestate"]) {
+//                  PluginOcsinventoryngWinupdate::resetWinupdatestate($computers_id, $cfg_ocs['history_plugins']);
+//               }
+//               if ($ocsConfig["import_osinstall"]) {
+//                  PluginOcsinventoryngOsinstall::resetOSInstall($computers_id, $cfg_ocs['history_plugins']);
+//               }
+//               if ($ocsConfig["import_proxysetting"]) {
+//                  PluginOcsinventoryngProxysetting::resetProxysetting($computers_id, $cfg_ocs['history_plugins']);
+//               }
+//               if ($ocsConfig["import_networkshare"]) {
+//                  PluginOcsinventoryngNetworkshare::resetNetworkshare($computers_id, $cfg_ocs['history_plugins']);
+//               }
+//               if ($ocsConfig["import_service"]) {
+//                  PluginOcsinventoryngService::resetService($computers_id, $cfg_ocs['history_plugins']);
+//               }
+//               if ($ocsConfig["import_runningprocess"]) {
+//                  PluginOcsinventoryngRunningprocess::resetRunningProcess($computers_id, $cfg_ocs['history_plugins']);
+//               }
+//               if ($ocsConfig["import_winusers"]) {
+//                  PluginOcsinventoryngWinuser::resetWinuser($computers_id, $cfg_ocs['history_plugins']);
+//               }
+//               if ($ocsConfig["import_teamviewer"]) {
+//                  PluginOcsinventoryngTeamviewer::resetTeamviewer($computers_id, $cfg_ocs['history_plugins']);
+//               }
+//               if ($ocsConfig["import_officepack"]) {
+//                  PluginOcsinventoryngOfficepack::resetOfficePack($computers_id, $cfg_ocs['history_plugins']);
+//               }
+               $force = 1;
+            }
+
+            self::updateComputer($idlink, $plugin_ocsinventoryng_ocsservers_id, $force);
+            return true;
+         }
+      } else {
+         //TRANS: %s is the OCS id
+         Session::addMessageAfterRedirect(sprintf(__('Unable to import, GLPI computer is already related to an element of OCSNG (%d)', 'ocsinventoryng'), $ocsid), false, ERROR);
+      }
+      return false;
+   }
+
+
+   /**
+    * Do automatic transfer if option is enable
+    *
+    * @param $line_links array : data from glpi_plugin_ocsinventoryng_ocslinks table
+    *
+    * @return nothing
+    * @internal param array $line_ocs : data from ocs tables
+    *
+    */
+   static function transferComputer($line_links) {
+      global $DB, $CFG_GLPI;
+
+      $ocsClient   = PluginOcsinventoryngOcsServer::getDBocs($line_links["plugin_ocsinventoryng_ocsservers_id"]);
+      $cfg_ocs     = PluginOcsinventoryngOcsServer::getConfig($line_links["plugin_ocsinventoryng_ocsservers_id"]);
+      $ocsComputer = $ocsClient->getComputer($line_links["ocsid"]);
+
+      $locations_id = 0;
+      $groups_id    = 0;
+      $contact      = (isset($ocsComputer['META']["USERID"])) ? $ocsComputer['META']["USERID"] : "";
+      if (!empty($contact) && $cfg_ocs["import_general_contact"] > 0) {
+         $query  = "SELECT `id`
+                   FROM `glpi_users`
+                   WHERE `name` = '" . $contact . "';";
+         $result = $DB->query($query);
+
+         if ($DB->numrows($result) == 1) {
+            $user_id = $DB->result($result, 0, 0);
+            $user    = new User();
+            $user->getFromDB($user_id);
+
+            if ($cfg_ocs["import_user_location"] > 0) {
+               $locations_id = $user->fields["locations_id"];
+            }
+            if ($cfg_ocs["import_user_group"] > 0) {
+               $comp = new Computer();
+               $comp->getFromDB($line_links["computers_id"]);
+               $groups_id = self::getUserGroup($comp->fields["entities_id"], $user_id, '`is_itemgroup`', true);
+            }
+         }
+      }
+
+      // Get all rules for the current plugin_ocsinventoryng_ocsservers_id
+      $rule = new RuleImportEntityCollection();
+
+      $data = $rule->processAllRules(['ocsservers_id' => $line_links["plugin_ocsinventoryng_ocsservers_id"],
+                                      '_source'       => 'ocsinventoryng',
+                                      'locations_id'  => $locations_id,
+                                      'groups_id'     => $groups_id
+                                     ], [
+                                        'locations_id' => $locations_id,
+                                        'groups_id'    => $groups_id
+                                     ], ['ocsid' => $line_links["ocsid"]]);
+
+      // If entity is changing move items to the new entities_id
+      if (isset($data['entities_id']) && $data['entities_id'] > -1 && $data['entities_id'] != $line_links['entities_id']) {
+
+         if (!isCommandLine() && !Session::haveAccessToEntity($data['entities_id'])) {
+            Html::displayRightError();
+         }
+
+         $transfer = new Transfer();
+         $transfer->getFromDB($CFG_GLPI['transfers_id_auto']);
+
+         $item_to_transfer = ["Computer" => [$line_links['computers_id']
+                                             => $line_links['computers_id']]];
+
+         $transfer->moveItems($item_to_transfer, $data['entities_id'], $transfer->fields);
+      }
+
+      //If location is update by a rule
+      self::updateComputerFields($line_links, $data, $cfg_ocs);
+   }
+
+   /** Update a ocs computer
+    *
+    * @param          $ID integer : ID of ocslinks row
+    * @param          $plugin_ocsinventoryng_ocsservers_id integer : ocs server ID
+    * @param bool|int $force bool : force update ?
+    * return action done
+    *
+    * @return array
+    */
+   static function updateComputer($ID, $plugin_ocsinventoryng_ocsservers_id, $force = 0) {
+      global $DB, $CFG_GLPI;
+
+      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+
+      $query  = "SELECT ocsid, computers_id, plugin_ocsinventoryng_ocsservers_id, entities_id, computer_update
+                FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                WHERE `id` = $ID
+                AND `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
+      $result = $DB->query($query);
+
+      if ($DB->numrows($result) == 1) {
+         $line = $DB->fetch_assoc($result);
+
+         $comp = new Computer();
+         $comp->getFromDB($line["computers_id"]);
+
+         $ocsClient    = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+         $options      = [
+            "DISPLAY" => [
+               "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE,
+            ]
+         ];
+         $computer_ocs = $ocsClient->getComputer($line['ocsid'], $options);
+
+         if (is_array($computer_ocs) && count($computer_ocs) > 0) {
+            // automatic transfer computer
+            if ($CFG_GLPI['transfers_id_auto'] > 0
+                && Session::isMultiEntitiesMode()) {
+               self::transferComputer($line);
+               $comp->getFromDB($line["computers_id"]);
+
+            } else {
+
+               $locations_id = 0;
+               $groups_id    = 0;
+               $contact      = (isset($computer_ocs['META']["USERID"])) ? $computer_ocs['META']["USERID"] : "";
+               if (!empty($contact) && $cfg_ocs["import_general_contact"] > 0) {
+                  $query  = "SELECT `id`
+                            FROM `glpi_users`
+                            WHERE `name` = '" . $contact . "';";
+                  $result = $DB->query($query);
+
+                  if ($DB->numrows($result) == 1) {
+                     $user_id = $DB->result($result, 0, 0);
+                     $user    = new User();
+                     $user->getFromDB($user_id);
+                     if ($cfg_ocs["import_user_location"] > 0) {
+                        $locations_id = $user->fields["locations_id"];
+                     }
+                     if ($cfg_ocs["import_user_group"] > 0) {
+                        $groups_id = self::getUserGroup($comp->fields["entities_id"],
+                                                        $user_id,
+                                                        '`is_itemgroup`',
+                                                        true);
+                     }
+                  }
+               }
+               $rule = new RuleImportEntityCollection();
+
+               $data = $rule->processAllRules(['ocsservers_id' => $line["plugin_ocsinventoryng_ocsservers_id"],
+                                               '_source'       => 'ocsinventoryng',
+                                               'locations_id'  => $locations_id,
+                                               'groups_id'     => $groups_id],
+                                              ['locations_id' => $locations_id,
+                                               'groups_id'    => $groups_id],
+                                              ['ocsid' => $line["ocsid"]]);
+
+               self::updateComputerFields($line, $data, $cfg_ocs);
+            }
+
+            // update last_update and and last_ocs_update
+            $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                             SET `last_update` = '" . $_SESSION["glpi_currenttime"] . "',
+                             `last_ocs_update` = '" . $computer_ocs["META"]["LASTDATE"] . "',
+                             `ocs_agent_version` = '" . $computer_ocs["HARDWARE"]["USERAGENT"] . " ',
+                             `last_ocs_conn` = '" . $computer_ocs["HARDWARE"]["LASTCOME"] . " ',
+                             `ip_src` = '" . $computer_ocs["HARDWARE"]["IPSRC"] . " ',
+                             `ocs_deviceid` = '" . $computer_ocs["HARDWARE"]["DEVICEID"] . "'
+                             WHERE `id` = $ID";
+            $DB->query($query);
+            //Add  || $data_ocs["META"]["CHECKSUM"] > self::MAX_CHECKSUM for bug of checksum 18446744073689088230
+            if ($force || $computer_ocs["META"]["CHECKSUM"] > self::MAX_CHECKSUM) {
+               $ocs_checksum = self::MAX_CHECKSUM;
+               PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id)->setChecksum($ocs_checksum, $line['ocsid']);
+            } else {
+               $ocs_checksum = $computer_ocs["META"]["CHECKSUM"];
+            }
+            $mixed_checksum = intval($ocs_checksum) & intval($cfg_ocs["checksum"]);
+
+            $updates = ['bios'            => false,
+                        'memories'        => false,
+                        'storages'        => [],
+                        'cpus'            => false,
+                        'hardware'        => false,
+                        'videos'          => false,
+                        'sounds'          => false,
+                        'networks'        => false,
+                        'modems'          => false,
+                        'ports'           => false,
+                        'monitors'        => false,
+                        'printers'        => false,
+                        'inputs'          => false,
+                        'softwares'       => false,
+                        'drives'          => false,
+                        'registry'        => false,
+                        'antivirus'       => false,
+                        'uptime'          => false,
+                        'officepack'      => false,
+                        'winupdatestate'  => false,
+                        'osinstall'       => false,
+                        'proxysetting'    => false,
+                        'networkshare'    => false,
+                        'service'         => false,
+                        'runningprocess'  => false,
+                        'winuser'         => false,
+                        'teamviewer'      => false,
+                        'virtualmachines' => false,
+                        'mb'              => false,
+                        'controllers'     => false,
+                        'slots'           => false,
+            ];
+
+            if ($mixed_checksum) {
+
+               // Get updates on computers
+               $dbu              = new DbUtils();
+               $computer_updates = $dbu->importArrayFromDB($line["computer_update"]);
+
+               $ocsCheck   = [];
+               $ocsPlugins = [];
+               if ($mixed_checksum & pow(2, self::HARDWARE_FL)) {
+                  if (($cfg_ocs["import_general_os"]
+                       || $cfg_ocs["import_os_serial"]) && $force) {
+                     PluginOcsinventoryngOS::resetOS($line['computers_id'], $cfg_ocs['history_hardware']);
+                  }
+                  $updates['hardware'] = true;
+                  $ocsCheck[]          = PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE;
+               }
+               if ($mixed_checksum & pow(2, self::BIOS_FL)) {
+                  $updates['bios'] = true;
+                  $ocsCheck[]      = PluginOcsinventoryngOcsClient::CHECKSUM_BIOS;
+                  if ($cfg_ocs["import_device_bios"]) {
+                     if ($force) {
+                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceFirmware', $cfg_ocs['history_devices']);
+                     }
+                  }
+                  if ($cfg_ocs["import_device_motherboard"] && $cfg_ocs['ocs_version'] >= PluginOcsinventoryngOcsServer::OCS2_2_VERSION_LIMIT) {
+                     if ($force) {
+                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceMotherboard', $cfg_ocs['history_devices']);
+                     }
+                     $updates['mb'] = true;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::MEMORIES_FL)) {
+
+                  if ($cfg_ocs["import_device_memory"]) {
+                     if ($force) {
+                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceMemory', $cfg_ocs['history_devices']);
+                     }
+                     $updates['memories'] = true;
+                     $ocsCheck[]          = PluginOcsinventoryngOcsClient::CHECKSUM_MEMORY_SLOTS;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::CONTROLLERS_FL)) {
+
+                  if ($cfg_ocs["import_device_controller"]) {
+                     if ($force) {
+                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceControl', $cfg_ocs['history_devices']);
+                     }
+                     $updates['controllers'] = true;
+                     $ocsCheck[]             = PluginOcsinventoryngOcsClient::CHECKSUM_SYSTEM_CONTROLLERS;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::SLOTS_FL)) {
+
+                  if ($cfg_ocs["import_device_slot"]) {
+                     if ($force) {
+                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DevicePci', $cfg_ocs['history_devices']);
+                     }
+                     $updates['slots'] = true;
+                     $ocsCheck[]       = PluginOcsinventoryngOcsClient::CHECKSUM_SYSTEM_SLOTS;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::STORAGES_FL)) {
+
+                  if ($cfg_ocs["import_device_hdd"]) {
+                     if ($force) {
+                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceHardDrive', $cfg_ocs['history_devices']);
+                     }
+                     $updates['storages']["hdd"] = true;
+                     $ocsCheck[]                 = PluginOcsinventoryngOcsClient::CHECKSUM_STORAGE_PERIPHERALS;
+                  }
+                  if ($cfg_ocs["import_device_drive"]) {
+                     if ($force) {
+                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceDrive', $cfg_ocs['history_devices']);
+                     }
+                     $updates['storages']["drive"] = true;
+                     $ocsCheck[]                   = PluginOcsinventoryngOcsClient::CHECKSUM_STORAGE_PERIPHERALS;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::CPUS_FL)) {
+                  if ($cfg_ocs["import_device_processor"]
+                      && !($cfg_ocs['ocs_version'] < PluginOcsinventoryngOcsServer::OCS2_1_VERSION_LIMIT)) {
+                     if ($force) {
+                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceProcessor', $cfg_ocs['history_devices']);
+                     }
+                     $updates['cpus'] = true;
+                     $ocsCheck[]      = PluginOcsinventoryngOcsClient::CHECKSUM_CPUS;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::VIDEOS_FL)) {
+                  if ($cfg_ocs["import_device_gfxcard"]) {
+                     if ($force) {
+                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceGraphicCard', $cfg_ocs['history_devices']);
+                     }
+                     $updates['videos'] = true;
+                     $ocsCheck[]        = PluginOcsinventoryngOcsClient::CHECKSUM_VIDEO_ADAPTERS;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::SOUNDS_FL)) {
+                  if ($cfg_ocs["import_device_sound"]) {
+                     if ($force) {
+                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceSoundCard', $cfg_ocs['history_devices']);
+                     }
+                     $updates['sounds'] = true;
+                     $ocsCheck[]        = PluginOcsinventoryngOcsClient::CHECKSUM_SOUND_ADAPTERS;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::NETWORKS_FL)) {
+                  if ($cfg_ocs["import_device_iface"]
+                      || $cfg_ocs["import_ip"]) {
+                     if ($force) {
+                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceNetworkCard', $cfg_ocs['history_devices']);
+                     }
+                     $updates['networks'] = true;
+                     $ocsCheck[]          = PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::MODEMS_FL)
+                   || $mixed_checksum & pow(2, self::PORTS_FL)
+               ) {
+                  if ($cfg_ocs["import_device_modem"]) {
+                     if ($force) {
+                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DevicePci', $cfg_ocs['history_devices']);
+                     }
+                     $updates['modems'] = true;
+                     $ocsCheck[]        = PluginOcsinventoryngOcsClient::CHECKSUM_MODEMS;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::PORTS_FL)) {
+                  if ($cfg_ocs["import_device_modem"]) {
+                     if ($force) {
+                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DevicePci', $cfg_ocs['history_devices']);
+                     }
+                     $updates['ports'] = true;
+                     $ocsCheck[]       = PluginOcsinventoryngOcsClient::CHECKSUM_MODEMS;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::MONITORS_FL)) {
+                  if ($cfg_ocs["import_monitor"]) {
+                     if ($force && $cfg_ocs["import_monitor"] == 1) { // Only reset monitor as global in unit management
+                        PluginOcsinventoryngMonitor::resetMonitors($line['computers_id'], $cfg_ocs['history_monitor']);    // try to link monitor with existing
+                     }
+                     $updates['monitors'] = true;
+                     $ocsCheck[]          = PluginOcsinventoryngOcsClient::CHECKSUM_MONITORS;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::PRINTERS_FL)) {
+                  if ($cfg_ocs["import_printer"]) {
+                     if ($force) {
+                        PluginOcsinventoryngPrinter::resetPrinters($line['computers_id'], $cfg_ocs['history_printer']);
+                     }
+                     $updates['printers'] = true;
+                     $ocsCheck[]          = PluginOcsinventoryngOcsClient::CHECKSUM_PRINTERS;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::INPUTS_FL)) {
+                  if ($cfg_ocs["import_periph"]) {
+                     if ($force) {
+                        PluginOcsinventoryngPeripheral::resetPeripherals($line['computers_id'], $cfg_ocs['history_peripheral']);
+                     }
+                     $updates['inputs'] = true;
+                     $ocsCheck[]        = PluginOcsinventoryngOcsClient::CHECKSUM_INPUT_DEVICES;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::SOFTWARES_FL)) {
+                  if ($cfg_ocs["import_software"]) {
+                     if ($force) {
+                        PluginOcsinventoryngSoftware::resetSoftwares($line['computers_id'], $cfg_ocs['history_software']);
+                     }
+                     $updates['softwares'] = true;
+                     $ocsCheck[]           = PluginOcsinventoryngOcsClient::CHECKSUM_SOFTWARE;
+                     if ($cfg_ocs["use_soft_dict"]) {
+                        $ocsWanted = PluginOcsinventoryngOcsClient::WANTED_DICO_SOFT;
+                     }
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::DRIVES_FL)) {
+                  if ($cfg_ocs["import_disk"]) {
+                     if ($force) {
+                        PluginOcsinventoryngDisk::resetDisks($line['computers_id'], $cfg_ocs['history_drives']);
+                     }
+                     $updates['drives'] = true;
+                     $ocsCheck[]        = PluginOcsinventoryngOcsClient::CHECKSUM_LOGICAL_DRIVES;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::REGISTRY_FL)) {
+                  if ($cfg_ocs["import_registry"]) {
+                     if ($force) {
+                        PluginOcsinventoryngRegistryKey::resetRegistry($line['computers_id'], $cfg_ocs['history_plugins']);
+                     }
+                     $updates['registry'] = true;
+                     $ocsCheck[]          = PluginOcsinventoryngOcsClient::CHECKSUM_REGISTRY;
+                  }
+               }
+               if ($mixed_checksum & pow(2, self::VIRTUALMACHINES_FL)) {
+                  //no vm in ocs before 1.3
+                  if (!($cfg_ocs['ocs_version'] < PluginOcsinventoryngOcsServer::OCS1_3_VERSION_LIMIT) && $cfg_ocs["import_vms"]) {
+                     if ($force) {
+                        PluginOcsinventoryngVirtualmachine::resetVirtualmachine($line['computers_id'], $cfg_ocs['history_vm']);
+                     }
+                     $updates['virtualmachines'] = true;
+                     $ocsCheck[]                 = PluginOcsinventoryngOcsClient::CHECKSUM_VIRTUAL_MACHINES;
+                  }
+               }
+               /********************* PLUGINS *********************/
+               if ($cfg_ocs["import_antivirus"]) {
+                  if ($force) {
+                     PluginOcsinventoryngAntivirus::resetAntivirus($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
+                  $updates['antivirus'] = true;
+                  $ocsPlugins[]         = PluginOcsinventoryngOcsClient::PLUGINS_SECURITY;
+               }
+               if ($cfg_ocs["import_uptime"]) {
+                  $updates['uptime'] = true;
+                  $ocsPlugins[]      = PluginOcsinventoryngOcsClient::PLUGINS_UPTIME;
+               }
+               if ($cfg_ocs["import_software"] && $cfg_ocs["import_officepack"]) {
+                  if ($force) {
+                     PluginOcsinventoryngOfficepack::resetOfficePack($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
+                  $updates['officepack'] = true;
+                  $ocsPlugins[]          = PluginOcsinventoryngOcsClient::PLUGINS_OFFICE;
+               }
+               if ($cfg_ocs["import_winupdatestate"]) {
+                  if ($force) {
+                     PluginOcsinventoryngWinupdate::resetWinupdatestate($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
+                  $updates['winupdatestate'] = true;
+                  $ocsPlugins[]              = PluginOcsinventoryngOcsClient::PLUGINS_WUPDATE;
+               }
+               if ($cfg_ocs["import_teamviewer"]) {
+                  if ($force) {
+                     PluginOcsinventoryngTeamviewer::resetTeamviewer($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
+                  $updates['teamviewer'] = true;
+                  $ocsPlugins[]          = PluginOcsinventoryngOcsClient::PLUGINS_TEAMVIEWER;
+               }
+               if ($cfg_ocs["import_proxysetting"]) {
+                  if ($force) {
+                     PluginOcsinventoryngProxysetting::resetProxysetting($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
+                  $updates['proxysetting'] = true;
+                  $ocsPlugins[]            = PluginOcsinventoryngOcsClient::PLUGINS_PROXYSETTING;
+               }
+               if ($cfg_ocs["import_winusers"]) {
+                  if ($force) {
+                     PluginOcsinventoryngWinuser::resetWinuser($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
+                  $updates['winuser'] = true;
+                  $ocsPlugins[]       = PluginOcsinventoryngOcsClient::PLUGINS_WINUSERS;
+               }
+               if ($cfg_ocs["import_osinstall"]) {
+                  if ($force) {
+                     PluginOcsinventoryngOsinstall::resetOSInstall($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
+                  $updates['osinstall'] = true;
+                  $ocsPlugins[]         = PluginOcsinventoryngOcsClient::PLUGINS_OSINSTALL;
+               }
+               if ($cfg_ocs["import_networkshare"]) {
+                  if ($force) {
+                     PluginOcsinventoryngNetworkshare::resetNetworkshare($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
+                  $updates['networkshare'] = true;
+                  $ocsPlugins[]            = PluginOcsinventoryngOcsClient::PLUGINS_NETWORKSHARE;
+               }
+               if ($cfg_ocs["import_service"]) {
+                  if ($force) {
+                     PluginOcsinventoryngService::resetService($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
+                  $updates['service'] = true;
+                  $ocsPlugins[]       = PluginOcsinventoryngOcsClient::PLUGINS_SERVICE;
+               }
+               if ($cfg_ocs["import_runningprocess"]) {
+                  if ($force) {
+                     PluginOcsinventoryngRunningprocess::resetRunningProcess($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
+                  $updates['runningprocess'] = true;
+                  $ocsPlugins[]              = PluginOcsinventoryngOcsClient::PLUGINS_RUNNINGPROCESS;
+               }
+               /********************* PLUGINS *********************/
+
+               if (count($ocsCheck) > 0) {
+                  $ocsCheckResult = $ocsCheck[0];
+                  foreach ($ocsCheck as $k => $ocsChecksum) {
+                     $ocsCheckResult = $ocsCheckResult | $ocsChecksum;
+                  }
+               } else {
+                  $ocsCheckResult = 0;
+               }
+
+               if (!isset($ocsWanted)) {
+                  $ocsWanted = PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO;
+               }
+
+               if (count($ocsPlugins) > 0) {
+                  $ocsPluginsResult = $ocsPlugins[0];
+                  foreach ($ocsPlugins as $plug) {
+                     $ocsPluginsResult = $ocsPluginsResult | $plug;
+                  }
+               } else {
+                  $ocsPluginsResult = 0;
+               }
+
+               $import_options = [
+                  'DISPLAY' => [
+                     'CHECKSUM' => $ocsCheckResult,
+                     'WANTED'   => $ocsWanted,
+                     'PLUGINS'  => $ocsPluginsResult
+                  ],
+               ];
+
+               $ocsComputer = $ocsClient->getComputer($line['ocsid'], $import_options);
+
+               // Update Administrative informations
+               $params = ['computers_id'                        => $line['computers_id'],
+                          'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                          'cfg_ocs'                             => $cfg_ocs,
+                          'computers_updates'                   => $computer_updates,
+                          'ocs_id'                              => $line['ocsid'],
+                          'entities_id'                         => $comp->fields['entities_id'],
+                          //                          'ocsComputer'                         => [],
+                          'dohistory'                           => true,
+                          'check_history'                       => true];
+
+               PluginOcsinventoryngOcsAdminInfosLink::updateAdministrativeInfo($params);
+
+               if (isset($ocsComputer['HARDWARE'])) {
+                  PluginOcsinventoryngOcsAdminInfosLink::updateAdministrativeInfoUseDate($line['computers_id'],
+                                                                                         $plugin_ocsinventoryng_ocsservers_id,
+                                                                                         $computer_updates,
+                                                                                         $ocsComputer['HARDWARE']);
+               }
+
+
+               if ($updates['hardware']) {
+
+                  $params['dohistory']     = $cfg_ocs['history_hardware'];
+                  $params['check_history'] = true;
+                  if ($force) {
+                     $params['check_history'] = false;
+                  }
+                  $params['HARDWARE'] = $ocsComputer['HARDWARE'];
+
+                  self::updateHardware($params);
+               }
+               if ($updates['bios']) {
+                  $params['BIOS'] = $ocsComputer['BIOS'];
+                  self::updateComputerFromBios($params);
+               }
+
+               $params_devices = ['computers_id' => $line['computers_id'],
+                                  'cfg_ocs'      => $cfg_ocs,
+                                  'entities_id'  => $comp->fields['entities_id']];
+
+               if ($updates['bios'] && isset($ocsComputer['BIOS'])) {
+                  PluginOcsinventoryngDevice::updateDevices("Item_DeviceFirmware", $ocsComputer['BIOS'], $params_devices);
+               }
+               if ($updates['memories'] && isset($ocsComputer['MEMORIES'])) {
+                  PluginOcsinventoryngDevice::updateDevices("Item_DeviceMemory", $ocsComputer['MEMORIES'], $params_devices);
+               }
+               if ($updates['storages'] && isset($ocsComputer['STORAGES'])) {
+                  if (isset($updates['storages']["hdd"]) && $updates['storages']["hdd"]) {
+                     PluginOcsinventoryngDevice::updateDevices("Item_DeviceHardDrive", $ocsComputer['STORAGES'], $params_devices);
+                  }
+                  if (isset($updates['storages']["drive"]) && $updates['storages']["drive"]) {
+                     PluginOcsinventoryngDevice::updateDevices("Item_DeviceDrive", $ocsComputer['STORAGES'], $params_devices);
+                  }
+               }
+               if ($updates['cpus'] && isset($ocsComputer['CPUS'])) {
+                  PluginOcsinventoryngDevice::updateDevices("Item_DeviceProcessor", $ocsComputer['CPUS'], $params_devices);
+               }
+               if ($updates['videos'] && isset($ocsComputer['VIDEOS'])) {
+                  PluginOcsinventoryngDevice::updateDevices("Item_DeviceGraphicCard", $ocsComputer['VIDEOS'], $params_devices);
+               }
+               if ($updates['mb'] && isset($ocsComputer['BIOS'])) {
+                  PluginOcsinventoryngDevice::updateDevices("Item_DeviceMotherboard", $ocsComputer['BIOS'], $params_devices);
+               }
+               if ($updates['controllers'] && isset($ocsComputer['CONTROLLERS'])) {
+                  PluginOcsinventoryngDevice::updateDevices("Item_DeviceControl", $ocsComputer['CONTROLLERS'], $params_devices);
+               }
+               if ($updates['sounds'] && isset($ocsComputer['SOUNDS'])) {
+                  PluginOcsinventoryngDevice::updateDevices("Item_DeviceSoundCard", $ocsComputer['SOUNDS'], $params_devices);
+               }
+               if ($updates['networks'] && isset($ocsComputer['NETWORKS'])) {
+                  PluginOcsinventoryngDevice::updateDevices("Item_DeviceNetworkCard", $ocsComputer['NETWORKS'], $params_devices);
+               }
+               if ($updates['modems'] && isset($ocsComputer['MODEMS'])) {
+                  PluginOcsinventoryngDevice::updateDevices("Item_DevicePci", $ocsComputer, $params_devices);
+               }
+               if ($updates['slots'] && isset($ocsComputer['SLOTS'])) {
+                  PluginOcsinventoryngDevice::updateDevices("Item_DevicePci", $ocsComputer, $params_devices);
+               }
+               if ($updates['ports'] && isset($ocsComputer['PORTS'])) {
+                  PluginOcsinventoryngDevice::updateDevices("Item_DevicePci", $ocsComputer, $params_devices);
+               }
+               if ($updates['monitors'] && isset($ocsComputer["MONITORS"])) {
+                  PluginOcsinventoryngMonitor::importMonitor($cfg_ocs, $line['computers_id'], $plugin_ocsinventoryng_ocsservers_id,
+                                                             $ocsComputer["MONITORS"], $comp->fields["entities_id"]);
+               }
+               if ($updates['printers'] && isset($ocsComputer["PRINTERS"])) {
+                  PluginOcsinventoryngPrinter::importPrinter($cfg_ocs, $line['computers_id'], $plugin_ocsinventoryng_ocsservers_id,
+                                                             $ocsComputer["PRINTERS"], $comp->fields["entities_id"]);
+               }
+               if ($updates['inputs'] && isset($ocsComputer["INPUTS"])) {
+                  PluginOcsinventoryngPeripheral::importPeripheral($cfg_ocs, $line['computers_id'],
+                                                                   $plugin_ocsinventoryng_ocsservers_id,
+                                                                   $ocsComputer["INPUTS"], $comp->fields["entities_id"]);
+               }
+               if ($updates['softwares'] && isset($ocsComputer["SOFTWARES"])) {
+                  // Get import software
+                  PluginOcsinventoryngSoftware::updateSoftware($cfg_ocs, $line['computers_id'], $ocsComputer["SOFTWARES"],
+                                                               $comp->fields["entities_id"],
+                                                               $updates['officepack'],
+                     (isset($ocsComputer['OFFICEPACK']) ? $ocsComputer['OFFICEPACK'] : []));
+               }
+               if ($updates['drives'] && isset($ocsComputer["DRIVES"])) {
+                  // Get import drives
+                  PluginOcsinventoryngDisk::updateDisk($line['computers_id'], $ocsComputer["DRIVES"],
+                                                       $plugin_ocsinventoryng_ocsservers_id,
+                                                       $cfg_ocs);
+               }
+               if ($updates['registry'] && isset($ocsComputer["REGISTRY"])) {
+                  //import registry entries not needed
+                  PluginOcsinventoryngRegistryKey::updateRegistry($line['computers_id'], $ocsComputer["REGISTRY"],
+                                                                  $cfg_ocs['history_plugins']);
+               }
+               if ($updates['antivirus'] && isset($ocsComputer["SECURITYCENTER"])) {
+                  //import antivirus entries
+                  PluginOcsinventoryngAntivirus::updateAntivirus($line['computers_id'], $ocsComputer["SECURITYCENTER"],
+                                                                 $cfg_ocs);
+               }
+               if ($updates['winupdatestate'] && isset($ocsComputer["WINUPDATESTATE"])) {
+                  //import winupdatestate entries
+                  PluginOcsinventoryngWinupdate::updateWinupdatestate($line['computers_id'], $ocsComputer["WINUPDATESTATE"],
+                                                                      $cfg_ocs['history_plugins']);
+               }
+               if ($updates['osinstall'] && isset($ocsComputer["OSINSTALL"])) {
+                  //import osinstall entries
+                  PluginOcsinventoryngOsinstall::updateOSInstall($line['computers_id'], $ocsComputer["OSINSTALL"],
+                                                                 $cfg_ocs['history_plugins']);
+               }
+               if ($updates['proxysetting'] && isset($ocsComputer["NAVIGATORPROXYSETTING"])) {
+                  //import proxysetting entries
+                  PluginOcsinventoryngProxysetting::updateProxysetting($line['computers_id'], $ocsComputer["NAVIGATORPROXYSETTING"],
+                                                                       $cfg_ocs['history_plugins']);
+               }
+               if ($updates['networkshare'] && isset($ocsComputer["NETWORKSHARE"])) {
+                  //import networkshare entries
+                  PluginOcsinventoryngNetworkshare::updateNetworkshare($line['computers_id'], $ocsComputer["NETWORKSHARE"],
+                                                                       $cfg_ocs['history_plugins']);
+               }
+               if ($updates['runningprocess'] && isset($ocsComputer["RUNNINGPROCESS"])) {
+                  //import runningprocess entries
+                  PluginOcsinventoryngRunningprocess::updateRunningprocess($line['computers_id'], $ocsComputer["RUNNINGPROCESS"],
+                                                                           $cfg_ocs['history_plugins']);
+               }
+               if ($updates['service'] && isset($ocsComputer["SERVICE"])) {
+                  //import service entries
+                  PluginOcsinventoryngService::updateService($line['computers_id'], $ocsComputer["SERVICE"],
+                                                             $cfg_ocs['history_plugins']);
+               }
+               if ($updates['winuser'] && isset($ocsComputer["WINUSERS"])) {
+                  //import winusers entries
+                  PluginOcsinventoryngWinuser::updateWinuser($line['computers_id'], $ocsComputer["WINUSERS"],
+                                                             $cfg_ocs['history_plugins']);
+               }
+               if ($updates['teamviewer'] && isset($ocsComputer["TEAMVIEWER"])) {
+                  //import teamviewer entries
+                  PluginOcsinventoryngTeamviewer::updateTeamviewer($line['computers_id'], $ocsComputer["TEAMVIEWER"],
+                                                                   $cfg_ocs['history_plugins']);
+               }
+               if ($updates['uptime'] && isset($ocsComputer["UPTIME"])) {
+                  //import uptime
+                  PluginOcsinventoryngUptime::updateUptime($line['id'], $ocsComputer["UPTIME"]);
+               }
+               if ($updates['virtualmachines'] && isset($ocsComputer["VIRTUALMACHINES"])) {
+                  // Get import vm
+                  PluginOcsinventoryngVirtualmachine::updateVirtualMachines($line['computers_id'], $ocsComputer["VIRTUALMACHINES"],
+                                                                            $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs);
+               }
+            }
+            unset($updates);
+            //Update TAG
+            self::updateTag($line);
+            //force drop old locks
+            $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line['computers_id']);
+            PluginOcsinventoryngOcslink::mergeOcsArray($line['computers_id'], $locks);
+
+            // Update OCS Cheksum
+            $oldChecksum = $ocsClient->getChecksum($line['ocsid']);
+            $newchecksum = $oldChecksum - $mixed_checksum;
+            $ocsClient->setChecksum($newchecksum, $line['ocsid']);
+            //Return code to indicate that computer was synchronized
+            return ['status'       => self::COMPUTER_SYNCHRONIZED,
+                    'entities_id'  => $comp->fields["entities_id"],
+                    'rule_matched' => [],
+                    'computers_id' => $line['computers_id']];
+         }
+         // ELSE Return code to indicate only last inventory date changed
+         return ['status'       => self::COMPUTER_NOTUPDATED,
+                 'entities_id'  => $comp->fields["entities_id"],
+                 'rule_matched' => [],
+                 'computers_id' => $line['computers_id']];
+      }
+   }
+
+   /**
+    * @param array $params
+    *
+    * @return array
+    */
+   static function updateComputerHardware($options = []) {
+      global $DB;
+
+      $is_utf8 = $options['cfg_ocs']["ocs_db_utf8"];
+
+      if (isset($options['HARDWARE'])) {
+         $hardware = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($options['HARDWARE']));
+
+         $updates = [];
+
+         if (intval($options['cfg_ocs']["import_general_domain"]) > 0
+             && !in_array("domains_id", $options['computers_updates'])) {
+            $updates["domains_id"] = Dropdown::importExternal('Domain', self::encodeOcsDataInUtf8($is_utf8, $hardware["WORKGROUP"]));
+         }
+
+         if (intval($options['cfg_ocs']["import_general_contact"]) > 0
+             && !in_array("contact", $options['computers_updates'])) {
+
+            $updates["contact"] = self::encodeOcsDataInUtf8($is_utf8, $hardware["USERID"]);
+
+            if (intval($options['cfg_ocs']["import_user"]) > 0) {
+               $query  = "SELECT `id`
+                         FROM `glpi_users`
+                         WHERE `name` = '" . $hardware["USERID"] . "';";
+               $result = $DB->query($query);
+
+               if ($DB->numrows($result) == 1
+                   && !in_array("users_id", $options['computers_updates'])) {
+                  $updates["users_id"] = $DB->result($result, 0, 0);
+               }
+            }
+         }
+
+         if (intval($options['cfg_ocs']["import_general_name"]) > 0
+             && !in_array("name", $options['computers_updates'])) {
+            $updates["name"] = self::encodeOcsDataInUtf8($is_utf8, $hardware["NAME"]);
+         }
+
+         if (intval($options['cfg_ocs']["import_general_comment"]) > 0
+             && !in_array("comment", $options['computers_updates'])) {
+
+            $updates["comment"] = "";
+            if (!empty($hardware["DESCRIPTION"])
+                && $hardware["DESCRIPTION"] != NOT_AVAILABLE) {
+               $updates["comment"] .= self::encodeOcsDataInUtf8($is_utf8, $hardware["DESCRIPTION"])
+                                      . "\r\n";
+            }
+            $updates["comment"] .= sprintf(__('%1$s: %2$s'), __('Swap', 'ocsinventoryng'), self::encodeOcsDataInUtf8($is_utf8, $hardware["SWAP"]));
+         }
+
+         if ($options['cfg_ocs']['ocs_version'] >= PluginOcsinventoryngOcsServer::OCS1_3_VERSION_LIMIT
+             && intval($options['cfg_ocs']["import_general_uuid"]) > 0
+             && !in_array("uuid", $options['computers_updates'])) {
+            $updates["uuid"] = $hardware["UUID"];
+         }
+
+         if (count($updates)) {
+            $updates["id"]          = $options['computers_id'];
+            $updates["entities_id"] = $options['entities_id'];
+            $comp                   = new Computer();
+
+            $comp->update($updates, $options['dohistory']);
+         }
+      }
+   }
+
+   /**
+    * Update the computer hardware configuration
+    *
+    * @param $params array
+    *
+    */
+   static function updateHardware($params = []) {
+
+      self::updateComputerHardware($params);
+
+      PluginOcsinventoryngOS::updateComputerOS($params);
+
+   }
+
+   /**
+    * Update the computer bios configuration
+    *
+    * @param array $params
+    *
+    */
+   static function updateComputerFromBios($params = []) {
+
+      $compupdate = [];
+
+      if (isset($params["BIOS"])) {
+
+         $bios        = $params['BIOS'];
+         $ocs_db_utf8 = $params['cfg_ocs']['ocs_db_utf8'];
+
+         if ($params['cfg_ocs']["import_general_serial"]
+             && $params['cfg_ocs']["import_general_serial"] > 0
+             && intval($params['cfg_ocs']["import_device_bios"]) > 0
+             && !in_array("serial", $params['computers_updates'])) {
+            $compupdate["serial"] = self::encodeOcsDataInUtf8($ocs_db_utf8, $bios["SSN"]);
+         }
+
+         if (intval($params['cfg_ocs']["import_general_model"]) > 0
+             && intval($params['cfg_ocs']["import_device_bios"]) > 0
+             && !in_array("computermodels_id", $params['computers_updates'])) {
+
+            $compupdate["computermodels_id"] = Dropdown::importExternal('ComputerModel',
+                                                                        self::encodeOcsDataInUtf8($ocs_db_utf8,
+                                                                                                  $bios["SMODEL"]),
+                                                                        -1,
+               (isset($bios["SMANUFACTURER"]) ? ["manufacturer" => $bios["SMANUFACTURER"]] : []));
+         }
+
+         if (intval($params['cfg_ocs']["import_general_manufacturer"]) > 0
+             && intval($params['cfg_ocs']["import_device_bios"]) > 0
+             && !in_array("manufacturers_id", $params['computers_updates'])) {
+
+            $compupdate["manufacturers_id"] = Dropdown::importExternal('Manufacturer',
+                                                                       self::encodeOcsDataInUtf8($ocs_db_utf8,
+                                                                                                 $bios["SMANUFACTURER"]));
+         }
+
+         if (intval($params['cfg_ocs']["import_general_type"]) > 0
+             && intval($params['cfg_ocs']["import_device_bios"]) > 0
+             && !empty($bios["TYPE"])
+             && !in_array("computertypes_id", $params['computers_updates'])) {
+
+            $compupdate["computertypes_id"] = Dropdown::importExternal('ComputerType',
+                                                                       self::encodeOcsDataInUtf8($ocs_db_utf8,
+                                                                                                 $bios["TYPE"]));
+         }
+
+         if (count($compupdate)) {
+            Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($compupdate));
+            $compupdate["id"]          = $params['computers_id'];
+            $compupdate["entities_id"] = $params['entities_id'];
+            $comp                      = new Computer();
+            $comp->update($compupdate, $params['cfg_ocs']['history_bios']);
+         }
+      }
+   }
+
+   /**
+    * Update fields : location / group for a computer if needed after rule processing
+    *
+    * @param $line_links
+    * @param $data
+    * @param $cfg_ocs
+    *
+    * @return nothing
+    * @internal param $line_links
+    * @internal param $data
+    *
+    */
+   static function updateComputerFields($line_links, $data, $cfg_ocs) {
+
+      //If there's a location to update
+      if (isset($data['locations_id'])) {
+         $computer = new Computer();
+         $computer->getFromDB($line_links['computers_id']);
+         $dbu       = new DbUtils();
+         $ancestors = $dbu->getAncestorsOf('glpi_entities', $computer->fields['entities_id']);
+
+         $location = new Location();
+         if ($location->getFromDB($data['locations_id'])) {
+            //If location is in the same entity as the computer, or if the location is
+            //defined in a parent entity, but recursive
+            if ($location->fields['entities_id'] == $computer->fields['entities_id']
+                || (in_array($location->fields['entities_id'], $ancestors)
+                    && $location->fields['is_recursive'])) {
+               $ko    = 0;
+               $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line_links['computers_id']);
+               if (is_array($locks) && count($locks)) {
+                  if (in_array("locations_id", $locks)) {
+                     $ko = 1;
+                  }
+               }
+               if ($ko == 0) {
+                  $tmp['locations_id'] = $data['locations_id'];
+                  $tmp["_nolock"]      = true;
+                  $tmp['id']           = $line_links['computers_id'];
+                  $computer->update($tmp, $cfg_ocs['history_hardware']);
+               }
+            }
+         }
+      }
+
+      //If there's a Group to update
+      if (isset($data['groups_id'])) {
+         $computer = new Computer();
+         $computer->getFromDB($line_links['computers_id']);
+         $dbu       = new DbUtils();
+         $ancestors = $dbu->getAncestorsOf('glpi_entities', $computer->fields['entities_id']);
+
+         $group = new Group();
+         if ($group->getFromDB($data['groups_id'])) {
+            //If group is in the same entity as the computer, or if the group is
+            //defined in a parent entity, but recursive
+            if ($group->fields['entities_id'] == $computer->fields['entities_id']
+                || (in_array($group->fields['entities_id'], $ancestors)
+                    && $group->fields['is_recursive'])) {
+               $ko    = 0;
+               $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line_links['computers_id']);
+               if (is_array($locks) && count($locks)) {
+                  if (in_array("groups_id", $locks)) {
+                     $ko = 1;
+                  }
+               }
+               if ($ko == 0) {
+                  $tmp['groups_id'] = $data['groups_id'];
+                  $tmp["_nolock"]   = true;
+                  $tmp['id']        = $line_links['computers_id'];
+                  $computer->update($tmp, $cfg_ocs['history_hardware']);
+               }
+            }
+         }
+      }
+   }
+
+   /**
+    * Update TAG information in glpi_plugin_ocsinventoryng_ocslinks table
+    *
+    * @param $line_links array : data from glpi_plugin_ocsinventoryng_ocslinks table
+    *
+    * @return string : current tag of computer on update
+    * @internal param array $line_ocs : data from ocs tables
+    *
+    */
+   static function updateTag($line_links) {
+      global $DB;
+      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($line_links["plugin_ocsinventoryng_ocsservers_id"]);
+
+      $computer = $ocsClient->getComputer($line_links["ocsid"]);
+
+      if ($computer) {
+         $data_ocs = Toolbox::addslashes_deep($computer["META"]);
+
+         if (isset($data_ocs["TAG"])
+             && isset($line_links["tag"])
+             && $data_ocs["TAG"] != $line_links["tag"]
+         ) {
+            $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                      SET `tag` = '" . $data_ocs["TAG"] . "'
+                      WHERE `id` = " . $line_links["id"];
+
+            if ($DB->query($query)) {
+               $changes[0] = '0';
+               $changes[1] = $line_links["tag"];
+               $changes[2] = $data_ocs["TAG"];
+
+               PluginOcsinventoryngOcslink::history($line_links["computers_id"], $changes,
+                                                    PluginOcsinventoryngOcslink::HISTORY_OCS_TAGCHANGED);
+               return $data_ocs["TAG"];
+            }
+         }
+      }
+   }
+
+
+   /**
+    * Get IP address from OCS hardware table
+    *
+    * @param the $plugin_ocsinventoryng_ocsservers_id
+    * @param ID  $computers_id
+    * return the ip address or ''
+    *
+    * @internal param the $plugin_ocsinventoryng_ocsservers_id ID of the OCS server
+    * @internal param ID $computers_id of the computer in OCS hardware table
+    *
+    * @return string
+    */
+   static function getGeneralIpAddress($plugin_ocsinventoryng_ocsservers_id, $computers_id) {
+      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $options   = [
+         'DISPLAY' => [
+            'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
+         ]
+      ];
+      $computer  = $ocsClient->getComputer($computers_id, $options);
+      $ipaddress = $computer["HARDWARE"]["IPADDR"];
+      if ($ipaddress) {
+         return $ipaddress;
+      }
+
+      return '';
+   }
+
+   /**
+    * @param $entity
+    *
+    * @return bool|resource
+    */
+   static function setEntityLock($entity) {
+
+      $fp = fopen(GLPI_LOCK_DIR . "/lock_entity_" . $entity, "w+");
+      if (flock($fp, LOCK_EX)) {
+         return $fp;
+      }
+      fclose($fp);
+      return false;
+   }
+
+   /**
+    * @param $entity
+    * @param $fp
+    */
+   static function removeEntityLock($entity, $fp) {
+
+      flock($fp, LOCK_UN);
+      fclose($fp);
+
+      //Test if the lock file still exists before removing it
+      // (sometimes another thread already removed the file)
+      clearstatcache();
+      if (file_exists(GLPI_LOCK_DIR . "/lock_entity_" . $entity)) {
+         @unlink(GLPI_LOCK_DIR . "/lock_entity_" . $entity);
+      }
+   }
+
+
+
+
+   /**
+    * Delete old dropdown value
+    *
+    * Delete all old dropdown value of a computer.
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    * @param $field string : string of the computer table
+    * @param $table string : dropdown table name
+    *
+    * @return nothing.
+    *
+    * static function resetDropdown($glpi_computers_id, $field, $table) {
+    * global $DB;
+    *
+    * $query  = "SELECT `$field` AS val
+    * FROM `glpi_computers`
+    * WHERE `id` = $glpi_computers_id";
+    * $result = $DB->query($query);
+    *
+    * if ($DB->numrows($result) == 1) {
+    * $value  = $DB->result($result, 0, "val");
+    * $query  = "SELECT COUNT(*) AS cpt
+    * FROM `glpi_computers`
+    * WHERE `$field` = '$value'";
+    * $result = $DB->query($query);
+    *
+    * if ($DB->result($result, 0, "cpt") == 1) {
+    * $query2 = "DELETE
+    * FROM `$table`
+    * WHERE `id` = $value";
+    * $DB->query($query2);
+    * }
+    * }
+    * }
+    */
+
+
+   /**
+    * @param bool $snmp
+    * @param bool $ipdiscover
+    *
+    * @return array
+    */
+   static function getAvailableStatistics($snmp = false, $ipdiscover = false) {
+
+      $stats = ['imported_machines_number'     => __('Computers imported', 'ocsinventoryng'),
+                'synchronized_machines_number' => __('Computers synchronized', 'ocsinventoryng'),
+                'linked_machines_number'       => __('Computers linked', 'ocsinventoryng'),
+                'notupdated_machines_number'   => __('Computers not updated', 'ocsinventoryng'),
+                'failed_rules_machines_number' => __("Computers don't check any rule", 'ocsinventoryng'),
+                'not_unique_machines_number'   => __('Duplicate computers', 'ocsinventoryng'),
+                'link_refused_machines_number' => __('Computers whose import is refused by a rule', 'ocsinventoryng')];
+      if ($snmp) {
+         $stats = ['imported_snmp_number'        => __('SNMP objects imported', 'ocsinventoryng'),
+                   'synchronized_snmp_number'    => __('SNMP objects synchronized', 'ocsinventoryng'),
+                   'linked_snmp_number'          => __('SNMP objects linked', 'ocsinventoryng'),
+                   'notupdated_snmp_number'      => __('SNMP objects not updated', 'ocsinventoryng'),
+                   'failed_imported_snmp_number' => __("SNMP objects not imported", 'ocsinventoryng')];
+      }
+      if ($ipdiscover) {
+         $stats = ['imported_ipdiscover_number'        => __('IPDISCOVER objects imported', 'ocsinventoryng'),
+                   'synchronized_ipdiscover_number'    => __('IPDISCOVER objects synchronized', 'ocsinventoryng'),
+                   'notupdated_ipdiscover_number'      => __('IPDISCOVER objects not updated', 'ocsinventoryng'),
+                   'failed_imported_ipdiscover_number' => __("IPDISCOVER objects not imported", 'ocsinventoryng')];
+      }
+
+      return $stats;
+   }
+
+   /**
+    * @param array $statistics
+    * @param bool  $action
+    * @param bool  $snmp
+    * @param bool  $ipdiscover
+    */
+   static function manageImportStatistics(&$statistics = [], $action = false, $snmp = false, $ipdiscover = false) {
+
+      if (empty($statistics)) {
+         foreach (self::getAvailableStatistics($snmp, $ipdiscover) as $field => $label) {
+            $statistics[$field] = 0;
+         }
+      }
+
+      switch ($action) {
+         case self::COMPUTER_SYNCHRONIZED:
+            $statistics["synchronized_machines_number"]++;
+            break;
+
+         case self::COMPUTER_IMPORTED:
+            $statistics["imported_machines_number"]++;
+            break;
+
+         case self::COMPUTER_FAILED_IMPORT:
+            $statistics["failed_rules_machines_number"]++;
+            break;
+
+         case self::COMPUTER_LINKED:
+            $statistics["linked_machines_number"]++;
+            break;
+
+         case self::COMPUTER_NOT_UNIQUE:
+            $statistics["not_unique_machines_number"]++;
+            break;
+
+         case self::COMPUTER_NOTUPDATED:
+            $statistics["notupdated_machines_number"]++;
+            break;
+
+         case self::COMPUTER_LINK_REFUSED:
+            $statistics["link_refused_machines_number"]++;
+            break;
+
+         case self::SNMP_SYNCHRONIZED:
+            $statistics["synchronized_snmp_number"]++;
+            break;
+
+         case self::SNMP_IMPORTED:
+            $statistics["imported_snmp_number"]++;
+            break;
+
+         case self::SNMP_FAILED_IMPORT:
+            $statistics["failed_imported_snmp_number"]++;
+            break;
+
+         case self::SNMP_LINKED:
+            $statistics["linked_snmp_number"]++;
+            break;
+
+         case self::SNMP_NOTUPDATED:
+            $statistics["notupdated_snmp_number"]++;
+            break;
+
+         case self::IPDISCOVER_IMPORTED:
+            $statistics["imported_ipdiscover_number"]++;
+            break;
+
+         case self::IPDISCOVER_FAILED_IMPORT:
+            $statistics["failed_imported_ipdiscover_number"]++;
+            break;
+
+         case self::IPDISCOVER_NOTUPDATED:
+            $statistics["notupdated_ipdiscover_number"]++;
+            break;
+
+         case self::IPDISCOVER_SYNCHRONIZED:
+            $statistics["synchronized_ipdiscover_number"]++;
+            break;
+      }
+   }
+
+   /**
+    * @param array $statistics
+    * @param bool  $finished
+    * @param bool  $snmp
+    * @param bool  $ipdiscover
+    */
+   static function showStatistics($statistics = [], $finished = false, $snmp = false, $ipdiscover = false) {
+
+      echo "<div class='center b'>";
+      echo "<table class='tab_cadre_fixe'>";
+      if ($snmp) {
+         echo "<th colspan='2'>" . __('Statistics of the OCSNG SNMP import', 'ocsinventoryng');
+      } else if ($ipdiscover) {
+         echo "<th colspan='2'>" . __('Statistics of the OCSNG IPDISCOVER import', 'ocsinventoryng');
+      } else {
+         echo "<th colspan='2'>" . __('Statistics of the OCSNG link', 'ocsinventoryng');
+      }
+
+      if ($finished) {
+         echo "&nbsp;-&nbsp;";
+         echo __('Task completed.');
+      }
+      echo "</th>";
+
+      foreach (self::getAvailableStatistics($snmp, $ipdiscover) as $field => $label) {
+         echo "<tr class='tab_bg_1'><td>" . $label . "</td><td>" . $statistics[$field] . "</td></tr>";
+      }
+      echo "</table></div>";
+   }
+
+
+   /**
+    * @param        $entity
+    * @param        $userid
+    * @param string $filter
+    * @param bool   $first
+    *
+    * @return array|int
+    */
+   static function getUserGroup($entity, $userid, $filter = '', $first = true) {
+      global $DB;
+
+      $dbu   = new DbUtils();
+      $query = "SELECT `glpi_groups`.`id`
+                FROM `glpi_groups_users`
+                INNER JOIN `glpi_groups` ON (`glpi_groups`.`id` = `glpi_groups_users`.`groups_id`)
+                WHERE `glpi_groups_users`.`users_id` = " . $userid .
+               $dbu->getEntitiesRestrictRequest(' AND ', 'glpi_groups', '', $entity, true);
+
+      if ($filter) {
+         $query .= "AND (" . $filter . ")";
+      }
+      $rep = [];
+      foreach ($DB->request($query) as $data) {
+         if ($first) {
+            return $data['id'];
+         }
+         $rep[] = $data['id'];
+      }
+      return ($first ? 0 : $rep);
+   }
+
+
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::getSpecificMassiveActions()
+    *
+    * @param null $checkitem
+    *
+    * @return an
+    */
+   function getSpecificMassiveActions($checkitem = null) {
+
+      $actions = parent::getSpecificMassiveActions($checkitem);
+
+      return $actions;
+   }
+
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::showMassiveActionsSubForm()
+    *
+    * @param MassiveAction $ma
+    *
+    * @return bool|false
+    */
+   static function showMassiveActionsSubForm(MassiveAction $ma) {
+
+      switch ($ma->getAction()) {
+         case 'plugin_ocsinventoryng_launch_ocsng_update':
+         case 'plugin_ocsinventoryng_force_ocsng_update':
+            echo "&nbsp;" .
+                 Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
+            return true;
+         case 'plugin_ocsinventoryng_lock_ocsng_field':
+            $fields['all'] = __('All');
+            $fields        += PluginOcsinventoryngOcslink::getLockableFields();
+            Dropdown::showFromArray("field", $fields);
+            echo "&nbsp;" .
+                 Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
+            return true;
+         case 'plugin_ocsinventoryng_unlock_ocsng_field':
+            $fields['all'] = __('All');
+            $fields        += PluginOcsinventoryngOcslink::getLockableFields();
+            Dropdown::showFromArray("field", $fields);
+            echo "&nbsp;" .
+                 Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
+            return true;
+      }
+      return parent::showMassiveActionsSubForm($ma);
+   }
+
+   /**
+    * @since version 0.85
+    *
+    * @see CommonDBTM::processMassiveActionsForOneItemtype()
+    *
+    * @param MassiveAction $ma
+    * @param CommonDBTM    $item
+    * @param array         $ids
+    *
+    * @return nothing|void
+    */
+   static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item, array $ids) {
+      global $DB;
+
+      switch ($ma->getAction()) {
+
+         case "plugin_ocsinventoryng_launch_ocsng_update":
+            $input = $ma->getInput();
+
+            foreach ($ids as $id) {
+
+               $query  = "SELECT `plugin_ocsinventoryng_ocsservers_id`, `id`
+                               FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                               WHERE `computers_id` = $id";
+               $result = $DB->query($query);
+               if ($DB->numrows($result) == 1) {
+                  $data = $DB->fetch_assoc($result);
+                  if (self::updateComputer($data['id'], $data['plugin_ocsinventoryng_ocsservers_id'], 0)) {
+                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                  } else {
+                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                  }
+               } else {
+                  $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+               }
+            }
+
+            return;
+
+         case "plugin_ocsinventoryng_force_ocsng_update":
+            $input = $ma->getInput();
+
+            foreach ($ids as $id) {
+
+               $query  = "SELECT `plugin_ocsinventoryng_ocsservers_id`, `id`
+                               FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                               WHERE `computers_id` = $id";
+               $result = $DB->query($query);
+               if ($DB->numrows($result) == 1) {
+                  $data = $DB->fetch_assoc($result);
+                  if (self::updateComputer($data['id'], $data['plugin_ocsinventoryng_ocsservers_id'], 1)) {
+                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                  } else {
+                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                  }
+               } else {
+                  $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+               }
+            }
+
+            return;
+
+         case "plugin_ocsinventoryng_lock_ocsng_field" :
+            $input  = $ma->getInput();
+            $fields = PluginOcsinventoryngOcslink::getLockableFields();
+
+            if ($input['field'] == 'all' || isset($fields[$input['field']])) {
+               foreach ($ids as $id) {
+
+                  if ($input['field'] == 'all') {
+                     if (PluginOcsinventoryngOcslink::addToOcsArray($id, array_flip($fields), "computer_update")) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                     } else {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                     }
+                  } else {
+                     if (PluginOcsinventoryngOcslink::addToOcsArray($id, [$input['field']], "computer_update")) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                     } else {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                     }
+                  }
+               }
+            }
+
+            return;
+
+         case "plugin_ocsinventoryng_unlock_ocsng_field" :
+            $input  = $ma->getInput();
+            $fields = PluginOcsinventoryngOcslink::getLockableFields();
+            if ($input['field'] == 'all' || isset($fields[$input['field']])) {
+               foreach ($ids as $id) {
+
+                  if ($input['field'] == 'all') {
+                     if (PluginOcsinventoryngOcslink::replaceOcsArray($id, [])) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                     } else {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                     }
+                  } else {
+                     if (PluginOcsinventoryngOcslink::deleteInOcsArray($id, $input['field'], true)) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
+                     } else {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                     }
+                  }
+               }
+            }
+
+            return;
+      }
+      parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
+   }
+}

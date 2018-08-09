@@ -68,19 +68,19 @@ if (isset($_SESSION["ocs_import"]["id"])) {
       }
 
       $conf   = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-      $action = PluginOcsinventoryngOcsServer::processComputer($key,
+      $action = PluginOcsinventoryngOcsProcess::processComputer($key,
                                                                $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                                0, $entity, $location);
-      PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_import"]['statistics'],
+      PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_import"]['statistics'],
                                                             $action['status']);
-      PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_import"]['statistics']);
+      PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_import"]['statistics']);
       Html::displayProgressBar(400, $percent);
 
       Html::redirect($_SERVER['PHP_SELF']);
    } else {
       //displayProgressBar(400, 100);
       if (isset($_SESSION["ocs_import"]['statistics'])) {
-         PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_import"]['statistics'], true);
+         PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_import"]['statistics'], true);
       } else {
          echo "<div class='center b red'>";
          echo __('No import: the plugin will not import these elements', 'ocsinventoryng');
@@ -104,7 +104,7 @@ if (!isset($_POST["import_ok"])) {
    if (isset($_SESSION["ocs_import"])) {
       unset($_SESSION["ocs_import"]);
    }
-   PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+   PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($display_list) {
       PluginOcsinventoryngOcsServer::showComputersToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                         $_SESSION["change_import_mode"],

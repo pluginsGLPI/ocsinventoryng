@@ -315,7 +315,7 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
 
       /* TODO log it ?
       /*switch ($action['status']) {
-         case PluginOcsinventoryngOcsServer::SNMP_FAILED_IMPORT:
+         case PluginOcsinventoryngOcsProcess::SNMP_FAILED_IMPORT:
             $notimport->logNotImported($ocsServerId, $ID, $action);
             break;
 

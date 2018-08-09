@@ -190,26 +190,26 @@ class PluginOcsinventoryngDetail extends CommonDBTM {
     */
    static function getActions() {
 
-      return [PluginOcsinventoryngOcsServer::COMPUTER_FAILED_IMPORT
+      return [PluginOcsinventoryngOcsProcess::COMPUTER_FAILED_IMPORT
               => _n('Computer not imported',
                     'Computers not imported', 2,
                     'ocsinventoryng'),
-              PluginOcsinventoryngOcsServer::COMPUTER_IMPORTED
+              PluginOcsinventoryngOcsProcess::COMPUTER_IMPORTED
               => __('Computers imported',
                     'ocsinventoryng'),
-              PluginOcsinventoryngOcsServer::COMPUTER_LINKED
+              PluginOcsinventoryngOcsProcess::COMPUTER_LINKED
               => __('Computers linked',
                     'ocsinventoryng'),
-              PluginOcsinventoryngOcsServer::COMPUTER_NOTUPDATED
+              PluginOcsinventoryngOcsProcess::COMPUTER_NOTUPDATED
               => __('Computers not updated',
                     'ocsinventoryng'),
-              PluginOcsinventoryngOcsServer::COMPUTER_SYNCHRONIZED
+              PluginOcsinventoryngOcsProcess::COMPUTER_SYNCHRONIZED
               => __('Computers synchronized',
                     'ocsinventoryng'),
-              PluginOcsinventoryngOcsServer::COMPUTER_NOT_UNIQUE
+              PluginOcsinventoryngOcsProcess::COMPUTER_NOT_UNIQUE
               => __('Computers not unique',
                     'ocsinventoryng'),
-              PluginOcsinventoryngOcsServer::COMPUTER_LINK_REFUSED
+              PluginOcsinventoryngOcsProcess::COMPUTER_LINK_REFUSED
               => __('Import refused by rule')];
    }
 

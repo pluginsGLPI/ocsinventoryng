@@ -449,13 +449,13 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
    static function getReason($reason) {
 
       switch ($reason) {
-         case PluginOcsinventoryngOcsServer::COMPUTER_FAILED_IMPORT :
+         case PluginOcsinventoryngOcsProcess::COMPUTER_FAILED_IMPORT :
             return __("Can't affect an entity", 'ocsinventoryng');
 
-         case PluginOcsinventoryngOcsServer::COMPUTER_NOT_UNIQUE :
+         case PluginOcsinventoryngOcsProcess::COMPUTER_NOT_UNIQUE :
             return __('Unicity criteria not verified', 'ocsinventoryng');
 
-         case PluginOcsinventoryngOcsServer::COMPUTER_LINK_REFUSED :
+         case PluginOcsinventoryngOcsProcess::COMPUTER_LINK_REFUSED :
             return __('Import refused by rule', 'ocsinventoryng');
 
          default:
@@ -501,23 +501,23 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
          $notimported->getFromDB($params['id']);
          $changes = self::getOcsComputerInfos($notimported->fields);
          if (isset($params['force'])) {
-            $result = PluginOcsinventoryngOcsServer::processComputer($notimported->fields['ocsid'],
+            $result = PluginOcsinventoryngOcsProcess::processComputer($notimported->fields['ocsid'],
                                                                      $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
                                                                      0, $params['entity'], 0);
          } else {
-            $result = PluginOcsinventoryngOcsServer::processComputer($notimported->fields['ocsid'],
+            $result = PluginOcsinventoryngOcsProcess::processComputer($notimported->fields['ocsid'],
                                                                      $notimported->fields['plugin_ocsinventoryng_ocsservers_id'], 0, -1, -1);
          }
 
          if (in_array($result['status'],
-                      [PluginOcsinventoryngOcsServer::COMPUTER_IMPORTED,
-                       PluginOcsinventoryngOcsServer::COMPUTER_LINKED,
-                       PluginOcsinventoryngOcsServer::COMPUTER_SYNCHRONIZED])) {
+                      [PluginOcsinventoryngOcsProcess::COMPUTER_IMPORTED,
+                       PluginOcsinventoryngOcsProcess::COMPUTER_LINKED,
+                       PluginOcsinventoryngOcsProcess::COMPUTER_SYNCHRONIZED])) {
             $notimported->delete(['id' => $params['id']]);
 
             //If serial has been changed in order to import computer
             if (in_array('serial', $changes)) {
-               PluginOcsinventoryngOcsServer::mergeOcsArray($result['computers_id'],
+               PluginOcsinventoryngOcslink::mergeOcsArray($result['computers_id'],
                                                             ['serial']);
             }
 
@@ -559,7 +559,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
             $notimported->delete(['id' => $params['id']]);
             //If serial has been changed in order to import computer
             if (in_array('serial', $changes)) {
-               PluginOcsinventoryngOcsServer::mergeOcsArray($params['id'], ['serial']);
+               PluginOcsinventoryngOcslink::mergeOcsArray($params['id'], ['serial']);
             }
          }
       }

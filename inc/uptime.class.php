@@ -27,34 +27,37 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
-
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "clean");
-
-if (!isset($_POST["clean_ok"])) {
-
-   Session::checkRight("plugin_ocsinventoryng_clean", READ);
-
-   if (!isset($_GET['check'])) {
-      $_GET['check'] = 'all';
-   }
-   if (!isset($_GET['start'])) {
-      $_GET['start'] = 0;
-   }
-   PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-   PluginOcsinventoryngOcsServer::showComputersToClean($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-      $_GET['check'], $_GET['start']);
-
-} else {
-   Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);
-   if (count($_POST['toclean']) > 0) {
-      PluginOcsinventoryngOcslink::cleanLinksFromList($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-         $_POST['toclean']);
-      echo "<div class='center b'>" . __('Clean links between GLPI and OCSNG', 'ocsinventoryng') .
-         "<br>" . __('Operation successful') . "<br>";
-      Html::displayBackLink();
-      echo "</div>";
-   }
+if (!defined('GLPI_ROOT')) {
+   die("Sorry. You can't access directly to this file");
 }
 
-Html::footer();
+/**
+ * Class PluginOcsinventoryngUptime
+ */
+class PluginOcsinventoryngUptime extends CommonDBChild {
+
+   // From CommonDBChild
+   static public $itemtype = 'Computer';
+   static public $items_id = 'computers_id';
+
+   static $rightname = "plugin_ocsinventoryng";
+
+   /**
+    * @param $id
+    * @param $ocsComputer
+    * @param $cfg_ocs
+    */
+   static function updateUptime($id, $ocsComputer) {
+      global $DB;
+
+      if ($id) {
+         if (isset($ocsComputer["time"])) {
+            $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                      SET `uptime` = '" . $ocsComputer["time"] . "'
+                      WHERE `id` = $id";
+
+            $DB->query($query);
+         }
+      }
+   }
+}

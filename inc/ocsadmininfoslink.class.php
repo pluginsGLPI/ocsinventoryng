@@ -104,4 +104,275 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
       return $computer_updates;
 
    }
+
+   /**
+    * @param $ID
+    * @param $table
+    *
+    * @return array
+    */
+   static function getColumnListFromAccountInfoTable($ID, $table) {
+
+      $listColumn = ["0" => __('No import')];
+      if ($ID != -1) {
+         if (PluginOcsinventoryngOcsServer::checkOCSconnection($ID)) {
+            $ocsClient          = PluginOcsinventoryngOcsServer::getDBocs($ID);
+            $AccountInfoColumns = $ocsClient->getAccountInfoColumns($table);
+            if (count($AccountInfoColumns) > 0) {
+               foreach ($AccountInfoColumns as $id => $name) {
+                  $listColumn[$id] = $name;
+               }
+            }
+         }
+      }
+      return $listColumn;
+   }
+
+   /**
+    * Update Admin Info retrieve config
+    *
+    * @param $tab data array
+    * */
+   function updateAdminInfo($tab) {
+      if (isset($tab["import_location"])
+          || isset($tab["import_otherserial"])
+          || isset($tab["import_group"])
+          || isset($tab["import_network"])
+          || isset($tab["import_contact_num"])
+          || isset($tab["import_use_date"])) {
+
+         $this->cleanForOcsServer($tab["id"]);
+
+         if (isset($tab["import_location"])) {
+            if ($tab["import_location"] != "") {
+               $this->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
+               $this->fields["glpi_column"]                         = "locations_id";
+               $this->fields["ocs_column"]                          = $tab["import_location"];
+               $this->addToDB();
+            }
+         }
+
+         if (isset($tab["import_otherserial"])) {
+            if ($tab["import_otherserial"] != "") {
+               $this->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
+               $this->fields["glpi_column"]                         = "otherserial";
+               $this->fields["ocs_column"]                          = $tab["import_otherserial"];
+               $this->addToDB();
+            }
+         }
+
+         if (isset($tab["import_group"])) {
+            if ($tab["import_group"] != "") {
+               $this->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
+               $this->fields["glpi_column"]                         = "groups_id";
+               $this->fields["ocs_column"]                          = $tab["import_group"];
+               $this->addToDB();
+            }
+         }
+
+         if (isset($tab["import_network"])) {
+            if ($tab["import_network"] != "") {
+               $this->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
+               $this->fields["glpi_column"]                         = "networks_id";
+               $this->fields["ocs_column"]                          = $tab["import_network"];
+               $this->addToDB();
+            }
+         }
+
+         if (isset($tab["import_contact_num"])) {
+            if ($tab["import_contact_num"] != "") {
+               $this->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
+               $this->fields["glpi_column"]                         = "contact_num";
+               $this->fields["ocs_column"]                          = $tab["import_contact_num"];
+               $this->addToDB();
+            }
+         }
+
+         if (isset($tab["import_use_date"])) {
+            if ($tab["import_use_date"] != "") {
+               $this->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
+               $this->fields["glpi_column"]                         = "use_date";
+               $this->fields["ocs_column"]                          = $tab["import_use_date"];
+               $this->addToDB();
+            }
+         }
+      }
+   }
+
+   /**
+    * Update the administrative informations
+    *
+    * This function erase old data and import the new ones about administrative informations
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsid integer : ocs computer id (ID).
+    * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
+    * @param $cfg_ocs array : configuration ocs of the server
+    * @param $computer_updates array : already updated fields of the computer
+    * @param $entities_id
+    *
+    */
+   static function updateAdministrativeInfo($params) {
+      global $DB;
+
+      $plugin_ocsinventoryng_ocsservers_id = $params['plugin_ocsinventoryng_ocsservers_id'];
+      $ocsid                               = $params['ocs_id'];
+      $cfg_ocs                             = $params['cfg_ocs'];
+      $computer_updates                    = $params['computers_updates'];
+      $entities_id                         = $params['entities_id'];
+      $computers_id                        = $params['computers_id'];
+
+      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      //check link between ocs and glpi column
+      $queryListUpdate = "SELECT `ocs_column`, `glpi_column`
+                          FROM `glpi_plugin_ocsinventoryng_ocsadmininfoslinks`
+                          WHERE `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
+      $result          = $DB->query($queryListUpdate);
+
+      if ($DB->numrows($result) > 0) {
+         $options  = [
+            "DISPLAY" => [
+               "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
+               "WANTED"   => PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO,
+            ]
+         ];
+         $computer = $ocsClient->getComputer($ocsid, $options);
+
+         if ($computer) {
+            $accountinfos = $computer["ACCOUNTINFO"];
+
+            foreach ($accountinfos as $key => $accountinfo) {
+               $comp = new Computer();
+               //update data
+               while ($links_glpi_ocs = $DB->fetch_array($result)) {
+                  //get info from ocs
+                  $ocs_column  = $links_glpi_ocs['ocs_column'];
+                  $glpi_column = $links_glpi_ocs['glpi_column'];
+
+                  if ($computer_updates
+                      && array_key_exists($ocs_column, $accountinfo)
+                      && !in_array($glpi_column, $computer_updates)) {
+
+                     if (isset($accountinfo[$ocs_column])) {
+                        $var = addslashes($accountinfo[$ocs_column]);
+                     } else {
+                        $var = "";
+                     }
+                     switch ($glpi_column) {
+                        case "groups_id":
+                           $var = self::importGroup($var, $entities_id);
+                           break;
+
+                        case "locations_id":
+                           $var = Dropdown::importExternal("Location", $var, $entities_id);
+                           break;
+
+                        case "networks_id":
+                           $var = Dropdown::importExternal("Network", $var);
+                           break;
+                     }
+
+                     $input                = [];
+                     $input[$glpi_column]  = $var;
+                     $input["id"]          = $computers_id;
+                     $input["entities_id"] = $entities_id;
+                     $input["_nolock"]     = true;
+                     $comp->update($input, $cfg_ocs['history_admininfos']);
+                  }
+
+                  if ($computer_updates
+                      && $ocs_column == 'ASSETTAG'
+                      && !in_array($glpi_column, $computer_updates)) {
+
+                     $var = $computer["BIOS"]["ASSETTAG"];
+                     if (isset($computer["BIOS"]["ASSETTAG"])
+                         && !empty($computer["BIOS"]["ASSETTAG"])) {
+                        $input                = [];
+                        $input[$glpi_column]  = $var;
+                        $input["id"]          = $computers_id;
+                        $input["entities_id"] = $entities_id;
+                        $input["_nolock"]     = true;
+                        $comp->update($input, $cfg_ocs['history_admininfos']);
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   /**
+    * Import a group from OCS table.
+    *
+    * @param $value string : Value of the new dropdown.
+    * @param $entities_id int : entity in case of specific dropdown
+    *
+    * @return integer : dropdown id.
+    * */
+   static function importGroup($value, $entities_id) {
+      global $DB;
+
+      if (empty($value)) {
+         return 0;
+      }
+
+      $query = "SELECT `id`
+                 FROM `glpi_groups`
+                 WHERE `name` = '$value' ";
+      $dbu   = new DbUtils();
+      $query .= $dbu->getEntitiesRestrictRequest(' AND ', 'glpi_groups', '',
+                                                 $entities_id, true);
+
+      $result = $DB->query($query);
+
+      if ($DB->numrows($result) == 0) {
+         $group                = new Group();
+         $input["name"]        = $value;
+         $input["entities_id"] = $entities_id;
+         return $group->add($input);
+      }
+      $line = $DB->fetch_array($result);
+      return $line["id"];
+   }
+
+   /**
+    * Update the administrative informations
+    *
+    * This function erase old data and import the new ones about administrative informations
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
+    * @param $computer_updates array : already updated fields of the computer
+    * @param $ocsComputer
+    *
+    * @return Nothing .
+    * @internal param int $ocsid : ocs computer id (ID).
+    * @internal param array $cfg_ocs : configuration ocs of the server
+    * @internal param int $entity : entity of the computer
+    * @internal param bool $dohistory : log changes?
+    *
+    */
+   static function updateAdministrativeInfoUseDate($computers_id, $plugin_ocsinventoryng_ocsservers_id,
+                                                   &$computer_updates, $ocsComputer) {
+
+      $ocsAdminInfosLink = new PluginOcsinventoryngOcsAdminInfosLink();
+      if ($ocsAdminInfosLink->getFromDBByCrit(['plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id, 'glpi_column' => 'use_date'])) {
+
+         $ocs_column = $ocsAdminInfosLink->getField('ocs_column');
+         if ($computer_updates
+             && array_key_exists($ocs_column, $ocsComputer)
+             && !in_array('use_date', $computer_updates)) {
+            if (isset($ocsComputer[$ocs_column])) {
+               $var = addslashes($ocsComputer[$ocs_column]);
+            } else {
+               $var = "";
+            }
+            $date             = str_replace($ocsComputer['NAME'] . "-", "", $var);
+            $computer_updates = PluginOcsinventoryngOcsAdminInfosLink::addInfocomsForComputer($computers_id,
+                                                                                              $date,
+                                                                                              $computer_updates);
+         }
+      }
+   }
 }

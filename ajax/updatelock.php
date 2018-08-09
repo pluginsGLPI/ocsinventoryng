@@ -33,7 +33,7 @@ Session::checkLoginUser();
 if (isset($_POST['update_lock'])) {
    $comp = new Computer();
    if ($comp->getFromDB($_POST['computers_id'])) {
-      PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST['computers_id'], $_POST['field'], true);
+      PluginOcsinventoryngOcslink::deleteInOcsArray($_POST['computers_id'], $_POST['field'], true);
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($_POST['plugin_ocsinventoryng_ocsservers_id']);
       $cfg_ocs   = PluginOcsinventoryngOcsServer::getConfig($_POST['plugin_ocsinventoryng_ocsservers_id']);
       $options   = [
@@ -42,7 +42,7 @@ if (isset($_POST['update_lock'])) {
          ]
       ];
 
-      $locks = PluginOcsinventoryngOcsServer::getLocksForComputer($_POST['computers_id']);
+      $locks = PluginOcsinventoryngOcslink::getLocksForComputer($_POST['computers_id']);
 
       $ocsComputer = $ocsClient->getComputer($_POST['ocsid'], $options);
       $params      = ['computers_id'                        => $_POST['computers_id'],
@@ -56,20 +56,20 @@ if (isset($_POST['update_lock'])) {
                       'BIOS'                                => $ocsComputer['BIOS'],
       ];
 
-      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcsServer::getHardwareLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
-         PluginOcsinventoryngOcsServer::setComputerHardware($params);
+      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcslink::getHardwareLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
+         PluginOcsinventoryngOcsProcess::setComputerHardware($params);
       }
-      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcsServer::getBiosLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
-         PluginOcsinventoryngOcsServer::updateComputerFromBios($params);
+      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcslink::getBiosLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
+         PluginOcsinventoryngOcsProcess::updateComputerFromBios($params);
       }
-      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcsServer::getOSLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
+      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcslink::getOSLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
          $params['check_history'] = true;
-         PluginOcsinventoryngOcsServer::updateComputerOS($params);
+         PluginOcsinventoryngOcsProcess::updateComputerOS($params);
       }
-      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcsServer::getAdministrativeInfosLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
-         PluginOcsinventoryngOcsServer::updateAdministrativeInfo($params);
+      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcslink::getAdministrativeInfosLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
+         PluginOcsinventoryngOcsProcess::updateAdministrativeInfo($params);
       }
-      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcsServer::getRuleLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id'], $_POST['ocsid']))) {
+      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcslink::getRuleLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id'], $_POST['ocsid']))) {
          $locations_id = 0;
          $groups_id    = 0;
          $contact      = (isset($ocsComputer['META']["USERID"])) ? $ocsComputer['META']["USERID"] : "";
@@ -87,7 +87,7 @@ if (isset($_POST['update_lock'])) {
                   $locations_id = $user->fields["locations_id"];
                }
                if ($cfg_ocs["import_user_group"] > 0) {
-                  $groups_id = self::getUserGroup($comp->fields["entities_id"],
+                  $groups_id = PluginOcsinventoryngOcsProcess::getUserGroup($comp->fields["entities_id"],
                                                   $user_id,
                                                   '`is_itemgroup`',
                                                   true);
@@ -104,7 +104,7 @@ if (isset($_POST['update_lock'])) {
                                          'groups_id'    => $groups_id],
                                         ['ocsid' => $_POST["ocsid"]]);
 
-         PluginOcsinventoryngOcsServer::updateComputerFields($params, $data, $cfg_ocs);
+         PluginOcsinventoryngOcsProcess::updateComputerFields($params, $data, $cfg_ocs);
       }
    }
 }

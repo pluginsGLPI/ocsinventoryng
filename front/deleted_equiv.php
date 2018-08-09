@@ -36,7 +36,7 @@ Html::header('OCSInventory NG', '', "tools", "pluginocsinventoryngmenu", "delete
 echo "<div class='center'>";
 $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
 if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
-   PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+   PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($_SESSION["ocs_deleted_equiv"]['computers_to_del']) {
       echo "<div class='center b'>" . $_SESSION["ocs_deleted_equiv"]['computers_deleted'] . " " . __('Pc deleted', 'ocsinventoryng');
       Html::redirect($_SERVER['PHP_SELF']);
@@ -58,7 +58,7 @@ if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
    }
 } else {
    if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
-      PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+      PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    }
    if ($_SESSION["ocs_deleted_equiv"]["total"] != $_SESSION["ocs_deleted_equiv"]["deleted"] && $_SESSION["ocs_deleted_equiv"]["last_req"]) {
 
@@ -67,7 +67,7 @@ if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
       $percent = min(100,
          round(100 * ($count) / $_SESSION["ocs_deleted_equiv"]["total"],
             0));
-      PluginOcsinventoryngOcsServer::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+      PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
       Html::displayProgressBar(400, $percent, $param['forcepadding'] = true);
       Html::redirect($_SERVER['PHP_SELF']);
    } else {

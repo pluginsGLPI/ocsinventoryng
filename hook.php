@@ -1554,18 +1554,18 @@ function plugin_ocsinventoryng_MassiveActions($type) {
              || Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
 
             return [// Specific one
-                    'PluginOcsinventoryngOcsServer' . MassiveAction::CLASS_ACTION_SEPARATOR .
+                    'PluginOcsinventoryngOcsProcess' . MassiveAction::CLASS_ACTION_SEPARATOR .
                     "plugin_ocsinventoryng_launch_ocsng_update"
                                                                => __('Launch synchronization',
                                                                      'ocsinventoryng'),
-                    'PluginOcsinventoryngOcsServer' . MassiveAction::CLASS_ACTION_SEPARATOR .
+                    'PluginOcsinventoryngOcsProcess' . MassiveAction::CLASS_ACTION_SEPARATOR .
                     "plugin_ocsinventoryng_force_ocsng_update"
                                                                => __('Force full import',
                                                                      'ocsinventoryng'),
-                    'PluginOcsinventoryngOcsServer' . MassiveAction::CLASS_ACTION_SEPARATOR .
+                    'PluginOcsinventoryngOcsProcess' . MassiveAction::CLASS_ACTION_SEPARATOR .
                     "plugin_ocsinventoryng_lock_ocsng_field"   => __('Lock fields',
                                                                      'ocsinventoryng'),
-                    'PluginOcsinventoryngOcsServer' . MassiveAction::CLASS_ACTION_SEPARATOR .
+                    'PluginOcsinventoryngOcsProcess' . MassiveAction::CLASS_ACTION_SEPARATOR .
                     "plugin_ocsinventoryng_unlock_ocsng_field" => __('Unlock fields',
                                                                      'ocsinventoryng')];
 
@@ -1864,8 +1864,8 @@ function plugin_ocsinventoryng_giveItem($type, $id, $data, $num) {
          return PluginOcsinventoryngNotimportedcomputer::getReason($data[$num][0]['name']);
 
       case "glpi_plugin_ocsinventoryng_ocslinks.computer_update" :
-         $locks           = PluginOcsinventoryngOcsServer::getLocksForComputer($data['id']);
-         $lockable_fields = PluginOcsinventoryngOcsServer::getLockableFields();
+         $locks           = PluginOcsinventoryngOcslink::getLocksForComputer($data['id']);
+         $lockable_fields = PluginOcsinventoryngOcslink::getLockableFields();
          $listlocks       = " ";
          if (is_array($locks) && count($locks)) {
             foreach ($locks as $key => $val) {
@@ -2096,7 +2096,7 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
             //So let's use the ip to proceed rules (if IP is a criteria of course)
             if (in_array("IPADDRESS", $fields) && !isset($ocs_data['IPADDRESS'])) {
                $ocs_data['IPADDRESS']
-                  = PluginOcsinventoryngOcsServer::getGeneralIpAddress($ocsservers_id, $ocsid);
+                  = PluginOcsinventoryngOcsProcess::getGeneralIpAddress($ocsservers_id, $ocsid);
             }
             return array_merge($rule_parameters, $ocs_data);
 
@@ -2134,21 +2134,21 @@ function plugin_ocsinventoryng_executeActions($params) {
             if ($action->fields["value"] == RuleImportComputer::RULE_ACTION_LINK_OR_IMPORT) {
                if (isset($params['params']['criterias_results']['found_computers'])) {
                   $output['found_computers'] = $params['params']['criterias_results']['found_computers'];
-                  $output['action']          = PluginOcsinventoryngOcsServer::LINK_RESULT_LINK;
+                  $output['action']          = PluginOcsinventoryngOcsProcess::LINK_RESULT_LINK;
                } else {
-                  $output['action'] = PluginOcsinventoryngOcsServer::LINK_RESULT_IMPORT;
+                  $output['action'] = PluginOcsinventoryngOcsProcess::LINK_RESULT_IMPORT;
                }
 
             } else if ($action->fields["value"] == RuleImportComputer::RULE_ACTION_LINK_OR_NO_IMPORT) {
                if (isset($params['params']['criterias_results']['found_computers'])) {
                   $output['found_computers'] = $params['params']['criterias_results']['found_computers'];;
-                  $output['action'] = PluginOcsinventoryngOcsServer::LINK_RESULT_LINK;
+                  $output['action'] = PluginOcsinventoryngOcsProcess::LINK_RESULT_LINK;
                } else {
-                  $output['action'] = PluginOcsinventoryngOcsServer::LINK_RESULT_NO_IMPORT;
+                  $output['action'] = PluginOcsinventoryngOcsProcess::LINK_RESULT_NO_IMPORT;
                }
             }
          } else {
-            $output['action'] = PluginOcsinventoryngOcsServer::LINK_RESULT_NO_IMPORT;
+            $output['action'] = PluginOcsinventoryngOcsProcess::LINK_RESULT_NO_IMPORT;
          }
          break;
    }
@@ -2177,22 +2177,22 @@ function plugin_ocsinventoryng_preProcessRulePreviewResults($params) {
             echo "<td>";
 
             switch ($output["action"]) {
-               case PluginOcsinventoryngOcsServer::LINK_RESULT_LINK:
+               case PluginOcsinventoryngOcsProcess::LINK_RESULT_LINK:
                   echo __('Link possible', 'ocsinventoryng');
                   break;
 
-               case PluginOcsinventoryngOcsServer::LINK_RESULT_NO_IMPORT:
+               case PluginOcsinventoryngOcsProcess::LINK_RESULT_NO_IMPORT:
                   echo __('Import refused', 'ocsinventoryng');
                   break;
 
-               case PluginOcsinventoryngOcsServer::LINK_RESULT_IMPORT:
+               case PluginOcsinventoryngOcsProcess::LINK_RESULT_IMPORT:
                   echo __('New computer created in GLPI', 'ocsinventoryng');
                   break;
             }
 
             echo "</td>";
             echo "</tr>";
-            if ($output["action"] != PluginOcsinventoryngOcsServer::LINK_RESULT_NO_IMPORT
+            if ($output["action"] != PluginOcsinventoryngOcsProcess::LINK_RESULT_NO_IMPORT
                 && isset($output["found_computers"])
             ) {
                echo "<tr class='tab_bg_2'>";
@@ -2414,12 +2414,12 @@ function plugin_ocsinventoryng_showLocksForItem($params = []) {
    $header = $params['header'];
    $ID     = $comp->getID();
 
-   $locks = PluginOcsinventoryngOcsServer::getLocksForComputer($ID);
+   $locks = PluginOcsinventoryngOcslink::getLocksForComputer($ID);
 
    if (!Session::haveRight("computer", UPDATE)) {
       return $params;
    }
-   $lockable_fields = PluginOcsinventoryngOcsServer::getLockableFields();
+   $lockable_fields = PluginOcsinventoryngOcslink::getLockableFields();
    if (is_array($locks) && count($locks)) {
       $header = true;
       echo "<tr><th colspan='2'>" . _n('Locked field', 'Locked fields', 2, 'ocsinventoryng') .
@@ -2456,7 +2456,7 @@ function plugin_ocsinventoryng_unlockFields($params = []) {
    $computer->check($_POST['id'], UPDATE);
    if (isset($_POST["lockfield"]) && count($_POST["lockfield"])) {
       foreach ($_POST["lockfield"] as $key => $val) {
-         PluginOcsinventoryngOcsServer::deleteInOcsArray($_POST["id"], $key, true);
+         PluginOcsinventoryngOcslink::deleteInOcsArray($_POST["id"], $key, true);
       }
    }
 }
@@ -2583,7 +2583,7 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration) {
          $devices = [];
          $types   = $CFG_GLPI['ocsinventoryng_devices_index'];
          foreach ($import_device as $key => $val) {
-            if (!$key) { // OcsServer::IMPORT_TAG_078
+            if (!$key) { // PluginOcsinventoryngOcsProcess::IMPORT_TAG_078
                continue;
             }
 

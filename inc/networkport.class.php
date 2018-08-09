@@ -276,7 +276,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          if (!isset($network_ports[$mac])) {
             $network_ports[$mac] = ['virtual' => []];
          }
-         $name = PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"],
+         $name = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"],
                                                                     $line['DESCRIPTION']);
 
          if (!empty($line['IPADDRESS'])) {

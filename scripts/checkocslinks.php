@@ -71,7 +71,7 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
 
    if (isset($_GET['clean'])) {
       echo "+ Handle ID changes\n";
-      PluginOcsinventoryngOcsServer::manageDeleted($ocsservers_id);
+      PluginOcsinventoryngOcsProcess::manageDeleted($ocsservers_id);
    }
 
    if (isset($_GET['glpi'])) {

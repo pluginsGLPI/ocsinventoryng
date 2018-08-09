@@ -413,7 +413,7 @@ JAVASCRIPT;
       if ($isactive) {
          $client = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
-         //if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $version > self::OCS2_1_VERSION_LIMIT && $snmp) {
+         //if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $version > PluginOcsinventoryngOcsServer::OCS2_1_VERSION_LIMIT && $snmp) {
          //host not imported by thread
          echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
          echo "<tr><th colspan='4'>";
@@ -861,10 +861,10 @@ JAVASCRIPT;
          $loc_id = 0;
          $dom_id = 0;
          if ($cfg_ocs['importsnmp_location']) {
-            $loc_id = Dropdown::importExternal('Location', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['META']['LOCATION']));
+            $loc_id = Dropdown::importExternal('Location', PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['META']['LOCATION']));
          }
          if ($cfg_ocs['importsnmp_domain']) {
-            $dom_id = Dropdown::importExternal('Domain', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['META']['DOMAIN']));
+            $dom_id = Dropdown::importExternal('Domain', PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['META']['DOMAIN']));
          }
 
          if ($itemtype == "NetworkEquipment") {
@@ -899,16 +899,16 @@ JAVASCRIPT;
 
             $DB->query($query);
 
-            return ['status' => PluginOcsinventoryngOcsServer::SNMP_IMPORTED,
+            return ['status' => PluginOcsinventoryngOcsProcess::SNMP_IMPORTED,
                     //'entities_id'  => $data['entities_id'],
             ];
          } else {
-            return ['status' => PluginOcsinventoryngOcsServer::SNMP_FAILED_IMPORT,
+            return ['status' => PluginOcsinventoryngOcsProcess::SNMP_FAILED_IMPORT,
                     //'entities_id'  => $data['entities_id'],
             ];
          }
       } else {
-         return ['status' => PluginOcsinventoryngOcsServer::SNMP_FAILED_IMPORT,
+         return ['status' => PluginOcsinventoryngOcsProcess::SNMP_FAILED_IMPORT,
                  //'entities_id'  => $data['entities_id'],
          ];
       }
@@ -1180,7 +1180,7 @@ JAVASCRIPT;
              || ($action == "update" && $cfg_ocs['importsnmp_manufacturer'] && !$linked)
              || ($action == "update" && $cfg_ocs['linksnmp_manufacturer'] && $linked)) {
             $man_id                    = Dropdown::importExternal('Manufacturer',
-                                                                  PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['SWITCH'][0]['MANUFACTURER']));
+                                                                  PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['SWITCH'][0]['MANUFACTURER']));
             $input['manufacturers_id'] = $man_id;
          }
 
@@ -1189,7 +1189,7 @@ JAVASCRIPT;
              || ($action == "update" && $cfg_ocs['importsnmp_firmware'] && !$linked)
              || ($action == "update" && $cfg_ocs['linksnmp_firmware'] && $linked)) {
             $firm_id                               = Dropdown::importExternal('NetworkEquipmentFirmware',
-                                                                              PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['SWITCH'][0]['FIRMVERSION']));
+                                                                              PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['SWITCH'][0]['FIRMVERSION']));
             $input['networkequipmentfirmwares_id'] = $firm_id;
          }
 
@@ -1201,7 +1201,7 @@ JAVASCRIPT;
          }
          //TODOSNMP = chassis ??
          //$mod_id = Dropdown::importExternal('NetworkEquipmentModel',
-         //PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
+         //PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
          //$ocsSnmp['SWITCH'][0]['REFERENCE']));
          //$input['networkequipmentmodels_id'] = $mod_id;
          // TODOSNMP ?
@@ -1243,7 +1243,7 @@ JAVASCRIPT;
              && count($ocsSnmp['POWERSUPPLIES']) > 0) {
 
             $man_id = Dropdown::importExternal('Manufacturer',
-                                               PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['POWERSUPPLIES'][0]['MANUFACTURER']));
+                                               PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['POWERSUPPLIES'][0]['MANUFACTURER']));
 
             $pow['manufacturers_id'] = $man_id;
             $pow['designation']      = $ocsSnmp['POWERSUPPLIES'][0]['REFERENCE'];
@@ -1290,7 +1290,7 @@ JAVASCRIPT;
                  || ($action == "update" && $cfg_ocs['linksnmp_fan'] && $linked))
              && count($ocsSnmp['FANS']) > 0) {
 
-            $man_id                  = Dropdown::importExternal('Manufacturer', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['FANS'][0]['MANUFACTURER']));
+            $man_id                  = Dropdown::importExternal('Manufacturer', PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['FANS'][0]['MANUFACTURER']));
             $dev['manufacturers_id'] = $man_id;
 
             $dev['designation'] = $ocsSnmp['FANS'][0]['REFERENCE'];
@@ -1657,7 +1657,7 @@ JAVASCRIPT;
 
          foreach ($ocsSnmp['CPU'] as $k => $processor) {
             $dev["designation"]      = $processor['TYPE'];
-            $dev["manufacturers_id"] = Dropdown::importExternal('Manufacturer', PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $processor['MANUFACTURER']));
+            $dev["manufacturers_id"] = Dropdown::importExternal('Manufacturer', PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $processor['MANUFACTURER']));
             $speed                   = 0;
             if (strstr($processor['SPEED'], "GHz")) {
                $speed = str_replace("GHz", "", $processor['SPEED']);
@@ -2069,13 +2069,13 @@ JAVASCRIPT;
       if (($cfg_ocs['importsnmp_location'] && $linked == 0)
           || ($cfg_ocs['linksnmp_location'] && $linked)) {
          $loc_id = Dropdown::importExternal('Location',
-                                            PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
+                                            PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
                                                                                                $ocsSnmp['META']['LOCATION']));
       }
       if (($cfg_ocs['importsnmp_domain'] && $linked == 0)
           || ($cfg_ocs['linksnmp_domain'] && $linked)) {
          $dom_id = Dropdown::importExternal('Domain',
-                                            PluginOcsinventoryngOcsServer::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
+                                            PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
                                                                                                $ocsSnmp['META']['DOMAIN']));
       }
       if ($itemtype == "Printer") {
@@ -2088,7 +2088,7 @@ JAVASCRIPT;
                 SET `last_update` = '" . $now . "' WHERE `id` = " . $ID . ";";
          $DB->query($sql);
 
-         return ['status' => PluginOcsinventoryngOcsServer::SNMP_SYNCHRONIZED,
+         return ['status' => PluginOcsinventoryngOcsProcess::SNMP_SYNCHRONIZED,
                  //'entities_id'  => $data['entities_id'],
          ];
       } else if ($itemtype == "NetworkEquipment") {
@@ -2102,7 +2102,7 @@ JAVASCRIPT;
                 WHERE `id` = " . $ID . ";";
          $DB->query($sql);
 
-         return ['status' => PluginOcsinventoryngOcsServer::SNMP_SYNCHRONIZED,
+         return ['status' => PluginOcsinventoryngOcsProcess::SNMP_SYNCHRONIZED,
                  //'entities_id'  => $data['entities_id'],
          ];
       } else if ($itemtype == "Computer") {
@@ -2116,7 +2116,7 @@ JAVASCRIPT;
                 WHERE `id` = " . $ID . ";";
          $DB->query($sql);
 
-         return ['status' => PluginOcsinventoryngOcsServer::SNMP_SYNCHRONIZED,
+         return ['status' => PluginOcsinventoryngOcsProcess::SNMP_SYNCHRONIZED,
                  //'entities_id'  => $data['entities_id'],
          ];
       } else if ($itemtype == "Peripheral"
@@ -2131,12 +2131,12 @@ JAVASCRIPT;
                   WHERE `id` = " . $ID . ";";
          $DB->query($sql);
 
-         return ['status' => PluginOcsinventoryngOcsServer::SNMP_SYNCHRONIZED,
+         return ['status' => PluginOcsinventoryngOcsProcess::SNMP_SYNCHRONIZED,
                  //'entities_id'  => $data['entities_id'],
          ];
       }
 
-      return ['status' => PluginOcsinventoryngOcsServer::SNMP_NOTUPDATED,
+      return ['status' => PluginOcsinventoryngOcsProcess::SNMP_NOTUPDATED,
               //'entities_id'  => $data['entities_id'],
       ];
    }
@@ -2478,7 +2478,7 @@ JAVASCRIPT;
                        $show_dropdown = true;
                        //If the computer is not explicitly refused by a rule
                        if (!isset($rulelink_results['action'])
-                       || $rulelink_results['action'] != PluginOcsinventoryngOcsServer::LINK_RESULT_NO_IMPORT){
+                       || $rulelink_results['action'] != PluginOcsinventoryngOcsProcess::LINK_RESULT_NO_IMPORT){
 
                        if (!empty($rulelink_results['found_computers'])){
                        $options['value']  = $rulelink_results['found_computers'][0];
@@ -2928,7 +2928,7 @@ JAVASCRIPT;
            }
           */
          self::updateSnmp($idlink, $plugin_ocsinventoryng_ocsservers_id);
-         return ['status' => PluginOcsinventoryngOcsServer::SNMP_LINKED,
+         return ['status' => PluginOcsinventoryngOcsProcess::SNMP_LINKED,
                  //'entities_id'  => $data['entities_id'],
          ];
       }

@@ -875,10 +875,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       if (isset($ipDiscoveryObject["ocsItemType"])
           && $ipDiscoveryObject["ocsItemType"] == Dropdown::EMPTY_VALUE
       ) {
-         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT];
+         return ['status' => PluginOcsinventoryngOcsProcess::IPDISCOVER_FAILED_IMPORT];
       }
       if ($ipDiscoveryObject["itemDescription"] == '') {
-         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT];
+         return ['status' => PluginOcsinventoryngOcsProcess::IPDISCOVER_FAILED_IMPORT];
       }
 
       if ($ipDiscoveryObject["itemName"] == "") {
@@ -888,7 +888,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       switch ($ipDiscoveryObject["glpiItemType"]) {
          //empty dropdown value
          case '0' :
-            return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT];
+            return ['status' => PluginOcsinventoryngOcsProcess::IPDISCOVER_FAILED_IMPORT];
       }
 
       if (isset($ipDiscoveryObject["ocsItemType"])) {
@@ -960,10 +960,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       }
 
       if ($id) {
-         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_IMPORTED];
+         return ['status' => PluginOcsinventoryngOcsProcess::IPDISCOVER_IMPORTED];
       } else {
          Session::addMessageAfterRedirect($mac . " : " . __('Unable to add. an object with same MAC address already exists.', 'ocsinventoryng'), false, ERROR);
-         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT];
+         return ['status' => PluginOcsinventoryngOcsProcess::IPDISCOVER_FAILED_IMPORT];
       }
    }
 
@@ -1037,10 +1037,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       }
 
       /*if ($id) {
-          return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_IMPORTED);
+          return array('status' => PluginOcsinventoryngOcsProcess::IPDISCOVER_IMPORTED);
        } else {
           Session::addMessageAfterRedirect($mac." : ".__('Unable to add. an object with same MAC address already exists.', 'ocsinventoryng'), false, ERROR);
-          return array('status' => PluginOcsinventoryngOcsServer::IPDISCOVER_FAILED_IMPORT);
+          return array('status' => PluginOcsinventoryngOcsProcess::IPDISCOVER_FAILED_IMPORT);
        }*/
    }
 
@@ -1060,10 +1060,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $res = null;
 
       if (isset($ipDiscoveryObject["ocsItemType"]) && $ipDiscoveryObject["ocsItemType"] == Dropdown::EMPTY_VALUE) {
-         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED];
+         return ['status' => PluginOcsinventoryngOcsProcess::IPDISCOVER_NOTUPDATED];
       }
       if ($ipDiscoveryObject["itemDescription"] == '') {
-         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED];
+         return ['status' => PluginOcsinventoryngOcsProcess::IPDISCOVER_NOTUPDATED];
       }
 
       if ($ipDiscoveryObject["itemName"] == "") {
@@ -1073,7 +1073,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       switch ($ipDiscoveryObject["glpiItemType"]) {
          //empty dropdown value
          case '0' :
-            return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED];
+            return ['status' => PluginOcsinventoryngOcsProcess::IPDISCOVER_NOTUPDATED];
       }
 
       $itemType1 = new $ipDiscoveryObject["glpiItemType"]();
@@ -1107,14 +1107,14 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             //add new ipdiscover object
             $action = self::importIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id);
             if ($action["status"] == 15) {
-               return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_SYNCHRONIZED];
+               return ['status' => PluginOcsinventoryngOcsProcess::IPDISCOVER_SYNCHRONIZED];
             }
          }
       }
       if ($res) {
-         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_SYNCHRONIZED];
+         return ['status' => PluginOcsinventoryngOcsProcess::IPDISCOVER_SYNCHRONIZED];
       } else {
-         return ['status' => PluginOcsinventoryngOcsServer::IPDISCOVER_NOTUPDATED];
+         return ['status' => PluginOcsinventoryngOcsProcess::IPDISCOVER_NOTUPDATED];
       }
    }
 

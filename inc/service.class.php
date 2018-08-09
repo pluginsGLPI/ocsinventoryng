@@ -54,6 +54,46 @@ class PluginOcsinventoryngService extends CommonDBChild {
    }
 
    /**
+    * Update config of the Service
+    *
+    * This function erase old data and import the new ones about Service
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $history_plugins boolean
+    */
+   static function updateService($computers_id, $ocsComputer, $history_plugins) {
+
+      self::resetService($computers_id, $history_plugins);
+
+      $ocsService = new self();
+
+      //update data
+      foreach ($ocsComputer as $service) {
+
+         $service               = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($service));
+         $input                 = array_change_key_case($service, CASE_LOWER);
+         $input["computers_id"] = $computers_id;
+
+         $ocsService->add($input, ['disable_unicity_check' => true], $history_plugins);
+      }
+   }
+
+   /**
+    * Delete old Services entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    * @param $history_plugins boolean
+    *
+    */
+   static function resetService($glpi_computers_id, $history_plugins) {
+
+      $service = new self();
+      $service->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $history_plugins);
+
+   }
+
+   /**
     * @see CommonGLPI::getTabNameForItem()
     **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {

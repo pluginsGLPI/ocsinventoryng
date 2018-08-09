@@ -54,6 +54,51 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
    }
 
    /**
+    * Update config of the Winupdatestate
+    *
+    * This function erase old data and import the new ones about Winupdate
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $history_plugins boolean
+    */
+   static function updateWinupdatestate($computers_id, $ocsComputer, $history_plugins) {
+
+      self::resetWinupdatestate($computers_id, $history_plugins);
+
+      //update data
+      if (!empty($ocsComputer)) {
+
+         $wupdate                      = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer));
+         $input                        = [];
+         $input["computers_id"]        = $computers_id;
+         $input["auoptions"]           = $wupdate["AUOPTIONS"];
+         $input["scheduleinstalldate"] = (empty($wupdate["SCHEDULEDINSTALLDATE"]) ? 'NULL' : $wupdate["SCHEDULEDINSTALLDATE"]);
+         $input["lastsuccesstime"]     = $wupdate["LASTSUCCESSTIME"];
+         $input["detectsuccesstime"]   = $wupdate["DETECTSUCCESSTIME"];
+         $input["downloadsuccesstime"] = $wupdate["DOWNLOADSUCCESSTIME"];
+
+         $CompWupdate = new self();
+         $CompWupdate->add($input, ['disable_unicity_check' => true], $history_plugins);
+      }
+
+   }
+
+   /**
+    * Delete old Winupdatestate entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    * @param $history_plugins boolean
+    *
+    */
+   static function resetWinupdatestate($glpi_computers_id, $history_plugins) {
+
+      $win = new self();
+      $win->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $history_plugins);
+
+   }
+
+   /**
     * @see CommonGLPI::getTabNameForItem()
     **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {

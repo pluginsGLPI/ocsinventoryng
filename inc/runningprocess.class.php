@@ -54,6 +54,45 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild {
    }
 
    /**
+    * Update config of the Runningprocess
+    *
+    * This function erase old data and import the new ones about Runningprocess
+    *
+    * @param $computers_id integer : glpi computer id.
+    * @param $ocsComputer
+    * @param $history_plugins boolean
+    */
+   static function updateRunningprocess($computers_id, $ocsComputer, $history_plugins) {
+
+      self::resetRunningProcess($computers_id, $history_plugins);
+
+      $Runningprocess = new self();
+
+      //update data
+      foreach ($ocsComputer as $runningprocess) {
+
+         $process               = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($runningprocess));
+         $input                 = array_change_key_case($process, CASE_LOWER);
+         $input["computers_id"] = $computers_id;
+         $Runningprocess->add($input, ['disable_unicity_check' => true], $history_plugins);
+      }
+   }
+
+   /**
+    * Delete old Runningprocess entries
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    * @param $history_plugins boolean
+    *
+    */
+   static function resetRunningProcess($glpi_computers_id, $history_plugins) {
+
+      $runningprocess = new self();
+      $runningprocess->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $history_plugins);
+
+   }
+
+   /**
     * @see CommonGLPI::getTabNameForItem()
     **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
