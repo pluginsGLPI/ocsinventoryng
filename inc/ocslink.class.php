@@ -1186,7 +1186,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     *
     * @return array|null
     */
-   static function getLocksForComputer($ID) {
+   static function getLocksForComputer($ID, $withrule = 1) {
       global $DB;
 
       $query  = "SELECT *
@@ -1200,8 +1200,11 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($data["plugin_ocsinventoryng_ocsservers_id"]);
          if ($cfg_ocs["use_locks"]) {
             // Print lock fields for OCSNG
-            $lockable_fields = self::getLockableFields($data["plugin_ocsinventoryng_ocsservers_id"], $data["ocsid"]);
-
+            if ($withrule) {
+               $lockable_fields = self::getLockableFields($data["plugin_ocsinventoryng_ocsservers_id"], $data["ocsid"]);
+            } else {
+               $lockable_fields = self::getLockableFields($data["plugin_ocsinventoryng_ocsservers_id"], 0);
+            }
             $dbu    = new DbUtils();
             $locked = $dbu->importArrayFromDB($data["computer_update"]);
             //            if (!in_array(PluginOcsinventoryngOcsProcess::IMPORT_TAG_078, $locked)) {

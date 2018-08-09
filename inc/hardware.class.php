@@ -94,7 +94,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
 
    static function getRuleLockableFields($plugin_ocsinventoryng_ocsservers_id = 0, $ocsid = 0) {
 
-      if ($plugin_ocsinventoryng_ocsservers_id > 0) {
+      if ($plugin_ocsinventoryng_ocsservers_id > 0 && $ocsid > 0) {
 
          $locks   = [];
          $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);

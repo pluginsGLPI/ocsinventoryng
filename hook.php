@@ -1864,8 +1864,8 @@ function plugin_ocsinventoryng_giveItem($type, $id, $data, $num) {
          return PluginOcsinventoryngNotimportedcomputer::getReason($data[$num][0]['name']);
 
       case "glpi_plugin_ocsinventoryng_ocslinks.computer_update" :
-         $locks           = PluginOcsinventoryngOcslink::getLocksForComputer($data['id']);
-         $lockable_fields = PluginOcsinventoryngOcslink::getLockableFields();
+         $locks           = PluginOcsinventoryngOcslink::getLocksForComputer($data['id'], 0);
+         $lockable_fields = PluginOcsinventoryngOcslink::getLockableFields(0,0);
          $listlocks       = " ";
          if (is_array($locks) && count($locks)) {
             foreach ($locks as $key => $val) {
