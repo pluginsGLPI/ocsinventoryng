@@ -55,7 +55,7 @@ class PluginOcsinventoryngVirtualmachine extends CommonDBChild {
     * @internal param unknown $ocsid
     * @internal param unknown $dohistory
     */
-   static function updateVirtualMachines($computers_id, $ocsComputer, $ocsservers_id, $cfg_ocs) {
+   static function updateVirtualMachines($computers_id, $ocsComputer, $ocsservers_id, $history_vm) {
       global $DB;
       $already_processed = [];
 
@@ -99,14 +99,14 @@ class PluginOcsinventoryngVirtualmachine extends CommonDBChild {
             }
             if (!$id) {
                $virtualmachine->reset();
-               $id_vm = $virtualmachine->add($vm, [], $cfg_ocs['history_vm']);
+               $id_vm = $virtualmachine->add($vm, [], $history_vm);
                if ($id_vm) {
                   $already_processed[] = $id_vm;
                }
             } else {
                if ($virtualmachine->getFromDB($id)) {
                   $vm['id'] = $id;
-                  $virtualmachine->update($vm, $cfg_ocs['history_vm']);
+                  $virtualmachine->update($vm, $history_vm);
                }
                $already_processed[] = $id;
             }

@@ -31,80 +31,11 @@ include('../../../inc/includes.php');
 
 Session::checkLoginUser();
 if (isset($_POST['update_lock'])) {
-   $comp = new Computer();
-   if ($comp->getFromDB($_POST['computers_id'])) {
-      PluginOcsinventoryngOcslink::deleteInOcsArray($_POST['computers_id'], $_POST['field'], true);
-      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($_POST['plugin_ocsinventoryng_ocsservers_id']);
-      $cfg_ocs   = PluginOcsinventoryngOcsServer::getConfig($_POST['plugin_ocsinventoryng_ocsservers_id']);
-      $options   = [
-         "DISPLAY" => [
-            "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE | PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
-         ]
-      ];
 
-      $locks = PluginOcsinventoryngOcslink::getLocksForComputer($_POST['computers_id']);
+   $plugin_ocsinventoryng_ocsservers_id = $_POST['plugin_ocsinventoryng_ocsservers_id'];
+   $computers_id = $_POST['computers_id'];
+   $ocsid = $_POST['ocsid'];
+   $field = $_POST['field'];
 
-      $ocsComputer = $ocsClient->getComputer($_POST['ocsid'], $options);
-      $params      = ['computers_id'                        => $_POST['computers_id'],
-                      'plugin_ocsinventoryng_ocsservers_id' => $_POST['plugin_ocsinventoryng_ocsservers_id'],
-                      'cfg_ocs'                             => $cfg_ocs,
-                      'computers_updates'                   => $locks,
-                      'ocs_id'                              => $_POST['ocsid'],
-                      'entities_id'                         => $comp->fields['entities_id'],
-                      'dohistory'                           => $cfg_ocs['history_hardware'],
-                      'HARDWARE'                            => $ocsComputer['HARDWARE'],
-                      'BIOS'                                => $ocsComputer['BIOS'],
-      ];
-
-      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcslink::getHardwareLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
-         PluginOcsinventoryngOcsProcess::setComputerHardware($params);
-      }
-      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcslink::getBiosLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
-         PluginOcsinventoryngOcsProcess::updateComputerFromBios($params);
-      }
-      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcslink::getOSLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
-         $params['check_history'] = true;
-         PluginOcsinventoryngOcsProcess::updateComputerOS($params);
-      }
-      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcslink::getAdministrativeInfosLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id']))) {
-         PluginOcsinventoryngOcsProcess::updateAdministrativeInfo($params);
-      }
-      if (array_key_exists($_POST['field'], PluginOcsinventoryngOcslink::getRuleLockableFields($_POST['plugin_ocsinventoryng_ocsservers_id'], $_POST['ocsid']))) {
-         $locations_id = 0;
-         $groups_id    = 0;
-         $contact      = (isset($ocsComputer['META']["USERID"])) ? $ocsComputer['META']["USERID"] : "";
-         if (!empty($contact) && $cfg_ocs["import_general_contact"] > 0) {
-            $query  = "SELECT `id`
-                            FROM `glpi_users`
-                            WHERE `name` = '" . $contact . "';";
-            $result = $DB->query($query);
-
-            if ($DB->numrows($result) == 1) {
-               $user_id = $DB->result($result, 0, 0);
-               $user    = new User();
-               $user->getFromDB($user_id);
-               if ($cfg_ocs["import_user_location"] > 0) {
-                  $locations_id = $user->fields["locations_id"];
-               }
-               if ($cfg_ocs["import_user_group"] > 0) {
-                  $groups_id = PluginOcsinventoryngOcsProcess::getUserGroup($comp->fields["entities_id"],
-                                                  $user_id,
-                                                  '`is_itemgroup`',
-                                                  true);
-               }
-            }
-         }
-         $rule = new RuleImportEntityCollection();
-
-         $data = $rule->processAllRules(['ocsservers_id' => $_POST["plugin_ocsinventoryng_ocsservers_id"],
-                                         '_source'       => 'ocsinventoryng',
-                                         'locations_id'  => $locations_id,
-                                         'groups_id'     => $groups_id],
-                                        ['locations_id' => $locations_id,
-                                         'groups_id'    => $groups_id],
-                                        ['ocsid' => $_POST["ocsid"]]);
-
-         PluginOcsinventoryngOcsProcess::updateComputerFields($params, $data, $cfg_ocs);
-      }
-   }
+   PluginOcsinventoryngOcslink::updateLock($plugin_ocsinventoryng_ocsservers_id, $computers_id, $ocsid, $field);
 }

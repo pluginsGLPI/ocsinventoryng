@@ -43,6 +43,38 @@ class PluginOcsinventoryngOS extends CommonDBChild {
    static $rightname = "plugin_ocsinventoryng";
 
 
+   static function getOSLockableFields($plugin_ocsinventoryng_ocsservers_id = 0) {
+
+      if ($plugin_ocsinventoryng_ocsservers_id > 0) {
+
+         $locks   = [];
+         $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+
+         if (intval($cfg_ocs["import_general_os"]) > 0) {
+            $locks["operatingsystems_id"]             = __('Operating system');
+            $locks["operatingsystemservicepacks_id"]  = __('Service pack');
+            $locks["operatingsystemversions_id"]      = __('Version of the operating system');
+            $locks["operatingsystemarchitectures_id"] = __('Operating system architecture');//Enable 9.1
+         }
+
+         if (intval($cfg_ocs["import_os_serial"]) > 0) {
+            $locks["license_number"] = __('Serial of the operating system');
+            $locks["license_id"]     = __('Product ID of the operating system');
+         }
+
+      } else {
+         $locks = ["operatingsystems_id"             => __('Operating system'),
+                   "operatingsystemservicepacks_id"  => __('Service pack'),
+                   "operatingsystemversions_id"      => __('Version of the operating system'),
+                   'operatingsystemarchitectures_id' => __('Operating system architecture'),//Enable 9.1
+                   "license_number"                  => __('Serial of the operating system'),
+                   "license_id"                      => __('Product ID of the operating system')];
+      }
+
+      return $locks;
+
+   }
+
    /**
     * @param array $params
     *
@@ -58,25 +90,6 @@ class PluginOcsinventoryngOS extends CommonDBChild {
 
       if (isset($options['HARDWARE'])) {
          $hardware = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($options['HARDWARE']));
-
-         $updates        = 0;
-         $license_number = null;
-         if (intval($options['cfg_ocs']["import_os_serial"]) > 0
-             && !in_array("license_number", $options['computers_updates'])) {
-
-            if (!empty($hardware["WINPRODKEY"])) {
-               $license_number = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware["WINPRODKEY"]);
-               $updates++;
-            }
-         }
-         $license_id = null;
-         if (intval($options['cfg_ocs']["import_os_serial"]) > 0
-             && !in_array("license_id", $options['computers_updates'])) {
-            if (!empty($hardware["WINPRODID"])) {
-               $license_id = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware["WINPRODID"]);
-               $updates++;
-            }
-         }
 
          if ($options['check_history']) {
             $sql_computer = "SELECT `glpi_operatingsystems`.`name` AS os_name,
@@ -111,15 +124,32 @@ class PluginOcsinventoryngOS extends CommonDBChild {
             }
          }
 
-         if (intval($options['cfg_ocs']["import_general_os"]) > 0) {
-            $operatingsystems_id = 0;
-            if (!in_array("operatingsystems_id", $options['computers_updates'])) {
-               $os_data             = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware['OSNAME']);
-               $operatingsystems_id = Dropdown::importExternal('OperatingSystem', $os_data);
-               if ($operatingsystems_id > 0) {
-                  $updates++;
-               }
+         $updates        = 0;
+         $license_number = null;
+
+         $operatingsystems_id = 0;
+         if (!in_array("operatingsystems_id", $options['computers_updates'])) {
+            $os_data             = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware['OSNAME']);
+            $operatingsystems_id = Dropdown::importExternal('OperatingSystem', $os_data);
+         }
+
+         if (intval($options['cfg_ocs']["import_os_serial"]) > 0
+             && !in_array("license_number", $options['computers_updates'])) {
+            if (!empty($hardware["WINPRODKEY"])) {
+               $license_number = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware["WINPRODKEY"]);
+               $updates++;
             }
+         }
+         $license_id = null;
+         if (intval($options['cfg_ocs']["import_os_serial"]) > 0
+             && !in_array("license_id", $options['computers_updates'])) {
+            if (!empty($hardware["WINPRODID"])) {
+               $license_id = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware["WINPRODID"]);
+               $updates++;
+            }
+         }
+
+         if (intval($options['cfg_ocs']["import_general_os"]) > 0) {
             $operatingsystemversions_id = 0;
             if (!in_array("operatingsystemversions_id", $options['computers_updates'])) {
                $osv_data                   = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware['OSVERSION']);
@@ -148,10 +178,28 @@ class PluginOcsinventoryngOS extends CommonDBChild {
             }
          }
 
-         if ($updates > 0) {
-            self::resetOS($options['computers_id'], $options['cfg_ocs']);
+         $device = new Item_OperatingSystem();
 
-            $device = new Item_OperatingSystem();
+         if ($id = $device->getFromDBByCrit(['items_id'            => $options['computers_id'],
+                                             'itemtype'            => 'Computer',
+                                             'entities_id'         => $options['entities_id'],
+                                             'operatingsystems_id' => $operatingsystems_id,
+                                             'is_dynamic'          => 1])) {
+            if ($updates > 0) {
+               $device->update(['id'                              => $id,
+                                'operatingsystemversions_id'      => $operatingsystemversions_id,
+                                'operatingsystemservicepacks_id'  => $operatingsystemservicepacks_id,
+                                'operatingsystemarchitectures_id' => $operatingsystemarchitectures_id,
+                                'license_number'                  => $license_number,
+                                'license_id'                      => $license_id,
+                                '_nolock'                         => true,
+                                'is_dynamic'                      => 1,
+                                'entities_id'                     => $options['entities_id']
+                               ], $options['dohistory']);
+            }
+         } else {
+
+            self::resetOS($options['computers_id'], $options['cfg_ocs']);
 
             //            if ($operatingsystems_id) {
             $device->add(['items_id'                        => $options['computers_id'],
@@ -165,8 +213,8 @@ class PluginOcsinventoryngOS extends CommonDBChild {
                           '_nolock'                         => true,
                           'is_dynamic'                      => 1,
                           'entities_id'                     => $options['entities_id']
-                         ], $options['dohistory']);
-            //            }
+                         ], [], $options['dohistory']);
+
          }
       }
    }

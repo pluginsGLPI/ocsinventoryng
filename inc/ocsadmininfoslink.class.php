@@ -60,6 +60,50 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
 
    }
 
+   static function getAdministrativeInfosLockableFields($plugin_ocsinventoryng_ocsservers_id = 0) {
+
+      if ($plugin_ocsinventoryng_ocsservers_id > 0) {
+
+         $locks = [];
+         $link  = new self();
+
+         $link->getFromDBbyOcsServerIDAndGlpiColumn($plugin_ocsinventoryng_ocsservers_id, "networks_id");
+         if (!empty($link->fields["ocs_column"])) {
+            $locks["networks_id"] = __('Network');
+         }
+         $link->getFromDBbyOcsServerIDAndGlpiColumn($plugin_ocsinventoryng_ocsservers_id, "use_date");
+         if (!empty($link->fields["ocs_column"])) {
+            $locks["use_date"] = __('Startup date');
+         }
+         $link->getFromDBbyOcsServerIDAndGlpiColumn($plugin_ocsinventoryng_ocsservers_id, "otherserial");
+         if (!empty($link->fields["ocs_column"])) {
+            $locks["otherserial"] = __('Inventory number');
+         }
+         $link->getFromDBbyOcsServerIDAndGlpiColumn($plugin_ocsinventoryng_ocsservers_id, "contact_num");
+         if (!empty($link->fields["ocs_column"])) {
+            $locks["contact_num"] = __('Alternate username number');
+         }
+         $link->getFromDBbyOcsServerIDAndGlpiColumn($plugin_ocsinventoryng_ocsservers_id, "locations_id");
+         if (!empty($link->fields["ocs_column"])) {
+            $locks["locations_id"] = __('Location');
+         }
+         $link->getFromDBbyOcsServerIDAndGlpiColumn($plugin_ocsinventoryng_ocsservers_id, "groups_id");
+         if (!empty($link->fields["ocs_column"])) {
+            $locks["groups_id"] = __('Group');
+         }
+      } else {
+         $locks = ["networks_id"  => __('Network'),
+                   "use_date"     => __('Startup date'),
+                   "otherserial"  => __('Inventory number'),
+                   "contact_num"  => __('Alternate username number'),
+                   "locations_id" => __('Location'),
+                   "groups_id"    => __('Group')];
+      }
+
+      return $locks;
+
+   }
+
    /**
     * @param $computers_id
     * @param $date

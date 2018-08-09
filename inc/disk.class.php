@@ -56,7 +56,7 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
     * @return Nothing .
     * @internal param int $ocsid : ocs computer id (ID).
     */
-   static function updateDisk($computers_id, $ocsComputer, $ocsservers_id, $cfg_ocs) {
+   static function updateDisk($computers_id, $ocsComputer, $ocsservers_id, $history_drives) {
       global $DB;
 
       $already_processed = [];
@@ -132,7 +132,7 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
                   if (!$id) {
                      $d->reset();
                      $disk['is_dynamic']  = 1;
-                     $id_disk             = $d->add($disk, [], $cfg_ocs['history_drives']);
+                     $id_disk             = $d->add($disk, [], $history_drives);
                      $already_processed[] = $id_disk;
                   } else {
                      // Only update if needed
@@ -148,7 +148,7 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
                            $toupdate['totalsize']      = $disk['totalsize'];
                            $toupdate['freesize']       = $disk['freesize'];
                            $toupdate['filesystems_id'] = $disk['filesystems_id'];
-                           $d->update($toupdate, $cfg_ocs['history_drives']);
+                           $d->update($toupdate, $history_drives);
                         }
                         $already_processed[] = $id;
                      }
@@ -172,9 +172,9 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
          //Delete all connexions
          $d->delete(['id'             => $data['id'],
                      '_ocsservers_id' => $ocsservers_id,
-                     '_no_history'    => !$cfg_ocs['history_drives']],
+                     '_no_history'    => !$history_drives],
                     true,
-                    $cfg_ocs['history_drives']);
+                    $history_drives);
       }
    }
 
