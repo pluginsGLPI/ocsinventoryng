@@ -334,7 +334,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
             }
          }
          if (!is_null($ocs_val)) {
-//            $ocs_field = Toolbox::encodeInUtf8($ocs_field);
+            //            $ocs_field = Toolbox::encodeInUtf8($ocs_field);
 
             //Field is a foreing key
             if ($table != '') {
@@ -494,11 +494,11 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
       $locations_id = 0;
       $groups_id    = 0;
-      $values = PluginOcsinventoryngHardware::getFields($ocsComputer, $cfg_ocs);
-      if (isset($values['groups_id']) && $values['groups_id'] > 0){
+      $values       = PluginOcsinventoryngHardware::getFields($ocsComputer, $cfg_ocs);
+      if (isset($values['groups_id']) && $values['groups_id'] > 0) {
          $groups_id = $values['groups_id'];
       }
-      if (isset($values['locations_id']) && $values['locations_id'] > 0){
+      if (isset($values['locations_id']) && $values['locations_id'] > 0) {
          $locations_id = $values['locations_id'];
       }
       //No entity or location predefined, check rules
@@ -704,7 +704,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                   $ocsComputer = $ocsClient->getComputer($ocsLink->fields['ocsid']);
 
                   if (!is_null($ocsComputer)) {
-//                     $ocsComputer = Toolbox::addslashes_deep($ocsComputer);
+                     //                     $ocsComputer = Toolbox::addslashes_deep($ocsComputer);
                      self::transferComputer($ocsLink->fields);
                   }
                }
@@ -730,18 +730,14 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                $comp->restore(['id' => $computers_id]);
             }
 
-            // Reset only if ocs id change case
-            $force = 0;
             if ($ocs_id_change) {
                $changes[0] = '0';
                $changes[1] = "";
                $changes[2] = $ocsid;
                PluginOcsinventoryngOcslink::history($computers_id, $changes, PluginOcsinventoryngOcslink::HISTORY_OCS_LINK);
-
-               $force = 1;
             }
 
-            self::synchronizeComputer($idlink, $plugin_ocsinventoryng_ocsservers_id, $force);
+            self::synchronizeComputer($idlink, $plugin_ocsinventoryng_ocsservers_id, 1);
             return true;
          }
       } else {
@@ -770,11 +766,11 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
       $locations_id = 0;
       $groups_id    = 0;
-      $values = PluginOcsinventoryngHardware::getFields($ocsComputer, $cfg_ocs, $line_links['computers_id']);
-      if (isset($values['groups_id']) && $values['groups_id'] > 0){
+      $values       = PluginOcsinventoryngHardware::getFields($ocsComputer, $cfg_ocs, $line_links['computers_id']);
+      if (isset($values['groups_id']) && $values['groups_id'] > 0) {
          $groups_id = $values['groups_id'];
       }
-      if (isset($values['locations_id']) && $values['locations_id'] > 0){
+      if (isset($values['locations_id']) && $values['locations_id'] > 0) {
          $locations_id = $values['locations_id'];
       }
 
@@ -858,10 +854,10 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                $groups_id    = 0;
 
                $values = PluginOcsinventoryngHardware::getFields($computer_ocs, $cfg_ocs, $line['computers_id']);
-               if (isset($values['groups_id']) && $values['groups_id'] > 0){
+               if (isset($values['groups_id']) && $values['groups_id'] > 0) {
                   $groups_id = $values['groups_id'];
                }
-               if (isset($values['locations_id']) && $values['locations_id'] > 0){
+               if (isset($values['locations_id']) && $values['locations_id'] > 0) {
                   $locations_id = $values['locations_id'];
                }
 
