@@ -1497,9 +1497,9 @@ function plugin_ocsinventoryng_postinit() {
    ];
 
    $PLUGIN_HOOKS['item_update']['ocsinventoryng']
-      = ['Computer'             => ['PluginOcsinventoryngOcslink', 'updateComputer'],
+      = ['Computer'             => ['PluginOcsinventoryngHardware', 'updateLockforComputer'],
          'Infocom'              => 'plugin_ocsinventoryng_item_update',
-         'Item_OperatingSystem' => ['PluginOcsinventoryngOcslink', 'updateComputerOS'],
+         'Item_OperatingSystem' => ['PluginOcsinventoryngOS', 'updateLockforOS'],
    ];
 
    $PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng']

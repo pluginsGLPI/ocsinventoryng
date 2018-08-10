@@ -530,68 +530,6 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
 
    /**
-    * Update lockable fields of an item
-    *
-    * @param $item                     CommonDBTM object
-    *
-    * @return nothing
-    * @internal param int|string $withtemplate integer  withtemplate param (default '')
-    */
-   static function updateComputer(CommonDBTM $item) {
-      global $DB;
-      // Manage changes for OCS if more than 1 element (date_mod)
-      // Need dohistory==1 if dohistory==2 no locking fields
-
-      $ocslink = new self();
-      if ($item->fields["is_dynamic"]
-          && $ocslink->getFromDBforComputer($item->getID())
-          && (count($item->updates) > 1)
-          && (!isset($item->input["_nolock"]))) {
-
-         $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
-         if ($cfg_ocs["use_locks"]) {
-            foreach ($item->updates as $k => $field) {
-               if (!array_key_exists($field, self::getLockableFields($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"], $ocslink->fields["ocsid"]))) {
-                  unset($item->updates[$k]);
-               }
-            }
-            self::mergeOcsArray($item->fields["id"], $item->updates);
-         }
-      }
-      if (isset($item->input["_auto_update_ocs"])) {
-         $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                   SET `use_auto_update` = " . $item->input["_auto_update_ocs"] . "
-                   WHERE `computers_id` = " . $item->input["id"];
-         $DB->query($query);
-      }
-   }
-
-   /**
-    * Update lockable fields of an item
-    *
-    * @param $item                     CommonDBTM object
-    *
-    * @return nothing
-    * @internal param int|string $withtemplate integer  withtemplate param (default '')
-    */
-   static function updateComputerOS($item) {
-
-      $ocslink = new self();
-      if ($item->fields["is_dynamic"]
-          && $item->fields["itemtype"] == 'Computer'
-          && $ocslink->getFromDBforComputer($item->fields["items_id"])
-          && (count($item->updates) > 1)
-          && (!isset($item->input["_nolock"]))) {
-
-         $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
-         if ($cfg_ocs["use_locks"]) {
-
-            self::mergeOcsArray($item->fields["items_id"], $item->updates);
-         }
-      }
-   }
-
-   /**
     * Update TAG information in glpi_plugin_ocsinventoryng_ocslinks table
     *
     * @param $line_links array : data from glpi_plugin_ocsinventoryng_ocslinks table
@@ -600,32 +538,27 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * @internal param array $line_ocs : data from ocs tables
     *
     */
-   static function updateTag($line_links) {
+   static function updateTag($line, $meta) {
       global $DB;
 
-      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($line_links["plugin_ocsinventoryng_ocsservers_id"]);
-
-      $computer = $ocsClient->getComputer($line_links["ocsid"]);
-
-      if ($computer) {
-         $data_ocs = Toolbox::addslashes_deep($computer["META"]);
+      if ($meta) {
+         $data_ocs = Toolbox::addslashes_deep($meta);
 
          if (isset($data_ocs["TAG"])
-             && isset($line_links["tag"])
-             && $data_ocs["TAG"] != $line_links["tag"]
+             && isset($line["tag"])
+             && $data_ocs["TAG"] != $line["tag"]
          ) {
             $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                       SET `tag` = '" . $data_ocs["TAG"] . "'
-                      WHERE `id` = " . $line_links["id"];
+                      WHERE `id` = " . $line["computers_id"];
 
             if ($DB->query($query)) {
                $changes[0] = '0';
-               $changes[1] = $line_links["tag"];
+               $changes[1] = $line["tag"];
                $changes[2] = $data_ocs["TAG"];
 
-               self::history($line_links["computers_id"], $changes,
+               self::history($line["computers_id"], $changes,
                                                     self::HISTORY_OCS_TAGCHANGED);
-               return $data_ocs["TAG"];
             }
          }
       }
@@ -1380,7 +1313,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                                             'groups_id'    => $groups_id],
                                            ['ocsid' => $ocsid]);
 
-            PluginOcsinventoryngHardware::updateComputerFields($params, $data, $cfg_ocs);
+            PluginOcsinventoryngHardware::updateComputerFields($params, $data, $cfg_ocs['history_hardware']);
          }
       }
    }

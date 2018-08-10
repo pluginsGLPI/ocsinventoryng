@@ -601,9 +601,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
     */
    static function resetDevices($glpi_computers_id, $itemtype, $history_devices) {
 
-      $linktype = 'Item_' . $itemtype;
-
-      $item = new $linktype();
+      $item = new $itemtype();
       $item->deleteByCriteria(['items_id'   => $glpi_computers_id,
                                'itemtype'   => 'Computer',
                                'is_dynamic' => 1], 1, $history_devices);

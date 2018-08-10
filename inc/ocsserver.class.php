@@ -2026,7 +2026,7 @@ JAVASCRIPT;
     *
     * @return bool|void
     */
-   static function showComputersToUpdate($plugin_ocsinventoryng_ocsservers_id, $check, $start) {
+   static function showComputersToSynchronize($plugin_ocsinventoryng_ocsservers_id, $check, $start) {
       global $DB, $CFG_GLPI;
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);

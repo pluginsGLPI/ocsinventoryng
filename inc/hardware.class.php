@@ -43,6 +43,34 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
    static $rightname = "plugin_ocsinventoryng";
 
 
+   /**
+    * Update lockable fields of an item
+    *
+    * @param $item                     CommonDBTM object
+    *
+    * @return nothing
+    * @internal param int|string $withtemplate integer  withtemplate param (default '')
+    */
+   static function updateLockforComputer(CommonDBTM $item) {
+
+      $ocslink = new PluginOcsinventoryngOcslink();
+      if ($item->fields["is_dynamic"]
+          && $ocslink->getFromDBforComputer($item->getID())
+          && (count($item->updates) > 1)
+          && (!isset($item->input["_nolock"]))) {
+
+         $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
+         if ($cfg_ocs["use_locks"]) {
+            foreach ($item->updates as $k => $field) {
+               if (!array_key_exists($field, PluginOcsinventoryngOcslink::getLockableFields($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"], $ocslink->fields["ocsid"]))) {
+                  unset($item->updates[$k]);
+               }
+            }
+            PluginOcsinventoryngOcslink::mergeOcsArray($item->fields["id"], $item->updates);
+         }
+      }
+   }
+
    static function getHardwareLockableFields($plugin_ocsinventoryng_ocsservers_id = 0) {
 
       if ($plugin_ocsinventoryng_ocsservers_id > 0) {

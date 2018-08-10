@@ -53,7 +53,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
     * @return true
     */
    function getFromDBbyOcsServerIDAndGlpiColumn($plugin_ocsinventoryng_ocsservers_id, $glpi_column) {
-      $table = $this->getTable();
+      $table        = $this->getTable();
       $field_server = "`$table`.`plugin_ocsinventoryng_ocsservers_id`";
       $field_column = "`$table`.`glpi_column`";
       return $this->getFromDBByCrit([$field_server => $plugin_ocsinventoryng_ocsservers_id, $field_column => $glpi_column]);
@@ -121,7 +121,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
          if (empty($infocom->fields['use_date'])
              || $infocom->fields['use_date'] == 'NULL') {
             //add use_date
-            $infocom->update(['id' => $infocom->fields['id'],
+            $infocom->update(['id'       => $infocom->fields['id'],
                               'use_date' => $use_date]);
          }
       } else {
@@ -138,7 +138,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
          $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
          if ($cfg_ocs["use_locks"]) {
             $computer_updates[] = "use_date";
-            $dbu = new DbUtils();
+            $dbu                = new DbUtils();
             $query              = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                          SET `computer_update` = '" . addslashes($dbu->exportArrayToDB($computer_updates)) . "'
                          WHERE `computers_id` = $computers_id";
@@ -189,55 +189,55 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
 
          if (isset($tab["import_location"])) {
             if ($tab["import_location"] != "") {
-               $this->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
-               $this->fields["glpi_column"]                         = "locations_id";
-               $this->fields["ocs_column"]                          = $tab["import_location"];
-               $this->addToDB();
+               $input["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
+               $input["glpi_column"]                         = "locations_id";
+               $input["ocs_column"]                          = $tab["import_location"];
+               $this->add($input);
             }
          }
 
          if (isset($tab["import_otherserial"])) {
             if ($tab["import_otherserial"] != "") {
-               $this->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
-               $this->fields["glpi_column"]                         = "otherserial";
-               $this->fields["ocs_column"]                          = $tab["import_otherserial"];
-               $this->addToDB();
+               $input["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
+               $input["glpi_column"]                         = "otherserial";
+               $input["ocs_column"]                          = $tab["import_otherserial"];
+               $this->add($input);
             }
          }
 
          if (isset($tab["import_group"])) {
             if ($tab["import_group"] != "") {
-               $this->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
-               $this->fields["glpi_column"]                         = "groups_id";
-               $this->fields["ocs_column"]                          = $tab["import_group"];
-               $this->addToDB();
+               $input["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
+               $input["glpi_column"]                         = "groups_id";
+               $input["ocs_column"]                          = $tab["import_group"];
+               $this->add($input);
             }
          }
 
          if (isset($tab["import_network"])) {
             if ($tab["import_network"] != "") {
-               $this->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
-               $this->fields["glpi_column"]                         = "networks_id";
-               $this->fields["ocs_column"]                          = $tab["import_network"];
-               $this->addToDB();
+               $input["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
+               $input["glpi_column"]                         = "networks_id";
+               $input["ocs_column"]                          = $tab["import_network"];
+               $this->add($input);
             }
          }
 
          if (isset($tab["import_contact_num"])) {
             if ($tab["import_contact_num"] != "") {
-               $this->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
-               $this->fields["glpi_column"]                         = "contact_num";
-               $this->fields["ocs_column"]                          = $tab["import_contact_num"];
-               $this->addToDB();
+               $input["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
+               $input["glpi_column"]                         = "contact_num";
+               $input["ocs_column"]                          = $tab["import_contact_num"];
+               $this->add($input);
             }
          }
 
          if (isset($tab["import_use_date"])) {
             if ($tab["import_use_date"] != "") {
-               $this->fields["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
-               $this->fields["glpi_column"]                         = "use_date";
-               $this->fields["ocs_column"]                          = $tab["import_use_date"];
-               $this->addToDB();
+               $input["plugin_ocsinventoryng_ocsservers_id"] = $tab["id"];
+               $input["glpi_column"]                         = "use_date";
+               $input["ocs_column"]                          = $tab["import_use_date"];
+               $this->add($input);
             }
          }
       }
@@ -275,16 +275,10 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
       $result          = $DB->query($queryListUpdate);
 
       if ($DB->numrows($result) > 0) {
-         $options  = [
-            "DISPLAY" => [
-               "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
-               "WANTED"   => PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO,
-            ]
-         ];
-         $computer = $ocsClient->getComputer($ocsid, $options);
 
-         if ($computer) {
-            $accountinfos = $computer["ACCOUNTINFO"];
+         if (isset($params["ACCOUNTINFO"])) {
+
+            $accountinfos = $params["ACCOUNTINFO"];
 
             foreach ($accountinfos as $key => $accountinfo) {
                $comp = new Computer();
@@ -328,6 +322,14 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
                   if ($computer_updates
                       && $ocs_column == 'ASSETTAG'
                       && !in_array($glpi_column, $computer_updates)) {
+
+                     $options  = [
+                        "DISPLAY" => [
+                           "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
+                           "WANTED"   => PluginOcsinventoryngOcsClient::WANTED_ACCOUNTINFO,
+                        ]
+                     ];
+                     $computer = $ocsClient->getComputer($ocsid, $options);
 
                      $var = $computer["BIOS"]["ASSETTAG"];
                      if (isset($computer["BIOS"]["ASSETTAG"])
@@ -401,7 +403,8 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
                                                    &$computer_updates, $ocsComputer) {
 
       $ocsAdminInfosLink = new PluginOcsinventoryngOcsAdminInfosLink();
-      if ($ocsAdminInfosLink->getFromDBByCrit(['plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id, 'glpi_column' => 'use_date'])) {
+      if ($ocsAdminInfosLink->getFromDBByCrit(['plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                               'glpi_column' => 'use_date'])) {
 
          $ocs_column = $ocsAdminInfosLink->getField('ocs_column');
          if ($computer_updates

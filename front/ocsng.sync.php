@@ -80,7 +80,7 @@ if (!isset($_POST["update_ok"])) {
    }
    PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($display_list) {
-      PluginOcsinventoryngOcsServer::showComputersToUpdate($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+      PluginOcsinventoryngOcsServer::showComputersToSynchronize($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
          $_GET['check'], $_GET['start']);
    }
 

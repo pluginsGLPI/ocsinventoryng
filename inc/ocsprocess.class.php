@@ -758,7 +758,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
     *
     */
    static function transferComputer($line_links) {
-      global $DB, $CFG_GLPI;
+      global $CFG_GLPI;
 
       $ocsClient   = PluginOcsinventoryngOcsServer::getDBocs($line_links["plugin_ocsinventoryng_ocsservers_id"]);
       $cfg_ocs     = PluginOcsinventoryngOcsServer::getConfig($line_links["plugin_ocsinventoryng_ocsservers_id"]);
@@ -821,7 +821,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
-      $query  = "SELECT ocsid, computers_id, plugin_ocsinventoryng_ocsservers_id, entities_id, computer_update
+      $query  = "SELECT `ocsid`, `computers_id`, `plugin_ocsinventoryng_ocsservers_id`, `entities_id`, `computer_update`, `tag`
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `id` = $ID
                 AND `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
@@ -928,78 +928,43 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
             if ($mixed_checksum) {
 
-               // Get updates on computers
-               $dbu              = new DbUtils();
-               $computer_updates = $dbu->importArrayFromDB($line["computer_update"]);
-
                $ocsCheck   = [];
                $ocsPlugins = [];
                if ($mixed_checksum & pow(2, self::HARDWARE_FL)) {
-                  if (($cfg_ocs["import_general_os"]
-                       || $cfg_ocs["import_os_serial"]) && $force) {
-                     PluginOcsinventoryngOS::resetOS($line['computers_id'], $cfg_ocs['history_hardware']);
-                  }
                   $updates['hardware'] = true;
                   $ocsCheck[]          = PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE;
                }
                if ($mixed_checksum & pow(2, self::BIOS_FL)) {
                   $updates['bios'] = true;
                   $ocsCheck[]      = PluginOcsinventoryngOcsClient::CHECKSUM_BIOS;
-                  if ($cfg_ocs["import_device_bios"]) {
-                     if ($force) {
-                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceFirmware', $cfg_ocs['history_devices']);
-                     }
-                  }
                   if ($cfg_ocs["import_device_motherboard"] && $cfg_ocs['ocs_version'] >= PluginOcsinventoryngOcsServer::OCS2_2_VERSION_LIMIT) {
-                     if ($force) {
-                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceMotherboard', $cfg_ocs['history_devices']);
-                     }
                      $updates['mb'] = true;
                   }
                }
                if ($mixed_checksum & pow(2, self::MEMORIES_FL)) {
-
                   if ($cfg_ocs["import_device_memory"]) {
-                     if ($force) {
-                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceMemory', $cfg_ocs['history_devices']);
-                     }
                      $updates['memories'] = true;
                      $ocsCheck[]          = PluginOcsinventoryngOcsClient::CHECKSUM_MEMORY_SLOTS;
                   }
                }
                if ($mixed_checksum & pow(2, self::CONTROLLERS_FL)) {
-
                   if ($cfg_ocs["import_device_controller"]) {
-                     if ($force) {
-                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceControl', $cfg_ocs['history_devices']);
-                     }
                      $updates['controllers'] = true;
                      $ocsCheck[]             = PluginOcsinventoryngOcsClient::CHECKSUM_SYSTEM_CONTROLLERS;
                   }
                }
                if ($mixed_checksum & pow(2, self::SLOTS_FL)) {
-
                   if ($cfg_ocs["import_device_slot"]) {
-                     if ($force) {
-                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DevicePci', $cfg_ocs['history_devices']);
-                     }
                      $updates['slots'] = true;
                      $ocsCheck[]       = PluginOcsinventoryngOcsClient::CHECKSUM_SYSTEM_SLOTS;
                   }
                }
                if ($mixed_checksum & pow(2, self::STORAGES_FL)) {
-
                   if ($cfg_ocs["import_device_hdd"]) {
-                     if ($force) {
-                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceHardDrive', $cfg_ocs['history_devices']);
-                     }
                      $updates['storages']["hdd"] = true;
                      $ocsCheck[]                 = PluginOcsinventoryngOcsClient::CHECKSUM_STORAGE_PERIPHERALS;
                   }
                   if ($cfg_ocs["import_device_drive"]) {
-                     if ($force) {
-                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceDrive', $cfg_ocs['history_devices']);
-                     }
                      $updates['storages']["drive"] = true;
                      $ocsCheck[]                   = PluginOcsinventoryngOcsClient::CHECKSUM_STORAGE_PERIPHERALS;
                   }
@@ -1007,27 +972,18 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                if ($mixed_checksum & pow(2, self::CPUS_FL)) {
                   if ($cfg_ocs["import_device_processor"]
                       && !($cfg_ocs['ocs_version'] < PluginOcsinventoryngOcsServer::OCS2_1_VERSION_LIMIT)) {
-                     if ($force) {
-                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceProcessor', $cfg_ocs['history_devices']);
-                     }
                      $updates['cpus'] = true;
                      $ocsCheck[]      = PluginOcsinventoryngOcsClient::CHECKSUM_CPUS;
                   }
                }
                if ($mixed_checksum & pow(2, self::VIDEOS_FL)) {
                   if ($cfg_ocs["import_device_gfxcard"]) {
-                     if ($force) {
-                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceGraphicCard', $cfg_ocs['history_devices']);
-                     }
                      $updates['videos'] = true;
                      $ocsCheck[]        = PluginOcsinventoryngOcsClient::CHECKSUM_VIDEO_ADAPTERS;
                   }
                }
                if ($mixed_checksum & pow(2, self::SOUNDS_FL)) {
                   if ($cfg_ocs["import_device_sound"]) {
-                     if ($force) {
-                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceSoundCard', $cfg_ocs['history_devices']);
-                     }
                      $updates['sounds'] = true;
                      $ocsCheck[]        = PluginOcsinventoryngOcsClient::CHECKSUM_SOUND_ADAPTERS;
                   }
@@ -1035,9 +991,6 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                if ($mixed_checksum & pow(2, self::NETWORKS_FL)) {
                   if ($cfg_ocs["import_device_iface"]
                       || $cfg_ocs["import_ip"]) {
-                     if ($force) {
-                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DeviceNetworkCard', $cfg_ocs['history_devices']);
-                     }
                      $updates['networks'] = true;
                      $ocsCheck[]          = PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS;
                   }
@@ -1046,54 +999,36 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                    || $mixed_checksum & pow(2, self::PORTS_FL)
                ) {
                   if ($cfg_ocs["import_device_modem"]) {
-                     if ($force) {
-                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DevicePci', $cfg_ocs['history_devices']);
-                     }
                      $updates['modems'] = true;
                      $ocsCheck[]        = PluginOcsinventoryngOcsClient::CHECKSUM_MODEMS;
                   }
                }
                if ($mixed_checksum & pow(2, self::PORTS_FL)) {
                   if ($cfg_ocs["import_device_modem"]) {
-                     if ($force) {
-                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'DevicePci', $cfg_ocs['history_devices']);
-                     }
                      $updates['ports'] = true;
                      $ocsCheck[]       = PluginOcsinventoryngOcsClient::CHECKSUM_MODEMS;
                   }
                }
                if ($mixed_checksum & pow(2, self::MONITORS_FL)) {
                   if ($cfg_ocs["import_monitor"]) {
-                     if ($force && $cfg_ocs["import_monitor"] == 1) { // Only reset monitor as global in unit management
-                        PluginOcsinventoryngMonitor::resetMonitors($line['computers_id'], $cfg_ocs['history_monitor']);    // try to link monitor with existing
-                     }
                      $updates['monitors'] = true;
                      $ocsCheck[]          = PluginOcsinventoryngOcsClient::CHECKSUM_MONITORS;
                   }
                }
                if ($mixed_checksum & pow(2, self::PRINTERS_FL)) {
                   if ($cfg_ocs["import_printer"]) {
-                     if ($force) {
-                        PluginOcsinventoryngPrinter::resetPrinters($line['computers_id'], $cfg_ocs['history_printer']);
-                     }
                      $updates['printers'] = true;
                      $ocsCheck[]          = PluginOcsinventoryngOcsClient::CHECKSUM_PRINTERS;
                   }
                }
                if ($mixed_checksum & pow(2, self::INPUTS_FL)) {
                   if ($cfg_ocs["import_periph"]) {
-                     if ($force) {
-                        PluginOcsinventoryngPeripheral::resetPeripherals($line['computers_id'], $cfg_ocs['history_peripheral']);
-                     }
                      $updates['inputs'] = true;
                      $ocsCheck[]        = PluginOcsinventoryngOcsClient::CHECKSUM_INPUT_DEVICES;
                   }
                }
                if ($mixed_checksum & pow(2, self::SOFTWARES_FL)) {
                   if ($cfg_ocs["import_software"]) {
-                     if ($force) {
-                        PluginOcsinventoryngSoftware::resetSoftwares($line['computers_id'], $cfg_ocs['history_software']);
-                     }
                      $updates['softwares'] = true;
                      $ocsCheck[]           = PluginOcsinventoryngOcsClient::CHECKSUM_SOFTWARE;
                      if ($cfg_ocs["use_soft_dict"]) {
@@ -1103,18 +1038,12 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                }
                if ($mixed_checksum & pow(2, self::DRIVES_FL)) {
                   if ($cfg_ocs["import_disk"]) {
-                     if ($force) {
-                        PluginOcsinventoryngDisk::resetDisks($line['computers_id'], $cfg_ocs['history_drives']);
-                     }
                      $updates['drives'] = true;
                      $ocsCheck[]        = PluginOcsinventoryngOcsClient::CHECKSUM_LOGICAL_DRIVES;
                   }
                }
                if ($mixed_checksum & pow(2, self::REGISTRY_FL)) {
                   if ($cfg_ocs["import_registry"]) {
-                     if ($force) {
-                        PluginOcsinventoryngRegistryKey::resetRegistry($line['computers_id'], $cfg_ocs['history_plugins']);
-                     }
                      $updates['registry'] = true;
                      $ocsCheck[]          = PluginOcsinventoryngOcsClient::CHECKSUM_REGISTRY;
                   }
@@ -1122,18 +1051,12 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                if ($mixed_checksum & pow(2, self::VIRTUALMACHINES_FL)) {
                   //no vm in ocs before 1.3
                   if (!($cfg_ocs['ocs_version'] < PluginOcsinventoryngOcsServer::OCS1_3_VERSION_LIMIT) && $cfg_ocs["import_vms"]) {
-                     if ($force) {
-                        PluginOcsinventoryngVirtualmachine::resetVirtualmachine($line['computers_id'], $cfg_ocs['history_vm']);
-                     }
                      $updates['virtualmachines'] = true;
                      $ocsCheck[]                 = PluginOcsinventoryngOcsClient::CHECKSUM_VIRTUAL_MACHINES;
                   }
                }
                /********************* PLUGINS *********************/
                if ($cfg_ocs["import_antivirus"]) {
-                  if ($force) {
-                     PluginOcsinventoryngAntivirus::resetAntivirus($line['computers_id'], $cfg_ocs['history_plugins']);
-                  }
                   $updates['antivirus'] = true;
                   $ocsPlugins[]         = PluginOcsinventoryngOcsClient::PLUGINS_SECURITY;
                }
@@ -1142,65 +1065,38 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                   $ocsPlugins[]      = PluginOcsinventoryngOcsClient::PLUGINS_UPTIME;
                }
                if ($cfg_ocs["import_software"] && $cfg_ocs["import_officepack"]) {
-                  if ($force) {
-                     PluginOcsinventoryngOfficepack::resetOfficePack($line['computers_id'], $cfg_ocs['history_plugins']);
-                  }
                   $updates['officepack'] = true;
                   $ocsPlugins[]          = PluginOcsinventoryngOcsClient::PLUGINS_OFFICE;
                }
                if ($cfg_ocs["import_winupdatestate"]) {
-                  if ($force) {
-                     PluginOcsinventoryngWinupdate::resetWinupdatestate($line['computers_id'], $cfg_ocs['history_plugins']);
-                  }
                   $updates['winupdatestate'] = true;
                   $ocsPlugins[]              = PluginOcsinventoryngOcsClient::PLUGINS_WUPDATE;
                }
                if ($cfg_ocs["import_teamviewer"]) {
-                  if ($force) {
-                     PluginOcsinventoryngTeamviewer::resetTeamviewer($line['computers_id'], $cfg_ocs['history_plugins']);
-                  }
                   $updates['teamviewer'] = true;
                   $ocsPlugins[]          = PluginOcsinventoryngOcsClient::PLUGINS_TEAMVIEWER;
                }
                if ($cfg_ocs["import_proxysetting"]) {
-                  if ($force) {
-                     PluginOcsinventoryngProxysetting::resetProxysetting($line['computers_id'], $cfg_ocs['history_plugins']);
-                  }
                   $updates['proxysetting'] = true;
                   $ocsPlugins[]            = PluginOcsinventoryngOcsClient::PLUGINS_PROXYSETTING;
                }
                if ($cfg_ocs["import_winusers"]) {
-                  if ($force) {
-                     PluginOcsinventoryngWinuser::resetWinuser($line['computers_id'], $cfg_ocs['history_plugins']);
-                  }
                   $updates['winuser'] = true;
                   $ocsPlugins[]       = PluginOcsinventoryngOcsClient::PLUGINS_WINUSERS;
                }
                if ($cfg_ocs["import_osinstall"]) {
-                  if ($force) {
-                     PluginOcsinventoryngOsinstall::resetOSInstall($line['computers_id'], $cfg_ocs['history_plugins']);
-                  }
                   $updates['osinstall'] = true;
                   $ocsPlugins[]         = PluginOcsinventoryngOcsClient::PLUGINS_OSINSTALL;
                }
                if ($cfg_ocs["import_networkshare"]) {
-                  if ($force) {
-                     PluginOcsinventoryngNetworkshare::resetNetworkshare($line['computers_id'], $cfg_ocs['history_plugins']);
-                  }
                   $updates['networkshare'] = true;
                   $ocsPlugins[]            = PluginOcsinventoryngOcsClient::PLUGINS_NETWORKSHARE;
                }
                if ($cfg_ocs["import_service"]) {
-                  if ($force) {
-                     PluginOcsinventoryngService::resetService($line['computers_id'], $cfg_ocs['history_plugins']);
-                  }
                   $updates['service'] = true;
                   $ocsPlugins[]       = PluginOcsinventoryngOcsClient::PLUGINS_SERVICE;
                }
                if ($cfg_ocs["import_runningprocess"]) {
-                  if ($force) {
-                     PluginOcsinventoryngRunningprocess::resetRunningProcess($line['computers_id'], $cfg_ocs['history_plugins']);
-                  }
                   $updates['runningprocess'] = true;
                   $ocsPlugins[]              = PluginOcsinventoryngOcsClient::PLUGINS_RUNNINGPROCESS;
                }
@@ -1238,6 +1134,9 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
                $ocsComputer = $ocsClient->getComputer($line['ocsid'], $import_options);
 
+               // Get updates on computers
+               $dbu              = new DbUtils();
+               $computer_updates = $dbu->importArrayFromDB($line["computer_update"]);
                // Update Administrative informations
                $params = ['computers_id'                        => $line['computers_id'],
                           'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
@@ -1245,12 +1144,13 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                           'computers_updates'                   => $computer_updates,
                           'ocs_id'                              => $line['ocsid'],
                           'entities_id'                         => $comp->fields['entities_id'],
-                          //                          'ocsComputer'                         => [],
                           'dohistory'                           => true,
                           'check_history'                       => true];
-               //TODO groups_id / locations_id already updated by rule or config
-               PluginOcsinventoryngOcsAdminInfosLink::updateAdministrativeInfo($params);
 
+               if (isset($ocsComputer['ACCOUNTINFO'])) {
+                  $params['ACCOUNTINFO'] = $ocsComputer['ACCOUNTINFO'];
+                  PluginOcsinventoryngOcsAdminInfosLink::updateAdministrativeInfo($params);
+               }
                if (isset($ocsComputer['HARDWARE'])) {
                   PluginOcsinventoryngOcsAdminInfosLink::updateAdministrativeInfoUseDate($line['computers_id'],
                                                                                          $plugin_ocsinventoryng_ocsservers_id,
@@ -1258,6 +1158,10 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                                                                                          $ocsComputer['HARDWARE']);
                }
 
+               //Update TAG
+               if (isset($ocsComputer['META'])) {
+                  PluginOcsinventoryngOcslink::updateTag($line, $ocsComputer['META']);
+               }
                if ($updates['hardware']) {
                   $params['dohistory']     = $cfg_ocs['history_hardware'];
                   $params['check_history'] = true;
@@ -1268,6 +1172,10 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
                   PluginOcsinventoryngHardware::updateComputerHardware($params);
 
+                  if (($cfg_ocs["import_general_os"]
+                       || $cfg_ocs["import_os_serial"]) && $force) {
+                     PluginOcsinventoryngOS::resetOS($line['computers_id'], $cfg_ocs['history_hardware']);
+                  }
                   PluginOcsinventoryngOS::updateComputerOS($params);
                }
                if ($updates['bios']) {
@@ -1280,61 +1188,116 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                                   'entities_id'  => $comp->fields['entities_id']];
 
                if ($updates['bios'] && isset($ocsComputer['BIOS'])) {
+                  if ($force) {
+                     PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'Item_DeviceFirmware', $cfg_ocs['history_devices']);
+                  }
                   PluginOcsinventoryngDevice::updateDevices("Item_DeviceFirmware", $ocsComputer['BIOS'], $params_devices);
                }
                if ($updates['memories'] && isset($ocsComputer['MEMORIES'])) {
+                  if ($force) {
+                     PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'Item_DeviceMemory', $cfg_ocs['history_devices']);
+                  }
                   PluginOcsinventoryngDevice::updateDevices("Item_DeviceMemory", $ocsComputer['MEMORIES'], $params_devices);
                }
                if ($updates['storages'] && isset($ocsComputer['STORAGES'])) {
                   if (isset($updates['storages']["hdd"]) && $updates['storages']["hdd"]) {
+                     if ($force) {
+                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'Item_DeviceHardDrive', $cfg_ocs['history_devices']);
+                     }
                      PluginOcsinventoryngDevice::updateDevices("Item_DeviceHardDrive", $ocsComputer['STORAGES'], $params_devices);
                   }
                   if (isset($updates['storages']["drive"]) && $updates['storages']["drive"]) {
+                     if ($force) {
+                        PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'Item_DeviceDrive', $cfg_ocs['history_devices']);
+                     }
                      PluginOcsinventoryngDevice::updateDevices("Item_DeviceDrive", $ocsComputer['STORAGES'], $params_devices);
                   }
                }
                if ($updates['cpus'] && isset($ocsComputer['CPUS'])) {
+                  if ($force) {
+                     PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'Item_DeviceProcessor', $cfg_ocs['history_devices']);
+                  }
                   PluginOcsinventoryngDevice::updateDevices("Item_DeviceProcessor", $ocsComputer['CPUS'], $params_devices);
                }
                if ($updates['videos'] && isset($ocsComputer['VIDEOS'])) {
+                  if ($force) {
+                     PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'Item_DeviceGraphicCard', $cfg_ocs['history_devices']);
+                  }
                   PluginOcsinventoryngDevice::updateDevices("Item_DeviceGraphicCard", $ocsComputer['VIDEOS'], $params_devices);
                }
                if ($updates['mb'] && isset($ocsComputer['BIOS'])) {
+                  if ($force) {
+                     PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'Item_DeviceMotherboard', $cfg_ocs['history_devices']);
+                  }
                   PluginOcsinventoryngDevice::updateDevices("Item_DeviceMotherboard", $ocsComputer['BIOS'], $params_devices);
                }
                if ($updates['controllers'] && isset($ocsComputer['CONTROLLERS'])) {
+                  if ($force) {
+                     PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'Item_DeviceControl', $cfg_ocs['history_devices']);
+                  }
                   PluginOcsinventoryngDevice::updateDevices("Item_DeviceControl", $ocsComputer['CONTROLLERS'], $params_devices);
                }
                if ($updates['sounds'] && isset($ocsComputer['SOUNDS'])) {
+                  if ($force) {
+                     PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'Item_DeviceSoundCard', $cfg_ocs['history_devices']);
+                  }
                   PluginOcsinventoryngDevice::updateDevices("Item_DeviceSoundCard", $ocsComputer['SOUNDS'], $params_devices);
                }
                if ($updates['networks'] && isset($ocsComputer['NETWORKS'])) {
+                  if ($force) {
+                     PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'Item_DeviceNetworkCard', $cfg_ocs['history_devices']);
+                  }
                   PluginOcsinventoryngDevice::updateDevices("Item_DeviceNetworkCard", $ocsComputer['NETWORKS'], $params_devices);
                }
                if ($updates['modems'] && isset($ocsComputer['MODEMS'])) {
-                  PluginOcsinventoryngDevice::updateDevices("Item_DevicePci", $ocsComputer, $params_devices);
+                  if ($force) {
+                     PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'Item_DevicePci', $cfg_ocs['history_devices']);
+                  }
+                  PluginOcsinventoryngDevice::updateDevices("Item_DevicePci", $ocsComputer['MODEMS'], $params_devices);
                }
                if ($updates['slots'] && isset($ocsComputer['SLOTS'])) {
-                  PluginOcsinventoryngDevice::updateDevices("Item_DevicePci", $ocsComputer, $params_devices);
+                  if ($force) {
+                     PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'Item_DevicePci', $cfg_ocs['history_devices']);
+                  }
+                  PluginOcsinventoryngDevice::updateDevices("Item_DevicePci", $ocsComputer['SLOTS'], $params_devices);
                }
                if ($updates['ports'] && isset($ocsComputer['PORTS'])) {
-                  PluginOcsinventoryngDevice::updateDevices("Item_DevicePci", $ocsComputer, $params_devices);
+                  if ($force) {
+                     PluginOcsinventoryngDevice::resetDevices($line['computers_id'], 'Item_DevicePci', $cfg_ocs['history_devices']);
+                  }
+                  PluginOcsinventoryngDevice::updateDevices("Item_DevicePci", $ocsComputer['PORTS'], $params_devices);
                }
                if ($updates['monitors'] && isset($ocsComputer["MONITORS"])) {
+                  if ($force && $cfg_ocs["import_monitor"] == 1) { // Only reset monitor as global in unit management
+                     PluginOcsinventoryngMonitor::resetMonitors($line['computers_id'], $cfg_ocs['history_monitor']);    // try to link monitor with existing
+                  }
                   PluginOcsinventoryngMonitor::importMonitor($cfg_ocs, $line['computers_id'], $plugin_ocsinventoryng_ocsservers_id,
                                                              $ocsComputer["MONITORS"], $comp->fields["entities_id"]);
                }
                if ($updates['printers'] && isset($ocsComputer["PRINTERS"])) {
+                  if ($force) {
+                     PluginOcsinventoryngPrinter::resetPrinters($line['computers_id'], $cfg_ocs['history_printer']);
+                  }
                   PluginOcsinventoryngPrinter::importPrinter($cfg_ocs, $line['computers_id'], $plugin_ocsinventoryng_ocsservers_id,
                                                              $ocsComputer["PRINTERS"], $comp->fields["entities_id"]);
                }
                if ($updates['inputs'] && isset($ocsComputer["INPUTS"])) {
+                  if ($force) {
+                     PluginOcsinventoryngPeripheral::resetPeripherals($line['computers_id'], $cfg_ocs['history_peripheral']);
+                  }
                   PluginOcsinventoryngPeripheral::importPeripheral($cfg_ocs, $line['computers_id'],
                                                                    $plugin_ocsinventoryng_ocsservers_id,
                                                                    $ocsComputer["INPUTS"], $comp->fields["entities_id"]);
                }
                if ($updates['softwares'] && isset($ocsComputer["SOFTWARES"])) {
                   // Get import software
+                  if ($force) {
+                     PluginOcsinventoryngSoftware::resetSoftwares($line['computers_id'], $cfg_ocs['history_software']);
+                     if ($updates['officepack']) {
+                        PluginOcsinventoryngOfficepack::resetOfficePack($line['computers_id'], $cfg_ocs['history_plugins']);
+                     }
+                  }
+
                   PluginOcsinventoryngSoftware::updateSoftware($cfg_ocs, $line['computers_id'], $ocsComputer["SOFTWARES"],
                                                                $comp->fields["entities_id"],
                                                                $updates['officepack'],
@@ -1342,62 +1305,98 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                }
                if ($updates['drives'] && isset($ocsComputer["DRIVES"])) {
                   // Get import drives
+                  if ($force) {
+                     PluginOcsinventoryngDisk::resetDisks($line['computers_id'], $cfg_ocs['history_drives']);
+                  }
                   PluginOcsinventoryngDisk::updateDisk($line['computers_id'], $ocsComputer["DRIVES"],
                                                        $plugin_ocsinventoryng_ocsservers_id,
                                                        $cfg_ocs['history_drives']);
                }
                if ($updates['registry'] && isset($ocsComputer["REGISTRY"])) {
-                  //import registry entries not needed
+                  //import registry entries
+                  if ($force) {
+                     PluginOcsinventoryngRegistryKey::resetRegistry($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
                   PluginOcsinventoryngRegistryKey::updateRegistry($line['computers_id'], $ocsComputer["REGISTRY"],
                                                                   $cfg_ocs['history_plugins']);
                }
                if ($updates['virtualmachines'] && isset($ocsComputer["VIRTUALMACHINES"])) {
                   // Get import vm
+                  if ($force) {
+                     PluginOcsinventoryngVirtualmachine::resetVirtualmachine($line['computers_id'], $cfg_ocs['history_vm']);
+                  }
                   PluginOcsinventoryngVirtualmachine::updateVirtualMachines($line['computers_id'], $ocsComputer["VIRTUALMACHINES"],
                                                                             $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs['history_vm']);
                }
                if ($updates['antivirus'] && isset($ocsComputer["SECURITYCENTER"])) {
                   //import antivirus entries
+                  if ($force) {
+                     PluginOcsinventoryngAntivirus::resetAntivirus($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
                   PluginOcsinventoryngAntivirus::updateAntivirus($line['computers_id'], $ocsComputer["SECURITYCENTER"],
                                                                  $cfg_ocs);
                }
                if ($updates['winupdatestate'] && isset($ocsComputer["WINUPDATESTATE"])) {
                   //import winupdatestate entries
+                  if ($force) {
+                     PluginOcsinventoryngWinupdate::resetWinupdatestate($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
                   PluginOcsinventoryngWinupdate::updateWinupdatestate($line['computers_id'], $ocsComputer["WINUPDATESTATE"],
                                                                       $cfg_ocs['history_plugins']);
                }
                if ($updates['osinstall'] && isset($ocsComputer["OSINSTALL"])) {
                   //import osinstall entries
+                  if ($force) {
+                     PluginOcsinventoryngOsinstall::resetOSInstall($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
                   PluginOcsinventoryngOsinstall::updateOSInstall($line['computers_id'], $ocsComputer["OSINSTALL"],
                                                                  $cfg_ocs['history_plugins']);
                }
                if ($updates['proxysetting'] && isset($ocsComputer["NAVIGATORPROXYSETTING"])) {
                   //import proxysetting entries
+                  if ($force) {
+                     PluginOcsinventoryngProxysetting::resetProxysetting($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
                   PluginOcsinventoryngProxysetting::updateProxysetting($line['computers_id'], $ocsComputer["NAVIGATORPROXYSETTING"],
                                                                        $cfg_ocs['history_plugins']);
                }
                if ($updates['networkshare'] && isset($ocsComputer["NETWORKSHARE"])) {
                   //import networkshare entries
+                  if ($force) {
+                     PluginOcsinventoryngNetworkshare::resetNetworkshare($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
                   PluginOcsinventoryngNetworkshare::updateNetworkshare($line['computers_id'], $ocsComputer["NETWORKSHARE"],
                                                                        $cfg_ocs['history_plugins']);
                }
                if ($updates['runningprocess'] && isset($ocsComputer["RUNNINGPROCESS"])) {
                   //import runningprocess entries
+                  if ($force) {
+                     PluginOcsinventoryngRunningprocess::resetRunningProcess($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
                   PluginOcsinventoryngRunningprocess::updateRunningprocess($line['computers_id'], $ocsComputer["RUNNINGPROCESS"],
                                                                            $cfg_ocs['history_plugins']);
                }
                if ($updates['service'] && isset($ocsComputer["SERVICE"])) {
+                  if ($force) {
+                     PluginOcsinventoryngService::resetService($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
                   //import service entries
                   PluginOcsinventoryngService::updateService($line['computers_id'], $ocsComputer["SERVICE"],
                                                              $cfg_ocs['history_plugins']);
                }
                if ($updates['winuser'] && isset($ocsComputer["WINUSERS"])) {
                   //import winusers entries
+                  if ($force) {
+                     PluginOcsinventoryngWinuser::resetWinuser($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
                   PluginOcsinventoryngWinuser::updateWinuser($line['computers_id'], $ocsComputer["WINUSERS"],
                                                              $cfg_ocs['history_plugins']);
                }
                if ($updates['teamviewer'] && isset($ocsComputer["TEAMVIEWER"])) {
                   //import teamviewer entries
+                  if ($force) {
+                     PluginOcsinventoryngTeamviewer::resetTeamviewer($line['computers_id'], $cfg_ocs['history_plugins']);
+                  }
                   PluginOcsinventoryngTeamviewer::updateTeamviewer($line['computers_id'], $ocsComputer["TEAMVIEWER"],
                                                                    $cfg_ocs['history_plugins']);
                }
@@ -1407,9 +1406,6 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                }
             }
             unset($updates);
-
-            //Update TAG
-            PluginOcsinventoryngOcslink::updateTag($line);
 
             //force drop old locks
             $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line['computers_id']);
