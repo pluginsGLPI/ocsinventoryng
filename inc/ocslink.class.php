@@ -1272,41 +1272,40 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                    || $field == "license_number"
                    || $field == "use_date"
                ) {
-                  $js = '$("input[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fa fa-lock\"></i>");';
+                  $js = '$("input[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fa fa-lock pointer\"></i>");';
                } else if ($field == "comment") {
-                  $js = '$("textarea[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fa fa-lock\"></i>");';
+                  $js = '$("textarea[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fa fa-lock pointer\"></i>");';
                } else {
-                  $js = '$("select[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fa fa-lock\"></i>");';
+                  $js = '$("select[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fa fa-lock pointer\"></i>");';
                }
                $rootdoc                             = $CFG_GLPI["root_doc"];
                $plugin_ocsinventoryng_ocsservers_id = $data['plugin_ocsinventoryng_ocsservers_id'];
-               $js                                  .= '
-            $(document).ready(function() {
-               $(".lockfield' . $field . '").click(function(e) {
-                  lastClickedElement = e.target;
-                  var check = confirm("' . $text . ' ?");
-                  var lock_data = {
-                  "field" : "' . $field . '",
-                  "computers_id" : "' . $computers_id . '",
-                  "plugin_ocsinventoryng_ocsservers_id" : "' . $plugin_ocsinventoryng_ocsservers_id . '",
-                  "ocsid" : "' . $data['ocsid'] . '",
-                  "ocs_linkid" : "' . $data['id'] . '",
-                  "update_lock" : "update_lock",                 
-                  };
-                 if (check) {
-                        $.ajax({
-                        type: "POST",
-                        url: "' . $rootdoc . '/plugins/ocsinventoryng/ajax/updatelock.php",
-                        data:lock_data,
-                        success: function(){
-                           window.location.reload();
-                        },
-                     });
-                 } else {
-                     return false;
-                 }
-             });
-           });';
+               $js .= '$(document).ready(function() {
+                        $(".lockfield' . $field . '").click(function(e) {
+                           lastClickedElement = e.target;
+                           var check = confirm("' . $text . ' ?");
+                           var lock_data = {
+                           "field" : "' . $field . '",
+                           "computers_id" : "' . $computers_id . '",
+                           "plugin_ocsinventoryng_ocsservers_id" : "' . $plugin_ocsinventoryng_ocsservers_id . '",
+                           "ocsid" : "' . $data['ocsid'] . '",
+                           "ocs_linkid" : "' . $data['id'] . '",
+                           "update_lock" : "update_lock",
+                           };
+                          if (check) {
+                                 $.ajax({
+                                 type: "POST",
+                                 url: "' . $rootdoc . '/plugins/ocsinventoryng/ajax/updatelock.php",
+                                 data:lock_data,
+                                 success: function(){
+                                    window.location.reload();
+                                 },
+                              });
+                          } else {
+                              return false;
+                          }
+                      });
+                    });';
                echo Html::scriptBlock($js);
             }
          }
