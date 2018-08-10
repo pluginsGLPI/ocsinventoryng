@@ -662,7 +662,7 @@ JAVASCRIPT;
       Dropdown::showYesNo("import_general_comment", $this->fields["import_general_comment"]);
       echo "</td>\n";
 
-      if (self::checkOCSconnection($ID) && self::checkVersion($ID)) {
+      if (self::checkVersion($ID)) {
          echo "<td class='center'>" . __('UUID') . "</td>\n<td>";
          Dropdown::showYesNo("import_general_uuid", $this->fields["import_general_uuid"]);
       } else {
@@ -1086,7 +1086,7 @@ JAVASCRIPT;
       $fields .= "<br>";
       $fields .= __('Type');
       $fields .= "<br>";
-      if (self::checkOCSconnection($ID) && self::checkVersion($ID)) {
+      if (self::checkVersion($ID)) {
          $fields .= __('UUID');
       }
       Html::showToolTip(nl2br($fields));

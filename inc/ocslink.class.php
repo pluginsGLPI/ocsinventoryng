@@ -871,7 +871,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          $input["id"]         = $computers_id;
          $comp->update($input);
       }
-      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+//      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
       $ocsComputer = $ocsClient->getComputer($ocsid);

@@ -267,7 +267,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
       $entities_id                         = $params['entities_id'];
       $computers_id                        = $params['computers_id'];
 
-      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+//      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       //check link between ocs and glpi column
       $queryListUpdate = "SELECT `ocs_column`, `glpi_column`
