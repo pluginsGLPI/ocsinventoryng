@@ -90,7 +90,7 @@ class PluginOcsinventoryngBios extends CommonDBChild {
     * @param array $params
     *
     */
-   static function updateComputerFromBios($params = []) {
+   static function updateComputerBios($params = []) {
 
       $compupdate = [];
 

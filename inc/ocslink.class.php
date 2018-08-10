@@ -1287,6 +1287,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                          'dohistory'                           => $cfg_ocs['history_hardware'],
                          'HARDWARE'                            => $ocsComputer['HARDWARE'],
                          'BIOS'                                => $ocsComputer['BIOS'],
+                         'force'                               => 0,
          ];
 
          if (array_key_exists($field,
@@ -1295,7 +1296,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          }
          if (array_key_exists($field,
                               PluginOcsinventoryngBios::getBiosLockableFields($plugin_ocsinventoryng_ocsservers_id))) {
-            PluginOcsinventoryngBios::updateComputerFromBios($params);
+            PluginOcsinventoryngBios::updateComputerBios($params);
          }
          if (array_key_exists($field,
                               PluginOcsinventoryngOS::getOSLockableFields($plugin_ocsinventoryng_ocsservers_id))) {
