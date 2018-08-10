@@ -462,7 +462,8 @@ JAVASCRIPT;
     *
     * @param $item                   CommonDBTM object
     *
-    * @return nothing
+    * @return void
+    * @throws \GlpitestSQLError
     * @internal param int|string $withtemplate integer  withtemplate param (default '')
     */
    static function showForItem(CommonDBTM $item) {
@@ -632,8 +633,9 @@ JAVASCRIPT;
     *
     * @param $item                   CommonDBTM object
     *
-    * @return nothing
-    **/
+    * @return void
+    * @throws \GlpitestSQLError
+    */
    static function showSimpleForItem(CommonDBTM $item) {
       global $DB;
 
@@ -924,7 +926,10 @@ JAVASCRIPT;
     * @param      $action
     * @param bool $linked
     *
+    * @param      $cfg_ocs
+    *
     * @return int
+    * @throws \GlpitestSQLError
     */
    static function addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action, $linked = false, $cfg_ocs) {
       global $DB;
@@ -1124,7 +1129,9 @@ JAVASCRIPT;
     * @param      $action
     * @param bool $linked
     *
+    * @param      $cfg_ocs
     * @return int
+    * @throws \GlpitestSQLError
     */
    static function addOrUpdateNetworkEquipment($itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action, $linked = false, $cfg_ocs) {
       global $DB;
@@ -1454,6 +1461,12 @@ JAVASCRIPT;
    }
 
 
+   /**
+    * @param        $mac
+    * @param string $separator
+    *
+    * @return string
+    */
    public static function addMacSeparator($mac, $separator = ':') {
       return join($separator, str_split($mac, 2));
    }
@@ -1468,7 +1481,9 @@ JAVASCRIPT;
     * @param      $action
     * @param bool $linked
     *
+    * @param      $cfg_ocs
     * @return int
+    * @throws \GlpitestSQLError
     */
    static function addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action, $linked = false, $cfg_ocs) {
       global $DB;
@@ -1921,6 +1936,7 @@ JAVASCRIPT;
     * @param      $action
     * @param bool $linked
     *
+    * @param      $cfg_ocs
     * @return int
     */
    static function addOrUpdateOther($itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action, $linked = false, $cfg_ocs) {
@@ -2146,7 +2162,7 @@ JAVASCRIPT;
     *
     * @param $params
     *
-    * @return nothing
+    * @return void
     * @internal param the $manufacturer supplier choice
     * @internal param the $type device type
     */

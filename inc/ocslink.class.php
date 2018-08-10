@@ -56,8 +56,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     *
     * @param $item                   CommonDBTM object
     *
-    * @return nothing
-    **/
+    * @return void
+    */
    static function showSimpleForChild(CommonDBTM $item) {
 
       $dbu = new DbUtils();
@@ -73,8 +73,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     *
     * @param $item                   CommonDBTM object
     *
-    * @return nothing
-    **/
+    * @return void
+    * @throws \GlpitestSQLError
+    */
    static function showSimpleForItem(CommonDBTM $item) {
       global $DB, $CFG_GLPI;
 
@@ -109,7 +110,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   echo "<tr class='tab_bg_1'><td>" . __('Last OCSNG inventory date', 'ocsinventoryng');
                   echo "</td><td>" . Html::convDateTime($data["last_ocs_update"]) . "</td>";
                   echo "<td>" . __('Inventory agent', 'ocsinventoryng');
-                  echo "</td><td>" . $data["ocs_agent_version"] . "</td></tr>";
+                  echo "</td><td>" . $data["ocs_agent_version"] . "<br>".$data['ocs_deviceid']."</td></tr>";
 
                   echo "<tr class='tab_bg_1'><td>" . __('GLPI import date', 'ocsinventoryng');
                   echo "</td><td>" . Html::convDateTime($data["last_update"]) . "</td>";
@@ -315,7 +316,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     *
     * @param $item                   CommonDBTM object
     *
-    * @return nothing
+    * @return void
+    * @throws \GlpitestSQLError
     * @internal param int|string $withtemplate integer  withtemplate param (default '')
     */
    static function showForItem(CommonDBTM $item) {
@@ -532,11 +534,12 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    /**
     * Update TAG information in glpi_plugin_ocsinventoryng_ocslinks table
     *
-    * @param $line_links array : data from glpi_plugin_ocsinventoryng_ocslinks table
+    * @param $line
+    * @param $meta
     *
     * @return string : current tag of computer on update
+    * @throws \GlpitestSQLError
     * @internal param array $line_ocs : data from ocs tables
-    *
     */
    static function updateTag($line, $meta) {
       global $DB;
@@ -847,25 +850,25 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     *
     * This make the database link between ocs and glpi databases
     *
-    * @param $ocsid integer : ocs item unique id.
-    * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
-    * @param $glpi_computers_id integer : glpi computer id
-    *
-    * return integer : link id.
-    *
+    * @param $link_params
     * @return bool|item
+    * @throws \GlpitestSQLError
     */
-   static function ocsLink($ocsid, $plugin_ocsinventoryng_ocsservers_id, $glpi_computers_id) {
+   static function ocsLink($link_params) {
       global $DB;
+
+      $ocsid                               = $link_params["ocsid"];
+      $plugin_ocsinventoryng_ocsservers_id = $link_params["plugin_ocsinventoryng_ocsservers_id"];
+      $computers_id                        = $link_params["computers_id"];
 
       // Retrieve informations from computer
       $comp = new Computer();
-      $comp->getFromDB($glpi_computers_id);
-      if (isset($glpi_computers_id)
-          && $glpi_computers_id > 0
+      $comp->getFromDB($computers_id);
+      if (isset($computers_id)
+          && $computers_id > 0
       ) {
          $input["is_dynamic"] = 1;
-         $input["id"]         = $glpi_computers_id;
+         $input["id"]         = $computers_id;
          $comp->update($input);
       }
       PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
@@ -886,7 +889,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                        (`computers_id`, `ocsid`, `ocs_deviceid`,
                         `last_update`, `plugin_ocsinventoryng_ocsservers_id`,
                         `entities_id`, `tag`)
-                VALUES ($glpi_computers_id, '$ocsid', '" . $ocsComputer['META']['DEVICEID'] . "',
+                VALUES ($computers_id, '$ocsid', '" . $ocsComputer['META']['DEVICEID'] . "',
                         '" . $_SESSION["glpi_currenttime"] . "', '$plugin_ocsinventoryng_ocsservers_id',
                         " . $comp->fields['entities_id'] . ", '" . addslashes($ocsComputer['META']['TAG']) . "')";
       $result = $DB->query($query);
@@ -904,8 +907,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * @param $plugin_ocsinventoryng_ocsservers_id int : id of ocs server in GLPI
     * @param $ocslinks_id array : ids of ocslinks to clean
     *
-    * @return nothing
-    * */
+    * @return void
+    * @throws \GlpitestSQLError
+    */
    static function cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_id) {
       global $DB;
 
@@ -956,9 +960,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    /**
     * @param $computers_id
     * @param $tomerge
-    * @param $field
-    *
     * @return bool
+    * @throws \GlpitestSQLError
     */
    static function mergeOcsArray($computers_id, $tomerge) {
       global $DB;
@@ -997,10 +1000,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    /**
     * @param      $computers_id
     * @param      $todel
-    * @param      $field
     * @param bool $is_value_to_del
     *
     * @return bool
+    * @throws \GlpitestSQLError
     */
    static function deleteInOcsArray($computers_id, $todel, $is_value_to_del = false) {
       global $DB;
@@ -1040,10 +1043,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    /**
     * @param      $computers_id
     * @param      $newArray
-    * @param      $field
     * @param bool $lock
     *
     * @return bool
+    * @throws \GlpitestSQLError
     */
    static function replaceOcsArray($computers_id, $newArray, $lock = true) {
       global $DB;
@@ -1115,9 +1118,11 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    }
 
    /**
-    * @param $ID
+    * @param     $ID
     *
+    * @param int $withrule
     * @return array|null
+    * @throws \GlpitestSQLError
     */
    static function getLocksForComputer($ID, $withrule = 1) {
       global $DB;
@@ -1165,6 +1170,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    }
 
    /**
+    * @param int $plugin_ocsinventoryng_ocsservers_id
+    * @param int $ocsid
     * @return array
     */
    static function getLockableFields($plugin_ocsinventoryng_ocsservers_id = 0, $ocsid = 0) {
@@ -1182,7 +1189,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
    /**
     * Display lock icon in main item form
     *
-    * @param string $itemtype
+    * @param $computers_id
+    * @param $data
     */
    static function showLockIcon($computers_id, $data) {
       global $CFG_GLPI;
@@ -1245,6 +1253,14 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       }
    }
 
+   /**
+    * @param $plugin_ocsinventoryng_ocsservers_id
+    * @param $computers_id
+    * @param $ocsid
+    * @param $field
+    *
+    * @throws \GlpitestSQLError
+    */
    static function updateLock($plugin_ocsinventoryng_ocsservers_id, $computers_id, $ocsid, $field) {
 
       $comp = new Computer();

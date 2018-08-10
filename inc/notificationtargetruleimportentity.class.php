@@ -54,6 +54,9 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
 
    /**
     * @see NotificationTarget::getDatasForTemplate()
+    *
+    * @param       $event
+    * @param array $options
     */
    function getDatasForTemplate($event, $options = []) {
       global $CFG_GLPI;

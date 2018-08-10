@@ -67,12 +67,14 @@ if (isset($_SESSION["ocs_import"]["id"])) {
          $location = -1;
       }
 
-      $conf   = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-      $action = PluginOcsinventoryngOcsProcess::processComputer($key,
-                                                               $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                                                               0, $entity, $location);
+      $process_params = ['ocsid'                               => $key,
+                         'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                         'lock'                                => 0,
+                         'defaultentity'                       => $entity,
+                         'defaultlocation'                     => $location];
+      $action         = PluginOcsinventoryngOcsProcess::processComputer($process_params);
       PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_import"]['statistics'],
-                                                            $action['status']);
+                                                             $action['status']);
       PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_import"]['statistics']);
       Html::displayProgressBar(400, $percent);
 
@@ -106,10 +108,13 @@ if (!isset($_POST["import_ok"])) {
    }
    PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($display_list) {
-      PluginOcsinventoryngOcsServer::showComputersToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                                                        $_SESSION["change_import_mode"],
-                                                        $_GET['check'], $_GET['start'],
-                                                        $_SESSION['glpiactiveentities']);
+      $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                      'import_mode'                         => $_SESSION["change_import_mode"],
+                      'check'                               => $_GET['check'],
+                      'start'                               => $_GET['start'],
+                      'entities_id'                         => $_SESSION['glpiactiveentities'],
+                      'tolinked'                            => false];
+      PluginOcsinventoryngOcsServer::showComputersToAdd($show_params);
    }
 
 } else {

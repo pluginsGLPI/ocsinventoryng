@@ -51,9 +51,11 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
     * @param $computers_id integer : glpi computer id.
     * @param $ocsComputer
     * @param $ocsservers_id integer : ocs server id
-    * @param $cfg_ocs array : ocs config
+    * @param $history_drives
+    * @param $force
     *
-    * @return Nothing .
+    * @return void .
+    * @throws \GlpitestSQLError
     * @internal param int $ocsid : ocs computer id (ID).
     */
    static function updateDisk($computers_id, $ocsComputer, $ocsservers_id, $history_drives, $force) {
@@ -187,9 +189,8 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
     *
     * @param $glpi_computers_id integer : glpi computer id.
     *
-    * @param $cfg_ocs
-    *
-    * @return nothing .
+    * @param $history_drives
+    * @return void .
     */
    static function resetDisks($glpi_computers_id, $history_drives) {
 

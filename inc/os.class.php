@@ -48,7 +48,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
     *
     * @param $item                     CommonDBTM object
     *
-    * @return nothing
+    * @return void
     * @internal param int|string $withtemplate integer  withtemplate param (default '')
     */
    static function updateLockforOS($item) {
@@ -67,6 +67,11 @@ class PluginOcsinventoryngOS extends CommonDBChild {
       }
    }
 
+   /**
+    * @param int $plugin_ocsinventoryng_ocsservers_id
+    *
+    * @return array
+    */
    static function getOSLockableFields($plugin_ocsinventoryng_ocsservers_id = 0) {
 
       if ($plugin_ocsinventoryng_ocsservers_id > 0) {
@@ -100,9 +105,10 @@ class PluginOcsinventoryngOS extends CommonDBChild {
    }
 
    /**
-    * @param array $params
+    * @param array $options
     *
-    * @return array
+    * @return void
+    * @throws \GlpitestSQLError
     */
    static function updateComputerOS($options = []) {
       global $DB;
@@ -249,11 +255,8 @@ class PluginOcsinventoryngOS extends CommonDBChild {
     * Delete old os settings
     *
     * @param $glpi_computers_id integer : glpi computer id.
-    * @param $itemtype integer : device type identifier.
-    *
-    * @param $cfg_ocs
-    *
-    * @return nothing .
+    * @param $history_hardware
+    * @return void .
     */
    static function resetOS($glpi_computers_id, $history_hardware) {
 

@@ -55,7 +55,10 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
     * @param array   $officepack
     * @param array   $ocsOfficePack
     *
-    * @return Nothing .
+    * @param int     $force
+    *
+    * @return void .
+    * @throws \GlpitestSQLError
     */
    static function updateSoftware($cfg_ocs, $computers_id, $ocsComputer, $entity, $officepack, $ocsOfficePack, $force = 0) {
       global $DB;
@@ -129,7 +132,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
          }
          $version     = isset($software['VERSION']) ? $software['VERSION'] : "";
          $name        = isset($software['NAME']) ? $software['NAME'] : "";
-         $installdate = isset($software['INSTALLDATE']) ? $software['INSTALLDATE'] : "";
+         $installdate = (isset($software['INSTALLDATE']) && $software['INSTALLDATE'] != '0000-00-00 00:00:00') ? $software['INSTALLDATE'] : "NULL";
 
          //Software might be created in another entity, depending on the entity's configuration
          $target_entity = Entity::getUsedConfig('entities_id_software', $entity);
@@ -332,6 +335,8 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
     * @param $comments
     * @param $dohistory
     * return int/bool : inserted version id or false.
+    *
+    * @return bool
     */
    static function updateVersion($software, $version, $comments, $dohistory) {
       global $DB;
@@ -404,6 +409,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
     * @param        $installdate
     * @param Do|int $dohistory Do history?
     *
+    * @return mixed
     */
    static function installSoftwareVersion($computers_id, $softwareversions_id, $installdate, $dohistory = 1) {
       global $DB;
@@ -433,9 +439,9 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
     *
     * @param $glpi_computers_id integer : glpi computer id.
     *
-    * @param $cfg_ocs
-    *
-    * @return nothing .
+    * @param $history_software
+    * @return void .
+    * @throws \GlpitestSQLError
     */
    static function resetSoftwares($glpi_computers_id, $history_software) {
       global $DB;

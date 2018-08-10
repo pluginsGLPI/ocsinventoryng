@@ -404,7 +404,13 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
 
       echo ".";
       $entities_id = 0;
-      $action      = PluginOcsinventoryngOcsProcess::processComputer($ID, $ocsServerId, 1);
+      $process_params = ['ocsid'                               => $ID,
+                         'plugin_ocsinventoryng_ocsservers_id' => $ocsServerId,
+                         'lock'                                => 1,
+                         'defaultentity'                       => -1,
+                         'defaultlocation'                     => -1];
+
+      $action      = PluginOcsinventoryngOcsProcess::processComputer($process_params);
       PluginOcsinventoryngOcsProcess::manageImportStatistics($fields, $action['status']);
 
       switch ($action['status']) {

@@ -33,6 +33,8 @@ Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
 Html::header('OCSInventory NG', '', "tools", "pluginocsinventoryngmenu", "deleted_equiv");
 
+global $CFG_GLPI;
+
 echo "<div class='center'>";
 $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
 if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {

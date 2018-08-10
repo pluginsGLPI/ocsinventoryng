@@ -49,13 +49,15 @@ class PluginOcsinventoryngVirtualmachine extends CommonDBChild {
     * @param unknown $computers_id
     * @param         $ocsComputer
     * @param unknown $ocsservers_id
-    * @param unknown $cfg_ocs
+    * @param         $history_vm
+    * @param         $force
     *
-    * @return bool
+    * @return void
+    * @throws \GlpitestSQLError
     * @internal param unknown $ocsid
     * @internal param unknown $dohistory
     */
-   static function updateVirtualMachines($computers_id, $ocsComputer, $ocsservers_id, $history_vm, $force) {
+   static function updateVirtualMachine($computers_id, $ocsComputer, $ocsservers_id, $history_vm, $force) {
       global $DB;
 
       if ($force) {
@@ -130,12 +132,16 @@ class PluginOcsinventoryngVirtualmachine extends CommonDBChild {
          //Delete all connexions
          $virtualmachine->delete(['id'             => $data['id'],
                                   '_ocsservers_id' => $ocsservers_id,
-                                  '_no_history'    => !$cfg_ocs['history_vm']],
+                                  '_no_history'    => !$history_vm],
                                  true,
-                                 $cfg_ocs['history_vm']);
+                                 $history_vm);
       }
    }
 
+   /**
+    * @param $glpi_computers_id
+    * @param $history_vm
+    */
    static function resetVirtualmachine($glpi_computers_id, $history_vm) {
 
       $dd = new ComputerVirtualMachine();

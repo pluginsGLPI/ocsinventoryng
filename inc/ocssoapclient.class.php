@@ -101,6 +101,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
     *
     * @param array $options
     *
+    * @param int   $id
+    *
     * @return array
     */
    public function getComputers($options, $id = 0) {
@@ -256,7 +258,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
     *         )
     *      )
     *
-    * @return array List of snmp devices :
+    * @return void List of snmp devices :
     *      array (
     *         'TOTAL_COUNT' => int, // the total number of computers for this query (without taking
     *    OFFSET and MAX_RECORDS into account)
@@ -327,7 +329,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
     * @param array $cfg_ocs Server confifguration
     * @param       $max_date
     *
-    * @return array $data the computers to update
+    * @return void $data the computers to update
     */
    public function getComputersToUpdate($cfg_ocs, $max_date) {
    }
@@ -335,7 +337,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
    /**
     * Gets the array of computers for script checkocslinks.php
     *
-    * @return array $data the list of computers
+    * @return void $data the list of computers
     */
    public function getOCSComputers() {
    }
@@ -389,7 +391,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
    /**
     * Get the old agents without inventory in ocsinventory
     *
-    * @return array The list of deleted computers : (DELETED contains the id or deviceid of the
+    * @return void The list of deleted computers : (DELETED contains the id or deviceid of the
     *    computer and equivalent and EQUIV contains the new id if the computer was marged) array (
     *         'DELETED' => 'EQUIV'
     *      )

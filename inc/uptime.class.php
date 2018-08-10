@@ -45,7 +45,8 @@ class PluginOcsinventoryngUptime extends CommonDBChild {
    /**
     * @param $id
     * @param $ocsComputer
-    * @param $cfg_ocs
+    *
+    * @throws \GlpitestSQLError
     */
    static function updateUptime($id, $ocsComputer) {
       global $DB;

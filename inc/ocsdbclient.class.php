@@ -59,6 +59,13 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       return $this->db;
    }
 
+   /**
+    * @param       $id
+    * @param array $tables
+    *
+    * @return array
+    * @throws \GlpitestSQLError
+    */
    public function getComputerRule($id, $tables = []) {
       $computers = [];
 
@@ -679,7 +686,10 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     *
     * @param array $options
     *
+    * @param int   $id
+    *
     * @return array
+    * @throws \GlpitestSQLError
     */
    public function countComputers($options, $id = 0) {
 
@@ -1294,7 +1304,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     * @param      $deleted
     * @param null $equivclean
     *
-    * @return Query
+    * @return bool|\mysqli_result
+    * @throws \GlpitestSQLError
     */
    public function removeDeletedComputers($deleted, $equivclean = null) {
       if (is_array($deleted)) {

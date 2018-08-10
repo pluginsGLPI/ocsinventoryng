@@ -489,7 +489,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param type $plugin_ocsinventoryng_ocsservers_id string
     * @param type $macAdresses array
     *
-    * @return none
+    * @return void
     */
    static function deleteMACFromOCS($plugin_ocsinventoryng_ocsservers_id, $macAdresses) {
 
@@ -512,7 +512,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     *
     * @param $id_links
     *
-    * @return none
+    * @return void
     * @internal param type $plugin_ocsinventoryng_ocsservers_id string
     * @internal param type $ids array
     */
@@ -833,7 +833,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param type  $plugin_ocsinventoryng_ocsservers_id integer
     * @param       $subnet
     *
-    * @return type array with the status of the import or update process
+    * @return array array with the status of the import or update process
+    * @throws \GlpitestSQLError
     * @global type $DB
     */
    static function processIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id, $subnet) {
@@ -980,7 +981,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @param      $subnet
     * @param int  $identify
     *
-    * @return type array
+    * @return void array
+    * @throws \GlpitestSQLError
     * @internal param type $ipDiscoveryObject array
     */
    static function linkIpDiscover($plugin_ocsinventoryng_ocsservers_id, $itemtypes, $items_id, $macAdresses, $ocsItemstypes, $itemsDescription, $subnet, $identify = 0) {

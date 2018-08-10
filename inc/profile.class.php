@@ -138,7 +138,8 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
     * @param bool $openform
     * @param bool $closeform
     *
-    * @return nothing
+    * @return void
+    * @throws \GlpitestSQLError
     * @internal param int $items_id id of the profile
     * @internal param value $target url of target
     */
@@ -383,6 +384,9 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
       }
    }
 
+   /**
+    * @param $profile
+    */
    static function addAllServers($profile) {
       global $DB;
 

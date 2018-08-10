@@ -48,17 +48,21 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
     * Import monitors from OCS
     * @since 1.0
     *
-    * @param     $cfg_ocs OCSNG mode configuration
-    * @param     $computers_id computer's id in GLPI
-    * @param     $ocsservers_id OCS server id
-    * @param     $ocsComputer
-    * @param the $entity
+    * @param $monitor_params
     *
+    * @throws \GlpitestSQLError
     * @internal param computer $ocsid 's id in OCS
     * @internal param the $entity entity in which the monitor will be created
     */
-   static function importMonitor($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity, $force) {
+   static function importMonitor($monitor_params) {
       global $DB, $CFG_GLPI;
+
+      $cfg_ocs       = $monitor_params["cfg_ocs"];
+      $computers_id  = $monitor_params["computers_id"];
+      $ocsservers_id = $monitor_params["plugin_ocsinventoryng_ocsservers_id"];
+      $ocsComputer   = $monitor_params["datas"];
+      $entity        = $monitor_params["entities_id"];
+      $force         = $monitor_params["force"];
 
       if ($force && $cfg_ocs["import_monitor"] == 1) { // Only reset monitor as global in unit management
          self::resetMonitors($computers_id, $cfg_ocs['history_monitor']);    // try to link monitor with existing
@@ -282,7 +286,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
                      $query  = "DELETE
                          FROM `glpi_computers_items`
                          WHERE `id`= " . $data['id'];
-                     $result = $DB->query($query);
+                     $DB->query($query);
                      //Put periph in dustbin
                   } else if ($decoConf == "trash") {
                      $query = "UPDATE
@@ -302,9 +306,9 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
     *
     * @param $glpi_computers_id integer : glpi computer id.
     *
-    * @param $cfg_ocs
-    *
-    * @return nothing .
+    * @param $history_monitor
+    * @return void .
+    * @throws \GlpitestSQLError
     */
    static function resetMonitors($glpi_computers_id, $history_monitor) {
       global $DB;

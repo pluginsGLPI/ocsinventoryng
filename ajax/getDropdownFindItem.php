@@ -33,6 +33,9 @@ header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkLoginUser();
+
+global $CFG_GLPI;
+
 if (!isset($_POST) || empty($_POST)) {
    $_POST = $_GET;
 }

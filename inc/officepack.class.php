@@ -49,9 +49,14 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
     * This function create a officepack in GLPI with some general data.
     *
     * @param type $computers_id
+    * @param      $softwares_id
+    * @param      $softwares_name
+    * @param      $softwareversions_id
     * @param      $entity
-    * @param type $ocsComputer
+    * @param      $ocsOfficePacks
     * @param type $cfg_ocs
+    *
+    * @param      $imported_licences
     *
     * @internal param \type $ocsservers_id
     */

@@ -42,6 +42,11 @@ class PluginOcsinventoryngOsinstall extends CommonDBChild {
 
    static $rightname = "plugin_ocsinventoryng";
 
+   /**
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
       return __('OS Informations', 'ocsinventoryng');
    }
@@ -62,6 +67,7 @@ class PluginOcsinventoryngOsinstall extends CommonDBChild {
     * @param $computers_id integer : glpi computer id.
     * @param $ocsComputer
     * @param $history_plugins boolean
+    * @param $force
     */
    static function updateOSInstall($computers_id, $ocsComputer, $history_plugins, $force) {
 

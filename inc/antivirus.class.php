@@ -50,6 +50,7 @@ class PluginOcsinventoryngAntivirus extends CommonDBChild {
     * @param $computers_id integer : glpi computer id.
     * @param $ocsComputer
     * @param $cfg_ocs array : ocs config
+    * @param $force
     */
    static function updateAntivirus($computers_id, $ocsComputer, $cfg_ocs, $force) {
 

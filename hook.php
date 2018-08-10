@@ -1901,7 +1901,7 @@ function plugin_ocsinventoryng_searchOptionsValues($params = []) {
  *
  * @param $params           input data
  *
- * @return an array of criteria
+ * @return array array of criteria
  */
 function plugin_ocsinventoryng_getRuleCriteria($params) {
    $criteria = [];
@@ -1979,7 +1979,7 @@ function plugin_ocsinventoryng_getRuleCriteria($params) {
  *
  * @param $params           input data
  *
- * @return an array of actions
+ * @return array array of actions
  */
 function plugin_ocsinventoryng_getRuleActions($params) {
    //
@@ -2012,8 +2012,8 @@ function plugin_ocsinventoryng_getRuleActions($params) {
  *
  * @param $params           input data
  *
- * @return an array of criteria value to add for processing
- **/
+ * @return array array of criteria value to add for processing
+ */
 function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params) {
    switch ($params['rule_itemtype']) {
       case 'RuleImportEntity':
@@ -2162,7 +2162,7 @@ function plugin_ocsinventoryng_executeActions($params) {
  *
  * @param $params           input data
  *
- * @return $output array
+ * @return  $output array
  */
 function plugin_ocsinventoryng_preProcessRulePreviewResults($params) {
    $output = $params['output'];
@@ -2216,7 +2216,7 @@ function plugin_ocsinventoryng_preProcessRulePreviewResults($params) {
  *
  * @param $params           input data
  *
- * @return $output array
+ * @return  $output array
  */
 function plugin_ocsinventoryng_preProcessRuleCollectionPreviewResults($params) {
    return plugin_ocsinventoryng_preProcessRulePreviewResults($params);
@@ -2225,8 +2225,10 @@ function plugin_ocsinventoryng_preProcessRuleCollectionPreviewResults($params) {
 /**
  * Get the list of all tables to include in the query
  *
- * @return an array of table names
- **/
+ * @param $rule_itemtype
+ *
+ * @return array array of table names
+ */
 function plugin_ocsinventoryng_getTablesForQuery($rule_itemtype) {
 
    $tables = [];
@@ -2249,9 +2251,10 @@ function plugin_ocsinventoryng_getTablesForQuery($rule_itemtype) {
 /**
  *  * Get fields needed to process criterias
  *
+ * @param            $rule_itemtype
  * @param fields|int $withouttable fields without tablename ? (default 0)
  *
- * @return an array of needed fields
+ * @return array array of needed fields
  */
 function plugin_ocsinventoryng_getFieldsForQuery($rule_itemtype, $withouttable = 0) {
 
@@ -2293,8 +2296,8 @@ function plugin_ocsinventoryng_getFieldsForQuery($rule_itemtype, $withouttable =
 /**
  * Get foreign fields needed to process criterias
  *
- * @return an array of needed fields
- **/
+ * @return array array of needed fields
+ */
 function plugin_ocsinventoryng_getFKFieldsForQuery() {
 
    $fields = [];
@@ -2317,7 +2320,7 @@ function plugin_ocsinventoryng_getFKFieldsForQuery() {
  *
  * @param $global_criteria an array of global criteria for this rule engine
  *
- * @return the array including plugin's criteria
+ * @return array array including plugin's criteria
  */
 function plugin_ocsinventoryng_ruleImportComputer_addGlobalCriteria($global_criteria) {
    return array_merge($global_criteria, ['IPADDRESS', 'IPSUBNET', 'MACADDRESS']);
@@ -2329,7 +2332,7 @@ function plugin_ocsinventoryng_ruleImportComputer_addGlobalCriteria($global_crit
  *
  * @param array|necessary $params
  *
- * @return an array with SQL restrict resquests
+ * @return array|\necessary array with SQL restrict resquests
  * @internal param necessary $params parameters to build SQL restrict requests
  * @since 1.0
  */
@@ -2617,8 +2620,8 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration) {
  *
  * @param $import_device     array
  *
- * @return import_device array migrated in post 0.78 scheme
- **/
+ * @return array array migrated in post 0.78 scheme
+ */
 function plugin_ocsinventoryng_migrateImportDevice($import_device = []) {
 
    $new_import_device = ['_version_078_'];

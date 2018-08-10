@@ -48,7 +48,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
     *
     * @param $item                     CommonDBTM object
     *
-    * @return nothing
+    * @return void
     * @internal param int|string $withtemplate integer  withtemplate param (default '')
     */
    static function updateLockforComputer(CommonDBTM $item) {
@@ -71,6 +71,11 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
       }
    }
 
+   /**
+    * @param int $plugin_ocsinventoryng_ocsservers_id
+    *
+    * @return array
+    */
    static function getHardwareLockableFields($plugin_ocsinventoryng_ocsservers_id = 0) {
 
       if ($plugin_ocsinventoryng_ocsservers_id > 0) {
@@ -120,6 +125,12 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
    }
 
 
+   /**
+    * @param int $plugin_ocsinventoryng_ocsservers_id
+    * @param int $ocsid
+    *
+    * @return array
+    */
    static function getRuleLockableFields($plugin_ocsinventoryng_ocsservers_id = 0, $ocsid = 0) {
 
       if ($plugin_ocsinventoryng_ocsservers_id > 0 && $ocsid > 0) {
@@ -159,9 +170,10 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
 
 
    /**
-    * @param array $params
+    * @param array $options
     *
-    * @return array
+    * @return void
+    * @throws \GlpitestSQLError
     */
    static function updateComputerHardware($options = []) {
       global $DB;
@@ -225,7 +237,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             $updates["entities_id"] = $options['entities_id'];
             $updates["_nolock"]     = true;
             $comp                   = new Computer();
-            $comp->update($updates, $options['cfg_ocs']['history_hardware']);
+            $comp->update($updates, $options['dohistory']);
          }
       }
    }
@@ -236,12 +248,10 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
     *
     * @param $line_links
     * @param $data
-    * @param $cfg_ocs
-    *
-    * @return nothing
+    * @param $history_hardware
+    * @return void
     * @internal param $line_links
     * @internal param $data
-    *
     */
    static function updateComputerFields($line_links, $data, $history_hardware) {
 
@@ -339,6 +349,14 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
       return ($first ? 0 : $rep);
    }
 
+   /**
+    * @param     $ocsComputer
+    * @param     $cfg_ocs
+    * @param int $computers_id
+    *
+    * @return array
+    * @throws \GlpitestSQLError
+    */
    static function getFields($ocsComputer, $cfg_ocs, $computers_id = 0) {
       global $DB;
 

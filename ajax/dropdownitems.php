@@ -33,6 +33,8 @@ Html::header_nocache();
 
 Session::checkLoginUser();
 
+global $CFG_GLPI;
+
 // Make a select box
 if (isset($_POST["itemtype"])
 ) {

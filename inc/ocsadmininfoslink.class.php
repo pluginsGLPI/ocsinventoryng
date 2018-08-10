@@ -60,6 +60,11 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
 
    }
 
+   /**
+    * @param int $plugin_ocsinventoryng_ocsservers_id
+    *
+    * @return array
+    */
    static function getAdministrativeInfosLockableFields($plugin_ocsinventoryng_ocsservers_id = 0) {
 
       if ($plugin_ocsinventoryng_ocsservers_id > 0) {
@@ -248,13 +253,9 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
     *
     * This function erase old data and import the new ones about administrative informations
     *
-    * @param $computers_id integer : glpi computer id.
-    * @param $ocsid integer : ocs computer id (ID).
-    * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
-    * @param $cfg_ocs array : configuration ocs of the server
-    * @param $computer_updates array : already updated fields of the computer
-    * @param $entities_id
+    * @param $params
     *
+    * @throws \GlpitestSQLError
     */
    static function updateAdministrativeInfo($params) {
       global $DB;
@@ -392,12 +393,11 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
     * @param $computer_updates array : already updated fields of the computer
     * @param $ocsComputer
     *
-    * @return Nothing .
+    * @return void .
     * @internal param int $ocsid : ocs computer id (ID).
     * @internal param array $cfg_ocs : configuration ocs of the server
     * @internal param int $entity : entity of the computer
     * @internal param bool $dohistory : log changes?
-    *
     */
    static function updateAdministrativeInfoUseDate($computers_id, $plugin_ocsinventoryng_ocsservers_id,
                                                    &$computer_updates, $ocsComputer) {

@@ -233,8 +233,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
     *
     * @param $plugin_ocsinventoryng_ocsservers_id Integer : Id of the ocs config
     *
-    * @return Nothing (display)
-    * */
+    * @return void (display)
+    * @throws \GlpitestSQLError
+    */
    static function setupMenu($plugin_ocsinventoryng_ocsservers_id) {
       global $CFG_GLPI, $DB;
       $name       = "";
@@ -352,8 +353,9 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
     *
     * @param $plugin_ocsinventoryng_ocsservers_id Integer : Id of the ocs config
     *
-    * @return Nothing (display)
-    * */
+    * @return void (display)
+    * @throws \GlpitestSQLError
+    */
    static function importMenu($plugin_ocsinventoryng_ocsservers_id) {
       global $CFG_GLPI, $DB;
       $name                = "";
@@ -1251,8 +1253,8 @@ JAVASCRIPT;
     * @param $options   array
     *     - target form target
     *
-    * @return Nothing (display)
-    * */
+    * @return void (display)
+    */
    function showForm($ID, $options = []) {
 
       $this->initForm($ID, $options);
@@ -1684,8 +1686,9 @@ JAVASCRIPT;
     *
     * @param $id int : ID of the OCS config (default value 1)
     *
-    * @return Value of $confVar fields or false if unfound.
-    * */
+    * @return int|null|string[] of $confVar fields or false if unfound.
+    * @throws \GlpitestSQLError
+    */
    static function getConfig($id) {
       global $DB;
 
@@ -1776,7 +1779,6 @@ JAVASCRIPT;
       }
       return false;
    }
-
 
 
    /**
@@ -2227,13 +2229,10 @@ JAVASCRIPT;
    /**
     * Display a list of computers to add or to link
     *
-    * @param            $serverId
-    * @param display    $advanced
-    * @param indicates  $check
-    * @param display    $start
-    * @param a|int      $entity
-    * @param bool|false $tolinked
+    * @param $show_params
     *
+    * @return bool
+    * @throws \GlpitestSQLError
     * @internal param the $plugin_ocsinventoryng_ocsservers_id ID of the ocs server
     * @internal param display $advanced detail about the computer import or not (target entity, matched rules, etc.)
     * @internal param indicates $check if checkboxes are checked or not
@@ -2241,10 +2240,16 @@ JAVASCRIPT;
     * @internal param a $entity list of entities in which computers can be added or linked
     * @internal param false $tolinked for an import, true for a link
     *
-    * @return bool
     */
-   static function showComputersToAdd($serverId, $advanced, $check, $start, $entity = 0, $tolinked = false) {
+   static function showComputersToAdd($show_params) {
       global $DB, $CFG_GLPI;
+
+      $serverId = $show_params["plugin_ocsinventoryng_ocsservers_id"];
+      $advanced    = $show_params["import_mode"];
+      $check  = $show_params["check"];
+      $start  = $show_params["start"];
+      $entity  = $show_params["entities_id"];
+      $tolinked  = $show_params["tolinked"];
 
       if (!Session::haveRight("plugin_ocsinventoryng", READ)
           && !Session::haveRight("plugin_ocsinventoryng_import", READ)
@@ -2711,7 +2716,7 @@ JAVASCRIPT;
 
    /**
     *
-    * @return type
+    * @return array
     */
    static function getValuesActionCron() {
       $values                               = [];
@@ -2739,6 +2744,7 @@ JAVASCRIPT;
             return $value;
       }
    }
+
    /**
     * @param $name
     *
@@ -2954,7 +2960,11 @@ JAVASCRIPT;
                         $task->log(sprintf(__('%1$s: %2$s'), _n('Computer', 'Computer', 1),
                                            sprintf(__('%1$s (%2$s)'), $values["ocs_deviceid"], $values["id"])));
 
-                        PluginOcsinventoryngOcsProcess::synchronizeComputer($values["id"], $plugin_ocsinventoryng_ocsservers_id);
+                        $sync_params = ['ID'                                  => $values["id"],
+                                        'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                        'cfg_ocs'                             => $cfg_ocs,
+                                        'force'                               => 0];
+                        PluginOcsinventoryngOcsProcess::synchronizeComputer($sync_params);
 
                      }
                   }
@@ -3009,7 +3019,6 @@ JAVASCRIPT;
    }
 
 
-
    /**
     * @param $id
     */
@@ -3050,13 +3059,13 @@ JAVASCRIPT;
     *
     * @return an
     */
-//   function getSpecificMassiveActions($checkitem = null) {
-//
-//      $actions = parent::getSpecificMassiveActions($checkitem);
-//
-//      return $actions;
-//   }
-//
+   //   function getSpecificMassiveActions($checkitem = null) {
+   //
+   //      $actions = parent::getSpecificMassiveActions($checkitem);
+   //
+   //      return $actions;
+   //   }
+   //
 
    /**
     * @internal param $width

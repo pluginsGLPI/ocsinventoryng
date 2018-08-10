@@ -48,16 +48,21 @@ class PluginOcsinventoryngPrinter extends CommonDBChild {
     * Import printers from OCS
     * @since 1.0
     *
-    * @param $cfg_ocs OCSNG mode configuration
-    * @param $computers_id computer's id in GLPI
-    * @param $ocsservers_id OCS server id
-    * @param $ocsComputer
-    * @param $entity the entity in which the printer will be created
+    * @param $printer_params
     *
+    * @throws \GlpitestSQLError
     * @internal param computer $ocsid 's id in OCS
     */
-   static function importPrinter($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity, $force) {
+   static function importPrinter($printer_params) {
       global $DB, $CFG_GLPI;
+
+      $cfg_ocs       = $printer_params["cfg_ocs"];
+      $computers_id  = $printer_params["computers_id"];
+      $ocsservers_id = $printer_params["plugin_ocsinventoryng_ocsservers_id"];
+      $ocsComputer   = $printer_params["datas"];
+      $entity        = $printer_params["entities_id"];
+      $force         = $printer_params["force"];
+
 
       if ($force) {
          PluginOcsinventoryngPrinter::resetPrinters($computers_id, $cfg_ocs['history_printer']);
@@ -256,9 +261,10 @@ class PluginOcsinventoryngPrinter extends CommonDBChild {
     *
     * @param $glpi_computers_id integer : glpi computer id.
     *
-    * @param $cfg_ocs
+    * @param $history_printer
     *
-    * @return nothing .
+    * @return void .
+    * @throws \GlpitestSQLError
     */
    static function resetPrinters($glpi_computers_id, $history_printer) {
       global $DB;

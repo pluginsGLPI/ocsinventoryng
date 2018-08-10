@@ -287,7 +287,7 @@ abstract class PluginOcsinventoryngOcsClient {
     */
    /**
     * @param       $id
-    * @param array $options
+    * @param array $tables
     *
     * @return mixed|null
     */

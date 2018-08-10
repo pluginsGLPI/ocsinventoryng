@@ -118,10 +118,9 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
     * @param the   $ID
     * @param array $field
     *
-    * @return nothing
+    * @return void
     * @internal param the $ID item's ID
     * @internal param array $field the item's fields
-    *
     */
    function displaySpecificTypeField($ID, $field = []) {
 
@@ -424,9 +423,8 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
     *
     * @param if $not_imported_id
     *
-    * @return nothing
+    * @return void
     * @internal param if $not_imported_id of the computer that is not imported in GLPI
-    *
     */
    function deleteNotImportedComputer($not_imported_id) {
 
@@ -501,12 +499,19 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
          $notimported->getFromDB($params['id']);
          $changes = self::getOcsComputerInfos($notimported->fields);
          if (isset($params['force'])) {
-            $result = PluginOcsinventoryngOcsProcess::processComputer($notimported->fields['ocsid'],
-                                                                     $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
-                                                                     0, $params['entity'], 0);
+            $process_params = ['ocsid'                               => $notimported->fields['ocsid'],
+                               'plugin_ocsinventoryng_ocsservers_id' => $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
+                               'lock'                                => 0,
+                               'defaultentity'                       => $params['entity'],
+                               'defaultlocation'                     => 0];
+            $result = PluginOcsinventoryngOcsProcess::processComputer($process_params);
          } else {
-            $result = PluginOcsinventoryngOcsProcess::processComputer($notimported->fields['ocsid'],
-                                                                     $notimported->fields['plugin_ocsinventoryng_ocsservers_id'], 0, -1, -1);
+            $process_params = ['ocsid'                               => $notimported->fields['ocsid'],
+                               'plugin_ocsinventoryng_ocsservers_id' => $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
+                               'lock'                                => 0,
+                               'defaultentity'                       => -1,
+                               'defaultlocation'                     => -1];
+            $result = PluginOcsinventoryngOcsProcess::processComputer($process_params);
          }
 
          if (in_array($result['status'],
@@ -551,10 +556,10 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
          $notimported = new PluginOcsinventoryngNotimportedcomputer;
          $notimported->getFromDB($params['id']);
          $changes = self::getOcsComputerInfos($notimported->fields);
-
-         if (PluginOcsinventoryngOcsProcess::linkComputer($notimported->fields['ocsid'],
-                                                         $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
-                                                         $params['computers_id'])
+         $link_params = ['ocsid'                               => $notimported->fields['ocsid'],
+                         'plugin_ocsinventoryng_ocsservers_id' => $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
+                         'computers_id'                        => $params['computers_id']];
+         if (PluginOcsinventoryngOcsProcess::linkComputer($link_params)
          ) {
             $notimported->delete(['id' => $params['id']]);
             //If serial has been changed in order to import computer
@@ -688,7 +693,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
     *
     * @param null $checkitem
     *
-    * @return an
+    * @return array
     */
    function getSpecificMassiveActions($checkitem = null) {
 

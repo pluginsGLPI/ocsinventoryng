@@ -42,6 +42,11 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
 
    static $rightname = "plugin_ocsinventoryng";
 
+   /**
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
       return __('Windows Updates', 'ocsinventoryng');
    }
@@ -61,6 +66,7 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
     * @param $computers_id integer : glpi computer id.
     * @param $ocsComputer
     * @param $history_plugins boolean
+    * @param $force
     */
    static function updateWinupdatestate($computers_id, $ocsComputer, $history_plugins, $force) {
 
@@ -101,7 +107,12 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
 
    /**
     * @see CommonGLPI::getTabNameForItem()
-    **/
+    *
+    * @param \CommonGLPI $item
+    * @param int         $withtemplate
+    *
+    * @return array|string
+    */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       $plugin_ocsinventoryng_ocsservers_id = PluginOcsinventoryngOcslink::getOCSServerForItem($item);
@@ -147,8 +158,8 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
     * @param             $comp                  Computer object
     * @param bool|string $withtemplate boolean  Template or basic item (default '')
     *
-    * @return Nothing
-    */
+    * @return bool
+*/
    static function showForComputer(Computer $comp, $withtemplate = '') {
       global $DB;
 

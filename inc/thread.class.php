@@ -345,7 +345,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                   $linkedrefused_number->AddValue($thread["link_refused_machines_number"]);
                   $process_time->AddValue($thread["duree"]);
                } else if ($imported_number->GetCount() > 0) {
-                  $this->showshowStat($minfreq, $imported_number, $synchronized_number,
+                  $this->showStat($minfreq, $imported_number, $synchronized_number,
                      $linked_number, $failed_number, $notupdated_number,
                      $notunique_number, $linkedrefused_number, $process_time);
                   $imported_number->Reset();
@@ -403,7 +403,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       }
 
       if ($imported_number->GetCount() > 0) {
-         $this->showshowStat($minfreq, $imported_number, $synchronized_number, $linked_number,
+         $this->showStat($minfreq, $imported_number, $synchronized_number, $linked_number,
             $failed_number, $notupdated_number, $notunique_number,
             $linkedrefused_number, $process_time);
       }
@@ -428,7 +428,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
     * @param $linkedrefused
     * @param $time
     **/
-   function showshowStat($duree, &$imported, &$synchronized, &$linked, &$failed, &$notupdated,
+   function showStat($duree, &$imported, &$synchronized, &$linked, &$failed, &$notupdated,
                          &$notunique, &$linkedrefused, &$time) {
 
       $title = __('Statistics');

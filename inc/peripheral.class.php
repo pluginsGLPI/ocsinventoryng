@@ -48,16 +48,20 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
     * Import peripherals from OCS
     * @since 1.0
     *
-    * @param $cfg_ocs OCSNG mode configuration
-    * @param $computers_id computer's id in GLPI
-    * @param $ocsservers_id OCS server id
-    * @param $ocsComputer
-    * @param $entity the entity in which the peripheral will be created
+    * @param $periph_params
     *
+    * @throws \GlpitestSQLError
     * @internal param computer $ocsid 's id in OCS
     */
-   static function importPeripheral($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity, $force) {
+   static function importPeripheral($periph_params) {
       global $DB, $CFG_GLPI;
+
+      $cfg_ocs       = $periph_params["cfg_ocs"];
+      $computers_id  = $periph_params["computers_id"];
+      $ocsservers_id = $periph_params["plugin_ocsinventoryng_ocsservers_id"];
+      $ocsComputer   = $periph_params["datas"];
+      $entity        = $periph_params["entities_id"];
+      $force         = $periph_params["force"];
 
       if ($force) {
          self::resetPeripherals($computers_id, $cfg_ocs['history_peripheral']);
@@ -207,9 +211,9 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
     *
     * @param $glpi_computers_id integer : glpi computer id.
     *
-    * @param $cfg_ocs
-    *
-    * @return nothing .
+    * @param $history_peripheral
+    * @return void .
+    * @throws \GlpitestSQLError
     */
    static function resetPeripherals($glpi_computers_id, $history_peripheral) {
       global $DB;

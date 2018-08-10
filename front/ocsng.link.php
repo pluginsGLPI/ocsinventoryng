@@ -65,14 +65,15 @@ if (isset ($_POST["delete_link"])) {
 if (isset($_SESSION["ocs_link"])) {
    if ($count = count($_SESSION["ocs_link"])) {
       $percent = min(100,
-         round(100 * ($_SESSION["ocs_link_count"] - $count) / $_SESSION["ocs_link_count"], 0));
+                     round(100 * ($_SESSION["ocs_link_count"] - $count) / $_SESSION["ocs_link_count"], 0));
 
       Html::displayProgressBar(400, $percent);
 
-      $key = array_pop($_SESSION["ocs_link"]);
-      PluginOcsinventoryngOcsProcess::linkComputer($key["ocsid"],
-         $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-         $key["computers_id"]);
+      $key         = array_pop($_SESSION["ocs_link"]);
+      $link_params = ['ocsid'                               => $key["ocsid"],
+                      'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                      'computers_id'                        => $key["computers_id"]];
+      PluginOcsinventoryngOcsProcess::linkComputer($link_params);
       Html::redirect($_SERVER['PHP_SELF']);
    } else {
       Html::displayProgressBar(400, 100);
@@ -91,10 +92,13 @@ if (!isset($_POST["import_ok"])) {
       $_GET['start'] = 0;
    }
    PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-   PluginOcsinventoryngOcsServer::showComputersToAdd($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-      $_SESSION["change_import_mode"], $_GET['check'],
-      $_GET['start'], $_SESSION['glpiactiveentities'],
-      1);
+   $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                   'import_mode'                         => $_SESSION["change_import_mode"],
+                   'check'                               => $_GET['check'],
+                   'start'                               => $_GET['start'],
+                   'entities_id'                         => $_SESSION['glpiactiveentities'],
+                   'tolinked'                            => true];
+   PluginOcsinventoryngOcsServer::showComputersToAdd($show_params);
 
 } else {
 
@@ -107,8 +111,8 @@ if (!isset($_POST["import_ok"])) {
 
                foreach ($_POST['tolink'] as $ocsid => $computers_id) {
                   if ($computers_id > 0 && $key == $ocsid) {
-                     $_SESSION["ocs_link"][] = ['ocsid' => $ocsid,
-                        'computers_id' => $computers_id];
+                     $_SESSION["ocs_link"][] = ['ocsid'        => $ocsid,
+                                                'computers_id' => $computers_id];
 
                   }
                }

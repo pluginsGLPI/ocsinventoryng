@@ -68,7 +68,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
     * @param $computers_id integer : glpi computer id.
     * @param $ocsComputer
     * @param $history_plugins boolean
-    *
+    * @param $force
     */
    static function updateRegistry($computers_id, $ocsComputer, $history_plugins, $force) {
       //before update, delete all entries about $computers_id
@@ -220,6 +220,9 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
       return true;
    }
 
+   /**
+    * @return array
+    */
    function rawSearchOptions() {
 
       $tab = [];

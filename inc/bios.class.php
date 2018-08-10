@@ -43,6 +43,11 @@ class PluginOcsinventoryngBios extends CommonDBChild {
    static $rightname = "plugin_ocsinventoryng";
 
 
+   /**
+    * @param int $plugin_ocsinventoryng_ocsservers_id
+    *
+    * @return array
+    */
    static function getBiosLockableFields($plugin_ocsinventoryng_ocsservers_id = 0) {
 
       if ($plugin_ocsinventoryng_ocsservers_id > 0) {

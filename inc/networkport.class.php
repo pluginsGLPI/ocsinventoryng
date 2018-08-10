@@ -59,7 +59,12 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
     * @param $dohistory
     * @param $already_known_ports
     *
-    * @return ID
+    * @param $mask
+    * @param $gateway
+    * @param $subnet
+    * @param $entities_id
+    *
+    * @return int
     */
    static private function updateNetworkPort($mac, $name, $computers_id, $instantiation_type,
                                              $inst_input, $ips, $check_name, $dohistory,
@@ -652,7 +657,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
     *
     * @param null $checkitem
     *
-    * @return an
+    * @return array
     */
    function getSpecificMassiveActions($checkitem = null) {
 

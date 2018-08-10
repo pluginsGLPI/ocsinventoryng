@@ -435,20 +435,23 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
    }
 
    /**
-    * @param     $ocsid
-    * @param     $plugin_ocsinventoryng_ocsservers_id
-    * @param int $lock
-    * @param int $defaultentity
-    * @param int $defaultlocation
+    * @param $process_params
     *
     * @return array
     * @throws \GlpitestSQLError
     */
-   static function processComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock = 0,
-                                   $defaultentity = -1, $defaultlocation = -1) {
+   static function processComputer($process_params) {
       global $DB;
 
+      $ocsid                               = $process_params["ocsid"];
+      $plugin_ocsinventoryng_ocsservers_id = $process_params["plugin_ocsinventoryng_ocsservers_id"];
+      $lock                                = $process_params["lock"];
+      $defaultentity                       = $process_params["defaultentity"];
+      $defaultlocation                     = $process_params["defaultlocation"];
+
       PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+
       //Check it machine is already present AND was imported by OCS AND still present in GLPI
       $query  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`id`, `computers_id`, `ocsid`
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -462,29 +465,43 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
          $datas = $DB->fetch_array($result);
          //Return code to indicates that the machine was synchronized
          //or only last inventory date changed
-         return self::synchronizeComputer($datas["id"], $plugin_ocsinventoryng_ocsservers_id, 0);
+         $sync_params = ['ID'                                  => $datas["id"],
+                         'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                         'cfg_ocs'                             => $cfg_ocs,
+                         'force'                               => 0];
+         return self::synchronizeComputer($sync_params);
       }
-      return self::importComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock, $defaultentity,
-                                  $defaultlocation);
+
+      $import_params = ['ocsid'                               => $ocsid,
+                        'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                        'lock'                                => $lock,
+                        'defaultentity'                       => $defaultentity,
+                        'defaultlocation'                     => $defaultlocation,
+                        'cfg_ocs'                             => $cfg_ocs];
+      return self::importComputer($import_params);
 
    }
 
 
    /**
-    * @param     $ocsid
-    * @param     $plugin_ocsinventoryng_ocsservers_id
-    * @param int $lock
-    * @param int $defaultentity
-    * @param int $defaultlocation
+    * @param $import_params
     *
     * @return array
     * @throws \GlpitestSQLError
     */
-   static function importComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock = 0, $defaultentity = -1, $defaultlocation = -1) {
+   static function importComputer($import_params) {
 
-      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
-      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
-      $comp    = new Computer();
+      //$defaultentity = -1, $defaultlocation = -1 ?
+      $ocsid                               = $import_params["ocsid"];
+      $plugin_ocsinventoryng_ocsservers_id = $import_params["plugin_ocsinventoryng_ocsservers_id"];
+      $lock                                = $import_params["lock"];
+      $defaultentity                       = $import_params["defaultentity"];
+      $defaultlocation                     = $import_params["defaultlocation"];
+      $cfg_ocs                             = $import_params["cfg_ocs"];
+
+      //      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      //      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+      $comp = new Computer();
 
       $rules_matched = [];
       $ocsClient     = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
@@ -574,8 +591,10 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                      if (is_array($rulelink_results['found_computers']) && count($rulelink_results['found_computers']) > 0) {
 
                         foreach ($rulelink_results['found_computers'] as $tmp => $computers_id) {
-
-                           if (self::linkComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $computers_id)) {
+                           $link_params = ['ocsid'                               => $ocsid,
+                                           'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                           'computers_id'                        => $computers_id];
+                           if (self::linkComputer($link_params)) {
                               return ['status'       => self::COMPUTER_LINKED,
                                       'entities_id'  => $data['entities_id'],
                                       'rule_matched' => $rules_matched,
@@ -595,8 +614,16 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                $changes[2] = $ocsid;
                PluginOcsinventoryngOcslink::history($computers_id, $changes, PluginOcsinventoryngOcslink::HISTORY_OCS_IMPORT);
 
-               if ($idlink = PluginOcsinventoryngOcslink::ocsLink($computer['META']['ID'], $plugin_ocsinventoryng_ocsservers_id, $computers_id)) {
-                  self::synchronizeComputer($idlink, $plugin_ocsinventoryng_ocsservers_id);
+               $link_params = ['ocsid'                               => $computer['META']['ID'],
+                               'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                               'computers_id'                        => $computers_id];
+
+               if ($idlink = PluginOcsinventoryngOcslink::ocsLink($link_params)) {
+                  $sync_params = ['ID'                                  => $idlink,
+                                  'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                  'cfg_ocs'                             => $cfg_ocs,
+                                  'force'                               => 0];
+                  self::synchronizeComputer($sync_params);
                }
 
                //Return code to indicates that the machine was imported
@@ -622,15 +649,17 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
    }
 
    /**
-    * @param $ocsid
-    * @param $plugin_ocsinventoryng_ocsservers_id
-    * @param $computers_id
+    * @param $link_params
     *
     * @return bool
     * @throws \GlpitestSQLError
     */
-   static function linkComputer($ocsid, $plugin_ocsinventoryng_ocsservers_id, $computers_id) {
+   static function linkComputer($link_params) {
       global $DB, $CFG_GLPI;
+
+      $ocsid                               = $link_params["ocsid"];
+      $plugin_ocsinventoryng_ocsservers_id = $link_params["plugin_ocsinventoryng_ocsservers_id"];
+      $computers_id                        = $link_params["computers_id"];
 
       PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
@@ -697,7 +726,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
          $ocsClient->setChecksum(PluginOcsinventoryngOcsClient::CHECKSUM_ALL, $ocsid);
 
          if ($ocs_id_change
-             || ($idlink = PluginOcsinventoryngOcslink::ocsLink($ocsid, $plugin_ocsinventoryng_ocsservers_id, $computers_id))) {
+             || ($idlink = PluginOcsinventoryngOcslink::ocsLink($link_params))) {
 
             // automatic transfer computer
             if (($CFG_GLPI['transfers_id_auto'] > 0) && Session::isMultiEntitiesMode()) {
@@ -743,8 +772,11 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                $changes[2] = $ocsid;
                PluginOcsinventoryngOcslink::history($computers_id, $changes, PluginOcsinventoryngOcslink::HISTORY_OCS_LINK);
             }
-
-            self::synchronizeComputer($idlink, $plugin_ocsinventoryng_ocsservers_id, 1);
+            $sync_params = ['ID'                                  => $idlink,
+                            'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                            'cfg_ocs'                             => $cfg_ocs,
+                            'force'                               => 1];
+            self::synchronizeComputer($sync_params);
             return true;
          }
       } else {
@@ -814,19 +846,18 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
    /** Update a ocs computer
     *
-    * @param          $ID integer : ID of ocslinks row
-    * @param          $plugin_ocsinventoryng_ocsservers_id integer : ocs server ID
-    * @param bool|int $force bool : force update ?
-    * return action done
+    * @param $sync_params
     *
     * @return array
     * @throws \GlpitestSQLError
     */
-   static function synchronizeComputer($ID, $plugin_ocsinventoryng_ocsservers_id, $force = 0) {
+   static function synchronizeComputer($sync_params) {
       global $DB, $CFG_GLPI;
 
-      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
-      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+      $ID                                  = $sync_params["ID"];
+      $plugin_ocsinventoryng_ocsservers_id = $sync_params["plugin_ocsinventoryng_ocsservers_id"];
+      $force                               = $sync_params["force"];
+      $cfg_ocs                             = $sync_params["cfg_ocs"];
 
       $query  = "SELECT `ocsid`, `computers_id`, `plugin_ocsinventoryng_ocsservers_id`, `entities_id`, `computer_update`, `tag`
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
@@ -1173,8 +1204,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                $params['force'] = $force;
 
                if ($updates['hardware']) {
-                  $params['dohistory']     = $cfg_ocs['history_hardware'];
-                  $params['HARDWARE'] = $ocsComputer['HARDWARE'];
+                  $params['dohistory'] = $cfg_ocs['history_hardware'];
+                  $params['HARDWARE']  = $ocsComputer['HARDWARE'];
 
                   $params['check_history'] = true;
                   if ($force) {
@@ -1237,35 +1268,49 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                   PluginOcsinventoryngDevice::updateDevices("Item_DevicePci", $ocsComputer['PORTS'], $params_devices);
                }
                if ($updates['monitors'] && isset($ocsComputer["MONITORS"])) {
-                  PluginOcsinventoryngMonitor::importMonitor($cfg_ocs, $line['computers_id'], $plugin_ocsinventoryng_ocsservers_id,
-                                                             $ocsComputer["MONITORS"], $comp->fields["entities_id"], $force);
+                  $monitor_params = ['entities_id'                         => $comp->fields["entities_id"],
+                                     'cfg_ocs'                             => $cfg_ocs,
+                                     'computers_id'                        => $line['computers_id'],
+                                     'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                     'datas'                               => $ocsComputer["MONITORS"],
+                                     'force'                               => $force];
+                  PluginOcsinventoryngMonitor::importMonitor($monitor_params);
                }
                if ($updates['printers'] && isset($ocsComputer["PRINTERS"])) {
-                  PluginOcsinventoryngPrinter::importPrinter($cfg_ocs, $line['computers_id'], $plugin_ocsinventoryng_ocsservers_id,
-                                                             $ocsComputer["PRINTERS"], $comp->fields["entities_id"], $force);
+                  $printer_params = ['entities_id'                         => $comp->fields["entities_id"],
+                                     'cfg_ocs'                             => $cfg_ocs,
+                                     'computers_id'                        => $line['computers_id'],
+                                     'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                     'datas'                               => $ocsComputer["PRINTERS"],
+                                     'force'                               => $force];
+                  PluginOcsinventoryngPrinter::importPrinter($printer_params);
                }
                if ($updates['inputs'] && isset($ocsComputer["INPUTS"])) {
-                  PluginOcsinventoryngPeripheral::importPeripheral($cfg_ocs, $line['computers_id'],
-                                                                   $plugin_ocsinventoryng_ocsservers_id,
-                                                                   $ocsComputer["INPUTS"], $comp->fields["entities_id"], $force);
+                  $periph_params = ['entities_id'                         => $comp->fields["entities_id"],
+                                     'cfg_ocs'                             => $cfg_ocs,
+                                     'computers_id'                        => $line['computers_id'],
+                                     'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                     'datas'                               => $ocsComputer["INPUTS"],
+                                     'force'                               => $force];
+                  PluginOcsinventoryngPeripheral::importPeripheral($periph_params);
                }
                if ($updates['softwares'] && isset($ocsComputer["SOFTWARES"])) {
-                  // Get import software
+                  //import softwares
                   PluginOcsinventoryngSoftware::updateSoftware($cfg_ocs, $line['computers_id'], $ocsComputer["SOFTWARES"],
                                                                $comp->fields["entities_id"],
                                                                $updates['officepack'],
                      (isset($ocsComputer['OFFICEPACK']) ? $ocsComputer['OFFICEPACK'] : []), $force);
                }
                if ($updates['drives'] && isset($ocsComputer["DRIVES"])) {
-                  // Get import drives
+                  //import drives
                   PluginOcsinventoryngDisk::updateDisk($line['computers_id'], $ocsComputer["DRIVES"],
                                                        $plugin_ocsinventoryng_ocsservers_id,
                                                        $cfg_ocs['history_drives'], $force);
                }
                if ($updates['virtualmachines'] && isset($ocsComputer["VIRTUALMACHINES"])) {
-                  // Get import vm
-                  PluginOcsinventoryngVirtualmachine::updateVirtualMachines($line['computers_id'], $ocsComputer["VIRTUALMACHINES"],
-                                                                            $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs['history_vm'], $force);
+                  //import vm
+                  PluginOcsinventoryngVirtualmachine::updateVirtualMachine($line['computers_id'], $ocsComputer["VIRTUALMACHINES"],
+                                                                           $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs['history_vm'], $force);
                }
                if ($updates['registry'] && isset($ocsComputer["REGISTRY"])) {
                   //import registry entries
@@ -1674,8 +1719,13 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                                WHERE `computers_id` = $id";
                $result = $DB->query($query);
                if ($DB->numrows($result) == 1) {
-                  $data = $DB->fetch_assoc($result);
-                  if (self::synchronizeComputer($data['id'], $data['plugin_ocsinventoryng_ocsservers_id'], 0)) {
+                  $data        = $DB->fetch_assoc($result);
+                  $cfg_ocs     = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
+                  $sync_params = ['ID'                                  => $data['id'],
+                                  'plugin_ocsinventoryng_ocsservers_id' => $data['plugin_ocsinventoryng_ocsservers_id'],
+                                  'cfg_ocs'                             => $cfg_ocs,
+                                  'force'                               => 0];
+                  if (self::synchronizeComputer($sync_params)) {
                      $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                   } else {
                      $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
@@ -1697,8 +1747,13 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                                WHERE `computers_id` = $id";
                $result = $DB->query($query);
                if ($DB->numrows($result) == 1) {
-                  $data = $DB->fetch_assoc($result);
-                  if (self::synchronizeComputer($data['id'], $data['plugin_ocsinventoryng_ocsservers_id'], 1)) {
+                  $data        = $DB->fetch_assoc($result);
+                  $cfg_ocs     = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
+                  $sync_params = ['ID'                                  => $data['id'],
+                                  'plugin_ocsinventoryng_ocsservers_id' => $data['plugin_ocsinventoryng_ocsservers_id'],
+                                  'cfg_ocs'                             => $cfg_ocs,
+                                  'force'                               => 1];
+                  if (self::synchronizeComputer($sync_params)) {
                      $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                   } else {
                      $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);

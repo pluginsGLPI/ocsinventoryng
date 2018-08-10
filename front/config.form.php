@@ -33,6 +33,8 @@ Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
 $config = new PluginOcsinventoryngConfig();
 
+global $CFG_GLPI;
+
 if (isset($_POST["update"])) {
    $config->update($_POST);
    Html::back();

@@ -657,9 +657,9 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
     * @param $glpi_computers_id integer : glpi computer id.
     * @param $itemtype integer : device type identifier.
     *
-    * @param $cfg_ocs
+    * @param $history_devices
     *
-    * @return nothing .
+    * @return void .
     */
    static function resetDevices($glpi_computers_id, $itemtype, $history_devices) {
 
