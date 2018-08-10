@@ -62,10 +62,11 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
     * @param $ocsComputer
     * @param $history_plugins boolean
     */
-   static function updateWinupdatestate($computers_id, $ocsComputer, $history_plugins) {
+   static function updateWinupdatestate($computers_id, $ocsComputer, $history_plugins, $force) {
 
-      self::resetWinupdatestate($computers_id, $history_plugins);
-
+      if ($force) {
+         self::resetWinupdatestate($computers_id, $history_plugins);
+      }
       //update data
       if (!empty($ocsComputer)) {
 

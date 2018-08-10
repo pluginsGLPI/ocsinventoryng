@@ -57,10 +57,16 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
 
       $history_devices = $params['cfg_ocs']['history_devices'];
       $ocs_db_utf8     = $params['cfg_ocs']['ocs_db_utf8'];
+      $force           = $params['force'];
 
       switch ($devicetype) {
 
          case "Item_DeviceFirmware":
+
+            if ($force) {
+               self::resetDevices($computers_id, $devicetype, $history_devices);
+            }
+
             $CompDevice = new $devicetype();
             //Bios
             $bios["designation"]             = $ocsComputer["BVERSION"];
@@ -68,13 +74,13 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             $bios["comment"]                 = $ocsComputer["BDATE"] . " - " . $ocsComputer["ASSETTAG"];
             $bios["manufacturers_id"]        = Dropdown::importExternal('Manufacturer',
                                                                         PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($ocs_db_utf8,
-                                                                                                  $ocsComputer["SMANUFACTURER"]));
+                                                                                                                            $ocsComputer["SMANUFACTURER"]));
             $bios["devicefirmwaremodels_id"] = Dropdown::importExternal('DeviceFirmwareModel',
                                                                         PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($ocs_db_utf8,
-                                                                                                  $ocsComputer["SMODEL"]));
+                                                                                                                            $ocsComputer["SMODEL"]));
             $bios["devicefirmwaretypes_id"]  = Dropdown::importExternal('DeviceFirmwareType',
                                                                         PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($ocs_db_utf8,
-                                                                                                  $ocsComputer["TYPE"]));
+                                                                                                                            $ocsComputer["TYPE"]));
 
             $DeviceBios = new DeviceFirmware();
             $bios_id    = $DeviceBios->import($bios);
@@ -104,6 +110,11 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
 
          case "Item_DeviceMemory":
             //MEMORIES
+
+            if ($force) {
+               self::resetDevices($computers_id, $devicetype, $history_devices);
+            }
+
             $CompDevice = new $devicetype();
             foreach ($ocsComputer as $line2) {
                $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
@@ -161,6 +172,11 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             break;
 
          case "Item_DeviceHardDrive":
+
+            if ($force) {
+               self::resetDevices($computers_id, $devicetype, $history_devices);
+            }
+
             $CompDevice = new $devicetype();
             //Disque Dur
             foreach ($ocsComputer as $line2) {
@@ -211,6 +227,11 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             break;
 
          case "Item_DeviceDrive":
+
+            if ($force) {
+               self::resetDevices($computers_id, $devicetype, $history_devices);
+            }
+
             $CompDevice = new $devicetype();
             //lecteurs
             foreach ($ocsComputer as $line2) {
@@ -255,6 +276,11 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
 
          case "Item_DevicePci":
             if (isset($ocsComputer['MODEMS'])) {
+
+               if ($force) {
+                  self::resetDevices($computers_id, $devicetype, $history_devices);
+               }
+
                $CompDevice = new $devicetype();
                //Modems
                foreach ($ocsComputer['MODEMS'] as $line2) {
@@ -290,6 +316,10 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             }
             //Ports
             if (isset($ocsComputer['PORTS'])) {
+
+               if ($force) {
+                  self::resetDevices($computers_id, $devicetype, $history_devices);
+               }
                $CompDevice = new $devicetype();
                foreach ($ocsComputer['PORTS'] as $line2) {
                   $line2               = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
@@ -335,6 +365,10 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             //Slots
             if (isset($ocsComputer['SLOTS'])) {
 
+               if ($force) {
+                  self::resetDevices($computers_id, $devicetype, $history_devices);
+               }
+
                $CompDevice = new $devicetype();
 
                foreach ($ocsComputer['SLOTS'] as $line2) {
@@ -375,6 +409,11 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             }
             break;
          case "Item_DeviceProcessor":
+
+            if ($force) {
+               self::resetDevices($computers_id, $devicetype, $history_devices);
+            }
+
             $CompDevice = new $devicetype();
             //Processeurs:
             foreach ($ocsComputer as $line2) {
@@ -419,12 +458,21 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             break;
 
          case "Item_DeviceNetworkCard":
+
+            if ($force) {
+               self::resetDevices($computers_id, $devicetype, $history_devices);
+            }
             //Carte reseau
             PluginOcsinventoryngNetworkPort::importNetwork($params['cfg_ocs'], $ocsComputer,
                                                            $computers_id, $entities_id);
             break;
 
          case "Item_DeviceGraphicCard":
+
+            if ($force) {
+               self::resetDevices($computers_id, $devicetype, $history_devices);
+            }
+
             $CompDevice = new $devicetype();
             //carte graphique
             foreach ($ocsComputer as $line2) {
@@ -465,6 +513,11 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             break;
 
          case "Item_DeviceSoundCard":
+
+            if ($force) {
+               self::resetDevices($computers_id, $devicetype, $history_devices);
+            }
+
             $CompDevice = new $devicetype();
             //carte son
             foreach ($ocsComputer as $line2) {
@@ -504,6 +557,11 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             }
             break;
          case "Item_DeviceMotherboard":
+
+            if ($force) {
+               self::resetDevices($computers_id, $devicetype, $history_devices);
+            }
+
             $CompDevice = new $devicetype();
             //Motherboard
             $mb["designation"] = $ocsComputer["MMODEL"];
@@ -540,6 +598,10 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
 
             break;
          case "Item_DeviceControl":
+
+            if ($force) {
+               self::resetDevices($computers_id, $devicetype, $history_devices);
+            }
             //controllers
             $CompDevice = new $devicetype();
             foreach ($ocsComputer as $line2) {
@@ -555,7 +617,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                   //$ctrl["interfacetypes_id"] = $line2["TYPE"];
                   $ctrl["manufacturers_id"] = Dropdown::importExternal('Manufacturer',
                                                                        PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($ocs_db_utf8,
-                                                                                                 $line2["MANUFACTURER"]));
+                                                                                                                           $line2["MANUFACTURER"]));
                   if (!empty($line2["DESCRIPTION"])) {
                      $ctrl["comment"] = $line2["DESCRIPTION"];
                   }

@@ -92,6 +92,7 @@ class PluginOcsinventoryngBios extends CommonDBChild {
       if (isset($params["BIOS"])) {
          $bios        = $params['BIOS'];
          $ocs_db_utf8 = $params['cfg_ocs']['ocs_db_utf8'];
+         $force       = $params["force"];
 
          if ($params['cfg_ocs']["import_general_serial"]
              && $params['cfg_ocs']["import_general_serial"] > 0
@@ -106,7 +107,7 @@ class PluginOcsinventoryngBios extends CommonDBChild {
 
             $compupdate["computermodels_id"] = Dropdown::importExternal('ComputerModel',
                                                                         PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($ocs_db_utf8,
-                                                                                                  $bios["SMODEL"]),
+                                                                                                                            $bios["SMODEL"]),
                                                                         -1,
                (isset($bios["SMANUFACTURER"]) ? ["manufacturer" => $bios["SMANUFACTURER"]] : []));
          }
@@ -118,7 +119,7 @@ class PluginOcsinventoryngBios extends CommonDBChild {
 
             $compupdate["manufacturers_id"] = Dropdown::importExternal('Manufacturer',
                                                                        PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($ocs_db_utf8,
-                                                                                                 $bios["SMANUFACTURER"]));
+                                                                                                                           $bios["SMANUFACTURER"]));
          }
 
          if (intval($params['cfg_ocs']["import_general_type"]) > 0
@@ -128,10 +129,10 @@ class PluginOcsinventoryngBios extends CommonDBChild {
 
             $compupdate["computertypes_id"] = Dropdown::importExternal('ComputerType',
                                                                        PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($ocs_db_utf8,
-                                                                                                 $bios["TYPE"]));
+                                                                                                                           $bios["TYPE"]));
          }
 
-         if (count($compupdate)) {
+         if (count($compupdate) || $force) {
             Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($compupdate));
             $compupdate["id"]          = $params['computers_id'];
             $compupdate["entities_id"] = $params['entities_id'];

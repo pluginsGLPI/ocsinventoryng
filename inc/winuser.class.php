@@ -62,10 +62,11 @@ class PluginOcsinventoryngWinuser extends CommonDBChild {
     * @param $ocsComputer
     * @param $history_plugins boolean
     */
-   static function updateWinuser($computers_id, $ocsComputer, $history_plugins) {
+   static function updateWinuser($computers_id, $ocsComputer, $history_plugins, $force) {
 
-      self::resetWinuser($computers_id, $history_plugins);
-
+      if ($force) {
+         self::resetWinuser($computers_id, $history_plugins);
+      }
       $winusers = new self();
       //update data
       foreach ($ocsComputer as $wusers) {

@@ -62,9 +62,11 @@ class PluginOcsinventoryngService extends CommonDBChild {
     * @param $ocsComputer
     * @param $history_plugins boolean
     */
-   static function updateService($computers_id, $ocsComputer, $history_plugins) {
+   static function updateService($computers_id, $ocsComputer, $history_plugins, $force) {
 
-      self::resetService($computers_id, $history_plugins);
+      if ($force) {
+         self::resetService($computers_id, $history_plugins);
+      }
 
       $ocsService = new self();
 

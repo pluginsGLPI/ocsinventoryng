@@ -56,8 +56,12 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
     * @return Nothing .
     * @internal param int $ocsid : ocs computer id (ID).
     */
-   static function updateDisk($computers_id, $ocsComputer, $ocsservers_id, $history_drives) {
+   static function updateDisk($computers_id, $ocsComputer, $ocsservers_id, $history_drives, $force) {
       global $DB;
+
+      if ($force) {
+         self::resetDisks($computers_id, $history_drives);
+      }
 
       $already_processed = [];
       $logical_drives    = $ocsComputer;

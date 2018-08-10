@@ -107,9 +107,9 @@ class PluginOcsinventoryngOS extends CommonDBChild {
    static function updateComputerOS($options = []) {
       global $DB;
 
-      $is_utf8     = $options['cfg_ocs']["ocs_db_utf8"];
-      $ocsServerId = $options['plugin_ocsinventoryng_ocsservers_id'];
-
+      $is_utf8               = $options['cfg_ocs']["ocs_db_utf8"];
+      $ocsServerId           = $options['plugin_ocsinventoryng_ocsservers_id'];
+      $force                 = $options["force"];
       $options['do_history'] = $options['cfg_ocs']["history_hardware"];
 
       if (isset($options['HARDWARE'])) {
@@ -204,6 +204,10 @@ class PluginOcsinventoryngOS extends CommonDBChild {
 
          $device = new Item_OperatingSystem();
 
+         if ($force) {
+            self::resetOS($options['computers_id'], $options['do_history']);
+         }
+
          if ($id = $device->getFromDBByCrit(['items_id'            => $options['computers_id'],
                                              'itemtype'            => 'Computer',
                                              'entities_id'         => $options['entities_id'],
@@ -222,8 +226,6 @@ class PluginOcsinventoryngOS extends CommonDBChild {
                                ], $options['dohistory']);
             }
          } else {
-
-            self::resetOS($options['computers_id'], $options['cfg_ocs']);
 
             //            if ($operatingsystems_id) {
             $device->add(['items_id'                        => $options['computers_id'],

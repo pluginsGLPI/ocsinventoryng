@@ -57,8 +57,12 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
     * @internal param computer $ocsid 's id in OCS
     * @internal param the $entity entity in which the monitor will be created
     */
-   static function importMonitor($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity) {
+   static function importMonitor($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity, $force) {
       global $DB, $CFG_GLPI;
+
+      if ($force && $cfg_ocs["import_monitor"] == 1) { // Only reset monitor as global in unit management
+         self::resetMonitors($computers_id, $cfg_ocs['history_monitor']);    // try to link monitor with existing
+      }
 
       $already_processed = [];
       $m                 = new Monitor();

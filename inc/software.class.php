@@ -57,8 +57,15 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
     *
     * @return Nothing .
     */
-   static function updateSoftware($cfg_ocs, $computers_id, $ocsComputer, $entity, $officepack, $ocsOfficePack) {
+   static function updateSoftware($cfg_ocs, $computers_id, $ocsComputer, $entity, $officepack, $ocsOfficePack, $force = 0) {
       global $DB;
+
+      if ($force) {
+         self::resetSoftwares($computers_id, $cfg_ocs['history_software']);
+      }
+      if ($officepack) {
+         PluginOcsinventoryngOfficepack::resetOfficePack($computers_id, $cfg_ocs['history_plugins']);
+      }
 
       $is_utf8                  = $cfg_ocs["ocs_db_utf8"];
       $computer_softwareversion = new Computer_SoftwareVersion();

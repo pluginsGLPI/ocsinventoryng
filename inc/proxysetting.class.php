@@ -62,10 +62,11 @@ class PluginOcsinventoryngProxysetting extends CommonDBChild {
     * @param $ocsComputer
     * @param $history_plugins boolean
     */
-   static function updateProxysetting($computers_id, $ocsComputer, $history_plugins) {
+   static function updateProxysetting($computers_id, $ocsComputer, $history_plugins, $force) {
 
-      self::resetProxysetting($computers_id, $history_plugins);
-
+      if ($force) {
+         self::resetProxysetting($computers_id, $history_plugins);
+      }
       $ProxySetting = new self();
 
       //update data

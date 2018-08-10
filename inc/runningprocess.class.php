@@ -62,10 +62,11 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild {
     * @param $ocsComputer
     * @param $history_plugins boolean
     */
-   static function updateRunningprocess($computers_id, $ocsComputer, $history_plugins) {
+   static function updateRunningprocess($computers_id, $ocsComputer, $history_plugins, $force) {
 
-      self::resetRunningProcess($computers_id, $history_plugins);
-
+      if ($force) {
+         self::resetRunningProcess($computers_id, $history_plugins);
+      }
       $Runningprocess = new self();
 
       //update data

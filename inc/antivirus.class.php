@@ -51,10 +51,11 @@ class PluginOcsinventoryngAntivirus extends CommonDBChild {
     * @param $ocsComputer
     * @param $cfg_ocs array : ocs config
     */
-   static function updateAntivirus($computers_id, $ocsComputer, $cfg_ocs) {
+   static function updateAntivirus($computers_id, $ocsComputer, $cfg_ocs, $force) {
 
-      self::resetAntivirus($computers_id, $cfg_ocs['history_plugins']);
-
+      if ($force) {
+         self::resetAntivirus($computers_id, $cfg_ocs['history_plugins']);
+      }
       $av = new ComputerAntivirus();
       //update data
       foreach ($ocsComputer as $anti) {

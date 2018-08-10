@@ -59,9 +59,11 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
     * @param $ocsComputer
     * @param $history_plugins boolean
     */
-   static function updateNetworkshare($computers_id, $ocsComputer, $history_plugins) {
+   static function updateNetworkshare($computers_id, $ocsComputer, $history_plugins, $force) {
 
-      self::resetNetworkshare($computers_id, $history_plugins);
+      if ($force) {
+         self::resetNetworkshare($computers_id, $history_plugins);
+      }
 
       $ocsShares = new self();
 

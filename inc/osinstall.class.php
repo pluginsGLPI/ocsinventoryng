@@ -63,10 +63,11 @@ class PluginOcsinventoryngOsinstall extends CommonDBChild {
     * @param $ocsComputer
     * @param $history_plugins boolean
     */
-   static function updateOSInstall($computers_id, $ocsComputer, $history_plugins) {
+   static function updateOSInstall($computers_id, $ocsComputer, $history_plugins, $force) {
 
-      self::resetOSInstall($computers_id, $history_plugins);
-
+      if ($force) {
+         self::resetOSInstall($computers_id, $history_plugins);
+      }
       //update data
       if (!empty($ocsComputer)) {
 

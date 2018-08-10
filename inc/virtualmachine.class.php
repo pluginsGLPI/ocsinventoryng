@@ -55,8 +55,13 @@ class PluginOcsinventoryngVirtualmachine extends CommonDBChild {
     * @internal param unknown $ocsid
     * @internal param unknown $dohistory
     */
-   static function updateVirtualMachines($computers_id, $ocsComputer, $ocsservers_id, $history_vm) {
+   static function updateVirtualMachines($computers_id, $ocsComputer, $ocsservers_id, $history_vm, $force) {
       global $DB;
+
+      if ($force) {
+         self::resetVirtualmachine($computers_id, $history_vm);
+      }
+
       $already_processed = [];
 
       $virtualmachine     = new ComputerVirtualMachine();

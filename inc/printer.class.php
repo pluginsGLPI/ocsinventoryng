@@ -56,8 +56,12 @@ class PluginOcsinventoryngPrinter extends CommonDBChild {
     *
     * @internal param computer $ocsid 's id in OCS
     */
-   static function importPrinter($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity) {
+   static function importPrinter($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity, $force) {
       global $DB, $CFG_GLPI;
+
+      if ($force) {
+         PluginOcsinventoryngPrinter::resetPrinters($computers_id, $cfg_ocs['history_printer']);
+      }
 
       $already_processed = [];
 

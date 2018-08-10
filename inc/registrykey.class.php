@@ -70,10 +70,11 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
     * @param $history_plugins boolean
     *
     */
-   static function updateRegistry($computers_id, $ocsComputer, $history_plugins) {
+   static function updateRegistry($computers_id, $ocsComputer, $history_plugins, $force) {
       //before update, delete all entries about $computers_id
-      self::resetRegistry($computers_id, $history_plugins);
-
+      if ($force) {
+         self::resetRegistry($computers_id, $history_plugins);
+      }
       $reg = new self();
       //update data
       foreach ($ocsComputer as $registry) {

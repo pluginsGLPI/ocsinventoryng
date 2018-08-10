@@ -56,8 +56,12 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
     *
     * @internal param computer $ocsid 's id in OCS
     */
-   static function importPeripheral($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity) {
+   static function importPeripheral($cfg_ocs, $computers_id, $ocsservers_id, $ocsComputer, $entity, $force) {
       global $DB, $CFG_GLPI;
+
+      if ($force) {
+         self::resetPeripherals($computers_id, $cfg_ocs['history_peripheral']);
+      }
 
       $already_processed = [];
       $p                 = new Peripheral();

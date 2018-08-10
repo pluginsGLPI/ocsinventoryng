@@ -64,9 +64,11 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
     * @param $ocsComputer
     * @param $history_plugins boolean
     */
-   static function updateTeamviewer($computers_id, $ocsComputer, $history_plugins) {
+   static function updateTeamviewer($computers_id, $ocsComputer, $history_plugins, $force) {
 
-      self::resetTeamviewer($computers_id, $history_plugins);
+      if ($force) {
+         self::resetTeamviewer($computers_id, $history_plugins);
+      }
 
       $CompTeam              = new self();
       $input                 = [];
@@ -110,8 +112,8 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
             $nb = 0;
             if ($_SESSION['glpishow_count_on_tabs']) {
                $dbu = new DbUtils();
-               $nb = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_teamviewers',
-                                                ["computers_id" => $item->getID()]);
+               $nb  = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_teamviewers',
+                                                 ["computers_id" => $item->getID()]);
             }
             return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
          }
@@ -192,7 +194,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
          echo "</table></br>";
 
          if ($result->numrows() != 0) {
-            $dbu = new DbUtils();
+            $dbu      = new DbUtils();
             $restrict = $comp->getEntityID();
             $query    = "SELECT `glpi_links`.`id`,
                        `glpi_links`.`link` AS link,
@@ -204,7 +206,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
                      ON `glpi_links`.`id` = `glpi_links_itemtypes`.`links_id`
                 WHERE `glpi_links_itemtypes`.`itemtype`='PluginOcsinventoryngTeamviewer' " .
                         $dbu->getEntitiesRestrictRequest(" AND", "glpi_links", "entities_id",
-                                                   $restrict, true) . "
+                                                         $restrict, true) . "
                 ORDER BY name";
 
             $result = $DB->query($query);
@@ -257,7 +259,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
             }
 
             $restrict = $comp->getEntityID();
-            $dbu = new DbUtils();
+            $dbu      = new DbUtils();
             $query    = "SELECT `glpi_links`.`id`,
                        `glpi_links`.`link` AS link,
                        `glpi_links`.`name` AS name ,
@@ -268,7 +270,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
                      ON `glpi_links`.`id` = `glpi_links_itemtypes`.`links_id`
                 WHERE `glpi_links_itemtypes`.`itemtype`= 'PluginOcsinventoryngTeamviewer' " .
                         $dbu->getEntitiesRestrictRequest(" AND", "glpi_links", "entities_id",
-                                                   $restrict, true) . "
+                                                         $restrict, true) . "
                 ORDER BY name";
 
             $result = $DB->query($query);

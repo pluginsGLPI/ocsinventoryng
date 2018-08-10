@@ -167,6 +167,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
       global $DB;
 
       $is_utf8 = $options['cfg_ocs']["ocs_db_utf8"];
+      $force   = $options["force"];
 
       if (isset($options['HARDWARE'])) {
          $hardware = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($options['HARDWARE']));
@@ -219,13 +220,12 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             $updates["uuid"] = $hardware["UUID"];
          }
 
-         if (count($updates)) {
+         if (count($updates) || $force) {
             $updates["id"]          = $options['computers_id'];
             $updates["entities_id"] = $options['entities_id'];
             $updates["_nolock"]     = true;
             $comp                   = new Computer();
-
-            $comp->update($updates, $options['dohistory']);
+            $comp->update($updates, $options['cfg_ocs']['history_hardware']);
          }
       }
    }
