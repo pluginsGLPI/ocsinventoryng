@@ -42,8 +42,10 @@ if (!isset($_POST["clean_ok"])) {
       $_GET['start'] = 0;
    }
    PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-   PluginOcsinventoryngOcsServer::showComputersToClean($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-      $_GET['check'], $_GET['start']);
+   $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                   'check'                               => $_GET['check'],
+                   'start'                               => $_GET['start']];
+   PluginOcsinventoryngOcsServer::showComputersToClean($show_params);
 
 } else {
    Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);

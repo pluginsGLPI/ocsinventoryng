@@ -1862,8 +1862,12 @@ JAVASCRIPT;
     *
     * @return bool
     */
-   static function showComputersToClean($plugin_ocsinventoryng_ocsservers_id, $check, $start) {
+   static function showComputersToClean($show_params) {
       global $DB, $CFG_GLPI;
+
+      $plugin_ocsinventoryng_ocsservers_id = $show_params["plugin_ocsinventoryng_ocsservers_id"];
+      $check                               = $show_params["check"];
+      $start                               = $show_params["start"];
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
 
@@ -2028,8 +2032,12 @@ JAVASCRIPT;
     *
     * @return bool|void
     */
-   static function showComputersToSynchronize($plugin_ocsinventoryng_ocsservers_id, $check, $start) {
+   static function showComputersToSynchronize($show_params) {
       global $DB, $CFG_GLPI;
+
+      $plugin_ocsinventoryng_ocsservers_id = $show_params["plugin_ocsinventoryng_ocsservers_id"];
+      $check                               = $show_params["check"];
+      $start                               = $show_params["start"];
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)
@@ -2237,19 +2245,21 @@ JAVASCRIPT;
     * @internal param display $advanced detail about the computer import or not (target entity, matched rules, etc.)
     * @internal param indicates $check if checkboxes are checked or not
     * @internal param display $start a list of computers starting at rowX
-    * @internal param a $entity list of entities in which computers can be added or linked
+    * @internal param a $entities_id list of entities in which computers can be added or linked
     * @internal param false $tolinked for an import, true for a link
     *
     */
    static function showComputersToAdd($show_params) {
       global $DB, $CFG_GLPI;
 
-      $serverId = $show_params["plugin_ocsinventoryng_ocsservers_id"];
-      $advanced    = $show_params["import_mode"];
-      $check  = $show_params["check"];
-      $start  = $show_params["start"];
-      $entity  = $show_params["entities_id"];
-      $tolinked  = $show_params["tolinked"];
+      $plugin_ocsinventoryng_ocsservers_id = $show_params["plugin_ocsinventoryng_ocsservers_id"];
+      $advanced                            = $show_params["import_mode"];
+      $check                               = $show_params["check"];
+      $start                               = $show_params["start"];
+      $entities_id                              = $show_params["entities_id"];
+      $tolinked                            = $show_params["tolinked"];
+
+      self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
 
       if (!Session::haveRight("plugin_ocsinventoryng", READ)
           && !Session::haveRight("plugin_ocsinventoryng_import", READ)
@@ -2273,7 +2283,7 @@ JAVASCRIPT;
       // Get all links between glpi and OCS
       $query_glpi     = "SELECT ocsid
                      FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                     WHERE `plugin_ocsinventoryng_ocsservers_id` = $serverId";
+                     WHERE `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
       $result_glpi    = $DB->query($query_glpi);
       $already_linked = [];
       if ($DB->numrows($result_glpi) > 0) {
@@ -2282,7 +2292,7 @@ JAVASCRIPT;
          }
       }
 
-      $cfg_ocs         = self::getConfig($serverId);
+      $cfg_ocs         = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
       $computerOptions = ['ORDER'    => 'LASTDATE',
                           'COMPLETE' => '0',
                           'FILTER'   => [
@@ -2302,7 +2312,7 @@ JAVASCRIPT;
          $computerOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
       }
 
-      $ocsClient    = self::getDBocs($serverId);
+      $ocsClient    = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $allComputers = $ocsClient->countComputers($computerOptions);
 
       if ($start != 0) {
@@ -2457,7 +2467,7 @@ JAVASCRIPT;
                   }
                   if ($advanced && !$tolinked) {
                      $location = isset($tab["locations_id"]) ? $tab["locations_id"] : 0;
-                     $data     = $rule->processAllRules(['ocsservers_id' => $serverId,
+                     $data     = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                                                          '_source'       => 'ocsinventoryng',
                                                          'locations_id'  => $location
                                                         ], ['locations_id' => $location], ['ocsid' => $tab["id"]]);
@@ -2559,11 +2569,11 @@ JAVASCRIPT;
                   if ($tolinked) {
                      $ko = 0;
                      echo "<td  width='30%'>";
-                     $tab['entities_id'] = $entity;
+                     $tab['entities_id'] = $entities_id;
                      $rulelink           = new RuleImportComputerCollection();
-                     $params             = ['entities_id' => $entity,
+                     $params             = ['entities_id' => $entities_id,
                                             'plugin_ocsinventoryng_ocsservers_id'
-                                                          => $serverId];
+                                                          => $plugin_ocsinventoryng_ocsservers_id];
                      $rulelink_results   = $rulelink->processAllRules(Toolbox::stripslashes_deep($tab), [], $params);
 
                      //Look for the computer using automatic link criterias as defined in OCSNG configuration
@@ -2577,7 +2587,7 @@ JAVASCRIPT;
 
                         if (!empty($rulelink_results['found_computers'])) {
                            $options['value']  = $rulelink_results['found_computers'][0];
-                           $options['entity'] = $entity;
+                           $options['entity'] = $entities_id;
                         }
                         $options['width'] = "100%";
 
@@ -2620,7 +2630,7 @@ JAVASCRIPT;
                           _sx('button', 'Import', 'ocsinventoryng') . "\">";
                   }
                   echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' " .
-                       "value='$serverId'>";
+                       "value='$plugin_ocsinventoryng_ocsservers_id'>";
                   echo "</td></tr>";
                }
                echo "</table>\n";

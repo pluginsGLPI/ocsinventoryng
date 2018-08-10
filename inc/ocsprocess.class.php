@@ -1287,11 +1287,11 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                }
                if ($updates['inputs'] && isset($ocsComputer["INPUTS"])) {
                   $periph_params = ['entities_id'                         => $comp->fields["entities_id"],
-                                     'cfg_ocs'                             => $cfg_ocs,
-                                     'computers_id'                        => $line['computers_id'],
-                                     'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                                     'datas'                               => $ocsComputer["INPUTS"],
-                                     'force'                               => $force];
+                                    'cfg_ocs'                             => $cfg_ocs,
+                                    'computers_id'                        => $line['computers_id'],
+                                    'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                    'datas'                               => $ocsComputer["INPUTS"],
+                                    'force'                               => $force];
                   PluginOcsinventoryngPeripheral::importPeripheral($periph_params);
                }
                if ($updates['softwares'] && isset($ocsComputer["SOFTWARES"])) {

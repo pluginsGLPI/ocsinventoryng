@@ -2507,7 +2507,6 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration) {
 
    ini_set("memory_limit", "-1");
    ini_set("max_execution_time", "0");
-   $dbu    = new DbUtils();
    $import = ['import_printer'    => 'Printer',
               'import_monitor'    => 'Monitor',
               'import_peripheral' => 'Peripheral'];
