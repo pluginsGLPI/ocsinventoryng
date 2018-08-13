@@ -63,9 +63,17 @@ class PluginOcsinventoryngPrinter extends CommonDBChild {
       $entity        = $printer_params["entities_id"];
       $force         = $printer_params["force"];
 
+      $uninstall_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_printer'] == 1 || $cfg_ocs['history_printer'] == 3)) {
+         $uninstall_history = 1;
+      }
+      $install_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_printer'] == 1 || $cfg_ocs['history_printer'] == 2)) {
+         $install_history = 1;
+      }
 
       if ($force) {
-         PluginOcsinventoryngPrinter::resetPrinters($computers_id, $cfg_ocs['history_printer']);
+         PluginOcsinventoryngPrinter::resetPrinters($computers_id, $uninstall_history);
       }
 
       $already_processed = [];
@@ -158,7 +166,7 @@ class PluginOcsinventoryngPrinter extends CommonDBChild {
                            $input["states_id"] = $cfg_ocs["states_id_default"];
                         }
                         $input["entities_id"] = $entity;
-                        $id_printer           = $p->add($input, [], $cfg_ocs['history_printer']);
+                        $id_printer           = $p->add($input, [], $install_history);
                      }
                   } else if ($management_process == 2) {
                      //Config says : manage printers as single units
@@ -171,7 +179,7 @@ class PluginOcsinventoryngPrinter extends CommonDBChild {
                      }
                      $input["entities_id"] = $entity;
                      $input['is_dynamic']  = 1;
-                     $id_printer           = $p->add($input, [], $cfg_ocs['history_printer']);
+                     $id_printer           = $p->add($input, [], $install_history);
                   }
 
                   if ($id_printer) {
@@ -179,7 +187,7 @@ class PluginOcsinventoryngPrinter extends CommonDBChild {
                      $conn->add(['computers_id' => $computers_id,
                                  'itemtype'     => 'Printer',
                                  'items_id'     => $id_printer,
-                                 'is_dynamic'   => 1], [], $cfg_ocs['history_printer']);
+                                 'is_dynamic'   => 1], [], $install_history);
                      //Update column "is_deleted" set value to 0 and set status to default
                      $input                = [];
                      $input["id"]          = $id_printer;
@@ -189,7 +197,7 @@ class PluginOcsinventoryngPrinter extends CommonDBChild {
                      if ($cfg_ocs["states_id_default"] > 0) {
                         $input["states_id"] = $cfg_ocs["states_id_default"];
                      }
-                     $p->update($input, $cfg_ocs['history_printer']);
+                     $p->update($input, $install_history);
                   }
                } else {
                   $already_processed[] = $id;
@@ -261,12 +269,12 @@ class PluginOcsinventoryngPrinter extends CommonDBChild {
     *
     * @param $glpi_computers_id integer : glpi computer id.
     *
-    * @param $history_printer
+    * @param $uninstall_history
     *
     * @return void .
     * @throws \GlpitestSQLError
     */
-   static function resetPrinters($glpi_computers_id, $history_printer) {
+   static function resetPrinters($glpi_computers_id, $uninstall_history) {
       global $DB;
 
       $query  = "SELECT *
@@ -280,7 +288,7 @@ class PluginOcsinventoryngPrinter extends CommonDBChild {
          $conn = new Computer_Item();
 
          while ($data = $DB->fetch_assoc($result)) {
-            $conn->delete(['id' => $data['id'], '_no_history' => !$history_printer], true, $history_printer);
+            $conn->delete(['id' => $data['id'], '_no_history' => !$uninstall_history], true, $uninstall_history);
 
             $query2  = "SELECT COUNT(*)
                        FROM `glpi_computers_items`
@@ -290,7 +298,7 @@ class PluginOcsinventoryngPrinter extends CommonDBChild {
 
             $printer = new Printer();
             if ($DB->result($result2, 0, 0) == 1) {
-               $printer->delete(['id' => $data['items_id'], '_no_history' => !$history_printer], true, $history_printer);
+               $printer->delete(['id' => $data['items_id'], '_no_history' => !$uninstall_history], true, $uninstall_history);
             }
          }
       }

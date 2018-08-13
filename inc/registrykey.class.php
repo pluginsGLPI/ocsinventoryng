@@ -70,10 +70,19 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
     * @param $history_plugins boolean
     * @param $force
     */
-   static function updateRegistry($computers_id, $ocsComputer, $history_plugins, $force) {
-      //before update, delete all entries about $computers_id
+   static function updateRegistry($computers_id, $ocsComputer, $cfg_ocs, $force) {
+
+      $uninstall_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 3)) {
+         $uninstall_history = 1;
+      }
+      $install_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 2)) {
+         $install_history = 1;
+      }
+
       if ($force) {
-         self::resetRegistry($computers_id, $history_plugins);
+         self::resetRegistry($computers_id, $uninstall_history);
       }
       $reg = new self();
       //update data
@@ -85,7 +94,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
          $input["value"]        = $registry["regvalue"];
          $input["path"]         = $registry["regkey"];
          $input["ocs_name"]     = $registry["name"];
-         $reg->add($input, ['disable_unicity_check' => true], $history_plugins);
+         $reg->add($input, ['disable_unicity_check' => true], $install_history);
       }
 
    }
@@ -94,13 +103,13 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
     * Delete old registry entries
     *
     * @param $glpi_computers_id integer : glpi computer id.
-    * @param $history_plugins boolean
+    * @param $uninstall_history boolean
     *
     * */
-   static function resetRegistry($glpi_computers_id, $history_plugins) {
+   static function resetRegistry($glpi_computers_id, $uninstall_history) {
 
       $registry = new self();
-      $registry->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $history_plugins);
+      $registry->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $uninstall_history);
    }
 
    /** Display registry values for a computer

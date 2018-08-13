@@ -57,11 +57,20 @@ class PluginOcsinventoryngVirtualmachine extends CommonDBChild {
     * @internal param unknown $ocsid
     * @internal param unknown $dohistory
     */
-   static function updateVirtualMachine($computers_id, $ocsComputer, $ocsservers_id, $history_vm, $force) {
+   static function updateVirtualMachine($computers_id, $ocsComputer, $ocsservers_id, $cfg_ocs, $force) {
       global $DB;
 
+      $uninstall_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_vm'] == 1 || $cfg_ocs['history_vm'] == 3)) {
+         $uninstall_history = 1;
+      }
+      $install_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_vm'] == 1 || $cfg_ocs['history_vm'] == 2)) {
+         $install_history = 1;
+      }
+
       if ($force) {
-         self::resetVirtualmachine($computers_id, $history_vm);
+         self::resetVirtualmachine($computers_id, $uninstall_history);
       }
 
       $already_processed = [];
@@ -106,14 +115,14 @@ class PluginOcsinventoryngVirtualmachine extends CommonDBChild {
             }
             if (!$id) {
                $virtualmachine->reset();
-               $id_vm = $virtualmachine->add($vm, [], $history_vm);
+               $id_vm = $virtualmachine->add($vm, [], $install_history);
                if ($id_vm) {
                   $already_processed[] = $id_vm;
                }
             } else {
                if ($virtualmachine->getFromDB($id)) {
                   $vm['id'] = $id;
-                  $virtualmachine->update($vm, $history_vm);
+                  $virtualmachine->update($vm, $install_history);
                }
                $already_processed[] = $id;
             }
@@ -132,21 +141,21 @@ class PluginOcsinventoryngVirtualmachine extends CommonDBChild {
          //Delete all connexions
          $virtualmachine->delete(['id'             => $data['id'],
                                   '_ocsservers_id' => $ocsservers_id,
-                                  '_no_history'    => !$history_vm],
+                                  '_no_history'    => !$uninstall_history],
                                  true,
-                                 $history_vm);
+                                 $uninstall_history);
       }
    }
 
    /**
     * @param $glpi_computers_id
-    * @param $history_vm
+    * @param $uninstall_history
     */
-   static function resetVirtualmachine($glpi_computers_id, $history_vm) {
+   static function resetVirtualmachine($glpi_computers_id, $uninstall_history) {
 
       $dd = new ComputerVirtualMachine();
       $dd->deleteByCriteria(['computers_id'   => $glpi_computers_id,
-                             'is_dynamic' => 1], 1, $history_vm);
+                             'is_dynamic' => 1], 1, $uninstall_history);
 
    }
 }

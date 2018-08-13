@@ -1284,7 +1284,6 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                          'computers_updates'                   => $locks,
                          'ocs_id'                              => $ocsid,
                          'entities_id'                         => $comp->fields['entities_id'],
-                         'dohistory'                           => $cfg_ocs['history_hardware'],
                          'HARDWARE'                            => $ocsComputer['HARDWARE'],
                          'BIOS'                                => $ocsComputer['BIOS'],
                          'force'                               => 0,
@@ -1330,7 +1329,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                                             'groups_id'    => $groups_id],
                                            ['ocsid' => $ocsid]);
 
-            PluginOcsinventoryngHardware::updateComputerFields($params, $data, $cfg_ocs['history_hardware']);
+            PluginOcsinventoryngHardware::updateComputerFields($params, $data, $cfg_ocs);
          }
       }
    }

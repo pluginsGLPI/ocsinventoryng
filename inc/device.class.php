@@ -54,17 +54,25 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
 
       $computers_id = $params['computers_id'];
       $entities_id  = $params['entities_id'];
+      $cfg_ocs      = $params['cfg_ocs'];
+      $ocs_db_utf8 = $params['cfg_ocs']['ocs_db_utf8'];
+      $force       = $params['force'];
 
-      $history_devices = $params['cfg_ocs']['history_devices'];
-      $ocs_db_utf8     = $params['cfg_ocs']['ocs_db_utf8'];
-      $force           = $params['force'];
+      $uninstall_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_devices'] == 1 || $cfg_ocs['history_devices'] == 3)) {
+         $uninstall_history = 1;
+      }
+      $install_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_devices'] == 1 || $cfg_ocs['history_devices'] == 2)) {
+         $install_history = 1;
+      }
 
       switch ($devicetype) {
 
          case "Item_DeviceFirmware":
 
             if ($force) {
-               self::resetDevices($computers_id, $devicetype, $history_devices);
+               self::resetDevices($computers_id, $devicetype, $uninstall_history);
             }
 
             $CompDevice = new $devicetype();
@@ -96,13 +104,13 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                        'itemtype'           => 'Computer',
                                        'entities_id'        => $entities_id,
                                        'devicefirmwares_id' => $bios_id,
-                                       'is_dynamic'         => 1], $history_devices);
+                                       'is_dynamic'         => 1], $install_history);
                } else {
                   $CompDevice->add(['items_id'           => $computers_id,
                                     'itemtype'           => 'Computer',
                                     'devicefirmwares_id' => $bios_id,
                                     'is_dynamic'         => 1,
-                                    'entities_id'        => $entities_id], [], $history_devices);
+                                    'entities_id'        => $entities_id], [], $install_history);
                }
             }
 
@@ -112,7 +120,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             //MEMORIES
 
             if ($force) {
-               self::resetDevices($computers_id, $devicetype, $history_devices);
+               self::resetDevices($computers_id, $devicetype, $uninstall_history);
             }
 
             $CompDevice = new $devicetype();
@@ -157,14 +165,14 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                              'entities_id'       => $entities_id,
                                              'devicememories_id' => $ram_id,
                                              'size'              => $line2["CAPACITY"],
-                                             'is_dynamic'        => 1], $history_devices);
+                                             'is_dynamic'        => 1], $install_history);
                      } else {
                         $CompDevice->add(['items_id'          => $computers_id,
                                           'itemtype'          => 'Computer',
                                           'devicememories_id' => $ram_id,
                                           'size'              => $line2["CAPACITY"],
                                           'is_dynamic'        => 1,
-                                          'entities_id'       => $entities_id], [], $history_devices);
+                                          'entities_id'       => $entities_id], [], $install_history);
                      }
                   }
                }
@@ -174,7 +182,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
          case "Item_DeviceHardDrive":
 
             if ($force) {
-               self::resetDevices($computers_id, $devicetype, $history_devices);
+               self::resetDevices($computers_id, $devicetype, $uninstall_history);
             }
 
             $CompDevice = new $devicetype();
@@ -211,7 +219,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                              'deviceharddrives_id' => $dd_id,
                                              'serial'              => $line2["SERIALNUMBER"],
                                              'capacity'            => $line2["DISKSIZE"],
-                                             'is_dynamic'          => 1], $history_devices);
+                                             'is_dynamic'          => 1], $install_history);
                      } else {
                         $CompDevice->add(['items_id'            => $computers_id,
                                           'itemtype'            => 'Computer',
@@ -219,7 +227,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                           'serial'              => $line2["SERIALNUMBER"],
                                           'capacity'            => $line2["DISKSIZE"],
                                           'is_dynamic'          => 1,
-                                          'entities_id'         => $entities_id], [], $history_devices);
+                                          'entities_id'         => $entities_id], [], $install_history);
                      }
                   }
                }
@@ -229,7 +237,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
          case "Item_DeviceDrive":
 
             if ($force) {
-               self::resetDevices($computers_id, $devicetype, $history_devices);
+               self::resetDevices($computers_id, $devicetype, $uninstall_history);
             }
 
             $CompDevice = new $devicetype();
@@ -260,13 +268,13 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                              'itemtype'        => 'Computer',
                                              'entities_id'     => $entities_id,
                                              'devicedrives_id' => $stor_id,
-                                             'is_dynamic'      => 1], $history_devices);
+                                             'is_dynamic'      => 1], $install_history);
                      } else {
                         $CompDevice->add(['items_id'        => $computers_id,
                                           'itemtype'        => 'Computer',
                                           'devicedrives_id' => $stor_id,
                                           'is_dynamic'      => 1,
-                                          'entities_id'     => $entities_id], [], $history_devices);
+                                          'entities_id'     => $entities_id], [], $install_history);
                      }
                   }
                }
@@ -278,7 +286,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             if (isset($ocsComputer['MODEMS'])) {
 
                if ($force) {
-                  self::resetDevices($computers_id, $devicetype, $history_devices);
+                  self::resetDevices($computers_id, $devicetype, $uninstall_history);
                }
 
                $CompDevice = new $devicetype();
@@ -303,13 +311,13 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                              'itemtype'      => 'Computer',
                                              'entities_id'   => $entities_id,
                                              'devicepcis_id' => $mdm_id,
-                                             'is_dynamic'    => 1], $history_devices);
+                                             'is_dynamic'    => 1], $install_history);
                      } else {
                         $CompDevice->add(['items_id'      => $computers_id,
                                           'itemtype'      => 'Computer',
                                           'devicepcis_id' => $mdm_id,
                                           'is_dynamic'    => 1,
-                                          'entities_id'   => $entities_id], [], $history_devices);
+                                          'entities_id'   => $entities_id], [], $install_history);
                      }
                   }
                }
@@ -318,7 +326,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             if (isset($ocsComputer['PORTS'])) {
 
                if ($force) {
-                  self::resetDevices($computers_id, $devicetype, $history_devices);
+                  self::resetDevices($computers_id, $devicetype, $uninstall_history);
                }
                $CompDevice = new $devicetype();
                foreach ($ocsComputer['PORTS'] as $line2) {
@@ -350,13 +358,13 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                                 'itemtype'      => 'Computer',
                                                 'entities_id'   => $entities_id,
                                                 'devicepcis_id' => $port_id,
-                                                'is_dynamic'    => 1], $history_devices);
+                                                'is_dynamic'    => 1], $install_history);
                         } else {
                            $CompDevice->add(['items_id'      => $computers_id,
                                              'itemtype'      => 'Computer',
                                              'devicepcis_id' => $port_id,
                                              'is_dynamic'    => 1,
-                                             'entities_id'   => $entities_id], [], $history_devices);
+                                             'entities_id'   => $entities_id], [], $install_history);
                         }
                      }
                   }
@@ -366,7 +374,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             if (isset($ocsComputer['SLOTS'])) {
 
                if ($force) {
-                  self::resetDevices($computers_id, $devicetype, $history_devices);
+                  self::resetDevices($computers_id, $devicetype, $uninstall_history);
                }
 
                $CompDevice = new $devicetype();
@@ -395,13 +403,13 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                                 'itemtype'      => 'Computer',
                                                 'entities_id'   => $entities_id,
                                                 'devicepcis_id' => $pci_id,
-                                                'is_dynamic'    => 1], $history_devices);
+                                                'is_dynamic'    => 1], $install_history);
                         } else {
                            $CompDevice->add(['items_id'      => $computers_id,
                                              'itemtype'      => 'Computer',
                                              'devicepcis_id' => $pci_id,
                                              'is_dynamic'    => 1,
-                                             'entities_id'   => $entities_id], [], $history_devices);
+                                             'entities_id'   => $entities_id], [], $install_history);
                         }
                      }
                   }
@@ -411,7 +419,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
          case "Item_DeviceProcessor":
 
             if ($force) {
-               self::resetDevices($computers_id, $devicetype, $history_devices);
+               self::resetDevices($computers_id, $devicetype, $uninstall_history);
             }
 
             $CompDevice = new $devicetype();
@@ -444,14 +452,14 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                           'entities_id'         => $entities_id,
                                           'deviceprocessors_id' => $proc_id,
                                           'frequency'           => $line2["SPEED"],
-                                          'is_dynamic'          => 1], $history_devices);
+                                          'is_dynamic'          => 1], $install_history);
                   } else {
                      $CompDevice->add(['items_id'            => $computers_id,
                                        'itemtype'            => 'Computer',
                                        'deviceprocessors_id' => $proc_id,
                                        'is_dynamic'          => 1,
                                        'frequency'           => $line2["SPEED"],
-                                       'entities_id'         => $entities_id], [], $history_devices);
+                                       'entities_id'         => $entities_id], [], $install_history);
                   }
                }
             }
@@ -460,7 +468,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
          case "Item_DeviceNetworkCard":
 
             if ($force) {
-               self::resetDevices($computers_id, $devicetype, $history_devices);
+               self::resetDevices($computers_id, $devicetype, $uninstall_history);
             }
             //Carte reseau
             PluginOcsinventoryngNetworkPort::importNetwork($params['cfg_ocs'], $ocsComputer,
@@ -470,7 +478,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
          case "Item_DeviceGraphicCard":
 
             if ($force) {
-               self::resetDevices($computers_id, $devicetype, $history_devices);
+               self::resetDevices($computers_id, $devicetype, $uninstall_history);
             }
 
             $CompDevice = new $devicetype();
@@ -498,14 +506,14 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                              'entities_id'           => $entities_id,
                                              'devicegraphiccards_id' => $video_id,
                                              'memory'                => $line2["MEMORY"],
-                                             'is_dynamic'            => 1], $history_devices);
+                                             'is_dynamic'            => 1], $install_history);
                      } else {
                         $CompDevice->add(['items_id'              => $computers_id,
                                           'itemtype'              => 'Computer',
                                           'devicegraphiccards_id' => $video_id,
                                           'is_dynamic'            => 1,
                                           'memory'                => $line2["MEMORY"],
-                                          'entities_id'           => $entities_id], [], $history_devices);
+                                          'entities_id'           => $entities_id], [], $install_history);
                      }
                   }
                }
@@ -515,7 +523,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
          case "Item_DeviceSoundCard":
 
             if ($force) {
-               self::resetDevices($computers_id, $devicetype, $history_devices);
+               self::resetDevices($computers_id, $devicetype, $uninstall_history);
             }
 
             $CompDevice = new $devicetype();
@@ -544,13 +552,13 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                              'itemtype'            => 'Computer',
                                              'entities_id'         => $entities_id,
                                              'devicesoundcards_id' => $snd_id,
-                                             'is_dynamic'          => 1], $history_devices);
+                                             'is_dynamic'          => 1], $install_history);
                      } else {
                         $CompDevice->add(['items_id'            => $computers_id,
                                           'itemtype'            => 'Computer',
                                           'devicesoundcards_id' => $snd_id,
                                           'is_dynamic'          => 1,
-                                          'entities_id'         => $entities_id], [], $history_devices);
+                                          'entities_id'         => $entities_id], [], $install_history);
                      }
                   }
                }
@@ -559,7 +567,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
          case "Item_DeviceMotherboard":
 
             if ($force) {
-               self::resetDevices($computers_id, $devicetype, $history_devices);
+               self::resetDevices($computers_id, $devicetype, $uninstall_history);
             }
 
             $CompDevice = new $devicetype();
@@ -585,14 +593,14 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                        'entities_id'           => $entities_id,
                                        'devicemotherboards_id' => $devicemotherboards_id,
                                        'serial'                => $serial,
-                                       'is_dynamic'            => 1], $history_devices);
+                                       'is_dynamic'            => 1], $install_history);
                } else {
                   $CompDevice->add(['items_id'              => $computers_id,
                                     'itemtype'              => 'Computer',
                                     'devicemotherboards_id' => $devicemotherboards_id,
                                     'is_dynamic'            => 1,
                                     'serial'                => $serial,
-                                    'entities_id'           => $entities_id], [], $history_devices);
+                                    'entities_id'           => $entities_id], [], $install_history);
                }
             }
 
@@ -600,7 +608,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
          case "Item_DeviceControl":
 
             if ($force) {
-               self::resetDevices($computers_id, $devicetype, $history_devices);
+               self::resetDevices($computers_id, $devicetype, $uninstall_history);
             }
             //controllers
             $CompDevice = new $devicetype();
@@ -634,13 +642,13 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                              'itemtype'          => 'Computer',
                                              'entities_id'       => $entities_id,
                                              'devicecontrols_id' => $ctrl_id,
-                                             'is_dynamic'        => 1], $history_devices);
+                                             'is_dynamic'        => 1], $install_history);
                      } else {
                         $CompDevice->add(['items_id'          => $computers_id,
                                           'itemtype'          => 'Computer',
                                           'entities_id'       => $entities_id,
                                           'devicecontrols_id' => $ctrl_id,
-                                          'is_dynamic'        => 1], [], $history_devices);
+                                          'is_dynamic'        => 1], [], $install_history);
                      }
                   }
 
@@ -657,16 +665,16 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
     * @param $glpi_computers_id integer : glpi computer id.
     * @param $itemtype integer : device type identifier.
     *
-    * @param $history_devices
+    * @param $history
     *
     * @return void .
     */
-   static function resetDevices($glpi_computers_id, $itemtype, $history_devices) {
+   static function resetDevices($glpi_computers_id, $itemtype, $history) {
 
       $item = new $itemtype();
       $item->deleteByCriteria(['items_id'   => $glpi_computers_id,
                                'itemtype'   => 'Computer',
-                               'is_dynamic' => 1], 1, $history_devices);
+                               'is_dynamic' => 1], 1, $history);
 
    }
 }

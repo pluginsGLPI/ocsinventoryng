@@ -54,8 +54,17 @@ class PluginOcsinventoryngAntivirus extends CommonDBChild {
     */
    static function updateAntivirus($computers_id, $ocsComputer, $cfg_ocs, $force) {
 
+      $uninstall_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 3)) {
+         $uninstall_history = 1;
+      }
+      $install_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 2)) {
+         $install_history = 1;
+      }
+
       if ($force) {
-         self::resetAntivirus($computers_id, $cfg_ocs['history_plugins']);
+         self::resetAntivirus($computers_id, $uninstall_history);
       }
       $av = new ComputerAntivirus();
       //update data
@@ -74,7 +83,7 @@ class PluginOcsinventoryngAntivirus extends CommonDBChild {
             $input["is_active"]         = $antivirus["ENABLED"];
             $input["is_uptodate"]       = $antivirus["UPTODATE"];
             $input["is_dynamic"]        = 1;
-            $av->add($input, ['disable_unicity_check' => true], $cfg_ocs['history_plugins']);
+            $av->add($input, ['disable_unicity_check' => true], $install_history);
          }
       }
    }
@@ -83,14 +92,14 @@ class PluginOcsinventoryngAntivirus extends CommonDBChild {
     * Delete old antivirus entries
     *
     * @param $glpi_computers_id integer : glpi computer id.
-    * @param $history_plugins boolean
+    * @param $uninstall_history boolean
     *
     */
-   static function resetAntivirus($glpi_computers_id, $history_plugins) {
+   static function resetAntivirus($glpi_computers_id, $uninstall_history) {
 
       $av = new ComputerAntivirus();
       $av->deleteByCriteria(['computers_id' => $glpi_computers_id,
-                             'is_dynamic'   => 1], 1, $history_plugins);
+                             'is_dynamic'   => 1], 1, $uninstall_history);
 
    }
 }

@@ -68,10 +68,19 @@ class PluginOcsinventoryngProxysetting extends CommonDBChild {
     * @param $history_plugins boolean
     * @param $force
     */
-   static function updateProxysetting($computers_id, $ocsComputer, $history_plugins, $force) {
+   static function updateProxysetting($computers_id, $ocsComputer, $cfg_ocs, $force) {
+
+      $uninstall_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 3)) {
+         $uninstall_history = 1;
+      }
+      $install_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 2)) {
+         $install_history = 1;
+      }
 
       if ($force) {
-         self::resetProxysetting($computers_id, $history_plugins);
+         self::resetProxysetting($computers_id, $uninstall_history);
       }
       $ProxySetting = new self();
 
@@ -91,7 +100,7 @@ class PluginOcsinventoryngProxysetting extends CommonDBChild {
          if (isset($proxy["OVERRIDE"])) {
             $input["override"] = $proxy["OVERRIDE"];
          }
-         $ProxySetting->add($input, ['disable_unicity_check' => true], $history_plugins);
+         $ProxySetting->add($input, ['disable_unicity_check' => true], $install_history);
       }
 
    }
@@ -100,13 +109,13 @@ class PluginOcsinventoryngProxysetting extends CommonDBChild {
     * Delete old Proxysetting entries
     *
     * @param $glpi_computers_id integer : glpi computer id.
-    * @param $history_plugins boolean
+    * @param $uninstall_history boolean
     *
     */
-   static function resetProxysetting($glpi_computers_id, $history_plugins) {
+   static function resetProxysetting($glpi_computers_id, $uninstall_history) {
 
       $proxy = new self();
-      $proxy->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $history_plugins);
+      $proxy->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $uninstall_history);
 
    }
 

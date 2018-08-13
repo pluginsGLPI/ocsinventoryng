@@ -68,10 +68,19 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
     * @param $history_plugins boolean
     * @param $force
     */
-   static function updateWinupdatestate($computers_id, $ocsComputer, $history_plugins, $force) {
+   static function updateWinupdatestate($computers_id, $ocsComputer, $cfg_ocs, $force) {
+
+      $uninstall_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 3)) {
+         $uninstall_history = 1;
+      }
+      $install_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 2)) {
+         $install_history = 1;
+      }
 
       if ($force) {
-         self::resetWinupdatestate($computers_id, $history_plugins);
+         self::resetWinupdatestate($computers_id, $uninstall_history);
       }
       //update data
       if (!empty($ocsComputer)) {
@@ -86,7 +95,7 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
          $input["downloadsuccesstime"] = $wupdate["DOWNLOADSUCCESSTIME"];
 
          $CompWupdate = new self();
-         $CompWupdate->add($input, ['disable_unicity_check' => true], $history_plugins);
+         $CompWupdate->add($input, ['disable_unicity_check' => true], $install_history);
       }
 
    }
@@ -95,13 +104,13 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
     * Delete old Winupdatestate entries
     *
     * @param $glpi_computers_id integer : glpi computer id.
-    * @param $history_plugins boolean
+    * @param $uninstall_history boolean
     *
     */
-   static function resetWinupdatestate($glpi_computers_id, $history_plugins) {
+   static function resetWinupdatestate($glpi_computers_id, $uninstall_history) {
 
       $win = new self();
-      $win->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $history_plugins);
+      $win->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $uninstall_history);
 
    }
 

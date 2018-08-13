@@ -67,11 +67,20 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
     * @return int
     */
    static private function updateNetworkPort($mac, $name, $computers_id, $instantiation_type,
-                                             $inst_input, $ips, $check_name, $dohistory,
+                                             $inst_input, $ips, $check_name, $cfg_ocs,
                                              $already_known_ports, $mask, $gateway, $subnet, $entities_id) {
       global $DB;
 
       $network_port = new NetworkPort();
+
+      $install_network_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_network'] == 1 || $cfg_ocs['history_network'] == 2)) {
+         $install_network_history = 1;
+      }
+      $uninstall_network_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_network'] == 1 || $cfg_ocs['history_network'] == 3)) {
+         $uninstall_network_history = 1;
+      }
 
       // Then, find or create the base NetworkPort
       $query = "SELECT `id`, `is_dynamic`
@@ -98,19 +107,19 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                         'mac'                => $mac,
                         'items_id'           => $computers_id,
                         'itemtype'           => 'Computer',
-                        '_no_history'        => !$dohistory,
+                        '_no_history'        => !$install_network_history,
                         'instantiation_type' => $instantiation_type,
                         '_create_children'   => 1,
                         'is_dynamic'         => 1,
                         'is_deleted'         => 0];
 
-         $networkports_id = $network_port->add($port_input, [], $dohistory);
+         $networkports_id = $network_port->add($port_input, [], $install_network_history);
          if ($networkports_id === false) {
             return -1;
          }
          $inst_input['networkports_id'] = $networkports_id;
          $instantiation                 = $network_port->getInstantiation();
-         $instantiation->update($inst_input, $dohistory);
+         $instantiation->update($inst_input, $install_network_history);
          unset($instantiation);
 
       } else {
@@ -121,7 +130,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $port_input = ['id'         => $network_port->getID(),
                            'name'       => $name,
                            'is_dynamic' => 1];
-            $network_port->update($port_input, $dohistory);
+            $network_port->update($port_input, $install_network_history);
          }
          if (($network_port->fields['instantiation_type'] != $instantiation_type)
              && ($network_port->fields['is_dynamic'] == 1)) {
@@ -135,7 +144,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $instantiation                 = $network_port->getInstantiation();
             $inst_input['id']              = $instantiation->getID();
             $inst_input['networkports_id'] = $network_port->getID();
-            $instantiation->update($inst_input, $dohistory);
+            $instantiation->update($inst_input, $install_network_history);
             unset($instantiation);
          }
       }
@@ -153,7 +162,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       if ((!$ips) || (count($ips) == 0)) {
          foreach ($DB->request($query) as $line) {
             if ($line['is_dynamic']) {
-               $network_name->delete($line, true, $dohistory);
+               $network_name->delete($line, true, $uninstall_network_history);
             }
          }
       } else {
@@ -163,7 +172,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                 'items_id'    => $networkports_id,
                                 'is_dynamic'  => 1,
                                 'is_deleted'  => 0,
-                                '_no_history' => !$dohistory,
+                                '_no_history' => !$install_network_history,
                                 'name'        => 'OCS-INVENTORY-NG'];
             $networknames_id = $network_name->add($name_input);
          } else {
@@ -171,7 +180,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $networknames_id = $line['id'];
             foreach ($names as $line) {
                if (($line['is_dynamic'] == 1) && ($line['id'] != $networknames_id)) {
-                  $network_port->delete($line, true, $dohistory);
+                  $network_port->delete($line, true, $uninstall_network_history);
                }
             }
          }
@@ -189,7 +198,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                $already_known_addresses[] = $line['id'];
                $ips                       = array_diff($ips, [$line['name']]);
             } else if ($line['is_dynamic'] == 1) {
-               $ip_address->delete($line, true, $dohistory);
+               $ip_address->delete($line, true, $uninstall_network_history);
             }
          }
       }
@@ -228,7 +237,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             }
 
             $IPNetwork->networkUpdate = true;
-            $IPNetwork->add($input, [], !$dohistory);
+            $IPNetwork->add($input, [], $install_network_history);
          }
       }
 
@@ -237,7 +246,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $ip_input = ['name'        => $ip,
                          'itemtype'    => 'NetworkName',
                          'items_id'    => $networknames_id,
-                         '_no_history' => !$dohistory,
+                         '_no_history' => !$install_network_history,
                          'is_dynamic'  => 1,
                          'is_deleted'  => 0];
             $ip_address->add($ip_input);
@@ -257,6 +266,17 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
     */
    static function importNetwork($cfg_ocs, $ocsComputer, $computers_id, $entities_id) {
       global $DB;
+
+
+      $install_devices_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_devices'] == 1 || $cfg_ocs['history_devices'] == 2)) {
+         $install_devices_history = 1;
+      }
+
+      $uninstall_network_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_network'] == 1 || $cfg_ocs['history_network'] == 3)) {
+         $uninstall_network_history = 1;
+      }
 
       // Group by DESCRIPTION, MACADDR, TYPE, TYPEMIB, SPEED, VIRTUALDEV
       // to get an array in IPADDRESS
@@ -360,18 +380,18 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                            'entities_id'           => $entities_id,
                                            'devicenetworkcards_id' => $net_id,
                                            'mac'                   => $mac,
-                                           '_no_history'           => !$cfg_ocs['history_devices'],
+                                           '_no_history'           => !$install_devices_history,
                                            'is_dynamic'            => 1,
-                                           'is_deleted'            => 0], $cfg_ocs['history_devices']);
+                                           'is_deleted'            => 0], $install_devices_history);
                   } else {
                      $item_device->add(['items_id'              => $computers_id,
                                         'itemtype'              => 'Computer',
                                         'entities_id'           => $entities_id,
                                         'devicenetworkcards_id' => $net_id,
                                         'mac'                   => $mac,
-                                        '_no_history'           => !$cfg_ocs['history_devices'],
+                                        '_no_history'           => !$install_devices_history,
                                         'is_dynamic'            => 1,
-                                        'is_deleted'            => 0], [], $cfg_ocs['history_devices']);
+                                        'is_deleted'            => 0], [], $install_devices_history);
                   }
                }
             }
@@ -404,7 +424,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $networkports_id = self::updateNetworkPort($mac, $main['name'], $computers_id,
                                                        $type->fields['instantiation_type'],
                                                        $inst_input, $main['ip'], false,
-                                                       $cfg_ocs['history_network'],
+                                                       $cfg_ocs,
                                                        $already_known_ports,
                                                        $mask, $gateway, $subnet, $entities_id);
 
@@ -426,7 +446,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $inst_input = ['networkports_id_alias' => $networkports_id];
             $id         = self::updateNetworkPort($mac, $port['name'], $computers_id,
                                                   'NetworkPortAlias', $inst_input, $port['ip'],
-                                                  true, $cfg_ocs['history_network'], $already_known_ports,
+                                                  true, $cfg_ocs, $already_known_ports,
                                                   $mask, $gateway, $subnet, $entities_id);
             if ($id > 0) {
                $already_known_ports[] = $id;
@@ -444,7 +464,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       }
       $network_ports = new NetworkPort();
       foreach ($DB->request($query) as $line) {
-         $network_ports->delete($line, true, $cfg_ocs['history_network']);
+         $network_ports->delete($line, true, $uninstall_network_history);
       }
 
       $query = "SELECT `id`
@@ -457,7 +477,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       }
       $item_device = new Item_DeviceNetworkCard();
       foreach ($DB->request($query) as $line) {
-         $item_device->delete($line, true, $cfg_ocs['history_network']);
+         $item_device->delete($line, true, $uninstall_network_history);
       }
    }
 

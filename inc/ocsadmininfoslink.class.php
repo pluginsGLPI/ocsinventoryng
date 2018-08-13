@@ -116,7 +116,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
     *
     * @return array
     */
-   static function addInfocomsForComputer($computers_id, $date, $computer_updates) {
+   static function addInfocomsForComputer($computers_id, $date, $computer_updates, $history) {
       global $DB;
 
       $infocom  = new Infocom();
@@ -127,13 +127,13 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
              || $infocom->fields['use_date'] == 'NULL') {
             //add use_date
             $infocom->update(['id'       => $infocom->fields['id'],
-                              'use_date' => $use_date]);
+                              'use_date' => $use_date], $history);
          }
       } else {
          //add infocom
          $infocom->add(['items_id' => $computers_id,
                         'itemtype' => 'Computer',
-                        'use_date' => $use_date]);
+                        'use_date' => $use_date], [], $history);
 
       }
 
@@ -267,7 +267,12 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
       $entities_id                         = $params['entities_id'];
       $computers_id                        = $params['computers_id'];
 
-//      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      $update_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && $cfg_ocs['history_admininfos'] == 1) {
+         $update_history = 1;
+      }
+
+      //      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       //check link between ocs and glpi column
       $queryListUpdate = "SELECT `ocs_column`, `glpi_column`
@@ -317,7 +322,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
                      $input["id"]          = $computers_id;
                      $input["entities_id"] = $entities_id;
                      $input["_nolock"]     = true;
-                     $comp->update($input, $cfg_ocs['history_admininfos']);
+                     $comp->update($input, $update_history);
                   }
 
                   if ($computer_updates
@@ -340,7 +345,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
                         $input["id"]          = $computers_id;
                         $input["entities_id"] = $entities_id;
                         $input["_nolock"]     = true;
-                        $comp->update($input, $cfg_ocs['history_admininfos']);
+                        $comp->update($input, $update_history);
                      }
                   }
                }
@@ -400,11 +405,16 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
     * @internal param bool $dohistory : log changes?
     */
    static function updateAdministrativeInfoUseDate($computers_id, $plugin_ocsinventoryng_ocsservers_id,
-                                                   &$computer_updates, $ocsComputer) {
+                                                   &$computer_updates, $ocsComputer, $cfg_ocs) {
+
+      $update_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && $cfg_ocs['history_admininfos'] == 1) {
+         $update_history = 1;
+      }
 
       $ocsAdminInfosLink = new PluginOcsinventoryngOcsAdminInfosLink();
       if ($ocsAdminInfosLink->getFromDBByCrit(['plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                                               'glpi_column' => 'use_date'])) {
+                                               'glpi_column'                         => 'use_date'])) {
 
          $ocs_column = $ocsAdminInfosLink->getField('ocs_column');
          if ($computer_updates
@@ -416,9 +426,10 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
                $var = "";
             }
             $date             = str_replace($ocsComputer['NAME'] . "-", "", $var);
-            $computer_updates = PluginOcsinventoryngOcsAdminInfosLink::addInfocomsForComputer($computers_id,
-                                                                                              $date,
-                                                                                              $computer_updates);
+            $computer_updates = self::addInfocomsForComputer($computers_id,
+                                                             $date,
+                                                             $computer_updates,
+                                                             $update_history);
          }
       }
    }

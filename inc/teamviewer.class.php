@@ -70,10 +70,20 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
     * @param $history_plugins boolean
     * @param $force
     */
-   static function updateTeamviewer($computers_id, $ocsComputer, $history_plugins, $force) {
+   static function updateTeamviewer($computers_id, $ocsComputer, $cfg_ocs, $force) {
+
+
+      $uninstall_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 3)) {
+         $uninstall_history = 1;
+      }
+      $install_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 2)) {
+         $install_history = 1;
+      }
 
       if ($force) {
-         self::resetTeamviewer($computers_id, $history_plugins);
+         self::resetTeamviewer($computers_id, $uninstall_history);
       }
 
       $CompTeam              = new self();
@@ -82,7 +92,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
       $input["version"]      = $ocsComputer["VERSION"];
       $input["twid"]         = $ocsComputer["TWID"];
 
-      $CompTeam->add($input, ['disable_unicity_check' => true], $history_plugins);
+      $CompTeam->add($input, ['disable_unicity_check' => true], $install_history);
 
    }
 
@@ -90,13 +100,13 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
     * Delete old Teamviewer entries
     *
     * @param $glpi_computers_id integer : glpi computer id.
-    * @param $history_plugins boolean
+    * @param $uninstall_history boolean
     *
     */
-   static function resetTeamviewer($glpi_computers_id, $history_plugins) {
+   static function resetTeamviewer($glpi_computers_id, $uninstall_history) {
 
       $team = new self();
-      $team->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $history_plugins);
+      $team->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $uninstall_history);
 
    }
 

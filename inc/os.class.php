@@ -113,12 +113,23 @@ class PluginOcsinventoryngOS extends CommonDBChild {
    static function updateComputerOS($options = []) {
       global $DB;
 
-      $is_utf8               = $options['cfg_ocs']["ocs_db_utf8"];
-      $ocsServerId           = $options['plugin_ocsinventoryng_ocsservers_id'];
-      $force                 = $options["force"];
-      $options['do_history'] = $options['cfg_ocs']["history_hardware"];
+      $is_utf8     = $options['cfg_ocs']["ocs_db_utf8"];
+      $ocsServerId = $options['plugin_ocsinventoryng_ocsservers_id'];
+      $force       = $options["force"];
+      $cfg_ocs     = $options['cfg_ocs'];
 
       if (isset($options['HARDWARE'])) {
+
+
+         $uninstall_history = 0;
+         if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_os'] == 1 || $cfg_ocs['history_os'] == 3)) {
+            $uninstall_history = 1;
+         }
+         $install_history = 0;
+         if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_os'] == 1 || $cfg_ocs['history_os'] == 2)) {
+            $install_history = 1;
+         }
+
          $hardware = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($options['HARDWARE']));
 
          if ($options['check_history']) {
@@ -146,10 +157,9 @@ class PluginOcsinventoryngOS extends CommonDBChild {
                $computerOSSP  = $data_computer["os_sp"];
 
                //Do not log software history in case of OS or Service Pack change
-               if (!$options['do_history']
-                   || $computerOS != $hardware["OSNAME"]
+               if ($computerOS != $hardware["OSNAME"]
                    || $computerOSSP != $hardware["OSCOMMENTS"]) {
-                  $options['dohistory'] = 0;
+                  $install_history = 0;
                }
             }
          }
@@ -211,7 +221,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
          $device = new Item_OperatingSystem();
 
          if ($force) {
-            self::resetOS($options['computers_id'], $options['do_history']);
+            self::resetOS($options['computers_id'], $uninstall_history);
          }
 
          if ($id = $device->getFromDBByCrit(['items_id'            => $options['computers_id'],
@@ -229,7 +239,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
                                 '_nolock'                         => true,
                                 'is_dynamic'                      => 1,
                                 'entities_id'                     => $options['entities_id']
-                               ], $options['dohistory']);
+                               ], $install_history);
             }
          } else {
 
@@ -245,7 +255,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
                           '_nolock'                         => true,
                           'is_dynamic'                      => 1,
                           'entities_id'                     => $options['entities_id']
-                         ], [], $options['dohistory']);
+                         ], [], $install_history);
 
          }
       }
@@ -256,9 +266,10 @@ class PluginOcsinventoryngOS extends CommonDBChild {
     *
     * @param $glpi_computers_id integer : glpi computer id.
     * @param $history_hardware
+    *
     * @return void .
     */
-   static function resetOS($glpi_computers_id, $history_hardware) {
+   static function resetOS($glpi_computers_id, $uninstall_history) {
 
       $linktype = 'Item_OperatingSystem';
 
@@ -266,7 +277,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
       $item->deleteByCriteria(['items_id'   => $glpi_computers_id,
                                'itemtype'   => 'Computer',
                                'is_dynamic' => 1
-                              ], 1, $history_hardware
+                              ], 1, $uninstall_history
       );
    }
 }

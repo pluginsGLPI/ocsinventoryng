@@ -608,11 +608,13 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
             //ADD IF NOT LINKED
             $computers_id = $comp->add($input, ['unicity_error_message' => false]);
             if ($computers_id) {
-               $ocsid      = $computer['META']['ID'];
-               $changes[0] = '0';
-               $changes[1] = "";
-               $changes[2] = $ocsid;
-               PluginOcsinventoryngOcslink::history($computers_id, $changes, PluginOcsinventoryngOcslink::HISTORY_OCS_IMPORT);
+               if ($cfg_ocs['dohistory'] == 1) {
+                  $ocsid      = $computer['META']['ID'];
+                  $changes[0] = '0';
+                  $changes[1] = "";
+                  $changes[2] = $ocsid;
+                  PluginOcsinventoryngOcslink::history($computers_id, $changes, PluginOcsinventoryngOcslink::HISTORY_OCS_IMPORT);
+               }
 
                $link_params = ['ocsid'                               => $computer['META']['ID'],
                                'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
@@ -687,14 +689,16 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                        WHERE `id` = " . $data["id"];
 
             if ($DB->query($query)) {
-               $ocs_id_change = true;
-               //Add history to indicates that the ocsid changed
-               $changes[0] = '0';
-               //Old ocsid
-               $changes[1] = $data["ocsid"];
-               //New ocsid
-               $changes[2] = $ocsid;
-               PluginOcsinventoryngOcslink::history($computers_id, $changes, PluginOcsinventoryngOcslink::HISTORY_OCS_IDCHANGED);
+               if ($cfg_ocs['dohistory'] == 1) {
+                  $ocs_id_change = true;
+                  //Add history to indicates that the ocsid changed
+                  $changes[0] = '0';
+                  //Old ocsid
+                  $changes[1] = $data["ocsid"];
+                  //New ocsid
+                  $changes[2] = $ocsid;
+                  PluginOcsinventoryngOcslink::history($computers_id, $changes, PluginOcsinventoryngOcslink::HISTORY_OCS_IDCHANGED);
+               }
             }
          }
       }
@@ -759,14 +763,21 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                     && ($ocsConfig["states_id_default"] > 0))) {
                $input["states_id"] = $ocsConfig["states_id_default"];
             }
-            $comp->update($input, $cfg_ocs['history_hardware']);
+            $update_history = 0;
+            $input["_no_history"] = 1;
+            if ($cfg_ocs['dohistory'] == 1 && $cfg_ocs['history_hardware'] == 1) {
+               $update_history = 1;
+               $input["_no_history"] = 0;
+            }
+
+            $comp->update($input, $update_history);
 
             // Auto restore if deleted
             if ($comp->fields['is_deleted']) {
                $comp->restore(['id' => $computers_id]);
             }
 
-            if ($ocs_id_change) {
+            if ($ocs_id_change && $cfg_ocs['dohistory'] == 1) {
                $changes[0] = '0';
                $changes[1] = "";
                $changes[2] = $ocsid;
@@ -841,7 +852,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       }
 
       //If location is update by a rule
-      PluginOcsinventoryngHardware::updateComputerFields($line_links, $data, $cfg_ocs['history_hardware']);
+      PluginOcsinventoryngHardware::updateComputerFields($line_links, $data, $cfg_ocs);
    }
 
    /** Update a ocs computer
@@ -909,7 +920,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                                                'groups_id'    => $groups_id],
                                               ['ocsid' => $line["ocsid"]]);
 
-               PluginOcsinventoryngHardware::updateComputerFields($line, $data, $cfg_ocs['history_hardware']);
+               PluginOcsinventoryngHardware::updateComputerFields($line, $data, $cfg_ocs);
             }
 
             // update last_update and and last_ocs_update
@@ -975,7 +986,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                if ($mixed_checksum & pow(2, self::BIOS_FL)) {
                   $updates['bios'] = true;
                   $ocsCheck[]      = PluginOcsinventoryngOcsClient::CHECKSUM_BIOS;
-                  if ($cfg_ocs["import_device_motherboard"] && $cfg_ocs['ocs_version'] >= PluginOcsinventoryngOcsServer::OCS2_2_VERSION_LIMIT) {
+                  if ($cfg_ocs["import_device_motherboard"]
+                      && $cfg_ocs['ocs_version'] >= PluginOcsinventoryngOcsServer::OCS2_2_VERSION_LIMIT) {
                      $updates['mb'] = true;
                   }
                }
@@ -1182,7 +1194,6 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                           'computers_updates'                   => $computer_updates,
                           'ocs_id'                              => $line['ocsid'],
                           'entities_id'                         => $comp->fields['entities_id'],
-                          'dohistory'                           => true,
                           'check_history'                       => true];
 
                if (isset($ocsComputer['ACCOUNTINFO'])) {
@@ -1193,7 +1204,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                   PluginOcsinventoryngOcsAdminInfosLink::updateAdministrativeInfoUseDate($line['computers_id'],
                                                                                          $plugin_ocsinventoryng_ocsservers_id,
                                                                                          $computer_updates,
-                                                                                         $ocsComputer['HARDWARE']);
+                                                                                         $ocsComputer['HARDWARE'],
+                                                                                         $cfg_ocs);
                }
 
                //Update TAG
@@ -1204,8 +1216,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                $params['force'] = $force;
 
                if ($updates['hardware']) {
-                  $params['dohistory'] = $cfg_ocs['history_hardware'];
-                  $params['HARDWARE']  = $ocsComputer['HARDWARE'];
+                  $params['HARDWARE'] = $ocsComputer['HARDWARE'];
 
                   $params['check_history'] = true;
                   if ($force) {
@@ -1305,17 +1316,17 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                   //import drives
                   PluginOcsinventoryngDisk::updateDisk($line['computers_id'], $ocsComputer["DRIVES"],
                                                        $plugin_ocsinventoryng_ocsservers_id,
-                                                       $cfg_ocs['history_drives'], $force);
+                                                       $cfg_ocs, $force);
                }
                if ($updates['virtualmachines'] && isset($ocsComputer["VIRTUALMACHINES"])) {
                   //import vm
                   PluginOcsinventoryngVirtualmachine::updateVirtualMachine($line['computers_id'], $ocsComputer["VIRTUALMACHINES"],
-                                                                           $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs['history_vm'], $force);
+                                                                           $plugin_ocsinventoryng_ocsservers_id, $cfg_ocs, $force);
                }
                if ($updates['registry'] && isset($ocsComputer["REGISTRY"])) {
                   //import registry entries
                   PluginOcsinventoryngRegistryKey::updateRegistry($line['computers_id'], $ocsComputer["REGISTRY"],
-                                                                  $cfg_ocs['history_plugins'], 1);
+                                                                  $cfg_ocs, 1);
                }
                /********************* PLUGINS *********************/
                if ($updates['antivirus'] && isset($ocsComputer["SECURITYCENTER"])) {
@@ -1326,42 +1337,42 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                if ($updates['winupdatestate'] && isset($ocsComputer["WINUPDATESTATE"])) {
                   //import winupdatestate entries
                   PluginOcsinventoryngWinupdate::updateWinupdatestate($line['computers_id'], $ocsComputer["WINUPDATESTATE"],
-                                                                      $cfg_ocs['history_plugins'], 1);
+                                                                      $cfg_ocs, 1);
                }
                if ($updates['osinstall'] && isset($ocsComputer["OSINSTALL"])) {
                   //import osinstall entries
                   PluginOcsinventoryngOsinstall::updateOSInstall($line['computers_id'], $ocsComputer["OSINSTALL"],
-                                                                 $cfg_ocs['history_plugins'], 1);
+                                                                 $cfg_ocs, 1);
                }
                if ($updates['proxysetting'] && isset($ocsComputer["NAVIGATORPROXYSETTING"])) {
                   //import proxysetting entries
                   PluginOcsinventoryngProxysetting::updateProxysetting($line['computers_id'], $ocsComputer["NAVIGATORPROXYSETTING"],
-                                                                       $cfg_ocs['history_plugins'], 1);
+                                                                       $cfg_ocs, 1);
                }
                if ($updates['networkshare'] && isset($ocsComputer["NETWORKSHARE"])) {
                   //import networkshare entries
                   PluginOcsinventoryngNetworkshare::updateNetworkshare($line['computers_id'], $ocsComputer["NETWORKSHARE"],
-                                                                       $cfg_ocs['history_plugins'], 1);
+                                                                       $cfg_ocs, 1);
                }
                if ($updates['runningprocess'] && isset($ocsComputer["RUNNINGPROCESS"])) {
                   //import runningprocess entries
                   PluginOcsinventoryngRunningprocess::updateRunningprocess($line['computers_id'], $ocsComputer["RUNNINGPROCESS"],
-                                                                           $cfg_ocs['history_plugins'], 1);
+                                                                           $cfg_ocs, 1);
                }
                if ($updates['service'] && isset($ocsComputer["SERVICE"])) {
                   //import service entries
                   PluginOcsinventoryngService::updateService($line['computers_id'], $ocsComputer["SERVICE"],
-                                                             $cfg_ocs['history_plugins'], 1);
+                                                             $cfg_ocs, 1);
                }
                if ($updates['winuser'] && isset($ocsComputer["WINUSERS"])) {
                   //import winusers entries
                   PluginOcsinventoryngWinuser::updateWinuser($line['computers_id'], $ocsComputer["WINUSERS"],
-                                                             $cfg_ocs['history_plugins'], 1);
+                                                             $cfg_ocs, 1);
                }
                if ($updates['teamviewer'] && isset($ocsComputer["TEAMVIEWER"])) {
                   //import teamviewer entries
                   PluginOcsinventoryngTeamviewer::updateTeamviewer($line['computers_id'], $ocsComputer["TEAMVIEWER"],
-                                                                   $cfg_ocs['history_plugins'], 1);
+                                                                   $cfg_ocs, 1);
                }
                if ($updates['uptime'] && isset($ocsComputer["UPTIME"])) {
                   //import uptime

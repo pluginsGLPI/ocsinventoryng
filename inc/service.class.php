@@ -68,10 +68,19 @@ class PluginOcsinventoryngService extends CommonDBChild {
     * @param $history_plugins boolean
     * @param $force
     */
-   static function updateService($computers_id, $ocsComputer, $history_plugins, $force) {
+   static function updateService($computers_id, $ocsComputer, $cfg_ocs, $force) {
+
+      $uninstall_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 3)) {
+         $uninstall_history = 1;
+      }
+      $install_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 2)) {
+         $install_history = 1;
+      }
 
       if ($force) {
-         self::resetService($computers_id, $history_plugins);
+         self::resetService($computers_id, $uninstall_history);
       }
 
       $ocsService = new self();
@@ -83,7 +92,7 @@ class PluginOcsinventoryngService extends CommonDBChild {
          $input                 = array_change_key_case($service, CASE_LOWER);
          $input["computers_id"] = $computers_id;
 
-         $ocsService->add($input, ['disable_unicity_check' => true], $history_plugins);
+         $ocsService->add($input, ['disable_unicity_check' => true], $install_history);
       }
    }
 
@@ -91,13 +100,13 @@ class PluginOcsinventoryngService extends CommonDBChild {
     * Delete old Services entries
     *
     * @param $glpi_computers_id integer : glpi computer id.
-    * @param $history_plugins boolean
+    * @param $uninstall_history boolean
     *
     */
-   static function resetService($glpi_computers_id, $history_plugins) {
+   static function resetService($glpi_computers_id, $uninstall_history) {
 
       $service = new self();
-      $service->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $history_plugins);
+      $service->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $uninstall_history);
 
    }
 

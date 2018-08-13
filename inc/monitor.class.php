@@ -64,8 +64,17 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
       $entity        = $monitor_params["entities_id"];
       $force         = $monitor_params["force"];
 
+      $uninstall_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_monitor'] == 1 || $cfg_ocs['history_monitor'] == 3)) {
+         $uninstall_history = 1;
+      }
+      $install_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_monitor'] == 1 || $cfg_ocs['history_monitor'] == 2)) {
+         $install_history = 1;
+      }
+
       if ($force && $cfg_ocs["import_monitor"] == 1) { // Only reset monitor as global in unit management
-         self::resetMonitors($computers_id, $cfg_ocs['history_monitor']);    // try to link monitor with existing
+         self::resetMonitors($computers_id, $uninstall_history);    // try to link monitor with existing
       }
 
       $already_processed = [];
@@ -159,7 +168,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
                         $input["states_id"] = $cfg_ocs["states_id_default"];
                      }
                      $input["entities_id"] = $entity;
-                     $id_monitor           = $m->add($input, [], $cfg_ocs['history_monitor']);
+                     $id_monitor           = $m->add($input, [], $install_history);
                   }
                } else if ($cfg_ocs["import_monitor"] >= 2) {
                   //Config says : manage monitors as single units
@@ -213,7 +222,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
                         $input["states_id"] = $cfg_ocs["states_id_default"];
                      }
                      $input["entities_id"] = $entity;
-                     $id_monitor           = $m->add($input, [], $cfg_ocs['history_monitor']);
+                     $id_monitor           = $m->add($input, [], $install_history);
                   }
                } // ($cfg_ocs["import_monitor"] >= 2)
 
@@ -223,7 +232,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
                               'itemtype'     => 'Monitor',
                               'items_id'     => $id_monitor,
                               'is_dynamic'   => 1,
-                              'is_deleted'   => 0], [], $cfg_ocs['history_monitor']);
+                              'is_deleted'   => 0], [], $install_history);
                   $already_processed[] = $id_monitor;
 
                   //Update column "is_deleted" set value to 0 and set status to default
@@ -248,7 +257,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
                      $input["id"] = $id_monitor;
                      if (count($input)) {
                         $input['entities_id'] = $entity;
-                        $m->update($input, $cfg_ocs['history_monitor']);
+                        $m->update($input, $install_history);
                      }
                   }
                }
@@ -306,11 +315,11 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
     *
     * @param $glpi_computers_id integer : glpi computer id.
     *
-    * @param $history_monitor
+    * @param $uninstall_history
     * @return void .
     * @throws \GlpitestSQLError
     */
-   static function resetMonitors($glpi_computers_id, $history_monitor) {
+   static function resetMonitors($glpi_computers_id, $uninstall_history) {
       global $DB;
 
       $query  = "SELECT *
@@ -326,7 +335,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
 
          while ($data = $DB->fetch_assoc($result)) {
 
-            $conn->delete(['id' => $data['id'], '_no_history' => !$history_monitor], true, $history_monitor);
+            $conn->delete(['id' => $data['id'], '_no_history' => !$uninstall_history], true, $uninstall_history);
 
             $query2  = "SELECT COUNT(*)
                        FROM `glpi_computers_items`
@@ -335,7 +344,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
             $result2 = $DB->query($query2);
 
             if ($DB->result($result2, 0, 0) == 1) {
-               $mon->delete(['id' => $data['items_id'], '_no_history' => !$history_monitor], true, $history_monitor);
+               $mon->delete(['id' => $data['items_id'], '_no_history' => !$uninstall_history], true, $uninstall_history);
             }
          }
       }

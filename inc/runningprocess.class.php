@@ -68,10 +68,19 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild {
     * @param $history_plugins boolean
     * @param $force
     */
-   static function updateRunningprocess($computers_id, $ocsComputer, $history_plugins, $force) {
+   static function updateRunningprocess($computers_id, $ocsComputer, $cfg_ocs, $force) {
+
+      $uninstall_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 3)) {
+         $uninstall_history = 1;
+      }
+      $install_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 2)) {
+         $install_history = 1;
+      }
 
       if ($force) {
-         self::resetRunningProcess($computers_id, $history_plugins);
+         self::resetRunningProcess($computers_id, $uninstall_history);
       }
       $Runningprocess = new self();
 
@@ -81,7 +90,7 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild {
          $process               = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($runningprocess));
          $input                 = array_change_key_case($process, CASE_LOWER);
          $input["computers_id"] = $computers_id;
-         $Runningprocess->add($input, ['disable_unicity_check' => true], $history_plugins);
+         $Runningprocess->add($input, ['disable_unicity_check' => true], $install_history);
       }
    }
 
@@ -89,13 +98,13 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild {
     * Delete old Runningprocess entries
     *
     * @param $glpi_computers_id integer : glpi computer id.
-    * @param $history_plugins boolean
+    * @param $uninstall_history boolean
     *
     */
-   static function resetRunningProcess($glpi_computers_id, $history_plugins) {
+   static function resetRunningProcess($glpi_computers_id, $uninstall_history) {
 
       $runningprocess = new self();
-      $runningprocess->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $history_plugins);
+      $runningprocess->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $uninstall_history);
 
    }
 

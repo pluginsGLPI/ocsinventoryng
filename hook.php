@@ -42,7 +42,7 @@ function plugin_ocsinventoryng_install() {
        && !$DB->tableExists("ocs_glpi_ocsservers")) {
 
       $install = true;
-      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.5.0-empty.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.5.2-empty.sql");
 
       $migration->createRule(['sub_type'     => 'RuleImportComputer',
                               'entities_id'  => 0,
@@ -1250,6 +1250,15 @@ function plugin_ocsinventoryng_install() {
 
    /******************* Migration 1.5.1 *******************/
 
+   /******************* Migration 1.5.2 *******************/
+
+   if (!$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'history_os')) {
+      $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+               ADD `history_os` tinyint(1) NOT NULL DEFAULT '1';";
+      $DB->queryOrDie($query, "1.5.1 add history_os in glpi_plugin_ocsinventoryng_ocsservers");
+   }
+
+   /******************* Migration 1.5.2 *******************/
 
    $cron = new CronTask();
    if (!$cron->getFromDBbyName('PluginOcsinventoryngThread', 'CleanOldThreads')) {
@@ -1556,12 +1565,10 @@ function plugin_ocsinventoryng_MassiveActions($type) {
             return [// Specific one
                     'PluginOcsinventoryngOcsProcess' . MassiveAction::CLASS_ACTION_SEPARATOR .
                     "plugin_ocsinventoryng_launch_ocsng_update"
-                                                               => __('Launch synchronization',
-                                                                     'ocsinventoryng'),
+                                                               => _sx('button', 'Launch synchronization', 'ocsinventoryng'),
                     'PluginOcsinventoryngOcsProcess' . MassiveAction::CLASS_ACTION_SEPARATOR .
                     "plugin_ocsinventoryng_force_ocsng_update"
-                                                               => __('Force full import',
-                                                                     'ocsinventoryng'),
+                                                               => _sx('button', 'Force full import', 'ocsinventoryng'),
                     'PluginOcsinventoryngOcsProcess' . MassiveAction::CLASS_ACTION_SEPARATOR .
                     "plugin_ocsinventoryng_lock_ocsng_field"   => __('Lock fields',
                                                                      'ocsinventoryng'),

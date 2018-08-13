@@ -63,8 +63,17 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
       $entity        = $periph_params["entities_id"];
       $force         = $periph_params["force"];
 
+      $uninstall_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_peripheral'] == 1 || $cfg_ocs['history_peripheral'] == 3)) {
+         $uninstall_history = 1;
+      }
+      $install_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_peripheral'] == 1 || $cfg_ocs['history_peripheral'] == 2)) {
+         $install_history = 1;
+      }
+
       if ($force) {
-         self::resetPeripherals($computers_id, $cfg_ocs['history_peripheral']);
+         self::resetPeripherals($computers_id, $uninstall_history);
       }
 
       $already_processed = [];
@@ -127,7 +136,7 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
                         $input["states_id"] = $cfg_ocs["states_id_default"];
                      }
                      $input["entities_id"] = $entity;
-                     $id_periph            = $p->add($input, [], $cfg_ocs['history_peripheral']);
+                     $id_periph            = $p->add($input, [], $install_history);
                   }
                } else if ($cfg_ocs["import_periph"] == 2) {
                   //Config says : manage peripherals as single units
@@ -138,7 +147,7 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
                      $input["states_id"] = $cfg_ocs["states_id_default"];
                   }
                   $input["entities_id"] = $entity;
-                  $id_periph            = $p->add($input, [], $cfg_ocs['history_peripheral']);
+                  $id_periph            = $p->add($input, [], $install_history);
                }
 
                if ($id_periph) {
@@ -146,7 +155,7 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
                   if ($conn->add(['computers_id' => $computers_id,
                                   'itemtype'     => 'Peripheral',
                                   'items_id'     => $id_periph,
-                                  'is_dynamic'   => 1], [], $cfg_ocs['history_peripheral'])) {
+                                  'is_dynamic'   => 1], [], $install_history)) {
                      //Update column "is_deleted" set value to 0 and set status to default
                      $input                = [];
                      $input["id"]          = $id_periph;
@@ -155,7 +164,7 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
                      if ($cfg_ocs["states_id_default"] > 0) {
                         $input["states_id"] = $cfg_ocs["states_id_default"];
                      }
-                     $p->update($input, $cfg_ocs['history_peripheral']);
+                     $p->update($input, $install_history);
                   }
                }
             } else {
@@ -211,11 +220,11 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
     *
     * @param $glpi_computers_id integer : glpi computer id.
     *
-    * @param $history_peripheral
+    * @param $uninstall_history
     * @return void .
     * @throws \GlpitestSQLError
     */
-   static function resetPeripherals($glpi_computers_id, $history_peripheral) {
+   static function resetPeripherals($glpi_computers_id, $uninstall_history) {
       global $DB;
 
       $query  = "SELECT *
@@ -229,7 +238,7 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
       if ($DB->numrows($result) > 0) {
          $conn = new Computer_Item();
          while ($data = $DB->fetch_assoc($result)) {
-            $conn->delete(['id' => $data['id'], '_no_history' => !$history_peripheral], true, $history_peripheral);
+            $conn->delete(['id' => $data['id'], '_no_history' => !$uninstall_history], true, $uninstall_history);
 
             $query2  = "SELECT COUNT(*)
                        FROM `glpi_computers_items`
@@ -239,9 +248,9 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
 
             if ($DB->result($result2, 0, 0) == 1) {
                $per->delete(['id'          => $data['items_id'],
-                             '_no_history' => !$history_peripheral],
+                             '_no_history' => !$uninstall_history],
                             true,
-                            $history_peripheral);
+                            $uninstall_history);
             }
          }
       }

@@ -96,8 +96,14 @@ class PluginOcsinventoryngBios extends CommonDBChild {
 
       if (isset($params["BIOS"])) {
          $bios        = $params['BIOS'];
+         $cfg_ocs     = $params['cfg_ocs'];
          $ocs_db_utf8 = $params['cfg_ocs']['ocs_db_utf8'];
          $force       = $params["force"];
+
+         $update_history = 0;
+         if ($cfg_ocs['dohistory'] == 1 && $cfg_ocs['history_bios'] == 1) {
+            $update_history = 1;
+         }
 
          if ($params['cfg_ocs']["import_general_serial"]
              && $params['cfg_ocs']["import_general_serial"] > 0
@@ -142,7 +148,7 @@ class PluginOcsinventoryngBios extends CommonDBChild {
             $compupdate["id"]          = $params['computers_id'];
             $compupdate["entities_id"] = $params['entities_id'];
             $comp                      = new Computer();
-            $comp->update($compupdate, $params['cfg_ocs']['history_bios']);
+            $comp->update($compupdate, $update_history);
          }
       }
    }

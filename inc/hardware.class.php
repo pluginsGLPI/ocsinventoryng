@@ -180,6 +180,12 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
 
       $is_utf8 = $options['cfg_ocs']["ocs_db_utf8"];
       $force   = $options["force"];
+      $cfg_ocs = $options['cfg_ocs'];
+
+      $update_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && $cfg_ocs['history_hardware'] == 1) {
+         $update_history = 1;
+      }
 
       if (isset($options['HARDWARE'])) {
          $hardware = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($options['HARDWARE']));
@@ -236,8 +242,9 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             $updates["id"]          = $options['computers_id'];
             $updates["entities_id"] = $options['entities_id'];
             $updates["_nolock"]     = true;
+            $updates["_no_history"] = !$update_history;
             $comp                   = new Computer();
-            $comp->update($updates, $options['dohistory']);
+            $comp->update($updates, $update_history);
          }
       }
    }
@@ -249,12 +256,17 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
     * @param $line_links
     * @param $data
     * @param $history_hardware
+    *
     * @return void
     * @internal param $line_links
     * @internal param $data
     */
-   static function updateComputerFields($line_links, $data, $history_hardware) {
+   static function updateComputerFields($line_links, $data, $cfg_ocs) {
 
+      $update_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && $cfg_ocs['history_hardware'] == 1) {
+         $update_history = 1;
+      }
       //If there's a location to update
       if (isset($data['locations_id'])) {
          $computer = new Computer();
@@ -280,7 +292,8 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
                   $tmp['locations_id'] = $data['locations_id'];
                   $tmp["_nolock"]      = true;
                   $tmp['id']           = $line_links['computers_id'];
-                  $computer->update($tmp, $history_hardware);
+                  $tmp["_no_history"]  = !$update_history;
+                  $computer->update($tmp, $update_history);
                }
             }
          }
@@ -308,10 +321,11 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
                   }
                }
                if ($ko == 0) {
-                  $tmp['groups_id'] = $data['groups_id'];
-                  $tmp["_nolock"]   = true;
-                  $tmp['id']        = $line_links['computers_id'];
-                  $computer->update($tmp, $history_hardware);
+                  $tmp['groups_id']   = $data['groups_id'];
+                  $tmp["_nolock"]     = true;
+                  $tmp['id']          = $line_links['computers_id'];
+                  $tmp["_no_history"] = !$update_history;
+                  $computer->update($tmp, $update_history);
                }
             }
          }

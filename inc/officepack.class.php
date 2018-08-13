@@ -63,6 +63,11 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
    static function updateOfficePack($computers_id, $softwares_id, $softwares_name, $softwareversions_id,
                                     $entity, $ocsOfficePacks, $cfg_ocs, &$imported_licences) {
 
+      $install_plugins_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 2)) {
+         $install_plugins_history = 1;
+      }
+
       foreach ($ocsOfficePacks as $ocsOfficePack) {
          $ocsOfficePack = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsOfficePack));
 
@@ -118,7 +123,7 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
                      $id_software_licenses = $software_licenses->getID();
                   } else {
                      $software_licenses->fields['softwares_id'] = $softwares_id;
-                     $id_software_licenses                      = $software_licenses->add($soft_l, [], $cfg_ocs['history_software']);
+                     $id_software_licenses                      = $software_licenses->add($soft_l, [], $install_plugins_history);
                   }
 
                   if ($id_software_licenses) {
@@ -145,9 +150,9 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
     * Delete old licenses software entries
     *
     * @param $glpi_computers_id integer : glpi computer id.
-    * @param $history_plugins boolean
+    * @param $uninstall_plugins_history boolean
     */
-   static function resetOfficePack($glpi_computers_id, $history_plugins) {
+   static function resetOfficePack($glpi_computers_id, $uninstall_plugins_history) {
       global $DB;
 
       $query = "SELECT *
@@ -174,15 +179,15 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
 
                if ($DB->result($result3, 0, 0) == 1) {
                   $soft = new Software();
-                  $soft->delete(['id' => $license->fields['softwares_id']], 1, $history_plugins);
+                  $soft->delete(['id' => $license->fields['softwares_id']], 1, $uninstall_plugins_history);
                }
-               $license->delete(["id" => $data['softwarelicenses_id']], 0, $history_plugins);
+               $license->delete(["id" => $data['softwarelicenses_id']], 0, $uninstall_plugins_history);
             }
          }
 
          $computer_softwarelicenses = new Computer_SoftwareVersion();
          $computer_softwarelicenses->deleteByCriteria(['computers_id' => $glpi_computers_id],
-                                                      0, $history_plugins);
+                                                      0, $uninstall_plugins_history);
       }
    }
 }

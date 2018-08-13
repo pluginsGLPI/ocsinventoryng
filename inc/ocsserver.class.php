@@ -1005,6 +1005,25 @@ JAVASCRIPT;
       echo "</div>\n";
    }
 
+   static function getHistoryValues() {
+
+      $values = [__('None'),
+                 __('Installation / Update / Uninstallation', 'ocsinventoryng'),
+                 __('Installation / Update', 'ocsinventoryng'),
+                 __('Uninstallation', 'ocsinventoryng')];
+
+      return $values;
+   }
+
+   function showHistoryDropdown($name) {
+
+      $value  = $this->fields[$name];
+      $values = self::getHistoryValues();
+      return Dropdown::showFromArray($name, $values, ['value' => $value]);
+
+   }
+
+
    /**
     * Print ocs history form
     *
@@ -1093,46 +1112,47 @@ JAVASCRIPT;
       echo "&nbsp;</td>\n";
 
       echo "<td class='center'>" . __('Devices history', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("history_devices", $this->fields["history_devices"]);
+      $this->showHistoryDropdown("history_devices");
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Volumes history', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("history_drives", $this->fields["history_drives"]);
+      $this->showHistoryDropdown("history_drives");
       echo "</td>\n";
 
       echo "<td class='center'>" . __('Network history', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("history_network", $this->fields["history_network"]);
+      $this->showHistoryDropdown("history_network");
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Monitor connection history', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("history_monitor", $this->fields["history_monitor"]);
+      $this->showHistoryDropdown("history_monitor");
       echo "</td>\n";
 
       echo "<td class='center'>" . __('Printer connection history', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("history_printer", $this->fields["history_printer"]);
+      $this->showHistoryDropdown("history_printer");
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Peripheral connection history', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("history_peripheral", $this->fields["history_peripheral"]);
+      $this->showHistoryDropdown("history_peripheral");
       echo "</td>\n";
 
       echo "<td class='center'>" . __('Software connection history', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("history_software", $this->fields["history_software"]);
-      echo "</td></tr>\n";
+      $this->showHistoryDropdown("history_software");
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Virtual machines history', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("history_vm", $this->fields["history_vm"]);
-      echo "</td>\n";
+      $this->showHistoryDropdown("history_vm");
 
       echo "<td class='center'>" . __('Administrative infos history', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("history_admininfos", $this->fields["history_admininfos"]);
-      echo "</td></tr>\n";
+      $this->showHistoryDropdown("history_admininfos");
 
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Plugins history', 'ocsinventoryng') . "</td><td>";
-      Dropdown::showYesNo("history_plugins", $this->fields["history_plugins"]);
+      $this->showHistoryDropdown("history_plugins");
       echo "</td>\n";
 
-      echo "<td colspan='2'></td></tr>";
+      echo "<td class='center'>" . __('OS history', 'ocsinventoryng') . "</td>\n<td>";
+      $this->showHistoryDropdown("history_os");
+      echo "</td>\n";
+
+      echo "</tr>";
 
       if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
          echo "<tr class='tab_bg_2 center'><td colspan='4'>";
@@ -2256,7 +2276,7 @@ JAVASCRIPT;
       $advanced                            = $show_params["import_mode"];
       $check                               = $show_params["check"];
       $start                               = $show_params["start"];
-      $entities_id                              = $show_params["entities_id"];
+      $entities_id                         = $show_params["entities_id"];
       $tolinked                            = $show_params["tolinked"];
 
       self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);

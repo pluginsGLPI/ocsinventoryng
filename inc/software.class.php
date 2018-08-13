@@ -63,11 +63,25 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
    static function updateSoftware($cfg_ocs, $computers_id, $ocsComputer, $entity, $officepack, $ocsOfficePack, $force = 0) {
       global $DB;
 
+      $uninstall_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_software'] == 1 || $cfg_ocs['history_software'] == 3)) {
+         $uninstall_history = 1;
+      }
+      $install_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_software'] == 1 || $cfg_ocs['history_software'] == 2)) {
+         $install_history = 1;
+      }
+
+      $uninstall_plugins_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 3)) {
+         $uninstall_plugins_history = 1;
+      }
+
       if ($force) {
-         self::resetSoftwares($computers_id, $cfg_ocs['history_software']);
+         self::resetSoftwares($computers_id, $uninstall_history);
       }
       if ($officepack) {
-         PluginOcsinventoryngOfficepack::resetOfficePack($computers_id, $cfg_ocs['history_plugins']);
+         PluginOcsinventoryngOfficepack::resetOfficePack($computers_id, $uninstall_plugins_history);
       }
 
       $is_utf8                  = $cfg_ocs["ocs_db_utf8"];
@@ -215,10 +229,10 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
                //Update version for this software
                if ($versionID = self::updateVersion($isNewSoft, $modified_version,
                                                     $version_comments,
-                                                    $cfg_ocs['history_software']) == !false) {
+                                                    $install_history) == !false) {
                   //Update version for this machine
                   self::updateSoftwareVersion($computers_id, $versionID, $installdate,
-                                              $cfg_ocs['history_software']);
+                                              $install_history);
                }
                unset($imported[$id]);
             } else {
@@ -230,7 +244,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
                $versionID = self::importVersion($cfg_ocs, $isNewSoft, $modified_version, $version_comments);
                //Install version for this machine
                self::installSoftwareVersion($computers_id, $versionID, $installdate,
-                                            $cfg_ocs['history_software']);
+                                            $install_history);
             }
             if ($officepack && count($ocsOfficePack) > 0) {
                // Get import officepack
@@ -243,9 +257,9 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
       }
 
       foreach ($imported as $id => $unused) {
-         $computer_softwareversion->delete(['id' => $id, '_no_history' => !$cfg_ocs['history_software']],
+         $computer_softwareversion->delete(['id' => $id, '_no_history' => !$uninstall_history],
                                            true,
-                                           $cfg_ocs['history_software']);
+                                           $uninstall_history);
          // delete cause a getFromDB, so fields contains values
          $verid = $computer_softwareversion->getField('softwareversions_id');
          $dbu   = new DbUtils();
@@ -262,9 +276,9 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
                $soft->putInTrash($vers->fields['softwares_id'],
                                  __('Software deleted by OCSNG synchronization', 'ocsinventoryng'));
             }
-            $vers->delete(["id" => $verid, '_no_history' => !$cfg_ocs['history_software']],
+            $vers->delete(["id" => $verid, '_no_history' => !$uninstall_history],
                           true,
-                          $cfg_ocs['history_software']);
+                          $uninstall_history);
          }
       }
 
@@ -272,7 +286,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
          $dbu                       = new DbUtils();
          $computer_softwarelicenses = new Computer_SoftwareLicense();
          foreach ($imported_licences as $id => $unused) {
-            $computer_softwarelicenses->delete(['id' => $id], true, $cfg_ocs['history_software']);
+            $computer_softwarelicenses->delete(['id' => $id], true, $uninstall_history);
             // delete cause a getFromDB, so fields contains values
             $verid = $computer_softwarelicenses->getField('softwareversions_id');
 
@@ -375,6 +389,11 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
    static function importVersion($cfg_ocs, $software, $version, $comments) {
       global $DB;
 
+      $install_history = 0;
+      if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_software'] == 1 || $cfg_ocs['history_software'] == 3)) {
+         $install_history = 1;
+      }
+
       $isNewVers = 0;
       $query     = "SELECT `id`
                 FROM `glpi_softwareversions`
@@ -394,7 +413,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
          $input["softwares_id"] = $software;
          $input["name"]         = $version;
          $input["comment"]      = $comments;
-         $isNewVers             = $vers->add($input, [], $cfg_ocs['history_software']);
+         $isNewVers             = $vers->add($input, [], $install_history);
       }
 
       return ($isNewVers);
@@ -439,11 +458,11 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
     *
     * @param $glpi_computers_id integer : glpi computer id.
     *
-    * @param $history_software
+    * @param $uninstall_history
     * @return void .
     * @throws \GlpitestSQLError
     */
-   static function resetSoftwares($glpi_computers_id, $history_software) {
+   static function resetSoftwares($glpi_computers_id, $uninstall_history) {
       global $DB;
 
       $query  = "SELECT *
@@ -470,20 +489,20 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
                if ($DB->result($result3, 0, 0) == 1) {
                   $soft = new Software();
                   $soft->delete(['id'          => $vers->fields['softwares_id'],
-                                 '_no_history' => !$history_software],
+                                 '_no_history' => !$uninstall_history],
                                 true,
-                                $history_software);
+                                $uninstall_history);
                }
                $vers->delete(["id"          => $data['softwareversions_id'],
-                              '_no_history' => !$history_software],
+                              '_no_history' => !$uninstall_history],
                              true,
-                             $history_software);
+                             $uninstall_history);
             }
          }
 
          $csv = new Computer_SoftwareVersion();
          $csv->deleteByCriteria(['computers_id' => $glpi_computers_id,
-                                 'is_dynamic'   => 1], 1, $history_software);
+                                 'is_dynamic'   => 1], 1, $uninstall_history);
 
       }
    }
