@@ -67,10 +67,21 @@ if (isset($_SESSION["ocs_import"]["id"])) {
          $location = -1;
       }
 
+      if (isset($_SESSION["ocs_import"]["is_recursive"][$key])) {
+         $recursive = $_SESSION["ocs_import"]["is_recursive"][$key];
+      } else {
+         $recursive = -1;
+      }
+
+      if (isset($_SESSION["ocs_import"]["groups_id_tech"][$key])) {
+         $groupTech = $_SESSION["ocs_import"]["groups_id_tech"][$key];
+      } else {
+         $groupTech = -1;
+      }
       $conf   = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
       $action = PluginOcsinventoryngOcsServer::processComputer($key,
                                                                $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                                                               0, $entity, $location);
+                                                               0, $entity, $location, $recursive, $groupTech);
       PluginOcsinventoryngOcsServer::manageImportStatistics($_SESSION["ocs_import"]['statistics'],
                                                             $action['status']);
       PluginOcsinventoryngOcsServer::showStatistics($_SESSION["ocs_import"]['statistics']);
@@ -125,6 +136,12 @@ if (!isset($_POST["import_ok"])) {
             }
             if (isset($_POST['toimport_locations'])) {
                $_SESSION["ocs_import"]["locations_id"][$key] = $_POST['toimport_locations'][$key];
+            }
+            if (isset($_POST['toimport_recursive'])) {
+               $_SESSION["ocs_import"]["is_recursive"][$key] = $_POST['toimport_recursive'][$key];
+            }
+            if (isset($_POST['toimport_technican_group'])) {
+               $_SESSION["ocs_import"]["groups_id_tech"][$key] = $_POST['toimport_technican_group'][$key];
             }
             $_SESSION["ocs_import_count"]++;
          }
