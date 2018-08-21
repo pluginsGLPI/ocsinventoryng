@@ -263,8 +263,10 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
          // delete cause a getFromDB, so fields contains values
          $verid = $computer_softwareversion->getField('softwareversions_id');
          $dbu   = new DbUtils();
-         if ($dbu->countElementsInTable('glpi_computers_softwareversions', ["softwareversions_id" => $verid]) == 0
-             && $dbu->countElementsInTable('glpi_softwarelicenses', ["softwareversions_id_buy" => $verid]) == 0) {
+         if ($dbu->countElementsInTable('glpi_computers_softwareversions',
+                                        ["softwareversions_id" => $verid]) == 0
+             && $dbu->countElementsInTable('glpi_softwarelicenses',
+                                           ["softwareversions_id_buy" => $verid]) == 0) {
 
             $vers = new SoftwareVersion();
             if ($vers->getFromDB($verid)
@@ -428,7 +430,6 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
     * @param        $installdate
     * @param Do|int $dohistory Do history?
     *
-    * @return mixed
     */
    static function installSoftwareVersion($computers_id, $softwareversions_id, $installdate, $dohistory = 1) {
       global $DB;
@@ -440,16 +441,14 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
                            AND `softwareversions_id` = $softwareversions_id)";
          $result       = $DB->query($query_exists);
 
-         if ($DB->numrows($result) > 0) {
-            return $DB->result($result, 0, "id");
+         if ($DB->numrows($result) == 0) {
+            $tmp = new Computer_SoftwareVersion();
+            $tmp->add(['computers_id'        => $computers_id,
+                       'softwareversions_id' => $softwareversions_id,
+                       'date_install'        => $installdate,
+                       'is_dynamic'          => 1,
+                       'is_deleted'          => 0], [], $dohistory);
          }
-
-         $tmp = new Computer_SoftwareVersion();
-         $tmp->add(['computers_id'        => $computers_id,
-                    'softwareversions_id' => $softwareversions_id,
-                    'date_install'        => $installdate,
-                    'is_dynamic'          => 1,
-                    'is_deleted'          => 0], [], $dohistory);
       }
    }
 

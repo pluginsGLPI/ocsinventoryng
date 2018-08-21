@@ -1227,7 +1227,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
                   PluginOcsinventoryngOS::updateComputerOS($params);
                }
-               if ($updates['bios']) {
+               if ($updates['bios'] && isset($ocsComputer['BIOS'])) {
                   $params['BIOS'] = $ocsComputer['BIOS'];
                   PluginOcsinventoryngBios::updateComputerBios($params);
                }

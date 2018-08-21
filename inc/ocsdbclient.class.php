@@ -336,6 +336,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                              WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
                }
 
+               $query .= "ORDER BY `id` DESC";
                $request = $this->db->query($query);
                while ($software = $this->db->fetch_assoc($request)) {
                   $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
