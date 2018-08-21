@@ -204,7 +204,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
                echo "</tr>";
                Session::addToNavigateListItems(__CLASS__, $data['id']);
 
-               $self = new Self();
+               $self = new self();
                $self->getFromDB($data['id']);
             }
             echo $header;
