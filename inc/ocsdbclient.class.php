@@ -1097,7 +1097,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
               FROM `hardware`
               INNER JOIN `accountinfo` ON (`hardware`.`ID` = `accountinfo`.`HARDWARE_ID`)
               WHERE ((`hardware`.`CHECKSUM` & " . $cfg_ocs["checksum"] . ") > 0
-                     OR `hardware`.`LASTDATE` > '2018-06-07 08:45:00') ";
+                     OR `hardware`.`LASTDATE` > '$max_date') ";
 
       // workaround to avoid duplicate when synchro occurs during an inventory
       // "after" insert in ocsweb.hardware  and "before" insert in ocsweb.deleted_equiv
