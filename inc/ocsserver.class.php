@@ -2958,7 +2958,7 @@ JAVASCRIPT;
          if (!$cfg_ocs["cron_sync_number"]) {
             return 0;
          }
-         PluginOcsinventoryngOcsProcess::manageDeleted($plugin_ocsinventoryng_ocsservers_id);
+         PluginOcsinventoryngOcsProcess::manageDeleted($plugin_ocsinventoryng_ocsservers_id, false);
 
          $query    = "SELECT MAX(`last_ocs_update`)
                    FROM `glpi_plugin_ocsinventoryng_ocslinks`
