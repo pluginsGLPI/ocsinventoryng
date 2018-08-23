@@ -5,15 +5,15 @@
     <state>stable</state>
     <logo>https://github.com/pluginsGLPI/ocsinventoryng/blob/master/ocsinventoryng.png?raw=true</logo>
     <description>
-        <short>
-            <fr><![CDATA[Synchronisation OCSInventory-NG]]></fr>
-            <en><![CDATA[OCSInventory-NG synchronisation]]></en>
+        <short>            
             <cs><![CDATA[Synchronizace s OCSInventory-NG]]></cs>
+            <en><![CDATA[OCSInventory-NG synchronisation]]></en>
+            <fr><![CDATA[Synchronisation OCSInventory-NG]]></fr>
         </short>
         <long>
-            <fr><![CDATA[Ce plugin permet de synchroniser GLPI avec la solution d'inventaire OCS Inventory NG. Il remplace le mode OCS natif de GLPI et apporte les fonctionnalités du plugin massocsimport afin d'offrir une meilleure compatibilité et évolutivité avec OCS Inventory. Il est composée d’un script (PHP ou Shell) permettant d’automatiser l’import et la mise à jour des machines (le mode Expert doit être opérationnel).<br />Une interface affiche la liste des scripts en cours ou terminés, ainsi que l'ensemble des données qui s'y rattachent.]]></fr>
+            <cs><![CDATA[Tento zásuvný modul umožňuje synchronizovat GLPI s řešením pro inventarizaci OCS Inventory NG. Nahradí nativní GLPI OCS režim a používá funkce zásuvného modulu massocsimport pro poskytnutí lepší kompatibility a rozšiřitelnosti s OCS. Skládá se ze skriptu (PHP nebo shell) pro automatizaci importu nebo synchronizaci počítačů (potřebuje, aby byl funkční Expertní režim)<br />Grafické rozhraní zobrazuje seznam spuštěných nebo dokončených skriptů a všechna s nimi související data.]]></cs>
             <en><![CDATA[This plugin allows you to synchronize with GLPI inventory solution OCS Inventory NG. It's replace native mode OCS of GLPI and use the plugin massocsimport functionalities to provide better compatibility and expandability with OCS. It's composed of a script (PHP or Shell) to automate import or synchronisation of computers (need that Expert mode is operational)<br />A graphical interface displays the list of scripts running or finished and all the datas related ot them.]]></en>
-            <cs><![CDATA[Tento zásuvný modul umožňuje synchronizovat s řešením GLPI pro inventuru s OCS Inventory NG. Nahradí nativní režim OCS GLPI a použije funkce zásuvného modulu massocsimport pro poskytnutí lepší kompatibility a rozšiřitelnosti s OCS. Je složen ze skriptu (PHP nebo shell) pro automatizaci importu nebo synchronizaci počítačů (potřebuje, aby byl funkční Expertní režim)<br />Grafické rozhraní zobrazuje seznam spuštěných nebo dokončených skriptů a všech souvisejících dat.]]></cs>
+            <fr><![CDATA[Ce plugin permet de synchroniser GLPI avec la solution d'inventaire OCS Inventory NG. Il remplace le mode OCS natif de GLPI et apporte les fonctionnalités du plugin massocsimport afin d'offrir une meilleure compatibilité et évolutivité avec OCS Inventory. Il est composée d’un script (PHP ou Shell) permettant d’automatiser l’import et la mise à jour des machines (le mode Expert doit être opérationnel).<br />Une interface affiche la liste des scripts en cours ou terminés, ainsi que l'ensemble des données qui s'y rattachent.]]></fr>
         </long>
     </description>
     <homepage>https://github.com/pluginsGLPI/ocsinventoryng</homepage>
@@ -110,61 +110,34 @@
         </version>
     </versions>
     <langs>
-        <lang>ar_SA</lang>
-        <lang>bg_BG</lang>
-        <lang>ca_ES</lang>
         <lang>cs_CZ</lang>
         <lang>da_DK</lang>
-        <lang>de_DE</lang>
-        <lang>el_GR</lang>
         <lang>en_GB</lang>
-        <lang>en_US</lang>
-        <lang>es_ES</lang>
-        <lang>es_VE</lang>
-        <lang>et_EE</lang>
-        <lang>fa_IR</lang>
         <lang>fr_FR</lang>
-        <lang>gl_ES</lang>
-        <lang>he_IL</lang>
-        <lang>hr_HR</lang>
-        <lang>hu_HU</lang>
         <lang>it_IT</lang>
-        <lang>ja_JP</lang>
-        <lang>lt_LT</lang>
-        <lang>nl_NL</lang>
-        <lang>nn_NO</lang>
-        <lang>pl_PL</lang>
-        <lang>pt_BR</lang>
-        <lang>pt_PT</lang>
-        <lang>ro_RO</lang>
-        <lang>ru_RU</lang>
-        <lang>sk_SK</lang>
-        <lang>sr_RS</lang>
         <lang>tr_TR</lang>
-        <lang>uk_UA</lang>
-        <lang>zh_CN</lang>
     </langs>
     <license><![CDATA[GPL v2+]]></license>
     <category>Injection/import</category>
     <tags>
-        <fr>
+        <cs>
             <tag>Import</tag>
             <tag>OCS-NG</tag>
-            <tag>inventaire</tag>
-            <tag>script</tag>
-        </fr>
+            <tag>soupis</tag>
+            <tag>skript</tag>
+        </cs>
         <en>
             <tag>Import</tag>
             <tag>OCS-NG</tag>
             <tag>inventory</tag>
             <tag>script</tag>
         </en>
-        <cs>
+        <fr>
             <tag>Import</tag>
             <tag>OCS-NG</tag>
-            <tag>inventura</tag>
-            <tag>skript</tag>
-        </cs>
+            <tag>inventaire</tag>
+            <tag>script</tag>
+        </fr>
     </tags>
     <screenshots>
         <screenshot>https://raw.githubusercontent.com/pluginsGLPI/ocsinventoryng/master/wiki/menu.png</screenshot>
