@@ -97,12 +97,14 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
             $locks["groups_id"] = __('Group');
          }
       } else {
-         $locks = ["networks_id"  => __('Network'),
-                   "use_date"     => __('Startup date'),
-                   "otherserial"  => __('Inventory number'),
-                   "contact_num"  => __('Alternate username number'),
-                   "locations_id" => __('Location'),
-                   "groups_id"    => __('Group')];
+         $locks = ["networks_id"    => __('Network'),
+                   "use_date"       => __('Startup date'),
+                   "otherserial"    => __('Inventory number'),
+                   "contact_num"    => __('Alternate username number'),
+                   "locations_id"   => __('Location'),
+                   "groups_id"      => __('Group'),
+                   "is_recursive"   => __('Child entities'),
+                   "groups_id_tech" => __('Group in charge of the hardware')];
       }
 
       return $locks;

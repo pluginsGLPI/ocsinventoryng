@@ -296,6 +296,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
     * @param       $cfg_ocs
     * @param       $entities_id
     * @param int   $locations_id
+    * @param int   $is_recursive
+    * @param int   $groups_id_tech
     *
     * @param int   $groups_id
     *
@@ -528,8 +530,10 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
          ]
       ]);
 
-      $locations_id = 0;
-      $groups_id    = 0;
+      $locations_id   = 0;
+      $groups_id      = 0;
+      $is_recursive   = 0;
+      $groups_id_tech = 0;
       $values       = PluginOcsinventoryngHardware::getFields($ocsComputer, $cfg_ocs);
       if (isset($values['groups_id']) && $values['groups_id'] > 0) {
          $groups_id = $values['groups_id'];

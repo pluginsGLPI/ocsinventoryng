@@ -1284,6 +1284,46 @@ function plugin_ocsinventoryng_install() {
       CronTask::Register('PluginOcsinventoryngRuleImportEntity', 'CheckRuleImportEntity', DAY_TIMESTAMP, ['state' => CronTask::STATE_DISABLE]);
    }
 
+   /******************* Migration 1.5.4 *******************/
+
+   $query = "UPDATE `glpi_notificationtemplatetranslations` SET `content_text` = '##FOREACHcheckruleimportentityitems##
+            ##lang.checkruleimportentity.entity## : ##checkruleimportentity.entity##
+            ##lang.checkruleimportentity.computer## : ##checkruleimportentity.computer##
+            ##lang.checkruleimportentity.location## : ##checkruleimportentity.location##
+            ##lang.checkruleimportentity.is_recursive## : ##checkruleimportentity.is_recursive##
+            ##lang.checkruleimportentity.groups_id_tech## : ##checkruleimportentity.groups_id_tech##
+            ##lang.checkruleimportentity.error## : ##checkruleimportentity.error##
+            ##lang.checkruleimportentity.dataerror## : ##checkruleimportentity.dataerror##
+            ##lang.checkruleimportentity.name_rule## ##checkruleimportentity.name_rule##
+            ##ENDFOREACHcheckruleimportentityitems##', `content_html` = '&lt;table class=\"tab_cadre\" border=\"1\" cellspacing=\"2\" cellpadding=\"3\"&gt;
+            &lt;tbody&gt;
+            &lt;tr&gt;
+            &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.entity##&lt;/span&gt;&lt;/td&gt;
+            &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.computer##&lt;/span&gt;&lt;/td&gt;
+            &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.location##&lt;/span&gt;&lt;/td&gt;
+            &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.is_recursive##&lt;/span&gt;&lt;/td&gt;
+            &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.groups_id_tech##&lt;/span&gt;&lt;/td&gt;
+            &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.error##&lt;/span&gt;&lt;/td&gt;
+            &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.dataerror##&lt;/span&gt;&lt;/td&gt;
+            &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.name_rule##&lt;/span&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+            ##FOREACHcheckruleimportentityitems##
+            &lt;tr&gt;
+            &lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.entity##&lt;/span&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;a href=\"##checkruleimportentity.url##\" target=\"_blank\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.computer##&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.location##&lt;/span&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.is_recursive##&lt;/span&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.groups_id_tech##&lt;/span&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.error##&lt;/span&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.dataerror##&lt;/span&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;a href=\"##checkruleimportentity.url_rule##\" target=\"_blank\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.name_rule##&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+            ##ENDFOREACHcheckruleimportentityitems##
+            &lt;/tbody&gt;
+            &lt;/table&gt;'";
+
+   $DB->queryOrDie($query, $DB->error());
+
    /*Now delete old tables*/
    $tables_ocs = ["ocs_glpi_crontasks", "ocs_glpi_displaypreferences",
                   "ocs_glpi_ocsadmininfoslinks", "ocs_glpi_ocslinks",

@@ -100,7 +100,7 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
          if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
             $computers = self::checkRuleImportEntity($plugin_ocsinventoryng_ocsservers_id);
-
+Toolbox::logDebug($computers);
             foreach ($computers as $entities_id => $items) {
                $message = $plugin_ocsinventoryng_ocsservers_name . ": <br />" .
                           sprintf(__('Items that do not meet the allocation rules for the entity %s: %s', 'ocsinventoryng'),

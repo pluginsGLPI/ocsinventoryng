@@ -2489,10 +2489,16 @@ JAVASCRIPT;
                   }
                   if ($advanced && !$tolinked) {
                      $location = isset($tab["locations_id"]) ? $tab["locations_id"] : 0;
+                     $recursive = isset($tab["is_recursive"]) ? $tab["is_recursive"] : 0;
+                     $idtech = isset($tab["groups_id_tech"]) ? $tab["groups_id_tech"] : 0;
                      $data     = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                                                          '_source'       => 'ocsinventoryng',
-                                                         'locations_id'  => $location
-                                                        ], ['locations_id' => $location], ['ocsid' => $tab["id"]]);
+                                                         'locations_id'  => $location,
+                                                         'is_recursive'  => $recursive,
+                                                         'groups_id_tech'  => $idtech
+                                                        ], ['locations_id' => $location,
+                                                            'is_recursive'  => $recursive,
+                                                            'groups_id_tech'  => $idtech], ['ocsid' => $tab["id"]]);
                   }
                   echo "<td>" . $tab["name"] . "</td>\n";
                   echo "<td>" . $tab["manufacturer"] . "</td>";

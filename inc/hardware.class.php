@@ -138,15 +138,21 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
          $locks   = [];
          $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
-         $rule         = new RuleImportEntityCollection();
-         $locations_id = 0;
-         $groups_id    = 0;
+         $rule           = new RuleImportEntityCollection();
+         $locations_id   = 0;
+         $groups_id      = 0;
+         $is_recursive   = 0;
+         $groups_id_tech = 0;
          $data         = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                                                  '_source'       => 'ocsinventoryng',
                                                  'locations_id'  => $locations_id,
-                                                 'groups_id'     => $groups_id],
+                                                 'groups_id'     => $groups_id,
+                                                 'is_recursive'   => $is_recursive,
+                                                 'groups_id_tech' => $groups_id_tech],
                                                 ['locations_id' => $locations_id,
-                                                 'groups_id'    => $groups_id],
+                                                 'groups_id'    => $groups_id,
+                                                 'is_recursive'   => $is_recursive,
+                                                 'groups_id_tech' => $groups_id_tech],
                                                 ['ocsid' => $ocsid]);
 
          if (intval($cfg_ocs["import_user_group"]) > 0) {
@@ -162,7 +168,9 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
          }
       } else {
          $locks = ["locations_id" => __('Location'),
-                   "groups_id"    => __('Group')];
+                   "groups_id"    => __('Group'),
+                   "is_recursive"    => __('Child entities'),
+                   "groups_id_tech"    => __('Group in charge of the hardware')];
       }
 
       return $locks;
@@ -299,6 +307,44 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
          }
       }
 
+      //If there's a recursive to update
+      if (isset($data['is_recursive'])) {
+         $computer = new Computer();
+         $computer->getFromDB($line_links['computers_id']);
+         $tmp['is_recursive'] = $data['is_recursive'];
+         $tmp['id']           = $line_links['computers_id'];
+         $computer->update($tmp, $cfg_ocs['history_hardware']);
+      }
+
+      //If there's a Group Tech to update
+      if (isset($data['groups_id_tech'])) {
+         $computer = new Computer();
+         $computer->getFromDB($line_links['computers_id']);
+         $ancestors = $dbu->getAncestorsOf('glpi_entities', $computer->fields['entities_id']);
+
+         $group = new Group();
+         if ($group->getFromDB($data['groups_id_tech'])) {
+            //If group is in the same entity as the computer, or if the group is
+            //defined in a parent entity, but recursive
+            if ($group->fields['entities_id'] == $computer->fields['entities_id']
+                || (in_array($group->fields['entities_id'], $ancestors)
+                    && $group->fields['is_recursive'])) {
+               $ko    = 0;
+               $locks = self::getLocksForComputer($line_links['computers_id']);
+               if (is_array($locks) && count($locks)) {
+                  if (in_array("groups_id_tech", $locks)) {
+                     $ko = 1;
+                  }
+               }
+               if ($ko == 0) {
+                  $tmp['groups_id_tech'] = $data['groups_id_tech'];
+                  $tmp['id']           = $line_links['computers_id'];
+                  $computer->update($tmp, $cfg_ocs['history_hardware']);
+               }
+            }
+         }
+      }
+
       //If there's a Group to update
       if (isset($data['groups_id'])) {
          $computer = new Computer();
@@ -396,6 +442,8 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
                   $entities_id = $comp->fields["entities_id"];
                }
                $values['groups_id'] = self::getUserGroup($entities_id, $user_id, '`is_itemgroup`', true);
+               $values['is_recursive'] = $comp->getField("is_recursive");
+               $values['groups_id_tech'] = $comp->getField("groups_id_tech");
             }
          }
       }
