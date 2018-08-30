@@ -2466,6 +2466,8 @@ JAVASCRIPT;
                   echo "<th>" . __('Match the rule ?', 'ocsinventoryng') . "</th>\n";
                   echo "<th>" . __('Destination entity') . "</th>\n";
                   echo "<th>" . __('Target location', 'ocsinventoryng') . "</th>\n";
+                  echo "<th>" . __('Child entities') . "</th>\n";
+                  echo "<th>" . __('Group in charge of the hardware') . "</th>\n";
                }
                if ($tolinked) {
                   echo "<th width='30%'>" . __('Item to link', 'ocsinventoryng') . "</th>";
@@ -2583,6 +2585,22 @@ JAVASCRIPT;
                      Location::dropdown(['name'     => $loc,
                                          'value'    => $data['locations_id'],
                                          'comments' => 0]);
+                     echo "</td>\n";
+                     echo "<td width='20%'>";
+                     if (!isset($data['is_recursive'])) {
+                        $data['is_recursive'] = 0;
+                     }
+                     $rec = "toimport_recursive[" . $tab["id"] . "]";
+                     Dropdown::showYesNo($rec, $data['is_recursive']);
+                     echo "</td>\n";
+                     echo "<td width='20%'>";
+                     if (!isset($data['groups_id_tech'])) {
+                        $data['groups_id_tech'] = 0;
+                     }
+                     $grp = "toimport_technican_group[" . $tab["id"] . "]";
+                     Group::dropdown(['name'     => $grp,
+                                      'value'    => $data['groups_id_tech'],
+                                      'comments' => 0]);
                      echo "</td>\n";
                   }
 

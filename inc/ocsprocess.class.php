@@ -301,7 +301,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
     *
     * @return array
     */
-   static function getComputerInformations($ocs_fields = [], $cfg_ocs, $entities_id, $locations_id = 0, $groups_id = 0) {
+   static function getComputerInformations($ocs_fields = [], $cfg_ocs, $entities_id, $locations_id = 0,
+                                           $groups_id = 0, $is_recursive = 0, $groups_id_tech = 0) {
       $input               = [];
       $input["is_dynamic"] = 1;
 
@@ -319,6 +320,13 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
          $input["groups_id"] = $groups_id;
       }
 
+      if ($is_recursive) {
+         $input["is_recursive"] = $is_recursive;
+      }
+
+      if ($groups_id_tech) {
+         $input["groups_id_tech"] = $groups_id_tech;
+      }
       $input['ocsid']      = $ocs_fields['META']['ID'];
       $ocs_fields_matching = self::getOcsFieldsMatching();
       foreach ($ocs_fields_matching as $glpi_field => $ocs_field) {
@@ -448,6 +456,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $lock                                = $process_params["lock"];
       $defaultentity                       = $process_params["defaultentity"];
       $defaultlocation                     = $process_params["defaultlocation"];
+      $defaultrecursive                    = $process_params["defaultrecursive"];
+      $defaultgrouptech                    = $process_params["defaultgrouptech"];
 
       PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
@@ -477,6 +487,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                         'lock'                                => $lock,
                         'defaultentity'                       => $defaultentity,
                         'defaultlocation'                     => $defaultlocation,
+                        'defaultrecursive'                    => $defaultrecursive,
+                        'defaultgrouptech'                    => $defaultgrouptech,
                         'cfg_ocs'                             => $cfg_ocs];
       return self::importComputer($import_params);
 
@@ -497,6 +509,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $lock                                = $import_params["lock"];
       $defaultentity                       = $import_params["defaultentity"];
       $defaultlocation                     = $import_params["defaultlocation"];
+      $defaultrecursive                    = $import_params["defaultrecursive"];
+      $defaultgrouptech                    = $import_params["defaultgrouptech"];
       $cfg_ocs                             = $import_params["cfg_ocs"];
 
       //      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
@@ -523,17 +537,27 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       if (isset($values['locations_id']) && $values['locations_id'] > 0) {
          $locations_id = $values['locations_id'];
       }
+      if (isset($values['is_recursive']) && $values['is_recursive'] > 0) {
+         $is_recursive = $values['is_recursive'];
+      }
+      if (isset($values['groups_id_tech']) && $values['groups_id_tech'] > 0) {
+         $groups_id_tech = $values['groups_id_tech'];
+      }
       //No entity or location predefined, check rules
       if ($defaultentity == -1 && ($defaultlocation == -1 || $defaultlocation == 0)) {
          //Try to affect computer to an entity
          $rule = new RuleImportEntityCollection();
-         $data = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                                         '_source'       => 'ocsinventoryng',
-                                         'locations_id'  => $locations_id,
-                                         'groups_id'     => $groups_id
+         $data = $rule->processAllRules(['ocsservers_id'  => $plugin_ocsinventoryng_ocsservers_id,
+                                         '_source'        => 'ocsinventoryng',
+                                         'locations_id'   => $locations_id,
+                                         'groups_id'      => $groups_id,
+                                         'is_recursive'   => $is_recursive,
+                                         'groups_id_tech' => $groups_id_tech
                                         ], [
-                                           'locations_id' => $locations_id,
-                                           'groups_id'    => $groups_id
+                                           'locations_id'   => $locations_id,
+                                           'groups_id'      => $groups_id,
+                                           'is_recursive'   => $is_recursive,
+                                           'groups_id_tech' => $groups_id_tech
                                         ], ['ocsid' => $ocsid]);
 
          if (isset($data['_ignore_import']) && $data['_ignore_import'] == 1) {
@@ -545,6 +569,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
          //An entity or a location has already been defined via the web interface
          $data['entities_id']  = $defaultentity;
          $data['locations_id'] = $defaultlocation;
+         $data['is_recursive']  = $defaultrecursive;
+         $data['groups_id_tech'] = $defaultgrouptech;
       }
       //Try to match all the rules, return the first good one, or null if not rules matched
       if (isset($data['entities_id']) && $data['entities_id'] >= 0) {
@@ -563,10 +589,13 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
             $computer = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer));
 
+            $groups_id_tech = (isset($data['groups_id_tech']) ? $data['groups_id_tech'] : 0);
+            $is_recursive = (isset($data['is_recursive']) ? $data['is_recursive'] : 0);
             $locations_id = (isset($data['locations_id']) ? $data['locations_id'] : 0);
             $groups_id    = (isset($data['groups_id']) ? $data['groups_id'] : 0);
             $input        = self::getComputerInformations($computer, PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id),
-                                                          $data['entities_id'], $locations_id, $groups_id);
+                                                          $data['entities_id'], $locations_id, $groups_id,
+                                                          $is_recursive,$groups_id_tech);
             //Check if machine could be linked with another one already in DB
             $rulelink = new RuleImportComputerCollection();
 
