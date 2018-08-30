@@ -410,8 +410,19 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "</table>";
 
       if ($canedit) {
-         Html::openArrowMassives("processes");
-         Html::closeArrowMassives(["delete_processes" => _x('button', 'Delete permanently')]);
+         echo "<table class='tab_glpi' width='95%'>";
+         echo "<tr><td width='30px'><img src=\"" . $CFG_GLPI["root_doc"]
+              . "/pics/arrow-left.png\" alt=''></td><td class='center'>";
+         echo "<a onclick= \"if ( markCheckboxes('processes') ) "
+              . "return false;\" href='#'>" . __("Check all") . "</a></td>";
+
+         echo "<td>/</td><td class='center'>";
+         echo "<a onclick= \"if ( unMarkCheckboxes('processes') ) "
+              . "return false;\" href='#'>" . __("Uncheck all") . "</a>";
+         echo "</td><td align='left' width='80%'>";
+         echo Html::submit(_x('button', 'Delete permanently'), ['name' => 'delete_processes']);
+         echo "</td>";
+         echo "</table>";
       }
       Html::closeForm();
    }
