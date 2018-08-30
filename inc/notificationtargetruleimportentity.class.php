@@ -53,12 +53,16 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
 
 
    /**
-    * @see NotificationTarget::getDatasForTemplate()
+    * Get all data needed for template processing
+    * Provides minimum information for alerts
+    * Can be overridden by each NotificationTartget class if needed
     *
-    * @param       $event
-    * @param array $options
-    */
-   function getDatasForTemplate($event, $options = []) {
+    * @param string $event   Event name
+    * @param array  $options Options
+    *
+    * @return void
+    **/
+   function addDataForTemplate($event, $options = []) {
       global $CFG_GLPI;
 
       $this->data['##checkruleimportentity.date##']   = Html::convDateTime(date('Y-m-d H:i:s'));
