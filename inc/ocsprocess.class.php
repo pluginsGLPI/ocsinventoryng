@@ -532,20 +532,12 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
       $locations_id   = 0;
       $groups_id      = 0;
-      $is_recursive   = 0;
-      $groups_id_tech = 0;
       $values       = PluginOcsinventoryngHardware::getFields($ocsComputer, $cfg_ocs);
       if (isset($values['groups_id']) && $values['groups_id'] > 0) {
          $groups_id = $values['groups_id'];
       }
       if (isset($values['locations_id']) && $values['locations_id'] > 0) {
          $locations_id = $values['locations_id'];
-      }
-      if (isset($values['is_recursive']) && $values['is_recursive'] > 0) {
-         $is_recursive = $values['is_recursive'];
-      }
-      if (isset($values['groups_id_tech']) && $values['groups_id_tech'] > 0) {
-         $groups_id_tech = $values['groups_id_tech'];
       }
       //No entity or location predefined, check rules
       if ($defaultentity == -1 && ($defaultlocation == -1 || $defaultlocation == 0)) {
@@ -554,15 +546,9 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
          $data = $rule->processAllRules(['ocsservers_id'  => $plugin_ocsinventoryng_ocsservers_id,
                                          '_source'        => 'ocsinventoryng',
                                          'locations_id'   => $locations_id,
-                                         'groups_id'      => $groups_id,
-                                         'is_recursive'   => $is_recursive,
-                                         'groups_id_tech' => $groups_id_tech
-                                        ], [
+                                         'groups_id'      => $groups_id ], [
                                            'locations_id'   => $locations_id,
-                                           'groups_id'      => $groups_id,
-                                           'is_recursive'   => $is_recursive,
-                                           'groups_id_tech' => $groups_id_tech
-                                        ], ['ocsid' => $ocsid]);
+                                           'groups_id'      => $groups_id], ['ocsid' => $ocsid]);
 
          if (isset($data['_ignore_import']) && $data['_ignore_import'] == 1) {
             //ELSE Return code to indicates that the machine was not imported because it doesn't matched rules

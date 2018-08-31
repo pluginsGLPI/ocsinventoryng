@@ -1310,8 +1310,6 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                               PluginOcsinventoryngHardware::getRuleLockableFields($plugin_ocsinventoryng_ocsservers_id, $ocsid))) {
             $locations_id   = 0;
             $groups_id      = 0;
-            $is_recursive   = 0;
-            $groups_id_tech = 0;
 
             $values = PluginOcsinventoryngHardware::getFields($ocsComputer, $cfg_ocs);
             if (isset($values['groups_id']) && $values['groups_id'] > 0){
@@ -1320,25 +1318,15 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             if (isset($values['locations_id']) && $values['locations_id'] > 0){
                $locations_id = $values['locations_id'];
             }
-            if (isset($values['is_recursive']) && $values['is_recursive'] > 0){
-               $is_recursive = $values['is_recursive'];
-            }
-            if (isset($values['groups_id_tech']) && $values['groups_id_tech'] > 0){
-               $groups_id_tech = $values['groups_id_tech'];
-            }
 
             $rule = new RuleImportEntityCollection();
 
             $data = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                                             '_source'       => 'ocsinventoryng',
                                             'locations_id'  => $locations_id,
-                                            'groups_id'     => $groups_id,
-                                            'is_recursive'  => $is_recursive,
-                                            'groups_id_tech'     => $groups_id_tech],
+                                            'groups_id'     => $groups_id],
                                            ['locations_id' => $locations_id,
-                                            'groups_id'    => $groups_id,
-                                            'is_recursive'  => $is_recursive,
-                                            'groups_id_tech'     => $groups_id_tech],
+                                            'groups_id'    => $groups_id],
                                            ['ocsid' => $ocsid]);
 
             PluginOcsinventoryngHardware::updateComputerFields($params, $data, $cfg_ocs);

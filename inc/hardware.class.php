@@ -309,8 +309,10 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
 
       //If there's a recursive to update
       if (isset($data['is_recursive'])) {
+         $computer = new Computer();
          $tmp['is_recursive'] = $data['is_recursive'];
          $tmp['id']           = $line_links['computers_id'];
+         $computer->update($tmp, $cfg_ocs['history_hardware']);
       }
 
       //If there's a Group Tech to update
@@ -439,9 +441,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
                   $entities_id = $comp->fields["entities_id"];
                }
                $values['groups_id'] = self::getUserGroup($entities_id, $user_id, '`is_itemgroup`', true);
-               $values['groups_id_tech'] = $comp->getField("groups_id_tech");
             }
-            $values['is_recursive'] = $comp->getField("is_recursive");
          }
       }
 
