@@ -2603,7 +2603,7 @@ JAVASCRIPT;
                      if (!isset($data['groups_id_tech'])) {
                         $data['groups_id_tech'] = 0;
                      }
-                     $grp = "toimport_technican_group[" . $tab["id"] . "]";
+                     $grp = "toimport_technician_group[" . $tab["id"] . "]";
                      Group::dropdown(['name'     => $grp,
                                       'value'    => $data['groups_id_tech'],
                                       'comments' => 0]);

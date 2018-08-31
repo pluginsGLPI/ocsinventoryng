@@ -69,7 +69,6 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
       foreach ($options['items'] as $id => $item) {
          if (!empty($item)) {
             $tmp = [];
-            
             $tmp['##checkruleimportentity.entity##']   = Dropdown::getDropdownName('glpi_entities',
                                                                                    $item['entities_id']);
             $tmp['##checkruleimportentity.computer##'] = $item['name'];
@@ -77,8 +76,12 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
             $tmp['##checkruleimportentity.url##']      = urldecode($url);
             $tmp['##checkruleimportentity.location##'] = Dropdown::getDropdownName('glpi_locations',
                                                                                    $item['locations_id']);
-            $tmp['##checkruleimportentity.is_recursive##'] = Dropdown::getDropdownName('glpi_entities',
-                                                                                       $item['is_recursive']);
+            if($item['is_recursive']){
+               $tmp['##checkruleimportentity.is_recursive##'] = __('Recursive');
+            } else{
+               $tmp['##checkruleimportentity.is_recursive##'] = __("is not") . " " . __('Recursive');
+            }
+            $tmp['##checkruleimportentity.is_recursive##'] = $item['is_recursive'];
             $tmp['##checkruleimportentity.groups_id_tech##'] = Dropdown::getDropdownName('glpi_groups',
                                                                                    $item['groups_id_tech']);
 

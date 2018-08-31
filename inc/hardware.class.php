@@ -141,18 +141,12 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
          $rule           = new RuleImportEntityCollection();
          $locations_id   = 0;
          $groups_id      = 0;
-         $is_recursive   = 0;
-         $groups_id_tech = 0;
          $data         = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                                                  '_source'       => 'ocsinventoryng',
                                                  'locations_id'  => $locations_id,
-                                                 'groups_id'     => $groups_id,
-                                                 'is_recursive'   => $is_recursive,
-                                                 'groups_id_tech' => $groups_id_tech],
+                                                 'groups_id'     => $groups_id],
                                                 ['locations_id' => $locations_id,
-                                                 'groups_id'    => $groups_id,
-                                                 'is_recursive'   => $is_recursive,
-                                                 'groups_id_tech' => $groups_id_tech],
+                                                 'groups_id'    => $groups_id],
                                                 ['ocsid' => $ocsid]);
 
          if (intval($cfg_ocs["import_user_group"]) > 0) {
@@ -168,9 +162,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
          }
       } else {
          $locks = ["locations_id" => __('Location'),
-                   "groups_id"    => __('Group'),
-                   "is_recursive"    => __('Child entities'),
-                   "groups_id_tech"    => __('Group in charge of the hardware')];
+                   "groups_id"    => __('Group')];
       }
 
       return $locks;
