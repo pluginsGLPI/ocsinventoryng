@@ -77,7 +77,8 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
             $tmp['##checkruleimportentity.url##']      = urldecode($url);
             $tmp['##checkruleimportentity.location##'] = Dropdown::getDropdownName('glpi_locations',
                                                                                    $item['locations_id']);
-            $tmp['##checkruleimportentity.child_entities##'] = $item['is_recursive'];
+            $tmp['##checkruleimportentity.is_recursive##'] = Dropdown::getDropdownName('glpi_entities',
+                                                                                       $item['is_recursive']);
             $tmp['##checkruleimportentity.groups_id_tech##'] = Dropdown::getDropdownName('glpi_groups',
                                                                                    $item['groups_id_tech']);
 
@@ -130,7 +131,7 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
                'checkruleimportentity.entity'         => __('Entity'),
                'checkruleimportentity.computer'       => __('Computer'),
                'checkruleimportentity.location'       => __('Location'),
-               'checkruleimportentity.child_entities'   => __('Child entities'),
+               'checkruleimportentity.is_recursive'   => __('Child entities'),
                'checkruleimportentity.groups_id_tech' => __('Group in charge of the hardware'),
                'checkruleimportentity.error'          => __('Error'),
                'checkruleimportentity.name_rule'      => __('Rule'),

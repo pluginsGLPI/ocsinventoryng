@@ -102,9 +102,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
                    "otherserial"    => __('Inventory number'),
                    "contact_num"    => __('Alternate username number'),
                    "locations_id"   => __('Location'),
-                   "groups_id"      => __('Group'),
-                   "is_recursive"   => __('Child entities'),
-                   "groups_id_tech" => __('Group in charge of the hardware')];
+                   "groups_id"      => __('Group')];
       }
 
       return $locks;
