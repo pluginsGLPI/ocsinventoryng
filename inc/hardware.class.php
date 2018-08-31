@@ -330,7 +330,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
                 || (in_array($group->fields['entities_id'], $ancestors)
                     && $group->fields['is_recursive'])) {
                $ko    = 0;
-               $locks = self::getLocksForComputer($line_links['computers_id']);
+               $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line_links['computers_id']);
                if (is_array($locks) && count($locks)) {
                   if (in_array("groups_id_tech", $locks)) {
                      $ko = 1;

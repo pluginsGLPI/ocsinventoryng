@@ -2431,7 +2431,7 @@ JAVASCRIPT;
                if ($usecheckbox) {
                   $nb_cols = 6;
                   if ($advanced && !$tolinked) {
-                     $nb_cols += 3;
+                     $nb_cols += 5;
                   }
                   if ($tolinked) {
                      $nb_cols += 1;
