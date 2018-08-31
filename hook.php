@@ -985,6 +985,8 @@ function plugin_ocsinventoryng_install() {
 ##lang.checkruleimportentity.entity## : ##checkruleimportentity.entity##
 ##lang.checkruleimportentity.computer## : ##checkruleimportentity.computer##
 ##lang.checkruleimportentity.location## : ##checkruleimportentity.location##
+##lang.checkruleimportentity.is_recursive## : ##checkruleimportentity.is_recursive##
+##lang.checkruleimportentity.groups_id_tech## : ##checkruleimportentity.groups_id_tech##
 ##lang.checkruleimportentity.error## : ##checkruleimportentity.error##
 ##lang.checkruleimportentity.dataerror## : ##checkruleimportentity.dataerror##
 ##lang.checkruleimportentity.name_rule## ##checkruleimportentity.name_rule##
