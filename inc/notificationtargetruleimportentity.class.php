@@ -81,7 +81,6 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
             } else{
                $tmp['##checkruleimportentity.is_recursive##'] = __("is not") . " " . __('Recursive');
             }
-            $tmp['##checkruleimportentity.is_recursive##'] = $item['is_recursive'];
             $tmp['##checkruleimportentity.groups_id_tech##'] = Dropdown::getDropdownName('glpi_groups',
                                                                                    $item['groups_id_tech']);
 
