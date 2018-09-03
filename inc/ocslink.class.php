@@ -1139,9 +1139,11 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          if ($cfg_ocs["use_locks"]) {
             // Print lock fields for OCSNG
             if ($withrule) {
-               $lockable_fields = self::getLockableFields($data["plugin_ocsinventoryng_ocsservers_id"], $data["ocsid"]);
+               $lockable_fields = self::getLockableFields($data["plugin_ocsinventoryng_ocsservers_id"],
+                                                          $data["ocsid"]);
             } else {
-               $lockable_fields = self::getLockableFields($data["plugin_ocsinventoryng_ocsservers_id"], 0);
+               $lockable_fields = self::getLockableFields($data["plugin_ocsinventoryng_ocsservers_id"],
+                                                          0);
             }
             $dbu    = new DbUtils();
             $locked = $dbu->importArrayFromDB($data["computer_update"]);

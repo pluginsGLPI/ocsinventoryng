@@ -62,7 +62,9 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
          $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
          if ($cfg_ocs["use_locks"]) {
             foreach ($item->updates as $k => $field) {
-               if (!array_key_exists($field, PluginOcsinventoryngOcslink::getLockableFields($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"], $ocslink->fields["ocsid"]))) {
+               if (!array_key_exists($field,
+                                     PluginOcsinventoryngOcslink::getLockableFields($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"],
+                                                                                    $ocslink->fields["ocsid"]))) {
                   unset($item->updates[$k]);
                }
             }

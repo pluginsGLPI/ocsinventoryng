@@ -273,7 +273,8 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
          'table'     => 'glpi_plugin_ocsinventoryng_ocsservers',
          'field'     => 'name',
          'name'      => __('Server'),
-         'linkfield' => 'plugin_ocsinventoryng_ocsservers_id'
+         'linkfield' => 'plugin_ocsinventoryng_ocsservers_id',
+         'datatype' => 'dropdown'
       ];
 
       $tab[] = [
