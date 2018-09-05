@@ -160,9 +160,14 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
          } else if (isset($data['locations_id']) && $data['locations_id'] > 0) {
             $locks["locations_id"] = __('Location');
          }
+
+         if (isset($data['groups_id_tech']) && $data['groups_id_tech'] > 0) {
+            $locks["groups_id_tech"] = __('Group in charge of the hardware');
+         }
       } else {
-         $locks = ["locations_id" => __('Location'),
-                   "groups_id"    => __('Group')];
+         $locks = ["locations_id"   => __('Location'),
+                   "groups_id"      => __('Group'),
+                   "groups_id_tech" => __('Group in charge of the hardware')];
       }
 
       return $locks;
