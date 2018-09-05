@@ -4668,7 +4668,7 @@ JAVASCRIPT;
                      if (!isset($data['groups_id_tech'])) {
                         $data['groups_id_tech'] = 0;
                      }
-                     $grp = "toimport_technican_group[" . $tab["id"] . "]";
+                     $grp = "toimport_technician_group[" . $tab["id"] . "]";
                      Group::dropdown(['name'     => $grp,
                                       'value'    => $data['groups_id_tech'],
                                       'comments' => 0]);
@@ -8104,7 +8104,8 @@ JAVASCRIPT;
               "users_id"                        => __('User'),
               "locations_id"                    => __('Location'),
               "use_date"                        => __('Startup date'),
-              "groups_id"                       => __('Group')];
+              "groups_id"                       => __('Group'),
+              "groups_id_tech"                  => __('Group in charge of the hardware')];
    }
 
    /**

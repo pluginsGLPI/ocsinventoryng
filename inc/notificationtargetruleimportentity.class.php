@@ -72,6 +72,14 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
             $tmp['##checkruleimportentity.url##']      = urldecode($url);
             $tmp['##checkruleimportentity.location##'] = Dropdown::getDropdownName('glpi_locations', $item['locations_id']);
 
+            if($item['is_recursive']){
+               $tmp['##checkruleimportentity.is_recursive##'] = __('Recursive');
+            } else{
+               $tmp['##checkruleimportentity.is_recursive##'] = __("is not") . " " . __('Recursive');
+            }
+            $tmp['##checkruleimportentity.groups_id_tech##'] = Dropdown::getDropdownName('glpi_groups',
+                                                                                         $item['groups_id_tech']);
+
             $tmp['##checkruleimportentity.error##']     = "";
             $tmp['##checkruleimportentity.dataerror##'] = "";
             $tmp['##checkruleimportentity.url_rule##']  = "";
@@ -114,14 +122,16 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
     */
    function getTags() {
 
-      $tags = ['checkruleimportentity.date'      => __('Date'),
-                    'checkruleimportentity.url'       => __('Link'),
-                    'checkruleimportentity.entity'    => __('Entity'),
-                    'checkruleimportentity.computer'  => __('Computer'),
-                    'checkruleimportentity.location'  => __('Location'),
-                    'checkruleimportentity.error'     => __('Error'),
-                    'checkruleimportentity.name_rule' => __('Rule'),
-                    'checkruleimportentity.dataerror' => __('Data error', 'ocsinventoryng')];
+      $tags = ['checkruleimportentity.date'           => __('Date'),
+               'checkruleimportentity.url'            => __('Link'),
+               'checkruleimportentity.entity'         => __('Entity'),
+               'checkruleimportentity.computer'       => __('Computer'),
+               'checkruleimportentity.location'       => __('Location'),
+               'checkruleimportentity.is_recursive'   => __('Child entities'),
+               'checkruleimportentity.groups_id_tech' => __('Group in charge of the hardware'),
+               'checkruleimportentity.error'          => __('Error'),
+               'checkruleimportentity.name_rule'      => __('Rule'),
+               'checkruleimportentity.dataerror'      => __('Data error', 'ocsinventoryng')];
 
       foreach ($tags as $tag => $label) {
          $this->addTagToList(['tag'   => $tag,

@@ -140,8 +140,8 @@ if (!isset($_POST["import_ok"])) {
             if (isset($_POST['toimport_recursive'])) {
                $_SESSION["ocs_import"]["is_recursive"][$key] = $_POST['toimport_recursive'][$key];
             }
-            if (isset($_POST['toimport_technican_group'])) {
-               $_SESSION["ocs_import"]["groups_id_tech"][$key] = $_POST['toimport_technican_group'][$key];
+            if (isset($_POST['toimport_technician_group'])) {
+               $_SESSION["ocs_import"]["groups_id_tech"][$key] = $_POST['toimport_technician_group'][$key];
             }
             $_SESSION["ocs_import_count"]++;
          }
