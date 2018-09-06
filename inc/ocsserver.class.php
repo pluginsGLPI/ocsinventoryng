@@ -7888,7 +7888,6 @@ JAVASCRIPT;
       //If there's a recursive to update
       if (isset($data['is_recursive'])) {
          $computer = new Computer();
-         $computer->getFromDB($line_links['computers_id']);
          $tmp['is_recursive'] = $data['is_recursive'];
          $tmp['id']           = $line_links['computers_id'];
          $computer->update($tmp, $cfg_ocs['history_hardware']);
