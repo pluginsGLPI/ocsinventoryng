@@ -272,13 +272,13 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
          return false;
       }
 
-      if ($result = $DB->request('glpi_plugin_ocsinventoryng_teamviewers', ['computers_id' => $ID])) {
+      if ($iterator = $DB->request('glpi_plugin_ocsinventoryng_teamviewers', ['computers_id' => $ID])) {
 
-         if ($result->numrows() != 0) {
-            foreach ($result as $data) {
-               $self = new Self();
-               $self->getFromDB($data['id']);
-            }
+         if (count($iterator)) {
+            $data = $iterator->next();
+
+            $self = new self();
+            $self->getFromDB($data['id']);
 
             $restrict = $comp->getEntityID();
             $dbu      = new DbUtils();
