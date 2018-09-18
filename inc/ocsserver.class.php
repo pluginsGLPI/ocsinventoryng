@@ -2601,6 +2601,14 @@ JAVASCRIPT;
 
       $locations_id = 0;
       $groups_id    = 0;
+      $is_recursive = 0;
+      if($defaultrecursive != -1){
+         $is_recursive = $defaultrecursive;
+      }
+      $groups_id_tech = 0;
+      if($defaultgroupTech != -1){
+         $groups_id_tech = $defaultgroupTech;
+      }
       $contact      = (isset($ocsComputer['META']["USERID"])) ? $ocsComputer['META']["USERID"] : "";
       if (!empty($contact) && $cfg_ocs["import_general_contact"] > 0) {
          $query  = "SELECT `id`
@@ -2626,13 +2634,17 @@ JAVASCRIPT;
          //Try to affect computer to an entity
          $rule = new RuleImportEntityCollection();
          $data = [];
-         $data = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                                         '_source'       => 'ocsinventoryng',
-                                         'locations_id'  => $locations_id,
-                                         'groups_id'     => $groups_id
+         $data = $rule->processAllRules(['ocsservers_id'  => $plugin_ocsinventoryng_ocsservers_id,
+                                         '_source'        => 'ocsinventoryng',
+                                         'locations_id'   => $locations_id,
+                                         'groups_id'      => $groups_id,
+                                         'is_recursive'   => $is_recursive,
+                                         'groups_id_tech' => $groups_id_tech
                                         ], [
-                                           'locations_id' => $locations_id,
-                                           'groups_id'    => $groups_id
+                                           'locations_id'   => $locations_id,
+                                           'groups_id'      => $groups_id,
+                                           'is_recursive'   => $is_recursive,
+                                           'groups_id_tech' => $groups_id_tech
                                         ], ['ocsid' => $ocsid]);
 
          if (isset($data['_ignore_import']) && $data['_ignore_import'] == 1) {
@@ -4668,7 +4680,7 @@ JAVASCRIPT;
                      if (!isset($data['groups_id_tech'])) {
                         $data['groups_id_tech'] = 0;
                      }
-                     $grp = "toimport_technician_group[" . $tab["id"] . "]";
+                     $grp = "toimport_technican_group[" . $tab["id"] . "]";
                      Group::dropdown(['name'     => $grp,
                                       'value'    => $data['groups_id_tech'],
                                       'comments' => 0]);
@@ -8103,8 +8115,7 @@ JAVASCRIPT;
               "users_id"                        => __('User'),
               "locations_id"                    => __('Location'),
               "use_date"                        => __('Startup date'),
-              "groups_id"                       => __('Group'),
-              "groups_id_tech"                  => __('Group in charge of the hardware')];
+              "groups_id"                       => __('Group')];
    }
 
    /**

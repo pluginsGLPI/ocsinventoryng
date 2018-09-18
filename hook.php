@@ -1009,7 +1009,7 @@ function plugin_ocsinventoryng_install() {
                (`notificationtemplates_id`, `subject`, `content_text`, `content_html`)
                VALUES ($templates_id,
          '[##checkruleimportentity.date##] ##checkruleimportentity.title## : ##checkruleimportentity.entity##',
-                       '##FOREACHcheckruleimportentityitems##
+         '##FOREACHcheckruleimportentityitems##
 ##lang.checkruleimportentity.entity## : ##checkruleimportentity.entity##
 ##lang.checkruleimportentity.computer## : ##checkruleimportentity.computer##
 ##lang.checkruleimportentity.location## : ##checkruleimportentity.location##
