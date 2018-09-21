@@ -71,6 +71,8 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
             $url                                       = $CFG_GLPI["url_base"] . "/index.php?redirect=Computer_" . $item['id'];
             $tmp['##checkruleimportentity.url##']      = urldecode($url);
             $tmp['##checkruleimportentity.location##'] = Dropdown::getDropdownName('glpi_locations', $item['locations_id']);
+            $tmp['##checkruleimportentity.is_recursive##'] = Dropdown::getDropdownName('glpi_entities', $item['is_recursive']);
+            $tmp['##checkruleimportentity.groups_id_tech##'] = Dropdown::getDropdownName('glpi_groups', $item['groups_id_tech']);
 
             $tmp['##checkruleimportentity.error##']     = "";
             $tmp['##checkruleimportentity.dataerror##'] = "";
