@@ -361,7 +361,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $name                = "";
       $ocsservers          = [];
       $dbu                 = new DbUtils();
-      $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', ["is_active" => 1]);
+      $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers',
+                                                        ["is_active" => 1]);
       if ($numberActiveServers > 0) {
          echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
                 method='post'>";

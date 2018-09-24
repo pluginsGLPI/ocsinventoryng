@@ -2050,7 +2050,7 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
 
          $ocsComputer = $ocsClient->getOcsComputer($ocsid, $tables);
 
-         if (!is_null($ocsComputer)) {
+         if (!is_null($ocsComputer) && count($ocsComputer) > 0) {
             if (isset($ocsComputer['NETWORKS'])) {
                $networks = $ocsComputer['NETWORKS'];
 

@@ -150,11 +150,14 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
       $computers = self::getComputerOcsLink($plugin_ocsinventoryng_ocsservers_id);
 
       $ruleCollection = new RuleImportEntityCollection();
-      $fields         = [];
 
       foreach ($computers as $computer) {
-         $computer['_source'] = 'ocsinventoryng';
-         $fields              = $ruleCollection->processAllRules($computer, $fields,
+
+         $output = ['locations_id' => $computer['locations_id'],
+                    'groups_id'    => $computer['groups_id']];
+
+         $fields              = $ruleCollection->processAllRules($computer,
+                                                                 $output,
                                                                  ['ocsid' => $computer['ocsid']]);
 
          //case pc matched with a rule
@@ -227,6 +230,8 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
             $computers[$computer_id]                  = $computer->fields;
             $computers[$computer_id]['ocsservers_id'] = $ocs['plugin_ocsinventoryng_ocsservers_id'];
             $computers[$computer_id]['ocsid']         = $ocs['ocsid'];
+            $computers[$computer_id]['_source']       = 'ocsinventoryng';
+
          }
       }
 
