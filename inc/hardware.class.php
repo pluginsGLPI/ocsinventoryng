@@ -162,9 +162,14 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
          } else if (isset($data['locations_id']) && $data['locations_id'] > 0) {
             $locks["locations_id"] = __('Location');
          }
+
+         if (isset($data['groups_id_tech']) && $data['groups_id_tech'] > 0) {
+            $locks["groups_id_tech"] = __('Group in charge of the hardware');
+         }
       } else {
-         $locks = ["locations_id" => __('Location'),
-                   "groups_id"    => __('Group')];
+         $locks = ["locations_id"   => __('Location'),
+                   "groups_id"      => __('Group'),
+                   "groups_id_tech" => __('Group in charge of the hardware')];
       }
 
       return $locks;
@@ -296,6 +301,43 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
                   $tmp['id']           = $line_links['computers_id'];
                   $tmp["_no_history"]  = !$update_history;
                   $computer->update($tmp, $update_history);
+               }
+            }
+         }
+      }
+
+      //If there's a recursive to update
+      if (isset($data['is_recursive'])) {
+         $computer = new Computer();
+         $tmp['is_recursive'] = $data['is_recursive'];
+         $tmp['id']           = $line_links['computers_id'];
+         $computer->update($tmp, $cfg_ocs['history_hardware']);
+      }
+
+      //If there's a Group Tech to update
+      if (isset($data['groups_id_tech'])) {
+         $computer = new Computer();
+         $computer->getFromDB($line_links['computers_id']);
+         $ancestors = $dbu->getAncestorsOf('glpi_entities', $computer->fields['entities_id']);
+
+         $group = new Group();
+         if ($group->getFromDB($data['groups_id_tech'])) {
+            //If group is in the same entity as the computer, or if the group is
+            //defined in a parent entity, but recursive
+            if ($group->fields['entities_id'] == $computer->fields['entities_id']
+                || (in_array($group->fields['entities_id'], $ancestors)
+                    && $group->fields['is_recursive'])) {
+               $ko    = 0;
+               $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line_links['computers_id']);
+               if (is_array($locks) && count($locks)) {
+                  if (in_array("groups_id_tech", $locks)) {
+                     $ko = 1;
+                  }
+               }
+               if ($ko == 0) {
+                  $tmp['groups_id_tech'] = $data['groups_id_tech'];
+                  $tmp['id']           = $line_links['computers_id'];
+                  $computer->update($tmp, $cfg_ocs['history_hardware']);
                }
             }
          }
