@@ -67,11 +67,25 @@ if (isset($_SESSION["ocs_import"]["id"])) {
          $location = -1;
       }
 
+      if (isset($_SESSION["ocs_import"]["is_recursive"][$key])) {
+         $recursive = $_SESSION["ocs_import"]["is_recursive"][$key];
+      } else {
+         $recursive = -1;
+      }
+
+      if (isset($_SESSION["ocs_import"]["groups_id_tech"][$key])) {
+         $groupTech = $_SESSION["ocs_import"]["groups_id_tech"][$key];
+      } else {
+         $groupTech = -1;
+      }
+
       $process_params = ['ocsid'                               => $key,
                          'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                          'lock'                                => 0,
                          'defaultentity'                       => $entity,
-                         'defaultlocation'                     => $location];
+                         'defaultlocation'                     => $location,
+                         'defaultrecursive'                    => $recursive,
+                         'defaultgrouptech'                    => $groupTech];
       $action         = PluginOcsinventoryngOcsProcess::processComputer($process_params);
       PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_import"]['statistics'],
                                                              $action['status']);
@@ -130,6 +144,12 @@ if (!isset($_POST["import_ok"])) {
             }
             if (isset($_POST['toimport_locations'])) {
                $_SESSION["ocs_import"]["locations_id"][$key] = $_POST['toimport_locations'][$key];
+            }
+            if (isset($_POST['toimport_recursive'])) {
+               $_SESSION["ocs_import"]["is_recursive"][$key] = $_POST['toimport_recursive'][$key];
+            }
+            if (isset($_POST['toimport_technician_group'])) {
+               $_SESSION["ocs_import"]["groups_id_tech"][$key] = $_POST['toimport_technician_group'][$key];
             }
             $_SESSION["ocs_import_count"]++;
          }

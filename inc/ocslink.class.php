@@ -1310,8 +1310,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          }
          if (array_key_exists($field,
                               PluginOcsinventoryngHardware::getRuleLockableFields($plugin_ocsinventoryng_ocsservers_id, $ocsid))) {
-            $locations_id = 0;
-            $groups_id    = 0;
+            $locations_id   = 0;
+            $groups_id      = 0;
 
             $values = PluginOcsinventoryngHardware::getFields($ocsComputer, $cfg_ocs);
             if (isset($values['groups_id']) && $values['groups_id'] > 0){
