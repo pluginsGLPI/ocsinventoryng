@@ -6636,9 +6636,9 @@ JAVASCRIPT;
             if (isset($software["PUBLISHER"])) {
                $manufacturer = Manufacturer::processName($software["PUBLISHER"]);
             }
-            $version     = $software['VERSION'];
-            $name        = $software['NAME'];
-            $installdate = $software['INSTALLDATE'];
+            $version     = isset($software['VERSION']) ? $software['VERSION'] : "";
+            $name        = isset($software['NAME']) ? $software['NAME'] : "";
+            $installdate = (isset($software['INSTALLDATE']) && $software['INSTALLDATE'] != '0000-00-00 00:00:00') ? date('Y-m-d', strtotime($software['INSTALLDATE'])) : "NULL";
 
             //Software might be created in another entity, depending on the entity's configuration
             $target_entity = Entity::getUsedConfig('entities_id_software', $entity);

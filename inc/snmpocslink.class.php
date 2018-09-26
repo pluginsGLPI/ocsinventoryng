@@ -882,7 +882,7 @@ JAVASCRIPT;
          }
          //TODOSNMP
          //Monitor & Phone ???
-         if ($id) {
+         if (isset($id)) {
             $date = date("Y-m-d H:i:s");
             //Add to snmp link
 
