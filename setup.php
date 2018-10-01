@@ -49,12 +49,12 @@ function plugin_init_ocsinventoryng() {
 
    $PLUGIN_HOOKS['autoinventory_information']['ocsinventoryng']
       = ['Computer'               => ['PluginOcsinventoryngOcslink', 'showSimpleForItem'],
-              'ComputerDisk'           => ['PluginOcsinventoryngOcslink', 'showSimpleForChild'],
-              'ComputerVirtualMachine' => ['PluginOcsinventoryngOcslink', 'showSimpleForChild'],
-              'Printer'                => ['PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'],
-              'NetworkEquipment'       => ['PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'],
-              'Peripheral'             => ['PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'],
-              'Phone'                  => ['PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem']];
+         'ComputerDisk'           => ['PluginOcsinventoryngOcslink', 'showSimpleForChild'],
+         'ComputerVirtualMachine' => ['PluginOcsinventoryngOcslink', 'showSimpleForChild'],
+         'Printer'                => ['PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'],
+         'NetworkEquipment'       => ['PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'],
+         'Peripheral'             => ['PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem'],
+         'Phone'                  => ['PluginOcsinventoryngSnmpOcslink', 'showSimpleForItem']];
 
    //Locks management
    $PLUGIN_HOOKS['display_locked_fields']['ocsinventoryng'] = 'plugin_ocsinventoryng_showLocksForItem';

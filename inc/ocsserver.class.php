@@ -1488,6 +1488,8 @@ JAVASCRIPT;
       $adm->updateAdminInfo($input);
       if (isset($input["ocs_db_passwd"]) && !empty($input["ocs_db_passwd"])) {
          $input["ocs_db_passwd"] = rawurlencode(stripslashes($input["ocs_db_passwd"]));
+         $input["ocs_db_passwd"] = Toolbox::encrypt(stripslashes($input["ocs_db_passwd"]),
+                                                    GLPIKEY);
       } else {
          unset($input["ocs_db_passwd"]);
       }
@@ -1595,6 +1597,8 @@ JAVASCRIPT;
 
       if (isset($input["ocs_db_passwd"]) && !empty($input["ocs_db_passwd"])) {
          $input["ocs_db_passwd"] = rawurlencode(stripslashes($input["ocs_db_passwd"]));
+         $input["ocs_db_passwd"] = Toolbox::encrypt(stripslashes($input["ocs_db_passwd"]),
+                                                    GLPIKEY);
       } else {
          unset($input["ocs_db_passwd"]);
       }
@@ -1777,11 +1781,13 @@ JAVASCRIPT;
 
       if ($config['conn_type'] == self::CONN_TYPE_DB) {
          return new PluginOcsinventoryngOcsDbClient(
-            $serverId, $config['ocs_db_host'], $config['ocs_db_user'], $config['ocs_db_passwd'], $config['ocs_db_name']
+            $serverId, $config['ocs_db_host'], $config['ocs_db_user'],
+            Toolbox::decrypt($config['ocs_db_passwd'], GLPIKEY), $config['ocs_db_name']
          );
       } else {
          return new PluginOcsinventoryngOcsSoapClient(
-            $serverId, $config['ocs_db_host'], $config['ocs_db_user'], $config['ocs_db_passwd']
+            $serverId, $config['ocs_db_host'], $config['ocs_db_user'],
+            Toolbox::decrypt($config['ocs_db_passwd'], GLPIKEY)
          );
       }
    }

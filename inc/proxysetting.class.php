@@ -148,7 +148,6 @@ class PluginOcsinventoryngProxysetting extends CommonDBChild {
             }
             return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
          }
-         return '';
       }
       return '';
    }
