@@ -38,7 +38,11 @@ if ($argv) {
    for ($i = 1; $i < count($argv); $i++) {
       $it = explode("=", $argv[$i], 2);
       $it[0] = preg_replace('/^--/', '', $it[0]);
-      $_GET[$it[0]] = $it[1];
+      if(isset($it[1])) {
+         $_GET[$it[0]] = $it[1];
+      } else {
+         $_GET[$it[0]] = 1;
+      }
    }
 }
 
