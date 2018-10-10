@@ -274,12 +274,16 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
       if ($cfg_ocs['dohistory'] == 1 && $cfg_ocs['history_hardware'] == 1) {
          $update_history = 1;
       }
+      $tmp = [];
+
+      $computer = new Computer();
+      $computer->getFromDB($line_links['computers_id']);
+
+      $dbu       = new DbUtils();
+      $ancestors = $dbu->getAncestorsOf('glpi_entities', $computer->fields['entities_id']);
+
       //If there's a location to update
       if (isset($data['locations_id'])) {
-         $computer = new Computer();
-         $computer->getFromDB($line_links['computers_id']);
-         $dbu       = new DbUtils();
-         $ancestors = $dbu->getAncestorsOf('glpi_entities', $computer->fields['entities_id']);
 
          $location = new Location();
          if ($location->getFromDB($data['locations_id'])) {
@@ -297,10 +301,6 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
                }
                if ($ko == 0) {
                   $tmp['locations_id'] = $data['locations_id'];
-                  $tmp["_nolock"]      = true;
-                  $tmp['id']           = $line_links['computers_id'];
-                  $tmp["_no_history"]  = !$update_history;
-                  $computer->update($tmp, $update_history);
                }
             }
          }
@@ -308,17 +308,11 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
 
       //If there's a recursive to update
       if (isset($data['is_recursive'])) {
-         $computer = new Computer();
          $tmp['is_recursive'] = $data['is_recursive'];
-         $tmp['id']           = $line_links['computers_id'];
-         $computer->update($tmp, $cfg_ocs['history_hardware']);
       }
 
       //If there's a Group Tech to update
       if (isset($data['groups_id_tech'])) {
-         $computer = new Computer();
-         $computer->getFromDB($line_links['computers_id']);
-         $ancestors = $dbu->getAncestorsOf('glpi_entities', $computer->fields['entities_id']);
 
          $group = new Group();
          if ($group->getFromDB($data['groups_id_tech'])) {
@@ -336,8 +330,6 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
                }
                if ($ko == 0) {
                   $tmp['groups_id_tech'] = $data['groups_id_tech'];
-                  $tmp['id']           = $line_links['computers_id'];
-                  $computer->update($tmp, $cfg_ocs['history_hardware']);
                }
             }
          }
@@ -366,16 +358,17 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
                }
                if ($ko == 0) {
                   $tmp['groups_id']   = $data['groups_id'];
-                  $tmp["_nolock"]     = true;
-                  $tmp['id']          = $line_links['computers_id'];
-                  $tmp["_no_history"] = !$update_history;
-                  $computer->update($tmp, $update_history);
                }
             }
          }
       }
+      if(count($tmp) > 0) {
+         $tmp["_nolock"]     = true;
+         $tmp['id']          = $line_links['computers_id'];
+         $tmp["_no_history"] = !$update_history;
+         $computer->update($tmp, $update_history);
+      }
    }
-
    /**
     * @param        $entity
     * @param        $userid
