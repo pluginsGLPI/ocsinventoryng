@@ -456,10 +456,10 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $ocsid                               = $process_params["ocsid"];
       $plugin_ocsinventoryng_ocsservers_id = $process_params["plugin_ocsinventoryng_ocsservers_id"];
       $lock                                = $process_params["lock"];
-      $defaultentity                       = $process_params["defaultentity"];
-      $defaultlocation                     = $process_params["defaultlocation"];
-      $defaultrecursive                    = $process_params["defaultrecursive"];
-      $defaultgrouptech                    = $process_params["defaultgrouptech"];
+      $defaultentity                       = (isset($process_params["defaultentity"])) ? $process_params["defaultentity"] : -1;
+      $defaultlocation                     = (isset($process_params["defaultlocation"])) ? $process_params["defaultlocation"] : -1;
+      $defaultrecursive                    = (isset($process_params["defaultrecursive"])) ? $process_params["defaultrecursive"] : 0;
+      $defaultgrouptech                    = (isset($process_params["defaultgrouptech"])) ? $process_params["defaultgrouptech"] : -1;
 
       PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
