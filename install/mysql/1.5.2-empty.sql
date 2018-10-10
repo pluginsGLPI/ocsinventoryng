@@ -36,6 +36,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocslinks` (
   KEY `ocs_deviceid` (`ocs_deviceid`),
   KEY `last_ocs_update` (`plugin_ocsinventoryng_ocsservers_id`,`last_ocs_update`),
   KEY `computers_id` (`computers_id`),
+  KEY `entities_id` (`entities_id`),
   KEY `use_auto_update` (`use_auto_update`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -134,8 +135,9 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `importsnmp_computerprocessors` tinyint(1) NOT NULL DEFAULT '0',
   `importsnmp_computersoftwares` tinyint(1) NOT NULL DEFAULT '0',
   `importsnmp_computervm` tinyint(1) NOT NULL DEFAULT '0',
-  `import_runningprocess` TINYINT(1) NOT NULL DEFAULT '0',
-  `import_service` TINYINT(1) NOT NULL DEFAULT '0',
+  `importsnmp_computerdisks` tinyint(1) NOT NULL DEFAULT '0',
+  `import_runningprocess` tinyint(1) NOT NULL DEFAULT '0',
+  `import_service` tinyint(1) NOT NULL DEFAULT '0',
   `import_uptime` tinyint(1) NOT NULL DEFAULT '0',
   `linksnmp_name` tinyint(1) NOT NULL DEFAULT '0',
   `linksnmp_serial` tinyint(1) NOT NULL DEFAULT '0',
@@ -155,6 +157,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `linksnmp_computerprocessors` tinyint(1) NOT NULL DEFAULT '0',
   `linksnmp_computersoftwares` tinyint(1) NOT NULL DEFAULT '0',
   `linksnmp_computervm` tinyint(1) NOT NULL DEFAULT '0',
+  `linksnmp_computerdisks` tinyint(1) NOT NULL DEFAULT '0',
   `dohistory` tinyint(1) NOT NULL DEFAULT '1',
   `history_hardware` tinyint(1) NOT NULL DEFAULT '1',
   `history_bios` tinyint(1) NOT NULL DEFAULT '1',
@@ -195,7 +198,6 @@ DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_winupdates`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_winupdates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `computers_id` int(11) NOT NULL DEFAULT '0',
-  `entities_id` int(11) NOT NULL DEFAULT '0',
   `auoptions` int(11) NOT NULL DEFAULT '0',
   `scheduleinstalldate` datetime DEFAULT NULL,
   `lastsuccesstime` datetime DEFAULT NULL,
@@ -211,7 +213,6 @@ DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_osinstalls`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_osinstalls` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `computers_id` INT(11) NOT NULL DEFAULT '0',
-  `entities_id` int(11) NOT NULL DEFAULT '0',
   `build_version` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `install_date` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `codeset` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -229,7 +230,6 @@ DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_proxysettings`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_proxysettings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `computers_id` int(11) NOT NULL DEFAULT '0',
-  `entities_id` int(11) NOT NULL DEFAULT '0',
   `user` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `enabled` int(11) NOT NULL DEFAULT '0',
   `autoconfigurl` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -245,7 +245,6 @@ DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_networkshares`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_networkshares` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `computers_id` INT(11) NOT NULL DEFAULT '0',
-  `entities_id` INT(11) NOT NULL DEFAULT '0',
   `drive` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `path` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `size` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -261,7 +260,6 @@ DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_winusers`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_winusers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `computers_id` int(11) NOT NULL DEFAULT '0',
-  `entities_id` int(11) NOT NULL DEFAULT '0',
   `name` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `type` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `description` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -272,12 +270,10 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_winusers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ### Dump table glpi_plugin_ocsinventoryng_teamviewers
-
 DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_teamviewers`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_teamviewers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `computers_id` int(11) NOT NULL DEFAULT '0',
-  `entities_id` int(11) NOT NULL DEFAULT '0',
   `twid` varchar(255) DEFAULT NULL,
   `version` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -285,7 +281,6 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_teamviewers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ### Dump table glpi_plugin_ocsinventoryng_networkports
-
 DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_networkports`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_networkports` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -429,7 +424,8 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_snmpocslinks` (
    `last_update` DATETIME COLLATE utf8_unicode_ci DEFAULT NULL,
    `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
    `linked` tinyint(1) NOT NULL DEFAULT '0',
-   PRIMARY KEY (`id`)
+   PRIMARY KEY (`id`),
+  KEY `plugin_ocsinventoryng_ocsservers_id` (`plugin_ocsinventoryng_ocsservers_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ### Dump table glpi_plugin_ocsinventoryng_ipdiscoverlinks
@@ -443,7 +439,8 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks` (
   `last_update` DATETIME COLLATE utf8_unicode_ci DEFAULT NULL,
   `subnet` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL,
   `plugin_ocsinventoryng_ocsservers_id` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `plugin_ocsinventoryng_ocsservers_id` (`plugin_ocsinventoryng_ocsservers_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ### Dump table glpi_plugin_ocsinventoryng_ruleimportentities
