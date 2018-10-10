@@ -133,7 +133,7 @@ class PluginOcsinventoryngVirtualmachine extends CommonDBChild {
       $query = "SELECT `id`
                 FROM `glpi_computervirtualmachines`
                 WHERE `computers_id`= $computers_id
-                   AND `is_dynamic` = 1";
+                   AND `is_dynamic` = 1 ";
       if (!empty($already_processed)) {
          $query .= "AND `id` NOT IN (" . implode(',', $already_processed) . ")";
       }
