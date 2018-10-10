@@ -55,15 +55,6 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       }
    }
 
-
-   /**
-    *
-    */
-   function cleanDBonPurge() {
-      PluginOcsinventoryngDetail::deleteThreadDetailsByProcessID($this->fields['id']);
-   }
-
-
    function title() {
 
       $buttons = [];

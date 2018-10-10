@@ -51,13 +51,6 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild {
       return __('Running Process', 'ocsinventoryng');
    }
 
-   function cleanDBonPurge() {
-
-      $self = new self();
-      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
-
-   }
-
    /**
     * Update config of the Runningprocess
     *

@@ -51,13 +51,6 @@ class PluginOcsinventoryngService extends CommonDBChild {
       return __('Service', 'ocsinventoryng');
    }
 
-   function cleanDBonPurge() {
-
-      $self = new self();
-      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
-
-   }
-
    /**
     * Update config of the Service
     *

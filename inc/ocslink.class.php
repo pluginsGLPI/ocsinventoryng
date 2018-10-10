@@ -671,11 +671,34 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     * @param $comp   Computer object
     **/
    static function purgeComputer(Computer $comp) {
+
       $link = new self();
       $link->deleteByCriteria(['computers_id' => $comp->getField("id")]);
 
       $reg = new PluginOcsinventoryngRegistryKey();
       $reg->deleteByCriteria(['computers_id' => $comp->getField("id")]);
+
+      $winupdate = new PluginOcsinventoryngWinupdate();
+      $winupdate->deleteByCriteria(['computers_id' => $comp->getField("id")]);
+
+      $osinstall = new PluginOcsinventoryngOsinstall();
+      $osinstall->deleteByCriteria(['computers_id' => $comp->getField("id")]);
+
+      $proxy = new PluginOcsinventoryngProxysetting();
+      $proxy->deleteByCriteria(['computers_id' => $comp->getField("id")]);
+
+      $runningprocess = new PluginOcsinventoryngRunningprocess();
+      $runningprocess->deleteByCriteria(['computers_id' => $comp->getField("id")]);
+
+      $service = new PluginOcsinventoryngService();
+      $service->deleteByCriteria(['computers_id' => $comp->getField("id")]);
+
+      $winuser = new PluginOcsinventoryngWinuser();
+      $winuser->deleteByCriteria(['computers_id' => $comp->getField("id")]);
+
+      $teamviewer = new PluginOcsinventoryngTeamviewer();
+      $teamviewer->deleteByCriteria(['computers_id' => $comp->getField("id")]);
+
    }
 
 

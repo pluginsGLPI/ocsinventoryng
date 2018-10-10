@@ -51,14 +51,6 @@ class PluginOcsinventoryngOsinstall extends CommonDBChild {
       return __('OS Informations', 'ocsinventoryng');
    }
 
-   function cleanDBonPurge() {
-
-      $self = new self();
-      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
-
-   }
-
-
    /**
     * Update config of the OSInstall
     *

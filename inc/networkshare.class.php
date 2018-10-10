@@ -51,13 +51,6 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
       return __('Network shares', 'ocsinventoryng');
    }
 
-   function cleanDBonPurge() {
-
-      $self = new self();
-      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
-
-   }
-
    /**
     * Update config of the Networkshare
     *

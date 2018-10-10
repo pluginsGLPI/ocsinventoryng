@@ -51,13 +51,6 @@ class PluginOcsinventoryngProxysetting extends CommonDBChild {
       return __('Proxy Settings', 'ocsinventoryng');
    }
 
-   function cleanDBonPurge() {
-
-      $self = new self();
-      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
-
-   }
-
    /**
     * Update config of the Proxysetting
     *

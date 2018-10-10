@@ -51,13 +51,6 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
       return __('Windows Updates', 'ocsinventoryng');
    }
 
-   function cleanDBonPurge() {
-
-      $self = new self();
-      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
-
-   }
-
    /**
     * Update config of the Winupdatestate
     *

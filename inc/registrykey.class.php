@@ -48,18 +48,6 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
       return __('Registry', 'ocsinventoryng');
    }
 
-
-   /**
-    *
-    */
-   function cleanDBonPurge() {
-
-      $self = new self();
-      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
-
-   }
-
-
    /**
     * Update config of the registry
     *

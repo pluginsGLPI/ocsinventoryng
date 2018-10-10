@@ -51,13 +51,6 @@ class PluginOcsinventoryngWinuser extends CommonDBChild {
       return __('Windows Users', 'ocsinventoryng');
    }
 
-   function cleanDBonPurge() {
-
-      $self = new self();
-      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
-
-   }
-
    /**
     * Update config of the WinUsers
     *

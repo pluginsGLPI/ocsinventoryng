@@ -53,13 +53,6 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
       return __('Teamviewer access', 'ocsinventoryng');
    }
 
-   function cleanDBonPurge() {
-
-      $self = new self();
-      $self->deleteByCriteria(['computers_id' => $this->fields['id']]);
-
-   }
-
    /**
     * Update config of the Teamviewer
     *
