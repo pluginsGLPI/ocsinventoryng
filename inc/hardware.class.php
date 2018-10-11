@@ -277,96 +277,93 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
       $tmp = [];
 
       $computer = new Computer();
-      $computer->getFromDB($line_links['computers_id']);
+      if ($computer->getFromDB($line_links['computers_id'])) {
 
-      $dbu       = new DbUtils();
-      $ancestors = $dbu->getAncestorsOf('glpi_entities', $computer->fields['entities_id']);
-
-      //If there's a location to update
-      if (isset($data['locations_id'])) {
-
-         $location = new Location();
-         if ($location->getFromDB($data['locations_id'])) {
-            //If location is in the same entity as the computer, or if the location is
-            //defined in a parent entity, but recursive
-            if ($location->fields['entities_id'] == $computer->fields['entities_id']
-                || (in_array($location->fields['entities_id'], $ancestors)
-                    && $location->fields['is_recursive'])) {
-               $ko    = 0;
-               $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line_links['computers_id']);
-               if (is_array($locks) && count($locks)) {
-                  if (in_array("locations_id", $locks)) {
-                     $ko = 1;
-                  }
-               }
-               if ($ko == 0) {
-                  $tmp['locations_id'] = $data['locations_id'];
-               }
-            }
-         }
-      }
-
-      //If there's a recursive to update
-      if (isset($data['is_recursive'])) {
-         $tmp['is_recursive'] = $data['is_recursive'];
-      }
-
-      //If there's a Group Tech to update
-      if (isset($data['groups_id_tech'])) {
-
-         $group = new Group();
-         if ($group->getFromDB($data['groups_id_tech'])) {
-            //If group is in the same entity as the computer, or if the group is
-            //defined in a parent entity, but recursive
-            if ($group->fields['entities_id'] == $computer->fields['entities_id']
-                || (in_array($group->fields['entities_id'], $ancestors)
-                    && $group->fields['is_recursive'])) {
-               $ko    = 0;
-               $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line_links['computers_id']);
-               if (is_array($locks) && count($locks)) {
-                  if (in_array("groups_id_tech", $locks)) {
-                     $ko = 1;
-                  }
-               }
-               if ($ko == 0) {
-                  $tmp['groups_id_tech'] = $data['groups_id_tech'];
-               }
-            }
-         }
-      }
-
-      //If there's a Group to update
-      if (isset($data['groups_id'])) {
-         $computer = new Computer();
-         $computer->getFromDB($line_links['computers_id']);
          $dbu       = new DbUtils();
          $ancestors = $dbu->getAncestorsOf('glpi_entities', $computer->fields['entities_id']);
 
-         $group = new Group();
-         if ($group->getFromDB($data['groups_id'])) {
-            //If group is in the same entity as the computer, or if the group is
-            //defined in a parent entity, but recursive
-            if ($group->fields['entities_id'] == $computer->fields['entities_id']
-                || (in_array($group->fields['entities_id'], $ancestors)
-                    && $group->fields['is_recursive'])) {
-               $ko    = 0;
-               $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line_links['computers_id']);
-               if (is_array($locks) && count($locks)) {
-                  if (in_array("groups_id", $locks)) {
-                     $ko = 1;
+         //If there's a location to update
+         if (isset($data['locations_id'])) {
+
+            $location = new Location();
+            if ($location->getFromDB($data['locations_id'])) {
+               //If location is in the same entity as the computer, or if the location is
+               //defined in a parent entity, but recursive
+               if ($location->fields['entities_id'] == $computer->fields['entities_id']
+                   || (in_array($location->fields['entities_id'], $ancestors)
+                       && $location->fields['is_recursive'])) {
+                  $ko    = 0;
+                  $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line_links['computers_id']);
+                  if (is_array($locks) && count($locks)) {
+                     if (in_array("locations_id", $locks)) {
+                        $ko = 1;
+                     }
                   }
-               }
-               if ($ko == 0) {
-                  $tmp['groups_id']   = $data['groups_id'];
+                  if ($ko == 0) {
+                     $tmp['locations_id'] = $data['locations_id'];
+                  }
                }
             }
          }
-      }
-      if(count($tmp) > 0) {
-         $tmp["_nolock"]     = true;
-         $tmp['id']          = $line_links['computers_id'];
-         $tmp["_no_history"] = !$update_history;
-         $computer->update($tmp, $update_history);
+
+         //If there's a recursive to update
+         if (isset($data['is_recursive'])) {
+            $tmp['is_recursive'] = $data['is_recursive'];
+         }
+
+         //If there's a Group Tech to update
+         if (isset($data['groups_id_tech'])) {
+
+            $group = new Group();
+            if ($group->getFromDB($data['groups_id_tech'])) {
+               //If group is in the same entity as the computer, or if the group is
+               //defined in a parent entity, but recursive
+               if ($group->fields['entities_id'] == $computer->fields['entities_id']
+                   || (in_array($group->fields['entities_id'], $ancestors)
+                       && $group->fields['is_recursive'])) {
+                  $ko    = 0;
+                  $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line_links['computers_id']);
+                  if (is_array($locks) && count($locks)) {
+                     if (in_array("groups_id_tech", $locks)) {
+                        $ko = 1;
+                     }
+                  }
+                  if ($ko == 0) {
+                     $tmp['groups_id_tech'] = $data['groups_id_tech'];
+                  }
+               }
+            }
+         }
+
+         //If there's a Group to update
+         if (isset($data['groups_id'])) {
+
+            $group = new Group();
+            if ($group->getFromDB($data['groups_id'])) {
+               //If group is in the same entity as the computer, or if the group is
+               //defined in a parent entity, but recursive
+               if ($group->fields['entities_id'] == $computer->fields['entities_id']
+                   || (in_array($group->fields['entities_id'], $ancestors)
+                       && $group->fields['is_recursive'])) {
+                  $ko    = 0;
+                  $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line_links['computers_id']);
+                  if (is_array($locks) && count($locks)) {
+                     if (in_array("groups_id", $locks)) {
+                        $ko = 1;
+                     }
+                  }
+                  if ($ko == 0) {
+                     $tmp['groups_id'] = $data['groups_id'];
+                  }
+               }
+            }
+         }
+         if (count($tmp) > 0) {
+            $tmp["_nolock"]     = true;
+            $tmp['id']          = $line_links['computers_id'];
+            $tmp["_no_history"] = !$update_history;
+            $computer->update($tmp, $update_history);
+         }
       }
    }
    /**

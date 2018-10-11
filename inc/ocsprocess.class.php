@@ -914,7 +914,6 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
             if ($CFG_GLPI['transfers_id_auto'] > 0
                 && Session::isMultiEntitiesMode()) {
                self::transferComputer($line);
-               $comp->getFromDB($line["computers_id"]);
 
             } else {
 
@@ -930,8 +929,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                if (isset($values['locations_id']) && $values['locations_id'] > 0) {
                   $locations_id = $values['locations_id'];
                }
-               $comp = new Computer();
-               if($comp->getFromDB($line['computers_id'])){
+               if(isset($comp->fields["is_recursive"]) && isset($comp->fields["groups_id_tech"])){
                   $is_recursive = $comp->fields["is_recursive"];
                   $groups_id_tech = $comp->fields["groups_id_tech"];
                }
