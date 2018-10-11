@@ -1,7 +1,6 @@
 <?php
 
 /*
- * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
  Copyright (C) 2015-2016 by the ocsinventoryng Development Team.
@@ -59,12 +58,13 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       if (!$withtemplate) {
          switch ($item->getType()) {
             case __CLASS__ :
+               $tab['1'] = __('Alerts', 'ocsinventoryng');
                if (PluginOcsinventoryngOcsServer::useMassImport()) {
                   //If connection to the OCS DB  is ok, and all rights are ok too
-                  return ['1' => __("Automatic synchronization's configuration", 'ocsinventoryng'),
-                          '2' => __('Check OCSNG import script', 'ocsinventoryng')];
+                  $tab['2'] = __("Automatic synchronization's configuration", 'ocsinventoryng');
+                  $tab['3'] = __('Check OCSNG import script', 'ocsinventoryng');
                }
-
+               return $tab;
          }
       }
       return '';
@@ -84,9 +84,12 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
          case __CLASS__ :
             switch ($tabnum) {
                case 1 :
-                  $item->showFormAutomaticSynchronization();
+                  $item->displayAlerts();
                   break;
                case 2 :
+                  $item->showFormAutomaticSynchronization();
+                  break;
+               case 3 :
                   $item->showScriptLock();
                   break;
             }
@@ -111,6 +114,17 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       return $ong;
    }
 
+   public static function getConfig() {
+      static $config = null;
+
+      if (is_null($config)) {
+         $config = new self();
+      }
+      $config->getFromDB(1);
+
+      return $config;
+   }
+
    /**
     *
     */
@@ -133,6 +147,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
    /**
     * @param array $options
+    *
     * @return bool
     */
    function showForm($options = []) {
@@ -141,17 +156,17 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       $this->showFormHeader($options);
 
       echo "<tr class='tab_bg_2'>";
-      echo "<td >" .  __('New imported computers from OCS-NG', 'ocsinventoryng') . "</td><td>";
-         Alert::dropdownYesNo(['name'=>"use_newocs_alert",
-                               'value'=>$this->fields["use_newocs_alert"]]);
+      echo "<td >" . __('New imported computers from OCS-NG', 'ocsinventoryng') . "</td><td>";
+      Alert::dropdownYesNo(['name'  => "use_newocs_alert",
+                            'value' => $this->fields["use_newocs_alert"]]);
 
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td >" . __('OCS-NG Synchronization alerts', 'ocsinventoryng') . "</td><td>";
-         Alert::dropdownIntegerNever('delay_ocs',
-                                     $this->fields["delay_ocs"],
-                                     ['max'=>99]);
-         echo "&nbsp;"._n('Day', 'Days', 2);
+      Alert::dropdownIntegerNever('delay_ocs',
+                                  $this->fields["delay_ocs"],
+                                  ['max' => 99]);
+      echo "&nbsp;" . _n('Day', 'Days', 2);
 
       echo "</td></tr>";
 
@@ -163,6 +178,131 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
       return true;
    }
+
+   static function displayAlerts() {
+      global $DB;
+
+      $CronTask = new CronTask();
+
+      $config = self::getConfig();
+
+      $ocsalert = new PluginOcsinventoryngOcsAlert();
+      $ocsalert->getFromDBbyEntity($_SESSION["glpiactive_entity"]);
+      if (isset($ocsalert->fields["use_newocs_alert"])
+          && $ocsalert->fields["use_newocs_alert"] > 0) {
+         $use_newocs_alert = $ocsalert->fields["use_newocs_alert"];
+      } else {
+         $use_newocs_alert = $config->useNewocsAlert();
+      }
+
+      if (isset($ocsalert->fields["delay_ocs"])
+          && $ocsalert->fields["delay_ocs"] > 0) {
+         $delay_ocs = $ocsalert->fields["delay_ocs"];
+      } else {
+         $delay_ocs = $config->getDelayOcs();
+      }
+      $synchro_ocs = 0;
+      if ($CronTask->getFromDBbyName("PluginOcsinventoryngOcsAlert", "SynchroAlert")) {
+         if ($CronTask->fields["state"] != CronTask::STATE_DISABLE && $delay_ocs > 0) {
+            $synchro_ocs = 1;
+         }
+      }
+      $new_ocs = 0;
+      if ($CronTask->getFromDBbyName("PluginOcsinventoryngOcsAlert", "AlertNewComputers")) {
+         if ($CronTask->fields["state"] != CronTask::STATE_DISABLE && $use_newocs_alert > 0) {
+            $new_ocs = 1;
+         }
+      }
+
+      if ($synchro_ocs == 0
+          && $new_ocs == 0) {
+         echo "<div align='center'><b>" . __('No used alerts', 'ocsinventoryng') . "</b></div>";
+      }
+
+      if ($new_ocs != 0) {
+
+         foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1") as $config) {
+
+            $query  = PluginOcsinventoryngOcsAlert::queryNew($config,
+                                                             $_SESSION["glpiactive_entity"]);
+            $result = $DB->query($query);
+
+            if ($DB->numrows($result) > 0) {
+
+               if (Session::isMultiEntitiesMode()) {
+                  $nbcol = 9;
+               } else {
+                  $nbcol = 8;
+               }
+
+               echo "<div align='center'><table class='tab_cadre' cellspacing='2' cellpadding='3'>";
+               echo "<tr><th colspan='$nbcol'>";
+               echo __('New imported computers from OCS-NG', 'ocsinventoryng') . "</th></tr>";
+               echo "<tr><th>" . __('Name') . "</th>";
+               if (Session::isMultiEntitiesMode()) {
+                  echo "<th>" . __('Entity') . "</th>";
+               }
+               echo "<th>" . __('Operating system') . "</th>";
+               echo "<th>" . __('Status') . "</th>";
+               echo "<th>" . __('Location') . "</th>";
+               echo "<th>" . __('User') . " / " . __('Group') . " / " . __('Alternate username') . "</th>";
+               echo "<th>" . __('Last OCSNG inventory date', 'ocsinventoryng') . "</th>";
+               echo "<th>" . __('Import date in GLPI', 'ocsinventoryng') . "</th>";
+               echo "<th>" . __('OCSNG server', 'ocsinventoryng') . "</th></tr>";
+
+               while ($data = $DB->fetch_array($result)) {
+                  echo PluginOcsinventoryngOcsAlert::displayBody($data);
+               }
+               echo "</table></div>";
+            } else {
+               echo "<br><div align='center'><b>" . __('No new imported computer from OCS-NG', 'ocsinventoryng') . "</b></div>";
+            }
+         }
+         echo "<br>";
+
+      }
+
+      if ($synchro_ocs != 0) {
+
+         foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1") as $config) {
+            $query  = PluginOcsinventoryngOcsAlert::query($delay_ocs, $config, $_SESSION["glpiactive_entity"]);
+            $result = $DB->query($query);
+            if ($DB->numrows($result) > 0) {
+
+               if (Session::isMultiEntitiesMode()) {
+                  $nbcol = 9;
+               } else {
+                  $nbcol = 8;
+               }
+               echo "<div align='center'><table class='tab_cadre' cellspacing='2' cellpadding='3'>";
+               echo "<tr><th colspan='$nbcol'>";
+               echo __('Computers not synchronized with OCS-NG since more', 'ocsinventoryng') . " " . $delay_ocs . " " . _n('Day', 'Days', 2) . "</th></tr>";
+               echo "<tr><th>" . __('Name') . "</th>";
+               if (Session::isMultiEntitiesMode()) {
+                  echo "<th>" . __('Entity') . "</th>";
+               }
+               echo "<th>" . __('Operating system') . "</th>";
+               echo "<th>" . __('Status') . "</th>";
+               echo "<th>" . __('Location') . "</th>";
+               echo "<th>" . __('User') . " / " . __('Group') . " / " . __('Alternate username') . "</th>";
+               echo "<th>" . __('Last OCSNG inventory date', 'ocsinventoryng') . "</th>";
+               echo "<th>" . __('Import date in GLPI', 'ocsinventoryng') . "</th>";
+               echo "<th>" . __('OCSNG server', 'ocsinventoryng') . "</th></tr>";
+
+               while ($data = $DB->fetch_array($result)) {
+
+                  echo PluginOcsinventoryngOcsAlert::displayBody($data);
+               }
+               echo "</table></div>";
+            } else {
+               echo "<br><div align='center'><b>" . __('No computer not synchronized since more', 'ocsinventoryng') . " " . $delay_ocs . " " . _n('Day', 'Days', 2) . "</b></div>";
+            }
+         }
+         echo "<br>";
+
+      }
+   }
+
 
    /**
     * @return bool
@@ -205,7 +345,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "</tr>";
 
       $this->showFormButtons(['canedit' => $canedit,
-                                   'candel'  => false]);
+                              'candel'  => false]);
 
       return true;
    }
@@ -320,7 +460,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
       NotificationEvent::debugEvent(new PluginOcsinventoryngNotimportedcomputer(),
                                     ['entities_id' => 0,
-                                          'notimported' => []]);
+                                     'notimported' => []]);
    }
 
    //----------------- Getters and setters -------------------//

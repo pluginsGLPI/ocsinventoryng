@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-11 11:02+0200\n"
-"PO-Revision-Date: 2018-10-11 09:04+0000\n"
+"POT-Creation-Date: 2018-10-11 14:50+0200\n"
+"PO-Revision-Date: 2018-10-11 12:52+0000\n"
 "Last-Translator: Amandine Manceau\n"
 "Language-Team: Catalan (Spain) (http://www.transifex.com/yllen/GLPI_ocsinventoryng/language/ca_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -76,7 +76,8 @@ msgstr "OCSNG"
 msgid "GLPI import date"
 msgstr "Data d'importació de GLPI"
 
-#: hook.php:901 inc/ipdiscoverocslink.class.php:1268
+#: hook.php:901 inc/config.class.php:249 inc/config.class.php:288
+#: inc/ipdiscoverocslink.class.php:1268
 #: inc/notificationtargetocsalert.class.php:77
 #: inc/notificationtargetocsalert.class.php:129
 #: inc/notimportedcomputer.class.php:91 inc/notimportedcomputer.class.php:305
@@ -134,7 +135,8 @@ msgstr "Clau/valor"
 msgid "OCSNG name"
 msgstr "Nom OCSNG"
 
-#: hook.php:983 hook.php:1213 hook.php:1249 inc/config.class.php:124
+#: hook.php:983 hook.php:1213 hook.php:1249 inc/config.class.php:138
+#: inc/config.class.php:251 inc/config.class.php:290
 #: inc/notificationtargetocsalert.class.php:79
 #: inc/notificationtargetocsalert.class.php:131 inc/ocsserver.class.php:64
 #: inc/ocsserver.class.php:299 inc/ocsserver.class.php:413
@@ -268,65 +270,97 @@ msgstr "Informació al voltant del script "
 msgid "Processes execution of automatic actions"
 msgstr "Processa l'execució d'accions automàtiques"
 
-#: inc/config.class.php:47 inc/ocsalert.class.php:59
+#: inc/config.class.php:46 inc/ocsalert.class.php:59
 msgid "Plugin setup"
 msgstr ""
 
-#: inc/config.class.php:65 inc/config.class.php:224
+#: inc/config.class.php:61
+msgid "Alerts"
+msgstr ""
+
+#: inc/config.class.php:65 inc/config.class.php:364
 msgid "Check OCSNG import script"
 msgstr "Comprova el script d'importació d'OCSNG"
 
-#: inc/config.class.php:144 inc/notificationtargetocsalert.class.php:45
-#: inc/ocsalert.class.php:427 inc/ocsalert.class.php:553
+#: inc/config.class.php:159 inc/config.class.php:240
+#: inc/notificationtargetocsalert.class.php:45 inc/ocsalert.class.php:427
+#: inc/ocsalert.class.php:553
 msgid "New imported computers from OCS-NG"
 msgstr ""
 
-#: inc/config.class.php:150 inc/ocsalert.class.php:98
+#: inc/config.class.php:165 inc/ocsalert.class.php:98
 #: inc/ocsalert.class.php:560
 msgid "OCS-NG Synchronization alerts"
 msgstr ""
 
-#: inc/config.class.php:181
+#: inc/config.class.php:219
+msgid "No used alerts"
+msgstr ""
+
+#: inc/config.class.php:250 inc/config.class.php:289
+#: inc/ipdiscoverocslink.class.php:1302
+#: inc/notificationtargetocsalert.class.php:78
+#: inc/notificationtargetocsalert.class.php:130 inc/ocslink.class.php:234
+#: inc/ocslink.class.php:290 inc/ocsserver.class.php:2002
+#: inc/ocsserver.class.php:2198 inc/snmpocslink.class.php:497
+#: inc/snmpocslink.class.php:661 inc/snmpocslink.class.php:798
+#: inc/snmpocslink.class.php:2736
+msgid "Import date in GLPI"
+msgstr "Data d'importació a GLPI"
+
+#: inc/config.class.php:258
+msgid "No new imported computer from OCS-NG"
+msgstr ""
+
+#: inc/config.class.php:279 inc/notificationtargetocsalert.class.php:67
+msgid "Computers not synchronized with OCS-NG since more"
+msgstr ""
+
+#: inc/config.class.php:298
+msgid "No computer not synchronized since more"
+msgstr ""
+
+#: inc/config.class.php:321
 msgid "Show processes where nothing was changed"
 msgstr "Mostra processos a on res ha canviat"
 
-#: inc/config.class.php:190
+#: inc/config.class.php:330
 msgid "Authorize the OCSNG update"
 msgstr "Autoritza l'actualització d'OCSNG"
 
-#: inc/config.class.php:196
+#: inc/config.class.php:336
 msgid "Log imported computers"
 msgstr ""
 
-#: inc/config.class.php:202
+#: inc/config.class.php:342
 msgid "Refresh information of a process every"
 msgstr "Actualitza la informació d'un procés cada"
 
-#: inc/config.class.php:204
+#: inc/config.class.php:344
 msgid "second"
 msgid_plural "seconds"
 msgstr[0] "segon"
 msgstr[1] "segons"
 
-#: inc/config.class.php:230
+#: inc/config.class.php:370
 msgid "Lock not activated"
 msgstr "Bloqueig no activat"
 
-#: inc/config.class.php:232
+#: inc/config.class.php:372
 msgid "Lock activated"
 msgstr "Bloqueig activat"
 
-#: inc/config.class.php:238
+#: inc/config.class.php:378
 msgctxt "button"
 msgid "Lock"
 msgstr "Bloqueig"
 
-#: inc/config.class.php:239
+#: inc/config.class.php:379
 msgctxt "button"
 msgid "Unlock"
 msgstr "Desbloqueig"
 
-#: inc/config.class.php:282 inc/thread.class.php:385
+#: inc/config.class.php:422 inc/thread.class.php:385
 msgid "All servers"
 msgstr "Tots els servidors"
 
@@ -488,16 +522,6 @@ msgstr ""
 msgctxt "button"
 msgid "Delete link"
 msgstr ""
-
-#: inc/ipdiscoverocslink.class.php:1302
-#: inc/notificationtargetocsalert.class.php:78
-#: inc/notificationtargetocsalert.class.php:130 inc/ocslink.class.php:234
-#: inc/ocslink.class.php:290 inc/ocsserver.class.php:2002
-#: inc/ocsserver.class.php:2198 inc/snmpocslink.class.php:497
-#: inc/snmpocslink.class.php:661 inc/snmpocslink.class.php:798
-#: inc/snmpocslink.class.php:2736
-msgid "Import date in GLPI"
-msgstr "Data d'importació a GLPI"
 
 #: inc/ipdiscoverocslink.class.php:1364 inc/ipdiscoverocslink.class.php:1470
 #: inc/ipdiscoverocslink.class.php:1489 inc/ipdiscoverocslink.class.php:1586
@@ -670,10 +694,6 @@ msgstr ""
 #: inc/notimportedcomputer.class.php:73 inc/notimportedcomputer.class.php:267
 msgid "Device ID"
 msgstr "ID de dispositiu"
-
-#: inc/notificationtargetocsalert.class.php:67
-msgid "Computers not synchronized with OCS-NG since more"
-msgstr ""
 
 #: inc/notificationtargetruleimportentity.class.php:44
 #: inc/ruleimportentity.class.php:49
