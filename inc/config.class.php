@@ -44,7 +44,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
     * @return string|translated
     */
    static function getTypeName($nb = 0) {
-      return __("Automatic synchronization's configuration", 'ocsinventoryng');
+      return __("Plugin setup", 'ocsinventoryng');
    }
 
 
@@ -59,8 +59,11 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       if (!$withtemplate) {
          switch ($item->getType()) {
             case __CLASS__ :
-               //If connection to the OCS DB  is ok, and all rights are ok too
-               return ['1' => __('Check OCSNG import script', 'ocsinventoryng')];
+               if (PluginOcsinventoryngOcsServer::useMassImport()) {
+                  //If connection to the OCS DB  is ok, and all rights are ok too
+                  return ['1' => __("Automatic synchronization's configuration", 'ocsinventoryng'),
+                          '2' => __('Check OCSNG import script', 'ocsinventoryng')];
+               }
 
          }
       }
@@ -79,7 +82,15 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
       switch ($item->getType()) {
          case __CLASS__ :
-            $item->showScriptLock();
+            switch ($tabnum) {
+               case 1 :
+                  $item->showFormAutomaticSynchronization();
+                  break;
+               case 2 :
+                  $item->showScriptLock();
+                  break;
+            }
+
             break;
 
       }
@@ -113,20 +124,51 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
            _n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng') . "</a>";
       echo "</td></tr>";
 
-      if (PluginOcsinventoryngOcsServer::useMassImport()) {
-         echo "<tr class='tab_bg_1'><td class='center b'>";
-         echo "<a href='" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/config.form.php'>" .
-              __("Automatic synchronization's configuration", 'ocsinventoryng') . "</a>";
-         echo "</td></tr>";
-      }
+      echo "<tr class='tab_bg_1'><td class='center b'>";
+      echo "<a href='" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/config.form.php'>" .
+           self::getTypeName() . "</a>";
+      echo "</td></tr>";
       echo "</table>";
+   }
+
+   /**
+    * @param array $options
+    * @return bool
+    */
+   function showForm($options = []) {
+
+      $this->getFromDB(1);
+      $this->showFormHeader($options);
+
+      echo "<tr class='tab_bg_2'>";
+      echo "<td >" .  __('New imported computers from OCS-NG', 'ocsinventoryng') . "</td><td>";
+         Alert::dropdownYesNo(['name'=>"use_newocs_alert",
+                               'value'=>$this->fields["use_newocs_alert"]]);
+
+      echo "</td></tr>";
+
+      echo "<tr class='tab_bg_2'><td >" . __('OCS-NG Synchronization alerts', 'ocsinventoryng') . "</td><td>";
+         Alert::dropdownIntegerNever('delay_ocs',
+                                     $this->fields["delay_ocs"],
+                                     ['max'=>99]);
+         echo "&nbsp;"._n('Day', 'Days', 2);
+
+      echo "</td></tr>";
+
+      echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
+      echo "<input type='hidden' name='id' value='1'>";
+      echo "</td></tr>";
+
+      $this->showFormButtons($options);
+
+      return true;
    }
 
    /**
     * @return bool
     * @internal param $target
     */
-   function showForm() {
+   function showFormAutomaticSynchronization() {
 
       if (!Session::haveRight("plugin_ocsinventoryng_sync", READ)) {
          return false;
@@ -279,6 +321,16 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       NotificationEvent::debugEvent(new PluginOcsinventoryngNotimportedcomputer(),
                                     ['entities_id' => 0,
                                           'notimported' => []]);
+   }
+
+   //----------------- Getters and setters -------------------//
+
+   public function useNewocsAlert() {
+      return $this->fields['use_newocs_alert'];
+   }
+
+   public function getDelayOcs() {
+      return $this->fields['delay_ocs'];
    }
 
 }

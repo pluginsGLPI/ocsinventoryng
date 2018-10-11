@@ -1,8 +1,8 @@
 @echo off
 echo Chemins php et du script a lancer
 
-SET path_php="C:\wamp64\bin\php\php7.0.10"
-SET plugin_glpi="C:\wamp\www\glpi\plugins\ocsinventoryng\scripts"
+SET path_php="D:\wamp64\bin\php\php7.2.4"
+SET plugin_glpi="D:\wamp64\www\glpi931\plugins\ocsinventoryng\scripts"
 
 echo Definition du path
 
@@ -16,6 +16,7 @@ IF NOT EXIST %plugin_glpi%\run.php GOTO EXIT
 :RUN
 echo Lancement du script
 php %plugin_glpi%\run.php
+pause
 GOTO FIN
 
 :EXIT

@@ -42,7 +42,7 @@ function plugin_ocsinventoryng_install() {
        && !$DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
        && !$DB->tableExists("ocs_glpi_ocsservers")) {
       //INSTALL
-      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.5.2-empty.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.5.5-empty.sql");
 
       $migration->createRule(['sub_type'     => 'RuleImportComputer',
                               'entities_id'  => 0,
@@ -333,7 +333,6 @@ function plugin_ocsinventoryng_install() {
 
          plugin_ocsinventoryng_updatemassocsimport($migration);
       }
-      $migration->executeMigration();
 
       /******************* Migration 1.2.2 *******************/
       if ($DB->tableExists('glpi_plugin_ocsinventoryng_ocsservers')
@@ -494,9 +493,24 @@ function plugin_ocsinventoryng_install() {
          $DB->queryOrDie($query, "1.5.2 add history_os in glpi_plugin_ocsinventoryng_ocsservers");
       }/*1.5.2*/
 
-      //Notifications
-      addNotifications();
+      /******************* Migration 1.5.5 *******************/
+      if (!$DB->tableExists('glpi_plugin_ocsinventoryng_ocsalerts')) {
+         plugin_ocsinventoryng_migration_additionnalalerts();
+
+         //crypt mdp
+         $ocsserver = new PluginOcsinventoryngOcsServer();
+         foreach ($dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_ocsservers') as $ocs) {
+            $ocsserver->update(['id'            => $ocs['id'],
+                                'ocs_db_passwd' => $ocs["ocs_db_passwd"]]);
+
+         }
+      }/*1.5.5*/
+
+      $migration->executeMigration();
+
    }
+   //Notifications
+   addNotifications();
 
    $cron = new CronTask();
    if (!$cron->getFromDBbyName('PluginOcsinventoryngThread', 'CleanOldThreads')) {
@@ -512,14 +526,26 @@ function plugin_ocsinventoryng_install() {
                          ['param' => 24]);
    }
    if (!$cron->getFromDBbyName('PluginOcsinventoryngOcsServer', 'CleanOldAgents')) {
-      CronTask::Register('PluginOcsinventoryngOcsServer', 'CleanOldAgents', DAY_TIMESTAMP, ['state' => CronTask::STATE_DISABLE]);
+      CronTask::Register('PluginOcsinventoryngOcsServer', 'CleanOldAgents', DAY_TIMESTAMP,
+                         ['state' => CronTask::STATE_DISABLE]);
    }
    /*1.3.2*/
    if (!$cron->getFromDBbyName('PluginOcsinventoryngOcsServer', 'RestoreOldAgents')) {
-      CronTask::Register('PluginOcsinventoryngOcsServer', 'RestoreOldAgents', DAY_TIMESTAMP, ['state' => CronTask::STATE_DISABLE]);
+      CronTask::Register('PluginOcsinventoryngOcsServer', 'RestoreOldAgents', DAY_TIMESTAMP,
+                         ['state' => CronTask::STATE_DISABLE]);
    }
    if (!$cron->getFromDBbyName('PluginOcsinventoryngRuleImportEntity', 'CheckRuleImportEntity')) {
-      CronTask::Register('PluginOcsinventoryngRuleImportEntity', 'CheckRuleImportEntity', DAY_TIMESTAMP, ['state' => CronTask::STATE_DISABLE]);
+      CronTask::Register('PluginOcsinventoryngRuleImportEntity', 'CheckRuleImportEntity', DAY_TIMESTAMP,
+                         ['state' => CronTask::STATE_DISABLE]);
+   }
+
+   if (!$cron->getFromDBbyName('PluginOcsinventoryngOcsAlert', 'SynchroAlert')) {
+      CronTask::Register('PluginOcsinventoryngOcsAlert', 'SynchroAlert', DAY_TIMESTAMP,
+                         ['state' => CronTask::STATE_DISABLE]);
+   }
+   if (!$cron->getFromDBbyName('PluginOcsinventoryngOcsAlert', 'AlertNewComputers')) {
+      CronTask::Register('PluginOcsinventoryngOcsAlert', 'AlertNewComputers', HOUR_TIMESTAMP,
+                         ['state' => CronTask::STATE_DISABLE]);
    }
 
    /*Now delete old tables*/
@@ -553,6 +579,7 @@ function plugin_ocsinventoryng_uninstall() {
 
    include_once(GLPI_ROOT . "/plugins/ocsinventoryng/inc/profile.class.php");
    include_once(GLPI_ROOT . "/plugins/ocsinventoryng/inc/menu.class.php");
+
    $dbu    = new DbUtils();
    $tables = ["glpi_plugin_ocsinventoryng_ocsservers",
               "glpi_plugin_ocsinventoryng_ocslinks",
@@ -576,7 +603,9 @@ function plugin_ocsinventoryng_uninstall() {
               "glpi_plugin_ocsinventoryng_networkshares",
               "glpi_plugin_ocsinventoryng_runningprocesses",
               "glpi_plugin_ocsinventoryng_services",
-              "glpi_plugin_ocsinventoryng_teamviewers"];
+              "glpi_plugin_ocsinventoryng_teamviewers",
+              "glpi_plugin_ocsinventoryng_notificationstates",
+              "glpi_plugin_ocsinventoryng_ocsalerts"];
 
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
@@ -638,9 +667,10 @@ function plugin_ocsinventoryng_uninstall() {
    }
 
    $notification = new Notification();
-   $itemtypes    = ['PluginMassocsimportNotimported',
-                    'PluginOcsinventoryngNotimportedcomputer',
-                    'PluginOcsinventoryngRuleImportEntity'];
+   $itemtypes = ['PluginMassocsimportNotimported',
+                 'PluginOcsinventoryngNotimportedcomputer',
+                 'PluginOcsinventoryngRuleImportEntity',
+                 'PluginOcsinventoryngOcsAlert'];
    foreach ($dbu->getAllDataFromTable($notification->getTable(),
                                       ["itemtype" => $itemtypes]) as $data) {
       $notification->delete($data);
@@ -671,6 +701,13 @@ function plugin_ocsinventoryng_uninstall() {
    }
    if ($cron->getFromDBbyName('PluginOcsinventoryngRuleImportEntity', 'CheckRuleImportEntity')) {
       CronTask::Unregister('CheckRuleImportEntity');
+   }
+
+   if (!$cron->getFromDBbyName('PluginOcsinventoryngOcsAlert', 'SynchroAlert')) {
+      CronTask::Unregister('SynchroAlert');
+   }
+   if (!$cron->getFromDBbyName('PluginOcsinventoryngOcsAlert', 'AlertNewComputers')) {
+      CronTask::Unregister('AlertNewComputers');
    }
 
    //Delete rights associated with the plugin
@@ -2246,6 +2283,9 @@ function addNotifications() {
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
       $DB->query($query);
    }
+
+   plugin_ocsinventoryng_add_notifications_alerts();
+
 }
 
 function plugin_ocsinventoryng_update110() {
@@ -2701,4 +2741,173 @@ function plugin_ocsinventoryng_upgrademassocsimport14to15() {
       $DB->query($query);
    }
    $migration->executeMigration();
+}
+
+function plugin_ocsinventoryng_migration_additionnalalerts() {
+   global $DB;
+
+   $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_configs` 
+            ADD `delay_ocs` int(11) NOT NULL default '-1',
+            ADD `use_newocs_alert` TINYINT( 1 ) NOT NULL DEFAULT '-1';";
+   $DB->query($query);
+
+   $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_ocsalerts` (
+              `id` int(11) NOT NULL auto_increment,
+              `entities_id` int(11) NOT NULL default '0',
+              `delay_ocs` int(11) NOT NULL default '-1',
+              `use_newocs_alert` TINYINT( 1 ) NOT NULL DEFAULT '-1',
+              PRIMARY KEY  (`id`)
+            ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+   $DB->queryOrDie($query, "1.5.5 add glpi_plugin_ocsinventoryng_ocsalerts");
+
+   $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_notificationstates` (
+           `id` int(11) NOT NULL auto_increment,
+           `states_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_states (id)',
+           PRIMARY KEY  (`id`)
+         ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+   $DB->queryOrDie($query, "1.5.5 add glpi_plugin_ocsinventoryng_notificationstates");
+
+   //if plugin additionalalerts
+   if ($DB->tableExists('glpi_plugin_additionalalerts_ocsalerts')) {
+      $query = "UPDATE `glpi_plugin_ocsinventoryng_configs` 
+                INNER JOIN `glpi_plugin_additionalalerts_configs` 
+                ON `glpi_plugin_additionalalerts_configs`.`id` = `glpi_plugin_ocsinventoryng_configs`.`id`
+                SET `glpi_plugin_ocsinventoryng_configs`.`delay_ocs` = `glpi_plugin_additionalalerts_configs`.`delay_ocs`,
+                `glpi_plugin_ocsinventoryng_configs`.`use_newocs_alert` = `glpi_plugin_additionalalerts_configs`.`use_newocs_alert`";
+      $DB->query($query);
+
+      $query = "INSERT INTO `glpi_plugin_ocsinventoryng_ocsalerts`
+                SELECT * FROM `glpi_plugin_additionalalerts_ocsalerts`";
+      $DB->queryOrDie($query, "1.5.5 migration glpi_plugin_ocsinventoryng_ocsalerts");
+
+      $query = "INSERT INTO `glpi_plugin_ocsinventoryng_notificationstates`
+                SELECT * FROM `glpi_plugin_additionalalerts_notificationstates`";
+      $DB->queryOrDie($query, "1.5.5 migration glpi_plugin_ocsinventoryng_notificationstates");
+
+      //disabled cron
+      $query = "INSERT INTO `glpi_crontasks`
+                SELECT NULL, 'PluginOcsinventoryngOcsAlert', 'AlertNewComputers', `frequency`, `param`, 
+                `state`, `mode`, `allowmode`, `hourmin`, `hourmax`, `logs_lifetime`, `lastrun`, `lastcode`, 
+                `comment`, `date_mod`, `date_creation`
+                 FROM `glpi_crontasks`
+                WHERE `name` LIKE 'AdditionalalertsNewOcs'";
+      $DB->query($query);
+
+      $query = "UPDATE `glpi_crontasks` SET `state` = 0
+                WHERE `name` LIKE 'AdditionalalertsNewOcs'";
+      $DB->query($query);
+
+      $query = "INSERT INTO `glpi_crontasks`
+                SELECT NULL, 'PluginOcsinventoryngOcsAlert', 'SynchroAlert', `frequency`, `param`, `state`, 
+                `mode`, `allowmode`, `hourmin`, `hourmax`, `logs_lifetime`, `lastrun`, `lastcode`, 
+                `comment`, `date_mod`, `date_creation`
+                 FROM `glpi_crontasks`
+                WHERE `name` LIKE 'AdditionalalertsOcs'";
+      $DB->query($query);
+
+      $query = "UPDATE `glpi_crontasks` SET `state` = 0
+                WHERE `name` LIKE 'AdditionalalertsOcs'";
+      $DB->query($query);
+
+
+      //migration notif
+      $query = "UPDATE `glpi_notifications` SET `itemtype` = 'PluginOcsinventoryngOcsAlert' 
+                WHERE `itemtype` LIKE 'PluginAdditionalalertsOcsAlert'";
+      $DB->query($query);
+
+      //notification_template
+      $query = "UPDATE `glpi_notificationtemplates` SET `itemtype` = 'PluginOcsinventoryngOcsAlert' 
+                WHERE `itemtype` LIKE 'PluginAdditionalalertsOcsAlert'";
+      $DB->query($query);
+
+   }
+}
+
+function plugin_ocsinventoryng_add_notifications_alerts() {
+   global $DB;
+
+   //add alert synchro & new computer AlertNewComputers & SynchroAlert
+   $query_id = "SELECT `id` 
+                FROM `glpi_notificationtemplates` 
+                WHERE `itemtype`='PluginOcsinventoryngOcsAlert'";
+   $result   = $DB->query($query_id);
+
+   if (!$DB->numrows($result)) {
+
+      //Add template
+      $query = "INSERT INTO `glpi_notificationtemplates`
+             (`name`, `itemtype`)
+             VALUES ('Alert machines ocs', 'PluginOcsinventoryngOcsAlert');";
+      $DB->queryOrDie($query, $DB->error());
+      $templates_id = $DB->insert_id();
+
+      $query = "INSERT INTO `glpi_notificationtemplatetranslations`
+                (`notificationtemplates_id`, `subject`, `content_text`, `content_html`)
+                                 VALUES($templates_id, '##lang.ocsmachine.title## : ##ocsmachine.entity##',
+                        '##FOREACHocsmachines##
+   ##lang.ocsmachine.name## : ##ocsmachine.name##
+   ##lang.ocsmachine.operatingsystem## : ##ocsmachine.operatingsystem##
+   ##lang.ocsmachine.state## : ##ocsmachine.state##
+   ##lang.ocsmachine.location## : ##ocsmachine.location##
+   ##lang.ocsmachine.user## : ##ocsmachine.user## / ##lang.ocsmachine.group## : ##ocsmachine.group## / ##lang.ocsmachine.contact## : ##ocsmachine.contact##
+   ##lang.ocsmachine.lastocsupdate## : ##ocsmachine.lastocsupdate##
+   ##lang.ocsmachine.lastupdate## : ##ocsmachine.lastupdate##
+   ##lang.ocsmachine.ocsserver## : ##ocsmachine.ocsserver##
+   ##ENDFOREACHocsmachines##',
+                        '&lt;table class=\"tab_cadre\" border=\"1\" cellspacing=\"2\" cellpadding=\"3\"&gt;
+   &lt;tbody&gt;
+   &lt;tr&gt;
+   &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.ocsmachine.name##&lt;/span&gt;&lt;/td&gt;
+   &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.ocsmachine.operatingsystem##&lt;/span&gt;&lt;/td&gt;
+   &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.ocsmachine.state##&lt;/span&gt;&lt;/td&gt;
+   &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.ocsmachine.location##&lt;/span&gt;&lt;/td&gt;
+   &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.ocsmachine.user##&lt;/span&gt;&lt;/td&gt;
+   &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.ocsmachine.lastocsupdate##&lt;/span&gt;&lt;/td&gt;
+   &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.ocsmachine.lastupdate##&lt;/span&gt;&lt;/td&gt;
+   &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.ocsmachine.ocsserver##&lt;/span&gt;&lt;/td&gt;
+   &lt;/tr&gt;
+   ##FOREACHocsmachines##
+   &lt;tr&gt;
+   &lt;td&gt;&lt;a href=\"##ocsmachine.urlname##\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##ocsmachine.name##&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;
+   &lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##ocsmachine.operatingsystem##&lt;/span&gt;&lt;/td&gt;
+   &lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##ocsmachine.state##&lt;/span&gt;&lt;/td&gt;
+   &lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##ocsmachine.location##&lt;/span&gt;&lt;/td&gt;
+   &lt;td&gt;##IFocsmachine.user##&lt;a href=\"##ocsmachine.urluser##\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##ocsmachine.user##&lt;/span&gt;&lt;/a&gt; / ##ENDIFocsmachine.user####IFocsmachine.group##&lt;a href=\"##ocsmachine.urlgroup##\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##ocsmachine.group##&lt;/span&gt;&lt;/a&gt; / ##ENDIFocsmachine.group####IFocsmachine.contact##&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##ocsmachine.contact####ENDIFocsmachine.contact##&lt;/span&gt;&lt;/td&gt;
+   &lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##ocsmachine.lastocsupdate##&lt;/span&gt;&lt;/td&gt;
+   &lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##ocsmachine.lastupdate##&lt;/span&gt;&lt;/td&gt;
+   &lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##ocsmachine.ocsserver##&lt;/span&gt;&lt;/td&gt;
+   &lt;/tr&gt;
+   ##ENDFOREACHocsmachines##
+   &lt;/tbody&gt;
+   &lt;/table&gt;');";
+      $DB->query($query);
+
+      $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`, `is_active`) 
+                VALUES ('Alert new machines ocs', 0, 'PluginOcsinventoryngOcsAlert', 'newocs', 1, 1);";
+      $DB->query($query);
+
+      //retrieve notification id
+      $query_id = "SELECT `id` FROM `glpi_notifications`
+               WHERE `name` = 'Alert new machines ocs' AND `itemtype` = 'PluginOcsinventoryngOcsAlert' AND `event` = 'newocs'";
+      $result = $DB->query($query_id) or die ($DB->error());
+      $notification = $DB->result($result, 0, 'id');
+
+      $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+               VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
+      $DB->query($query);
+
+      $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`, `is_active`) 
+                  VALUES ('Alert ocs synchronization', 0, 'PluginOcsinventoryngOcsAlert', 'ocs', 1, 1);";
+      $DB->query($query);
+
+      //retrieve notification id
+      $query_id = "SELECT `id` FROM `glpi_notifications`
+               WHERE `name` = 'Alert ocs synchronization' AND `itemtype` = 'PluginOcsinventoryngOcsAlert' AND `event` = 'ocs'";
+      $result = $DB->query($query_id) or die ($DB->error());
+      $notification = $DB->result($result, 0, 'id');
+
+      $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+               VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
+      $DB->query($query);
+   }
 }
