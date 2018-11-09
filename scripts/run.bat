@@ -6,7 +6,7 @@ SET plugin_glpi="C:\wamp\www\glpi\plugins\ocsinventoryng\scripts"
 
 echo Definition du path
 
-PATH = %PATH%;%path_php%
+PATH = %path_php%;%PATH%
 
 
 IF EXIST %plugin_glpi%\run.php GOTO RUN

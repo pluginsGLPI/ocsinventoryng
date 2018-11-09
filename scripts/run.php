@@ -128,7 +128,7 @@ ini_set("max_execution_time", "0");
 
 chdir(dirname($_SERVER["argv"][0]));
 define("GLPI_ROOT", realpath(dirname($_SERVER["argv"][0]) . "/../../.."));
-require GLPI_ROOT . "/config/based_config.php";
+require GLPI_ROOT . "/inc/based_config.php";
 
 $processid = date("zHi");
 $server_id = "";
