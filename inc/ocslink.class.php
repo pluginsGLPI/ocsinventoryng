@@ -1219,7 +1219,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                }
             }
          } else {
-            $locks = null;
+            $locks = [];
          }
 
          return $locks;
