@@ -1034,16 +1034,18 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   unset($tab[$k]);
                }
             }
+            
+            if (is_array($tab) && is_array($tomerge)) {
+               $newtab = array_merge($tomerge, $tab);
+               $newtab = array_unique($newtab);
+               $dbu    = new DbUtils();
+               $query  = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+                         SET `computer_update` = '" . addslashes($dbu->exportArrayToDB($newtab)) . "'
+                         WHERE `computers_id` = $computers_id";
 
-            $newtab = array_merge($tomerge, $tab);
-            $newtab = array_unique($newtab);
-            $dbu    = new DbUtils();
-            $query  = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                      SET `computer_update` = '" . addslashes($dbu->exportArrayToDB($newtab)) . "'
-                      WHERE `computers_id` = $computers_id";
-
-            if ($DB->query($query)) {
-               return true;
+               if ($DB->query($query)) {
+                  return true;
+               }
             }
          }
       }
