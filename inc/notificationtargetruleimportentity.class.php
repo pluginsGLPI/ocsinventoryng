@@ -76,13 +76,6 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
             $tmp['##checkruleimportentity.url##']      = urldecode($url);
             $tmp['##checkruleimportentity.location##'] = Dropdown::getDropdownName('glpi_locations',
                                                                                    $item['locations_id']);
-            if($item['is_recursive']){
-               $tmp['##checkruleimportentity.is_recursive##'] = __('Recursive');
-            } else{
-               $tmp['##checkruleimportentity.is_recursive##'] = __("is not") . " " . __('Recursive');
-            }
-            $tmp['##checkruleimportentity.groups_id_tech##'] = Dropdown::getDropdownName('glpi_groups',
-                                                                                   $item['groups_id_tech']);
 
             $tmp['##checkruleimportentity.error##']     = "";
             $tmp['##checkruleimportentity.dataerror##'] = "";
@@ -104,7 +97,7 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
                   }
 
                   if (isset($item['ruleid'])) {
-                     $url_rule                                   = $CFG_GLPI["url_base"] . "/index.php?redirect=RuleImportComputer_" . $item['ruleid'];
+                     $url_rule                                   = $CFG_GLPI["url_base"] . "/index.php?redirect=RuleImportEntity_" . $item['ruleid'];
                      $tmp['##checkruleimportentity.url_rule##']  = $url_rule;
                      $tmp['##checkruleimportentity.name_rule##'] = $item['rule_name'];
                   }
@@ -133,8 +126,6 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
                'checkruleimportentity.entity'         => __('Entity'),
                'checkruleimportentity.computer'       => __('Computer'),
                'checkruleimportentity.location'       => __('Location'),
-               'checkruleimportentity.is_recursive'   => __('Child entities'),
-               'checkruleimportentity.groups_id_tech' => __('Group in charge of the hardware'),
                'checkruleimportentity.error'          => __('Error'),
                'checkruleimportentity.name_rule'      => __('Rule'),
                'checkruleimportentity.dataerror'      => __('Data error', 'ocsinventoryng')];

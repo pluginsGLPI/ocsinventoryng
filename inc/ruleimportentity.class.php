@@ -167,8 +167,7 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
             //Verification of the entity and location
             if (isset($fields['entities_id']) && $fields['entities_id'] != $entities_id
                || isset($fields['locations_id']) && $fields['locations_id'] != $computer['locations_id']
-               || isset($fields['is_recursive']) && $fields['is_recursive'] != $computer['is_recursive']
-               || isset($fields['groups_id_tech']) && $fields['groups_id_tech'] != $computer['groups_id_tech']) {
+                || !isset($fields['locations_id']) && $computer['locations_id'] != 0) {
 
                if (!isset($data[$entities_id])) {
                   $data[$entities_id] = [];
@@ -179,22 +178,15 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
                $rule                                          = new Rule();
                $rule->getFromDB($fields['_ruleid']);
                $data[$entities_id][$computer['id']]['rule_name'] = $rule->fields['name'];
-               if (isset($fields['groups_id_tech']) && $fields['groups_id_tech'] != $computer['groups_id_tech']) {
 
-                  $data[$entities_id][$computer['id']]['error'][]     = 'Group Tech';
-                  $data[$entities_id][$computer['id']]['dataerror'][] = $fields['groups_id_tech'];
-
-               }
-               if (isset($fields['is_recursive']) && $fields['is_recursive'] != $computer['is_recursive']) {
-
-                  $data[$entities_id][$computer['id']]['error'][]     = 'Recursive';
-                  $data[$entities_id][$computer['id']]['dataerror'][] = $fields['is_recursive'];
-
-               }
-               if (isset($fields['locations_id']) && $fields['locations_id'] != $computer['locations_id']) {
+               if (isset($fields['locations_id']) && $fields['locations_id'] != $computer['locations_id']
+                  || !isset($fields['locations_id']) && $computer['locations_id'] != 0) {
 
                   $data[$entities_id][$computer['id']]['error'][]     = 'Location';
-                  $data[$entities_id][$computer['id']]['dataerror'][] = $fields['locations_id'];
+                  $data[$entities_id][$computer['id']]['dataerror'][] = "";
+                  if(isset($fields['locations_id'])) {
+                     $data[$entities_id][$computer['id']]['dataerror'][] = $fields['locations_id'];
+                  }
 
                }
                if (isset($fields['entities_id']) && $fields['entities_id'] != $entities_id) {
