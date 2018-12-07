@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-11 14:50+0200\n"
-"PO-Revision-Date: 2018-10-11 12:52+0000\n"
-"Last-Translator: Amandine Manceau\n"
+"PO-Revision-Date: 2018-10-11 18:30+0000\n"
+"Last-Translator: Pierfrancesco Passerini <p.passerini@gmail.com>\n"
 "Language-Team: Italian (Italy) (http://www.transifex.com/yllen/GLPI_ocsinventoryng/language/it_IT/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -282,7 +282,7 @@ msgstr "Plugin setup"
 
 #: inc/config.class.php:61
 msgid "Alerts"
-msgstr ""
+msgstr "Avvisi"
 
 #: inc/config.class.php:65 inc/config.class.php:364
 msgid "Check OCSNG import script"
@@ -301,7 +301,7 @@ msgstr "Avvisi sincronizzazioni OCS-NG"
 
 #: inc/config.class.php:219
 msgid "No used alerts"
-msgstr ""
+msgstr "Avvisi non configurati"
 
 #: inc/config.class.php:250 inc/config.class.php:289
 #: inc/ipdiscoverocslink.class.php:1302
@@ -316,7 +316,7 @@ msgstr "Data di importazione in GLPI"
 
 #: inc/config.class.php:258
 msgid "No new imported computer from OCS-NG"
-msgstr ""
+msgstr "Nessun nuovo computer importato da OCS-NG"
 
 #: inc/config.class.php:279 inc/notificationtargetocsalert.class.php:67
 msgid "Computers not synchronized with OCS-NG since more"
@@ -324,7 +324,7 @@ msgstr "Computers non sincronizzati con OCS-NG da pi&ugrave di"
 
 #: inc/config.class.php:298
 msgid "No computer not synchronized since more"
-msgstr ""
+msgstr "Nessun computer non è sincronizzato da più"
 
 #: inc/config.class.php:321
 msgid "Show processes where nothing was changed"
@@ -1606,7 +1606,7 @@ msgstr "Nessuna chiave trovata nel registro"
 msgid ""
 "Alerts on computers that no longer respond the rules for assigning an item "
 "to an entity"
-msgstr "Avvisi su computer che non rispettano più le regole per l'assegnazione di un elemento ad un'entità"
+msgstr "Avvisi per i computer che non rispettano più le regole per l'assegnazione di un elemento ad un'entità"
 
 #: inc/ruleimportentity.class.php:106
 #, php-format
