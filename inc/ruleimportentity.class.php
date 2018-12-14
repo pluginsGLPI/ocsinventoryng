@@ -225,7 +225,8 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
    static function getComputerOcsLink($plugin_ocsinventoryng_ocsservers_id) {
       $ocslink = new PluginOcsinventoryngOcslink();
 
-      $ocslinks = $ocslink->find("`plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id", "entities_id");
+      $ocslinks = $ocslink->find(["plugin_ocsinventoryng_ocsservers_id" => $plugin_ocsinventoryng_ocsservers_id],
+                                 ["entities_id"]);
 
       $computers = [];
       foreach ($ocslinks as $ocs) {

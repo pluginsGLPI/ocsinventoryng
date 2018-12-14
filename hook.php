@@ -506,6 +506,11 @@ function plugin_ocsinventoryng_install() {
          }
       }/*1.5.5*/
 
+      /******************* Migration 1.6.0 *******************/
+      if ($DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'states_id_default')) {
+
+      }
+
       $migration->executeMigration();
 
    }
@@ -766,10 +771,7 @@ function plugin_ocsinventoryng_getDatabaseRelations() {
               => ["glpi_plugin_ocsinventoryng_networkports" => "networkports_id"],
 
               "glpi_profiles"
-              => ["glpi_plugin_ocsinventoryng_ocsservers_profiles" => "profiles_id"],
-
-              "glpi_states"
-              => ["glpi_plugin_ocsinventoryng_ocsservers" => "states_id_default"]];
+              => ["glpi_plugin_ocsinventoryng_ocsservers_profiles" => "profiles_id"]];
    }
    return [];
 }
@@ -1064,27 +1066,24 @@ function plugin_ocsinventoryng_displayConfigItem($type, $ID, $data, $num) {
  *
  * @return string
  */
-function plugin_ocsinventoryng_addSelect($type, $id, $num) {
+function plugin_ocsinventoryng_addSelect($type, $id) {
 
    $searchopt = &Search::getOptions($type);
    $table     = $searchopt[$id]["table"];
    $field     = $searchopt[$id]["field"];
 
-   $out = "`$table`.`$field` AS ITEM_$num,
+   $out = "`$table`.`$field` AS $field,
            `$table`.`ocsid` AS ocsid,
            `$table`.`plugin_ocsinventoryng_ocsservers_id` AS plugin_ocsinventoryng_ocsservers_id, ";
 
-   if ($num == 0) {
-      switch ($type) {
-         case 'PluginOcsinventoryngNotimportedcomputer' :
-            return $out;
+   switch ($type) {
+      case 'PluginOcsinventoryngNotimportedcomputer' :
+         return $out;
 
-         case 'PluginOcsinventoryngDetail' :
-            $out .= "`$table`.`plugin_ocsinventoryng_threads_id`,
-                     `$table`.`threadid`, ";
-            return $out;
-      }
-      return "";
+      case 'PluginOcsinventoryngDetail' :
+         $out .= "`$table`.`plugin_ocsinventoryng_threads_id`,
+                  `$table`.`threadid`, ";
+         return $out;
    }
    return "";
 }

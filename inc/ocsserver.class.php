@@ -1196,12 +1196,6 @@ JAVASCRIPT;
       echo "<td><input type='text' size='30' name='tag_exclude' value='" .
            $this->fields["tag_exclude"] . "'></td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Default status', 'ocsinventoryng') .
-           "</td>\n<td>";
-      State::dropdown(['name'  => 'states_id_default',
-                       'value' => $this->fields["states_id_default"]]);
-      echo "</td></tr>\n";
-
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Behavior when disconnecting', 'ocsinventoryng') . "</td>\n<td>";
       Dropdown::showFromArray("deconnection_behavior", [''       => __('Preserve link', 'ocsinventoryng'),
                                                         "trash"  => __('Put the link in dustbin and add a lock', 'ocsinventoryng'),

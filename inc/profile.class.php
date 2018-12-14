@@ -175,7 +175,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
          Dropdown::show('PluginOcsinventoryngOcsServer', ['width'     => '50%',
                                                           'used'      => $used,
                                                           'value'     => '',
-                                                          'condition' => "is_active = 1",
+                                                          'condition' => ["is_active" => 1],
                                                           'toadd'     => ['-1' => __('All')]]);
          echo "&nbsp;&nbsp;<input type='hidden' name='profile' value='$profiles_id'>";
          echo "&nbsp;&nbsp;<input type='submit' name='addocsserver' value=\"" . _sx('button', 'Add') . "\" class='submit' >";

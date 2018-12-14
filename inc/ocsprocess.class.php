@@ -275,7 +275,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       return ['manufacturer'                    => ['BIOS', 'SMANUFACTURER'],
               'manufacturers_id'                => ['BIOS', 'SMANUFACTURER'],
               'license_number'                  => ['HARDWARE', 'WINPRODKEY'],
-              'license_id'                      => ['HARDWARE', 'WINPRODID'],
+              'licenseid'                      => ['HARDWARE', 'WINPRODID'],
               'operatingsystems_id'             => ['HARDWARE', 'OSNAME'],
               'operatingsystemversions_id'      => ['HARDWARE', 'OSVERSION'],
               'operatingsystemarchitectures_id' => ['HARDWARE', 'ARCH'],
@@ -307,10 +307,11 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                                            $groups_id = 0, $is_recursive = 0, $groups_id_tech = 0) {
       $input               = [];
       $input["is_dynamic"] = 1;
+      $input['_auto']      = 1;
 
-      if ($cfg_ocs["states_id_default"] > 0) {
-         $input["states_id"] = $cfg_ocs["states_id_default"];
-      }
+//      if ($cfg_ocs["states_id_default"] > 0) {
+//         $input["states_id"] = $cfg_ocs["states_id_default"];
+//      }
 
       $input["entities_id"] = $entities_id;
 
@@ -407,7 +408,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
       if (intval($cfg_ocs["import_os_serial"]) == 0) {
          unset($input["license_number"]);
-         unset($input["license_id"]);
+         unset($input["licenseid"]);
       }
 
       if (intval($cfg_ocs["import_general_serial"]) == 0) {
@@ -775,13 +776,14 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
             $input["entities_id"] = $comp->fields['entities_id'];
             $input["is_dynamic"]  = 1;
             $input["_nolock"]     = true;
+            $input['_auto']       = 1;
 
             // Not already import from OCS / mark default state
-            if ((!$ocs_id_change && ($ocsConfig["states_id_default"] > 0))
-                || (!$comp->fields['is_dynamic']
-                    && ($ocsConfig["states_id_default"] > 0))) {
-               $input["states_id"] = $ocsConfig["states_id_default"];
-            }
+//            if ((!$ocs_id_change && ($ocsConfig["states_id_default"] > 0))
+//                || (!$comp->fields['is_dynamic']
+//                    && ($ocsConfig["states_id_default"] > 0))) {
+//               $input["states_id"] = $ocsConfig["states_id_default"];
+//            }
             $update_history = 0;
             $input["_no_history"] = 1;
             if ($cfg_ocs['dohistory'] == 1 && $cfg_ocs['history_hardware'] == 1) {

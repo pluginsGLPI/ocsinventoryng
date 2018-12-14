@@ -162,10 +162,12 @@ class PluginOcsinventoryngPrinter extends CommonDBChild {
                      } else {
                         $input = $print;
 
-                        if ($cfg_ocs["states_id_default"] > 0) {
-                           $input["states_id"] = $cfg_ocs["states_id_default"];
-                        }
+//                        if ($cfg_ocs["states_id_default"] > 0) {
+//                           $input["states_id"] = $cfg_ocs["states_id_default"];
+//                        }
+                        $input['_auto']       = 1;
                         $input["entities_id"] = $entity;
+
                         $id_printer           = $p->add($input, [], $install_history);
                      }
                   } else if ($management_process == 2) {
@@ -174,9 +176,9 @@ class PluginOcsinventoryngPrinter extends CommonDBChild {
                      $input              = $print;
                      $input["is_global"] = MANAGEMENT_UNITARY;
 
-                     if ($cfg_ocs["states_id_default"] > 0) {
-                        $input["states_id"] = $cfg_ocs["states_id_default"];
-                     }
+//                     if ($cfg_ocs["states_id_default"] > 0) {
+//                        $input["states_id"] = $cfg_ocs["states_id_default"];
+//                     }
                      $input["entities_id"] = $entity;
                      $input['is_dynamic']  = 1;
                      $id_printer           = $p->add($input, [], $install_history);
@@ -194,9 +196,10 @@ class PluginOcsinventoryngPrinter extends CommonDBChild {
                      $input["is_deleted"]  = 0;
                      $input["entities_id"] = $entity;
 
-                     if ($cfg_ocs["states_id_default"] > 0) {
-                        $input["states_id"] = $cfg_ocs["states_id_default"];
-                     }
+//                     if ($cfg_ocs["states_id_default"] > 0) {
+//                        $input["states_id"] = $cfg_ocs["states_id_default"];
+//                     }
+                     $input['_auto'] = 1;
                      $p->update($input, $install_history);
                   }
                } else {

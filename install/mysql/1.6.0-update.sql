@@ -1,0 +1,1 @@
+ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` DROP `states_id_default`;

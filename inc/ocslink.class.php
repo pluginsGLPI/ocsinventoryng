@@ -933,8 +933,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          return false;
       }
       $link = new self();
-      $data = $link->find("`ocsid` = " . $ocsid . " 
-                           AND `plugin_ocsinventoryng_ocsservers_id` = " . $plugin_ocsinventoryng_ocsservers_id);
+      $data = $link->find(["ocsid" => $ocsid,
+                          "plugin_ocsinventoryng_ocsservers_id" => $plugin_ocsinventoryng_ocsservers_id]);
       if (count($data) > 0) {
          return false;
       }
@@ -1265,7 +1265,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                    || $field == "serial"
                    || $field == "name"
                    || $field == "otherserial"
-                   || $field == "license_id"
+                   || $field == "licenseid"
                    || $field == "contact_num"
                    || $field == "license_number"
                    || $field == "use_date"
@@ -1407,7 +1407,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   'os'                 => 'operatingsystems_id',
                   'os_version'         => 'operatingsystemversions_id',
                   'os_sp'              => 'operatingsystemservicepacks_id',
-                  'os_license_id'      => 'license_id',
+                  'os_license_id'      => 'licenseid',
                   'auto_update'        => 'autoupdatesystems_id',
                   'location'           => 'locations_id',
                   'domain'             => 'domains_id',

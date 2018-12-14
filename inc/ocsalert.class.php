@@ -124,7 +124,6 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
                 AND `glpi_items_operatingsystems`.`itemtype` = 'Computer')
             WHERE `glpi_computers`.`is_deleted` = 0
             AND `glpi_computers`.`is_template` = 0
-            AND `glpi_computers`.`states_id` = " . $config["states_id_default"] . " 
             AND `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id` = '" . $config["id"] . "' ";
       $query .= "AND `glpi_computers`.`entities_id` = '" . $entity . "' ";
       $query .= " ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update` ASC";

@@ -88,7 +88,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
 
          if (intval($cfg_ocs["import_os_serial"]) > 0) {
             $locks["license_number"] = __('Serial of the operating system');
-            $locks["license_id"]     = __('Product ID of the operating system');
+            $locks["licenseid"]     = __('Product ID of the operating system');
          }
 
       } else {
@@ -97,7 +97,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
                    "operatingsystemversions_id"      => __('Version of the operating system'),
                    'operatingsystemarchitectures_id' => __('Operating system architecture'),//Enable 9.1
                    "license_number"                  => __('Serial of the operating system'),
-                   "license_id"                      => __('Product ID of the operating system')];
+                   "licenseid"                      => __('Product ID of the operating system')];
       }
 
       return $locks;
@@ -182,7 +182,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
          }
          $license_id = null;
          if (intval($options['cfg_ocs']["import_os_serial"]) > 0
-             && !in_array("license_id", $options['computers_updates'])) {
+             && !in_array("licenseid", $options['computers_updates'])) {
             if (!empty($hardware["WINPRODID"])) {
                $license_id = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware["WINPRODID"]);
                $updates++;
@@ -235,7 +235,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
                                 'operatingsystemservicepacks_id'  => $operatingsystemservicepacks_id,
                                 'operatingsystemarchitectures_id' => $operatingsystemarchitectures_id,
                                 'license_number'                  => $license_number,
-                                'license_id'                      => $license_id,
+                                'licenseid'                      => $license_id,
                                 '_nolock'                         => true,
                                 'is_dynamic'                      => 1,
                                 'entities_id'                     => $options['entities_id']
@@ -251,7 +251,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
                           'operatingsystemservicepacks_id'  => $operatingsystemservicepacks_id,
                           'operatingsystemarchitectures_id' => $operatingsystemarchitectures_id,
                           'license_number'                  => $license_number,
-                          'license_id'                      => $license_id,
+                          'licenseid'                      => $license_id,
                           '_nolock'                         => true,
                           'is_dynamic'                      => 1,
                           'entities_id'                     => $options['entities_id']

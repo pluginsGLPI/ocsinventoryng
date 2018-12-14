@@ -164,9 +164,9 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
                      $id_monitor = $DB->result($result_search, 0, "id");
                   } else {
                      $input = $mon;
-                     if ($cfg_ocs["states_id_default"] > 0) {
-                        $input["states_id"] = $cfg_ocs["states_id_default"];
-                     }
+//                     if ($cfg_ocs["states_id_default"] > 0) {
+//                        $input["states_id"] = $cfg_ocs["states_id_default"];
+//                     }
                      $input["entities_id"] = $entity;
                      $id_monitor           = $m->add($input, [], $install_history);
                   }
@@ -218,9 +218,9 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
 
                   if (!$id_monitor) {
                      $input = $mon;
-                     if ($cfg_ocs["states_id_default"] > 0) {
-                        $input["states_id"] = $cfg_ocs["states_id_default"];
-                     }
+//                     if ($cfg_ocs["states_id_default"] > 0) {
+//                        $input["states_id"] = $cfg_ocs["states_id_default"];
+//                     }
                      $input["entities_id"] = $entity;
                      $id_monitor           = $m->add($input, [], $install_history);
                   }
@@ -242,10 +242,10 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
                      if ($old->fields["is_deleted"]) {
                         $input["is_deleted"] = 0;
                      }
-                     if ($cfg_ocs["states_id_default"] > 0
-                         && $old->fields["states_id"] != $cfg_ocs["states_id_default"]) {
-                        $input["states_id"] = $cfg_ocs["states_id_default"];
-                     }
+//                     if ($cfg_ocs["states_id_default"] > 0
+//                         && $old->fields["states_id"] != $cfg_ocs["states_id_default"]) {
+//                        $input["states_id"] = $cfg_ocs["states_id_default"];
+//                     }
                      if (empty($old->fields["name"])
                          && !empty($mon["name"])) {
                         $input["name"] = $mon["name"];
