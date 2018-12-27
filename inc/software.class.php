@@ -410,8 +410,9 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
 
       if (!$isNewVers) {
          $vers = new SoftwareVersion();
-         // TODO : define a default state ? Need a new option in config
-         // Use $cfg_ocs["states_id_default"] or create a specific one?
+         //for rule asset
+         $input['_auto']        = 1;
+         $input["is_dynamic"]   = 1;
          $input["softwares_id"] = $software;
          $input["name"]         = $version;
          $input["comment"]      = $comments;

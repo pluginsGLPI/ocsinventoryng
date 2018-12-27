@@ -322,6 +322,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
                      $input["id"]          = $computers_id;
                      $input["entities_id"] = $entities_id;
                      $input["_nolock"]     = true;
+
                      $comp->update($input, $update_history);
                   }
 
@@ -345,6 +346,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
                         $input["id"]          = $computers_id;
                         $input["entities_id"] = $entities_id;
                         $input["_nolock"]     = true;
+
                         $comp->update($input, $update_history);
                      }
                   }

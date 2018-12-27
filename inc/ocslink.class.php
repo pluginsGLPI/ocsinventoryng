@@ -918,10 +918,10 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       $comp = new Computer();
       $comp->getFromDB($computers_id);
       if (isset($computers_id)
-          && $computers_id > 0
-      ) {
+          && $computers_id > 0) {
          $input["is_dynamic"] = 1;
          $input["id"]         = $computers_id;
+
          $comp->update($input);
       }
 //      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
@@ -990,6 +990,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                         $tmp['states_id']   = $results[1];
                         $tmp['entities_id'] = $data['entities_id'];
                         $tmp["_nolock"]     = true;
+
                         $comp->update($tmp);
                      }
                   }
@@ -1365,25 +1366,14 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          }
          if (array_key_exists($field,
                               PluginOcsinventoryngHardware::getRuleLockableFields($plugin_ocsinventoryng_ocsservers_id, $ocsid))) {
-            $locations_id = 0;
-            $groups_id    = 0;
 
-            $values = PluginOcsinventoryngHardware::getFields($ocsComputer, $cfg_ocs);
-            if (isset($values['groups_id']) && $values['groups_id'] > 0){
-               $groups_id = $values['groups_id'];
-            }
-            if (isset($values['locations_id']) && $values['locations_id'] > 0){
-               $locations_id = $values['locations_id'];
-            }
-
+            $values = [];
+            PluginOcsinventoryngHardware::getFields($ocsComputer, $cfg_ocs, $values);
             $rule = new RuleImportEntityCollection();
-
-            $data = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                                            '_source'       => 'ocsinventoryng',
-                                            'locations_id'  => $locations_id,
-                                            'groups_id'     => $groups_id],
-                                           ['locations_id' => $locations_id,
-                                            'groups_id'    => $groups_id],
+            $data = $rule->processAllRules($values +
+                                           ['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                            '_source'       => 'ocsinventoryng'],
+                                           $values,
                                            ['ocsid' => $ocsid]);
 
             PluginOcsinventoryngHardware::updateComputerFields($params, $data, $cfg_ocs);

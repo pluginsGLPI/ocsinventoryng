@@ -31,23 +31,23 @@ include('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-$config = new PluginOcsinventoryngConfig();
-
-global $CFG_GLPI;
-
-if (isset($_POST["update"])) {
-   $config->update($_POST);
-   Html::back();
-}
-if (isset($_POST["soft_lock"])) {
-   $config->setScriptLock();
-}
-if (isset($_POST["soft_unlock"])) {
-   $config->removeScriptLock();
-}
-
 $plugin = new Plugin();
 if ($plugin->isActivated("ocsinventoryng")) {
+   $config = new PluginOcsinventoryngConfig();
+
+   global $CFG_GLPI;
+
+   if (isset($_POST["update"])) {
+      $config->update($_POST);
+      Html::back();
+   }
+   if (isset($_POST["soft_lock"])) {
+      $config->setScriptLock();
+   }
+   if (isset($_POST["soft_unlock"])) {
+      $config->removeScriptLock();
+   }
+
    Html::header(__("Automatic synchronization's configuration", 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "config");
 
    $config->display(['id' => 1]);

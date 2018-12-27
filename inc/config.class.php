@@ -367,9 +367,11 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "<td class='center'>";
       $status = $this->isScriptLocked();
       if (!$status) {
-         echo __('Lock not activated', 'ocsinventoryng') . "&nbsp;<img src='../pics/export.png'>";
+         echo __('Lock not activated', 'ocsinventoryng');
+         echo "&nbsp;<i style='color:darkgreen' class='fas fa-unlock'></i>";
       } else {
-         echo __('Lock activated', 'ocsinventoryng') . "&nbsp;<img src='../pics/ok2.png'>";
+         echo __('Lock activated', 'ocsinventoryng');
+         echo "&nbsp;<i style='color:firebrick' class='fas fa-lock'></i>";
       }
       echo "</td></tr>";
 

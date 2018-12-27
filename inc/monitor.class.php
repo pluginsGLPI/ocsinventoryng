@@ -117,7 +117,8 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
             if (!empty($monitor["TYPE"])) {
                $mon["monitortypes_id"] = Dropdown::importExternal('MonitorType', $monitor["TYPE"]);
             }
-            $mon["serial"] = $monitor["SERIAL"];
+            $mon["serial"]     = $monitor["SERIAL"];
+            $mon["is_dynamic"] = 1;
             //Look for a monitor with the same name (and serial if possible) already connected
             //to this computer
             $query = "SELECT `m`.`id`, `gci`.`is_deleted`
@@ -164,9 +165,8 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
                      $id_monitor = $DB->result($result_search, 0, "id");
                   } else {
                      $input = $mon;
-//                     if ($cfg_ocs["states_id_default"] > 0) {
-//                        $input["states_id"] = $cfg_ocs["states_id_default"];
-//                     }
+                     //for rule asset
+                     $input['_auto']      = 1;
                      $input["entities_id"] = $entity;
                      $id_monitor           = $m->add($input, [], $install_history);
                   }
@@ -218,10 +218,10 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
 
                   if (!$id_monitor) {
                      $input = $mon;
-//                     if ($cfg_ocs["states_id_default"] > 0) {
-//                        $input["states_id"] = $cfg_ocs["states_id_default"];
-//                     }
+                     //for rule asset
+                     $input['_auto']       = 1;
                      $input["entities_id"] = $entity;
+                     $input["is_dynamic"]  = 1;
                      $id_monitor           = $m->add($input, [], $install_history);
                   }
                } // ($cfg_ocs["import_monitor"] >= 2)
@@ -239,13 +239,12 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
                   $input = [];
                   $old   = new Monitor();
                   if ($old->getFromDB($id_monitor)) {
+                     //for rule asset
+                     $input['_auto']      = 1;
                      if ($old->fields["is_deleted"]) {
                         $input["is_deleted"] = 0;
                      }
-//                     if ($cfg_ocs["states_id_default"] > 0
-//                         && $old->fields["states_id"] != $cfg_ocs["states_id_default"]) {
-//                        $input["states_id"] = $cfg_ocs["states_id_default"];
-//                     }
+
                      if (empty($old->fields["name"])
                          && !empty($mon["name"])) {
                         $input["name"] = $mon["name"];

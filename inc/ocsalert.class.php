@@ -205,10 +205,8 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
          $body .= "<td class='center'>" . Dropdown::getDropdownName("glpi_entities", $data["entities_id"]) . "</td>";
       }
       $item_operatingsystems = new Item_OperatingSystem();
-      if ($item_operatingsystems->getFromDBByCrit(['itemtype' => 'Computer',
-                                                   'items_id' => $computer->getID()])) {
-
-      }
+      $item_operatingsystems->getFromDBByCrit(['itemtype' => 'Computer',
+                                               'items_id' => $computer->getID()]);
       $body .= "<td>" . Dropdown::getDropdownName("glpi_operatingsystems",
                                                   $item_operatingsystems->getField("operatingsystems_id")) . "</td>";
       $body .= "<td>" . Dropdown::getDropdownName("glpi_states", $computer->fields["states_id"]) . "</td>";

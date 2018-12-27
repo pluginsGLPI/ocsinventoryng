@@ -386,7 +386,7 @@ JAVASCRIPT;
          foreach ($DB->request($query) as $data) {
             $ocsservers[] = $data['id'];
          }
-         Dropdown::show('PluginOcsinventoryngOcsServer', ["condition"           => "`id` IN ('" . implode("','", $ocsservers) . "')",
+         Dropdown::show('PluginOcsinventoryngOcsServer', ["condition"           => ["id" => $ocsservers],
                                                           "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                           "on_change"           => "this.form.submit()",
                                                           "display_emptychoice" => false]);
@@ -427,17 +427,15 @@ JAVASCRIPT;
          // SNMP device link feature
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                   <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsngsnmp.link.php'>
-                   <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' " .
-              "alt='" . __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "' " .
-              "title=\"" . __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "\">
+                   <i style='color:firebrick' class='fas fa-arrow-alt-circle-down fa-3x' 
+                           title=\"" . __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "\"></i>
                      <br>" . __('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "
                   </a></td>";
 
          echo "<td class='center b' colspan='2'>
                <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsngsnmp.sync.php'>
-                <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro1.png' " .
-              "alt='" . __s('Synchronize snmp devices already imported', 'ocsinventoryng') . "' " .
-              "title=\"" . __s('Synchronize snmp devices already imported', 'ocsinventoryng') . "\" >
+                  <i style='color:cornflowerblue' class='fas fa-sync-alt fa-3x' 
+                     title=\"" . __s('Synchronize snmp devices already imported', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Synchronize snmp devices already imported', 'ocsinventoryng') . "
                </a></td>";
          echo "</tr>";
@@ -445,9 +443,8 @@ JAVASCRIPT;
          //SNMP device import feature
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
              <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsngsnmp.import.php'>
-              <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' " .
-              "alt='" . __s('Import new SNMP devices', 'ocsinventoryng') . "' " .
-              "title=\"" . __s('Import new SNMP devices', 'ocsinventoryng') . "\">
+              <i style='color:cornflowerblue' class='fas fa-plus fa-3x' 
+                           title=\"" . __s('Import new SNMP devices', 'ocsinventoryng') . "\"></i>
                 <br>" . __('Import new SNMP devices', 'ocsinventoryng') . "
              </a></td>";
 
@@ -813,7 +810,7 @@ JAVASCRIPT;
     *
     * @return array
     */
-   static function processSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $lock = 0, $params) {
+   static function processSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $params) {
       global $DB;
 
       PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
@@ -875,7 +872,7 @@ JAVASCRIPT;
 
          } else if ($itemtype == "Printer") {
 
-            $id = self::addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add", false, $cfg_ocs);
+            $id = self::addOrUpdatePrinter($itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add", false, $cfg_ocs);
 
          } else if ($itemtype == "Computer") {
 
@@ -931,7 +928,7 @@ JAVASCRIPT;
     * @return int
     * @throws \GlpitestSQLError
     */
-   static function addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action, $linked = false, $cfg_ocs) {
+   static function addOrUpdatePrinter($itemtype, $ID, $ocsSnmp, $loc_id, $dom_id, $action, $linked, $cfg_ocs) {
       global $DB;
 
       $snmpDevice = new $itemtype();
@@ -1133,7 +1130,7 @@ JAVASCRIPT;
     * @return int
     * @throws \GlpitestSQLError
     */
-   static function addOrUpdateNetworkEquipment($itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action, $linked = false, $cfg_ocs) {
+   static function addOrUpdateNetworkEquipment($itemtype, $ID, $ocsSnmp, $loc_id, $dom_id, $action, $linked, $cfg_ocs) {
       global $DB;
 
       $snmpDevice = new $itemtype();
@@ -1485,7 +1482,7 @@ JAVASCRIPT;
     * @return int
     * @throws \GlpitestSQLError
     */
-   static function addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action, $linked = false, $cfg_ocs) {
+   static function addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID, $ocsSnmp, $loc_id, $dom_id, $action, $linked, $cfg_ocs) {
       global $DB;
 
       $snmpDevice = new $itemtype();
@@ -1672,7 +1669,9 @@ JAVASCRIPT;
 
          foreach ($ocsSnmp['CPU'] as $k => $processor) {
             $dev["designation"]      = $processor['TYPE'];
-            $dev["manufacturers_id"] = Dropdown::importExternal('Manufacturer', PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $processor['MANUFACTURER']));
+            $dev["manufacturers_id"] = Dropdown::importExternal('Manufacturer',
+                                                                PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
+                                                                                                                    $processor['MANUFACTURER']));
             $speed                   = 0;
             if (strstr($processor['SPEED'], "GHz")) {
                $speed = str_replace("GHz", "", $processor['SPEED']);
@@ -1939,7 +1938,7 @@ JAVASCRIPT;
     * @param      $cfg_ocs
     * @return int
     */
-   static function addOrUpdateOther($itemtype, $ID = 0, $ocsSnmp, $loc_id, $dom_id, $action, $linked = false, $cfg_ocs) {
+   static function addOrUpdateOther($itemtype, $ID, $ocsSnmp, $loc_id, $dom_id, $action, $linked, $cfg_ocs) {
       global $DB;
 
       $snmpDevice = new $itemtype();
@@ -2096,7 +2095,7 @@ JAVASCRIPT;
       }
       if ($itemtype == "Printer") {
 
-         self::addOrUpdatePrinter($plugin_ocsinventoryng_ocsservers_id, $itemtype, $items_id,
+         self::addOrUpdatePrinter($itemtype, $items_id,
                                   $ocsSnmp, $loc_id, $dom_id, "update", $linked, $cfg_ocs);
 
          $now = date("Y-m-d H:i:s");
@@ -2201,12 +2200,11 @@ JAVASCRIPT;
       echo "<td>";
       echo "<input type=\"submit\" name=\"search\" class=\"submit\" value='" . _sx('button', 'Post') . "' >";
 
-      echo "<a href='"
+      echo "<a class='fa fa-undo reset-search' href='"
            . $target
            . (strpos($target, '?') ? '&amp;' : '?')
-           . "reset=reset' >";
-      echo "&nbsp;&nbsp;<img title=\"" . __s('Blank') . "\" alt=\"" . __s('Blank') . "\" src='" .
-           $CFG_GLPI["root_doc"] . "/pics/reset.png' class='calendrier pointer'></a>";
+           . "reset=reset' title=\"".__s('Blank')."\"
+                  ><span class='sr-only'>" . __s('Blank')  ."</span></a>";
       echo "</td>";
       echo "</tr>";
 
@@ -2871,12 +2869,8 @@ JAVASCRIPT;
            $input["is_dynamic"]    = 1;
            $input["_nolock"]       = true;
 
-           // Not already import from OCS / mark default state
-           if ((!$ocs_id_change && ($ocsConfig["states_id_default"] > 0))
-           || (!$comp->fields['is_dynamic']
-           && ($ocsConfig["states_id_default"] > 0))) {
-           $input["states_id"] = $ocsConfig["states_id_default"];
-           }
+            //for rule asset
+            $input['_auto']      = 1;
            $comp->update($input);
            // Auto restore if deleted
            if ($comp->fields['is_deleted']) {

@@ -386,9 +386,10 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                }
                echo "</td>";
                echo "<td class='center'>";
-               echo "<a href=\"detail.php?criteria[0][field]=5&" .
-                  "criteria[0][searchtype]=contains&criteria[0][value]=^" . $thread["processid"] . '$">' . "<img  src='" . $CFG_GLPI["root_doc"] . "/pics/rdv.png'</a></td>";
+               echo "<a class='fas fa-search-plus' href=\"detail.php?criteria[0][field]=5&" .
+                  "criteria[0][searchtype]=contains&criteria[0][value]=^" . $thread["processid"] . '$">' . "</a></td>";
                echo "</tr>\n";
+
             }
          }
       }
@@ -568,19 +569,21 @@ class PluginOcsinventoryngThread extends CommonDBTM {
     * @param $status
     **/
    function displayProcessStatusIcon($status) {
-      global $CFG_GLPI;
 
       switch ($status) {
          case PLUGIN_OCSINVENTORYNG_STATE_FINISHED :
-            echo "<img src='" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/pics/export.png'>";
+            echo "<i style='color:darkgreen' class='fas fa-check-circle' 
+            title=\"" . __('Finished state') . "\"></i>";
             break;
 
          case PLUGIN_OCSINVENTORYNG_STATE_RUNNING :
-            echo "<img src='" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/pics/wait.png'>";
+            echo "<i style='color:grey' class='fas fa-hourglass-half'
+               title=\"" . __('Running') . "\"></i>";
             break;
 
          case PLUGIN_OCSINVENTORYNG_STATE_STARTED :
-            echo "<img src='" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/pics/ok2.png'>";
+            echo "<i style='color:grey' class='fas fa-hourglass-start'
+            title=\"" . __('Scheduled') . "\"></i>";
             break;
       }
    }

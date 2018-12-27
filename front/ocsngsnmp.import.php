@@ -70,8 +70,7 @@ if (isset($_SESSION["ocs_importsnmp"]["id"])) {
 
       $conf = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
       $action = PluginOcsinventoryngSnmpOcslink::processSnmp($key,
-         $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-         0, $params);
+         $_SESSION["plugin_ocsinventoryng_ocsservers_id"], $params);
       PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_importsnmp"]['statistics'],
          $action['status'], true);
       PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_importsnmp"]['statistics'], false, true);

@@ -106,10 +106,6 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             $locks["domains_id"] = __('Domain');
          }
 
-         if (intval($cfg_ocs["import_user"]) > 0) {
-            $locks["users_id"] = __('User');
-         }
-
          if (intval($cfg_ocs["import_general_uuid"]) > 0) {
             $locks["uuid"] = __('UUID');
          }
@@ -151,7 +147,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
                                                  'groups_id'    => $groups_id],
                                                 ['ocsid' => $ocsid]);
 
-         if (intval($cfg_ocs["import_user_group"]) > 0) {
+         if (intval($cfg_ocs["import_user_group"]) > 0 || intval($cfg_ocs["import_user_group_default"])) {
             $locks["groups_id"] = __('Group');
          } else if (isset($data['groups_id']) && $data['groups_id'] > 0) {
             $locks["groups_id"] = __('Group');
@@ -208,18 +204,6 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
              && !in_array("contact", $options['computers_updates'])) {
 
             $updates["contact"] = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware["USERID"]);
-
-            if (intval($options['cfg_ocs']["import_user"]) > 0) {
-               $query  = "SELECT `id`
-                         FROM `glpi_users`
-                         WHERE `name` = '" . $hardware["USERID"] . "';";
-               $result = $DB->query($query);
-
-               if ($DB->numrows($result) == 1
-                   && !in_array("users_id", $options['computers_updates'])) {
-                  $updates["users_id"] = $DB->result($result, 0, 0);
-               }
-            }
          }
 
          if (intval($options['cfg_ocs']["import_general_name"]) > 0
@@ -250,6 +234,8 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             $updates["entities_id"] = $options['entities_id'];
             $updates["_nolock"]     = true;
             $updates["_no_history"] = !$update_history;
+            $updates['_auto']       = true;
+
             $comp                   = new Computer();
             $comp->update($updates, $update_history);
          }
@@ -311,51 +297,37 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             $tmp['is_recursive'] = $data['is_recursive'];
          }
 
-         //If there's a Group Tech to update
-         if (isset($data['groups_id_tech'])) {
-
-            $group = new Group();
-            if ($group->getFromDB($data['groups_id_tech'])) {
-               //If group is in the same entity as the computer, or if the group is
-               //defined in a parent entity, but recursive
-               if ($group->fields['entities_id'] == $computer->fields['entities_id']
-                   || (in_array($group->fields['entities_id'], $ancestors)
-                       && $group->fields['is_recursive'])) {
-                  $ko    = 0;
-                  $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line_links['computers_id']);
-                  if (is_array($locks) && count($locks)) {
-                     if (in_array("groups_id_tech", $locks)) {
-                        $ko = 1;
-                     }
-                  }
-                  if ($ko == 0) {
-                     $tmp['groups_id_tech'] = $data['groups_id_tech'];
-                  }
-               }
-            }
-         }
-
          //If there's a Group to update
          if (isset($data['groups_id'])) {
 
             $group = new Group();
+            $ko    = 1;
+            $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line_links['computers_id']);
             if ($group->getFromDB($data['groups_id'])) {
                //If group is in the same entity as the computer, or if the group is
                //defined in a parent entity, but recursive
                if ($group->fields['entities_id'] == $computer->fields['entities_id']
                    || (in_array($group->fields['entities_id'], $ancestors)
                        && $group->fields['is_recursive'])) {
-                  $ko    = 0;
-                  $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line_links['computers_id']);
+                  $ko = 0;
+
                   if (is_array($locks) && count($locks)) {
                      if (in_array("groups_id", $locks)) {
                         $ko = 1;
                      }
                   }
-                  if ($ko == 0) {
-                     $tmp['groups_id'] = $data['groups_id'];
+
+               }
+            } else if($data['groups_id'] == 0) {
+               $ko = 0;
+               if (is_array($locks) && count($locks)) {
+                  if (in_array("groups_id", $locks)) {
+                     $ko = 1;
                   }
                }
+            }
+            if ($ko == 0) {
+               $tmp['groups_id'] = $data['groups_id'];
             }
          }
          if (count($tmp) > 0) {
@@ -366,6 +338,21 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
          }
       }
    }
+
+   /**
+    * @param        $userid
+    *
+    * @return array|int
+    */
+   static function getUserDefaultGroup($userid) {
+
+      $user = new User();
+      if ($user->getFromDB($userid)) {
+         return $user->getField('groups_id');
+      }
+      return 0;
+   }
+
    /**
     * @param        $entity
     * @param        $userid
@@ -400,17 +387,16 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
    /**
     * @param     $ocsComputer
     * @param     $cfg_ocs
+    * @param     $values
     * @param int $computers_id
     *
-    * @return array
     * @throws \GlpitestSQLError
     */
-   static function getFields($ocsComputer, $cfg_ocs, $computers_id = 0) {
+   static function getFields($ocsComputer, $cfg_ocs, &$values, $computers_id = 0) {
       global $DB;
 
-      $values  = [];
       $contact = (isset($ocsComputer['META']["USERID"])) ? $ocsComputer['META']["USERID"] : "";
-      if (!empty($contact) && $cfg_ocs["import_general_contact"] > 0) {
+      if (!empty($contact)) {
          $query  = "SELECT `id`
                    FROM `glpi_users`
                    WHERE `name` = '" . $contact . "';";
@@ -423,7 +409,12 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             if ($cfg_ocs["import_user_location"] > 0) {
                $values['locations_id'] = $user->fields["locations_id"];
             }
-            if ($cfg_ocs["import_user_group"] > 0) {
+            if ($cfg_ocs["import_user_group_default"]) {
+               $values['groups_id'] = self::getUserDefaultGroup($user_id);
+            }
+            if ($cfg_ocs["import_user_group"] > 0 &&
+                (isset($values['groups_id']) && $values['groups_id'] == 0
+                  || !isset($values['groups_id']))) {
                $comp        = new Computer();
                $entities_id = 0;
                if ($computers_id > 0 && $comp->getFromDB($computers_id)) {
@@ -433,7 +424,5 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             }
          }
       }
-
-      return $values;
    }
 }

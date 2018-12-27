@@ -481,36 +481,6 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       }
    }
 
-
-   /**
-    * @param NetworkPort $netport
-    * @param array       $options
-    * @param list        $recursiveItems
-    */
-   function showInstantiationForm(NetworkPort $netport, $options = [], $recursiveItems) {
-
-      if (!$options['several']) {
-         echo "<tr class='tab_bg_1'>\n";
-         $this->showNetworkCardField($netport, $options, $recursiveItems);
-         $this->showMacField($netport, $options);
-         echo "</tr>\n";
-
-         echo "<tr class='tab_bg_1'>\n";
-         echo "<td>" . __('OCS TYPE', 'ocsinventoryng') . "</td>";
-         echo "<td>" . $this->fields['TYPE'] . "</td>\n";
-         echo "<td>" . __('OCS MIB TYPE', 'ocsinventoryng') . "</td>";
-         echo "<td>" . $this->fields['TYPEMIB'] . "</td>\n";
-         echo "</tr>\n";
-
-         echo "<tr class='tab_bg_1'>\n";
-         echo "<td>" . __('Create an entry for defining this type', 'ocsinventoryng') . "</td><td>";
-         echo PluginOcsinventoryngNetworkPortType::getLinkToCreateFromTypeAndTypeMIB($this->fields);
-         echo "</td>";
-         echo "</tr>\n";
-      }
-   }
-
-
    /**
     * @see NetworkPortInstantiation::getInstantiationHTMLTableHeaders
     *

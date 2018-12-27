@@ -508,7 +508,7 @@ function plugin_ocsinventoryng_install() {
 
       /******************* Migration 1.6.0 *******************/
       if ($DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'states_id_default')) {
-
+         $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.6.0-update.sql");
       }
 
       $migration->executeMigration();
@@ -2234,9 +2234,6 @@ function addNotifications() {
          '##FOREACHcheckruleimportentityitems##
 ##lang.checkruleimportentity.entity## : ##checkruleimportentity.entity##
 ##lang.checkruleimportentity.computer## : ##checkruleimportentity.computer##
-##lang.checkruleimportentity.location## : ##checkruleimportentity.location##
-##lang.checkruleimportentity.is_recursive## : ##checkruleimportentity.is_recursive##
-##lang.checkruleimportentity.groups_id_tech## : ##checkruleimportentity.groups_id_tech##
 ##lang.checkruleimportentity.error## : ##checkruleimportentity.error##
 ##lang.checkruleimportentity.dataerror## : ##checkruleimportentity.dataerror##
 ##lang.checkruleimportentity.name_rule## ##checkruleimportentity.name_rule##
@@ -2246,9 +2243,6 @@ function addNotifications() {
 &lt;tr&gt;
 &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.entity##&lt;/span&gt;&lt;/td&gt;
 &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.computer##&lt;/span&gt;&lt;/td&gt;
-&lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.location##&lt;/span&gt;&lt;/td&gt;
-&lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.is_recursive##&lt;/span&gt;&lt;/td&gt;
-&lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.groups_id_tech##&lt;/span&gt;&lt;/td&gt;
 &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.error##&lt;/span&gt;&lt;/td&gt;
 &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.dataerror##&lt;/span&gt;&lt;/td&gt;
 &lt;td style=\"text-align: left;\" bgcolor=\"#cccccc\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##lang.checkruleimportentity.name_rule##&lt;/span&gt;&lt;/td&gt;
@@ -2257,9 +2251,6 @@ function addNotifications() {
 &lt;tr&gt;
 &lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.entity##&lt;/span&gt;&lt;/td&gt;
 &lt;td&gt;&lt;a href=\"##checkruleimportentity.url##\" target=\"_blank\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.computer##&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;
-&lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.location##&lt;/span&gt;&lt;/td&gt;
-&lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.is_recursive##&lt;/span&gt;&lt;/td&gt;
-&lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.groups_id_tech##&lt;/span&gt;&lt;/td&gt;
 &lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.error##&lt;/span&gt;&lt;/td&gt;
 &lt;td&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.dataerror##&lt;/span&gt;&lt;/td&gt;
 &lt;td&gt;&lt;a href=\"##checkruleimportentity.url_rule##\" target=\"_blank\"&gt;&lt;span style=\"font-family: Verdana; font-size: 11px; text-align: left;\"&gt;##checkruleimportentity.name_rule##&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;

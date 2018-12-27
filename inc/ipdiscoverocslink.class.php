@@ -334,10 +334,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
    static function ipDiscoverMenu() {
       global $CFG_GLPI, $DB;
       $ocsservers = [];
-      //echo "<div class='center'>";
-      //echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png' " .
-      //"alt='OCS Inventory NG' title='OCS Inventory NG'>";
-      //echo "</div>";
+
       $dbu = new DbUtils();
       $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', ["is_active" => 1]);
       if ($numberActiveServers > 0) {
@@ -360,7 +357,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             $ocsservers[] = $data['id'];
          }
          Dropdown::show('PluginOcsinventoryngOcsServer',
-                        ["condition"           => "`id` IN ('" . implode("','", $ocsservers) . "')",
+                        ["condition"           => ["id" => $ocsservers],
                          "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                          "on_change"           => "this.form.submit()",
                          "display_emptychoice" => false]);
@@ -1134,7 +1131,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * @return array
     */
 
-   static function getIpDiscoverobject($macAdresses, $entities = [], $glpiItemsTypes, $itemsNames = "", $itemsDescription, $itempsIp, $ocsItemsTypes = []) {
+   static function getIpDiscoverobject($macAdresses, $entities, $glpiItemsTypes, $itemsNames, $itemsDescription, $itempsIp, $ocsItemsTypes = []) {
       $objectToImport = [];
       $macs           = self::getMacAdressKeyVal($macAdresses);
       if (!empty($entities)) {
@@ -1215,7 +1212,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     *
     * @global type    $CFG_GLPI
     */
-   static function showHardware($hardware, $lim, $start = 0, $ipAdress, $status, $subnet, $action) {
+   static function showHardware($hardware, $lim, $start, $ipAdress, $status, $subnet, $action) {
       global $CFG_GLPI, $DB;
 
       $output_type = Search::HTML_OUTPUT; //0
@@ -1241,7 +1238,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       echo "&nbsp;";
       $refresh = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php?" . $reload;
       Html::showSimpleForm($refresh, 'refresh', _sx('button', 'Refresh'), [],
-                           $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro.png");
+                          "fa-sync-alt fa-3x");
       echo "</h2>";
       echo "</div>";
 

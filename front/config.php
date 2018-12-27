@@ -33,8 +33,7 @@ global $CFG_GLPI;
 
 $plugin = new Plugin();
 if ($plugin->isActivated("ocsinventoryng")
-   && Session::haveRight("plugin_ocsinventoryng", UPDATE)
-) {
+   && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
 
    Html::header('OCSInventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsinventoryng");
 

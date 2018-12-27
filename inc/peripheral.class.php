@@ -132,9 +132,9 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
                      $id_periph = $DB->result($result_search, 0, "id");
                   } else {
                      $input = $periph;
-//                     if ($cfg_ocs["states_id_default"] > 0) {
-//                        $input["states_id"] = $cfg_ocs["states_id_default"];
-//                     }
+                     //for rule asset
+                     $input['_auto']       = 1;
+                     $input["is_dynamic"]  = 1;
                      $input["entities_id"] = $entity;
                      $id_periph            = $p->add($input, [], $install_history);
                   }
@@ -143,9 +143,9 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
                   //Import all peripherals as non global.
                   $input              = $periph;
                   $input["is_global"] = 0;
-//                  if ($cfg_ocs["states_id_default"] > 0) {
-//                     $input["states_id"] = $cfg_ocs["states_id_default"];
-//                  }
+                  //for rule asset
+                  $input['_auto'] = 1;
+                  $input["is_dynamic"]  = 1;
                   $input["entities_id"] = $entity;
                   $id_periph            = $p->add($input, [], $install_history);
                }
@@ -161,9 +161,9 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
                      $input["id"]          = $id_periph;
                      $input["is_deleted"]  = 0;
                      $input["entities_id"] = $entity;
-//                     if ($cfg_ocs["states_id_default"] > 0) {
-//                        $input["states_id"] = $cfg_ocs["states_id_default"];
-//                     }
+                     //for rule asset
+                     $input['_auto']      = 1;
+                     $input["is_dynamic"]  = 1;
                      $p->update($input, $install_history);
                   }
                }

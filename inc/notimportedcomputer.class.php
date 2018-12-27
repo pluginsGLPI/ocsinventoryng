@@ -504,9 +504,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
                                'plugin_ocsinventoryng_ocsservers_id' => $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
                                'lock'                                => 0,
                                'defaultentity'                       => $params['entity'],
-                               'defaultlocation'                     => 0,
-                               'defaultrecursive'                    => 0,
-                               'defaultgrouptech'                    => 0];
+                               'defaultrecursive'                    => 0];
             $result = PluginOcsinventoryngOcsProcess::processComputer($process_params);
          } else {
             $process_params = ['ocsid'                               => $notimported->fields['ocsid'],

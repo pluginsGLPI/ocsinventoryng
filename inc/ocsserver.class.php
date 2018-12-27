@@ -240,10 +240,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       global $CFG_GLPI, $DB;
       $name       = "";
       $ocsservers = [];
-      //echo "<div class='center'>";
-      //echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png' " .
-      //"alt='OCS Inventory NG' title='OCS Inventory NG'>";
-      //echo "</div>";
+
       $dbu                 = new DbUtils();
       $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', ["is_active" => 1]);
       if ($numberActiveServers > 0) {
@@ -266,7 +263,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          foreach ($DB->request($query) as $data) {
             $ocsservers[] = $data['id'];
          }
-         Dropdown::show('PluginOcsinventoryngOcsServer', ["condition"           => "`id` IN ('" . implode("','", $ocsservers) . "')",
+         Dropdown::show('PluginOcsinventoryngOcsServer', ["condition"           => ["id" => $ocsservers],
                                                           "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                           "on_change"           => "this.form.submit()",
                                                           "display_emptychoice" => false]);
@@ -302,9 +299,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          if ($isactive) {
             echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 2 : 4) . "'>
                   <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
-                   <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/ocsserver.png' " .
-                 "alt='" . __s("Configuration of OCSNG server", 'ocsinventoryng') . "' " .
-                 "title=\"" . __s("Configuration of OCSNG server", 'ocsinventoryng') . "\">
+                    <i style='color:cornflowerblue' class='fas fa-cogs fa-3x' 
+                        title=\"" . __s('Configuration of OCSNG server', 'ocsinventoryng') . "\"></i>
                    <br>" . sprintf(__('Configuration of OCSNG server %s', 'ocsinventoryng'), $name) . "
                   </a></td>";
 
@@ -312,9 +308,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                //config massimport
                echo "<td class='center b' colspan='2'>
                      <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/config.form.php'>
-                      <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro.png' " .
-                    "alt='" . __s("Automatic synchronization's configuration", 'ocsinventoryng') . "' " .
-                    "title=\"" . __s("Automatic synchronization's configuration", 'ocsinventoryng') . "\">
+                      <i style='color:grey' class='fas fa-sync-alt fa-3x' 
+                        title=\"" . __s('Automatic synchronization\'s configuration', 'ocsinventoryng') . "\"></i>
                         <br>" . __("Automatic synchronization's configuration", 'ocsinventoryng') . "
                      </a></td>";
             }
@@ -381,7 +376,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          foreach ($DB->request($query) as $data) {
             $ocsservers[] = $data['id'];
          }
-         Dropdown::show('PluginOcsinventoryngOcsServer', ["condition"           => "`id` IN ('" . implode("','", $ocsservers) . "')",
+         Dropdown::show('PluginOcsinventoryngOcsServer', ["condition"           => ["id" => $ocsservers],
                                                           "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                           "on_change"           => "this.form.submit()",
                                                           "display_emptychoice" => false]);
@@ -429,11 +424,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                echo "<tr class='tab_bg_1'>";
                if (Session::haveRight("plugin_ocsinventoryng_import", READ)) {
                   echo "<td class='center b' colspan='2'>
-                  <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.import.php'>
-                   <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/import.png' " .
-                       "alt='" . __s('Import new computers', 'ocsinventoryng') . "' " .
-                       "title=\"" . __s('Import new computers', 'ocsinventoryng') . "\">
-                     <br>" . __('Import new computers', 'ocsinventoryng') . "
+                  <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.import.php'>";
+                  echo "<i style='color:cornflowerblue' class='fas fa-plus fa-3x' 
+                           title=\"" . __s('Import new computers', 'ocsinventoryng') . "\"></i>";
+                  echo "<br>" . __('Import new computers', 'ocsinventoryng') . "
                   </a></td>";
                } else {
                   echo "<td class='center b' colspan='2'></td>";
@@ -442,9 +436,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   //threads
                   echo "<td class='center b' colspan='2'>
                      <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/thread.php?plugin_ocsinventoryng_ocsservers_id=" . $plugin_ocsinventoryng_ocsservers_id . "'>
-                      <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/thread.png' " .
-                       "alt='" . __s('Scripts execution of automatic actions', 'ocsinventoryng') . "' " .
-                       "title=\"" . __s('Scripts execution of automatic actions', 'ocsinventoryng') . "\">
+                      <i style='color:cornflowerblue' class='fas fa-play fa-3x' 
+                           title=\"" . __s('Scripts execution of automatic actions', 'ocsinventoryng') . "\"></i>
                         <br>" . __('Scripts execution of automatic actions', 'ocsinventoryng') . "
                      </a></td>";
                }
@@ -456,9 +449,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                if (Session::haveRight("plugin_ocsinventoryng_sync", READ) && $isactive) {
                   echo "<td class='center b' colspan='2'>
                   <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.sync.php'>
-                   <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/synchro1.png' " .
-                       "alt='" . __s('Synchronize computers already imported', 'ocsinventoryng') . "' " .
-                       "title=\"" . __s('Synchronize computers already imported', 'ocsinventoryng') . "\">
+                  <i style='color:cornflowerblue' class='fas fa-sync-alt fa-3x' 
+                           title=\"" . __s('Synchronize computers already imported', 'ocsinventoryng') . "\"></i>
                      <br>" . __('Synchronize computers already imported', 'ocsinventoryng') . "
                   </a></td>";
                } else {
@@ -468,9 +460,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   //host imported by thread
                   echo "<td class='center b' colspan='2'>
                      <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/detail.php'>
-                      <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/detail.png' " .
-                       "alt='" . __s('Computers imported by automatic actions', 'ocsinventoryng') . "' " .
-                       "title=\"" . __s('Computers imported by automatic actions', 'ocsinventoryng') . "\">
+                     <i style='color:green' class='fas fa-check fa-3x' 
+                           title=\"" . __s('Computers imported by automatic actions', 'ocsinventoryng') . "\"></i>
                         <br>" . __('Computers imported by automatic actions', 'ocsinventoryng') . "
                      </a></td>";
                }
@@ -484,9 +475,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                if (Session::haveRight("plugin_ocsinventoryng_link", READ) && $isactive) {
                   echo "<td class='center b' colspan='2'>
                   <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.link.php'>
-                   <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/link.png' " .
-                       "alt='" . __s('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng') . "' " .
-                       "title=\"" . __s('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng') . "\">
+                  <i style='color:firebrick' class='fas fa-arrow-alt-circle-down fa-3x' 
+                           title=\"" . __s('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng') . "\"></i>
                      <br>" . __('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng') . "
                   </a></td>";
                } else {
@@ -497,9 +487,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   //host not imported by thread
                   echo "<td class='center b' colspan='2'>
                      <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/notimportedcomputer.php'>
-                      <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/notimported.png' " .
-                       "alt='" . __s('Computers not imported by automatic actions', 'ocsinventoryng') . "' " .
-                       "title=\"" . __s('Computers not imported by automatic actions', 'ocsinventoryng') . "\" >
+                     <i style='color:firebrick' class='fas fa-times fa-3x' 
+                           title=\"" . __s('Computers not imported by automatic actions', 'ocsinventoryng') . "\"></i>
                         <br>" . __('Computers not imported by automatic actions', 'ocsinventoryng') . "
                      </a></td>";
                }
@@ -518,17 +507,15 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          if (Session::haveRight(static::$rightname, UPDATE)) {
             echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 4 : 2) . "'>
             <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/deleted_equiv.php'>
-                <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/trash.png' " .
-                 "alt='" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "' " .
-                 "title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\" >
+            <i style='color:grey' class='fas fa-trash fa-3x' 
+                           title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Clean OCSNG deleted computers', 'ocsinventoryng') . "
                </a></td>";
          }
          echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 4 : 2) . "'>
                <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.clean.php'>
-                <img src='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/pics/clean.png' " .
-              "alt='" . __s('Clean links between GLPI and OCSNG', 'ocsinventoryng') . "' " .
-              "title=\"" . __s('Clean links between GLPI and OCSNG', 'ocsinventoryng') . "\" >
+               <i style='color:green' class='fas fa-trash fa-3x' 
+                           title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Clean links between GLPI and OCSNG', 'ocsinventoryng') . "
                </a></td><tr>";
       }
@@ -685,8 +672,8 @@ JAVASCRIPT;
       echo "<tr class='tab_bg_2'><td class='center'>" . __('Alternate username') . "</td>\n<td>";
       Dropdown::showYesNo("import_general_contact", $this->fields["import_general_contact"]);
       echo "</td>";
-      echo "<td class='center'>" . __('Affect user from contact', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("import_user", $this->fields["import_user"]);
+      echo "<td class='center'>" . __('Affect default group of user by default', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_user_group_default", $this->fields["import_user_group_default"]);
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Depends on contact import', 'ocsinventoryng')));
       echo "</td></tr>\n";
@@ -2432,7 +2419,7 @@ JAVASCRIPT;
                if ($usecheckbox) {
                   $nb_cols = 6;
                   if ($advanced && !$tolinked) {
-                     $nb_cols += 5;
+                     $nb_cols += 3;
                   }
                   if ($tolinked) {
                      $nb_cols += 1;
@@ -2466,9 +2453,7 @@ JAVASCRIPT;
                if ($advanced && !$tolinked) {
                   echo "<th>" . __('Match the rule ?', 'ocsinventoryng') . "</th>\n";
                   echo "<th>" . __('Destination entity') . "</th>\n";
-                  echo "<th>" . __('Target location', 'ocsinventoryng') . "</th>\n";
                   echo "<th>" . __('Child entities') . "</th>\n";
-                  echo "<th>" . __('Group in charge of the hardware') . "</th>\n";
                }
                if ($tolinked) {
                   echo "<th width='30%'>" . __('Item to link', 'ocsinventoryng') . "</th>";
@@ -2489,17 +2474,11 @@ JAVASCRIPT;
                      echo "</td>";
                   }
                   if ($advanced && !$tolinked) {
-                     $location = isset($tab["locations_id"]) ? $tab["locations_id"] : 0;
                      $recursive = isset($tab["is_recursive"]) ? $tab["is_recursive"] : 0;
-                     $idtech = isset($tab["groups_id_tech"]) ? $tab["groups_id_tech"] : 0;
                      $data     = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                                                          '_source'       => 'ocsinventoryng',
-                                                         'locations_id'  => $location,
                                                          'is_recursive'  => $recursive,
-                                                         'groups_id_tech'  => $idtech
-                                                        ], ['locations_id' => $location,
-                                                            'is_recursive'  => $recursive,
-                                                            'groups_id_tech'  => $idtech], ['ocsid' => $tab["id"]]);
+                                                        ], ['is_recursive'  => $recursive], ['ocsid' => $tab["id"]]);
                   }
                   echo "<td>" . $tab["name"] . "</td>\n";
                   echo "<td>" . $tab["manufacturer"] . "</td>";
@@ -2566,7 +2545,7 @@ JAVASCRIPT;
                   echo "<td>" . $tab["TAG"] . "</td>\n";
                   if ($advanced && !$tolinked) {
                      if (!isset($data['entities_id']) || $data['entities_id'] == -1) {
-                        echo "<td class='center'><img src=\"" . $CFG_GLPI['root_doc'] . "/pics/redbutton.png\"></td>\n";
+                        echo "<td class='center'><i style='color:firebrick' class='fas fa-times-circle'></i></td>\n";
                         $data['entities_id'] = -1;
                      } else {
                         echo "<td  width='15%' class='center'>";
@@ -2585,29 +2564,11 @@ JAVASCRIPT;
                                        'comments' => 0]);
                      echo "</td>\n";
                      echo "<td width='20%'>";
-                     if (!isset($data['locations_id'])) {
-                        $data['locations_id'] = 0;
-                     }
-                     $loc = "toimport_locations[" . $tab["id"] . "]";
-                     Location::dropdown(['name'     => $loc,
-                                         'value'    => $data['locations_id'],
-                                         'comments' => 0]);
-                     echo "</td>\n";
-                     echo "<td width='20%'>";
                      if (!isset($data['is_recursive'])) {
                         $data['is_recursive'] = 0;
                      }
                      $rec = "toimport_recursive[" . $tab["id"] . "]";
                      Dropdown::showYesNo($rec, $data['is_recursive']);
-                     echo "</td>\n";
-                     echo "<td width='20%'>";
-                     if (!isset($data['groups_id_tech'])) {
-                        $data['groups_id_tech'] = 0;
-                     }
-                     $grp = "toimport_technician_group[" . $tab["id"] . "]";
-                     Group::dropdown(['name'     => $grp,
-                                      'value'    => $data['groups_id_tech'],
-                                      'comments' => 0]);
                      echo "</td>\n";
                   }
 
@@ -2657,7 +2618,7 @@ JAVASCRIPT;
                            echo "</div>";
                         }
                      } else {
-                        echo "<img src='" . $CFG_GLPI['root_doc'] . "/pics/redbutton.png'>";
+                        echo "<i style='color:firebrick' class='fas fa-times-circle'></i>";
                      }
                      echo "</td>";
                   }
