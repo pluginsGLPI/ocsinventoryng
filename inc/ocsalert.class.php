@@ -483,7 +483,8 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
       echo "<td>" . __('Status used by OCS-NG', 'ocsinventoryng');
       Dropdown::show('State', ['name' => "states_id",
                                'used' => $used]);
-      echo "&nbsp;<input type='submit' name='add_state' value=\"" . _sx('button', 'Add') . "\" class='submit' ></div></td>";
+      echo Html::submit(_sx('button', 'Add'), ['name' => 'add_state']);
+      echo "</div></td>";
       echo "</tr>";
       echo "</table>";
       Html::closeForm();
@@ -564,12 +565,12 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
       if ($canedit) {
          echo "<tr>";
          echo "<td class='tab_bg_2 center' colspan='4'>";
-         echo "<input type='hidden' name='entities_id' value='$ID'>";
+         echo Html::hidden('entities_id', ['value' => $ID]);
          if ($entitynotification->fields["id"]) {
-            echo "<input type='hidden' name='id' value=\"" . $entitynotification->fields["id"] . "\">";
-            echo "<input type='submit' name='update' value=\"" . _sx('button', 'Save') . "\" class='submit' >";
+            echo Html::hidden('id', ['value' => $entitynotification->fields["id"]]);
+            echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
          } else {
-            echo "<input type='submit' name='add' value=\"" . _sx('button', 'Save') . "\" class='submit' >";
+            echo Html::submit(_sx('button', 'Save'), ['name' => 'add']);
          }
          echo "</td></tr>";
          echo "</table>";

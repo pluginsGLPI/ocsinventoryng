@@ -372,7 +372,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                   echo "<div class='center'>";
                   echo "<form method='post' action=\"$target\">";
-                  echo "<input type='hidden' name='id' value='$items_id'>";
+                  echo Html::hidden('id', ['value' => $items_id]);
                   echo "<table class='tab_cadre_fixe'>";
                   echo "<tr><th colspan = '4'>" . __('OCSNG link', 'ocsinventoryng') . "</th>";
 
@@ -410,27 +410,26 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                   if (Session::haveRight("plugin_ocsinventoryng_link", UPDATE)) {
                      echo "<tr class='tab_bg_1'>";
                      echo "<td class='center'>";
-                     echo "<input type='hidden' name='link_id' value='" . $data["id"] . "'>";
-                     echo "<input class=submit type='submit' name='update' value=\"" .
-                          _sx('button', 'Save') . "\">";
+                     echo Html::hidden('link_id', ['value' => $data["id"]]);
+                     echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
                      echo "</td>";
 
                      echo "<td class='center'>";
-                     echo "<input type='hidden' name='resynch_id' value='" . $data["id"] . "'>";
-                     echo "<input class=submit type='submit' name='launch_ocs_resynch' value=\"" .
-                          _sx('button', 'Launch synchronization', 'ocsinventoryng') . "\">";
+                     echo Html::hidden('resynch_id', ['value' => $data["id"]]);
+                     echo Html::submit(_sx('button', 'Launch synchronization', 'ocsinventoryng'),
+                                           ['name' => 'launch_ocs_resynch']);
                      echo "</td>";
 
                      echo "<td class='center'>";
-                     echo "<input type='hidden' name='resynch_id' value='" . $data["id"] . "'>";
-                     echo "<input class=submit type='submit' name='force_ocs_resynch' value=\"" .
-                          _sx('button', 'Force full import', 'ocsinventoryng') . "\">";
+                     echo Html::hidden('resynch_id', ['value' => $data["id"]]);
+                     echo Html::submit(_sx('button', 'Force full import', 'ocsinventoryng'),
+                                       ['name' => 'force_ocs_resynch']);
                      echo "</td>";
 
                      echo "<td class='center'>";
-                     echo "<input type='hidden' name='items_id' value='" . $items_id . "'>";
-                     echo "<input class=submit type='submit' name='delete_link' value=\"" .
-                          _sx('button', 'Delete link', 'ocsinventoryng') . "\">";
+                     echo Html::hidden('items_id', ['value' => $items_id]);
+                     echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'),
+                                       ['name' => 'delete_link']);
                      echo "</td>";
 
                      echo "</tr>";

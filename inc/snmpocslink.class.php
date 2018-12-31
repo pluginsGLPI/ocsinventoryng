@@ -347,9 +347,8 @@ JAVASCRIPT;
 
       if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
          echo "<tr class='tab_bg_2'><td class='center' colspan='4'>";
-         echo "<input type='hidden' name='id' value='$ID'>";
-         echo "<input type='submit' name='updateSNMP' class='submit' value='" .
-              _sx('button', 'Save') . "'>";
+         echo Html::hidden('id', ['value' => $ID]);
+         echo Html::submit(_sx('button', 'Save'), ['name' => 'updateSNMP']);
          echo "</td></tr>";
       }
 
@@ -2194,12 +2193,12 @@ JAVASCRIPT;
       echo "<td class='center'>";
       echo __('By IP', 'ocsinventoryng');
       echo "</td><td class='center'>";
-      echo "<input type=\"text\" name=\"ip\" value='" . $p['ip'] . "'>";
+      echo Html::input('ip', ['type'  => 'text',
+                              'value' => $p['ip']]);
       echo "</td>";
 
       echo "<td>";
-      echo "<input type=\"submit\" name=\"search\" class=\"submit\" value='" . _sx('button', 'Post') . "' >";
-
+      echo Html::submit(_sx('button', 'Post'), ['name' => 'search']);
       echo "<a class='fa fa-undo reset-search' href='"
            . $target
            . (strpos($target, '?') ? '&amp;' : '?')
@@ -2389,11 +2388,9 @@ JAVASCRIPT;
 
                   echo "<tr class='tab_bg_1'><td colspan='10' class='center'>";
                   if (!$tolinked) {
-                     echo "<input class='submit' type='submit' name='import_ok' value=\"" .
-                          _sx('button', 'Import', 'ocsinventoryng') . "\">";
+                     echo Html::submit(_sx('button', 'Import'), ['name' => 'import_ok']);
                   } else {
-                     echo "<input class='submit' type='submit' name='import_ok' value=\"" .
-                          _sx('button', 'Link', 'ocsinventoryng') . "\">";
+                     echo Html::submit(_sx('button', 'Link'), ['name' => 'import_ok']);
                   }
                   echo "</td></tr>\n";
                }
@@ -2533,7 +2530,7 @@ JAVASCRIPT;
                         $options['used'] = $used;
 
                         $type::dropdown($options);
-                        echo "<input type='hidden' name='tolink_itemtype[" . $tab["id"] . "]' value='" . $tab["type"] . "'>";
+                        echo Html::hidden('tolink_itemtype[' . $tab["id"] . ']', ['value' => $tab["type"]]);
                         unset($options['value']);
 
                      } else {
@@ -2561,14 +2558,12 @@ JAVASCRIPT;
 
                echo "<tr class='tab_bg_1'><td colspan='10' class='center'>";
                if (!$tolinked) {
-                  echo "<input class='submit' type='submit' name='import_ok' value=\"" .
-                       _sx('button', 'Import', 'ocsinventoryng') . "\">";
+                  echo Html::submit(_sx('button', 'Import'), ['name' => 'import_ok']);
                } else {
-                  echo "<input class='submit' type='submit' name='import_ok' value=\"" .
-                       _sx('button', 'Link', 'ocsinventoryng') . "\">";
+                  echo Html::submit(_sx('button', 'Link'), ['name' => 'import_ok']);
                }
-               echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' " .
-                    "value='" . $plugin_ocsinventoryng_ocsservers_id . "'>";
+               echo Html::hidden('plugin_ocsinventoryng_ocsservers_id',
+                                 ['value' => $plugin_ocsinventoryng_ocsservers_id]);
                echo "</td></tr>";
                echo "</table>\n";
                Html::closeForm();
@@ -2721,10 +2716,8 @@ JAVASCRIPT;
 
                echo "<table class='tab_cadre_fixe'>";
                echo "<tr class='tab_bg_1'><td colspan='6' class='center'>";
-               echo "<input class='submit' type='submit' name='update_ok' value=\"" .
-                    _sx('button', 'Synchronize', 'ocsinventoryng') . "\">";
-               echo "&nbsp;<input class='submit' type='submit' name='delete' value=\"" .
-                    _sx('button', 'Delete link', 'ocsinventoryng') . "\">";
+               echo Html::submit(_sx('button', 'Synchronize'), ['name' => 'update_ok']);
+               echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'), ['name' => 'delete']);
                echo "</td></tr>\n";
 
                echo "<tr>";
@@ -2750,12 +2743,10 @@ JAVASCRIPT;
                }
 
                echo "<tr class='tab_bg_1'><td colspan='6' class='center'>";
-               echo "<input class='submit' type='submit' name='update_ok' value=\"" .
-                    _sx('button', 'Synchronize', 'ocsinventoryng') . "\">";
-               echo "&nbsp;<input class='submit' type='submit' name='delete' value=\"" .
-                    _sx('button', 'Delete link', 'ocsinventoryng') . "\">";
-               echo "<input type=hidden name='plugin_ocsinventoryng_ocsservers_id' " .
-                    "value='$plugin_ocsinventoryng_ocsservers_id'>";
+               echo Html::submit(_sx('button', 'Synchronize'), ['name' => 'update_ok']);
+               echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'), ['name' => 'delete']);
+               echo Html::hidden('plugin_ocsinventoryng_ocsservers_id',
+                                 ['value' => $plugin_ocsinventoryng_ocsservers_id]);
                echo "</td></tr>";
 
                echo "<tr class='tab_bg_1'><td colspan='6' class='center'>";

@@ -476,8 +476,8 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
            "</th></tr>";
 
       echo "<tr class='tab_bg_2'><td class='center'>";
-      echo "<input type='hidden' name='id' value='" . $notimported->fields['id'] . "'>";
-      echo "<input type='hidden' name='action' value='massive'>";
+      echo Html::hidden('id', ['value' => $notimported->fields['id']]);
+      echo Html::hidden('action', ['value' => 'massive']);
       Dropdown::showForMassiveAction('PluginOcsinventoryngNotimportedcomputer', 0,
                                      ['action' => 'massive']);
       echo "</td></tr>";

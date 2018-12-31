@@ -77,7 +77,7 @@ if ($item->maybeTemplate()) {
    $where .= " AND `is_template` = 0 ";
 }
 
-if ((strlen($_POST['searchText']) > 0)) {
+if (isset($_POST['searchText']) && (strlen($_POST['searchText']) > 0)) {
    $search = Search::makeTextSearch($_POST['searchText']);
 
    $where .= " AND (`name` " . $search . "

@@ -345,7 +345,8 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                echo "<td width='10'>";
 
                if ($canedit) {
-                  echo "<input type='checkbox' name='item[" . $thread["processid"] . "]' value='1'>";
+                  echo Html::input('item[' . $thread["processid"] . ']', ['type'  => 'checkbox',
+                                                                          'value' => 1]);
                } else {
                   echo "&nbsp;";
                }

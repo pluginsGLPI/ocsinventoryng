@@ -45,7 +45,7 @@ if (isset($_POST["itemtype"])
    if (isset($_POST["rand"])) {
       $rand = $_POST["rand"];
    }
-   echo "<input type='hidden' name='tolink_itemtype[" . $_POST["id"] . "]' value='" . $_POST["itemtype"] . "'>";
+   echo Html::hidden("tolink_itemtype[". $_POST["id"] ."]", ['value' => $_POST["itemtype"]]);
    echo "<br>";
    $field_id = Html::cleanId("dropdown_" . $_POST['myname'] . $rand);
    $p = ['itemtype' => $_POST["itemtype"],

@@ -177,8 +177,8 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
                                                           'value'     => '',
                                                           'condition' => ["is_active" => 1],
                                                           'toadd'     => ['-1' => __('All')]]);
-         echo "&nbsp;&nbsp;<input type='hidden' name='profile' value='$profiles_id'>";
-         echo "&nbsp;&nbsp;<input type='submit' name='addocsserver' value=\"" . _sx('button', 'Add') . "\" class='submit' >";
+         echo Html::hidden('profile', ['value' => $profiles_id]);
+         echo Html::submit(_sx('button', 'Add'), ['name' => 'addocsserver']);
       }
 
       echo "</td><td>";
@@ -203,7 +203,8 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
             if ($ocsserver->getFromDB($id)) {
                echo "<br>";
                if (Session::haveRight("profile", UPDATE)) {
-                  echo "<input type='checkbox' name='item[" . $configid[$id] . "]' value='1'>";
+                  echo Html::input('item[' . $configid[$id] . ']', ['type'  => 'checkbox',
+                                                                    'value' => 1]);
                }
                echo $ocsserver->getLink();
             }
@@ -215,7 +216,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
       echo "</td></tr>";
       if ($nbservers && Session::haveRight("profile", UPDATE)) {
          echo "<tr class='tab_bg_1 center'><td>";
-         echo "<input type='submit' name='delete' value='Supprimer' class='submit' >";
+         echo Html::submit(_sx('button', 'Delete'), ['name' => 'delete']);
          echo "</td></tr>";
       }
       echo "</table>";
@@ -240,8 +241,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
           && $closeform) {
          echo "<div class='center'>";
          echo Html::hidden('id', ['value' => $profiles_id]);
-         echo Html::submit(_sx('button', 'Save'),
-                           ['name' => 'update']);
+         echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
          echo "</div>\n";
          Html::closeForm();
       }

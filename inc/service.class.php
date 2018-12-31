@@ -48,7 +48,7 @@ class PluginOcsinventoryngService extends CommonDBChild {
     * @return string
     */
    static function getTypeName($nb = 0) {
-      return __('Service', 'ocsinventoryng');
+      return __('Service');
    }
 
    /**

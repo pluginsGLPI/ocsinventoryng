@@ -159,7 +159,7 @@ class PluginOcsinventoryngOsinstall extends CommonDBChild {
                         echo "<tr class='tab_bg_1'>";
                         echo "<td>" . __('Build version', 'ocsinventoryng') . "</td>";
                         echo "<td>" . $data['build_version'] . "</td>";
-                        echo "<td>" . __('Installation date', 'ocsinventoryng') . "</td>";
+                        echo "<td>" . __('Installation date') . "</td>";
                         echo "<td>" . $data['install_date'] . "</td>";
                         echo "</tr>";
 

@@ -117,7 +117,7 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
             break;
          case 'readonly_text' :
             $value = $this->fields[$field['name']];
-            echo "<input type='hidden' name='" . $field['name'] . "' value='$value'>$value";
+            echo Html::hidden($field['name'], ['value' => $value]);
             break;
 
          case 'MIB or wildcard':
@@ -213,9 +213,9 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
       }
       $link .= '&rand=1'; // To reload main window
 
-      Ajax::createIframeModalWindow('create_network', $link, ['title' => __('Create', 'ocsinventoryng')]);
+      Ajax::createIframeModalWindow('create_network', $link, ['title' => __('Create')]);
 
-      return "<a href='#' onClick=\"$('#create_network').dialog('open');\">" . __('Create', 'ocsinventoryng') . "</a>";
+      return "<a href='#' onClick=\"$('#create_network').dialog('open');\">" . __('Create') . "</a>";
    }
 
 

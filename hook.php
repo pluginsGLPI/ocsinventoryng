@@ -1721,7 +1721,8 @@ function plugin_ocsinventoryng_showLocksForItem($params = []) {
          echo "<tr class='tab_bg_1'>";
 
          echo "<td class='center' width='10'>";
-         echo "<input type='checkbox' name='lockfield[" . $val . "]'></td>";
+         echo Html::input('lockfield[' . $val . ']', ['type' => 'checkbox']);
+         echo "</td>";
          echo "<td class='left' width='95%'>" . $lockable_fields[$val] . "</td>";
          echo "</tr>\n";
       }

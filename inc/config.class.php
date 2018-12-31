@@ -171,7 +171,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
-      echo "<input type='hidden' name='id' value='1'>";
+      echo Html::hidden('id', ['value' => 1]);
       echo "</td></tr>";
 
       $this->showFormButtons($options);
@@ -358,7 +358,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
       echo "<div class='center'>";
       echo "<form name='lock' action=\"" . $_SERVER['HTTP_REFERER'] . "\" method='post'>";
-      echo "<input type='hidden' name='id' value='1'>";
+      echo Html::hidden('id', ['value' => 1]);
       echo "<table class='tab_cadre'>";
       echo "<tr class='tab_bg_2'>";
       echo "<th>&nbsp;" . __('Check OCSNG import script', 'ocsinventoryng') . "&nbsp;</th></tr>";
@@ -376,7 +376,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td colspan='2' class='center'>";
-      echo Html::submit((!$status ? _sx('button', 'Lock', 'ocsinventoryng') : _sx('button', 'Unlock', 'ocsinventoryng')),
+      echo Html::submit((!$status ? _sx('button', 'Lock', 'ocsinventoryng') : _sx('button', 'Unlock')),
          ['name' => !$status ? "soft_lock" : "soft_unlock"]);
       echo "</td/></tr/></table><br>";
       Html::closeForm();
