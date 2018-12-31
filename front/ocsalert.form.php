@@ -28,40 +28,43 @@
 
 include('../../../inc/includes.php');
 
-$state = new PluginOcsinventoryngNotificationState();
-$ocsalert = new PluginOcsinventoryngOcsAlert();
+$plugin = new Plugin();
+if ($plugin->isActivated("ocsinventoryng")) {
+   $state    = new PluginOcsinventoryngNotificationState();
+   $ocsalert = new PluginOcsinventoryngOcsAlert();
 
-if (isset($_POST["add"])) {
+   if (isset($_POST["add"])) {
 
-   if ($ocsalert->canUpdate()) {
-      $newID = $ocsalert->add($_POST);
-   }
-   Html::back();
+      if ($ocsalert->canUpdate()) {
+         $newID = $ocsalert->add($_POST);
+      }
+      Html::back();
 
-} else if (isset($_POST["update"])) {
+   } else if (isset($_POST["update"])) {
 
-   if ($ocsalert->canUpdate()) {
-      $ocsalert->update($_POST);
-   }
-   Html::back();
+      if ($ocsalert->canUpdate()) {
+         $ocsalert->update($_POST);
+      }
+      Html::back();
 
-} else if (isset($_POST["add_state"])) {
+   } else if (isset($_POST["add_state"])) {
 
-   if ($ocsalert->canUpdate()) {
-      $newID = $state->add($_POST);
-   }
-   Html::back();
+      if ($ocsalert->canUpdate()) {
+         $newID = $state->add($_POST);
+      }
+      Html::back();
 
-} else if (isset($_POST["delete_state"])) {
+   } else if (isset($_POST["delete_state"])) {
 
-   if ($ocsalert->canUpdate()) {
-      $state->getFromDB($_POST["id"]);
-      foreach ($_POST["item"] as $key => $val) {
-         if ($val == 1) {
-            $state->delete(['id' => $key]);
+      if ($ocsalert->canUpdate()) {
+         $state->getFromDB($_POST["id"]);
+         foreach ($_POST["item"] as $key => $val) {
+            if ($val == 1) {
+               $state->delete(['id' => $key]);
+            }
          }
       }
-   }
-   Html::back();
+      Html::back();
 
+   }
 }

@@ -53,12 +53,12 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
 
 
    /**
-    * @see NotificationTarget::getDatasForTemplate()
+    * @see NotificationTarget::addDataForTemplate()
     *
     * @param       $event
     * @param array $options
     */
-   function getDatasForTemplate($event, $options = []) {
+   function addDataForTemplate($event, $options = []) {
       global $CFG_GLPI;
 
       $this->data['##checkruleimportentity.date##']   = Html::convDateTime(date('Y-m-d H:i:s'));

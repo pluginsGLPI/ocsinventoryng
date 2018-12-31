@@ -376,9 +376,8 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_2'><td colspan='2' class='center'>";
-      echo "<input type='submit' name='" . (!$status ? "soft_lock" : "soft_unlock") . "' class='submit' " .
-           "value='" . (!$status ? _sx('button', 'Lock', 'ocsinventoryng')
-            : _sx('button', 'Unlock', 'ocsinventoryng')) . "'>";
+      echo Html::submit((!$status ? _sx('button', 'Lock', 'ocsinventoryng') : _sx('button', 'Unlock', 'ocsinventoryng')),
+         ['name' => !$status ? "soft_lock" : "soft_unlock"]);
       echo "</td/></tr/></table><br>";
       Html::closeForm();
       echo "</div>";

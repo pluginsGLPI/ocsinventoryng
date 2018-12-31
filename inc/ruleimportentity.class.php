@@ -150,24 +150,21 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
       $computers = self::getComputerOcsLink($plugin_ocsinventoryng_ocsservers_id);
 
       $ruleCollection = new RuleImportEntityCollection();
+      $ruleAsset = new RuleAssetCollection();
 
       foreach ($computers as $computer) {
 
-         $output = ['locations_id' => $computer['locations_id'],
-                    'groups_id'    => $computer['groups_id']];
+         $fields = $ruleCollection->processAllRules($computer,
+                                                    [],
+                                                    ['ocsid' => $computer['ocsid']]);
 
-         $fields              = $ruleCollection->processAllRules($computer,
-                                                                 $output,
-                                                                 ['ocsid' => $computer['ocsid']]);
 
          //case pc matched with a rule
          if (isset($fields['_ruleid'])) {
             $entities_id = $computer['entities_id'];
 
             //Verification of the entity and location
-            if (isset($fields['entities_id']) && $fields['entities_id'] != $entities_id
-               || isset($fields['locations_id']) && $fields['locations_id'] != $computer['locations_id']
-                || !isset($fields['locations_id']) && $computer['locations_id'] != 0) {
+            if (isset($fields['entities_id']) && $fields['entities_id'] != $entities_id) {
 
                if (!isset($data[$entities_id])) {
                   $data[$entities_id] = [];
@@ -179,16 +176,6 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
                $rule->getFromDB($fields['_ruleid']);
                $data[$entities_id][$computer['id']]['rule_name'] = $rule->fields['name'];
 
-               if (isset($fields['locations_id']) && $fields['locations_id'] != $computer['locations_id']
-                  || !isset($fields['locations_id']) && $computer['locations_id'] != 0) {
-
-                  $data[$entities_id][$computer['id']]['error'][]     = 'Location';
-                  $data[$entities_id][$computer['id']]['dataerror'][] = "";
-                  if(isset($fields['locations_id'])) {
-                     $data[$entities_id][$computer['id']]['dataerror'][] = $fields['locations_id'];
-                  }
-
-               }
                if (isset($fields['entities_id']) && $fields['entities_id'] != $entities_id) {
 
                   if (!isset($data[$fields['entities_id']])) {
@@ -201,6 +188,21 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
                   $data[$fields['entities_id']][$computer['id']] = $data[$entities_id][$computer['id']];
                }
             }
+
+            $output = ['locations_id' => $computer['locations_id']];
+            $fields = $ruleAsset->processAllRules($computer, $output, ['ocsid' => $computer['ocsid']]);
+
+            if (isset($fields['locations_id']) && $fields['locations_id'] != $computer['locations_id']
+                 || !isset($fields['locations_id']) && $computer['locations_id'] != 0) {
+
+               if(!isset($data[$entities_id][$computer['id']])) {
+                  $data[$entities_id][$computer['id']]           = $computer;
+               }
+
+               $data[$entities_id][$computer['id']]['error'][]     = 'Location';
+               $data[$entities_id][$computer['id']]['dataerror'][] = $fields['locations_id'];
+            }
+
          } else {
             //No rules match
             $entities_id = $computer['entities_id'];
@@ -211,6 +213,7 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
             $data[$entities_id][$computer['id']]            = $computer;
             $data[$entities_id][$computer['id']]['error'][] = self::NO_RULE;
          }
+
       }
 
       return $data;
@@ -237,6 +240,7 @@ class PluginOcsinventoryngRuleImportEntity extends CommonDBTM {
             $computers[$computer_id]['ocsservers_id'] = $ocs['plugin_ocsinventoryng_ocsservers_id'];
             $computers[$computer_id]['ocsid']         = $ocs['ocsid'];
             $computers[$computer_id]['_source']       = 'ocsinventoryng';
+            $computers[$computer_id]['_auto']         = true;
 
          }
       }
