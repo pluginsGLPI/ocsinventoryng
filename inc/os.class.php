@@ -224,7 +224,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
             self::resetOS($options['computers_id'], $uninstall_history);
          }
 
-         if ($device->getFromDBByCrit(['items_id'            => $options['computers_id'],
+         if (device->getFromDBByCrit(['items_id'            => $options['computers_id'],
                                              'itemtype'            => 'Computer',
                                              'entities_id'         => $options['entities_id'],
                                              'operatingsystems_id' => $operatingsystems_id,
