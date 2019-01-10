@@ -230,7 +230,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
                                              'operatingsystems_id' => $operatingsystems_id,
                                              'is_dynamic'          => 1])) {
             if ($updates > 0) {
-               $device->update(['id'                              => $id,
+               $device->update(['id'                              => $device->getID(),
                                 'operatingsystemversions_id'      => $operatingsystemversions_id,
                                 'operatingsystemservicepacks_id'  => $operatingsystemservicepacks_id,
                                 'operatingsystemarchitectures_id' => $operatingsystemarchitectures_id,
