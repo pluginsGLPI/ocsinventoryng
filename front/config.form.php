@@ -54,7 +54,7 @@ if ($plugin->isActivated("ocsinventoryng")) {
 } else {
    Html::header(__('Setup'), '', "tools", "pluginocsinventoryngmenu", "config");
    echo "<div class='center'><br><br>";
-   echo "<img src=\"" . $CFG_GLPI["root_doc"] . "/pics/warning.png\" alt='" . __s('Warning') . "'><br><br>";
+   echo "<i class='fas fa-exclamation-triangle fa-4x' style='color:orange'></i><br><br>";
    echo "<b>" . __('Please activate the plugin', 'ocsinventoryng') . "</b></div>";
 }
 

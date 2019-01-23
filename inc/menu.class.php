@@ -188,7 +188,7 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
             } else {
                $ong = [];
                echo "<div align='center'>";
-               echo Html::image($CFG_GLPI["root_doc"] . "/pics/warning.png", ['alt' => __('Warning')]);
+               echo "<i class='fas fa-exclamation-triangle fa-4x' style='color:orange'></i>";
                echo "<br>";
                echo "<div class='red b'>";
                echo __('No OCSNG server defined', 'ocsinventoryng');
