@@ -183,7 +183,7 @@ class PluginOcsinventoryngOsinstall extends CommonDBChild {
                         echo "<td colspan='2'></td></tr>";
                      }
                   } else {
-                     echo "<tr class='tab_bg_2'><th colspan='$colspan'>" . __('No item found') . "</th></tr>";
+                     echo "<tr class='tab_bg_2'><td colspan='$colspan'>" . __('No item found') . "</td></tr>";
                   }
 
                   echo "</table>";

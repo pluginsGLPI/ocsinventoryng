@@ -1226,7 +1226,7 @@ JAVASCRIPT;
            __('Behavior to the deletion of a computer in OCSNG', 'ocsinventoryng') . "</td>";
       echo "<td>";
       $actions[0] = Dropdown::EMPTY_VALUE;
-      $actions[1] = __('Put in dustbin');
+      $actions[1] = __('Put in trashbin');
       $dbu        = new DbUtils();
       foreach ($dbu->getAllDataFromTable('glpi_states') as $state) {
          $actions['STATE_' . $state['id']] = sprintf(__('Change to state %s', 'ocsinventoryng'), $state['name']);
