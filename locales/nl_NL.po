@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the GLPI - Ocsinventoryng plugin package.
 # 
 # Translators:
-# Pieter Liekens <pieter.liekens@sint-gillis-waas.be>, 2018
+# Pieter Liekens <pieter.liekens@sint-gillis-waas.be>, 2018-2019
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-31 11:07+0100\n"
-"PO-Revision-Date: 2018-12-31 10:09+0000\n"
-"Last-Translator: Amandine Manceau\n"
+"POT-Creation-Date: 2019-02-25 10:39+0100\n"
+"PO-Revision-Date: 2019-02-25 09:44+0000\n"
+"Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>\n"
 "Language-Team: Dutch (Netherlands) (http://www.transifex.com/yllen/GLPI_ocsinventoryng/language/nl_NL/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -32,7 +32,7 @@ msgstr "Import herstarten"
 
 #: hook.php:835
 msgid "Import in the entity"
-msgstr ""
+msgstr "Importeer in de entiteit"
 
 #: hook.php:841
 msgid "Delete computer in OCSNG"
@@ -91,7 +91,7 @@ msgstr "Automatische update OCSNG"
 #: hook.php:917 inc/notimportedcomputer.class.php:82
 #: inc/notimportedcomputer.class.php:259 inc/ocslink.class.php:116
 msgid "Inventory agent"
-msgstr ""
+msgstr "Inventaris agent"
 
 #: hook.php:923 hook.php:1202 hook.php:1255
 #: inc/notificationtargetnotimportedcomputer.class.php:92
@@ -288,11 +288,11 @@ msgstr "Nieuw geïmporteerde computers uit OCS-NG"
 #: inc/config.class.php:165 inc/ocsalert.class.php:98
 #: inc/ocsalert.class.php:558
 msgid "OCS-NG Synchronization alerts"
-msgstr ""
+msgstr "OCS-NG Synchronisatie waarschuwingen"
 
 #: inc/config.class.php:219
 msgid "No used alerts"
-msgstr ""
+msgstr "Geen gebruikte waarschuwingen"
 
 #: inc/config.class.php:250 inc/config.class.php:289
 #: inc/ipdiscoverocslink.class.php:1322
@@ -307,11 +307,11 @@ msgstr "Datum importeren in GLPI"
 
 #: inc/config.class.php:258
 msgid "No new imported computer from OCS-NG"
-msgstr ""
+msgstr "Geen nieuwe computers geïmporteerd vanuit OCS-NG"
 
 #: inc/config.class.php:279 inc/notificationtargetocsalert.class.php:67
 msgid "Computers not synchronized with OCS-NG since more"
-msgstr ""
+msgstr "Computers die niet zijn gesynchroniseerd met OCS-NG sinds meer dan"
 
 #: inc/config.class.php:298
 msgid "No computer not synchronized since more"
@@ -327,7 +327,7 @@ msgstr ""
 
 #: inc/config.class.php:336
 msgid "Log imported computers"
-msgstr ""
+msgstr "Log van de geïmporteerde computers"
 
 #: inc/config.class.php:342
 msgid "Refresh information of a process every"
@@ -702,23 +702,23 @@ msgstr ""
 
 #: inc/notimportedcomputer.class.php:458
 msgid "Import refused by rule"
-msgstr ""
+msgstr "Import geweigerd wegens regel"
 
 #: inc/notimportedcomputer.class.php:475
 msgid "Actions to be made on the computer"
-msgstr ""
+msgstr "Acties die op de computer moeten lopen"
 
 #: inc/notimportedcomputer.class.php:646
 msgid "Send OCSNG not imported computers alert failed"
-msgstr ""
+msgstr "Stuur niett geïmporteerde computers waarschuwing niet geslaagd"
 
 #: inc/notimportedcomputer.class.php:676
 msgid "Not imported computers alert"
-msgstr ""
+msgstr "Niet geïmporteerde computers waarschuwing"
 
 #: inc/ocsalert.class.php:47
 msgid "OCSNG alerts"
-msgstr ""
+msgstr "OCSNG waarschuwingen"
 
 #: inc/ocsalert.class.php:102
 msgid "Alert for the new imported computers"
@@ -726,7 +726,7 @@ msgstr ""
 
 #: inc/ocsalert.class.php:482
 msgid "Parameter"
-msgstr ""
+msgstr "Parameter"
 
 #: inc/ocsalert.class.php:483
 msgid "Status used by OCS-NG"
@@ -904,7 +904,7 @@ msgstr "OCSNG console"
 
 #: inc/ocsserver.class.php:208
 msgid "Expert sync mode"
-msgstr ""
+msgstr "Expert sync modus"
 
 #: inc/ocsserver.class.php:216 inc/ocsserver.class.php:1340
 msgid "Database in UTF8"
@@ -1569,6 +1569,10 @@ msgstr ""
 
 #: inc/runningprocess.class.php:186
 msgid "Company"
+msgstr ""
+
+#: inc/service.class.php:51
+msgid "Services"
 msgstr ""
 
 #: inc/service.class.php:178

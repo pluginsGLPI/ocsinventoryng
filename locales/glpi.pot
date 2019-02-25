@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Ocsinventoryng plugin 1.5.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-31 11:07+0100\n"
+"POT-Creation-Date: 2019-02-25 10:39+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1569,6 +1569,10 @@ msgstr ""
 
 #: inc/runningprocess.class.php:186
 msgid "Company"
+msgstr ""
+
+#: inc/service.class.php:51
+msgid "Services"
 msgstr ""
 
 #: inc/service.class.php:178
