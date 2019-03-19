@@ -353,15 +353,15 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
           && (isset($computer["BIOS"]) && $computer["BIOS"])) {
          $input["_ocs"]                                = true;
          $input["name"]                                = isset($computer["HARDWARE"]["NAME"]) ? $computer["HARDWARE"]["NAME"] : '';
-         $input["domain"]                              = isset($computer["HARDWARE"]["WORKGROUP"] ? $computer["HARDWARE"]["WORKGROUP"] : '';
+         $input["domain"]                              = isset($computer["HARDWARE"]["WORKGROUP"]) ? $computer["HARDWARE"]["WORKGROUP"] : '';
          $input["tag"]                                 = $computer["META"]["TAG"];
          $input["ocs_deviceid"]                        = $computer["HARDWARE"]["DEVICEID"];
-         $input["ipaddr"]                              = isset($computer["HARDWARE"]["IPADDR"] ? $computer["HARDWARE"]["IPADDR"] : '';
+         $input["ipaddr"]                              = isset($computer["HARDWARE"]["IPADDR"]) ? $computer["HARDWARE"]["IPADDR"] : '';
          $input["plugin_ocsinventoryng_ocsservers_id"] = $ocsservers_id;
          $input["ocsid"]                               = $ocsid;
          $input["last_inventory"]                      = $computer["HARDWARE"]["LASTCOME"];
-         $input["useragent"]                           = isset($computer["HARDWARE"]["USERAGENT"] ? $computer["HARDWARE"]["USERAGENT"] : '';
-         $input["serial"]                              = isset($computer["BIOS"]["SSN"] ? $computer["BIOS"]["SSN"] : '';
+         $input["useragent"]                           = isset($computer["HARDWARE"]["USERAGENT"]) ? $computer["HARDWARE"]["USERAGENT"] : '';
+         $input["serial"]                              = isset($computer["BIOS"]["SSN"]) ? $computer["BIOS"]["SSN"] : '';
          $input["reason"]                              = $reason['status'];
          $input["comment"]                             = "";
          if (isset($reason['entities_id'])) {
