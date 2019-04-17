@@ -166,10 +166,14 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
          if (isset($data['groups_id_tech']) && $data['groups_id_tech'] > 0) {
             $locks["groups_id_tech"] = __('Group in charge of the hardware');
          }
+         if (isset($data['users_id_tech']) && $data['users_id_tech'] > 0) {
+            $locks["users_id_tech"] = __('Technician in charge of the hardware');
+         }
       } else {
          $locks = ["locations_id"   => __('Location'),
                    "groups_id"      => __('Group'),
-                   "groups_id_tech" => __('Group in charge of the hardware')];
+                   "groups_id_tech" => __('Group in charge of the hardware'),
+                   "users_id_tech" => __('Technician in charge of the hardware')];
       }
 
       return $locks;
@@ -330,6 +334,29 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
                   }
                   if ($ko == 0) {
                      $tmp['groups_id_tech'] = $data['groups_id_tech'];
+                  }
+               }
+            }
+         }
+
+         //If there's a User Tech to update
+         if (isset($data['users_id_tech'])) {
+
+            $user = new User();
+            if ($user->getFromDB($data['users_id_tech'])) {
+               //If group is in the same entity as the computer, or if the group is
+               //defined in a parent entity, but recursive
+               if ($user->fields['entities_id'] == $computer->fields['entities_id']
+                   || in_array($user->fields['entities_id'], $ancestors)) {
+                  $ko    = 0;
+                  $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line_links['computers_id']);
+                  if (is_array($locks) && count($locks)) {
+                     if (in_array("users_id_tech", $locks)) {
+                        $ko = 1;
+                     }
+                  }
+                  if ($ko == 0) {
+                     $tmp['users_id_tech'] = $data['users_id_tech'];
                   }
                }
             }

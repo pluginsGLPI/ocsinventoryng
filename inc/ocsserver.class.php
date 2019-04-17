@@ -2438,7 +2438,7 @@ JAVASCRIPT;
                if ($usecheckbox) {
                   $nb_cols = 6;
                   if ($advanced && !$tolinked) {
-                     $nb_cols += 5;
+                     $nb_cols += 6;
                   }
                   if ($tolinked) {
                      $nb_cols += 1;
@@ -2475,6 +2475,7 @@ JAVASCRIPT;
                   echo "<th>" . __('Target location', 'ocsinventoryng') . "</th>\n";
                   echo "<th>" . __('Child entities') . "</th>\n";
                   echo "<th>" . __('Group in charge of the hardware') . "</th>\n";
+                  echo "<th>" . __('Technician in charge of the hardware') . "</th>\n";
                }
                if ($tolinked) {
                   echo "<th width='30%'>" . __('Item to link', 'ocsinventoryng') . "</th>";
@@ -2498,14 +2499,17 @@ JAVASCRIPT;
                      $location = isset($tab["locations_id"]) ? $tab["locations_id"] : 0;
                      $recursive = isset($tab["is_recursive"]) ? $tab["is_recursive"] : 0;
                      $idtech = isset($tab["groups_id_tech"]) ? $tab["groups_id_tech"] : 0;
+                     $idtechusr = isset($tab["users_id_tech"]) ? $tab["users_id_tech"] : 0;
                      $data     = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                                                          '_source'       => 'ocsinventoryng',
                                                          'locations_id'  => $location,
                                                          'is_recursive'  => $recursive,
-                                                         'groups_id_tech'  => $idtech
+                                                         'groups_id_tech'  => $idtech,
+                                                         'users_id_tech'  => $idtechusr
                                                         ], ['locations_id' => $location,
                                                             'is_recursive'  => $recursive,
-                                                            'groups_id_tech'  => $idtech], ['ocsid' => $tab["id"]]);
+                                                            'groups_id_tech'  => $idtech,
+                                                            'users_id_tech'  => $idtechusr], ['ocsid' => $tab["id"]]);
                   }
                   echo "<td>" . $tab["name"] . "</td>\n";
                   echo "<td>" . $tab["manufacturer"] . "</td>";
@@ -2613,6 +2617,15 @@ JAVASCRIPT;
                      $grp = "toimport_technician_group[" . $tab["id"] . "]";
                      Group::dropdown(['name'     => $grp,
                                       'value'    => $data['groups_id_tech'],
+                                      'comments' => 0]);
+                     echo "</td>\n";
+                     echo "<td width='20%'>";
+                     if (!isset($data['users_id_tech'])) {
+                        $data['users_id_tech'] = 0;
+                     }
+                     $usr = "toimport_technician_user[" . $tab["id"] . "]";
+                     User::dropdown(['name'     => $usr,
+                                      'value'    => $data['users_id_tech'],
                                       'comments' => 0]);
                      echo "</td>\n";
                   }

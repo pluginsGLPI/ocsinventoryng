@@ -79,13 +79,20 @@ if (isset($_SESSION["ocs_import"]["id"])) {
          $groupTech = -1;
       }
 
+      if (isset($_SESSION["ocs_import"]["users_id_tech"][$key])) {
+         $userTech = $_SESSION["ocs_import"]["users_id_tech"][$key];
+      } else {
+         $userTech = -1;
+      }
+
       $process_params = ['ocsid'                               => $key,
                          'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                          'lock'                                => 0,
                          'defaultentity'                       => $entity,
                          'defaultlocation'                     => $location,
                          'defaultrecursive'                    => $recursive,
-                         'defaultgrouptech'                    => $groupTech];
+                         'defaultgrouptech'                    => $groupTech,
+                         'defaultusertech'                    => $userTech];
       $action         = PluginOcsinventoryngOcsProcess::processComputer($process_params);
       PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_import"]['statistics'],
                                                              $action['status']);
@@ -150,6 +157,9 @@ if (!isset($_POST["import_ok"])) {
             }
             if (isset($_POST['toimport_technician_group'])) {
                $_SESSION["ocs_import"]["groups_id_tech"][$key] = $_POST['toimport_technician_group'][$key];
+            }
+            if (isset($_POST['toimport_technician_user'])) {
+               $_SESSION["ocs_import"]["userss_id_tech"][$key] = $_POST['toimport_technician_user'][$key];
             }
             $_SESSION["ocs_import_count"]++;
          }
