@@ -435,7 +435,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                                                           PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($ocs_db_utf8, $line2["MANUFACTURER"]));
                $processor["frequency_default"] = $line2["SPEED"];
                $processor["nbcores_default"]   = $line2["CORES"];
-               $processor["nbthreads_default"] = $line2["LOGICAL_CPUS"];
+               //$processor["nbthreads_default"] = $line2["LOGICAL_CPUS"];
                $processor["frequence"]   = $line2["CURRENT_SPEED"];
                $processor["entities_id"] = $entities_id;
                $DeviceProcessor          = new DeviceProcessor();

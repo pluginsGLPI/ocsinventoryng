@@ -185,9 +185,9 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
             }
          }
 
-         $computer_softwarelicenses = new Computer_SoftwareVersion();
-         $computer_softwarelicenses->deleteByCriteria(['computers_id' => $glpi_computers_id],
-                                                      0, $uninstall_plugins_history);
+         $computer_softwarelicenses = new Computer_SoftwareLicense();
+         $computer_softwarelicenses->deleteByCriteria(['computers_id'   => $glpi_computers_id,
+                                                       'is_dynamic' => 1], 1, $uninstall_plugins_history);
       }
    }
 }
