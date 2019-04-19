@@ -224,12 +224,11 @@ class PluginOcsinventoryngOS extends CommonDBChild {
             self::resetOS($options['computers_id'], $uninstall_history);
          }
 
+         // Yllen: only check on items_id and itemtype because only one is allowed
          if ($id = $device->getFromDBByCrit(['items_id'            => $options['computers_id'],
-                                             'itemtype'            => 'Computer',
-                                             'entities_id'         => $options['entities_id'],
-                                             'operatingsystems_id' => $operatingsystems_id,
-                                             'is_dynamic'          => 1])) {
-            if ($updates > 0) {
+                                             'itemtype'            => 'Computer'])) {
+            // Yllen: do update only if is_dynamic - no change if manual  
+            if (($updates > 0) && ($device->fields['is_dynamic'] == 1)) {
                $device->update(['id'                              => $id,
                                 'operatingsystemversions_id'      => $operatingsystemversions_id,
                                 'operatingsystemservicepacks_id'  => $operatingsystemservicepacks_id,
@@ -237,11 +236,14 @@ class PluginOcsinventoryngOS extends CommonDBChild {
                                 'license_number'                  => $license_number,
                                 'licenseid'                      => $license_id,
                                 '_nolock'                         => true,
-                                'is_dynamic'                      => 1,
+                                'is_deleted'                      => 0, // Yllen: restoreFromTrash
                                 'entities_id'                     => $options['entities_id']
                                ], $install_history);
             }
          } else {
+            
+            // Yllen: fix multiple
+            self::resetOS($options['computers_id'], $uninstall_history);
 
             //            if ($operatingsystems_id) {
             $device->add(['items_id'                        => $options['computers_id'],
