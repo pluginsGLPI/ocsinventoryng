@@ -154,26 +154,12 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                   $DeviceMemory = new DeviceMemory();
                   $ram_id       = $DeviceMemory->import($ram);
                   if ($ram_id) {
-                     if ($CompDevice->getFromDBByCrit(['items_id'          => $computers_id,
-                                                       'itemtype'          => 'Computer',
-                                                       'entities_id'       => $entities_id,
-                                                       'devicememories_id' => $ram_id,
-                                                       'is_dynamic'        => 1])) {
-                        $CompDevice->update(['id'                => $CompDevice->getID(),
-                                             'items_id'          => $computers_id,
-                                             'itemtype'          => 'Computer',
-                                             'entities_id'       => $entities_id,
-                                             'devicememories_id' => $ram_id,
-                                             'size'              => $line2["CAPACITY"],
-                                             'is_dynamic'        => 1], $install_history);
-                     } else {
                         $CompDevice->add(['items_id'          => $computers_id,
                                           'itemtype'          => 'Computer',
                                           'devicememories_id' => $ram_id,
                                           'size'              => $line2["CAPACITY"],
                                           'is_dynamic'        => 1,
                                           'entities_id'       => $entities_id], [], $install_history);
-                     }
                   }
                }
             }
@@ -441,26 +427,12 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                $DeviceProcessor          = new DeviceProcessor();
                $proc_id                  = $DeviceProcessor->import($processor);
                if ($proc_id) {
-                  if ($CompDevice->getFromDBByCrit(['items_id'            => $computers_id,
-                                                    'itemtype'            => 'Computer',
-                                                    'entities_id'         => $entities_id,
-                                                    'deviceprocessors_id' => $proc_id,
-                                                    'is_dynamic'          => 1])) {
-                     $CompDevice->update(['id'                  => $CompDevice->getID(),
-                                          'items_id'            => $computers_id,
-                                          'itemtype'            => 'Computer',
-                                          'entities_id'         => $entities_id,
-                                          'deviceprocessors_id' => $proc_id,
-                                          'frequency'           => $line2["SPEED"],
-                                          'is_dynamic'          => 1], $install_history);
-                  } else {
                      $CompDevice->add(['items_id'            => $computers_id,
                                        'itemtype'            => 'Computer',
                                        'deviceprocessors_id' => $proc_id,
                                        'is_dynamic'          => 1,
                                        'frequency'           => $line2["SPEED"],
                                        'entities_id'         => $entities_id], [], $install_history);
-                  }
                }
             }
             break;
