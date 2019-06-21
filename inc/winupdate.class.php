@@ -199,10 +199,31 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
             foreach ($result as $data) {
                echo "<tr class='tab_bg_2'>";
                echo "<td>" . self::getAuoptionsName($data['auoptions']) . "</td>";
-               echo "<td>" . Html::convDateTime($data['scheduleinstalldate']) . "</td>";
-               echo "<td>" . Html::convDateTime($data['lastsuccesstime']) . "</td>";
-               echo "<td>" . Html::convDateTime($data['detectsuccesstime']) . "</td>";
-               echo "<td>" . Html::convDateTime($data['downloadsuccesstime']) . "</td>";
+               
+               if (DateTime::createFromFormat('Y-m-d H:i:s', $data['scheduleinstalldate']) !== FALSE 
+                  && $data['scheduleinstalldate'] != "0000-00-00 00:00:00") {
+                  echo "<td>" . Html::convDateTime($data['scheduleinstalldate']) . "</td>";
+               } else {
+                  echo "<td>" . __('Automatic') . "</td>";
+               }
+               if (DateTime::createFromFormat('Y-m-d H:i:s', $data['lastsuccesstime']) !== FALSE 
+                  && $data['lastsuccesstime'] != "0000-00-00 00:00:00") {
+                  echo "<td>" . Html::convDateTime($data['lastsuccesstime']) . "</td>";
+               } else {
+                  echo "<td>" . __('Automatic') . "</td>";
+               }
+               if (DateTime::createFromFormat('Y-m-d H:i:s', $data['detectsuccesstime']) !== FALSE 
+                  && $data['detectsuccesstime'] != "0000-00-00 00:00:00") {
+                  echo "<td>" . Html::convDateTime($data['detectsuccesstime']) . "</td>";
+               } else {
+                  echo "<td>" . __('Automatic') . "</td>";
+               }
+               if (DateTime::createFromFormat('Y-m-d H:i:s', $data['downloadsuccesstime']) !== FALSE 
+                  && $data['downloadsuccesstime'] != "0000-00-00 00:00:00") {
+                  echo "<td>" . Html::convDateTime($data['downloadsuccesstime']) . "</td>";
+               } else {
+                  echo "<td>" . __('Automatic') . "</td>";
+               }
                echo "</tr>";
                Session::addToNavigateListItems(__CLASS__, $data['id']);
             }

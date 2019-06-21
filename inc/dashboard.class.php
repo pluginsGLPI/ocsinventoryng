@@ -102,106 +102,107 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
 
             $widget = new PluginMydashboardHtml();
             $widget->setWidgetTitle(__("Last synchronization of computers by month", "ocsinventoryng"));
+            $graph = "";
+            if ($nb > 0) {
+               $dataBarset = json_encode($tabdata);
+               $labelsBar  = json_encode($tabnames);
+               $tabsyncset = json_encode($tabsyncdates);
 
-            $dataBarset = json_encode($tabdata);
-            $labelsBar  = json_encode($tabnames);
-            $tabsyncset = json_encode($tabsyncdates);
-
-            $nbcomputers = __('Computers number', 'ocsinventoryng');
-            $nbcomputers = addslashes($nbcomputers);
-            $graph = "<script type='text/javascript'>
-                     var barsynchChartData = {
-                             datasets: [{
-                               data: $dataBarset,
-                               label: '$nbcomputers',
-                               backgroundColor: '#1f77b4',
-                     //          backgroundColor: '#FFF',
-                  //                   fill: false,
-                  //                   lineTension: '0.1',
-                             }],
-                           labels: $labelsBar
-                           };
-                     var datesyncset = $tabsyncset;
-                     $(document).ready(
-                        function () {
-                            var isChartRendered = false;
-                            var canvas = document . getElementById('LastSynchroChart');
-                            var ctx = canvas . getContext('2d');
-                            ctx.canvas.width = 700;
-                            ctx.canvas.height = 400;
-                            var LastSynchroChart = new Chart(ctx, {
-                                  type: 'bar',
-                                  data: barsynchChartData,
-                                  options: {
-                                      responsive:true,
-                                      maintainAspectRatio: true,
-                                      title:{
-                                          display:false,
-                                          text:'LastSynchroChart'
-                                      },
-                                      tooltips: {
-                                          enabled: false,
-//                                          mode: 'index',
-//                                          intersect: false
-                                      },
-                                      scales: {
-                                          xAxes: [{
-                                              stacked: true,
-                                          }],
-                                          yAxes: [{
-                                              stacked: true
-                                          }]
-                                      },
-                                     hover: {
-                                        onHover: function(event,elements) {
-                                           $('#LastSynchroChart').css('cursor', elements[0] ? 'pointer' : 'default');
-                                         }
-                                      },
-                                      animation: {
-                                       onComplete: function() {
-                                          
-                                          var chartInstance = this.chart,
-                                          ctx = chartInstance.ctx;
-                                          ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
-                                          ctx.textAlign = 'center';
-                                          ctx.textBaseline = 'bottom';
-                              
-                                          this.data.datasets.forEach(function (dataset, i) {
-                                              var meta = chartInstance.controller.getDatasetMeta(i);
-                                              meta.data.forEach(function (bar, index) {
-                                                  var data = dataset.data[index];                            
-                                                  ctx.fillText(data, bar._model.x, bar._model.y - 5);
-                                              });
-                                          });
-                                          isChartRendered = true
-                                       }
+               $nbcomputers = __('Computers number', 'ocsinventoryng');
+               $nbcomputers = addslashes($nbcomputers);
+               $graph = "<script type='text/javascript'>
+                        var barsynchChartData = {
+                                datasets: [{
+                                  data: $dataBarset,
+                                  label: '$nbcomputers',
+                                  backgroundColor: '#1f77b4',
+                        //          backgroundColor: '#FFF',
+                     //                   fill: false,
+                     //                   lineTension: '0.1',
+                                }],
+                              labels: $labelsBar
+                              };
+                        var datesyncset = $tabsyncset;
+                        $(document).ready(
+                           function () {
+                               var isChartRendered = false;
+                               var canvas = document . getElementById('LastSynchroChart');
+                               var ctx = canvas . getContext('2d');
+                               ctx.canvas.width = 700;
+                               ctx.canvas.height = 400;
+                               var LastSynchroChart = new Chart(ctx, {
+                                     type: 'bar',
+                                     data: barsynchChartData,
+                                     options: {
+                                         responsive:true,
+                                         maintainAspectRatio: true,
+                                         title:{
+                                             display:false,
+                                             text:'LastSynchroChart'
+                                         },
+                                         tooltips: {
+                                             enabled: false,
+   //                                          mode: 'index',
+   //                                          intersect: false
+                                         },
+                                         scales: {
+                                             xAxes: [{
+                                                 stacked: true,
+                                             }],
+                                             yAxes: [{
+                                                 stacked: true
+                                             }]
+                                         },
+                                        hover: {
+                                           onHover: function(event,elements) {
+                                              $('#LastSynchroChart').css('cursor', elements[0] ? 'pointer' : 'default');
+                                            }
+                                         },
+                                         animation: {
+                                          onComplete: function() {
+                                             
+                                             var chartInstance = this.chart,
+                                             ctx = chartInstance.ctx;
+                                             ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                                             ctx.textAlign = 'center';
+                                             ctx.textBaseline = 'bottom';
+                                 
+                                             this.data.datasets.forEach(function (dataset, i) {
+                                                 var meta = chartInstance.controller.getDatasetMeta(i);
+                                                 meta.data.forEach(function (bar, index) {
+                                                     var data = dataset.data[index];                            
+                                                     ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                                                 });
+                                             });
+                                             isChartRendered = true
+                                          }
+                                        }
                                      }
-                                  }
-                              });
-                              
-                           canvas.onclick = function(evt) {
-                              var activeSynchroPoints = LastSynchroChart.getElementsAtEvent(evt);
-                              if (activeSynchroPoints[0]) {
-                                var chartSyncData = activeSynchroPoints[0]['_chart'].config.data;
-                                var idx = activeSynchroPoints[0]['_index'];
-                                var label = chartSyncData.labels[idx];
-                                var value = chartSyncData.datasets[0].data[idx];
-                                var dateinv = datesyncset[idx];
-                  //              var url = \"http://example.com/?label=\" + label + \"&value=\" + value;
-                                $.ajax({
-                                   url: '" . $CFG_GLPI['root_doc'] . "/plugins/mydashboard/ajax/launchURL.php',
-                                   type: 'POST',
-                                   data:{dateinv:dateinv, widget:'$widgetId'},
-                                   success:function(response) {
-                                           window.open(response);
-                                         }
-                                });
-                              }
-                            };
-                     }
-                 );
-                      </script>";
-
+                                 });
+                                 
+                              canvas.onclick = function(evt) {
+                                 var activeSynchroPoints = LastSynchroChart.getElementsAtEvent(evt);
+                                 if (activeSynchroPoints[0]) {
+                                   var chartSyncData = activeSynchroPoints[0]['_chart'].config.data;
+                                   var idx = activeSynchroPoints[0]['_index'];
+                                   var label = chartSyncData.labels[idx];
+                                   var value = chartSyncData.datasets[0].data[idx];
+                                   var dateinv = datesyncset[idx];
+                     //              var url = \"http://example.com/?label=\" + label + \"&value=\" + value;
+                                   $.ajax({
+                                      url: '" . $CFG_GLPI['root_doc'] . "/plugins/mydashboard/ajax/launchURL.php',
+                                      type: 'POST',
+                                      data:{dateinv:dateinv, widget:'$widgetId'},
+                                      success:function(response) {
+                                              window.open(response);
+                                            }
+                                   });
+                                 }
+                               };
+                        }
+                    );
+                         </script>";
+            }
             $canvas = true;
             if ($nb < 1) {
                $canvas = false;
