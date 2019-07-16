@@ -1088,9 +1088,9 @@ JAVASCRIPT;
          $mac = $ocsSnmp['META']['MACADDR'];
 
          $np = new NetworkPort();
-         $np->getFromDBByCrit(['mac' => $mac, 'items_id' => $id_printer, 'itemtype' => $itemtype]);
+         $data = $np->find(['mac' => $mac, 'items_id' => $id_printer, 'itemtype' => $itemtype]);
 
-         if (count($np->fields) < 1) {
+         if (count($data) < 1) {
 
             $item   = new $itemtype();
             $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
@@ -1379,8 +1379,8 @@ JAVASCRIPT;
                                 'itemtype' => $itemtype], 1);
 
          $np = new NetworkPort();
-         $np->getFromDBByCrit(['mac' => $mac, 'items_id' => $id_network, 'itemtype' => $itemtype]);
-         if (count($np->fields) < 1) {
+         $data = $np->find(['mac' => $mac, 'items_id' => $id_network, 'itemtype' => $itemtype]);
+         if (count($data) < 1) {
 
             $item   = new $itemtype();
             $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
@@ -1416,8 +1416,8 @@ JAVASCRIPT;
                $mac_dest          = self::addMacSeparator($net['DEVICENAME']);
 
                $np = new NetworkPort();
-               $np->getFromDBByCrit(['mac' => $mac, 'items_id' => $id_network, 'itemtype' => $itemtype, 'instantiation_type' => 'NetworkPortEthernet']);
-               if (count($np->fields) < 1) {
+               $data = $np->find(['mac' => $mac, 'items_id' => $id_network, 'itemtype' => $itemtype, 'instantiation_type' => 'NetworkPortEthernet']);
+               if (count($data) < 1) {
 
                   $item   = new $itemtype();
                   $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
@@ -1441,13 +1441,13 @@ JAVASCRIPT;
 
                $link    = new NetworkPort_NetworkPort();
                $np_dest = new NetworkPort();
-               $np_dest->getFromDBByCrit(['mac' => $mac_dest]);
-               if (count($np_dest->fields) > 0) {
-
-                  $link_input = ['networkports_id_1' => $np_src,
-                                 'networkports_id_2' => $np_dest->fields['id']];
-                  $link->add($link_input, [], $cfg_ocs['history_network']);
-
+               $datas = $np_dest->find(['mac' => $mac_dest]);
+               if (count($datas) > 0) {
+                  foreach ($datas as $data) {
+                     $link_input = ['networkports_id_1' => $np_src,
+                                    'networkports_id_2' => $data['id']];
+                     $link->add($link_input, [], $cfg_ocs['history_network']);
+                  }
                }
             }
          }
@@ -1814,8 +1814,8 @@ JAVASCRIPT;
          $mac = $ocsSnmp['META']['MACADDR'];
 
          $np = new NetworkPort();
-         $np->getFromDBByCrit(['mac' => $mac, 'items_id' => $id_item, 'itemtype' => $itemtype]);
-         if (count($np->fields) < 1) {
+         $data = $np->find(['mac' => $mac, 'items_id' => $id_item, 'itemtype' => $itemtype]);
+         if (count($data) < 1) {
 
             $item   = new $itemtype();
             $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
@@ -2027,8 +2027,8 @@ JAVASCRIPT;
          $mac = $ocsSnmp['META']['MACADDR'];
 
          $np = new NetworkPort();
-         $np->getFromDBByCrit(['mac' => $mac, 'items_id' => $id_item, 'itemtype' => $itemtype]);
-         if (count($np->fields) < 1) {
+         $data = $np->find(['mac' => $mac, 'items_id' => $id_item, 'itemtype' => $itemtype]);
+         if (count($data) < 1) {
 
             $item   = new $itemtype();
             $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);

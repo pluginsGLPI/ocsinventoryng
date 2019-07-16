@@ -372,7 +372,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
          $input["rules_id"] = json_encode($reason['rule_matched']);
 
          $query  = "SELECT `id` FROM `" . $this->getTable() . "` " .
-                   "WHERE `ocs_deviceid`='" . $ocsid. "'
+                   "WHERE `ocsid`='" . $ocsid. "'
                      AND `plugin_ocsinventoryng_ocsservers_id`= $ocsservers_id";
          $result = $DB->query($query);
          if ($DB->numrows($result) > 0) {

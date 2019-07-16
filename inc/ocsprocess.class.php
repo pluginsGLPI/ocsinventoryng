@@ -1340,7 +1340,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                }
                if ($updates['uptime'] && isset($ocsComputer["UPTIME"])) {
                   //import uptime
-                  PluginOcsinventoryngUptime::updateUptime($line['id'], $ocsComputer["UPTIME"]);
+                  PluginOcsinventoryngUptime::updateUptime($ID, $ocsComputer["UPTIME"]);
                }
                /********************* PLUGINS *********************/
             }
