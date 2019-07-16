@@ -1444,9 +1444,13 @@ JAVASCRIPT;
                $datas = $np_dest->find(['mac' => $mac_dest]);
                if (count($datas) > 0) {
                   foreach ($datas as $data) {
-                     $link_input = ['networkports_id_1' => $np_src,
-                                    'networkports_id_2' => $data['id']];
-                     $link->add($link_input, [], $cfg_ocs['history_network']);
+                     $link->getFromDBByCrit(['networkports_id_1' => $np_src,
+                                             'networkports_id_2' => $data['id']]);
+                     if (count($link->fields) < 1) {
+                        $link_input = ['networkports_id_1' => $np_src,
+                                       'networkports_id_2' => $data['id']];
+                        $link->add($link_input, [], $cfg_ocs['history_network']);
+                     }
                   }
                }
             }
