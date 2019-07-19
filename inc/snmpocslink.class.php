@@ -1438,18 +1438,19 @@ JAVASCRIPT;
 
                   $np_src = $np->add($port_input, [], $cfg_ocs['history_network']);
                }
-
-               $link    = new NetworkPort_NetworkPort();
-               $np_dest = new NetworkPort();
-               $datas = $np_dest->find(['mac' => $mac_dest]);
-               if (count($datas) > 0) {
-                  foreach ($datas as $data) {
-                     $link->getFromDBByCrit(['networkports_id_1' => $np_src,
-                                             'networkports_id_2' => $data['id']]);
-                     if (count($link->fields) < 1) {
-                        $link_input = ['networkports_id_1' => $np_src,
-                                       'networkports_id_2' => $data['id']];
-                        $link->add($link_input, [], $cfg_ocs['history_network']);
+               if ($np_src) {
+                  $link    = new NetworkPort_NetworkPort();
+                  $np_dest = new NetworkPort();
+                  $datas = $np_dest->find(['mac' => $mac_dest]);
+                  if (count($datas) > 0) {
+                     foreach ($datas as $data) {
+                        $link->getFromDBByCrit(['networkports_id_1' => $np_src,
+                                                'networkports_id_2' => $data['id']]);
+                        if (count($link->fields) < 1) {
+                           $link_input = ['networkports_id_1' => $np_src,
+                                          'networkports_id_2' => $data['id']];
+                           $link->add($link_input, [], $cfg_ocs['history_network']);
+                        }
                      }
                   }
                }
@@ -1912,8 +1913,9 @@ JAVASCRIPT;
       // Delete Unexisting Items not found in OCS
       //Look for all ununsed disks
       $query = "SELECT `id`
-                FROM `glpi_computerdisks`
-                WHERE `computers_id`= $id_item
+                FROM `glpi_items_disks`
+                WHERE `items_id`= $id_item
+                   AND `itemtype` = 'Computer'
                    AND `is_dynamic` = 1 ";
       if (!empty($already_processed)) {
          $query .= "AND `id` NOT IN (" . implode(',', $already_processed) . ")";

@@ -315,7 +315,7 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
 
       echo ".";
       $action = PluginOcsinventoryngSnmpOcslink::updateSnmp($ID, $ocsServerId);
-      PluginOcsinventoryngOcsServer::manageImportStatistics($fields, $action['status']);
+      PluginOcsinventoryngOcsProcess::manageImportStatistics($fields, $action['status']);
 
       /* TODO log it ?
       /*switch ($action['status']) {
