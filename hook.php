@@ -38,11 +38,11 @@ function plugin_ocsinventoryng_install() {
    $migration = new Migration(150);
    $dbu       = new DbUtils();
 
-   if (!$DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers_profiles")
+   if (!$DB->tableExists("glpi_plugin_ocsinventoryng_customapps")
        && !$DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
        && !$DB->tableExists("ocs_glpi_ocsservers")) {
       //INSTALL
-      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.6.0-empty.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.6.1-empty.sql");
 
       $migration->createRule(['sub_type'     => 'RuleImportComputer',
                               'entities_id'  => 0,
@@ -510,6 +510,9 @@ function plugin_ocsinventoryng_install() {
       if ($DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'states_id_default')) {
          $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.6.0-update.sql");
       }
+      if (!$DB->tableExists('glpi_plugin_ocsinventoryng_customapps')) {
+         $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.6.1-update.sql");
+      }
 
       $migration->executeMigration();
 
@@ -608,6 +611,7 @@ function plugin_ocsinventoryng_uninstall() {
               "glpi_plugin_ocsinventoryng_networkshares",
               "glpi_plugin_ocsinventoryng_runningprocesses",
               "glpi_plugin_ocsinventoryng_services",
+              "glpi_plugin_ocsinventoryng_customapps",
               "glpi_plugin_ocsinventoryng_teamviewers",
               "glpi_plugin_ocsinventoryng_notificationstates",
               "glpi_plugin_ocsinventoryng_ocsalerts"];

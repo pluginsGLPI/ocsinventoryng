@@ -895,7 +895,11 @@ JAVASCRIPT;
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Running Process Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/runningProcess) must be installed', 'ocsinventoryng')));
       echo "&nbsp;</td>\n";
-      echo "<td class='center'></td>\n<td></td></tr>\n";
+      echo "<td class='center'>" . __('Customapp', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_customapp", $this->fields["import_customapp"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Customapp Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/customapp) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td>\n";
 
       echo "</table>";
       echo "</div>";

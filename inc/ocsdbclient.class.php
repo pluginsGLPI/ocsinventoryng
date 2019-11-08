@@ -369,6 +369,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
             case "uptime" :
             case "winupdatestate":
             case "teamviewer":
+            case "customapp":
             case "navigatorproxysetting":
             case "winusers":
             case "osinstall":
