@@ -123,6 +123,9 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                self::resetDevices($computers_id, $devicetype, $uninstall_history);
             }
 
+            $KnownDevice = new $devicetype();
+            $tabMems = $KnownDevice->find("`items_id` = ". $computers_id . " AND `itemtype`='Computer' AND `entities_id` = " .$entities_id. " AND 'is_dynamic' = 1");
+
             $CompDevice = new $devicetype();
             foreach ($ocsComputer as $line2) {
                $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
@@ -154,12 +157,17 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                   $DeviceMemory = new DeviceMemory();
                   $ram_id       = $DeviceMemory->import($ram);
                   if ($ram_id) {
-                     if ($CompDevice->getFromDBByCrit(['items_id'          => $computers_id,
-                                                       'itemtype'          => 'Computer',
-                                                       'entities_id'       => $entities_id,
-                                                       'devicememories_id' => $ram_id,
-                                                       'is_dynamic'        => 1])) {
-                        $CompDevice->update(['id'                => $CompDevice->getID(),
+                     $found=false;
+                     foreach( $tabMems as $idMem => $currMem ) {
+                        if ($currMem['devicememories_id'] == $ram_id) {
+                           unset($tabMems[$idMem]);
+                           $found=true;
+                           break;
+                        }
+                     }
+                     if ( $found ) {
+                        $CompDevice->update(['id'                => $idMem,
+
                                              'items_id'          => $computers_id,
                                              'itemtype'          => 'Computer',
                                              'entities_id'       => $entities_id,
@@ -175,6 +183,12 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                           'entities_id'       => $entities_id], [], $install_history);
                      }
                   }
+               }
+            }
+            if ($force) {
+               foreach( $tabMems as $id => $currMem ) {
+                  $deleteDevice = new $devicetype();
+                  $deleteDevice->delete($currMem);
                }
             }
             break;
@@ -422,6 +436,9 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                self::resetDevices($computers_id, $devicetype, $uninstall_history);
             }
 
+            $KnownDevice = new $devicetype();
+            $tabProcs = $KnownDevice->find("`items_id` = " . $computers_id . " AND `itemtype`='Computer' AND `entities_id` = " .$entities_id. " AND is_dynamic = 1");
+ 
             $CompDevice = new $devicetype();
             //Processeurs:
             foreach ($ocsComputer as $line2) {
@@ -436,22 +453,30 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                $processor["frequency_default"] = $line2["SPEED"];
                $processor["nbcores_default"]   = $line2["CORES"];
                $processor["nbthreads_default"] = $line2["LOGICAL_CPUS"];
-               $processor["frequence"]   = $line2["CURRENT_SPEED"];
+//               always change with boost
+//               $processor["frequence"]   = $line2["CURRENT_SPEED"];
                $processor["entities_id"] = $entities_id;
                $DeviceProcessor          = new DeviceProcessor();
                $proc_id                  = $DeviceProcessor->import($processor);
                if ($proc_id) {
-                  if ($CompDevice->getFromDBByCrit(['items_id'            => $computers_id,
-                                                    'itemtype'            => 'Computer',
-                                                    'entities_id'         => $entities_id,
-                                                    'deviceprocessors_id' => $proc_id,
-                                                    'is_dynamic'          => 1])) {
-                     $CompDevice->update(['id'                  => $CompDevice->getID(),
+                  $found=false;
+                  foreach( $tabProcs as $idProc => $currProc ) {
+			  if ($currProc['deviceprocessors_id'] == $proc_id &&
+                              $currProc['nbcores'] == $processor["nbcores_default"] ) {
+                        unset($tabProcs[$idProc]);
+                        $found=true;
+                        break;
+                     }
+                  }
+                  if ( $found ) {
+                     $CompDevice->update(['id'                  => $idProc,
                                           'items_id'            => $computers_id,
                                           'itemtype'            => 'Computer',
                                           'entities_id'         => $entities_id,
                                           'deviceprocessors_id' => $proc_id,
                                           'frequency'           => $line2["SPEED"],
+                                          'nbcores'             => $line2["CORES"],
+                                          'nbthreads'           => $line2["LOGICAL_CPUS"],
                                           'is_dynamic'          => 1], $install_history);
                   } else {
                      $CompDevice->add(['items_id'            => $computers_id,
@@ -459,6 +484,8 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                        'deviceprocessors_id' => $proc_id,
                                        'is_dynamic'          => 1,
                                        'frequency'           => $line2["SPEED"],
+                                       'nbcores'             => $line2["CORES"],
+                                       'nbthreads'           => $line2["LOGICAL_CPUS"],
                                        'entities_id'         => $entities_id], [], $install_history);
                   }
                }
