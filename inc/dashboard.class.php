@@ -56,8 +56,8 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
     */
    function getWidgetsForItem() {
       return [
-         $this->getType() . "1" => __("Last synchronization of computers by month", "ocsinventoryng") . "&nbsp;<i class='fa fa-bar-chart'></i>",
-         $this->getType() . "2" => __("Detail of imported computers", "ocsinventoryng") . "&nbsp;<i class='fa fa-pie-chart'></i>",
+         $this->getType() . "1" => __("Last synchronization of computers by month", "ocsinventoryng") . "&nbsp;<i class='fas fa-bar-chart'></i>",
+         $this->getType() . "2" => __("Detail of imported computers", "ocsinventoryng") . "&nbsp;<i class='fas fa-pie-chart'></i>",
       ];
    }
 
@@ -66,14 +66,25 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
     *
     * @return PluginMydashboardDatatable|PluginMydashboardHBarChart|PluginMydashboardHtml|PluginMydashboardLineChart|PluginMydashboardPieChart|PluginMydashboardVBarChart
     */
-   function getWidgetContentForItem($widgetId) {
-      global $DB, $CFG_GLPI;
+   function getWidgetContentForItem($widgetId, $opt = []) {
+      global $DB;
 
       if (empty($this->form)) {
          $this->init();
       }
       switch ($widgetId) {
          case $this->getType() . "1":
+            $name = 'LastSynchroChart';
+
+            $criterias = [];
+
+            $params  = ["preferences" => [],
+                        "criterias"   => $criterias,
+                        "opt"         => $opt];
+            $options = PluginMydashboardHelper::manageCriterias($params);
+
+            $opt  = $options['opt'];
+            $crit = $options['crit'];
 
             $query = "SELECT DISTINCT
                            DATE_FORMAT(`glpi_plugin_ocsinventoryng_ocslinks`.`last_update`, '%b %Y') AS periodsync_name,
@@ -102,121 +113,35 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
 
             $widget = new PluginMydashboardHtml();
             $widget->setWidgetTitle(__("Last synchronization of computers by month", "ocsinventoryng"));
-            $graph = "";
-            if ($nb > 0) {
-               $dataBarset = json_encode($tabdata);
-               $labelsBar  = json_encode($tabnames);
-               $tabsyncset = json_encode($tabsyncdates);
 
-               $nbcomputers = __('Computers number', 'ocsinventoryng');
-               $nbcomputers = addslashes($nbcomputers);
-               $graph = "<script type='text/javascript'>
-                        var barsynchChartData = {
-                                datasets: [{
-                                  data: $dataBarset,
-                                  label: '$nbcomputers',
-                                  backgroundColor: '#1f77b4',
-                        //          backgroundColor: '#FFF',
-                     //                   fill: false,
-                     //                   lineTension: '0.1',
-                                }],
-                              labels: $labelsBar
-                              };
-                        var datesyncset = $tabsyncset;
-                        $(document).ready(
-                           function () {
-                               var isChartRendered = false;
-                               var canvas = document . getElementById('LastSynchroChart');
-                               var ctx = canvas . getContext('2d');
-                               ctx.canvas.width = 700;
-                               ctx.canvas.height = 400;
-                               var LastSynchroChart = new Chart(ctx, {
-                                     type: 'bar',
-                                     data: barsynchChartData,
-                                     options: {
-                                         responsive:true,
-                                         maintainAspectRatio: true,
-                                         title:{
-                                             display:false,
-                                             text:'LastSynchroChart'
-                                         },
-                                         tooltips: {
-                                             enabled: false,
-   //                                          mode: 'index',
-   //                                          intersect: false
-                                         },
-                                         scales: {
-                                             xAxes: [{
-                                                 stacked: true,
-                                             }],
-                                             yAxes: [{
-                                                 stacked: true
-                                             }]
-                                         },
-                                        hover: {
-                                           onHover: function(event,elements) {
-                                              $('#LastSynchroChart').css('cursor', elements[0] ? 'pointer' : 'default');
-                                            }
-                                         },
-                                         animation: {
-                                          onComplete: function() {
-                                             
-                                             var chartInstance = this.chart,
-                                             ctx = chartInstance.ctx;
-                                             ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
-                                             ctx.textAlign = 'center';
-                                             ctx.textBaseline = 'bottom';
-                                 
-                                             this.data.datasets.forEach(function (dataset, i) {
-                                                 var meta = chartInstance.controller.getDatasetMeta(i);
-                                                 meta.data.forEach(function (bar, index) {
-                                                     var data = dataset.data[index];                            
-                                                     ctx.fillText(data, bar._model.x, bar._model.y - 5);
-                                                 });
-                                             });
-                                             isChartRendered = true
-                                          }
-                                        }
-                                     }
-                                 });
-                                 
-                              canvas.onclick = function(evt) {
-                                 var activeSynchroPoints = LastSynchroChart.getElementsAtEvent(evt);
-                                 if (activeSynchroPoints[0]) {
-                                   var chartSyncData = activeSynchroPoints[0]['_chart'].config.data;
-                                   var idx = activeSynchroPoints[0]['_index'];
-                                   var label = chartSyncData.labels[idx];
-                                   var value = chartSyncData.datasets[0].data[idx];
-                                   var dateinv = datesyncset[idx];
-                     //              var url = \"http://example.com/?label=\" + label + \"&value=\" + value;
-                                   $.ajax({
-                                      url: '" . $CFG_GLPI['root_doc'] . "/plugins/mydashboard/ajax/launchURL.php',
-                                      type: 'POST',
-                                      data:{dateinv:dateinv, widget:'$widgetId'},
-                                      success:function(response) {
-                                              window.open(response);
-                                            }
-                                   });
-                                 }
-                               };
-                        }
-                    );
-                         </script>";
-            }
-            $canvas = true;
-            if ($nb < 1) {
-               $canvas = false;
-               $graph .= __('No data available', 'mydashboard');
-            }
-            $params    = ["widgetId"  => $widgetId,
-                          "name"      => 'LastSynchroChart',
-                          "onsubmit"  => false,
-                          "opt"       => [],
-                          "criterias" => [],
-                          "export"    => $canvas,
-                          "canvas"    => $canvas,
-                          "nb"        => $nb];
-            $graph     .= PluginMydashboardHelper::getGraphHeader($params);
+
+            $dataBarset = json_encode($tabdata);
+            $labelsBar  = json_encode($tabnames);
+            $tabsyncset = json_encode($tabsyncdates);
+
+            $nbcomputers     = __('Computers number', 'ocsinventoryng');
+            $nbcomputers     = addslashes($nbcomputers);
+            $colors          = PluginMydashboardColor::getColors(1, 0);
+            $backgroundColor = json_encode($colors);
+
+            $graph_datas = ['name'            => $name,
+                            'ids'             => $tabsyncset,
+                            'data'            => $dataBarset,
+                            'labels'          => $labelsBar,
+                            'label'           => $nbcomputers,
+                            'backgroundColor' => $backgroundColor];
+
+            $graph = PluginMydashboardBarChart::launchGraph($graph_datas, []);
+
+            $params = ["widgetId"  => $widgetId,
+                       "name"      => $name,
+                       "onsubmit"  => false,
+                       "opt"       => $opt,
+                       "criterias" => $criterias,
+                       "export"    => true,
+                       "canvas"    => true,
+                       "nb"        => $nb];
+            $widget->setWidgetHeader(PluginMydashboardHelper::getGraphHeader($params));
             $widget->setWidgetHtmlContent(
                $graph
             );
@@ -225,9 +150,20 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
             break;
 
          case $this->getType() . "2":
+            $name = 'InventoryTypePieChart';
 
-            $counts = [];
-            $name   = [];
+            $criterias = [];
+
+            $params  = ["preferences" => [],
+                        "criterias"   => $criterias,
+                        "opt"         => $opt];
+            $options = PluginMydashboardHelper::manageCriterias($params);
+
+            $opt  = $options['opt'];
+            $crit = $options['crit'];
+
+            $counts     = [];
+            $name_agent = [];
 
             $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
                               FROM `glpi_computers`
@@ -245,8 +181,8 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
 
             if ($nb) {
                while ($data = $DB->fetch_assoc($result)) {
-                  $counts[] = $data["nb"];
-                  $name[]   = __('OCS Inventory NG', 'ocsinventoryng');
+                  $counts[]     = $data["nb"];
+                  $name_agent[] = __('OCS Inventory NG', 'ocsinventoryng');
                }
             }
             $plugin = new Plugin();
@@ -268,8 +204,8 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
 
                if ($nb) {
                   while ($data = $DB->fetch_assoc($result)) {
-                     $counts[] = $data["nb"];
-                     $name[]   = __('Fusion Inventory', 'ocsinventoryng');
+                     $counts[]     = $data["nb"];
+                     $name_agent[] = __('Fusion Inventory', 'ocsinventoryng');
                   }
                }
             }
@@ -304,8 +240,8 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
 
             if ($nb) {
                while ($data = $DB->fetch_assoc($result)) {
-                  $counts[] = $data["nb"];
-                  $name[]   = __('Without agent', 'ocsinventoryng');
+                  $counts[]     = $data["nb"];
+                  $name_agent[] = __('Without agent', 'ocsinventoryng');
                }
             }
 
@@ -316,74 +252,30 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
             $palette            = PluginMydashboardColor::getColors(2);
             $backgroundPieColor = json_encode($palette);
             $dataPieset         = json_encode($counts);
-            $labelsPie          = json_encode($name);
+            $labelsPie          = json_encode($name_agent);
 
-            $graph = "<script type='text/javascript'>
-         
-            var dataInvPie = {
-              datasets: [{
-                data: $dataPieset,
-                backgroundColor: $backgroundPieColor
-              }],
-              labels: $labelsPie
-            };
-            
-            $(document).ready(
-              function() {
-                var canvas = document.getElementById('InventoryTypePieChart');
-                var ctx = canvas.getContext('2d');
-                ctx.canvas.width = 700;
-                ctx.canvas.height = 400;
-                var InventoryTypePieChart = new Chart(ctx, {
-                  type: 'pie',
-                  data: dataInvPie,
-                  options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    animation: {
-                        onComplete: function() {
-                          isChartRendered = true
-                        }
-                      }
-                   }
-                });
-//                    canvas.onclick = function(evt) {
-//                        var activePoints = InventoryTypePieChart.getElementsAtEvent(evt);
-//                        if (activePoints[0]) {
-//                          var chartData = activePoints[0]['_chart'].config.data;
-//                          var idx = activePoints[0]['_index'];
-//                          var label = chartData.labels[idx];
-//                          var value = chartData.datasets[0].data[idx];
-//                          var dateinv = dateset[idx];
-//            //              var url = \"http://example.com/?label=\" + label + \"&value=\" + value;
-//                          $.ajax({
-//                             url: '" . $CFG_GLPI['root_doc'] . "/plugins/mydashboard/ajax/launchURL.php',
-//                             type: 'POST',
-//                             data:{dateinv:dateinv, widget:'$widgetId'},
-//                             success:function(response) {
-//                                     window.open(response);
-//                                   }
-//                          });
-//                        }
-//                      };
-                   }
-                 );
-                
-             </script>";
-            $canvas = true;
-            if ($nb < 1) {
-               $canvas = false;
-               $graph .= __('No data available', 'mydashboard');
-            }
-            $params    = ["widgetId"  => $widgetId,
-                          "name"      => 'InventoryTypePieChart',
-                          "onsubmit"  => false,
-                          "opt"       => [],
-                          "criterias" => [],
-                          "export"    => $canvas,
-                          "canvas"    => $canvas,
-                          "nb"        => $nb];
-            $graph     .= PluginMydashboardHelper::getGraphHeader($params);
+            $graph_datas = ['name'            => $name,
+                            'ids'             => json_encode([]),
+                            'data'            => $dataPieset,
+                            'labels'          => $labelsPie,
+                            'label'           => $title,
+                            'backgroundColor' => $backgroundPieColor];
+
+            //            if ($onclick == 1) {
+            $graph_criterias = ['widget' => $widgetId];
+            //            }
+
+            $graph = PluginMydashboardPieChart::launchPieGraph($graph_datas, $graph_criterias);
+
+            $params = ["widgetId"  => $widgetId,
+                       "name"      => $name,
+                       "onsubmit"  => false,
+                       "opt"       => [],
+                       "criterias" => [],
+                       "export"    => true,
+                       "canvas"    => true,
+                       "nb"        => $nb];
+            $widget->setWidgetHeader(PluginMydashboardHelper::getGraphHeader($params));
             $widget->setWidgetHtmlContent(
                $graph
             );
