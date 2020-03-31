@@ -1066,23 +1066,25 @@ function plugin_ocsinventoryng_displayConfigItem($type, $ID, $data, $num) {
  *
  * @return string
  */
-function plugin_ocsinventoryng_addSelect($type, $id) {
+function plugin_ocsinventoryng_addSelect($type, $ID, $num) {
 
    $searchopt = &Search::getOptions($type);
-   $table     = $searchopt[$id]["table"];
-   $field     = $searchopt[$id]["field"];
-
-   $out = "`$table`.`$field` AS $field,
-           `$table`.`ocsid` AS ocsid,
-           `$table`.`plugin_ocsinventoryng_ocsservers_id` AS plugin_ocsinventoryng_ocsservers_id, ";
+   $table     = $searchopt[$ID]["table"];
+   $field     = $searchopt[$ID]["field"];
 
    switch ($type) {
       case 'PluginOcsinventoryngNotimportedcomputer' :
+         $out = "`$table`.`$field`  AS `ITEM_$num`,
+           `glpi_plugin_ocsinventoryng_notimportedcomputers`.`ocsid` AS ocsid,
+           `glpi_plugin_ocsinventoryng_notimportedcomputers`.`plugin_ocsinventoryng_ocsservers_id` AS plugin_ocsinventoryng_ocsservers_id, ";
          return $out;
 
       case 'PluginOcsinventoryngDetail' :
-         $out .= "`$table`.`plugin_ocsinventoryng_threads_id`,
-                  `$table`.`threadid`, ";
+         $out = "`$table`.`$field`  AS `ITEM_$num`,
+           `glpi_plugin_ocsinventoryng_details`.`ocsid` AS ocsid,
+           `glpi_plugin_ocsinventoryng_details`.`plugin_ocsinventoryng_ocsservers_id` AS plugin_ocsinventoryng_ocsservers_id, ";
+         $out .= "glpi_plugin_ocsinventoryng_details`.`plugin_ocsinventoryng_threads_id`,
+                  `glpi_plugin_ocsinventoryng_details`.`threadid`, ";
          return $out;
    }
    return "";
