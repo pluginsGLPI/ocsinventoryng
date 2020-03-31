@@ -698,6 +698,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       $teamviewer = new PluginOcsinventoryngTeamviewer();
       $teamviewer->deleteByCriteria(['computers_id' => $comp->getField("id")]);
 
+      $customapp = new PluginOcsinventoryngCustomapp();
+      $customapp->deleteByCriteria(['computers_id' => $comp->getField("id")]);
+
    }
 
 

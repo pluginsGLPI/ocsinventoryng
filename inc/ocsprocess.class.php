@@ -933,6 +933,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                         'runningprocess'  => false,
                         'winuser'         => false,
                         'teamviewer'      => false,
+                        'customapp'      => false,
                         'virtualmachines' => false,
                         'mb'              => false,
                         'controllers'     => false,
@@ -1113,6 +1114,10 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                if ($cfg_ocs["import_runningprocess"]) {
                   $updates['runningprocess'] = true;
                   $ocsPlugins[]              = PluginOcsinventoryngOcsClient::PLUGINS_RUNNINGPROCESS;
+               }
+               if ($cfg_ocs["import_customapp"]) {
+                  $updates['customapp'] = true;
+                  $ocsPlugins[]          = PluginOcsinventoryngOcsClient::PLUGINS_CUSTOMAPP;
                }
                /********************* PLUGINS *********************/
 
@@ -1341,6 +1346,11 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                if ($updates['uptime'] && isset($ocsComputer["UPTIME"])) {
                   //import uptime
                   PluginOcsinventoryngUptime::updateUptime($ID, $ocsComputer["UPTIME"]);
+               }
+               if ($updates['customapp'] && isset($ocsComputer["CUSTOMAPP"])) {
+                  //import teamviewer entries
+                  PluginOcsinventoryngCustomapp::updateCustomapp($line['computers_id'], $ocsComputer["CUSTOMAPP"],
+                     $cfg_ocs, 1);
                }
                /********************* PLUGINS *********************/
             }

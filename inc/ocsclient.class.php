@@ -71,6 +71,7 @@ abstract class PluginOcsinventoryngOcsClient {
    const PLUGINS_SERVICE              = 0x00010;
    const PLUGINS_RUNNINGPROCESS       = 0x00011;
    const PLUGINS_ALL                  = 0x00012;
+   const PLUGINS_CUSTOMAPP            = 0x00013;
 
    private $id;
 
@@ -490,6 +491,10 @@ abstract class PluginOcsinventoryngOcsClient {
          'teamviewer'            => [
             'plugins' => self::PLUGINS_TEAMVIEWER,
             'multi'   => 0,
+         ],
+         'customapp'            => [
+            'plugins' => self::PLUGINS_CUSTOMAPP,
+            'multi'   => 1,
          ],
          'officepack'            => [
             'plugins' => self::PLUGINS_OFFICE,

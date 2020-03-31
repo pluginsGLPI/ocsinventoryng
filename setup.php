@@ -32,6 +32,7 @@ define("PLUGIN_OCSINVENTORYNG_STATE_RUNNING", 2);
 define("PLUGIN_OCSINVENTORYNG_STATE_FINISHED", 3);
 
 define("PLUGIN_OCSINVENTORYNG_LOCKFILE", GLPI_LOCK_DIR . "/ocsinventoryng.lock");
+define('PLUGIN_OCS_VERSION', '1.6.1');
 
 /**
  * Init the hooks of the plugins -Needed
@@ -80,6 +81,10 @@ function plugin_init_ocsinventoryng() {
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_winusers')) {
       Plugin::registerClass('PluginOcsinventoryngWinuser',
                             ['addtabon' => 'Computer']);
+   }
+   if ($DB->tableExists('glpi_plugin_ocsinventoryng_customapps')) {
+      Plugin::registerClass('PluginOcsinventoryngCustomapp',
+         ['addtabon' => 'Computer']);
    }
 
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_networkshares')) {
@@ -195,7 +200,7 @@ function plugin_init_ocsinventoryng() {
 function plugin_version_ocsinventoryng() {
 
    return ['name'           => "OCS Inventory NG",
-           'version'        => '1.6.0',
+           'version'        => PLUGIN_OCS_VERSION,
            'author'         => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
            'license'        => 'GPLv2+',
            'homepage'       => 'https://github.com/pluginsGLPI/ocsinventoryng',
