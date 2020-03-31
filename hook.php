@@ -1086,8 +1086,8 @@ function plugin_ocsinventoryng_addSelect($type, $ID, $num) {
       case 'PluginOcsinventoryngDetail' :
          $out = "`$table`.`$field`  AS `ITEM_$num`,
            `glpi_plugin_ocsinventoryng_details`.`ocsid` AS ocsid,
-           `glpi_plugin_ocsinventoryng_details`.`plugin_ocsinventoryng_ocsservers_id` AS plugin_ocsinventoryng_ocsservers_id, ";
-         $out .= "glpi_plugin_ocsinventoryng_details`.`plugin_ocsinventoryng_threads_id`,
+           `glpi_plugin_ocsinventoryng_details`.`plugin_ocsinventoryng_ocsservers_id` AS plugin_ocsinventoryng_ocsservers_id, 
+           `glpi_plugin_ocsinventoryng_details`.`plugin_ocsinventoryng_threads_id`,
                   `glpi_plugin_ocsinventoryng_details`.`threadid`, ";
          return $out;
    }
