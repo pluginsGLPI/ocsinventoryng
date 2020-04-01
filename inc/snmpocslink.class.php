@@ -2396,7 +2396,7 @@ JAVASCRIPT;
                   if (!$tolinked) {
                      echo Html::submit(_sx('button', 'Import'), ['name' => 'import_ok']);
                   } else {
-                     echo Html::submit(_sx('button', 'Link'), ['name' => 'import_ok']);
+                     echo Html::submit(_sx('button', 'Link', 'ocsinventoryng'), ['name' => 'import_ok']);
                   }
                   echo "</td></tr>\n";
                }
@@ -2566,7 +2566,7 @@ JAVASCRIPT;
                if (!$tolinked) {
                   echo Html::submit(_sx('button', 'Import'), ['name' => 'import_ok']);
                } else {
-                  echo Html::submit(_sx('button', 'Link'), ['name' => 'import_ok']);
+                  echo Html::submit(_sx('button', 'Link', 'ocsinventoryng'), ['name' => 'import_ok']);
                }
                echo Html::hidden('plugin_ocsinventoryng_ocsservers_id',
                                  ['value' => $plugin_ocsinventoryng_ocsservers_id]);

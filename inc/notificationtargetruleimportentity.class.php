@@ -122,7 +122,7 @@ class PluginOcsinventoryngNotificationTargetRuleImportEntity extends Notificatio
    function getTags() {
 
       $tags = ['checkruleimportentity.date'           => __('Date'),
-               'checkruleimportentity.url'            => __('Link'),
+               'checkruleimportentity.url'            => __('Link', 'ocsinventoryng'),
                'checkruleimportentity.entity'         => __('Entity'),
                'checkruleimportentity.computer'       => __('Computer'),
                'checkruleimportentity.location'       => __('Location'),

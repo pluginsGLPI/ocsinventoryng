@@ -55,8 +55,8 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
       $computers_id = $params['computers_id'];
       $entities_id  = $params['entities_id'];
       $cfg_ocs      = $params['cfg_ocs'];
-      $ocs_db_utf8 = $params['cfg_ocs']['ocs_db_utf8'];
-      $force       = $params['force'];
+      $ocs_db_utf8  = $params['cfg_ocs']['ocs_db_utf8'];
+      $force        = $params['force'];
 
       $uninstall_history = 0;
       if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_devices'] == 1 || $cfg_ocs['history_devices'] == 3)) {
@@ -123,6 +123,12 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                self::resetDevices($computers_id, $devicetype, $uninstall_history);
             }
 
+            $KnownDevice = new $devicetype();
+            $tabMems     = $KnownDevice->find(['items_id'    => $computers_id,
+                                               'itemtype'    => 'Computer',
+                                               'entities_id' => $entities_id,
+                                               'is_dynamic'  => 1]);
+
             $CompDevice = new $devicetype();
             foreach ($ocsComputer as $line2) {
                $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
@@ -154,11 +160,15 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                   $DeviceMemory = new DeviceMemory();
                   $ram_id       = $DeviceMemory->import($ram);
                   if ($ram_id) {
-                     if ($CompDevice->getFromDBByCrit(['items_id'          => $computers_id,
-                                                       'itemtype'          => 'Computer',
-                                                       'entities_id'       => $entities_id,
-                                                       'devicememories_id' => $ram_id,
-                                                       'is_dynamic'        => 1])) {
+                     $found = false;
+                     foreach ($tabMems as $idMem => $currMem) {
+                        if ($currMem['devicememories_id'] == $ram_id) {
+                           unset($tabMems[$idMem]);
+                           $found = true;
+                           break;
+                        }
+                     }
+                     if ($found) {
                         $CompDevice->update(['id'                => $CompDevice->getID(),
                                              'items_id'          => $computers_id,
                                              'itemtype'          => 'Computer',
@@ -421,8 +431,12 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             if ($force) {
                self::resetDevices($computers_id, $devicetype, $uninstall_history);
             }
-
-            $CompDevice = new $devicetype();
+            $KnownDevice = new $devicetype();
+            $tabProcs    = $KnownDevice->find(['items_id'    => $computers_id,
+                                               'itemtype'    => 'Computer',
+                                               'entities_id' => $entities_id,
+                                               'is_dynamic'  => 1]);
+            $CompDevice  = new $devicetype();
             //Processeurs:
             foreach ($ocsComputer as $line2) {
                $line2                    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
@@ -436,16 +450,21 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                $processor["frequency_default"] = $line2["SPEED"];
                $processor["nbcores_default"]   = $line2["CORES"];
                $processor["nbthreads_default"] = $line2["LOGICAL_CPUS"];
-               $processor["frequence"]   = $line2["CURRENT_SPEED"];
-               $processor["entities_id"] = $entities_id;
-               $DeviceProcessor          = new DeviceProcessor();
-               $proc_id                  = $DeviceProcessor->import($processor);
+               $processor["frequence"]         = $line2["CURRENT_SPEED"];
+               $processor["entities_id"]       = $entities_id;
+               $DeviceProcessor                = new DeviceProcessor();
+               $proc_id                        = $DeviceProcessor->import($processor);
                if ($proc_id) {
-                  if ($CompDevice->getFromDBByCrit(['items_id'            => $computers_id,
-                                                    'itemtype'            => 'Computer',
-                                                    'entities_id'         => $entities_id,
-                                                    'deviceprocessors_id' => $proc_id,
-                                                    'is_dynamic'          => 1])) {
+                  $found = false;
+                  foreach ($tabProcs as $idProc => $currProc) {
+                     if ($currProc['deviceprocessors_id'] == $proc_id &&
+                         +$currProc['nbcores'] == $processor["nbcores_default"]) {
+                        unset($tabProcs[$idProc]);
+                        $found = true;
+                        break;
+                     }
+                  }
+                  if ($found) {
                      $CompDevice->update(['id'                  => $CompDevice->getID(),
                                           'items_id'            => $computers_id,
                                           'itemtype'            => 'Computer',

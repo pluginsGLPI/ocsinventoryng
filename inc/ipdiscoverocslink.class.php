@@ -1384,7 +1384,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   echo Html::submit(_sx('button', 'Import'), ['name' => 'IdentifyAndImport']);
                   echo "&nbsp;";
                } else {
-                  echo Html::submit(__('Link'), ['name' => 'IdentifyAndLink']);
+                  echo Html::submit(__('Link', 'ocsinventoryng'), ['name' => 'IdentifyAndLink']);
                   echo "&nbsp;";
                }
                echo Html::submit(_sx('button', 'Delete from OCSNG', 'ocsinventoryng'), ['name' => 'delete']);
@@ -1497,7 +1497,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   echo Html::submit(_sx('button', 'Import'), ['name' => 'IdentifyAndImport']);
                   echo "&nbsp;";
                } else {
-                  echo Html::submit(__('Link'), ['name' => 'IdentifyAndLink']);
+                  echo Html::submit(__('Link', 'ocsinventoryng'), ['name' => 'IdentifyAndLink']);
                   echo "&nbsp;";
                }
                echo Html::submit(_sx('button', 'Delete from OCSNG', 'ocsinventoryng'), ['name' => 'delete']);
@@ -1517,7 +1517,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   echo Html::submit(_sx('button', 'Import'), ['name' => 'Import']);
                   echo "&nbsp;";
                } else {
-                  echo Html::submit(__('Link'), ['name' => 'Link']);
+                  echo Html::submit(__('Link', 'ocsinventoryng'), ['name' => 'Link']);
                   echo "&nbsp;";
                }
                echo Html::submit(_sx('button', 'Delete from OCSNG', 'ocsinventoryng'), ['name' => 'delete']);
@@ -1617,7 +1617,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   echo Html::submit(_sx('button', 'Import'), ['name' => 'Import']);
                   echo "&nbsp;";
                } else {
-                  echo Html::submit(__('Link'), ['name' => 'Link']);
+                  echo Html::submit(__('Link', 'ocsinventoryng'), ['name' => 'Link']);
                   echo "&nbsp;";
                }
                echo Html::submit(_sx('button', 'Delete from OCSNG', 'ocsinventoryng'), ['name' => 'delete']);
