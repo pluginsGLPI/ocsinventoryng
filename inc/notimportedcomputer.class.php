@@ -352,11 +352,11 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
       if ((isset($computer["HARDWARE"]) && $computer["HARDWARE"])
           && (isset($computer["BIOS"]) && $computer["BIOS"])) {
          $input["_ocs"]                                = true;
-         $input["name"]                                = isset($computer["HARDWARE"]["NAME"]) ? $computer["HARDWARE"]["NAME"] : 'null';
+         $input["name"]                                = isset($computer["META"]["NAME"]) ? $computer["META"]["NAME"] : 'null';
          $input["domain"]                              = isset($computer["HARDWARE"]["WORKGROUP"]) ? $computer["HARDWARE"]["WORKGROUP"] : 'null';
          $input["tag"]                                 = $computer["META"]["TAG"];
          $input["ocs_deviceid"]                        = $computer["HARDWARE"]["DEVICEID"];
-         $input["ipaddr"]                              = isset($computer["HARDWARE"]["IPADDR"]) ? $computer["HARDWARE"]["IPADDR"] : 'null';
+         $input["ipaddr"]                              = isset($computer["HARDWARE"]["IPSRC"]) ? $computer["HARDWARE"]["IPSRC"] : 'null';
          $input["plugin_ocsinventoryng_ocsservers_id"] = $ocsservers_id;
          $input["ocsid"]                               = $ocsid;
          $input["last_inventory"]                      = $computer["HARDWARE"]["LASTCOME"];
@@ -371,9 +371,9 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
          }
          $input["rules_id"] = json_encode($reason['rule_matched']);
 
-         $query  = "SELECT `id` FROM `" . $this->getTable() . "` " .
-                   "WHERE `ocsid`='" . $ocsid. "'
-                     AND `plugin_ocsinventoryng_ocsservers_id`= $ocsservers_id";
+         $query  = "SELECT `id` FROM `glpi_plugin_ocsinventoryng_notimportedcomputers`
+                    WHERE `ocsid`='" . $ocsid. "' 
+                    AND `plugin_ocsinventoryng_ocsservers_id`= '" . $ocsservers_id. "'";
          $result = $DB->query($query);
          if ($DB->numrows($result) > 0) {
             $input['id'] = $DB->result($result, 0, 'id');

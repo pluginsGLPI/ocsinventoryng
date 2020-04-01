@@ -98,12 +98,13 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
    /**
     *
     * Encode data coming from OCS DB in utf8 is needed
-    * @since 1.0
     *
     * @param boolean $is_ocsdb_utf8 is OCS database declared as utf8 in GLPI configuration
     * @param string  $value value to encode in utf8
     *
     * @return string value encoded in utf8
+    * @since 1.0
+    *
     */
    static function encodeOcsDataInUtf8($is_ocsdb_utf8, $value) {
       if (!$is_ocsdb_utf8 && !Toolbox::seems_utf8($value)) {
@@ -275,7 +276,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       return ['manufacturer'                    => ['BIOS', 'SMANUFACTURER'],
               'manufacturers_id'                => ['BIOS', 'SMANUFACTURER'],
               'license_number'                  => ['HARDWARE', 'WINPRODKEY'],
-              'licenseid'                      => ['HARDWARE', 'WINPRODID'],
+              'licenseid'                       => ['HARDWARE', 'WINPRODID'],
               'operatingsystems_id'             => ['HARDWARE', 'OSNAME'],
               'operatingsystemversions_id'      => ['HARDWARE', 'OSVERSION'],
               'operatingsystemarchitectures_id' => ['HARDWARE', 'ARCH'],
@@ -306,7 +307,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $input               = [];
       $input["is_dynamic"] = 1;
       //for rule asset
-      $input['_auto']      = 1;
+      $input['_auto'] = 1;
 
       $input["entities_id"] = $entities_id;
 
@@ -516,8 +517,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       if ($defaultentity == -1) {
          //Try to affect computer to an entity
          $rule = new RuleImportEntityCollection();
-         $data = $rule->processAllRules(['ocsservers_id'  => $plugin_ocsinventoryng_ocsservers_id,
-                                         '_source'        => 'ocsinventoryng'], [], ['ocsid' => $ocsid]);
+         $data = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                         '_source'       => 'ocsinventoryng'], [], ['ocsid' => $ocsid]);
 
          if (isset($data['_ignore_import']) && $data['_ignore_import'] == 1) {
             //ELSE Return code to indicates that the machine was not imported because it doesn't matched rules
@@ -527,7 +528,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       } else {
          //An entity or a location has already been defined via the web interface
          $data['entities_id']  = $defaultentity;
-         $data['is_recursive']  = $defaultrecursive;
+         $data['is_recursive'] = $defaultrecursive;
       }
       //Try to match all the rules, return the first good one, or null if not rules matched
       if (isset($data['entities_id']) && $data['entities_id'] >= 0) {
@@ -550,7 +551,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
             $input        = self::getComputerInformations($computer, PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id),
                                                           $data['entities_id'], $is_recursive);
 
-           PluginOcsinventoryngHardware::getFields($ocsComputer, $cfg_ocs, $input);
+            PluginOcsinventoryngHardware::getFields($ocsComputer, $cfg_ocs, $input);
 
             //Check if machine could be linked with another one already in DB
             $rulelink = new RuleImportComputerCollection();
@@ -742,12 +743,12 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
             $input["is_dynamic"]  = 1;
             $input["_nolock"]     = true;
             //for rule asset
-            $input['_auto']      = 1;
+            $input['_auto'] = 1;
 
-            $update_history = 0;
+            $update_history       = 0;
             $input["_no_history"] = 1;
             if ($cfg_ocs['dohistory'] == 1 && $cfg_ocs['history_hardware'] == 1) {
-               $update_history = 1;
+               $update_history       = 1;
                $input["_no_history"] = 0;
             }
 
@@ -768,7 +769,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                             'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                             'cfg_ocs'                             => $cfg_ocs,
                             'force'                               => 1];
-            self::synchronizeComputer($sync_params);
+            self::synchronizeComputer($sync_params, false);
             return true;
          }
       } else {
@@ -794,7 +795,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $cfg_ocs     = PluginOcsinventoryngOcsServer::getConfig($line_links["plugin_ocsinventoryng_ocsservers_id"]);
       $ocsComputer = $ocsClient->getComputer($line_links["ocsid"]);
 
-      $values       = [];
+      $values = [];
       PluginOcsinventoryngHardware::getFields($ocsComputer, $cfg_ocs, $values, $line_links['computers_id']);
 
       // Get all rules for the current plugin_ocsinventoryng_ocsservers_id
@@ -803,7 +804,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $data = $rule->processAllRules($values +
                                      ['ocsservers_id' => $line_links["plugin_ocsinventoryng_ocsservers_id"],
                                       '_source'       => 'ocsinventoryng'],
-                                     $values ,
+                                     $values,
                                      ['ocsid' => $line_links["ocsid"]]);
 
       // If entity is changing move items to the new entities_id
@@ -833,7 +834,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
     * @return array
     * @throws \GlpitestSQLError
     */
-   static function synchronizeComputer($sync_params) {
+   static function synchronizeComputer($sync_params, $transfer = true) {
       global $DB, $CFG_GLPI;
 
       $ID                                  = $sync_params["ID"];
@@ -864,7 +865,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
          if (is_array($computer_ocs) && count($computer_ocs) > 0) {
             // automatic transfer computer
             if ($CFG_GLPI['transfers_id_auto'] > 0
-                && Session::isMultiEntitiesMode()) {
+                && Session::isMultiEntitiesMode()
+               && $transfer == true) {
                self::transferComputer($line);
 
             } else {
@@ -872,7 +874,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                $values = [];
                PluginOcsinventoryngHardware::getFields($computer_ocs, $cfg_ocs, $values, $line['computers_id']);
 
-               if(isset($comp->fields["is_recursive"])){
+               if (isset($comp->fields["is_recursive"])) {
                   $values['is_recursive'] = $comp->fields["is_recursive"];
                }
 
@@ -933,7 +935,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                         'runningprocess'  => false,
                         'winuser'         => false,
                         'teamviewer'      => false,
-                        'customapp'      => false,
+                        'customapp'       => false,
                         'virtualmachines' => false,
                         'mb'              => false,
                         'controllers'     => false,
@@ -1117,7 +1119,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                }
                if ($cfg_ocs["import_customapp"]) {
                   $updates['customapp'] = true;
-                  $ocsPlugins[]          = PluginOcsinventoryngOcsClient::PLUGINS_CUSTOMAPP;
+                  $ocsPlugins[]         = PluginOcsinventoryngOcsClient::PLUGINS_CUSTOMAPP;
                }
                /********************* PLUGINS *********************/
 
@@ -1350,7 +1352,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                if ($updates['customapp'] && isset($ocsComputer["CUSTOMAPP"])) {
                   //import teamviewer entries
                   PluginOcsinventoryngCustomapp::updateCustomapp($line['computers_id'], $ocsComputer["CUSTOMAPP"],
-                     $cfg_ocs, 1);
+                                                                 $cfg_ocs, 1);
                }
                /********************* PLUGINS *********************/
             }
@@ -1388,10 +1390,10 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
     * @param ID  $computers_id
     * return the ip address or ''
     *
-    * @internal param the $plugin_ocsinventoryng_ocsservers_id ID of the OCS server
+    * @return string
     * @internal param ID $computers_id of the computer in OCS hardware table
     *
-    * @return string
+    * @internal param the $plugin_ocsinventoryng_ocsservers_id ID of the OCS server
     */
    static function getGeneralIpAddress($plugin_ocsinventoryng_ocsservers_id, $computers_id) {
       PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
@@ -1627,13 +1629,13 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
 
    /**
+    * @param null $checkitem
+    *
+    * @return array
     * @since version 0.85
     *
     * @see CommonDBTM::getSpecificMassiveActions()
     *
-    * @param null $checkitem
-    *
-    * @return array
     */
    function getSpecificMassiveActions($checkitem = null) {
 
@@ -1643,13 +1645,13 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
    }
 
    /**
+    * @param MassiveAction $ma
+    *
+    * @return bool|false
     * @since version 0.85
     *
     * @see CommonDBTM::showMassiveActionsSubForm()
     *
-    * @param MassiveAction $ma
-    *
-    * @return bool|false
     */
    static function showMassiveActionsSubForm(MassiveAction $ma) {
 
@@ -1678,16 +1680,16 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
    }
 
    /**
-    * @since version 0.85
-    *
-    * @see CommonDBTM::processMassiveActionsForOneItemtype()
-    *
     * @param MassiveAction $ma
     * @param CommonDBTM    $item
     * @param array         $ids
     *
     * @return nothing|void
     * @throws \GlpitestSQLError
+    * @see CommonDBTM::processMassiveActionsForOneItemtype()
+    *
+    * @since version 0.85
+    *
     */
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item, array $ids) {
       global $DB;
