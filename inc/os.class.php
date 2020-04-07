@@ -225,11 +225,11 @@ class PluginOcsinventoryngOS extends CommonDBChild {
          }
 
          // Yllen: only check on items_id and itemtype because only one is allowed
-         if ($id = $device->getFromDBByCrit(['items_id'            => $options['computers_id'],
-                                             'itemtype'            => 'Computer'])) {
+         if ($device->getFromDBByCrit(['items_id'            => $options['computers_id'],
+                                       'itemtype'            => 'Computer'])) {
             // Yllen: do update only if is_dynamic - no change if manual  
             if (($updates > 0) && ($device->fields['is_dynamic'] == 1)) {
-               $device->update(['id'                              => $id,
+               $device->update(['id'                              => $device->getID(),
                                 'operatingsystemversions_id'      => $operatingsystemversions_id,
                                 'operatingsystemservicepacks_id'  => $operatingsystemservicepacks_id,
                                 'operatingsystemarchitectures_id' => $operatingsystemarchitectures_id,
