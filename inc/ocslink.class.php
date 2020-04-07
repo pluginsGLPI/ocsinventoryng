@@ -577,7 +577,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          ) {
             $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                       SET `tag` = '" . $data_ocs["TAG"] . "'
-                      WHERE `id` = " . $line["computers_id"];
+                      WHERE `computers_id` = " . $line["computers_id"];
 
             if ($DB->query($query)) {
                $changes[0] = '0';
