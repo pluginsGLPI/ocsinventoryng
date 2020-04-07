@@ -76,6 +76,10 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             }
 
             $CompDevice = new $devicetype();
+            $tab     = $CompDevice->find(['items_id'    => $computers_id,
+                                               'itemtype'    => 'Computer',
+                                               'entities_id' => $entities_id,
+                                               'is_dynamic'  => 1]);
             //Bios
             $bios["designation"]             = $ocsComputer["BVERSION"];
             $bios["entities_id"]             = $entities_id;
@@ -94,11 +98,15 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             $bios_id    = $DeviceBios->import($bios);
 
             if ($bios_id) {
-               if ($CompDevice->getFromDBByCrit(['items_id'           => $computers_id,
-                                                 'itemtype'           => 'Computer',
-                                                 'entities_id'        => $entities_id,
-                                                 'devicefirmwares_id' => $bios_id,
-                                                 'is_dynamic'         => 1])) {
+               $found = false;
+               foreach ($tab as $id => $curr) {
+                  if ($curr['devicefirmwares_id'] == $bios_id) {
+                     unset($tab[$id]);
+                     $found = true;
+                     break;
+                  }
+               }
+               if ($found) {
                   $CompDevice->update(['id'                 => $CompDevice->getID(),
                                        'items_id'           => $computers_id,
                                        'itemtype'           => 'Computer',
@@ -124,7 +132,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             }
 
             $KnownDevice = new $devicetype();
-            $tabMems     = $KnownDevice->find(['items_id'    => $computers_id,
+            $tab     = $KnownDevice->find(['items_id'    => $computers_id,
                                                'itemtype'    => 'Computer',
                                                'entities_id' => $entities_id,
                                                'is_dynamic'  => 1]);
@@ -161,9 +169,9 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                   $ram_id       = $DeviceMemory->import($ram);
                   if ($ram_id) {
                      $found = false;
-                     foreach ($tabMems as $idMem => $currMem) {
-                        if ($currMem['devicememories_id'] == $ram_id) {
-                           unset($tabMems[$idMem]);
+                     foreach ($tab as $id => $curr) {
+                        if ($curr['devicememories_id'] == $ram_id) {
+                           unset($tab[$id]);
                            $found = true;
                            break;
                         }
@@ -197,6 +205,10 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
 
             $CompDevice = new $devicetype();
             //Disque Dur
+            $tab    = $CompDevice->find(['items_id'    => $computers_id,
+                                               'itemtype'    => 'Computer',
+                                               'entities_id' => $entities_id,
+                                               'is_dynamic'  => 1]);
             foreach ($ocsComputer as $line2) {
                $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                if (!empty($line2["DISKSIZE"]) && preg_match("/disk|spare\sdrive/i", $line2["TYPE"])) {
@@ -217,11 +229,15 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                   $DeviceHardDrive        = new DeviceHardDrive();
                   $dd_id                  = $DeviceHardDrive->import($dd);
                   if ($dd_id) {
-                     if ($CompDevice->getFromDBByCrit(['items_id'            => $computers_id,
-                                                       'itemtype'            => 'Computer',
-                                                       'entities_id'         => $entities_id,
-                                                       'deviceharddrives_id' => $dd_id,
-                                                       'is_dynamic'          => 1])) {
+                     $found = false;
+                     foreach ($tab as $id => $curr) {
+                        if ($curr['deviceharddrives_id'] == $dd_id) {
+                           unset($tab[$id]);
+                           $found = true;
+                           break;
+                        }
+                     }
+                     if ($found) {
                         $CompDevice->update(['id'                  => $CompDevice->getID(),
                                              'items_id'            => $computers_id,
                                              'itemtype'            => 'Computer',
@@ -251,6 +267,10 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             }
 
             $CompDevice = new $devicetype();
+            $tab    = $CompDevice->find(['items_id'    => $computers_id,
+                                         'itemtype'    => 'Computer',
+                                         'entities_id' => $entities_id,
+                                         'is_dynamic'  => 1]);
             //lecteurs
             foreach ($ocsComputer as $line2) {
                $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
@@ -268,11 +288,15 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                   $DeviceDrive         = new DeviceDrive();
                   $stor_id             = $DeviceDrive->import($stor);
                   if ($stor_id) {
-                     if ($CompDevice->getFromDBByCrit(['items_id'        => $computers_id,
-                                                       'itemtype'        => 'Computer',
-                                                       'entities_id'     => $entities_id,
-                                                       'devicedrives_id' => $stor_id,
-                                                       'is_dynamic'      => 1])) {
+                     $found = false;
+                     foreach ($tab as $id => $curr) {
+                        if ($curr['devicedrives_id'] == $stor_id) {
+                           unset($tab[$id]);
+                           $found = true;
+                           break;
+                        }
+                     }
+                     if ($found) {
                         $CompDevice->update(['id'              => $CompDevice->getID(),
                                              'items_id'        => $computers_id,
                                              'itemtype'        => 'Computer',
@@ -300,6 +324,10 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                }
 
                $CompDevice = new $devicetype();
+               $tab    = $CompDevice->find(['items_id'    => $computers_id,
+                                            'itemtype'    => 'Computer',
+                                            'entities_id' => $entities_id,
+                                            'is_dynamic'  => 1]);
                //Modems
                foreach ($ocsComputer['MODEMS'] as $line2) {
                   $line2              = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
@@ -311,11 +339,15 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                   $DevicePci = new DevicePci();
                   $mdm_id    = $DevicePci->import($mdm);
                   if ($mdm_id) {
-                     if ($CompDevice->getFromDBByCrit(['items_id'      => $computers_id,
-                                                       'itemtype'      => 'Computer',
-                                                       'entities_id'   => $entities_id,
-                                                       'devicepcis_id' => $mdm_id,
-                                                       'is_dynamic'    => 1])) {
+                     $found = false;
+                     foreach ($tab as $id => $curr) {
+                        if ($curr['devicepcis_id'] == $mdm_id) {
+                           unset($tab[$id]);
+                           $found = true;
+                           break;
+                        }
+                     }
+                     if ($found) {
                         $CompDevice->update(['id'            => $CompDevice->getID(),
                                              'items_id'      => $computers_id,
                                              'itemtype'      => 'Computer',
@@ -339,6 +371,11 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                   self::resetDevices($computers_id, $devicetype, $uninstall_history);
                }
                $CompDevice = new $devicetype();
+               $tab    = $CompDevice->find(['items_id'    => $computers_id,
+                                            'itemtype'    => 'Computer',
+                                            'entities_id' => $entities_id,
+                                            'is_dynamic'  => 1]);
+
                foreach ($ocsComputer['PORTS'] as $line2) {
                   $line2               = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                   $port["designation"] = "";
@@ -358,11 +395,15 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                      $DevicePci = new DevicePci();
                      $port_id   = $DevicePci->import($port);
                      if ($port_id) {
-                        if ($CompDevice->getFromDBByCrit(['items_id'      => $computers_id,
-                                                          'itemtype'      => 'Computer',
-                                                          'entities_id'   => $entities_id,
-                                                          'devicepcis_id' => $port_id,
-                                                          'is_dynamic'    => 1])) {
+                        $found = false;
+                        foreach ($tab as $id => $curr) {
+                           if ($curr['devicepcis_id'] == $port_id) {
+                              unset($tab[$id]);
+                              $found = true;
+                              break;
+                           }
+                        }
+                        if ($found) {
                            $CompDevice->update(['id'            => $CompDevice->getID(),
                                                 'items_id'      => $computers_id,
                                                 'itemtype'      => 'Computer',
@@ -388,7 +429,10 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                }
 
                $CompDevice = new $devicetype();
-
+               $tab    = $CompDevice->find(['items_id'    => $computers_id,
+                                            'itemtype'    => 'Computer',
+                                            'entities_id' => $entities_id,
+                                            'is_dynamic'  => 1]);
                foreach ($ocsComputer['SLOTS'] as $line2) {
                   $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                   if ($line2['NAME']) {
@@ -403,11 +447,15 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                      $DevicePci = new DevicePci();
                      $pci_id    = $DevicePci->import($pci);
                      if ($pci_id) {
-                        if ($CompDevice->getFromDBByCrit(['items_id'      => $computers_id,
-                                                          'itemtype'      => 'Computer',
-                                                          'entities_id'   => $entities_id,
-                                                          'devicepcis_id' => $pci_id,
-                                                          'is_dynamic'    => 1])) {
+                        $found = false;
+                        foreach ($tab as $id => $curr) {
+                           if ($curr['devicepcis_id'] == $pci_id) {
+                              unset($tab[$id]);
+                              $found = true;
+                              break;
+                           }
+                        }
+                        if ($found) {
                            $CompDevice->update(['id'            => $CompDevice->getID(),
                                                 'items_id'      => $computers_id,
                                                 'itemtype'      => 'Computer',
@@ -432,7 +480,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                self::resetDevices($computers_id, $devicetype, $uninstall_history);
             }
             $KnownDevice = new $devicetype();
-            $tabProcs    = $KnownDevice->find(['items_id'    => $computers_id,
+            $tab    = $KnownDevice->find(['items_id'    => $computers_id,
                                                'itemtype'    => 'Computer',
                                                'entities_id' => $entities_id,
                                                'is_dynamic'  => 1]);
@@ -456,10 +504,10 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                $proc_id                        = $DeviceProcessor->import($processor);
                if ($proc_id) {
                   $found = false;
-                  foreach ($tabProcs as $idProc => $currProc) {
-                     if ($currProc['deviceprocessors_id'] == $proc_id &&
-                         +$currProc['nbcores'] == $processor["nbcores_default"]) {
-                        unset($tabProcs[$idProc]);
+                  foreach ($tab as $id => $curr) {
+                     if ($curr['deviceprocessors_id'] == $proc_id &&
+                         +$curr['nbcores'] == $processor["nbcores_default"]) {
+                        unset($tab[$id]);
                         $found = true;
                         break;
                      }
@@ -501,6 +549,10 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             }
 
             $CompDevice = new $devicetype();
+            $tab    = $CompDevice->find(['items_id'    => $computers_id,
+                                         'itemtype'    => 'Computer',
+                                         'entities_id' => $entities_id,
+                                         'is_dynamic'  => 1]);
             //carte graphique
             foreach ($ocsComputer as $line2) {
                $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
@@ -514,11 +566,15 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                   $DeviceGraphicCard       = new DeviceGraphicCard();
                   $video_id                = $DeviceGraphicCard->import($video);
                   if ($video_id) {
-                     if ($CompDevice->getFromDBByCrit(['items_id'              => $computers_id,
-                                                       'itemtype'              => 'Computer',
-                                                       'entities_id'           => $entities_id,
-                                                       'devicegraphiccards_id' => $video_id,
-                                                       'is_dynamic'            => 1])) {
+                     $found = false;
+                     foreach ($tab as $id => $curr) {
+                        if ($curr['devicegraphiccards_id'] == $video_id) {
+                           unset($tab[$id]);
+                           $found = true;
+                           break;
+                        }
+                     }
+                     if ($found) {
                         $CompDevice->update(['id'                    => $CompDevice->getID(),
                                              'items_id'              => $computers_id,
                                              'itemtype'              => 'Computer',
@@ -546,6 +602,10 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             }
 
             $CompDevice = new $devicetype();
+            $tab    = $CompDevice->find(['items_id'    => $computers_id,
+                                         'itemtype'    => 'Computer',
+                                         'entities_id' => $entities_id,
+                                         'is_dynamic'  => 1]);
             //carte son
             foreach ($ocsComputer as $line2) {
                $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
@@ -561,11 +621,15 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                   $DeviceSoundCard = new DeviceSoundCard();
                   $snd_id          = $DeviceSoundCard->import($snd);
                   if ($snd_id) {
-                     if ($CompDevice->getFromDBByCrit(['items_id'            => $computers_id,
-                                                       'itemtype'            => 'Computer',
-                                                       'entities_id'         => $entities_id,
-                                                       'devicesoundcards_id' => $snd_id,
-                                                       'is_dynamic'          => 1])) {
+                     $found = false;
+                     foreach ($tab as $id => $curr) {
+                        if ($curr['devicesoundcards_id'] == $snd_id) {
+                           unset($tab[$id]);
+                           $found = true;
+                           break;
+                        }
+                     }
+                     if ($found) {
                         $CompDevice->update(['id'                  => $CompDevice->getID(),
                                              'items_id'            => $computers_id,
                                              'itemtype'            => 'Computer',
@@ -590,6 +654,10 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             }
 
             $CompDevice = new $devicetype();
+            $tab    = $CompDevice->find(['items_id'    => $computers_id,
+                                         'itemtype'    => 'Computer',
+                                         'entities_id' => $entities_id,
+                                         'is_dynamic'  => 1]);
             //Motherboard
             $mb["designation"] = $ocsComputer["MMODEL"];
 
@@ -601,11 +669,15 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             $devicemotherboards_id = $DeviceMB->import($mb);
             $serial                = $ocsComputer["MSN"];
             if ($devicemotherboards_id) {
-               if ($CompDevice->getFromDBByCrit(['items_id'              => $computers_id,
-                                                 'itemtype'              => 'Computer',
-                                                 'entities_id'           => $entities_id,
-                                                 'devicemotherboards_id' => $devicemotherboards_id,
-                                                 'is_dynamic'            => 1])) {
+               $found = false;
+               foreach ($tab as $id => $curr) {
+                  if ($curr['devicemotherboards_id'] == $devicemotherboards_id) {
+                     unset($tab[$id]);
+                     $found = true;
+                     break;
+                  }
+               }
+               if ($found) {
                   $CompDevice->update(['id'                    => $CompDevice->getID(),
                                        'items_id'              => $computers_id,
                                        'itemtype'              => 'Computer',
@@ -631,6 +703,11 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             }
             //controllers
             $CompDevice = new $devicetype();
+            $tab    = $CompDevice->find(['items_id'    => $computers_id,
+                                         'itemtype'    => 'Computer',
+                                         'entities_id' => $entities_id,
+                                         'is_dynamic'  => 1]);
+
             foreach ($ocsComputer as $line2) {
                $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
                if ($line2['NAME']) {
@@ -651,11 +728,15 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                   $DeviceControl = new DeviceControl();
                   $ctrl_id       = $DeviceControl->import($ctrl);
                   if ($ctrl_id) {
-                     if ($CompDevice->getFromDBByCrit(['items_id'          => $computers_id,
-                                                       'itemtype'          => 'Computer',
-                                                       'entities_id'       => $entities_id,
-                                                       'devicecontrols_id' => $ctrl_id,
-                                                       'is_dynamic'        => 1])) {
+                     $found = false;
+                     foreach ($tab as $id => $curr) {
+                        if ($curr['devicecontrols_id'] == $ctrl_id) {
+                           unset($tab[$id]);
+                           $found = true;
+                           break;
+                        }
+                     }
+                     if ($found) {
                         $CompDevice->update(['id'                => $CompDevice->getID(),
                                              'items_id'          => $computers_id,
                                              'itemtype'          => 'Computer',
