@@ -376,6 +376,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
             case "networkshare" :
             case "service":
             case "runningprocess" :
+            case "officepack" :
             if (self::OcsTableExists($table)) {
                if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
                   $query   = "SELECT * 
@@ -392,22 +393,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                }
             }
             break;
-            //plugin officepack
-            case "officepack" :
-               if (self::OcsTableExists("officepack")) {
-                  if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
-                     $query   = "SELECT `ID`, `HARDWARE_ID`, `OFFICEVERSION`, `PRODUCT`, `OFFICEKEY`, `NOTE`
-                              FROM `officepack`
-                              WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")
-                              AND `INSTALL` = 1";
-                     $request = $this->db->query($query);
-                     while ($meta = $this->db->fetch_assoc($request)) {
-                        $computers[$meta['HARDWARE_ID']][strtoupper($table)][$meta['ID']] = $meta;
-                     }
-                  }
-               }
-               break;
-               break;
             case "hardware" :
                $query   = "SELECT `hardware`.*,`accountinfo`.`TAG` 
                           FROM `hardware`

@@ -52,9 +52,9 @@ class PluginOcsinventoryngUptime extends CommonDBChild {
       global $DB;
 
       if ($id) {
-         if (isset($ocsComputer["time"])) {
+         if (isset($ocsComputer["DURATION"])) {
             $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                      SET `uptime` = '" . $ocsComputer["time"] . "'
+                      SET `uptime` = '" . $ocsComputer["DURATION"] . "'
                       WHERE `id` = $id";
 
             $DB->query($query);
