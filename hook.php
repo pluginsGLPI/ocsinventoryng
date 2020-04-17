@@ -466,7 +466,7 @@ function plugin_ocsinventoryng_install() {
       /******************* Migration 1.4.4 *******************/
       if ($DB->tableExists('glpi_plugin_ocsinventoryng_ocsservers')
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_runningprocess')
-          && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_service')){
+          && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_service')) {
 
          $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.4.4-update.sql");
       }/*1.4.4*/
@@ -676,10 +676,10 @@ function plugin_ocsinventoryng_uninstall() {
    }
 
    $notification = new Notification();
-   $itemtypes = ['PluginMassocsimportNotimported',
-                 'PluginOcsinventoryngNotimportedcomputer',
-                 'PluginOcsinventoryngRuleImportEntity',
-                 'PluginOcsinventoryngOcsAlert'];
+   $itemtypes    = ['PluginMassocsimportNotimported',
+                    'PluginOcsinventoryngNotimportedcomputer',
+                    'PluginOcsinventoryngRuleImportEntity',
+                    'PluginOcsinventoryngOcsAlert'];
    foreach ($dbu->getAllDataFromTable($notification->getTable(),
                                       ["itemtype" => $itemtypes]) as $data) {
       $notification->delete($data);
@@ -754,6 +754,7 @@ function plugin_ocsinventoryng_getDatabaseRelations() {
               => ["glpi_plugin_ocsinventoryng_ocslinks"             => "plugin_ocsinventoryng_ocsservers_id",
                   "glpi_plugin_ocsinventoryng_ocsadmininfoslinks"   => "plugin_ocsinventoryng_ocsservers_id",
                   "glpi_plugin_ocsinventoryng_threads"              => "plugin_ocsinventoryng_ocsservers_id",
+                  "glpi_plugin_ocsinventoryng_details"              => "plugin_ocsinventoryng_ocsservers_id",
                   "glpi_plugin_ocsinventoryng_notimportedcomputers" => "plugin_ocsinventoryng_ocsservers_id",
                   "glpi_plugin_ocsinventoryng_servers"              => "plugin_ocsinventoryng_ocsservers_id",
                   "glpi_plugin_ocsinventoryng_snmpocslinks"         => "plugin_ocsinventoryng_ocsservers_id",
@@ -767,9 +768,9 @@ function plugin_ocsinventoryng_getDatabaseRelations() {
                   "glpi_plugin_ocsinventoryng_notimportedcomputers" => "entities_id"],
 
               "glpi_computers"
-              => ["glpi_plugin_ocsinventoryng_ocslinks"         => "computers_id",
-                  "glpi_plugin_ocsinventoryng_registrykeys"     => "computers_id",
-                  "glpi_plugin_ocsinventoryng_details"          => "computers_id"],
+              => ["glpi_plugin_ocsinventoryng_ocslinks"     => "computers_id",
+                  "glpi_plugin_ocsinventoryng_registrykeys" => "computers_id",
+                  "glpi_plugin_ocsinventoryng_details"      => "computers_id"],
 
               "glpi_networkports"
               => ["glpi_plugin_ocsinventoryng_networkports" => "networkports_id"],
@@ -1192,11 +1193,12 @@ function plugin_ocsinventoryng_searchOptionsValues($params = []) {
 /**
  *
  * Criteria for rules
- * @since 0.84
  *
  * @param $params           input data
  *
  * @return array array of criteria
+ * @since 0.84
+ *
  */
 function plugin_ocsinventoryng_getRuleCriteria($params) {
    $criteria = [];
@@ -1270,11 +1272,12 @@ function plugin_ocsinventoryng_getRuleCriteria($params) {
 /**
  *
  * Actions for rules
- * @since 0.84
  *
  * @param $params           input data
  *
  * @return array array of actions
+ * @since 0.84
+ *
  */
 function plugin_ocsinventoryng_getRuleActions($params) {
    //
@@ -1302,12 +1305,12 @@ function plugin_ocsinventoryng_getRuleActions($params) {
 }
 
 /**
- * @see inc/RuleCollection::prepareInputDataForProcess()
- * @since 0.84
- *
  * @param $params           input data
  *
  * @return array array of criteria value to add for processing
+ * @see inc/RuleCollection::prepareInputDataForProcess()
+ * @since 0.84
+ *
  */
 function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params) {
    switch ($params['rule_itemtype']) {
@@ -1403,11 +1406,12 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
 /**
  *
  * Actions for rules
- * @since 0.84
  *
  * @param $params           input data
  *
  * @return an array of actions
+ * @since 0.84
+ *
  */
 function plugin_ocsinventoryng_executeActions($params) {
 
@@ -1453,11 +1457,12 @@ function plugin_ocsinventoryng_executeActions($params) {
 /**
  *
  * Preview for test a Rule
- * @since 0.84
  *
  * @param $params           input data
  *
  * @return  $output array
+ * @since 0.84
+ *
  */
 function plugin_ocsinventoryng_preProcessRulePreviewResults($params) {
    $output = $params['output'];
@@ -1507,11 +1512,12 @@ function plugin_ocsinventoryng_preProcessRulePreviewResults($params) {
 /**
  *
  * Preview for test a RuleCoolection
- * @since 0.84
  *
  * @param $params           input data
  *
  * @return  $output array
+ * @since 0.84
+ *
  */
 function plugin_ocsinventoryng_preProcessRuleCollectionPreviewResults($params) {
    return plugin_ocsinventoryng_preProcessRulePreviewResults($params);
@@ -1611,11 +1617,12 @@ function plugin_ocsinventoryng_getFKFieldsForQuery() {
 /**
  *
  * Add global criteria for ruleImportComputer rules engine
- * @since 1.0
  *
  * @param $global_criteria an array of global criteria for this rule engine
  *
  * @return array array including plugin's criteria
+ * @since 1.0
+ *
  */
 function plugin_ocsinventoryng_ruleImportComputer_addGlobalCriteria($global_criteria) {
    return array_merge($global_criteria, ['IPADDRESS', 'IPSUBNET', 'MACADDRESS']);
@@ -1701,11 +1708,12 @@ function plugin_ocsinventoryng_ruleImportComputer_getSqlRestriction($params = []
 /**
  *
  * Display plugin's entries in unlock fields form
- * @since 1.0
  *
  * @param an|array $params an array which contains the item and the header boolean
  *
  * @return an array
+ * @since 1.0
+ *
  */
 function plugin_ocsinventoryng_showLocksForItem($params = []) {
    $comp   = $params['item'];
@@ -1744,9 +1752,10 @@ function plugin_ocsinventoryng_showLocksForItem($params = []) {
 /**
  *
  * Unlock fields managed by the plugin
- * @since 1.0
  *
  * @param array $params
+ *
+ * @since 1.0
  *
  * @internal param array $_POST
  */

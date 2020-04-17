@@ -1637,6 +1637,24 @@ JAVASCRIPT;
       $server = new PluginOcsinventoryngServer();
       $server->deleteByCriteria(['plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']]);
 
+      $detail = new PluginOcsinventoryngDetail();
+      $detail->deleteByCriteria(['plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']]);
+
+      $notimported = new PluginOcsinventoryngNotimportedcomputer();
+      $notimported->deleteByCriteria(['plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']]);
+
+      $iplink = new PluginOcsinventoryngIpdiscoverOcslink();
+      $iplink->deleteByCriteria(['plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']]);
+
+      $snmplink = new PluginOcsinventoryngSnmpOcslink();
+      $snmplink->deleteByCriteria(['plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']]);
+
+      $prof = new PluginOcsinventoryngOcsserver_Profile();
+      $prof->deleteByCriteria(['plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']]);
+
+      $thread = new PluginOcsinventoryngThread();
+      $thread->deleteByCriteria(['plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']]);
+
       unset($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
 
       // ocsservers_id for RuleImportComputer, OCS_SERVER for RuleImportEntity
