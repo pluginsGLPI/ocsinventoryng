@@ -64,29 +64,29 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
                'type'  => 'echo_rule'],
               ['name'  => 'ocsid',
                'label' => __('OCSNG ID', 'ocsinventoryng'),
-               'type'  => 'echo'],
+               'type'  => 'text'],
               ['name'  => 'plugin_ocsinventoryng_ocsservers_id',
                'label' => __('Server'),
                'type'  => 'echo_dropdown',
                'table' => 'glpi_plugin_ocsinventoryng_ocsservers'],
               ['name'  => 'ocs_deviceid',
                'label' => __('Device ID', 'ocsinventoryng'),
-               'type'  => 'echo'],
+               'type'  => 'text'],
               ['name'  => 'serial',
                'label' => __('Serial number'),
-               'type'  => ($can_update ? 'text' : 'echo')],
+               'type'  => 'text'],
               ['name'  => 'tag',
                'label' => __('OCSNG TAG', 'ocsinventoryng'),
-               'type'  => ($can_update ? 'text' : 'echo')],
+               'type'  => 'text'],
               ['name'  => 'useragent',
                'label' => __('Inventory agent', 'ocsinventoryng'),
-               'type'  => 'echo'],
+               'type'  => 'text'],
               ['name'  => 'ipaddr',
                'label' => __('IP'),
-               'type'  => 'echo'],
+               'type'  => 'text'],
               ['name'  => 'domain',
                'label' => __('Domain'),
-               'type'  => 'echo'],
+               'type'  => 'text'],
               ['name'  => 'last_inventory',
                'label' => __('Last OCSNG inventory date', 'ocsinventoryng'),
                'type'  => 'echo_datetime']];
@@ -241,23 +241,23 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
          'name'     => __('OCSNG ID', 'ocsinventoryng'),
          'datatype' => 'integer'
       ];
-
-      $tab[] = [
-         'id'            => '2',
-         'table'         => $this->getTable(),
-         'field'         => 'name',
-         'name'          => __('OCSNG name', 'ocsinventoryng'),
-         'datatype'      => 'itemlink',
-         'massiveaction' => false,
-         'itemlink_type' => $this->getType()
-      ];
+//
+//      $tab[] = [
+//         'id'            => '2',
+//         'table'         => $this->getTable(),
+//         'field'         => 'name',
+//         'name'          => __('OCSNG name', 'ocsinventoryng'),
+//         'datatype'      => 'itemlink',
+//         'massiveaction' => false,
+//         'itemlink_type' => $this->getType()
+//      ];
 
       $tab[] = [
          'id'       => '3',
          'table'    => $this->getTable(),
          'field'    => 'useragent',
          'name'     => __('Inventory agent', 'ocsinventoryng'),
-         'datatype' => 'number'
+         'datatype' => 'text'
       ];
 
       $tab[] = [
@@ -265,7 +265,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
          'table'    => $this->getTable(),
          'field'    => 'ocs_deviceid',
          'name'     => __('Device ID', 'ocsinventoryng'),
-         'datatype' => 'number'
+         'datatype' => 'text'
       ];
 
       $tab[] = [

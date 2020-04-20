@@ -153,24 +153,25 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
    function showForm($options = []) {
 
       $this->getFromDB(1);
+
       $this->showFormHeader($options);
 
       echo "<tr class='tab_bg_2'>";
-      echo "<td >" . __('New imported computers from OCS-NG', 'ocsinventoryng') . "</td><td>";
+      echo "<th colspan='3'>" . __('OCSNG alerts', 'ocsinventoryng');
+      echo "</th></tr>";
+
+      echo "<tr class='tab_bg_2'>";
+      echo "<td colspan='2'>" . __('New imported computers from OCS-NG', 'ocsinventoryng') . "</td><td>";
       Alert::dropdownYesNo(['name'  => "use_newocs_alert",
                             'value' => $this->fields["use_newocs_alert"]]);
 
       echo "</td></tr>";
 
-      echo "<tr class='tab_bg_2'><td >" . __('OCS-NG Synchronization alerts', 'ocsinventoryng') . "</td><td>";
+      echo "<tr class='tab_bg_2'><td colspan='2'>" . __('OCS-NG Synchronization alerts', 'ocsinventoryng') . "</td><td>";
       Alert::dropdownIntegerNever('delay_ocs',
                                   $this->fields["delay_ocs"],
                                   ['max' => 99]);
       echo "&nbsp;" . _n('Day', 'Days', 2);
-
-      echo "</td></tr>";
-
-      echo "<tr class='tab_bg_2'><td class='center' colspan='2'>";
       echo Html::hidden('id', ['value' => 1]);
       echo "</td></tr>";
 

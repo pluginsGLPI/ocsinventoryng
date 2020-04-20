@@ -293,7 +293,12 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "<div class='center'>";
       echo "<form name='processes' id='processes' action='$target' method='post'>";
       echo "<table class='tab_cadrehov'>";
-      echo "<tr><th colspan='16'>" . __('Processes execution of automatic actions', 'ocsinventoryng');
+      $colspan = '15';
+      $log = PluginOcsinventoryngConfig::logProcessedComputers();
+      if ($log) {
+         $colspan = '16';
+      }
+      echo "<tr><th colspan='$colspan'>" . __('Processes execution of automatic actions', 'ocsinventoryng');
       if (Session::haveRecursiveAccessToEntity(0)) {
          echo "&nbsp;<a href='thread.php?plugin_ocsinventoryng_ocsservers_id=0'>(" . __('See all servers', 'ocsinventoryng') . ")</a>";
       }
@@ -314,8 +319,11 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "<th>" . __('Computers refused', 'ocsinventoryng') . "</th>";
       echo "<th>" . __('Process time execution', 'ocsinventoryng') . "</th>";
       echo "<th>" . __('Server') . "</th>";
-      echo "<th>&nbsp;</th>";
-      echo "</th></tr>\n";
+      $log = PluginOcsinventoryngConfig::logProcessedComputers();
+      if ($log) {
+         echo "<th>&nbsp;</th>";
+      }
+      echo "</tr>\n";
 
       if ($DB->numrows($result)) {
          while ($thread = $DB->fetch_array($result)) {
@@ -386,9 +394,12 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                   echo __('All servers', 'ocsinventoryng');
                }
                echo "</td>";
-               echo "<td class='center'>";
-               echo "<a class='fas fa-search-plus' href=\"detail.php?criteria[0][field]=5&" .
-                  "criteria[0][searchtype]=contains&criteria[0][value]=^" . $thread["processid"] . '$">' . "</a></td>";
+
+               if ($log) {
+                  echo "<td class='center'>";
+                  echo "<a class='fas fa-search-plus' href=\"detail.php?criteria[0][field]=5&" .
+                       "criteria[0][searchtype]=contains&criteria[0][value]=^" . $thread["processid"] . '$">' . "</a></td>";
+               }
                echo "</tr>\n";
 
             }
@@ -398,7 +409,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       if ($imported_number->GetCount() > 0) {
          $this->showStat($minfreq, $imported_number, $synchronized_number, $linked_number,
             $failed_number, $notupdated_number, $notunique_number,
-            $linkedrefused_number, $process_time);
+            $linkedrefused_number, $process_time, $colspan);
       }
       echo "</table>";
 
@@ -433,17 +444,22 @@ class PluginOcsinventoryngThread extends CommonDBTM {
     * @param $time
     **/
    function showStat($duree, &$imported, &$synchronized, &$linked, &$failed, &$notupdated,
-                         &$notunique, &$linkedrefused, &$time) {
+                         &$notunique, &$linkedrefused, &$time, $colspan) {
 
       $title = __('Statistics');
       if ($duree < 9999) {
          $title = sprintf(__('%1$s (%2$s)'), $title,
             sprintf(_n('%d hour', '%d hours', $duree), $duree));
       }
-      echo "<tr><th colspan='16'>" . $title . "</th></tr>";
+
+      echo "<tr><th colspan='$colspan'>" . $title . "</th></tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td class='right' colspan='6'>" . __('Minimum') .
+      $colsp = '5';
+      if ($colspan == '16') {
+         $colsp = '6';
+      }
+      echo "<td class='right' colspan='$colsp'>" . __('Minimum') .
          "<br />" . __('Maximum', 'ocsinventoryng') .
          "<br />" . __('Average') .
          "<br />" . __('Total') . "</td>";
@@ -492,7 +508,6 @@ class PluginOcsinventoryngThread extends CommonDBTM {
          echo "<td>&nbsp;</td><td>&nbsp;</td>";
       }
       echo "</tr>\n";
-      echo "<tr><th colspan='15'>" . Dropdown::EMPTY_VALUE . "<th></tr>\n";
    }
 
 

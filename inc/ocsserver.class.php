@@ -456,7 +456,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                } else {
                   echo "<td class='center b' colspan='2'></td>";
                }
-               if (Session::haveRight("plugin_ocsinventoryng_import", READ) && $usemassimport) {
+               $log = PluginOcsinventoryngConfig::logProcessedComputers();
+               if ($log && Session::haveRight("plugin_ocsinventoryng_import", READ) && $usemassimport) {
                   //host imported by thread
                   echo "<td class='center b' colspan='2'>
                      <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/detail.php'>
@@ -464,6 +465,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                            title=\"" . __s('Computers imported by automatic actions', 'ocsinventoryng') . "\"></i>
                         <br>" . __('Computers imported by automatic actions', 'ocsinventoryng') . "
                      </a></td>";
+               } else {
+                  echo "<td class='center b' colspan='2'></td>";
                }
                echo "</tr>\n";
             }
