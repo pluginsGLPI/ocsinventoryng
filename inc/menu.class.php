@@ -155,22 +155,27 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
 
       switch ($item->getType()) {
          case __CLASS__ :
-            $dbu = new DbUtils();
+            $dbu        = new DbUtils();
             $ocsServers = $dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_ocsservers',
-                                               ["is_active" => 1]);
+                                                    ["is_active" => 1]);
             if (!empty($ocsServers)) {
 
                $ong[0] = __('Server Setup', 'ocsinventoryng');
 
                $ong[1] = __('Inventory Import', 'ocsinventoryng');
 
-               $ong[2] = __('IPDiscover Import', 'ocsinventoryng');
+               if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
+                   && $_SESSION["plugin_ocsinventoryng_ocsservers_id"] > 0) {
+                  if (PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
+                     $ocsClient  = new PluginOcsinventoryngOcsServer();
+                     $client     = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+                     $ipdiscover = $client->getIntConfig('IPDISCOVER');
+                     if ($ipdiscover) {
+                        $ong[2] = __('IPDiscover Import', 'ocsinventoryng');
+                     }
+                  }
+               }
 
-               //if (isset($_POST["plugin_ocsinventoryng_ocsservers_id"])) {
-               //   $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = $_POST["plugin_ocsinventoryng_ocsservers_id"];
-               //} else {
-               //   $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = PluginOcsinventoryngOcsServer::getFirstServer();
-               //}
 
                if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
                    && $_SESSION["plugin_ocsinventoryng_ocsservers_id"] > 0) {
