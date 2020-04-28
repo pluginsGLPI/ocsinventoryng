@@ -44,7 +44,7 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
     */
    static function getTypeName($nb = 0) {
 
-      return __('OCSNG alerts', 'ocsinventoryng');
+      return __('OCS-NG Synchronization alerts', 'ocsinventoryng');
    }
 
    /**
@@ -95,7 +95,7 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
       switch ($name) {
          case 'SynchroAlert':
             return [
-               'description' => __('OCS-NG Synchronization alerts', 'ocsinventoryng')];   // Optional
+               'description' => __('Computers not synchronized with OCS-NG since X days', 'ocsinventoryng')];   // Optional
             break;
          case 'AlertNewComputers':
             return [
@@ -482,12 +482,17 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
       echo "<table class='tab_cadre_fixe' cellpadding='5'>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td>" . __('Parameter', 'ocsinventoryng') . "</td>";
-      echo "<td>" . __('Status used by OCS-NG', 'ocsinventoryng');
+      echo "<th colspan='2'>" . __('Statuses used for alert', 'ocsinventoryng') . "</th>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>" . __('Status');
+      echo "</td>";
+      echo "<td>";
       Dropdown::show('State', ['name' => "states_id",
                                'used' => $used]);
       echo Html::submit(_sx('button', 'Add'), ['name' => 'add_state']);
-      echo "</div></td>";
+      echo "</td>";
       echo "</tr>";
       echo "</table>";
       Html::closeForm();

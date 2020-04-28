@@ -41,7 +41,7 @@ class PluginOcsinventoryngNotificationTargetOcsAlert extends NotificationTarget 
     * @return array
     */
    function getEvents() {
-      return ['ocs'    => PluginOcsinventoryngNotificationTargetOcsAlert::getTypeName(2),
+      return ['ocs'    => __('Computers not synchronized with OCS-NG since X days', 'ocsinventoryng'),
               'newocs' => __('New imported computers from OCS-NG', 'ocsinventoryng')];
    }
 
