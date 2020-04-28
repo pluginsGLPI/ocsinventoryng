@@ -1148,8 +1148,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     */
    public function getOldAgents() {
 
-      $config = $this->getConfig("GUI_REPORT_AGIN_MACH");
-      $delay  = $config['IVALUE'];
+//      $config = $this->getConfig("GUI_REPORT_AGIN_MACH");
+      $delay  = 30;
       $query  = "SELECT `id` from `hardware` 
                      WHERE ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) 
                      AND ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) 

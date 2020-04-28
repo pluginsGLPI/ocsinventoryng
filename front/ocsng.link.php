@@ -64,15 +64,15 @@ if (isset ($_POST["delete_link"])) {
 
 if (isset($_SESSION["ocs_link"])) {
    if ($count = count($_SESSION["ocs_link"])) {
-      if((isset($_SESSION["ocs_link_data"]["connection"]) && $_SESSION["ocs_link_data"]["connection"] == false ) || !isset($_SESSION["ocs_link_data"]["connection"]) ){
-         if(!PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])){
-            
+      if ((isset($_SESSION["ocs_link_data"]["connection"]) && $_SESSION["ocs_link_data"]["connection"] == false) || !isset($_SESSION["ocs_link_data"]["connection"])) {
+         if (!PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
+
             $_SESSION["ocs_link"] = [];
 
             Html::redirect($_SERVER['PHP_SELF']);
-         }else{
-			$_SESSION["ocs_link_data"]["connection"] = true;
-		 }
+         } else {
+            $_SESSION["ocs_link_data"]["connection"] = true;
+         }
       }
       $percent = min(100,
                      round(100 * ($_SESSION["ocs_link_count"] - $count) / $_SESSION["ocs_link_count"], 0));
@@ -101,15 +101,16 @@ if (!isset($_POST["import_ok"])) {
    if (!isset($_GET['start'])) {
       $_GET['start'] = 0;
    }
-   PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-   $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                   'import_mode'                         => $_SESSION["change_import_mode"],
-                   'check'                               => $_GET['check'],
-                   'start'                               => $_GET['start'],
-                   'entities_id'                         => $_SESSION['glpiactiveentities'],
-                   'tolinked'                            => true];
-   PluginOcsinventoryngOcsServer::showComputersToAdd($show_params);
-
+   if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
+      PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+      $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                      'import_mode'                         => $_SESSION["change_import_mode"],
+                      'check'                               => $_GET['check'],
+                      'start'                               => $_GET['start'],
+                      'entities_id'                         => $_SESSION['glpiactiveentities'],
+                      'tolinked'                            => true];
+      PluginOcsinventoryngOcsServer::showComputersToAdd($show_params);
+   }
 } else {
 
    if (isset($_POST["toimport"]) && (count($_POST['toimport']) > 0)) {

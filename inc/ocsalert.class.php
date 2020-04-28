@@ -169,8 +169,6 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
 
       $query_state = "SELECT `states_id`
             FROM `glpi_plugin_ocsinventoryng_notificationstates` ";
-
-
       $result_state = $DB->query($query_state);
       if ($DB->numrows($result_state) > 0) {
          $query .= " AND (`glpi_computers`.`states_id` = 999999 ";
@@ -180,9 +178,9 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
          }
          $query .= ") ";
       }
-      $query .= " AND `glpi_computers`.`entities_id` = $entity";
 
-      $query .= " ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update` ASC";
+      $query .= " AND `glpi_computers`.`entities_id` = $entity";
+      $query .= " ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update` DESC";
 
       return $query;
 
@@ -555,7 +553,7 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
       echo "<tr class='tab_bg_2'>";
       echo "<th colspan='3'>" . __('OCS-NG Synchronization alerts', 'ocsinventoryng');
       echo "</th></tr>";
-      
+
       echo "<tr class='tab_bg_1'><td>" . __('New imported computers from OCS-NG', 'ocsinventoryng') . "</td><td>";
       Alert::dropdownIntegerNever('use_newocs_alert', $entitynotification->fields["use_newocs_alert"],
                                   ['max'            => 99,

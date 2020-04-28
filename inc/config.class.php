@@ -267,8 +267,11 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       if ($synchro_ocs != 0) {
 
          foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1") as $config) {
+
             $query  = PluginOcsinventoryngOcsAlert::query($delay_ocs, $config, $_SESSION["glpiactive_entity"]);
+
             $result = $DB->query($query);
+
             if ($DB->numrows($result) > 0) {
 
                if (Session::isMultiEntitiesMode()) {

@@ -39,19 +39,19 @@ $display_list = true;
 if (isset($_SESSION["ocs_update"]['computers'])) {
    if ($count = count($_SESSION["ocs_update"]['computers'])) {
       $percent = min(100,
-         round(100 * ($_SESSION["ocs_update_count"] - $count) / $_SESSION["ocs_update_count"],
-            0));
+                     round(100 * ($_SESSION["ocs_update_count"] - $count) / $_SESSION["ocs_update_count"],
+                           0));
 
 
-      $key = array_pop($_SESSION["ocs_update"]['computers']);
-      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-      $sync_params = ['ID' => $key,
+      $key         = array_pop($_SESSION["ocs_update"]['computers']);
+      $cfg_ocs     = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+      $sync_params = ['ID'                                  => $key,
                       'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                      'cfg_ocs' => $cfg_ocs,
-                      'force' => 0];
-      $action = PluginOcsinventoryngOcsProcess::synchronizeComputer($sync_params);
+                      'cfg_ocs'                             => $cfg_ocs,
+                      'force'                               => 0];
+      $action      = PluginOcsinventoryngOcsProcess::synchronizeComputer($sync_params);
       PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_update"]['statistics'],
-         $action['status']);
+                                                             $action['status']);
       PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_update"]['statistics']);
       Html::displayProgressBar(400, $percent);
 
@@ -81,14 +81,15 @@ if (!isset($_POST["update_ok"])) {
    if (!isset($_GET['start'])) {
       $_GET['start'] = 0;
    }
-   PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-   if ($display_list) {
-      $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                      'check'                               => $_GET['check'],
-                      'start'                               => $_GET['start']];
-      PluginOcsinventoryngOcsServer::showComputersToSynchronize($show_params);
+   if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
+      PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+      if ($display_list) {
+         $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                         'check'                               => $_GET['check'],
+                         'start'                               => $_GET['start']];
+         PluginOcsinventoryngOcsServer::showComputersToSynchronize($show_params);
+      }
    }
-
 } else {
    if (count($_POST['toupdate']) > 0) {
       $_SESSION["ocs_update_count"] = 0;

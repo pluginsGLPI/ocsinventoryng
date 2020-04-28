@@ -607,8 +607,8 @@ JAVASCRIPT;
       echo "<div>";
       echo "<table class='tab_cadre' width='100%'>";
       echo "<tr class='tab_bg_2'>";
-      echo "<th colspan='4'>".
-           Html::hidden('id', ['value' => $ID]).
+      echo "<th colspan='4'>" .
+           Html::hidden('id', ['value' => $ID]) .
            __('General information', 'ocsinventoryng') .
            "<br><span style='color:red;'>" . __('Warning : the import entity rules depends on selected fields', 'ocsinventoryng') . "</span>\n";
       echo "</th></tr>\n";
@@ -1186,8 +1186,8 @@ JAVASCRIPT;
            __('Limit the import to the following tags (separator $, nothing for all)', 'ocsinventoryng') . "</td>\n";
       echo "<td>";
       echo Html::input('tag_limit', ['type'  => 'text',
-                                   'value' => $this->fields["tag_limit"],
-                                   'size'  => 30]);
+                                     'value' => $this->fields["tag_limit"],
+                                     'size'  => 30]);
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'><td class='center'>" .
@@ -1366,7 +1366,7 @@ JAVASCRIPT;
       echo Html::input('ocs_db_passwd', ['type'         => 'password',
                                          'autocomplete' => 'off']);
       if ($ID) {
-         echo Html::input('_blank_passwd', ['type'         => 'checkbox']);
+         echo Html::input('_blank_passwd', ['type' => 'checkbox']);
          echo "&nbsp;" . __("Clear");
       }
       echo "</td>";
@@ -1805,18 +1805,21 @@ JAVASCRIPT;
     * @return PluginOcsinventoryngOcsClient the ocs client (database or soap)
     */
    static function getDBocs($serverId) {
-      $config = self::getConfig($serverId);
 
-      if ($config['conn_type'] == self::CONN_TYPE_DB) {
-         return new PluginOcsinventoryngOcsDbClient(
-            $serverId, $config['ocs_db_host'], $config['ocs_db_user'],
-            Toolbox::decrypt($config['ocs_db_passwd'], GLPIKEY), $config['ocs_db_name']
-         );
-      } else {
-         return new PluginOcsinventoryngOcsSoapClient(
-            $serverId, $config['ocs_db_host'], $config['ocs_db_user'],
-            Toolbox::decrypt($config['ocs_db_passwd'], GLPIKEY)
-         );
+      if ($serverId) {
+         $config = self::getConfig($serverId);
+
+         if ($config['conn_type'] == self::CONN_TYPE_DB) {
+            return new PluginOcsinventoryngOcsDbClient(
+               $serverId, $config['ocs_db_host'], $config['ocs_db_user'],
+               Toolbox::decrypt($config['ocs_db_passwd'], GLPIKEY), $config['ocs_db_name']
+            );
+         } else {
+            return new PluginOcsinventoryngOcsSoapClient(
+               $serverId, $config['ocs_db_host'], $config['ocs_db_user'],
+               Toolbox::decrypt($config['ocs_db_passwd'], GLPIKEY)
+            );
+         }
       }
    }
 
@@ -1924,7 +1927,7 @@ JAVASCRIPT;
       $check                               = $show_params["check"];
       $start                               = $show_params["start"];
 
-      if(!self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)){
+      if (!self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
          return false;
       }
 
@@ -2094,7 +2097,7 @@ JAVASCRIPT;
       $check                               = $show_params["check"];
       $start                               = $show_params["start"];
 
-      if(!self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)){
+      if (!self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
          return false;
       }
       if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)
@@ -2315,7 +2318,7 @@ JAVASCRIPT;
       $entities_id                         = $show_params["entities_id"];
       $tolinked                            = $show_params["tolinked"];
 
-      if(!self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)){
+      if (!self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
          return false;
       }
 
@@ -2522,10 +2525,10 @@ JAVASCRIPT;
                   }
                   if ($advanced && !$tolinked) {
                      $recursive = isset($tab["is_recursive"]) ? $tab["is_recursive"] : 0;
-                     $data     = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                                                         '_source'       => 'ocsinventoryng',
-                                                         'is_recursive'  => $recursive,
-                                                        ], ['is_recursive'  => $recursive], ['ocsid' => $tab["id"]]);
+                     $data      = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                                          '_source'       => 'ocsinventoryng',
+                                                          'is_recursive'  => $recursive,
+                                                         ], ['is_recursive' => $recursive], ['ocsid' => $tab["id"]]);
                   }
                   echo "<td>" . $tab["name"] . "</td>\n";
                   echo "<td>" . $tab["manufacturer"] . "</td>";
@@ -2900,12 +2903,12 @@ JAVASCRIPT;
    /**
     * cron Restore Old Agents
     *
-    * @global type $DB
-    * @global type $CFG_GLPI
-    *
     * @param type  $task
     *
     * @return int
+    * @global type $DB
+    * @global type $CFG_GLPI
+    *
     */
    static function cronRestoreOldAgents($task) {
       global $DB;
@@ -3094,10 +3097,10 @@ JAVASCRIPT;
    }
 
    /**
-    * @since version 0.84
-    *
     * @param $target
-    * */
+    * *@since version 0.84
+    *
+    */
    static function checkBox($target) {
 
       echo "<a href='" . $target . "?check=all' " .
@@ -3111,13 +3114,13 @@ JAVASCRIPT;
 
 
    /**
+    * @param null $checkitem
+    *
+    * @return an
     * @since version 0.85
     *
     * @see CommonDBTM::getSpecificMassiveActions()
     *
-    * @param null $checkitem
-    *
-    * @return an
     */
    //   function getSpecificMassiveActions($checkitem = null) {
    //
