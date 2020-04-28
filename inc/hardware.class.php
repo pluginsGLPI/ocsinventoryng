@@ -96,6 +96,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
 
          if (intval($cfg_ocs["import_general_contact"]) > 0) {
             $locks["contact"] = __('Alternate username');
+            $locks["users_id"] = __('User');
          }
 
          if (intval($cfg_ocs["import_general_type"]) > 0
