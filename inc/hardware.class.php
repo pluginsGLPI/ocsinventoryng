@@ -61,14 +61,15 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
 
          $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"]);
          if ($cfg_ocs["use_locks"]) {
+            $updates = [];
             foreach ($item->updates as $k => $field) {
-               if (!array_key_exists($field,
-                                     PluginOcsinventoryngOcslink::getLockableFields($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"],
-                                                                                    $ocslink->fields["ocsid"]))) {
-                  unset($item->updates[$k]);
+               if (array_key_exists($field,
+                                    PluginOcsinventoryngOcslink::getLockableFields($ocslink->fields["plugin_ocsinventoryng_ocsservers_id"],
+                                                                                   $ocslink->fields["ocsid"]))) {
+                  $updates[] = $field;
                }
             }
-            PluginOcsinventoryngOcslink::mergeOcsArray($item->fields["id"], $item->updates);
+            PluginOcsinventoryngOcslink::mergeOcsArray($item->fields["id"], $updates);
          }
       }
    }
@@ -236,7 +237,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             $updates["_no_history"] = !$update_history;
             $updates['_auto']       = true;
 
-            $comp                   = new Computer();
+            $comp = new Computer();
             $comp->update($updates, $update_history);
          }
       }
@@ -318,7 +319,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
                   }
 
                }
-            } else if($data['groups_id'] == 0) {
+            } else if ($data['groups_id'] == 0) {
                $ko = 0;
                if (is_array($locks) && count($locks)) {
                   if (in_array("groups_id", $locks)) {
@@ -414,7 +415,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             }
             if ($cfg_ocs["import_user_group"] > 0 &&
                 (isset($values['groups_id']) && $values['groups_id'] == 0
-                  || !isset($values['groups_id']))) {
+                 || !isset($values['groups_id']))) {
                $comp        = new Computer();
                $entities_id = 0;
                if ($computers_id > 0 && $comp->getFromDB($computers_id)) {
