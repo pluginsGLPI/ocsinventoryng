@@ -363,7 +363,7 @@ CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_configs` (
    `log_imported_computers` tinyint(1) NOT NULL default '0',
    `comment` text,
    `delay_ocs` int(11) NOT NULL default '-1',
-   `use_newocs_alert` TINYINT( 1 ) NOT NULL DEFAULT '-1',
+   `use_newocs_alert` int(11) NOT NULL default '-1',
    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -494,7 +494,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsalerts` (
   `id` int(11) NOT NULL auto_increment,
   `entities_id` int(11) NOT NULL default '0',
   `delay_ocs` int(11) NOT NULL default '-1',
-  `use_newocs_alert` TINYINT( 1 ) NOT NULL DEFAULT '-1',
+  `use_newocs_alert` int(11) NOT NULL default '-1',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

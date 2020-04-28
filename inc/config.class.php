@@ -157,17 +157,18 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       $this->showFormHeader($options);
 
       echo "<tr class='tab_bg_2'>";
-      echo "<th colspan='3'>" . __('OCSNG alerts', 'ocsinventoryng');
+      echo "<th colspan='3'>" . __('OCS-NG Synchronization alerts', 'ocsinventoryng');
       echo "</th></tr>";
 
       echo "<tr class='tab_bg_2'>";
       echo "<td colspan='2'>" . __('New imported computers from OCS-NG', 'ocsinventoryng') . "</td><td>";
-      Alert::dropdownYesNo(['name'  => "use_newocs_alert",
-                            'value' => $this->fields["use_newocs_alert"]]);
-
+      Alert::dropdownIntegerNever('use_newocs_alert',
+                                  $this->fields["use_newocs_alert"],
+                                  ['max' => 99]);
+      echo "&nbsp;" . _n('Day', 'Days', 2);
       echo "</td></tr>";
 
-      echo "<tr class='tab_bg_2'><td colspan='2'>" . __('OCS-NG Synchronization alerts', 'ocsinventoryng') . "</td><td>";
+      echo "<tr class='tab_bg_2'><td colspan='2'>" . __('Computers not synchronized with OCS-NG since more', 'ocsinventoryng') . "</td><td>";
       Alert::dropdownIntegerNever('delay_ocs',
                                   $this->fields["delay_ocs"],
                                   ['max' => 99]);
@@ -217,14 +218,14 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
       if ($synchro_ocs == 0
           && $new_ocs == 0) {
-         echo "<div align='center'><b>" . __('No used alerts', 'ocsinventoryng') . "</b></div>";
+         echo "<div align='center'><b>" . __('No used alerts, please activate the automatic actions', 'ocsinventoryng') . "</b></div>";
       }
 
       if ($new_ocs != 0) {
 
          foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1") as $config) {
 
-            $query  = PluginOcsinventoryngOcsAlert::queryNew($config,
+            $query  = PluginOcsinventoryngOcsAlert::queryNew($delay_ocs, $config,
                                                              $_SESSION["glpiactive_entity"]);
             $result = $DB->query($query);
 
@@ -238,7 +239,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
                echo "<div align='center'><table class='tab_cadre' cellspacing='2' cellpadding='3'>";
                echo "<tr><th colspan='$nbcol'>";
-               echo __('New imported computers from OCS-NG', 'ocsinventoryng') . "</th></tr>";
+               echo __('New imported computers from OCS-NG', 'ocsinventoryng') . " - " . $delay_ocs . " " . _n('Day', 'Days', 2) . "</th></tr>";
                echo "<tr><th>" . __('Name') . "</th>";
                if (Session::isMultiEntitiesMode()) {
                   echo "<th>" . __('Entity') . "</th>";

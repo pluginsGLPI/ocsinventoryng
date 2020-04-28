@@ -111,7 +111,11 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
     *
     * @return string
     */
-   static function queryNew($config, $entity) {
+   static function queryNew($delay_ocs, $config, $entity) {
+
+      $delay_stamp_ocs = mktime(0, 0, 0, date("m"), date("d") - $delay_ocs, date("y"));
+      $date_ocs        = date("Y-m-d", $delay_stamp_ocs);
+      $date_ocs        = $date_ocs . " 00:00:00";
 
       $query = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update`,
                       `glpi_plugin_ocsinventoryng_ocslinks`.`last_update`,
@@ -124,6 +128,7 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
                 AND `glpi_items_operatingsystems`.`itemtype` = 'Computer')
             WHERE `glpi_computers`.`is_deleted` = 0
             AND `glpi_computers`.`is_template` = 0
+            AND `last_ocs_update` >= '" . $date_ocs . "' 
             AND `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id` = '" . $config["id"] . "' ";
       $query .= "AND `glpi_computers`.`entities_id` = '" . $entity . "' ";
       $query .= " ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update` ASC";
@@ -404,10 +409,10 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
       $message     = [];
       $cron_status = 0;
 
-      foreach (self::getEntitiesToNotify('use_newocs_alert') as $entity => $repeat) {
+      foreach (self::getEntitiesToNotify('use_newocs_alert') as $entity => $delay_ocs) {
 
          foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers", "`is_active` = 1") as $config) {
-            $query_newocsmachine = self::queryNew($config, $entity);
+            $query_newocsmachine = self::queryNew($delay_ocs, $config, $entity);
 
             $newocsmachine_infos    = [];
             $newocsmachine_messages = [];
@@ -547,15 +552,18 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
          echo "<form method='post' name=form action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
       }
       echo "<table class='tab_cadre_fixe'>";
-
+      echo "<tr class='tab_bg_2'>";
+      echo "<th colspan='3'>" . __('OCS-NG Synchronization alerts', 'ocsinventoryng');
+      echo "</th></tr>";
+      
       echo "<tr class='tab_bg_1'><td>" . __('New imported computers from OCS-NG', 'ocsinventoryng') . "</td><td>";
-      $default_value = $entitynotification->fields['use_newocs_alert'];
-      Alert::dropdownYesNo(['name'           => "use_newocs_alert",
-                            'value'          => $default_value,
-                            'inherit_global' => 1]);
-      echo "</td></tr>";
+      Alert::dropdownIntegerNever('use_newocs_alert', $entitynotification->fields["use_newocs_alert"],
+                                  ['max'            => 99,
+                                   'inherit_global' => 1]);
+      echo "&nbsp;" . _n('Day', 'Days', 2) . "</td>";
+      echo "</tr>";
 
-      echo "<tr class='tab_bg_1'><td >" . __('OCS-NG Synchronization alerts', 'ocsinventoryng') . "</td><td>";
+      echo "<tr class='tab_bg_1'><td >" . __('Computers not synchronized with OCS-NG since more', 'ocsinventoryng') . "</td><td>";
       Alert::dropdownIntegerNever('delay_ocs', $entitynotification->fields["delay_ocs"],
                                   ['max'            => 99,
                                    'inherit_global' => 1]);

@@ -8,3 +8,6 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_customapps` (
   PRIMARY KEY (`id`),
   KEY `computers_id` (`computers_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `glpi_plugin_ocsinventoryng_configs` CHANGE `use_newocs_alert` `use_newocs_alert` INT(11) NOT NULL DEFAULT '-1';
+ALTER TABLE `glpi_plugin_ocsinventoryng_ocsalerts` CHANGE `use_newocs_alert` `use_newocs_alert` INT(11) NOT NULL DEFAULT '-1';
