@@ -125,7 +125,7 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
       if ($plugin_ocsinventoryng_ocsservers_id > 0
           && PluginOcsinventoryngOcsServer::serverIsActive($plugin_ocsinventoryng_ocsservers_id)) {
 
-         PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+
          $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
          // can exists for template
          if (($item->getType() == 'Computer')
@@ -152,8 +152,18 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
     * @return bool|true
     */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-
-      self::showForComputer($item, $withtemplate);
+      $plugin_ocsinventoryng_ocsservers_id = PluginOcsinventoryngOcslink::getOCSServerForItem($item);
+      if(!PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)){
+         echo "<div class='spaced center'>";
+         echo "<table class='tab_cadre_fixehov'>";
+         echo "<tr class='noHover'><th colspan='5'>" . self::getTypeName(0) .
+            "</th></tr>";
+         echo "<tr class='tab_bg_2'><th colspan='5'>" . __('Server unreachable','ocsinventoryng') . "</th></tr>";
+         echo "</table>";
+         echo "</div>";
+      }else {
+         self::showForComputer($item, $withtemplate);
+      }
       return true;
    }
 

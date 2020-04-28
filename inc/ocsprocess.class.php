@@ -449,8 +449,9 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $defaultentity                       = (isset($process_params["defaultentity"])) ? $process_params["defaultentity"] : -1;
       $defaultrecursive                    = (isset($process_params["defaultrecursive"])) ? $process_params["defaultrecursive"] : 0;
 
-      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+
       $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+
 
       //Check it machine is already present AND was imported by OCS AND still present in GLPI
       $query  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`id`, `computers_id`, `ocsid`
@@ -461,6 +462,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                       AND `ocsid` = '$ocsid'
                       AND `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
       $result = $DB->query($query);
+
       if ($DB->numrows($result)) {
          $datas = $DB->fetch_array($result);
          //Return code to indicates that the machine was synchronized
@@ -470,15 +472,15 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                          'cfg_ocs'                             => $cfg_ocs,
                          'force'                               => 0];
          return self::synchronizeComputer($sync_params);
+      } else {
+         $import_params = ['ocsid'                               => $ocsid,
+                           'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                           'lock'                                => $lock,
+                           'defaultentity'                       => $defaultentity,
+                           'defaultrecursive'                    => $defaultrecursive,
+                           'cfg_ocs'                             => $cfg_ocs];
+         return self::importComputer($import_params);
       }
-
-      $import_params = ['ocsid'                               => $ocsid,
-                        'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                        'lock'                                => $lock,
-                        'defaultentity'                       => $defaultentity,
-                        'defaultrecursive'                    => $defaultrecursive,
-                        'cfg_ocs'                             => $cfg_ocs];
-      return self::importComputer($import_params);
 
    }
 
@@ -499,12 +501,11 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $cfg_ocs                             = $import_params["cfg_ocs"];
 
       //      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
-      //      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+            $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
       $comp = new Computer();
 
       $rules_matched = [];
       $ocsClient     = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-      $ocsClient->setChecksum(PluginOcsinventoryngOcsClient::CHECKSUM_ALL, $ocsid);
 
       $ocsComputer = $ocsClient->getComputer($ocsid, [
          'DISPLAY' => [
@@ -592,6 +593,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                }
             }
 
+            $ocsClient->setChecksum(PluginOcsinventoryngOcsClient::CHECKSUM_ALL, $ocsid);
+
             //ADD IF NOT LINKED
             $computers_id = $comp->add($input, ['unicity_error_message' => false]);
             if ($computers_id) {
@@ -650,7 +653,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $plugin_ocsinventoryng_ocsservers_id = $link_params["plugin_ocsinventoryng_ocsservers_id"];
       $computers_id                        = $link_params["computers_id"];
 
-      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+//      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $cfg_ocs   = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
@@ -769,7 +772,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                             'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                             'cfg_ocs'                             => $cfg_ocs,
                             'force'                               => 1];
-            self::synchronizeComputer($sync_params, false);
+//            self::synchronizeComputer($sync_params, false);
             return true;
          }
       } else {
@@ -866,7 +869,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
             // automatic transfer computer
             if ($CFG_GLPI['transfers_id_auto'] > 0
                 && Session::isMultiEntitiesMode()
-               && $transfer == true) {
+                && $transfer == true) {
                self::transferComputer($line);
 
             } else {
@@ -1152,7 +1155,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                      'PLUGINS'  => $ocsPluginsResult
                   ],
                ];
-
+               //launch process
                $ocsComputer = $ocsClient->getComputer($line['ocsid'], $import_options);
 
                // Get updates on computers
@@ -1198,6 +1201,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
                   PluginOcsinventoryngOS::updateComputerOS($params);
                }
+
                if ($updates['bios'] && isset($ocsComputer['BIOS'])) {
                   $params['BIOS'] = $ocsComputer['BIOS'];
                   PluginOcsinventoryngBios::updateComputerBios($params);
@@ -1214,6 +1218,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                if ($updates['memories'] && isset($ocsComputer['MEMORIES'])) {
                   PluginOcsinventoryngDevice::updateDevices("Item_DeviceMemory", $ocsComputer['MEMORIES'], $params_devices);
                }
+
                if ($updates['storages'] && isset($ocsComputer['STORAGES'])) {
                   if (isset($updates['storages']["hdd"]) && $updates['storages']["hdd"]) {
                      PluginOcsinventoryngDevice::updateDevices("Item_DeviceHardDrive", $ocsComputer['STORAGES'], $params_devices);
@@ -1222,12 +1227,14 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                      PluginOcsinventoryngDevice::updateDevices("Item_DeviceDrive", $ocsComputer['STORAGES'], $params_devices);
                   }
                }
+
                if ($updates['cpus'] && isset($ocsComputer['CPUS'])) {
                   PluginOcsinventoryngDevice::updateDevices("Item_DeviceProcessor", $ocsComputer['CPUS'], $params_devices);
                }
                if ($updates['videos'] && isset($ocsComputer['VIDEOS'])) {
                   PluginOcsinventoryngDevice::updateDevices("Item_DeviceGraphicCard", $ocsComputer['VIDEOS'], $params_devices);
                }
+
                if ($updates['mb'] && isset($ocsComputer['BIOS'])) {
                   PluginOcsinventoryngDevice::updateDevices("Item_DeviceMotherboard", $ocsComputer['BIOS'], $params_devices);
                }
@@ -1396,7 +1403,9 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
     * @internal param the $plugin_ocsinventoryng_ocsservers_id ID of the OCS server
     */
    static function getGeneralIpAddress($plugin_ocsinventoryng_ocsservers_id, $computers_id) {
-      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      if(!PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)){
+         return '';
+      }
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $options   = [
          'DISPLAY' => [

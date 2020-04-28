@@ -61,6 +61,8 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
     * @throws \GlpitestSQLError
     */
    static function updateSoftware($cfg_ocs, $computers_id, $ocsComputer, $entity, $officepack, $ocsOfficePack, $force = 0) {
+      $chrono_rules = 0;
+
       global $DB;
 
       $uninstall_history = 0;
@@ -83,6 +85,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
       if ($officepack) {
          PluginOcsinventoryngOfficepack::resetOfficePack($computers_id, $uninstall_plugins_history);
       }
+
 
       $is_utf8                  = $cfg_ocs["ocs_db_utf8"];
       $computer_softwareversion = new Computer_SoftwareVersion();
@@ -129,16 +132,27 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
          }
       }
 
+
       foreach ($ocsComputer as $software) {
          $software = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($software));
 
          //As we cannot be sure that data coming from OCS are in utf8, let's try to encode them
          //if possible
-         foreach (['NAME', 'PUBLISHER', 'VERSION'] as $field) {
-            if (isset($software[$field])) {
-               $software[$field] = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $software[$field]);
-            }
+//         foreach (['NAME', 'PUBLISHER', 'VERSION'] as $field) {
+//            if (isset($software[$field])) {
+//               $software[$field] = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $software[$field]);
+//            }
+//         }
+         if (isset($software['NAME'])) {
+            $software['NAME'] = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $software['NAME']);
          }
+         if (isset($software['PUBLISHER'])) {
+            $software['PUBLISHER'] = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $software['PUBLISHER']);
+         }
+         if (isset($software['VERSION'])) {
+            $software['VERSION'] = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $software['VERSION']);
+         }
+
          $manufacturer = "";
          //Replay dictionnary on manufacturer
          if (isset($software["PUBLISHER"])) {
@@ -158,42 +172,43 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
          $modified_version    = $version;
          $version_comments    = isset($software['COMMENTS']) ? $software['COMMENTS'] : "";
          $is_helpdesk_visible = null;
+
          if (!$cfg_ocs["use_soft_dict"]) {
             //Software dictionnary
             $params         = ["name"         => $name,
-                               "manufacturer" => $manufacturer,
-                               "old_version"  => $version,
-                               "entities_id"  => $entity];
+               "manufacturer" => $manufacturer,
+               "old_version"  => $version,
+               "entities_id"  => $entity];
             $rulecollection = new RuleDictionnarySoftwareCollection();
             $res_rule       = $rulecollection->processAllRules(Toolbox::stripslashes_deep($params),
-                                                               [],
-                                                               Toolbox::stripslashes_deep(['version' => $version]));
+               [],
+               Toolbox::stripslashes_deep(['version' => $version]));
 
             if (isset($res_rule["name"])
-                && $res_rule["name"]) {
+               && $res_rule["name"]) {
                $modified_name = $res_rule["name"];
             }
 
             if (isset($res_rule["version"])
-                && $res_rule["version"]) {
+               && $res_rule["version"]) {
                $modified_version = $res_rule["version"];
             }
 
             if (isset($res_rule["is_helpdesk_visible"])
-                && strlen($res_rule["is_helpdesk_visible"])) {
+               && strlen($res_rule["is_helpdesk_visible"])) {
 
                $is_helpdesk_visible = $res_rule["is_helpdesk_visible"];
             }
 
             if (isset($res_rule['manufacturer'])
-                && $res_rule['manufacturer']) {
+               && $res_rule['manufacturer']) {
                $manufacturer = Toolbox::addslashes_deep($res_rule["manufacturer"]);
             }
 
             //If software dictionnary returns an entity, it overrides the one that may have
             //been defined in the entity's configuration
             if (isset($res_rule["new_entities_id"])
-                && strlen($res_rule["new_entities_id"])) {
+               && strlen($res_rule["new_entities_id"])) {
                $target_entity = $res_rule["new_entities_id"];
             }
          }
@@ -219,6 +234,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
                                                       '',
                ($entity != $target_entity),
                                                       $is_helpdesk_visible);
+
 
             if ($id) {
                //-------------------------------------------------------------------------//
@@ -253,8 +269,11 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
                                                                 $cfg_ocs,
                                                                 $imported_licences);
             }
+
          }
+
       }
+
 
       foreach ($imported as $id => $unused) {
          $computer_softwareversion->delete(['id' => $id, '_no_history' => !$uninstall_history],
@@ -305,6 +324,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
             }
          }
       }
+
    }
 
 

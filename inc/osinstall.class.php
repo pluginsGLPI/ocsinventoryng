@@ -125,7 +125,9 @@ class PluginOcsinventoryngOsinstall extends CommonDBChild {
          if ($plugin_ocsinventoryng_ocsservers_id > 0
              && PluginOcsinventoryngOcsServer::serverIsActive($plugin_ocsinventoryng_ocsservers_id)) {
 
-            PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+            if(!PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)){
+               return false;
+            }
             $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
             // Manage locks pictures

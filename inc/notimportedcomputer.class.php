@@ -339,7 +339,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
    function logNotImported($ocsservers_id, $ocsid, $reason) {
       global $DB;
 
-      PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id);
+//      PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id);
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
       $options   = [
          "DISPLAY" => [
@@ -498,6 +498,12 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
       if (isset($params['id'])) {
          $notimported = new PluginOcsinventoryngNotimportedcomputer;
          $notimported->getFromDB($params['id']);
+
+         if(!PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])){
+            Session::addMessageAfterRedirect(__("Error to contact ocs server",'ocsinventoryng'),
+               false, ERROR);
+            return false;
+         }
          $changes = self::getOcsComputerInfos($notimported->fields);
          if (isset($params['force'])) {
             $process_params = ['ocsid'                               => $notimported->fields['ocsid'],
@@ -554,10 +560,16 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
       if (isset($params['id'])) {
          $notimported = new PluginOcsinventoryngNotimportedcomputer;
          $notimported->getFromDB($params['id']);
-         $changes = self::getOcsComputerInfos($notimported->fields);
+
          $link_params = ['ocsid'                               => $notimported->fields['ocsid'],
                          'plugin_ocsinventoryng_ocsservers_id' => $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
                          'computers_id'                        => $params['computers_id']];
+         if(!PluginOcsinventoryngOcsServer::checkOCSconnection($notimported->fields['plugin_ocsinventoryng_ocsservers_id'])){
+            Session::addMessageAfterRedirect(__("Error to contact ocs server",'ocsinventoryng'),
+               false, ERROR);
+            return false;
+         }
+         $changes = self::getOcsComputerInfos($notimported->fields);
          if (PluginOcsinventoryngOcsProcess::linkComputer($link_params)
          ) {
             $notimported->delete(['id' => $params['id']]);
@@ -577,7 +589,6 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
     * @return array
     */
    static function getOcsComputerInfos($params = []) {
-      PluginOcsinventoryngOcsServer::checkOCSconnection($params['plugin_ocsinventoryng_ocsservers_id']);
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($params['plugin_ocsinventoryng_ocsservers_id']);
       $options   = [
          "DISPLAY" => [
