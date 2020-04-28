@@ -67,7 +67,7 @@ if (isset($_SESSION["ocs_link"])) {
       if((isset($_SESSION["ocs_link_data"]["connection"]) && $_SESSION["ocs_link_data"]["connection"] == false ) || !isset($_SESSION["ocs_link_data"]["connection"]) ){
          if(!PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])){
             
-            $_SESSION["ocs_link"]["id"] = [];
+            $_SESSION["ocs_link"] = [];
 
             Html::redirect($_SERVER['PHP_SELF']);
          }else{

@@ -500,7 +500,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
          $notimported->getFromDB($params['id']);
 
          if(!PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])){
-            Session::addMessageAfterRedirect(__("Error to contact ocs server"),
+            Session::addMessageAfterRedirect(__("Error to contact ocs server",'ocsinventoryng'),
                false, ERROR);
             return false;
          }
@@ -565,7 +565,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
                          'plugin_ocsinventoryng_ocsservers_id' => $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
                          'computers_id'                        => $params['computers_id']];
          if(!PluginOcsinventoryngOcsServer::checkOCSconnection($notimported->fields['plugin_ocsinventoryng_ocsservers_id'])){
-            Session::addMessageAfterRedirect(__("Error to contact ocs server"),
+            Session::addMessageAfterRedirect(__("Error to contact ocs server",'ocsinventoryng'),
                false, ERROR);
             return false;
          }
