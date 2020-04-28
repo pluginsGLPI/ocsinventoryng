@@ -859,7 +859,9 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
    static function processIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id, $subnet) {
       global $DB;
       $ocsClient = new PluginOcsinventoryngOcsServer();
-      $ocsClient->checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      if(!$ocsClient->checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)){
+         return ['status' => PluginOcsinventoryngOcsProcess::IPDISCOVER_NOTUPDATED];
+      }
       $mac   = $ipDiscoveryObject["macAdress"];
       $query = "SELECT *
                 FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`

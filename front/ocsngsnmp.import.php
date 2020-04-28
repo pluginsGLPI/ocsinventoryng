@@ -50,6 +50,16 @@ if (isset($_POST["change_import_mode"])) {
 
 if (isset($_SESSION["ocs_importsnmp"]["id"])) {
    if ($count = count($_SESSION["ocs_importsnmp"]["id"])) {
+      if((isset($_SESSION["ocs_import"]["connection"]) && $_SESSION["ocs_import"]["connection"] == false ) || !isset($_SESSION["ocs_import"]["connection"]) ){
+         if(!PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])){
+            PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_import"]['statistics']);
+            $_SESSION["ocs_import"]["id"] = [];
+
+            Html::redirect($_SERVER['PHP_SELF']);
+         }else{
+            $_SESSION["ocs_importsnmp"]["connection"] = true;
+         }
+      }
       $percent = min(100,
          round(100 * ($_SESSION["ocs_importsnmp_count"] - $count) / $_SESSION["ocs_importsnmp_count"],
             0));

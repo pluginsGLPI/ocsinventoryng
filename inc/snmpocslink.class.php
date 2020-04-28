@@ -812,7 +812,7 @@ JAVASCRIPT;
    static function processSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $params) {
       global $DB;
 
-      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+
 
       //Check it machine is already present AND was imported by OCS AND still present in GLPI
       $query                                      = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`id`
@@ -846,7 +846,7 @@ JAVASCRIPT;
          $p[$key] = $val;
       }
 
-      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $cfg_ocs   = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
       //TODOSNMP entites_id ?
@@ -2634,7 +2634,9 @@ JAVASCRIPT;
    static function showSnmpDeviceToUpdate($plugin_ocsinventoryng_ocsservers_id, $check, $start) {
       global $DB, $CFG_GLPI;
 
-      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      if(!PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)){
+         return false;
+      }
       if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
          return false;
       }
@@ -2789,7 +2791,6 @@ JAVASCRIPT;
    static function ocsSnmpLink($ocsid, $plugin_ocsinventoryng_ocsservers_id, $items_id, $itemtype) {
       global $DB;
 
-      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
       $ocsSnmp = $ocsClient->getSnmpDevice($ocsid);
@@ -2822,8 +2823,10 @@ JAVASCRIPT;
     *
     */
    static function linkSnmpDevice($ocsid, $plugin_ocsinventoryng_ocsservers_id, $params) {
-
-      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      //TODO enlever pour en conserver 1 seul
+      if(!PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)){
+         return false;
+      }
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       //TODOSNMP entites_id ?
 

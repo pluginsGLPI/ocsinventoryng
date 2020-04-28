@@ -1924,7 +1924,9 @@ JAVASCRIPT;
       $check                               = $show_params["check"];
       $start                               = $show_params["start"];
 
-      self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      if(!self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)){
+         return false;
+      }
 
       if (!Session::haveRight("plugin_ocsinventoryng_clean", READ)) {
          return false;
@@ -2092,7 +2094,9 @@ JAVASCRIPT;
       $check                               = $show_params["check"];
       $start                               = $show_params["start"];
 
-      self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      if(!self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)){
+         return false;
+      }
       if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)
           && !Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
          return false;
@@ -2311,7 +2315,9 @@ JAVASCRIPT;
       $entities_id                         = $show_params["entities_id"];
       $tolinked                            = $show_params["tolinked"];
 
-      self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      if(!self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)){
+         return false;
+      }
 
       if (!Session::haveRight("plugin_ocsinventoryng", READ)
           && !Session::haveRight("plugin_ocsinventoryng_import", READ)
