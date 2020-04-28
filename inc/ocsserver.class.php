@@ -1399,7 +1399,7 @@ JAVASCRIPT;
       Dropdown::showFromArray("action_cleancron", $actions, ['value' => $this->fields["action_cleancron"]]);
       echo "</td>";
 
-      echo "<td>" . __('Number of days without inventory for cleaning', 'satisfaction') . "</td>";
+      echo "<td>" . __('Number of days without inventory for cleaning', 'ocsinventoryng') . "</td>";
       echo "<td>";
       Dropdown::showNumber('cleancron_nb_days', ['value' => $this->fields["cleancron_nb_days"],
                                               'min'   => 1,
