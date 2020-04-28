@@ -319,7 +319,7 @@ abstract class PluginOcsinventoryngOcsClient {
     *         'DELETED' => 'EQUIV'
     *      )
     */
-   abstract public function getOldAgents();
+   abstract public function getOldAgents($nb_days);
 
    /**
     * Get the account info columns

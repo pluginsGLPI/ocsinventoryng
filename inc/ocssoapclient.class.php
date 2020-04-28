@@ -396,7 +396,7 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
     *         'DELETED' => 'EQUIV'
     *      )
     */
-   public function getOldAgents() {
+   public function getOldAgents($nb_days) {
    }
 
    /**

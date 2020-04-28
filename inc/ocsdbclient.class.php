@@ -293,10 +293,10 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                }
                break;
             case "softwares" :
-            if (($check & $checksum) || $complete > 0) {
+               if (($check & $checksum) || $complete > 0) {
 
-               if (self::WANTED_DICO_SOFT & $wanted) {
-                  $query = "SELECT
+                  if (self::WANTED_DICO_SOFT & $wanted) {
+                     $query = "SELECT
                                         IFNULL(`dico_soft`.`FORMATTED`, `softwares`.`NAME`) AS NAME,
                                         `softwares`.`VERSION`,
                                         `softwares`.`PUBLISHER`,
@@ -306,17 +306,17 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                                         `softwares`.`FILESIZE`,
                                         `softwares`.`SOURCE`,
                                         `softwares`.`HARDWARE_ID`";
-                  if ($version['TVALUE'] > PluginOcsinventoryngOcsServer::OCS2_VERSION_LIMIT) {
-                     $query .= ",`softwares`.`GUID`,
+                     if ($version['TVALUE'] > PluginOcsinventoryngOcsServer::OCS2_VERSION_LIMIT) {
+                        $query .= ",`softwares`.`GUID`,
                                         `softwares`.`LANGUAGE`,
                                         `softwares`.`INSTALLDATE`,
                                         `softwares`.`BITSWIDTH`";
-                  }
-                  $query .= "FROM `softwares`
+                     }
+                     $query .= "FROM `softwares`
                             INNER JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
                             WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-               } else {
-                  $query = "SELECT
+                  } else {
+                     $query = "SELECT
                                         `softwares`.`NAME`,
                                         `softwares`.`VERSION`,
                                         `softwares`.`PUBLISHER`,
@@ -326,27 +326,27 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                                         `softwares`.`FILESIZE`,
                                         `softwares`.`SOURCE`,
                                         `softwares`.`HARDWARE_ID`";
-                  if ($version['TVALUE'] > PluginOcsinventoryngOcsServer::OCS2_VERSION_LIMIT) {
-                     $query .= ",`softwares`.`GUID`,
+                     if ($version['TVALUE'] > PluginOcsinventoryngOcsServer::OCS2_VERSION_LIMIT) {
+                        $query .= ",`softwares`.`GUID`,
                                   `softwares`.`LANGUAGE`,
                                   `softwares`.`INSTALLDATE`,
                                   `softwares`.`BITSWIDTH`";
-                  }
-                  $query .= "FROM `softwares`
+                     }
+                     $query .= "FROM `softwares`
                              WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-               }
+                  }
 
-               $query .= "ORDER BY `id` DESC";
-               $request = $this->db->query($query);
-               while ($software = $this->db->fetch_assoc($request)) {
-                  $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
+                  $query   .= "ORDER BY `id` DESC";
+                  $request = $this->db->query($query);
+                  while ($software = $this->db->fetch_assoc($request)) {
+                     $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
+                  }
                }
-            }
-            break;
+               break;
             case "registry" :
 
-            if (($check & $checksum) || $complete > 0) {
-               $query   = "SELECT `registry`.`NAME` AS name,
+               if (($check & $checksum) || $complete > 0) {
+                  $query   = "SELECT `registry`.`NAME` AS name,
                                    `registry`.`REGVALUE` AS regvalue,
                                    `registry`.`HARDWARE_ID` AS HARDWARE_ID,
                                    `regconfig`.`REGTREE` AS regtree,
@@ -354,17 +354,17 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                          FROM `registry`
                          LEFT JOIN `regconfig` ON (`registry`.`NAME` = `regconfig`.`NAME`)
                          WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-               $request = $this->db->query($query);
-               while ($reg = $this->db->fetch_assoc($request)) {
-                  if ($multi) {
-                     $computers[$reg['HARDWARE_ID']][strtoupper($table)][] = $reg;
-                  } else {
-                     $computers[$reg['HARDWARE_ID']][strtoupper($table)] = $reg;
+                  $request = $this->db->query($query);
+                  while ($reg = $this->db->fetch_assoc($request)) {
+                     if ($multi) {
+                        $computers[$reg['HARDWARE_ID']][strtoupper($table)][] = $reg;
+                     } else {
+                        $computers[$reg['HARDWARE_ID']][strtoupper($table)] = $reg;
+                     }
                   }
                }
-            }
-            break;
-               //plugins
+               break;
+            //plugins
             case "securitycenter" :
             case "uptime" :
             case "winupdatestate":
@@ -377,22 +377,22 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
             case "service":
             case "runningprocess" :
             case "officepack" :
-            if (self::OcsTableExists($table)) {
-               if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
-                  $query   = "SELECT * 
+               if (self::OcsTableExists($table)) {
+                  if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
+                     $query   = "SELECT * 
                              FROM `$table` 
                              WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-                  $request = $this->db->query($query);
-                  while ($plugin = $this->db->fetch_assoc($request)) {
-                     if ($multi) {
-                        $computers[$plugin['HARDWARE_ID']][strtoupper($table)][$plugin['ID']] = $plugin;
-                     } else {
-                        $computers[$plugin['HARDWARE_ID']][strtoupper($table)] = $plugin;
+                     $request = $this->db->query($query);
+                     while ($plugin = $this->db->fetch_assoc($request)) {
+                        if ($multi) {
+                           $computers[$plugin['HARDWARE_ID']][strtoupper($table)][$plugin['ID']] = $plugin;
+                        } else {
+                           $computers[$plugin['HARDWARE_ID']][strtoupper($table)] = $plugin;
+                        }
                      }
                   }
                }
-            }
-            break;
+               break;
             case "hardware" :
                $query   = "SELECT `hardware`.*,`accountinfo`.`TAG` 
                           FROM `hardware`
@@ -609,12 +609,12 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    }
 
    /**
-    * @see PluginOcsinventoryngOcsClient::searchComputers()
-    *
     * @param string $field
     * @param mixed  $value
     *
     * @return array
+    * @see PluginOcsinventoryngOcsClient::searchComputers()
+    *
     */
    public function searchComputers($field, $value) {
 
@@ -649,34 +649,36 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    }
 
    /**
-    * @see PluginOcsinventoryngOcsClient::updateBios()
-    *
     * @param int $ssn
     * @param int $id
+    *
+    * @see PluginOcsinventoryngOcsClient::updateBios()
+    *
     */
    public function updateBios($ssn, $id) {
       $this->db->query("UPDATE `bios` SET `SSN` = '" . $ssn . "'" . " WHERE `HARDWARE_ID` = $id");
    }
 
    /**
-    * @see PluginOcsinventoryngOcsClient::updateTag()
-    *
     * @param int $tag
     * @param int $id
+    *
+    * @see PluginOcsinventoryngOcsClient::updateTag()
+    *
     */
    public function updateTag($tag, $id) {
       $this->db->query("UPDATE `accountinfo` SET `TAG` = '" . $tag . "' WHERE `HARDWARE_ID` = $id");
    }
 
    /**
-    * @see PluginOcsinventoryngOcsClient::getComputers()
-    *
     * @param array $options
     *
     * @param int   $id
     *
     * @return array
     * @throws \GlpitestSQLError
+    * @see PluginOcsinventoryngOcsClient::getComputers()
+    *
     */
    public function countComputers($options, $id = 0) {
 
@@ -826,12 +828,12 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    }
 
    /**
-    * @see PluginOcsinventoryngOcsClient::getComputers()
-    *
     * @param array $options
-    * @param int $id
+    * @param int   $id
     *
     * @return array
+    * @see PluginOcsinventoryngOcsClient::getComputers()
+    *
     */
    public function getComputers($options, $id = 0) {
 
@@ -1014,11 +1016,11 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    }
 
    /**
-    * @see PluginOcsinventoryngOcsClient::getConfig()
-    *
     * @param string $key
     *
     * @return bool|mixed|result
+    * @see PluginOcsinventoryngOcsClient::getConfig()
+    *
     */
    public function getConfig($key) {
       $res    = false;
@@ -1033,11 +1035,12 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    }
 
    /**
-    * @see PluginOcsinventoryngOcsClient::setConfig()
-    *
     * @param string $key
     * @param int    $ivalue
     * @param string $tvalue
+    *
+    * @see PluginOcsinventoryngOcsClient::setConfig()
+    *
     */
    public function setConfig($key, $ivalue, $tvalue) {
       $query = "UPDATE `config` 
@@ -1047,10 +1050,11 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    }
 
    /**
-    * @see PluginOcsinventoryngOcsClient::setChecksum()
-    *
     * @param int $checksum
     * @param int $id
+    *
+    * @see PluginOcsinventoryngOcsClient::setChecksum()
+    *
     */
    public function setChecksum($checksum, $id) {
       $query = "UPDATE `hardware` SET `CHECKSUM` = $checksum WHERE `ID` = $id";
@@ -1058,11 +1062,11 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    }
 
    /**
-    * @see PluginOcsinventoryngOcsClient::getChecksum()
-    *
     * @param int $id
     *
     * @return int
+    * @see PluginOcsinventoryngOcsClient::getChecksum()
+    *
     */
    public function getChecksum($id) {
       $query    = "SELECT `CHECKSUM` FROM `hardware` WHERE `ID` = $id";
@@ -1072,12 +1076,12 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    }
 
    /**
-    * @see PluginOcsinventoryngOcsClient::getComputersToUpdate()
-    *
     * @param array $cfg_ocs
     * @param date  $max_date
     *
     * @return array
+    * @see PluginOcsinventoryngOcsClient::getComputersToUpdate()
+    *
     */
    public function getComputersToUpdate($cfg_ocs, $max_date) {
       $query = "SELECT `hardware`.`ID`
@@ -1144,18 +1148,20 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    }
 
    /**
+    * @param $delay
+    *
+    * @return array
+    * @throws \GlpitestSQLError
     * @see PluginOcsinventoryngOcsClient::getOldAgents()
     */
-   public function getOldAgents() {
+   public function getOldAgents($delay) {
 
-//      $config = $this->getConfig("GUI_REPORT_AGIN_MACH");
-      $delay  = 30;
-      $query  = "SELECT `id` from `hardware` 
+      $query = "SELECT `id` from `hardware` 
                      WHERE ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) 
                      AND ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) 
                      AND `deviceid` <> '_SYSTEMGROUP_' AND `deviceid` <> '_DOWNLOADGROUP_'";
-      $res    = $this->db->query($query);
-      $data   = [];
+      $res   = $this->db->query($query);
+      $data  = [];
 
       if ($res->num_rows > 0) {
          while ($num = $this->db->fetch_assoc($res)) {
@@ -1338,11 +1344,11 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    }
 
    /**
-    * @see PluginOcsinventoryngOcsClient::getSnmp()
-    *
     * @param array $options
     *
     * @return array
+    * @see PluginOcsinventoryngOcsClient::getSnmp()
+    *
     */
    public function getSnmp($options) {
 

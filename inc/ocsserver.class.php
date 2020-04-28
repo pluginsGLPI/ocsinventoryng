@@ -1388,14 +1388,23 @@ JAVASCRIPT;
          }");
       $style    = ($this->fields["use_cleancron"]) ? "" : "style='display: none '";
       $notstyle = ($this->fields["use_cleancron"]) ? "style='display: none '" : "";
+      echo "<td colspan='2'></td>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1' id='show_cleancron_td2' $style>";
 
       echo "<td class='center' id='show_cleancron_td1' $style>" . __("Action") . "</td>";
       $actions = self::getValuesActionCron();
-      echo "<td id='show_cleancron_td2' $style>";
+      echo "<td>";
       Dropdown::showFromArray("action_cleancron", $actions, ['value' => $this->fields["action_cleancron"]]);
       echo "</td>";
 
-      echo "<td colspan ='2' id='show_cleancron_td3' $notstyle></td>";
+      echo "<td>" . __('Number of days without inventory for cleaning', 'satisfaction') . "</td>";
+      echo "<td>";
+      Dropdown::showNumber('cleancron_nb_days', ['value' => $this->fields["cleancron_nb_days"],
+                                              'min'   => 1,
+                                              'max'   => 365]);
+      echo "</td>";
       echo "</tr>";
 
       echo "<tr class='tab_bg_1' id='show_cleancron_tr1' $style>";
@@ -2858,7 +2867,7 @@ JAVASCRIPT;
          if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
             $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-            $agents    = $ocsClient->getOldAgents();
+            $agents    = $ocsClient->getOldAgents($config["cleancron_nb_days"]);
 
             if ($config['action_cleancron'] == self::ACTION_PURGE_COMPUTER) {
                //action purge agents OCSNG

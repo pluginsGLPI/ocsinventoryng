@@ -44,7 +44,7 @@ function plugin_init_ocsinventoryng() {
    $PLUGIN_HOOKS['use_rules']['ocsinventoryng']      = ['RuleImportEntity', 'RuleImportComputer'];
 
    $PLUGIN_HOOKS['change_profile']['ocsinventoryng'] = ['PluginOcsinventoryngProfile',
-                                                             'initProfile'];
+                                                        'initProfile'];
 
    $PLUGIN_HOOKS['import_item']['ocsinventoryng'] = ['Computer'];
 
@@ -84,28 +84,28 @@ function plugin_init_ocsinventoryng() {
    }
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_customapps')) {
       Plugin::registerClass('PluginOcsinventoryngCustomapp',
-         ['addtabon' => 'Computer']);
+                            ['addtabon' => 'Computer']);
    }
 
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_networkshares')) {
       Plugin::registerClass('PluginOcsinventoryngNetworkshare',
-                            ['addtabon'   => 'Computer']);
+                            ['addtabon' => 'Computer']);
    }
 
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_runningprocesses')) {
       Plugin::registerClass('PluginOcsinventoryngRunningprocess',
-                            ['addtabon'   => 'Computer']);
+                            ['addtabon' => 'Computer']);
    }
 
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_services')) {
       Plugin::registerClass('PluginOcsinventoryngService',
-                            ['addtabon'   => 'Computer']);
+                            ['addtabon' => 'Computer']);
    }
 
    if ($DB->tableExists('glpi_plugin_ocsinventoryng_teamviewers')) {
       Plugin::registerClass('PluginOcsinventoryngTeamviewer',
                             ['addtabon'   => 'Computer',
-                                  'link_types' => true]);
+                             'link_types' => true]);
 
       if (class_exists('PluginOcsinventoryngTeamviewer')) {
          Link::registerTag(PluginOcsinventoryngTeamviewer::$tags);
@@ -199,18 +199,18 @@ function plugin_init_ocsinventoryng() {
  **/
 function plugin_version_ocsinventoryng() {
 
-   return ['name'           => "OCS Inventory NG",
-           'version'        => PLUGIN_OCS_VERSION,
-           'author'         => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
-           'license'        => 'GPLv2+',
-           'homepage'       => 'https://github.com/pluginsGLPI/ocsinventoryng',
-           'requirements'   => [
+   return ['name'         => "OCS Inventory NG",
+           'version'      => PLUGIN_OCS_VERSION,
+           'author'       => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
+           'license'      => 'GPLv2+',
+           'homepage'     => 'https://github.com/pluginsGLPI/ocsinventoryng',
+           'requirements' => [
               'glpi' => [
                  'min' => '9.4',
                  'dev' => false
               ]
            ]
-        ];
+   ];
 
 }
 

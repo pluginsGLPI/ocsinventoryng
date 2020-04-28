@@ -11,3 +11,4 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_customapps` (
 
 ALTER TABLE `glpi_plugin_ocsinventoryng_configs` CHANGE `use_newocs_alert` `use_newocs_alert` INT(11) NOT NULL DEFAULT '-1';
 ALTER TABLE `glpi_plugin_ocsinventoryng_ocsalerts` CHANGE `use_newocs_alert` `use_newocs_alert` INT(11) NOT NULL DEFAULT '-1';
+ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` ADD `cleancron_nb_days` int(11) NOT NULL DEFAULT '90';

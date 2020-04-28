@@ -113,6 +113,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `ocs_version` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `conn_type` tinyint(1) NOT NULL DEFAULT '0',
   `use_cleancron` tinyint(1) NOT NULL DEFAULT '0',
+  `cleancron_nb_days` int(11) NOT NULL DEFAULT '90',
   `action_cleancron` tinyint(1) NOT NULL DEFAULT '0',
   `use_restorationcron` tinyint(1) NOT NULL DEFAULT '0',
   `delay_restorationcron` int(11) NOT NULL DEFAULT '0',
