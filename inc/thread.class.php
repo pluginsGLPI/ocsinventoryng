@@ -346,7 +346,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
                } else if ($imported_number->GetCount() > 0) {
                   $this->showStat($minfreq, $imported_number, $synchronized_number,
                      $linked_number, $failed_number, $notupdated_number,
-                     $notunique_number, $linkedrefused_number, $process_time);
+                     $notunique_number, $linkedrefused_number, $process_time, $colspan);
                   $imported_number->Reset();
                }
                echo "<tr class='tab_bg_1'>";
