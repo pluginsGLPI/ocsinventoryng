@@ -861,6 +861,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
          $options      = [
             "DISPLAY" => [
                "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE,
+               'PLUGINS'  => PluginOcsinventoryngOcsClient::PLUGINS_ALL
             ]
          ];
          $computer_ocs = $ocsClient->getComputer($line['ocsid'], $options);
@@ -903,10 +904,15 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                              WHERE `id` = $ID";
             $DB->query($query);
             //Add  || $data_ocs["META"]["CHECKSUM"] > self::MAX_CHECKSUM for bug of checksum 18446744073689088230
+//            Toolbox::logWarning(intval($cfg_ocs["checksum"]));
+
             if ($force || $computer_ocs["META"]["CHECKSUM"] > self::MAX_CHECKSUM) {
                $ocs_checksum = self::MAX_CHECKSUM;
                PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id)->setChecksum($ocs_checksum, $line['ocsid']);
             } else {
+               if (isset($computer_ocs['OFFICEPACK'])) {
+                  $ocsClient->setChecksum($computer_ocs["META"]["CHECKSUM"] | PluginOcsinventoryngOcsClient::CHECKSUM_SOFTWARE, $line['ocsid']);
+               }
                $ocs_checksum = $computer_ocs["META"]["CHECKSUM"];
             }
             $mixed_checksum = intval($ocs_checksum) & intval($cfg_ocs["checksum"]);
@@ -1372,7 +1378,11 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
             // Update OCS Cheksum
             $oldChecksum = $ocsClient->getChecksum($line['ocsid']);
             $newchecksum = $oldChecksum - $mixed_checksum;
-            $ocsClient->setChecksum($newchecksum, $line['ocsid']);
+            if (isset($computer_ocs['OFFICEPACK'])) {
+               $ocsClient->setChecksum($newchecksum | PluginOcsinventoryngOcsClient::CHECKSUM_SOFTWARE, $line['ocsid']);
+            } else {
+               $ocsClient->setChecksum($newchecksum, $line['ocsid']);
+            }
 
             //Return code to indicate that computer was synchronized
             return ['status'       => self::COMPUTER_SYNCHRONIZED,

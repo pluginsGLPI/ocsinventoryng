@@ -2507,7 +2507,7 @@ JAVASCRIPT;
                echo "<th>" . __('Manufacturer') . "</th>\n";
                echo "<th>" . __('Model') . "</th>\n";
                echo "<th>" . _n('Information', 'Informations', 2) . "</th>\n";
-               echo "<th>" . __('Date') . "</th>\n";
+               echo "<th>" . __('Last OCSNG inventory date', 'ocsinventoryng') . "</th>\n";
                echo "<th>" . __('OCSNG TAG', 'ocsinventoryng') . "</th>\n";
                if ($advanced && !$tolinked) {
                   echo "<th>" . __('Match the rule ?', 'ocsinventoryng') . "</th>\n";
