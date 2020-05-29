@@ -530,6 +530,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                echo "<br><span style='color:firebrick'>" . $deleted_pcs . " " . __('Pc deleted', 'ocsinventoryng');
                echo "</span>";
             }
+            echo "<br><span style='color:grey'>".__('Update ID of deleted computers of OCSNG', 'ocsinventoryng');
+            echo "</span>";
             echo "</td>";
          } else {
             echo "<td colspan='2'></td>";
@@ -539,7 +541,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                <i style='color:steelblue' class='fas fa-trash fa-3x' 
                            title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Clean links between GLPI and OCSNG', 'ocsinventoryng') . "
-               </a></td><tr>";
+               </a>";
+         echo "<br><span style='color:grey'>".__('Drop links for not present computers into OCSNG', 'ocsinventoryng');
+         echo "</span>";
+         echo "</td><tr>";
       }
       echo "</table></div>";
    }
