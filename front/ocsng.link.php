@@ -102,7 +102,19 @@ if (!isset($_POST["import_ok"])) {
       $_GET['start'] = 0;
    }
    if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
-      PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+
+      $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+      $deleted_pcs   = $ocsClient->getTotalDeletedComputers();
+      if ($deleted_pcs > 0) {
+         echo "<div class='center'>";
+         echo "<span style='color:firebrick'>";
+         echo "<i class='fas fa-exclamation-triangle fa-5x'></i><br><br>";
+         echo __('You have', 'ocsinventoryng')." ". $deleted_pcs . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng');
+         echo "<br>";
+         echo __('Please clean them before import or synchronize computers', 'ocsinventoryng');
+         echo "</span></div>";
+      }
+
       $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                       'import_mode'                         => $_SESSION["change_import_mode"],
                       'check'                               => $_GET['check'],

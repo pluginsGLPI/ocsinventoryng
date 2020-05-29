@@ -519,13 +519,13 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          if (Session::haveRight(static::$rightname, UPDATE)) {
             echo "<td class='center b' colspan='2'>";
 
-            $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-            $deleted_pcs   = $ocsClient->getTotalDeletedComputers();
             echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/deleted_equiv.php'>
             <i style='color:steelblue' class='fas fa-trash fa-3x' 
                            title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Clean OCSNG deleted computers', 'ocsinventoryng') . "
                </a>";
+            $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+            $deleted_pcs   = $ocsClient->getTotalDeletedComputers();
             if ($deleted_pcs > 0) {
                echo "<br><span style='color:firebrick'>" . $deleted_pcs . " " . __('Pc deleted', 'ocsinventoryng');
                echo "</span>";
@@ -2928,7 +2928,6 @@ JAVASCRIPT;
 
                   $nb = $ocsClient->deleteOldAgents($agents);
                   if ($nb) {
-                     PluginOcsinventoryngOcsProcess::manageDeleted($plugin_ocsinventoryng_ocsservers_id, false);
                      $cron_status = 1;
                      if ($task) {
                         $task->addVolume($nb);

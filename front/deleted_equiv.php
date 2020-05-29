@@ -40,7 +40,7 @@ $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinvent
 if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
    PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($_SESSION["ocs_deleted_equiv"]['computers_to_del']) {
-      echo "<div class='center b'>" . $_SESSION["ocs_deleted_equiv"]['computers_deleted'] . " " . __('Pc deleted', 'ocsinventoryng');
+      echo "<div class='center b'>" . $_SESSION["ocs_deleted_equiv"]['computers_deleted'] . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng');
       Html::redirect($_SERVER['PHP_SELF']);
    } else {
       if ($_SESSION["ocs_deleted_equiv"]['computers_deleted'] === 0) {
@@ -50,7 +50,7 @@ if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
          echo "<table class='tab_cadre_fixe'>";
          echo "<th colspan='2'>" . __('Clean OCSNG deleted computers', 'ocsinventoryng');
          echo "</th>";
-         echo "<tr class='tab_bg_1'><td>" . __('Pc deleted', 'ocsinventoryng') . "</td><td>" . $_SESSION["ocs_deleted_equiv"]['computers_deleted'] . "</td></tr>";
+         echo "<tr class='tab_bg_1'><td>" . __('deleted computers into OCS Inventory NG', 'ocsinventoryng') . "</td><td>" . $_SESSION["ocs_deleted_equiv"]['computers_deleted'] . "</td></tr>";
          echo "</table></div>";
 
       }
@@ -87,7 +87,7 @@ if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
          echo "<table class='tab_cadre_fixe'>";
          echo "<th colspan='2'>" . __('Clean OCSNG deleted computers', 'ocsinventoryng');
          echo "</th>";
-         echo "<tr class='tab_bg_1'><td>" . __('Pc deleted', 'ocsinventoryng') . "</td><td>" . $count . "/" . $total . "</td></tr>";
+         echo "<tr class='tab_bg_1'><td>" . __('deleted computers into OCS Inventory NG', 'ocsinventoryng') . "</td><td>" . $count . "/" . $total . "</td></tr>";
          echo "</table></div>";
       }
       echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
