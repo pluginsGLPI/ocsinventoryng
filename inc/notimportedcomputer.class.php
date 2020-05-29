@@ -55,7 +55,6 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
     */
    function getAdditionalFields() {
 
-      $can_update = PluginOcsinventoryngConfig::canUpdateOCS();
       return [['name'  => 'reason',
                'label' => __('Reason of rejection'),
                'type'  => 'reason'],
@@ -241,16 +240,16 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
          'name'     => __('OCSNG ID', 'ocsinventoryng'),
          'datatype' => 'integer'
       ];
-//
-//      $tab[] = [
-//         'id'            => '2',
-//         'table'         => $this->getTable(),
-//         'field'         => 'name',
-//         'name'          => __('OCSNG name', 'ocsinventoryng'),
-//         'datatype'      => 'itemlink',
-//         'massiveaction' => false,
-//         'itemlink_type' => $this->getType()
-//      ];
+      //
+      //      $tab[] = [
+      //         'id'            => '2',
+      //         'table'         => $this->getTable(),
+      //         'field'         => 'name',
+      //         'name'          => __('OCSNG name', 'ocsinventoryng'),
+      //         'datatype'      => 'itemlink',
+      //         'massiveaction' => false,
+      //         'itemlink_type' => $this->getType()
+      //      ];
 
       $tab[] = [
          'id'       => '3',
@@ -274,7 +273,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
          'field'     => 'name',
          'name'      => __('Server'),
          'linkfield' => 'plugin_ocsinventoryng_ocsservers_id',
-         'datatype' => 'dropdown'
+         'datatype'  => 'dropdown'
       ];
 
       $tab[] = [
@@ -339,7 +338,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
    function logNotImported($ocsservers_id, $ocsid, $reason) {
       global $DB;
 
-//      PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id);
+      //      PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id);
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
       $options   = [
          "DISPLAY" => [
@@ -372,8 +371,8 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
          $input["rules_id"] = json_encode($reason['rule_matched']);
 
          $query  = "SELECT `id` FROM `glpi_plugin_ocsinventoryng_notimportedcomputers`
-                    WHERE `ocsid`='" . $ocsid. "' 
-                    AND `plugin_ocsinventoryng_ocsservers_id`= '" . $ocsservers_id. "'";
+                    WHERE `ocsid`='" . $ocsid . "' 
+                    AND `plugin_ocsinventoryng_ocsservers_id`= '" . $ocsservers_id . "'";
          $result = $DB->query($query);
          if ($DB->numrows($result) > 0) {
             $input['id'] = $DB->result($result, 0, 'id');
@@ -429,12 +428,64 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
     */
    function deleteNotImportedComputer($not_imported_id) {
 
-      if ($this->getFromDB($not_imported_id)) {
-         PluginUninstallUninstall::deleteComputerInOCS($this->fields["ocsid"],
-                                                       $this->fields["plugin_ocsinventoryng_ocsservers_id"]);
+      $can_update = PluginOcsinventoryngConfig::canUpdateOCS();
+      if ($this->getFromDB($not_imported_id) && $can_update) {
+         self::deleteComputerInOCS($this->fields["ocsid"],
+                                   $this->fields["plugin_ocsinventoryng_ocsservers_id"]);
          $fields["id"] = $not_imported_id;
          $this->delete($fields);
       }
+   }
+
+   /**
+    * @param $ocs_id
+    * @param $ocs_server_id
+    *
+    * @throws \GlpitestSQLError
+    */
+   static function deleteComputerInOCS($ocs_id, $ocs_server_id) {
+
+      $DBocs = PluginOcsinventoryngOcsServer::getDBocs($ocs_server_id)->getDB();
+
+      //First try to remove all the network ports
+      $query = "DELETE
+                FROM `netmap`
+                WHERE `MAC` IN (SELECT `MACADDR`
+                                FROM `networks`
+                                WHERE `networks`.`HARDWARE_ID` = '" . $ocs_id . "')";
+      $DBocs->query($query);
+
+      $tables = ["accesslog", "accountinfo", "batteries", "bios", "controllers", "cpus", "devices",
+                 "download_history", "download_servers", "drives", "groups",
+                 "groups_cache", "inputs", "itmgmt_comments", "javainfo", "jounallog",
+                 "locks", "memories", "modems", "monitors", "networks", "ports", "printers",
+                 "registry", "saas", "sim", "slots", "softwares", "sounds", "storages", "usbdevices", "videos", "virtualmachines"];
+
+      foreach ($tables as $table) {
+         if (self::OcsTableExists($ocs_server_id, $table)) {
+            $query = "DELETE
+                      FROM `" . $table . "`
+                      WHERE `hardware_id` = '" . $ocs_id . "'";
+            $DBocs->query($query);
+         }
+      }
+
+      $query = "DELETE
+                FROM `hardware`
+                WHERE `ID` = '" . $ocs_id . "'";
+      $DBocs->query($query);
+
+   }
+
+   static function OcsTableExists($ocs_server_id, $tablename) {
+      $dbClient = PluginOcsinventoryngOcsServer::getDBocs($ocs_server_id);
+
+      if (!($dbClient instanceof PluginOcsinventoryngOcsDbClient)) {
+         return false;
+      }
+
+      $DBocs = $dbClient->getDB();
+      return $DBocs->tableExists($tablename);
    }
 
 
@@ -499,9 +550,9 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
          $notimported = new PluginOcsinventoryngNotimportedcomputer;
          $notimported->getFromDB($params['id']);
 
-         if(!PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])){
-            Session::addMessageAfterRedirect(__("Error to contact ocs server",'ocsinventoryng'),
-               false, ERROR);
+         if (!PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
+            Session::addMessageAfterRedirect(__("Error to contact ocs server", 'ocsinventoryng'),
+                                             false, ERROR);
             return false;
          }
          $changes = self::getOcsComputerInfos($notimported->fields);
@@ -511,12 +562,12 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
                                'lock'                                => 0,
                                'defaultentity'                       => $params['entity'],
                                'defaultrecursive'                    => 0];
-            $result = PluginOcsinventoryngOcsProcess::processComputer($process_params);
+            $result         = PluginOcsinventoryngOcsProcess::processComputer($process_params);
          } else {
             $process_params = ['ocsid'                               => $notimported->fields['ocsid'],
                                'plugin_ocsinventoryng_ocsservers_id' => $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
                                'lock'                                => 0];
-            $result = PluginOcsinventoryngOcsProcess::processComputer($process_params);
+            $result         = PluginOcsinventoryngOcsProcess::processComputer($process_params);
          }
 
          if (in_array($result['status'],
@@ -528,7 +579,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
             //If serial has been changed in order to import computer
             if (in_array('serial', $changes)) {
                PluginOcsinventoryngOcslink::mergeOcsArray($result['computers_id'],
-                                                            ['serial']);
+                                                          ['serial']);
             }
 
             return true;
@@ -564,9 +615,9 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
          $link_params = ['ocsid'                               => $notimported->fields['ocsid'],
                          'plugin_ocsinventoryng_ocsservers_id' => $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
                          'computers_id'                        => $params['computers_id']];
-         if(!PluginOcsinventoryngOcsServer::checkOCSconnection($notimported->fields['plugin_ocsinventoryng_ocsservers_id'])){
-            Session::addMessageAfterRedirect(__("Error to contact ocs server",'ocsinventoryng'),
-               false, ERROR);
+         if (!PluginOcsinventoryngOcsServer::checkOCSconnection($notimported->fields['plugin_ocsinventoryng_ocsservers_id'])) {
+            Session::addMessageAfterRedirect(__("Error to contact ocs server", 'ocsinventoryng'),
+                                             false, ERROR);
             return false;
          }
          $changes = self::getOcsComputerInfos($notimported->fields);
@@ -697,13 +748,13 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
    }
 
    /**
+    * @param null $checkitem
+    *
+    * @return array
     * @since version 0.85
     *
     * @see CommonDBTM::getSpecificMassiveActions()
     *
-    * @param null $checkitem
-    *
-    * @return array
     */
    function getSpecificMassiveActions($checkitem = null) {
 
@@ -723,13 +774,13 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
    }
 
    /**
+    * @param MassiveAction $ma
+    *
+    * @return bool|false
     * @since version 0.85
     *
     * @see CommonDBTM::showMassiveActionsSubForm()
     *
-    * @param MassiveAction $ma
-    *
-    * @return bool|false
     */
    static function showMassiveActionsSubForm(MassiveAction $ma) {
 
@@ -755,15 +806,15 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
 
 
    /**
-    * @since version 0.85
-    *
-    * @see CommonDBTM::processMassiveActionsForOneItemtype()
-    *
     * @param MassiveAction $ma
     * @param CommonDBTM    $item
     * @param array         $ids
     *
     * @return nothing|void
+    * @since version 0.85
+    *
+    * @see CommonDBTM::processMassiveActionsForOneItemtype()
+    *
     */
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
                                                        array $ids) {

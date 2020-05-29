@@ -840,12 +840,9 @@ function plugin_ocsinventoryng_MassiveActions($type) {
                   "plugin_ocsinventoryng_import"]      = __("Import in the entity",
                                                             'ocsinventoryng');
 
-         $plugin = new Plugin;
-         if ($plugin->isActivated("uninstall")) {
-            $actions['PluginOcsinventoryngNotimportedcomputer' . MassiveAction::CLASS_ACTION_SEPARATOR .
-                     "plugin_ocsinventoryng_delete"] = __('Delete computer in OCSNG',
-                                                          'ocsinventoryng');
-         }
+         $actions['PluginOcsinventoryngNotimportedcomputer' . MassiveAction::CLASS_ACTION_SEPARATOR .
+                  "plugin_ocsinventoryng_delete"] = __('Delete computer in OCSNG',
+                                                       'ocsinventoryng');
          return $actions;
 
       case 'Computer' :

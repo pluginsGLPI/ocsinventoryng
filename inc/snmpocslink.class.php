@@ -2205,7 +2205,7 @@ JAVASCRIPT;
 
       echo "<td>";
       echo Html::submit(_sx('button', 'Post'), ['name' => 'search']);
-      echo "<a class='fa fa-undo reset-search' href='"
+      echo "<a class='fas fa-undo reset-search' href='"
            . $target
            . (strpos($target, '?') ? '&amp;' : '?')
            . "reset=reset' title=\"".__s('Blank')."\"

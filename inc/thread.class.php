@@ -179,7 +179,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "</table></div>";
 
       echo "<div id='tabcontent'></div>";
-      echo "<script type='text/javascript'>loadDefaultTab();</script>";
+//      echo "<script type='text/javascript'>loadDefaultTab();</script>";
    }
 
 

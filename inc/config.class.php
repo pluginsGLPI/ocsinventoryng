@@ -332,7 +332,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td> " . __('Authorize the OCSNG update', 'ocsinventoryng') . " </td><td>";
+      echo "<td> " . __('Authorize the OCSNG update (purge agents when purge GLPI computers or from Automatic actions)', 'ocsinventoryng') . " </td><td>";
       Dropdown::showYesNo('allow_ocs_update', $this->fields['allow_ocs_update']);
       echo "</td>";
       echo "</tr>";

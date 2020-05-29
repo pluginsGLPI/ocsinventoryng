@@ -290,28 +290,30 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       $usemassimport = self::useMassImport();
 
-      echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
+      echo "<div class='center'><table class='tab_cadre_fixe' width='40%' cellpadding='10'>";
       if (Session::haveRight("plugin_ocsinventoryng", READ)) {
          echo "<tr><th colspan='4'>";
          printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
          echo "</th></tr>";
          //config server
          if ($isactive) {
-            echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 2 : 4) . "'>
+            echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                   <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
-                    <i style='color:cornflowerblue' class='fas fa-cogs fa-3x' 
+                    <i style='color:steelblue' class='fas fa-cogs fa-3x' 
                         title=\"" . __s('Configuration of OCSNG server', 'ocsinventoryng') . "\"></i>
-                   <br>" . sprintf(__('Configuration of OCSNG server %s', 'ocsinventoryng'), $name) . "
+                   <br><br>" . sprintf(__('Configuration of OCSNG server %s', 'ocsinventoryng'), $name) . "
                   </a></td>";
 
             if ($usemassimport && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
                //config massimport
                echo "<td class='center b' colspan='2'>
                      <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/config.form.php'>
-                      <i style='color:grey' class='fas fa-sync-alt fa-3x' 
+                      <i style='color:steelblue' class='fas fa-sync-alt fa-3x' 
                         title=\"" . __s('Automatic synchronization\'s configuration', 'ocsinventoryng') . "\"></i>
-                        <br>" . __("Automatic synchronization's configuration", 'ocsinventoryng') . "
+                        <br><br>" . __("Automatic synchronization's configuration", 'ocsinventoryng') . "
                      </a></td>";
+            } else {
+               echo "<td colspan='2'></td>";
             }
             echo "</tr>\n";
 
@@ -324,15 +326,17 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "</th></tr>";
 
       echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-            <a href='" . $CFG_GLPI["root_doc"] . "/front/ruleimportentity.php'>" . __('Rules for assigning an item to an entity') . "
-            </a>";
+            <a href='" . $CFG_GLPI["root_doc"] . "/front/ruleimportentity.php'>
+            <i style='color:firebrick' class='fas fa-book fa-3x' 
+                        title=\"" . __s('Rules for assigning an item to an entity') . "\"></i><br><br>" . __('Rules for assigning an item to an entity') . "</a>";
       echo "<br><div class='red'>";
       echo __('Setup rules for choose entity on items import', 'ocsinventoryng');
       echo "</div></td>";
 
       echo "<td class='center b' colspan='2'>
-            <a href='" . $CFG_GLPI["root_doc"] . "/front/ruleimportcomputer.php'>" . __('Rules for import and link computers') . "
-         </a>";
+            <a href='" . $CFG_GLPI["root_doc"] . "/front/ruleimportcomputer.php'>
+         <i style='color:firebrick' class='fas fa-book fa-3x' 
+                        title=\"" . __s('Rules for import and link computers') . "\"></i><br><br>" . __('Rules for import and link computers') . "</a>";
       echo "<br><div class='red'>";
       echo __('Setup rules for select criteria for items link', 'ocsinventoryng');
       echo "</div></td>";
@@ -361,7 +365,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       if ($numberActiveServers > 0) {
          echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
                 method='post'>";
-         echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
+         echo "<div class='center'><table class='tab_cadre_fixe' width='40%' cellpadding='10'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an OCSNG server', 'ocsinventoryng') .
               "</th></tr>\n";
 
@@ -403,8 +407,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
       $usemassimport = self::useMassImport();
 
-      echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
-      echo "<tr><th colspan='" . ($usemassimport ? 4 : 2) . "'>";
+      echo "<div class='center'><table class='tab_cadre_fixe' width='40%' cellpadding='10'>";
+      echo "<tr><th colspan='4'>";
       printf(__('%1$s %2$s'), __('OCSNG server', 'ocsinventoryng'), $name);
       echo "<br>";
       if (Session::haveRight("plugin_ocsinventoryng", READ)
@@ -425,7 +429,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                if (Session::haveRight("plugin_ocsinventoryng_import", READ)) {
                   echo "<td class='center b' colspan='2'>
                   <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.import.php'>";
-                  echo "<i style='color:cornflowerblue' class='fas fa-plus fa-3x' 
+                  echo "<i style='color:steelblue' class='fas fa-plus fa-3x' 
                            title=\"" . __s('Import new computers', 'ocsinventoryng') . "\"></i>";
                   echo "<br>" . __('Import new computers', 'ocsinventoryng') . "
                   </a></td>";
@@ -436,10 +440,12 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   //threads
                   echo "<td class='center b' colspan='2'>
                      <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/thread.php?plugin_ocsinventoryng_ocsservers_id=" . $plugin_ocsinventoryng_ocsservers_id . "'>
-                      <i style='color:cornflowerblue' class='fas fa-play fa-3x' 
+                      <i style='color:steelblue' class='fas fa-play fa-3x' 
                            title=\"" . __s('Scripts execution of automatic actions', 'ocsinventoryng') . "\"></i>
                         <br>" . __('Scripts execution of automatic actions', 'ocsinventoryng') . "
                      </a></td>";
+               } else {
+                  echo "<td colspan='2'></td>";
                }
                echo "</tr>\n";
             }
@@ -449,7 +455,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                if (Session::haveRight("plugin_ocsinventoryng_sync", READ) && $isactive) {
                   echo "<td class='center b' colspan='2'>
                   <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.sync.php'>
-                  <i style='color:cornflowerblue' class='fas fa-sync-alt fa-3x' 
+                  <i style='color:steelblue' class='fas fa-sync-alt fa-3x' 
                            title=\"" . __s('Synchronize computers already imported', 'ocsinventoryng') . "\"></i>
                      <br>" . __('Synchronize computers already imported', 'ocsinventoryng') . "
                   </a></td>";
@@ -478,7 +484,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                if (Session::haveRight("plugin_ocsinventoryng_link", READ) && $isactive) {
                   echo "<td class='center b' colspan='2'>
                   <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.link.php'>
-                  <i style='color:firebrick' class='fas fa-arrow-alt-circle-down fa-3x' 
+                  <i style='color:steelblue' class='fas fa-arrow-alt-circle-down fa-3x' 
                            title=\"" . __s('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng') . "\"></i>
                      <br>" . __('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng') . "
                   </a></td>";
@@ -494,6 +500,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                            title=\"" . __s('Computers not imported by automatic actions', 'ocsinventoryng') . "\"></i>
                         <br>" . __('Computers not imported by automatic actions', 'ocsinventoryng') . "
                      </a></td>";
+               } else {
+                  echo "<td colspan='2'></td>";
                }
                echo "</tr>\n";
             }
@@ -507,17 +515,20 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       if ((Session::haveRight("plugin_ocsinventoryng_clean", UPDATE)
            || Session::haveRight(static::$rightname, UPDATE))
           && $isactive) {
+         echo "<tr class='tab_bg_1'>";
          if (Session::haveRight(static::$rightname, UPDATE)) {
-            echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 4 : 2) . "'>
+            echo "<td class='center b' colspan='2'>
             <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/deleted_equiv.php'>
-            <i style='color:grey' class='fas fa-trash fa-3x' 
+            <i style='color:steelblue' class='fas fa-trash fa-3x' 
                            title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Clean OCSNG deleted computers', 'ocsinventoryng') . "
                </a></td>";
+         } else {
+            echo "<td colspan='2'></td>";
          }
-         echo "<tr class='tab_bg_1'><td class='center b' colspan='" . ($usemassimport ? 4 : 2) . "'>
+         echo "<td class='center b' colspan='2'>
                <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.clean.php'>
-               <i style='color:green' class='fas fa-trash fa-3x' 
+               <i style='color:steelblue' class='fas fa-trash fa-3x' 
                            title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Clean links between GLPI and OCSNG', 'ocsinventoryng') . "
                </a></td><tr>";
@@ -1689,11 +1700,37 @@ JAVASCRIPT;
 
       $sql    = "SELECT `plugin_ocsinventoryng_ocsservers_id`
               FROM `glpi_plugin_ocsinventoryng_ocslinks`
-              WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` = $ID";
+              WHERE `computers_id` = $ID";
       $result = $DB->query($sql);
       if ($DB->numrows($result) > 0) {
          $datas = $DB->fetch_array($result);
          return $datas["plugin_ocsinventoryng_ocsservers_id"];
+      }
+      return -1;
+   }
+
+   /**
+    * Get the ocs id of a machine, by giving the machine id
+    *
+    * @param $ID the machine ID
+    *
+    * return the ocs server id of the machine
+    *
+    * @param $ocsservers_id
+    *
+    * @return int
+    * @throws \GlpitestSQLError
+    */
+   static function getOCSIDByComputerID($ID, $ocsservers_id) {
+      global $DB;
+
+      $sql    = "SELECT `ocsid`
+              FROM `glpi_plugin_ocsinventoryng_ocslinks`
+              WHERE `computers_id` = '".$ID."' AND `plugin_ocsinventoryng_ocsservers_id` = $ocsservers_id";
+      $result = $DB->query($sql);
+      if ($DB->numrows($result) > 0) {
+         $datas = $DB->fetch_array($result);
+         return $datas["ocsid"];
       }
       return -1;
    }
@@ -2873,7 +2910,8 @@ JAVASCRIPT;
                //action purge agents OCSNG
 
                $computers = [];
-               if (count($agents) > 0) {
+               $can_update = PluginOcsinventoryngConfig::canUpdateOCS();
+               if (count($agents) > 0 && $can_update) {
 
                   $nb = $ocsClient->deleteOldAgents($agents);
                   if ($nb) {

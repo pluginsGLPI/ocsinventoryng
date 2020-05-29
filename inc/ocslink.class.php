@@ -671,6 +671,17 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
     **/
    static function purgeComputer(Computer $comp) {
 
+      $can_update = PluginOcsinventoryngConfig::canUpdateOCS();
+      if ($can_update) {
+         $ocsservers_id = PluginOcsinventoryngOcsServer::getServerByComputerID($comp->getField("id"));
+         if ($ocsservers_id > 0) {
+            $ocs_id = PluginOcsinventoryngOcsServer::getOCSIDByComputerID($comp->getField("id"), $ocsservers_id);
+            if ($ocs_id > 0) {
+               PluginOcsinventoryngNotimportedcomputer::deleteComputerInOCS($ocs_id, $ocsservers_id);
+            }
+         }
+      }
+
       $link = new self();
       $link->deleteByCriteria(['computers_id' => $comp->getField("id")]);
 
@@ -1273,11 +1284,11 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                    || $field == "license_number"
                    || $field == "use_date"
                ) {
-                  $js = '$("input[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fa fa-lock pointer\"></i>");';
+                  $js = '$("input[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fas fa-lock pointer\"></i>");';
                } else if ($field == "comment") {
-                  $js = '$("textarea[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fa fa-lock pointer\"></i>");';
+                  $js = '$("textarea[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fas fa-lock pointer\"></i>");';
                } else {
-                  $js = '$("select[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fa fa-lock pointer\"></i>");';
+                  $js = '$("select[name=' . $field . ']").closest("td").prev().append("<i class=\"lockfield' . $field . ' fas fa-lock pointer\"></i>");';
                }
                $rootdoc                             = $CFG_GLPI["root_doc"];
                $plugin_ocsinventoryng_ocsservers_id = $data['plugin_ocsinventoryng_ocsservers_id'];

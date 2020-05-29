@@ -518,7 +518,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_customapps` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
-INSERT INTO `glpi_plugin_ocsinventoryng_configs`(`id`,`thread_log_frequency`,`is_displayempty`,`import_limit`) VALUES (1, 2, 1, 0);
+INSERT INTO `glpi_plugin_ocsinventoryng_configs`(`id`,`thread_log_frequency`,`is_displayempty`,`import_limit`, `allow_ocs_update`, `delay_refresh`) VALUES (1, 2, 1, 0, 1, 5);
 
 INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Unkown port', '*', '*', 'PluginOcsinventoryngNetworkPort', NULL, NULL,NULL, NULL);
 INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Ethernet port', 'Ethernet', '*', 'NetworkPortEthernet', 'T', 10,NULL, NULL);

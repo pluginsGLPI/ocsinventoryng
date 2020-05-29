@@ -1197,8 +1197,10 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
                      $tables = ["accesslog",
                                 "accountinfo",
+                                "batteries",
                                 "bios",
                                 "controllers",
+                                "cpus",
                                 "devices",
                                 "download_history",
                                 "download_servers",
@@ -1217,7 +1219,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                                 "ports",
                                 "printers",
                                 "registry",
+                                "saas",
                                 "securitycenter",
+                                "sim",
                                 "uptime",
                                 "officepack",
                                 "winupdatestate",
@@ -1225,10 +1229,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                                 "softwares",
                                 "sounds",
                                 "storages",
+                                "usbdevices",
                                 "videos",
-                                "virtualmachines",
-                                "cpus",
-                                "sim"
+                                "virtualmachines"
                      ];
                      if (isset($tables) and is_array($tables)) {
                         foreach ($tables as $table) {
