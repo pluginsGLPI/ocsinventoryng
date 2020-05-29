@@ -517,12 +517,20 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
           && $isactive) {
          echo "<tr class='tab_bg_1'>";
          if (Session::haveRight(static::$rightname, UPDATE)) {
-            echo "<td class='center b' colspan='2'>
-            <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/deleted_equiv.php'>
+            echo "<td class='center b' colspan='2'>";
+
+            $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+            $deleted_pcs   = $ocsClient->getTotalDeletedComputers();
+            echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/deleted_equiv.php'>
             <i style='color:steelblue' class='fas fa-trash fa-3x' 
                            title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Clean OCSNG deleted computers', 'ocsinventoryng') . "
-               </a></td>";
+               </a>";
+            if ($deleted_pcs > 0) {
+               echo "<br><span style='color:firebrick'>" . $deleted_pcs . " " . __('Pc deleted', 'ocsinventoryng');
+               echo "</span>";
+            }
+            echo "</td>";
          } else {
             echo "<td colspan='2'></td>";
          }
@@ -1413,8 +1421,8 @@ JAVASCRIPT;
       echo "<td>" . __('Number of days without inventory for cleaning', 'ocsinventoryng') . "</td>";
       echo "<td>";
       Dropdown::showNumber('cleancron_nb_days', ['value' => $this->fields["cleancron_nb_days"],
-                                              'min'   => 1,
-                                              'max'   => 365]);
+                                                 'min'   => 1,
+                                                 'max'   => 365]);
       echo "</td>";
       echo "</tr>";
 
@@ -1726,7 +1734,7 @@ JAVASCRIPT;
 
       $sql    = "SELECT `ocsid`
               FROM `glpi_plugin_ocsinventoryng_ocslinks`
-              WHERE `computers_id` = '".$ID."' AND `plugin_ocsinventoryng_ocsservers_id` = $ocsservers_id";
+              WHERE `computers_id` = '" . $ID . "' AND `plugin_ocsinventoryng_ocsservers_id` = $ocsservers_id";
       $result = $DB->query($sql);
       if ($DB->numrows($result) > 0) {
          $datas = $DB->fetch_array($result);
@@ -2909,7 +2917,7 @@ JAVASCRIPT;
             if ($config['action_cleancron'] == self::ACTION_PURGE_COMPUTER) {
                //action purge agents OCSNG
 
-               $computers = [];
+               $computers  = [];
                $can_update = PluginOcsinventoryngConfig::canUpdateOCS();
                if (count($agents) > 0 && $can_update) {
 

@@ -300,6 +300,9 @@ abstract class PluginOcsinventoryngOcsClient {
 
    }
 
+   abstract public function getTotalDeletedComputers();
+
+
    abstract public function getDeletedComputers();
 
    /**
@@ -402,25 +405,25 @@ abstract class PluginOcsinventoryngOcsClient {
    /**
     * Returns the integer config for the given key
     *
-    * @see PluginOcsinventoryngOcsClient::getConfig()
-    *
     * @param string $key The name of the config item to return
     *
     * @return integer
+    * @see PluginOcsinventoryngOcsClient::getConfig()
+    *
     */
    public function getIntConfig($key) {
       $config = $this->getConfig($key);
-      return $config['IVALUE'];
+      return $config['IVALUE'] ?? 0;
    }
 
    /**
     * Returns the text config for the given key
     *
-    * @see PluginOcsinventoryngOcsClient::getConfig()
-    *
     * @param string $key The name of the config item to return
     *
     * @return string
+    * @see PluginOcsinventoryngOcsClient::getConfig()
+    *
     */
    public function getTextConfig($key) {
       $config = $this->getConfig($key);
@@ -492,7 +495,7 @@ abstract class PluginOcsinventoryngOcsClient {
             'plugins' => self::PLUGINS_TEAMVIEWER,
             'multi'   => 0,
          ],
-         'customapp'            => [
+         'customapp'             => [
             'plugins' => self::PLUGINS_CUSTOMAPP,
             'multi'   => 1,
          ],

@@ -67,7 +67,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM {
              && PluginOcsinventoryngOcsServer::checkTraceDeleted($item->getID())) {
             $client  = PluginOcsinventoryngOcsServer::getDBocs($item->getID());
             $version = $client->getTextConfig('GUI_VERSION');
-            $snmp    = $client->getIntConfig('SNMP');
+            $snmp    = ($client->getIntConfig('SNMP') > 0)?true:false;
 
             if ($version > PluginOcsinventoryngOcsServer::OCS2_1_VERSION_LIMIT && $snmp) {
                return __('SNMP Import', 'ocsinventoryng');

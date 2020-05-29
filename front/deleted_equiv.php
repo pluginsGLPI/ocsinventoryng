@@ -62,16 +62,18 @@ if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
    if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
       PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    }
+
    if ($_SESSION["ocs_deleted_equiv"]["total"] != $_SESSION["ocs_deleted_equiv"]["deleted"] && $_SESSION["ocs_deleted_equiv"]["last_req"]) {
 
       echo $_SESSION["ocs_deleted_equiv"]["deleted"] . "/" . $_SESSION["ocs_deleted_equiv"]["total"];
+      echo "<br><br>";
       $count = $_SESSION["ocs_deleted_equiv"]["deleted"];
       $percent = min(100,
          round(100 * ($count) / $_SESSION["ocs_deleted_equiv"]["total"],
             0));
-      PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
       Html::displayProgressBar(400, $percent, $param['forcepadding'] = true);
-      Html::redirect($_SERVER['PHP_SELF']);
+      PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+
    } else {
 
       if ($_SESSION["ocs_deleted_equiv"]["total"] === 0) {

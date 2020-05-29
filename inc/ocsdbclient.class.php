@@ -1260,16 +1260,28 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    }
 
    /**
+    * @see PluginOcsinventoryngOcsClient::getTotalDeletedComputers()
+    */
+   public function getTotalDeletedComputers() {
+
+      $query                                  = "SELECT COUNT(*) FROM `deleted_equiv`";
+      $total_count                            = $this->db->query($query);
+      $total                                  = $this->db->fetch_row($total_count);
+
+      return intval($total['0']);
+   }
+
+   /**
     * @see PluginOcsinventoryngOcsClient::getDeletedComputers()
     */
    public function getDeletedComputers() {
 
-      if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
+//      if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
          $query                                  = "SELECT COUNT(*) FROM `deleted_equiv`";
          $total_count                            = $this->db->query($query);
          $total                                  = $this->db->fetch_row($total_count);
          $_SESSION["ocs_deleted_equiv"]["total"] = intval($total['0']);
-      }
+//      }
       $count   = 0;
       $query   = "SELECT `DATE`,`DELETED`,`EQUIVALENT` 
                   FROM `deleted_equiv` ORDER BY `DATE`,`EQUIVALENT` 
@@ -1286,7 +1298,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       } else {
          $res = [];
       }
-      $_SESSION["ocs_deleted_equiv"]["deleted"] = 0;
+//      $_SESSION["ocs_deleted_equiv"]["deleted"] = 0;
       if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
          $_SESSION["ocs_deleted_equiv"]["deleted"] = $count;
       } else {
