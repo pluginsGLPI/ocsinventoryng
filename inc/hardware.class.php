@@ -199,7 +199,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
 
          if (intval($options['cfg_ocs']["import_general_domain"]) > 0
              && !in_array("domains_id", $options['computers_updates'])) {
-            $updates["domains_id"] = Dropdown::importExternal('Domain', PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware["WORKGROUP"]));
+            $updates["domains_id"] = Dropdown::importExternal('Domain', PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware["WORKGROUP"]), $options['entities_id']);
          }
 
          if (intval($options['cfg_ocs']["import_general_contact"]) > 0
