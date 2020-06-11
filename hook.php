@@ -42,7 +42,7 @@ function plugin_ocsinventoryng_install() {
        && !$DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
        && !$DB->tableExists("ocs_glpi_ocsservers")) {
       //INSTALL
-      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.6.1-empty.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.7.0-empty.sql");
 
       $migration->createRule(['sub_type'     => 'RuleImportComputer',
                               'entities_id'  => 0,
@@ -117,7 +117,7 @@ function plugin_ocsinventoryng_install() {
 
          // recuperation des droits du core
          // creation de la table glpi_plugin_ocsinventoryng_profiles vide
-         If ($DB->tableExists("ocs_glpi_profiles")
+         if ($DB->tableExists("ocs_glpi_profiles")
              && ($DB->tableExists('ocs_glpi_ocsservers')
                  && $dbu->countElementsInTable('ocs_glpi_ocsservers') > 0)) {
 
@@ -131,7 +131,7 @@ function plugin_ocsinventoryng_install() {
          }
 
          // recuperation des paramètres du core
-         If ($DB->tableExists("ocs_glpi_crontasks")) {
+         if ($DB->tableExists("ocs_glpi_crontasks")) {
 
             $query = "INSERT INTO `glpi_crontasks` (`itemtype`, `name`, `frequency`, `param`, `state`,
             `mode`, `allowmode`, `hourmin`, `hourmax`, `logs_lifetime`, `lastrun`, `lastcode`, `comment`)
@@ -148,7 +148,7 @@ function plugin_ocsinventoryng_install() {
             $DB->queryOrDie($query, "1.0.0 update ocsinventoryng crontask");
          }
 
-         If ($DB->tableExists("ocs_glpi_displaypreferences")) {
+         if ($DB->tableExists("ocs_glpi_displaypreferences")) {
             $query = "INSERT INTO `glpi_displaypreferences`
                           SELECT *
                           FROM `ocs_glpi_displaypreferences`
@@ -166,7 +166,7 @@ function plugin_ocsinventoryng_install() {
       }
 
       //Update 1.0.3
-      If ($DB->tableExists("glpi_plugin_ocsinventoryng_networkports")
+      if ($DB->tableExists("glpi_plugin_ocsinventoryng_networkports")
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_networkports', 'speed')) {
 
          $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_networkports` 
@@ -283,7 +283,7 @@ function plugin_ocsinventoryng_install() {
       $migration->dropTable('glpi_plugin_ocsinventoryng_profiles');
 
       //Update 1.2.2
-      If ($DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
+      if ($DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_device_motherboard')) {
 
          $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
@@ -292,7 +292,7 @@ function plugin_ocsinventoryng_install() {
       }
 
       //Update 1.2.3
-      If (!$DB->tableExists("glpi_plugin_ocsinventoryng_ipdiscoverocslinks")) {
+      if (!$DB->tableExists("glpi_plugin_ocsinventoryng_ipdiscoverocslinks")) {
 
          $query = "CREATE TABLE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks` (
                 `id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -667,11 +667,11 @@ function plugin_ocsinventoryng_uninstall() {
 
    // clean rules
    $rule = new RuleImportEntity();
-   foreach ($DB->request("glpi_rules", ['sub_type' => 'RuleImportEntity']) AS $data) {
+   foreach ($DB->request("glpi_rules", ['sub_type' => 'RuleImportEntity']) as $data) {
       $rule->delete($data);
    }
    $rule = new RuleImportComputer();
-   foreach ($DB->request("glpi_rules", ['sub_type' => 'RuleImportComputer']) AS $data) {
+   foreach ($DB->request("glpi_rules", ['sub_type' => 'RuleImportComputer']) as $data) {
       $rule->delete($data);
    }
 
@@ -1640,17 +1640,22 @@ function plugin_ocsinventoryng_ruleImportComputer_getSqlRestriction($params = []
    // Search computer, in entity, not already linked
 
    //resolve The rule result no preview : Drop this restriction `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` IS NULL
-   $params['sql_where'] .= " AND `glpi_computers`.`is_template` = '0' ";
+   $params['sql_where'][] = ["glpi_computers.is_template" => '0'];
 
    if ($CFG_GLPI['transfers_id_auto'] < 1) {
-      $params['sql_where'] .= " AND `glpi_computers`.`entities_id` IN (" . $params['where_entity'] . ")";
+      $params['sql_where'][] = ["glpi_computers.entities_id" => $params['where_entity']];
    }
-   $params['sql_from'] = "`glpi_computers`
-                           LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks`
-                              ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`)";
-
-   $needport = false;
-   $needip   = false;
+   $params['sql_from']     = "glpi_computers";
+   $params['sql_leftjoin'] = [
+      'glpi_plugin_ocsinventoryng_ocslinks' => [
+         'ON' => [
+            'glpi_computers'                      => 'id',
+            'glpi_plugin_ocsinventoryng_ocslinks' => 'computers_id',
+         ]
+      ]
+   ];
+   $needport               = false;
+   $needip                 = false;
    foreach ($params['criteria'] as $criteria) {
       switch ($criteria->fields['criteria']) {
          case 'IPADDRESS' :
@@ -1659,13 +1664,9 @@ function plugin_ocsinventoryng_ruleImportComputer_getSqlRestriction($params = []
                $ips = [$params['input']["IPADDRESS"]];
             }
             if (count($ips)) {
-               $needport            = true;
-               $needip              = true;
-               $params['sql_where'] .= " AND `glpi_ipaddresses`.`name` IN ('";
-               $params['sql_where'] .= implode("','", $ips);
-               $params['sql_where'] .= "')";
-            } else {
-               $params['sql_where'] = " AND 0 ";
+               $needport              = true;
+               $needip                = true;
+               $params['sql_where'][] = ["`glpi_ipaddresses`.`name`" => $ips];
             }
             break;
 
@@ -1675,29 +1676,48 @@ function plugin_ocsinventoryng_ruleImportComputer_getSqlRestriction($params = []
                $macs = [$params['input']["MACADDRESS"]];
             }
             if (count($macs)) {
-               $needport            = true;
-               $params['sql_where'] .= " AND `glpi_networkports`.`mac` IN ('";
-               $params['sql_where'] .= implode("','", $macs);
-
-               $params['sql_where'] .= "')";
-            } else {
-               $params['sql_where'] = " AND 0 ";
+               $needport              = true;
+               $params['sql_where'][] = ["`glpi_networkports`.`mac`" => $macs];
             }
             break;
       }
    }
 
    if ($needport) {
-      $params['sql_from'] .= " LEFT JOIN `glpi_networkports`
-                               ON (`glpi_computers`.`id` = `glpi_networkports`.`items_id`
-                                  AND `glpi_networkports`.`itemtype` = 'Computer') ";
+      $params['sql_leftjoin'] = [
+         'glpi_networkports' => [
+            'ON' => [
+               'glpi_computers'    => 'id',
+               'glpi_networkports' => 'items_id', [
+                  'AND' => [
+                     "glpi_networkports.itemtype" => 'Computer'
+                  ]
+               ]
+            ]
+         ]
+      ];
    }
    if ($needip) {
-      $params['sql_from'] .= " LEFT JOIN `glpi_networknames`
-                               ON (`glpi_networkports`.`id` =  `glpi_networknames`.`items_id`
-                                  AND `glpi_networknames`.`itemtype`='NetworkPort')
-                               LEFT JOIN `glpi_ipaddresses`
-                                  ON (`glpi_ipaddresses`.`items_id` = `glpi_networknames`.`id`)";
+      $params['sql_leftjoin'] = [
+         'glpi_networknames' => [
+            'ON' => [
+               'glpi_networkports' => 'id',
+               'glpi_networknames' => 'items_id', [
+                  'AND' => [
+                     "glpi_networknames.itemtype" => 'NetworkPort'
+                  ]
+               ]
+            ]
+         ]
+      ];
+      $params['sql_leftjoin'] = [
+         'glpi_ipaddresses' => [
+            'ON' => [
+               'glpi_ipaddresses'  => 'items_id',
+               'glpi_networknames' => 'id',
+            ]
+         ]
+      ];
    }
    return $params;
 }
@@ -1991,7 +2011,7 @@ function plugin_ocsinventoryng_item_update($item) {
          $result = $DB->query($query);
 
          if ($DB->numrows($result) == 1) {
-            $line    = $DB->fetch_assoc($result);
+            $line    = $DB->fetchAssoc($result);
             $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($line["plugin_ocsinventoryng_ocsservers_id"]);
             if ($cfg_ocs["use_locks"]) {
                $dbu              = new DbUtils();

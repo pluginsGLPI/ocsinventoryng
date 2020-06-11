@@ -116,7 +116,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "</th></tr>";
 
       if ($DB->numrows($result)) {
-         while ($thread = $DB->fetch_array($result)) {
+         while ($thread = $DB->fetchArray($result)) {
             echo "<tr class='tab_bg_2'>";
             echo "<td class='center'>" . $thread["threadid"] . "</td>";
 
@@ -200,7 +200,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
 
       $thread_number = $DB->numrows($result);
 
-      while ($thread = $DB->fetch_array($result)) {
+      while ($thread = $DB->fetchArray($result)) {
          $status += $thread["status"];
       }
 
@@ -326,7 +326,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       echo "</tr>\n";
 
       if ($DB->numrows($result)) {
-         while ($thread = $DB->fetch_array($result)) {
+         while ($thread = $DB->fetchArray($result)) {
             if ($config->fields["is_displayempty"]
                || ($thread["status"] != PLUGIN_OCSINVENTORYNG_STATE_FINISHED)
                || (!$config->fields["is_displayempty"]

@@ -350,7 +350,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
          $result       = $DB->query($query_exists);
 
          if ($DB->numrows($result) > 0) {
-            $data = $DB->fetch_array($result);
+            $data = $DB->fetchArray($result);
             $tmp  = new Computer_SoftwareVersion();
 
             $input = ['id'           => $data['id'],
@@ -386,7 +386,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
       $result = $DB->query($query);
 
       if ($DB->numrows($result) > 0) {
-         $data             = $DB->fetch_array($result);
+         $data             = $DB->fetchArray($result);
          $input["id"]      = $data["id"];
          $input["comment"] = $comments;
          $vers             = new SoftwareVersion();
@@ -426,7 +426,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
       $result    = $DB->query($query);
 
       if ($DB->numrows($result) > 0) {
-         $data      = $DB->fetch_array($result);
+         $data      = $DB->fetchArray($result);
          $isNewVers = $data["id"];
       }
 
@@ -495,7 +495,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
       $result = $DB->query($query);
 
       if ($DB->numrows($result) > 0) {
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             $query2  = "SELECT COUNT(*)
                        FROM `glpi_computers_softwareversions`
                        WHERE `softwareversions_id` = " . $data['softwareversions_id'];

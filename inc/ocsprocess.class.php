@@ -225,7 +225,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
                if ($result = $DB->query($query)) {
                   if ($DB->numrows($result) > 0) {
-                     $data                          = $DB->fetch_array($result);
+                     $data                          = $DB->fetchArray($result);
                      $ocslinks_toclean[$data['id']] = $data['id'];
                   }
                }
@@ -464,7 +464,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {
-         $datas = $DB->fetch_array($result);
+         $datas = $DB->fetchArray($result);
          //Return code to indicates that the machine was synchronized
          //or only last inventory date changed
          $sync_params = ['ID'                                  => $datas["id"],
@@ -669,7 +669,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       // Already link - check if the OCS computer already exists
       if ($numrows > 0) {
          $ocs_link_exists = true;
-         $data            = $DB->fetch_assoc($result);
+         $data            = $DB->fetchAssoc($result);
 
          // Not found
          if (!$ocsClient->getIfOCSComputersExists($data['ocsid'])) {
@@ -852,7 +852,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $result = $DB->query($query);
 
       if ($DB->numrows($result) == 1) {
-         $line = $DB->fetch_assoc($result);
+         $line = $DB->fetchAssoc($result);
 
          $comp = new Computer();
          $comp->getFromDB($line["computers_id"]);
@@ -1725,7 +1725,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                                WHERE `computers_id` = $id";
                $result = $DB->query($query);
                if ($DB->numrows($result) == 1) {
-                  $data        = $DB->fetch_assoc($result);
+                  $data        = $DB->fetchAssoc($result);
                   $cfg_ocs     = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
                   $sync_params = ['ID'                                  => $data['id'],
                                   'plugin_ocsinventoryng_ocsservers_id' => $data['plugin_ocsinventoryng_ocsservers_id'],
@@ -1753,7 +1753,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                                WHERE `computers_id` = $id";
                $result = $DB->query($query);
                if ($DB->numrows($result) == 1) {
-                  $data        = $DB->fetch_assoc($result);
+                  $data        = $DB->fetchAssoc($result);
                   $cfg_ocs     = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
                   $sync_params = ['ID'                                  => $data['id'],
                                   'plugin_ocsinventoryng_ocsservers_id' => $data['plugin_ocsinventoryng_ocsservers_id'],

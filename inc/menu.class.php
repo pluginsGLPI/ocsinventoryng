@@ -129,7 +129,13 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
       $menu['options']['modifysubnet']['title'] = __s('Modify Subnet', 'ocsinventoryng');
       $menu['options']['modifysubnet']['page']  = '/plugins/ocsinventoryng/front/ipdiscover.modifynetwork.php';
 
+      $menu['icon'] = self::getIcon();
+
       return $menu;
+   }
+
+   static function getIcon() {
+      return "fas fa-download";
    }
 
    /**

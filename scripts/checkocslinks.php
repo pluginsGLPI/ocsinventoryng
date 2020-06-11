@@ -86,7 +86,7 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
 
       $result = $DB->query($query);
       if ($DB->numrows($result) > 0) {
-         while ($data = $DB->fetch_array($result)) {
+         while ($data = $DB->fetchArray($result)) {
             $nbchk++;
             printf("%12d : %s\n", $data['id'], $data['ocs_deviceid']);
             if (isset($_GET['clean'])) {
@@ -132,7 +132,7 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
       $result = $DB->query($query);
       $nb = $DB->numrows($result);
       if ($nb > 0) {
-         for ($i = 1; $data = $DB->fetch_array($result); $i++) {
+         for ($i = 1; $data = $DB->fetchArray($result); $i++) {
             $nbchk++;
             $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
             if (isset ($hardware[$data["ocsid"]])) {

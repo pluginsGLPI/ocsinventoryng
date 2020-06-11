@@ -138,7 +138,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
             echo "<th>" . __('Hive', 'ocsinventoryng') . "</th>";
             echo "<th>" . __('Path', 'ocsinventoryng') . "</th>";
             echo "<th>" . __('Key/Value', 'ocsinventoryng') . "</th></tr>\n";
-            while ($data = $DB->fetch_assoc($result)) {
+            while ($data = $DB->fetchAssoc($result)) {
                echo "<tr class='tab_bg_1'>";
                echo "<td>" . $data["ocs_name"] . "</td>";
                if (isset($REGISTRY_HIVE[$data["hive"]])) {

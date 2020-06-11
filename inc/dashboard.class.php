@@ -104,7 +104,7 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
             $tabnames     = [];
             $tabsyncdates = [];
             if ($nb) {
-               while ($data = $DB->fetch_assoc($result)) {
+               while ($data = $DB->fetchAssoc($result)) {
                   $tabdata[]      = $data['nb'];
                   $tabnames[]     = $data['periodsync_name'];
                   $tabsyncdates[] = $data['periodsync'];
@@ -180,7 +180,7 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
             $nb     = $DB->numrows($result);
 
             if ($nb) {
-               while ($data = $DB->fetch_assoc($result)) {
+               while ($data = $DB->fetchAssoc($result)) {
                   $counts[]     = $data["nb"];
                   $name_agent[] = __('OCS Inventory NG', 'ocsinventoryng');
                }
@@ -203,7 +203,7 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                $nb     = $DB->numrows($result);
 
                if ($nb) {
-                  while ($data = $DB->fetch_assoc($result)) {
+                  while ($data = $DB->fetchAssoc($result)) {
                      $counts[]     = $data["nb"];
                      $name_agent[] = __('Fusion Inventory', 'ocsinventoryng');
                   }
@@ -239,7 +239,7 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
             $nb     = $DB->numrows($result);
 
             if ($nb) {
-               while ($data = $DB->fetch_assoc($result)) {
+               while ($data = $DB->fetchAssoc($result)) {
                   $counts[]     = $data["nb"];
                   $name_agent[] = __('Without agent', 'ocsinventoryng');
                }

@@ -252,7 +252,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
                echo "<th>" . __('Import date in GLPI', 'ocsinventoryng') . "</th>";
                echo "<th>" . __('OCSNG server', 'ocsinventoryng') . "</th></tr>";
 
-               while ($data = $DB->fetch_array($result)) {
+               while ($data = $DB->fetchArray($result)) {
                   echo PluginOcsinventoryngOcsAlert::displayBody($data);
                }
                echo "</table></div>";
@@ -294,7 +294,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
                echo "<th>" . __('Import date in GLPI', 'ocsinventoryng') . "</th>";
                echo "<th>" . __('OCSNG server', 'ocsinventoryng') . "</th></tr>";
 
-               while ($data = $DB->fetch_array($result)) {
+               while ($data = $DB->fetchArray($result)) {
 
                   echo PluginOcsinventoryngOcsAlert::displayBody($data);
                }
@@ -431,7 +431,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
                   FROM `glpi_plugin_ocsinventoryng_ocsservers`";
       $result = $DB->query($sql);
 
-      while ($conf = $DB->fetch_array($result)) {
+      while ($conf = $DB->fetchArray($result)) {
          $servers[$conf["id"]] = $conf["name"];
       }
 

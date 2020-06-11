@@ -100,7 +100,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                $result = $DB->query($query);
                if ($DB->numrows($result) > 0) {
-                  $data = $DB->fetch_assoc($result);
+                  $data = $DB->fetchAssoc($result);
 
                   if (count($data)) {
 
@@ -222,7 +222,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                $result = $DB->query($query);
                if ($DB->numrows($result) > 0) {
-                  $data = $DB->fetch_assoc($result);
+                  $data = $DB->fetchAssoc($result);
 
                   if (count($data)) {
                      $target = Toolbox::getItemTypeFormURL("PluginOcsinventoryngSnmpOcslink");
@@ -282,7 +282,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                      $result = $DB->query($query);
                      if ($DB->numrows($result) > 0) {
-                        $data = $DB->fetch_assoc($result);
+                        $data = $DB->fetchAssoc($result);
 
                         if (count($data)) {
                            echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG IPDiscover Import informations', 'ocsinventoryng') . "</th>";
@@ -365,7 +365,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
-               $data = $DB->fetch_assoc($result);
+               $data = $DB->fetchAssoc($result);
                $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
 
                if (count($data)) {
@@ -614,7 +614,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                          AND `glpi_computers_items`.`itemtype` = '" . $item->input['itemtype'] . "'";
          $result = $DB->query($query);
 
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             $temp = clone $item;
             $temp->delete($data, true);
          }
@@ -900,7 +900,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
       $result = $DB->query($query);
       if ($DB->numrows($result) > 0) {
-         $data = $DB->fetch_assoc($result);
+         $data = $DB->fetchAssoc($result);
 
          if (count($data)) {
 
@@ -991,7 +991,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
          if ($result = $DB->query($query)) {
             if ($DB->numrows($result) > 0) {
-               $data = $DB->fetch_array($result);
+               $data = $DB->fetchArray($result);
 
                $comp = new Computer();
                if ($cfg_ocs['deleted_behavior']) {
@@ -1202,7 +1202,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       $locks  = [];
       $result = $DB->query($query);
       if ($DB->numrows($result) == 1) {
-         $data = $DB->fetch_assoc($result);
+         $data = $DB->fetchAssoc($result);
 
          $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($data["plugin_ocsinventoryng_ocsservers_id"]);
          if ($cfg_ocs["use_locks"]) {

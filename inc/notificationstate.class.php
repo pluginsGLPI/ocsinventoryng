@@ -66,7 +66,7 @@ class PluginOcsinventoryngNotificationState extends CommonDBTM {
             echo "</th>";
             echo "<th>" . _n('Status', 'Statuses', 2) . "</th>";
             echo "</tr>";
-            while ($ligne = $DB->fetch_array($result)) {
+            while ($ligne = $DB->fetchArray($result)) {
                echo "<tr class='tab_bg_1'>";
                echo "<td width='10' class='center'>";
                Html::showMassiveActionCheckBox($this->getType(), $ligne['id'], ['class' => $this]);

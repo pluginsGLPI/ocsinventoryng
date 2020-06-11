@@ -163,7 +163,7 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
       $result = $DB->query($query);
 
       if ($DB->numrows($result) > 0) {
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             $query2  = "SELECT COUNT(*)
                        FROM `glpi_computers_softwarelicenses`
                        WHERE `softwarelicenses_id` = " . $data['softwarelicenses_id'];

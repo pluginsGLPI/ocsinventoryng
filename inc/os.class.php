@@ -152,7 +152,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
             $res_computer = $DB->query($sql_computer);
 
             if ($DB->numrows($res_computer) == 1) {
-               $data_computer = $DB->fetch_array($res_computer);
+               $data_computer = $DB->fetchArray($res_computer);
                $computerOS    = $data_computer["os_name"];
                $computerOSSP  = $data_computer["os_sp"];
 

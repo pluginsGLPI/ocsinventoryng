@@ -196,7 +196,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
                 WHERE `profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . "
                 ORDER BY `name` ASC";
       $result = $DB->query($query);
-      if ($data = $DB->fetch_assoc($result)) {
+      if ($data = $DB->fetchAssoc($result)) {
 
          $ocsserver = new PluginOcsinventoryngOcsServer();
          foreach ($used as $id) {

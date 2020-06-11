@@ -268,7 +268,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                                                           "on_change"           => "this.form.submit()",
                                                           "display_emptychoice" => false]);
          echo "</td></tr>";
-         echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
+         echo "<tr class='tab_bg_2'><td colspan='2' class ='center'>";
          echo __('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
          echo "</td></tr>";
          echo "</table></div>";
@@ -283,7 +283,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $result   = $DB->query($sql);
       $isactive = 0;
       if ($DB->numrows($result) > 0) {
-         $datas    = $DB->fetch_array($result);
+         $datas    = $DB->fetchArray($result);
          $name     = " : " . $datas["name"];
          $isactive = $datas["is_active"];
       }
@@ -329,17 +329,17 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             <a href='" . $CFG_GLPI["root_doc"] . "/front/ruleimportentity.php'>
             <i style='color:firebrick' class='fas fa-book fa-3x' 
                         title=\"" . __s('Rules for assigning an item to an entity') . "\"></i><br><br>" . __('Rules for assigning an item to an entity') . "</a>";
-      echo "<br><div class='red'>";
+      echo "<br><span style='color:firebrick'>";
       echo __('Setup rules for choose entity on items import', 'ocsinventoryng');
-      echo "</div></td>";
+      echo "</span></td>";
 
       echo "<td class='center b' colspan='2'>
             <a href='" . $CFG_GLPI["root_doc"] . "/front/ruleimportcomputer.php'>
          <i style='color:firebrick' class='fas fa-book fa-3x' 
                         title=\"" . __s('Rules for import and link computers') . "\"></i><br><br>" . __('Rules for import and link computers') . "</a>";
-      echo "<br><div class='red'>";
+      echo "<br><span style='color:firebrick'>";
       echo __('Setup rules for select criteria for items link', 'ocsinventoryng');
-      echo "</div></td>";
+      echo "</span></td>";
 
       echo "</tr>\n";
 
@@ -385,7 +385,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                                                           "on_change"           => "this.form.submit()",
                                                           "display_emptychoice" => false]);
          echo "</td></tr>";
-         echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
+         echo "<tr class='tab_bg_2'><td colspan='2' class ='center'>";
          echo __('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
          echo "</td></tr>";
          echo "</table></div>";
@@ -400,7 +400,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $result   = $DB->query($sql);
       $isactive = 0;
       if ($DB->numrows($result) > 0) {
-         $datas    = $DB->fetch_array($result);
+         $datas    = $DB->fetchArray($result);
          $name     = " : " . $datas["name"];
          $isactive = $datas["is_active"];
       }
@@ -1716,7 +1716,7 @@ JAVASCRIPT;
               WHERE `computers_id` = $ID";
       $result = $DB->query($sql);
       if ($DB->numrows($result) > 0) {
-         $datas = $DB->fetch_array($result);
+         $datas = $DB->fetchArray($result);
          return $datas["plugin_ocsinventoryng_ocsservers_id"];
       }
       return -1;
@@ -1742,7 +1742,7 @@ JAVASCRIPT;
               WHERE `computers_id` = '" . $ID . "' AND `plugin_ocsinventoryng_ocsservers_id` = $ocsservers_id";
       $result = $DB->query($sql);
       if ($DB->numrows($result) > 0) {
-         $datas = $DB->fetch_array($result);
+         $datas = $DB->fetchArray($result);
          return $datas["ocsid"];
       }
       return -1;
@@ -1766,7 +1766,7 @@ JAVASCRIPT;
       $result = $DB->query($sql);
 
       if ($DB->numrows($result) > 0) {
-         $datas = $DB->fetch_array($result);
+         $datas = $DB->fetchArray($result);
          return $datas["id"];
       }
       return -1;
@@ -1813,7 +1813,7 @@ JAVASCRIPT;
          $result = $DB->query($query);
 
          if ($result) {
-            $data = $DB->fetch_assoc($result);
+            $data = $DB->fetchAssoc($result);
          }
       }
 
@@ -2020,7 +2020,7 @@ JAVASCRIPT;
 
       $ocs_missing = [];
       if ($DB->numrows($result) > 0) {
-         while ($data = $DB->fetch_array($result)) {
+         while ($data = $DB->fetchArray($result)) {
             $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
             if (!isset($hardware[$data["ocsid"]])) {
                $ocs_missing[$data["ocsid"]] = $data["ocsid"];
@@ -2053,7 +2053,7 @@ JAVASCRIPT;
       // fetch all links missing between glpi and OCS
       $already_linked = [];
       if ($DB->numrows($result_glpi) > 0) {
-         while ($data = $DB->fetch_assoc($result_glpi)) {
+         while ($data = $DB->fetchAssoc($result_glpi)) {
             $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
 
             $already_linked[$data["ocsid"]]["entities_id"]  = $data["entities_id"];
@@ -2183,7 +2183,7 @@ JAVASCRIPT;
       }
 
       $already_linked_ids = [];
-      while ($data = $DB->fetch_assoc($already_linked_result)) {
+      while ($data = $DB->fetchAssoc($already_linked_result)) {
          $already_linked_ids [] = $data['ocsid'];
       }
 
@@ -2248,7 +2248,7 @@ JAVASCRIPT;
             // Get all links between glpi and OCS
             $already_linked = [];
             if ($DB->numrows($result_glpi) > 0) {
-               while ($data = $DB->fetch_assoc($result_glpi)) {
+               while ($data = $DB->fetchAssoc($result_glpi)) {
                   $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
                   if (isset($hardware[$data["ocsid"]])) {
                      $already_linked[$data["ocsid"]]["date"] = $data["last_update"];
@@ -2407,7 +2407,7 @@ JAVASCRIPT;
       $result_glpi    = $DB->query($query_glpi);
       $already_linked = [];
       if ($DB->numrows($result_glpi) > 0) {
-         while ($data = $DB->fetch_array($result_glpi)) {
+         while ($data = $DB->fetchArray($result_glpi)) {
             $already_linked [] = $data["ocsid"];
          }
       }
@@ -2999,7 +2999,7 @@ JAVASCRIPT;
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
                $computer = new Computer();
-               while ($data = $DB->fetch_assoc($result)) {
+               while ($data = $DB->fetchAssoc($result)) {
                   $computer->fields['id']         = $data['id'];
                   $computer->fields['is_deleted'] = 0;
                   $computer->fields['date_mod']   = $_SESSION['glpi_currenttime'];
@@ -3077,7 +3077,7 @@ JAVASCRIPT;
                                         AND `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` = '" . $data["ID"] . "'";
                   $result_glpi = $DB->query($query_glpi);
                   if ($DB->numrows($result_glpi) > 0) {
-                     while ($values = $DB->fetch_assoc($result_glpi)) {
+                     while ($values = $DB->fetchAssoc($result_glpi)) {
                         $task->addVolume(1);
                         $task->log(sprintf(__('%1$s: %2$s'), _n('Computer', 'Computer', 1),
                                            sprintf(__('%1$s (%2$s)'), $values["ocs_deviceid"], $values["id"])));

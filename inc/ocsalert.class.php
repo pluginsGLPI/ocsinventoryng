@@ -172,7 +172,7 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
       $result_state = $DB->query($query_state);
       if ($DB->numrows($result_state) > 0) {
          $query .= " AND (`glpi_computers`.`states_id` = 999999 ";
-         while ($data_state = $DB->fetch_array($result_state)) {
+         while ($data_state = $DB->fetchArray($result_state)) {
             $type_where = "OR `glpi_computers`.`states_id` = " . $data_state["states_id"] . " ";
             $query      .= " $type_where ";
          }
@@ -519,7 +519,7 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
          if ($DB->numrows($result) != 1) {
             return false;
          }
-         $this->fields = $DB->fetch_assoc($result);
+         $this->fields = $DB->fetchAssoc($result);
          if (is_array($this->fields) && count($this->fields)) {
             return true;
          }

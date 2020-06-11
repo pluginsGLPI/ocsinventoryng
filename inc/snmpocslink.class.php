@@ -405,7 +405,7 @@ JAVASCRIPT;
       $result   = $DB->query($sql);
       $isactive = 0;
       if ($DB->numrows($result) > 0) {
-         $datas    = $DB->fetch_array($result);
+         $datas    = $DB->fetchArray($result);
          $name     = " : " . $datas["name"];
          $isactive = $datas["is_active"];
       }
@@ -480,7 +480,7 @@ JAVASCRIPT;
 
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
-               $data = $DB->fetch_assoc($result);
+               $data = $DB->fetchAssoc($result);
                $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
 
                if (count($data)) {
@@ -649,7 +649,7 @@ JAVASCRIPT;
 
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
-               $data = $DB->fetch_assoc($result);
+               $data = $DB->fetchAssoc($result);
 
                if (count($data)) {
                   echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG SNMP Import informations', 'ocsinventoryng') . "</th>";
@@ -786,7 +786,7 @@ JAVASCRIPT;
 
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
-               $data = $DB->fetch_assoc($result);
+               $data = $DB->fetchAssoc($result);
 
                if (count($data)) {
                   echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG IPDiscover Import informations', 'ocsinventoryng') . "</th>";
@@ -822,7 +822,7 @@ JAVASCRIPT;
       $result_glpi_plugin_ocsinventoryng_ocslinks = $DB->query($query);
 
       if ($DB->numrows($result_glpi_plugin_ocsinventoryng_ocslinks)) {
-         $datas = $DB->fetch_array($result_glpi_plugin_ocsinventoryng_ocslinks);
+         $datas = $DB->fetchArray($result_glpi_plugin_ocsinventoryng_ocslinks);
          //Return code to indicates that the machine was synchronized
          //or only last inventory date changed
          return self::updateSnmp($datas["id"], $plugin_ocsinventoryng_ocsservers_id);
@@ -2072,7 +2072,7 @@ JAVASCRIPT;
                WHERE `id` = " . $ID . " 
                AND `plugin_ocsinventoryng_ocsservers_id` = " . $plugin_ocsinventoryng_ocsservers_id;
       $rep   = $DB->query($query);
-      while ($data = $DB->fetch_array($rep)) {
+      while ($data = $DB->fetchArray($rep)) {
          $ocsid    = $data['ocs_id'];
          $itemtype = $data['itemtype'];
          $items_id = $data['items_id'];
@@ -2274,7 +2274,7 @@ JAVASCRIPT;
       $result_glpi    = $DB->query($query_glpi);
       $already_linked = [];
       if ($DB->numrows($result_glpi) > 0) {
-         while ($data = $DB->fetch_array($result_glpi)) {
+         while ($data = $DB->fetchArray($result_glpi)) {
             $already_linked [] = $data["ocs_id"];
          }
       }
@@ -2654,7 +2654,7 @@ JAVASCRIPT;
       }
 
       $already_linked_ids = [];
-      while ($data = $DB->fetch_assoc($already_linked_result)) {
+      while ($data = $DB->fetchAssoc($already_linked_result)) {
          $already_linked_ids [] = $data['ocsid'];
       }
 
@@ -2699,7 +2699,7 @@ JAVASCRIPT;
             // Get all links between glpi and OCS
             $already_linked = [];
             if ($DB->numrows($result) > 0) {
-               while ($data = $DB->fetch_assoc($result)) {
+               while ($data = $DB->fetchAssoc($result)) {
                   $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
 
                   $format = 'Y-m-d H:i:s';

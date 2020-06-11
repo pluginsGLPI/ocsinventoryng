@@ -121,7 +121,7 @@ if ($_POST['page'] == 1 && empty($_POST['searchText'])) {
 }
 $count = 0;
 if ($DB->numrows($result)) {
-   while ($data = $DB->fetch_assoc($result)) {
+   while ($data = $DB->fetchAssoc($result)) {
       $output = $data['name'];
 
       if (isset($data['contact']) && !empty($data['contact'])) {

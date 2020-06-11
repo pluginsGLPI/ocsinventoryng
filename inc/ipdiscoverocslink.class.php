@@ -101,7 +101,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM {
                     WHERE `config`.`NAME` 
                     LIKE 'ID_IPDISCOVER_%'";
       $result    = $DBOCS->query($query);
-      while ($subNetId = $DBOCS->fetch_assoc($result)) {
+      while ($subNetId = $DBOCS->fetchAssoc($result)) {
          $outputs[$subNetId["TVALUE"]] = $subNetId["TVALUE"];
       }
    }
@@ -139,7 +139,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM {
                  WHERE `subnet`.`NETID` = '$ipAdress'";
       $result = $OCSDB->query($query);
       if ($result->num_rows > 0) {
-         $res    = $OCSDB->fetch_assoc($result);
+         $res    = $OCSDB->fetchAssoc($result);
          $tab    = $_SESSION["subnets"];
          $subnet = array_search($res["ID"], $tab);
 
@@ -164,7 +164,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM {
                  WHERE `subnet`.`NETID` = '$ipAdress'";
       $result = $OCSDB->query($query);
       if ($result->num_rows > 0) {
-         $res  = $OCSDB->fetch_assoc($result);
+         $res  = $OCSDB->fetchAssoc($result);
          $name = $res["NAME"];
 
       }
@@ -182,7 +182,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM {
                  WHERE `config`.`NAME` 
                  LIKE 'ID_IPDISCOVER_%'";
       $result    = $DBOCS->query($query);
-      $subNetId  = $DBOCS->fetch_assoc($result);
+      $subNetId  = $DBOCS->fetchAssoc($result);
       $count     = intval($subNetId["MAX"]);
    }
 
@@ -199,7 +199,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM {
                     FROM `devicetype`";
       $result    = $DBOCS->query($query);
 
-      while ($ent = $DBOCS->fetch_assoc($result)) {
+      while ($ent = $DBOCS->fetchAssoc($result)) {
          $out["id"][]   = $ent["id"];
          $out["name"][] = $ent["name"];
       }
@@ -229,7 +229,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM {
       $ocsClient = new PluginOcsinventoryngOcsServer();
       $DBOCS     = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
       $result    = $DBOCS->query($query);
-      while ($subNet = $DBOCS->fetch_assoc($result)) {
+      while ($subNet = $DBOCS->fetchAssoc($result)) {
          $subnets[] = $subNet;
       }
 
@@ -289,7 +289,7 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM {
             $result         = $DBOCS->query($getKnownSubnet);
 
             $i = 0;
-            while ($subNet = $DBOCS->fetch_assoc($result)) {
+            while ($subNet = $DBOCS->fetchAssoc($result)) {
                $subnet[]      = $subNet;
                $theSubnet[$i] = $subnet[$i]["NETID"];
                $i++;
@@ -322,8 +322,8 @@ GROUP BY netid) ident on ipdiscover.RSX = ident.RSX left join (SELECT COUNT(DIST
 GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP asc";
 
          $result = $DBOCS->query($query);
-         while ($details = $DBOCS->fetch_assoc($result)) {
-            $per                = $DBOCS->fetch_assoc($percent);
+         while ($details = $DBOCS->fetchAssoc($result)) {
+            $per                = $DBOCS->fetchAssoc($percent);
             $details['PERCENT'] = $per['PERCENT'];
             $subnetsDetails[]   = $details;
          }
@@ -473,7 +473,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $query       = "SELECT `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`.`macaddress`
                       FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`";
       $result      = $DB->query($query);
-      while ($res = $DB->fetch_assoc($result)) {
+      while ($res = $DB->fetchAssoc($result)) {
          $macAdresses[] = $res["macaddress"];
       }
       return $macAdresses;
@@ -598,7 +598,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       if ($status == "imported") {
          $result   = $DB->query($query);
          $hardware = [];
-         while ($res = $DBOCS->fetch_assoc($result)) {
+         while ($res = $DBOCS->fetchAssoc($result)) {
             if (!isset($res["mac"])) {
                $hardware[] = $res;
             } else if (!self::findInArray($hardware, "mac", $res["mac"])) {
@@ -609,7 +609,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          $result   = $DBOCS->query($query);
          $hardware = [];
 
-         while ($res = $DBOCS->fetch_assoc($result)) {
+         while ($res = $DBOCS->fetchAssoc($result)) {
             if (!isset($res["mac"])) {
                $hardware[] = $res;
             } else if (!self::findInArray($hardware, "mac", $res["mac"])) {
@@ -708,7 +708,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                               WHERE `subnet` = '$ip'";
             $result         = $DB->query($query);
             if ($DB->numrows($result)) {
-               $datas          = $DB->fetch_assoc($result);
+               $datas          = $DB->fetchAssoc($result);
                $imported_count = $datas['count'];
             }
             if ($imported_count > 0) {
@@ -776,7 +776,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          echo "<tr class='tab_bg_2' ><td class='center' >" . __('Subnet Name', 'ocsinventoryng') . "</td>";
          //this is for the identified subnets
          if ($result->num_rows > 0) {
-            $res     = $OCSDB->fetch_assoc($result);
+            $res     = $OCSDB->fetchAssoc($result);
             $n       = $res["NAME"];
             $m       = $res["MASK"];
             $idValue = $res["ID"];
@@ -871,7 +871,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
 
       $result = $DB->query($query);
       if ($DB->numrows($result)) {
-         $datas = $DB->fetch_assoc($result);
+         $datas = $DB->fetchAssoc($result);
          return self::updateIpDiscover($ipDiscoveryObject, $datas, $plugin_ocsinventoryng_ocsservers_id);
       }
 
@@ -967,7 +967,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                          FROM `glpi_users`
                          WHERE glpi_users.id like '$userId'";
          $queryResult = $DB->query($query);
-         $userAssoc   = $DB->fetch_assoc($queryResult);
+         $userAssoc   = $DB->fetchAssoc($queryResult);
 
          if ($userAssoc) {
             $ocsClient   = new PluginOcsinventoryngOcsServer();
@@ -1044,7 +1044,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                          FROM `glpi_users`
                          WHERE glpi_users.id like '$userId'";
             $queryResult = $DB->query($query);
-            $userAssoc   = $DB->fetch_assoc($queryResult);
+            $userAssoc   = $DB->fetchAssoc($queryResult);
 
             if ($userAssoc) {
                $ocsClient   = new PluginOcsinventoryngOcsServer();

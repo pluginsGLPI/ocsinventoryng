@@ -241,7 +241,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
 
                echo "<tr><th colspan='$colspan'>" . __('Teamviewer direct access', 'ocsinventoryng') . "</th></tr>";
 
-               while ($data = $DB->fetch_assoc($result)) {
+               while ($data = $DB->fetchAssoc($result)) {
 
                   $links = Link::getAllLinksFor($self, $data);
                   foreach ($links as $link) {
@@ -304,7 +304,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
 
                echo "<tr><th colspan='$colspan'>" . __('Teamviewer direct access', 'ocsinventoryng') . "</th></tr>";
 
-               while ($data = $DB->fetch_assoc($result)) {
+               while ($data = $DB->fetchAssoc($result)) {
 
                   $links = Link::getAllLinksFor($self, $data);
                   foreach ($links as $link) {

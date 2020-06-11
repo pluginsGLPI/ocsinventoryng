@@ -332,7 +332,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
       if ($DB->numrows($result) > 0) {
          $conn = new Computer_Item();
 
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
 
             $conn->delete(['id' => $data['id'], '_no_history' => !$uninstall_history], true, $uninstall_history);
 

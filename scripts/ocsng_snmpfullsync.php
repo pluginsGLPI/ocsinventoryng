@@ -144,7 +144,7 @@ if ($ocsservers_id != -1) {
                   AND `use_massimport`";
    $res = $DB->query($query);
 
-   while ($ocsservers = $DB->fetch_array($res)) {
+   while ($ocsservers = $DB->fetchArray($res)) {
       $result = launchSync($tid, $ocsservers["id"], $thread_nbr, $threadid, $fields, $config);
       if ($result) {
          $fields = $result;
@@ -237,7 +237,7 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
    $already_linked_ocs_ids = array();
 
    if ($DB->numrows($already_linked_result) > 0) {
-      while ($data = $DB->fetch_assoc($already_linked_result)) {
+      while ($data = $DB->fetchAssoc($already_linked_result)) {
          $already_linked_ocs_ids [] = $data['ocs_id'];
 //         $already_linked_ids [] = $data['id'];
       }
@@ -286,7 +286,7 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
 
 
       if ($DB->numrows($result) > 0) {
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             $already_linked_ids [] = $data['id'];
          }
       }

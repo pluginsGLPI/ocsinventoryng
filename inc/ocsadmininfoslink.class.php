@@ -289,7 +289,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
             foreach ($accountinfos as $key => $accountinfo) {
                $comp = new Computer();
                //update data
-               while ($links_glpi_ocs = $DB->fetch_array($result)) {
+               while ($links_glpi_ocs = $DB->fetchArray($result)) {
                   //get info from ocs
                   $ocs_column  = $links_glpi_ocs['ocs_column'];
                   $glpi_column = $links_glpi_ocs['glpi_column'];
@@ -386,7 +386,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
          $input["entities_id"] = $entities_id;
          return $group->add($input);
       }
-      $line = $DB->fetch_array($result);
+      $line = $DB->fetchArray($result);
       return $line["id"];
    }
 

@@ -112,7 +112,7 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
       $result = $DB->query($query);
 
       echo "=====================================================\n";
-      while ($ocsservers = $DB->fetch_array($result)) {
+      while ($ocsservers = $DB->fetchArray($result)) {
          FirstPass($ocsservers["id"]);
       }
       echo "=====================================================\n";
@@ -175,7 +175,7 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
                   AND `use_massimport`";
       $res   = $DB->query($query);
 
-      while ($ocsservers = $DB->fetch_array($res)) {
+      while ($ocsservers = $DB->fetchArray($res)) {
          $result = SecondPass($tid, $ocsservers["id"], $thread_nbr, $threadid, $fields, $config);
          if ($result) {
             $fields = $result;

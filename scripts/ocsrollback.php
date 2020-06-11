@@ -83,7 +83,7 @@ if (!($res && $DBocs->numrows($res) > 0)) {
    die("No data from OCS\n");
 }
 
-$data = $DBocs->fetch_array($res);
+$data = $DBocs->fetchArray($res);
 $maxid = $data["ID"];
 $maxti = $data["LASTCOME"];
 
@@ -109,7 +109,7 @@ echo "Start\n";
 $tabres = array();
 $nb = $nbupd = 0;
 
-while ($event = $DB->fetch_array($res)) {
+while ($event = $DB->fetchArray($res)) {
 
    if ($event["new_value"] > $maxid
       && PluginOcsinventoryngOcsServer::getServerByComputerID($event["items_id"]) == $_GET["server"]
@@ -136,7 +136,7 @@ while ($event = $DB->fetch_array($res)) {
          $resocs = $DBocs->query($sql);
 
          $olddevid = "";
-         if ($hard = $DBocs->fetch_array($resocs)) {
+         if ($hard = $DBocs->fetchArray($resocs)) {
             $olddevid = $hard["DEVICEID"];
          }
 
