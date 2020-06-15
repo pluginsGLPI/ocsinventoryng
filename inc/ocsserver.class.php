@@ -2543,6 +2543,7 @@ JAVASCRIPT;
                   echo "<tr class='tab_bg_1'><td colspan='" . $nb_cols . "' class='center'>";
                   if (($tolinked && $caneditlink)) {
                      echo Html::submit(_sx('button', 'Link', 'ocsinventoryng'), ['name' => 'import_ok']);
+                     echo "&nbsp;";
                      echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'), ['name' => 'delete_link']);
                   } else if (!$tolinked && $caneditimport) {
                      echo Html::submit(_sx('button', 'Import'), ['name' => 'import_ok']);
