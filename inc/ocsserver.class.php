@@ -524,13 +524,13 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                            title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Clean OCSNG deleted computers', 'ocsinventoryng') . "
                </a>";
-            $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-            $deleted_pcs   = $ocsClient->getTotalDeletedComputers();
+            $ocsClient   = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+            $deleted_pcs = $ocsClient->getTotalDeletedComputers();
             if ($deleted_pcs > 0) {
                echo "<br><span style='color:firebrick'>" . $deleted_pcs . " " . __('Pc deleted', 'ocsinventoryng');
                echo "</span>";
             }
-            echo "<br><span style='color:grey'>".__('Update ID of deleted computers of OCSNG', 'ocsinventoryng');
+            echo "<br><span style='color:grey'>" . __('Update ID of deleted computers of OCSNG', 'ocsinventoryng');
             echo "</span>";
             echo "</td>";
          } else {
@@ -542,7 +542,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                            title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Clean links between GLPI and OCSNG', 'ocsinventoryng') . "
                </a>";
-         echo "<br><span style='color:grey'>".__('Drop links for not present computers into OCSNG', 'ocsinventoryng');
+         echo "<br><span style='color:grey'>" . __('Drop links for not present computers into OCSNG', 'ocsinventoryng');
          echo "</span>";
          echo "</td><tr>";
       }
@@ -2412,11 +2412,110 @@ JAVASCRIPT;
          }
       }
 
+      //first pass for exclude ID if no linked
       $cfg_ocs         = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
       $computerOptions = ['ORDER'    => 'LASTDATE',
                           'COMPLETE' => '0',
                           'FILTER'   => [
                              'EXCLUDE_IDS' => $already_linked
+                          ],
+                          'DISPLAY'  => [
+                             'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS
+                          ],
+                          'ORDER'    => 'NAME'
+      ];
+      if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
+         $computerOptions['FILTER']['TAGS'] = $tag_limit;
+      }
+      if ($cfg_ocs["tag_exclude"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
+         $computerOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
+      }
+      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $ocsResult = $ocsClient->getComputers($computerOptions);
+
+      $computers  = (isset($ocsResult['COMPUTERS']) ? $ocsResult['COMPUTERS'] : []);
+      $hardware   = [];
+      $exlude_ids = [];
+      if (isset($computers)) {
+         if (count($computers)) {
+
+            foreach ($computers as $data) {
+
+               $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
+
+               $id                    = $data['META']['ID'];
+               $hardware[$id]["date"] = $data['META']["LASTDATE"];
+               $hardware[$id]["name"] = $data['META']["NAME"];
+               $hardware[$id]["TAG"]  = $data['META']["TAG"];
+               $hardware[$id]["id"]   = $data['META']["ID"];
+               $hardware[$id]["UUID"] = $data['META']["UUID"];
+               $contact               = $data['META']["USERID"];
+
+               if (!empty($contact)) {
+                  $query                         = "SELECT `id`
+                            FROM `glpi_users`
+                            WHERE `name` = '" . $contact . "';";
+                  $result                        = $DB->query($query);
+                  $hardware[$id]["locations_id"] = 0;
+                  if ($DB->numrows($result) == 1) {
+                     $user_id = $DB->result($result, 0, 0);
+                     $user    = new User();
+                     $user->getFromDB($user_id);
+                     $hardware[$id]["locations_id"] = $user->fields["locations_id"];
+                  }
+               }
+               if (isset($data['BIOS']) && count($data['BIOS'])) {
+                  $hardware[$id]["serial"]       = $data['BIOS']["SSN"];
+                  $hardware[$id]["model"]        = $data['BIOS']["SMODEL"];
+                  $hardware[$id]["manufacturer"] = $data['BIOS']["SMANUFACTURER"];
+               } else {
+                  $hardware[$id]["serial"]       = '';
+                  $hardware[$id]["model"]        = '';
+                  $hardware[$id]["manufacturer"] = '';
+               }
+
+               if (isset($data['NETWORKS']) && count($data['NETWORKS'])) {
+                  $hardware[$id]["NETWORKS"] = $data["NETWORKS"];
+
+               }
+            }
+            if ($tolinked) {
+               foreach ($hardware as $ID => $tab) {
+                  $tab['entities_id'] = $entities_id;
+                  $rulelink           = new RuleImportComputerCollection();
+                  $params             = ['entities_id' => $entities_id,
+                                         'plugin_ocsinventoryng_ocsservers_id'
+                                                       => $plugin_ocsinventoryng_ocsservers_id];
+                  $rulelink_results   = $rulelink->processAllRules(Toolbox::stripslashes_deep($tab), [], $params);
+                  if (!isset($rulelink_results['action'])
+                      || ($rulelink_results['action'] != PluginOcsinventoryngOcsProcess::LINK_RESULT_LINK
+                          && $rulelink_results['action'] != PluginOcsinventoryngOcsProcess::LINK_RESULT_NO_IMPORT)
+                  ) {
+                     $exlude_ids[] = $ID;
+                  }
+               }
+            } else {
+               foreach ($hardware as $ID => $tab) {
+                  $tab['entities_id'] = $entities_id;
+                  $rulelink           = new RuleImportComputerCollection();
+                  $params             = ['entities_id' => $entities_id,
+                                         'plugin_ocsinventoryng_ocsservers_id'
+                                                       => $plugin_ocsinventoryng_ocsservers_id];
+                  $rulelink_results   = $rulelink->processAllRules(Toolbox::stripslashes_deep($tab), [], $params);
+                  if (isset($rulelink_results['found_computers'])
+                      && is_array($rulelink_results['found_computers'])
+                      && count($rulelink_results['found_computers']) > 0) {
+                     $exlude_ids[] = $ID;
+                  }
+               }
+            }
+         }
+      }
+      //end first pass for exclude ID if no linked
+      $computerOptions = ['ORDER'    => 'LASTDATE',
+                          'COMPLETE' => '0',
+                          'FILTER'   => [
+                             'EXCLUDE_IDS' => array_merge($already_linked, $exlude_ids)
                           ],
                           'DISPLAY'  => [
                              'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS
@@ -2485,7 +2584,6 @@ JAVASCRIPT;
 
                if (isset($data['NETWORKS']) && count($data['NETWORKS'])) {
                   $hardware[$id]["NETWORKS"] = $data["NETWORKS"];
-
                }
             }
 
@@ -2572,8 +2670,7 @@ JAVASCRIPT;
 
                $rule = new RuleImportEntityCollection();
                foreach ($hardware as $ID => $tab) {
-                  //$comp = new Computer();
-                  //$comp->fields["id"] = $tab["id"];
+
                   $data = [];
 
                   echo "<tr class='tab_bg_2'>";
@@ -2738,6 +2835,7 @@ JAVASCRIPT;
                   echo "<tr class='tab_bg_1'><td colspan='" . $nb_cols . "' class='center'>";
                   if ($tolinked) {
                      echo Html::submit(_sx('button', 'Link', 'ocsinventoryng'), ['name' => 'import_ok']);
+                     echo "&nbsp;";
                      echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'), ['name' => 'delete_link']);
                   } else {
                      echo Html::submit(_sx('button', 'Import'), ['name' => 'import_ok']);
