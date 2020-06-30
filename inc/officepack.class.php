@@ -83,7 +83,7 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
             $id = array_search($softwareversions_id, $imported_licences);
 
             $software_licenses         = new SoftwareLicense();
-            $computer_softwarelicenses = new Computer_SoftwareLicense();
+            $item_softwarelicenses = new Item_SoftwareVersion();
             if ($id) {
                //-------------------------------------------------------------------------//
                //---- The software exists in this license for this computer --------------//
@@ -97,13 +97,15 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
 
                      $software_licenses->update(['id'      => $software_licenses->getID(),
                                                  'comment' => $ocsOfficePack['NOTE']]);
-                     if (!$computer_softwarelicenses->getFromDBByCrit(['computers_id'        => $computers_id,
+                     if (!$item_softwarelicenses->getFromDBByCrit(['items_id'        => $computers_id,
+                                                                       'itemtype'        => 'Computer',
                                                                        'softwarelicenses_id' => $software_licenses->getID()])) {
 
-                        $computer_soft_l['computers_id']        = $computers_id;
+                        $computer_soft_l['items_id']        = $computers_id;
+                        $computer_soft_l['itemtype']        = 'Computer';
                         $computer_soft_l['softwarelicenses_id'] = $software_licenses->getID();
                         $computer_soft_l['is_dynamic']          = -1;
-                        $computer_softwarelicenses->add($computer_soft_l);
+                        $item_softwarelicenses->add($computer_soft_l);
                         //Update for validity
                         $software_licenses->update(['id'       => $software_licenses->getID(),
                                                     'is_valid' => 1]);
@@ -132,9 +134,10 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
                      $computer_soft_l['is_dynamic']          = 1;
                      $computer_soft_l['number']              = -1;
 
-                     if (!$computer_softwarelicenses->getFromDBByCrit(['computers_id'        => $computers_id,
+                     if (!$item_softwarelicenses->getFromDBByCrit(['items_id'        => $computers_id,
+                                                                   'itemtype'        => 'Computer',
                                                                        'softwarelicenses_id' => $id_software_licenses])) {
-                        $computer_softwarelicenses->add($computer_soft_l);
+                        $item_softwarelicenses->add($computer_soft_l);
                      }
                      //Update for validity
                      $software_licenses->update(['id'       => $id_software_licenses,
@@ -156,16 +159,17 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
       global $DB;
 
       $query = "SELECT *
-                FROM `glpi_computers_softwarelicenses`
-                WHERE `computers_id` = $glpi_computers_id 
-                AND `is_dynamic` = 1";
+                FROM `glpi_items_softwarelicenses`
+                WHERE `items_id` = $glpi_computers_id 
+                AND `itemtype` = 'Computer' 
+                AND`is_dynamic` = 1";
 
       $result = $DB->query($query);
 
       if ($DB->numrows($result) > 0) {
          while ($data = $DB->fetchAssoc($result)) {
             $query2  = "SELECT COUNT(*)
-                       FROM `glpi_computers_softwarelicenses`
+                       FROM `glpi_items_softwarelicenses`
                        WHERE `softwarelicenses_id` = " . $data['softwarelicenses_id'];
             $result2 = $DB->query($query2);
 
@@ -185,8 +189,9 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
             }
          }
 
-         $computer_softwarelicenses = new Computer_SoftwareLicense();
-         $computer_softwarelicenses->deleteByCriteria(['computers_id' => $glpi_computers_id],
+         $item_softwarelicenses = new Item_SoftwareLicense();
+         $item_softwarelicenses->deleteByCriteria(['items_id' => $glpi_computers_id,
+                                                   'itemtype' => 'Computer'],
                                                       0, $uninstall_plugins_history);
       }
    }

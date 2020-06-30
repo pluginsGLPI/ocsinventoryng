@@ -88,21 +88,22 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
 
 
       $is_utf8                  = $cfg_ocs["ocs_db_utf8"];
-      $computer_softwareversion = new Computer_SoftwareVersion();
+      $item_softwareversion = new Item_SoftwareVersion();
       //---- Get all the softwares for this machine from OCS -----//
 
       $soft = new Software();
 
       // Read imported software in last sync
-      $query    = "SELECT `glpi_computers_softwareversions`.`id` as id,
+      $query    = "SELECT `glpi_items_softwareversions `.`id` as id,
                              `glpi_softwares`.`name` as sname,
                              `glpi_softwareversions`.`name` as vname
-                      FROM `glpi_computers_softwareversions`
+                      FROM `glpi_items_softwareversions `
                       INNER JOIN `glpi_softwareversions`
-                              ON `glpi_softwareversions`.`id`= `glpi_computers_softwareversions`.`softwareversions_id`
+                              ON `glpi_softwareversions`.`id`= `glpi_items_softwareversions `.`softwareversions_id`
                       INNER JOIN `glpi_softwares`
                               ON `glpi_softwares`.`id`= `glpi_softwareversions`.`softwares_id`
-                      WHERE `glpi_computers_softwareversions`.`computers_id`= $computers_id
+                      WHERE `glpi_items_softwareversions `.`computers_id`= $computers_id
+                            AND `glpi_items_softwareversions `.`itemtype`= 'Computer'
                             AND `is_dynamic` = 1";
       $imported = [];
 
@@ -112,18 +113,19 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
 
       if ($officepack) {
          // Read imported software in last sync
-         $query             = "SELECT `glpi_computers_softwarelicenses`.`id` as id,
+         $query             = "SELECT `glpi_items_softwarelicenses`.`id` as id,
                           `glpi_softwares`.`name` as sname,
                           `glpi_softwarelicenses`.`name` as lname,
                           `glpi_softwareversions`.`id` as vid
-                   FROM `glpi_computers_softwarelicenses`
+                   FROM `glpi_items_softwarelicenses`
                    INNER JOIN `glpi_softwarelicenses`
-                           ON `glpi_softwarelicenses`.`id`= `glpi_computers_softwarelicenses`.`softwarelicenses_id`
+                           ON `glpi_softwarelicenses`.`id`= `glpi_items_softwarelicenses`.`softwarelicenses_id`
                    INNER JOIN `glpi_softwares`
                            ON `glpi_softwares`.`id`= `glpi_softwarelicenses`.`softwares_id`
                    INNER JOIN `glpi_softwareversions`
                            ON `glpi_softwarelicenses`.`softwareversions_id_use` = `glpi_softwareversions`.`id`
-                   WHERE `glpi_computers_softwarelicenses`.`computers_id`= $computers_id
+                   WHERE `glpi_items_softwarelicenses`.`items_id`= $computers_id
+                         AND `glpi_items_softwarelicenses`.`itemtype`= 'Computer'
                          AND `is_dynamic` = 1";
          $imported_licences = [];
 
@@ -279,13 +281,13 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
 
 
       foreach ($imported as $id => $unused) {
-         $computer_softwareversion->delete(['id' => $id, '_no_history' => !$uninstall_history],
+         $item_softwareversion->delete(['id' => $id, '_no_history' => !$uninstall_history],
                                            true,
                                            $uninstall_history);
          // delete cause a getFromDB, so fields contains values
-         $verid = $computer_softwareversion->getField('softwareversions_id');
+         $verid = $item_softwareversion->getField('softwareversions_id');
          $dbu   = new DbUtils();
-         if ($dbu->countElementsInTable('glpi_computers_softwareversions',
+         if ($dbu->countElementsInTable('glpi_items_softwareversions',
                                         ["softwareversions_id" => $verid]) == 0
              && $dbu->countElementsInTable('glpi_softwarelicenses',
                                            ["softwareversions_id_buy" => $verid]) == 0) {
@@ -308,13 +310,13 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
 
       if ($officepack) {
          $dbu                       = new DbUtils();
-         $computer_softwarelicenses = new Computer_SoftwareLicense();
+         $item_softwarelicenses = new Item_SoftwareLicense();
          foreach ($imported_licences as $id => $unused) {
-            $computer_softwarelicenses->delete(['id' => $id], true, $uninstall_history);
+            $item_softwarelicenses->delete(['id' => $id], true, $uninstall_history);
             // delete cause a getFromDB, so fields contains values
-            $verid = $computer_softwarelicenses->getField('softwareversions_id');
+            $verid = $item_softwarelicenses->getField('softwareversions_id');
 
-            if ($dbu->countElementsInTable('glpi_computers_softwarelicenses', ["softwarelicenses_id" => $verid]) == 0) {
+            if ($dbu->countElementsInTable('glpi_items_softwarelicenses', ["softwarelicenses_id" => $verid]) == 0) {
 
                $vers = new SoftwareVersion();
                if ($vers->getFromDB($verid)
@@ -344,14 +346,15 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
 
       if (!empty($softwareversions_id) && $softwareversions_id > 0) {
          $query_exists = "SELECT `id`
-                          FROM `glpi_computers_softwareversions`
-                          WHERE (`computers_id` = $computers_id
+                          FROM `glpi_items_softwareversions`
+                          WHERE (`items_id` = $computers_id
+                                 AND `itemtype` = 'Computer'
                                  AND `softwareversions_id` = $softwareversions_id)";
          $result       = $DB->query($query_exists);
 
          if ($DB->numrows($result) > 0) {
             $data = $DB->fetchArray($result);
-            $tmp  = new Computer_SoftwareVersion();
+            $tmp  = new Computer_ItemVersion();
 
             $input = ['id'           => $data['id'],
                       '_no_history'  => !$dohistory,
@@ -459,14 +462,16 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
 
       if (!empty($softwareversions_id) && $softwareversions_id > 0) {
          $query_exists = "SELECT `id`
-                          FROM `glpi_computers_softwareversions`
-                          WHERE (`computers_id` = $computers_id
+                          FROM `glpi_items_softwareversions`
+                          WHERE (`items_id` = $computers_id
+                           AND `itemtype` = 'Computer'
                            AND `softwareversions_id` = $softwareversions_id)";
          $result       = $DB->query($query_exists);
 
          if ($DB->numrows($result) == 0) {
-            $tmp = new Computer_SoftwareVersion();
-            $tmp->add(['computers_id'        => $computers_id,
+            $tmp = new Computer_ItemVersion();
+            $tmp->add(['items_id'        => $computers_id,
+                       'itemtype' => 'Computer',
                        'softwareversions_id' => $softwareversions_id,
                        'date_install'        => $installdate,
                        'is_dynamic'          => 1,
@@ -489,15 +494,16 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
       global $DB;
 
       $query  = "SELECT *
-                FROM `glpi_computers_softwareversions`
-                WHERE `computers_id` = $glpi_computers_id
+                FROM `glpi_items_softwareversions`
+                WHERE `items_id` = $glpi_computers_id
+                     AND `itemtype` = 'Computer'
                      AND `is_dynamic` = 1";
       $result = $DB->query($query);
 
       if ($DB->numrows($result) > 0) {
          while ($data = $DB->fetchAssoc($result)) {
             $query2  = "SELECT COUNT(*)
-                       FROM `glpi_computers_softwareversions`
+                       FROM `glpi_items_softwareversions`
                        WHERE `softwareversions_id` = " . $data['softwareversions_id'];
             $result2 = $DB->query($query2);
 
@@ -523,8 +529,9 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
             }
          }
 
-         $csv = new Computer_SoftwareVersion();
-         $csv->deleteByCriteria(['computers_id' => $glpi_computers_id,
+         $csv = new Item_SoftwareVersion();
+         $csv->deleteByCriteria(['items_id' => $glpi_computers_id,
+                                 'itemtype' => 'Computer',
                                  'is_dynamic'   => 1], 1, $uninstall_history);
 
       }
