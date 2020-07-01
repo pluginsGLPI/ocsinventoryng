@@ -102,7 +102,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
                               ON `glpi_softwareversions`.`id`= `glpi_items_softwareversions `.`softwareversions_id`
                       INNER JOIN `glpi_softwares`
                               ON `glpi_softwares`.`id`= `glpi_softwareversions`.`softwares_id`
-                      WHERE `glpi_items_softwareversions `.`computers_id`= $computers_id
+                      WHERE `glpi_items_softwareversions `.`items_id`= $computers_id
                             AND `glpi_items_softwareversions `.`itemtype`= 'Computer'
                             AND `is_dynamic` = 1";
       $imported = [];

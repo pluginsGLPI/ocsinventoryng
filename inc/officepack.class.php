@@ -82,7 +82,7 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
 
             $id = array_search($softwareversions_id, $imported_licences);
 
-            $software_licenses         = new SoftwareLicense();
+            $software_licenses     = new SoftwareLicense();
             $item_softwarelicenses = new Item_SoftwareVersion();
             if ($id) {
                //-------------------------------------------------------------------------//
@@ -97,12 +97,12 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
 
                      $software_licenses->update(['id'      => $software_licenses->getID(),
                                                  'comment' => $ocsOfficePack['NOTE']]);
-                     if (!$item_softwarelicenses->getFromDBByCrit(['items_id'        => $computers_id,
-                                                                       'itemtype'        => 'Computer',
-                                                                       'softwarelicenses_id' => $software_licenses->getID()])) {
+                     if (!$item_softwarelicenses->getFromDBByCrit(['items_id'            => $computers_id,
+                                                                   'itemtype'            => 'Computer',
+                                                                   'softwarelicenses_id' => $software_licenses->getID()])) {
 
-                        $computer_soft_l['items_id']        = $computers_id;
-                        $computer_soft_l['itemtype']        = 'Computer';
+                        $computer_soft_l['items_id']            = $computers_id;
+                        $computer_soft_l['itemtype']            = 'Computer';
                         $computer_soft_l['softwarelicenses_id'] = $software_licenses->getID();
                         $computer_soft_l['is_dynamic']          = -1;
                         $item_softwarelicenses->add($computer_soft_l);
@@ -129,14 +129,15 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
                   }
 
                   if ($id_software_licenses) {
-                     $computer_soft_l['computers_id']        = $computers_id;
+                     $computer_soft_l['items_id']            = $computers_id;
+                     $computer_soft_l['itemtype']            = 'Computer';
                      $computer_soft_l['softwarelicenses_id'] = $id_software_licenses;
                      $computer_soft_l['is_dynamic']          = 1;
                      $computer_soft_l['number']              = -1;
 
-                     if (!$item_softwarelicenses->getFromDBByCrit(['items_id'        => $computers_id,
-                                                                   'itemtype'        => 'Computer',
-                                                                       'softwarelicenses_id' => $id_software_licenses])) {
+                     if (!$item_softwarelicenses->getFromDBByCrit(['items_id'            => $computers_id,
+                                                                   'itemtype'            => 'Computer',
+                                                                   'softwarelicenses_id' => $id_software_licenses])) {
                         $item_softwarelicenses->add($computer_soft_l);
                      }
                      //Update for validity
@@ -192,7 +193,7 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
          $item_softwarelicenses = new Item_SoftwareLicense();
          $item_softwarelicenses->deleteByCriteria(['items_id' => $glpi_computers_id,
                                                    'itemtype' => 'Computer'],
-                                                      0, $uninstall_plugins_history);
+                                                  0, $uninstall_plugins_history);
       }
    }
 }
