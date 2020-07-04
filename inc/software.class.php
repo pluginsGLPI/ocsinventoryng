@@ -94,16 +94,16 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
       $soft = new Software();
 
       // Read imported software in last sync
-      $query    = "SELECT `glpi_items_softwareversions `.`id` as id,
+      $query    = "SELECT `glpi_items_softwareversions`.`id` as id,
                              `glpi_softwares`.`name` as sname,
                              `glpi_softwareversions`.`name` as vname
-                      FROM `glpi_items_softwareversions `
+                      FROM `glpi_items_softwareversions`
                       INNER JOIN `glpi_softwareversions`
-                              ON `glpi_softwareversions`.`id`= `glpi_items_softwareversions `.`softwareversions_id`
+                              ON `glpi_softwareversions`.`id`= `glpi_items_softwareversions`.`softwareversions_id`
                       INNER JOIN `glpi_softwares`
                               ON `glpi_softwares`.`id`= `glpi_softwareversions`.`softwares_id`
-                      WHERE `glpi_items_softwareversions `.`items_id`= $computers_id
-                            AND `glpi_items_softwareversions `.`itemtype`= 'Computer'
+                      WHERE `glpi_items_softwareversions`.`items_id`= $computers_id
+                            AND `glpi_items_softwareversions`.`itemtype`= 'Computer'
                             AND `is_dynamic` = 1";
       $imported = [];
 
@@ -354,7 +354,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
 
          if ($DB->numrows($result) > 0) {
             $data = $DB->fetchArray($result);
-            $tmp  = new Computer_ItemVersion();
+            $tmp  = new Item_SoftwareVersion();
 
             $input = ['id'           => $data['id'],
                       '_no_history'  => !$dohistory,
@@ -469,7 +469,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
          $result       = $DB->query($query_exists);
 
          if ($DB->numrows($result) == 0) {
-            $tmp = new Computer_ItemVersion();
+            $tmp = new Item_SoftwareVersion();
             $tmp->add(['items_id'        => $computers_id,
                        'itemtype' => 'Computer',
                        'softwareversions_id' => $softwareversions_id,
