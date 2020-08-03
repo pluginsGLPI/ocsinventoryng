@@ -293,10 +293,62 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                }
                break;
             case "softwares" :
-               if (($check & $checksum) || $complete > 0) {
+               if ($version['TVALUE'] >= PluginOcsinventoryngOcsServer::OCS2_7_VERSION_LIMIT) {
+                  if (($check & $checksum) || $complete > 0) {
+                     if (self::WANTED_DICO_SOFT & $wanted) {
+                        $query = "SELECT
+                                        IFNULL(`dico_soft`.`FORMATTED`, `software_name`.`NAME`) AS NAME,
+                                        `software_version`.`VERSION`,
+                                        `software_publisher`.`PUBLISHER`,
+                                        `software`.`COMMENTS`,
+                                        `software`.`FOLDER`,
+                                        `software`.`FILENAME`,
+                                        `software`.`FILESIZE`,
+                                        `software`.`SOURCE`,
+                                        `software`.`HARDWARE_ID`,
+                                        `software`.`GUID`,
+                                        `software`.`LANGUAGE`,
+                                        `software`.`INSTALLDATE`,
+                                        `software`.`BITSWIDTH`";
+                        $query .= " FROM `software`
+                            LEFT JOIN `software_name` ON (`software`.`NAME_ID` = `software_name`.`ID`)
+                            LEFT JOIN `software_version` ON (`software`.`VERSION_ID` = `software_version`.`ID`)
+                            LEFT JOIN `software_publisher` ON (`software`.`PUBLISHER_ID` = `software_publisher`.`ID`)
+                            INNER JOIN `dico_soft` ON (`software_name`.`NAME` = `dico_soft`.`EXTRACTED`)
+                            WHERE `software`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                     } else {
+                        $query = "SELECT
+                                        `software_name`.`NAME`,
+                                        `software_version`.`VERSION`,
+                                        `software_publisher`.`PUBLISHER`,
+                                        `software`.`COMMENTS`,
+                                        `software`.`FOLDER`,
+                                        `software`.`FILENAME`,
+                                        `software`.`FILESIZE`,
+                                        `software`.`SOURCE`,
+                                        `software`.`HARDWARE_ID`,
+                                        `software`.`GUID`,
+                                        `software`.`LANGUAGE`,
+                                        `software`.`INSTALLDATE`,
+                                        `software`.`BITSWIDTH`";
+                        $query .= " FROM `software`
+                             LEFT JOIN `software_name` ON (`software`.`NAME_ID` = `software_name`.`ID`)
+                             LEFT JOIN `software_version` ON (`software`.`VERSION_ID` = `software_version`.`ID`)
+                             LEFT JOIN `software_publisher` ON (`software`.`PUBLISHER_ID` = `software_publisher`.`ID`)
+                             WHERE `software`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
+                     }
 
-                  if (self::WANTED_DICO_SOFT & $wanted) {
-                     $query = "SELECT
+                     $query   .= " ORDER BY  `software`.`id` DESC";
+                     $request = $this->db->query($query);
+                     while ($software = $this->db->fetchAssoc($request)) {
+                        $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
+                     }
+                  }
+               } else {
+                  if (($check & $checksum) || $complete > 0) {
+
+                     if (self::WANTED_DICO_SOFT & $wanted) {
+                        $query = "SELECT
                                         IFNULL(`dico_soft`.`FORMATTED`, `softwares`.`NAME`) AS NAME,
                                         `softwares`.`VERSION`,
                                         `softwares`.`PUBLISHER`,
@@ -306,17 +358,17 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                                         `softwares`.`FILESIZE`,
                                         `softwares`.`SOURCE`,
                                         `softwares`.`HARDWARE_ID`";
-                     if ($version['TVALUE'] > PluginOcsinventoryngOcsServer::OCS2_VERSION_LIMIT) {
-                        $query .= ",`softwares`.`GUID`,
+                        if ($version['TVALUE'] > PluginOcsinventoryngOcsServer::OCS2_VERSION_LIMIT) {
+                           $query .= ",`softwares`.`GUID`,
                                         `softwares`.`LANGUAGE`,
                                         `softwares`.`INSTALLDATE`,
                                         `softwares`.`BITSWIDTH`";
-                     }
-                     $query .= "FROM `softwares`
+                        }
+                        $query .= " FROM `softwares`
                             INNER JOIN `dico_soft` ON (`softwares`.`NAME` = `dico_soft`.`EXTRACTED`)
                             WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-                  } else {
-                     $query = "SELECT
+                     } else {
+                        $query = "SELECT
                                         `softwares`.`NAME`,
                                         `softwares`.`VERSION`,
                                         `softwares`.`PUBLISHER`,
@@ -326,20 +378,21 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                                         `softwares`.`FILESIZE`,
                                         `softwares`.`SOURCE`,
                                         `softwares`.`HARDWARE_ID`";
-                     if ($version['TVALUE'] > PluginOcsinventoryngOcsServer::OCS2_VERSION_LIMIT) {
-                        $query .= ",`softwares`.`GUID`,
+                        if ($version['TVALUE'] > PluginOcsinventoryngOcsServer::OCS2_VERSION_LIMIT) {
+                           $query .= ",`softwares`.`GUID`,
                                   `softwares`.`LANGUAGE`,
                                   `softwares`.`INSTALLDATE`,
                                   `softwares`.`BITSWIDTH`";
-                     }
-                     $query .= "FROM `softwares`
+                        }
+                        $query .= " FROM `softwares`
                              WHERE `softwares`.`HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-                  }
+                     }
 
-                  $query   .= "ORDER BY `id` DESC";
-                  $request = $this->db->query($query);
-                  while ($software = $this->db->fetchAssoc($request)) {
-                     $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
+                     $query   .= " ORDER BY  `softwares`.`id` DESC";
+                     $request = $this->db->query($query);
+                     while ($software = $this->db->fetchAssoc($request)) {
+                        $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
+                     }
                   }
                }
                break;
