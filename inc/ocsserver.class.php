@@ -1995,11 +1995,28 @@ JAVASCRIPT;
       }
       $canedit = Session::haveRight("plugin_ocsinventoryng_clean", UPDATE);
 
+      // ocslinks ocsid
+      $query =
+         "SELECT `ocsid` ".
+         "FROM `glpi_plugin_ocsinventoryng_ocslinks` ".
+         "WHERE `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id".
+         (new DbUtils())->getEntitiesRestrictRequest(" AND", "glpi_plugin_ocsinventoryng_ocslinks");
+      $result = $DB->query($query);
+      $ocsids = [];
+      if($DB->numrows($result) > 0) {
+         while ($data = $DB->fetchAssoc($result)) {
+            $ocsids[] = $data['ocsid'];
+         }
+      }
+
       // Select unexisting OCS hardware
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
       $computerOptions = [
          'COMPLETE' => '0',
+         'FILTER' => [
+            'IDS' => $ocsids,
+         ]
       ];
 
       $computers = $ocsClient->getComputers($computerOptions);
@@ -2012,21 +2029,11 @@ JAVASCRIPT;
          $hardware = [];
       }
 
-      $query  = "SELECT `ocsid`
-                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                WHERE `plugin_ocsinventoryng_ocsservers_id`
-                           = $plugin_ocsinventoryng_ocsservers_id";
-      $result = $DB->query($query);
-
+      // ocslinks missing in ocs
       $ocs_missing = [];
-      if ($DB->numrows($result) > 0) {
-         while ($data = $DB->fetchArray($result)) {
-            $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
-            if (!isset($hardware[$data["ocsid"]])) {
-               $ocs_missing[$data["ocsid"]] = $data["ocsid"];
-            }
-         }
-      }
+      foreach($ocsids as $id)
+         if(!isset($hardware[$id]))
+            $ocs_missing[$id] = $id;
 
       //Select unexisting computers
       $query_glpi = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`entities_id` AS entities_id,
