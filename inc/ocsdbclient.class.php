@@ -728,7 +728,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     *
     * @param int   $id
     *
-    * @return array
+    * @return int
     * @throws \GlpitestSQLError
     * @see PluginOcsinventoryngOcsClient::getComputers()
     *
@@ -847,37 +847,25 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       } else {
          $where_condition = "";
       }
-      $join = "";
-      if ((isset($filters['EXCLUDE_TAGS']) and $filters['EXCLUDE_TAGS']) ||
-          (isset($filters['TAGS']) and $filters['TAGS'])) {
-         $join = "LEFT JOIN `accountinfo` ON (`hardware`.`ID` = `accountinfo`.`HARDWARE_ID`) ";
-      }
 
       if ($id > 0) {
-         $query = "SELECT count(DISTINCT `hardware`.`ID`) FROM `hardware` $join
-                           WHERE `hardware`.`ID` = $id
-                           $where_condition";
+         $query = 
+            "SELECT count(DISTINCT `hardware`.`ID`) as total ".
+            "FROM `hardware` ".
+            "INNER JOIN `accountinfo` ON `accountinfo`.`HARDWARE_ID` = `hardware`.`ID` ".
+            "WHERE `hardware`.`ID` = $id ".
+            "$where_condition";
       } else {
-         $query = "SELECT DISTINCT `hardware`.`ID` FROM `hardware` $join
-                           WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
-                           $where_condition
-                           ORDER BY $order
-                           $max_records $offset";
+         $query =
+            "SELECT count(DISTINCT `hardware`.`ID`) as total ".
+            "FROM `hardware` ".
+            "INNER JOIN `accountinfo` ON `accountinfo`.`HARDWARE_ID` = `hardware`.`ID` ".
+            "WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%' ".
+            "$where_condition";
       }
       $request = $this->db->query($query);
-
-      if ($this->db->numrows($request)) {
-
-         while ($hardwareid = $this->db->fetchAssoc($request)) {
-            $hardwareids[] = $hardwareid['ID'];
-         }
-         return $hardwareids;
-      } else {
-
-         return [];
-      }
-
-      return $res;
+      $result = $this->db->fetchAssoc($request);
+      return $result['total'];
    }
 
    /**

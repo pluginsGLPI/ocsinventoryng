@@ -2532,7 +2532,7 @@ JAVASCRIPT;
       }
 
       $ocsClient    = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-      $allComputers = $ocsClient->countComputers($computerOptions);
+      $numrows      = $ocsClient->countComputers($computerOptions);
 
       if ($start != 0) {
          $computerOptions['OFFSET'] = $start;
@@ -2593,7 +2593,7 @@ JAVASCRIPT;
             }
             echo "<div class='center'>";
 
-            if ($numrows = count($allComputers)) {
+            if ($numrows) {
 
                $parameters = "check=$check";
                Html::printPager($start, $numrows, $target, $parameters);
