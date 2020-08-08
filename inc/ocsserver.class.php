@@ -2169,8 +2169,10 @@ JAVASCRIPT;
       // Get linked computer ids in GLPI
       $already_linked_query  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid
                                FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                               INNER JOIN `glpi_computers` on `glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`
                                WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
-                                            = $plugin_ocsinventoryng_ocsservers_id";
+                                            = $plugin_ocsinventoryng_ocsservers_id".
+                                 (new DbUtils())->getEntitiesRestrictRequest(" AND", "glpi_plugin_ocsinventoryng_ocslinks");
       $already_linked_result = $DB->query($already_linked_query);
 
       if ($DB->numrows($already_linked_result) == 0) {
@@ -2201,6 +2203,8 @@ JAVASCRIPT;
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
       $ocsResult = $ocsClient->getComputers([
+                                               'OFFSET' => $start,
+                                               'MAX_RECORDS' => $_SESSION['glpilist_limit'],
                                                'ORDER'    => 'LASTDATE',
                                                'COMPLETE' => '0',
                                                'FILTER'   => [
@@ -2216,7 +2220,7 @@ JAVASCRIPT;
             // Get all ids of the returned computers
             $ocs_computer_ids = [];
             $hardware         = [];
-            $computers        = array_slice($ocsResult['COMPUTERS'], $start, $_SESSION['glpilist_limit']);
+            $computers        = $ocsResult['COMPUTERS'];
             foreach ($computers as $computer) {
                $ID                  = $computer['META']['ID'];
                $ocs_computer_ids [] = $ID;
