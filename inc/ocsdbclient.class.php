@@ -1006,31 +1006,42 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       }
 
       if ($id > 0) {
-         $query = "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` 
-                  FROM `hardware`
-                     WHERE `hardware`.`ID` = $id
-                     $where_condition";
+         $query = 
+            "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` ".
+            "FROM `hardware` ".
+            "INNER JOIN `accountinfo` ON `accountinfo`.`HARDWARE_ID` = `hardware`.`ID` ".
+            "WHERE `hardware`.`ID` = $id ".
+            "$where_condition";
+         $count_query = null;
       } else {
-         $query = "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` 
-                  FROM `hardware`, `accountinfo`
-                     WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
-                     AND `hardware`.`ID` = `accountinfo`.`HARDWARE_ID` $where_condition
-                     ORDER BY $order
-                     $max_records $offset";
+         $query =
+            "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` ".
+            "FROM `hardware` ".
+            "INNER JOIN `accountinfo` ON `accountinfo`.`HARDWARE_ID` = `hardware`.`ID` ".
+            "WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%' ".
+            "$where_condition ".
+            "ORDER BY $order ".
+            "$max_records $offset";
+         $count_query =
+            "SELECT count(DISTINCT `hardware`.`ID`) as total ".
+            "FROM `hardware` ".
+            "INNER JOIN `accountinfo` ON `accountinfo`.`HARDWARE_ID` = `hardware`.`ID` ".
+            "WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%' ".
+            "$where_condition";
       }
       $request = $this->db->query($query);
-
-      if ($this->db->numrows($request)) {
-
+      if($count_query)
+      {
+         $count_request = $this->db->query($count_query);
+         $count_request_result = $this->db->fetchAssoc($count_request);
+         $count = $count_request_result['total'];
+      }
+      else
+      {
          $count = $this->db->numrows($request);
-         /*$query = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
-                           WHERE hardware.DEVICEID NOT LIKE '\\_%'
-                           AND hardware.ID = accountinfo.HARDWARE_ID
-                           $where_condition
-                           ORDER BY $order
-                           $max_records  $offset";
+      }
 
-         $request = $this->db->query($query);*/
+      if ($count) {
          $this->getAccountInfoColumns();
          while ($hardwareid = $this->db->fetchAssoc($request)) {
             $hardwareids[] = $hardwareid['ID'];
