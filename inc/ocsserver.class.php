@@ -3162,17 +3162,38 @@ JAVASCRIPT;
          }
          PluginOcsinventoryngOcsProcess::manageDeleted($plugin_ocsinventoryng_ocsservers_id, false);
 
-         $query    = "SELECT MAX(`last_ocs_update`)
-                   FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                   WHERE `plugin_ocsinventoryng_ocsservers_id`= $plugin_ocsinventoryng_ocsservers_id";
-         $max_date = "0000-00-00 00:00:00";
-         if ($result = $DB->query($query)) {
-            if ($DB->numrows($result) > 0) {
-               $max_date = $DB->result($result, 0, 0);
+         // Get linked computer ids in GLPI
+         $already_linked_query  = 
+            "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid ".
+            "FROM `glpi_plugin_ocsinventoryng_ocslinks` ".
+            "INNER JOIN `glpi_computers` on `glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` ".
+            "WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
+         $already_linked_result = $DB->query($already_linked_query);
+
+         $already_linked_ids = [];
+         if($DB->numrows($already_linked_result) > 0)
+            while($data = $DB->fetchAssoc($already_linked_result))
+               $already_linked_ids [] = $data['ocsid'];
+
+         // Fetch linked computers from ocs
+         $res = [];
+         if(count($already_linked_ids) > 0)
+         {
+            $ocsResult = $PluginOcsinventoryngDBocs->getComputers([
+               'MAX_RECORDS' => $cfg_ocs["cron_sync_number"],
+               'ORDER'    => 'LASTDATE',
+               'COMPLETE' => '0',
+               'FILTER'   => [
+                  'IDS'      => $already_linked_ids,
+                  'CHECKSUM' => $cfg_ocs["checksum"],
+               ]
+            ]);
+
+            if (isset($ocsResult['COMPUTERS']) && count($ocsResult['COMPUTERS']) > 0) {
+               foreach ($ocsResult['COMPUTERS'] as $computer)
+                  $res[ $computer['META']['ID'] ] = $computer['META'];
             }
          }
-
-         $res = $PluginOcsinventoryngDBocs->getComputersToUpdate($cfg_ocs, $max_date);
 
          $task->setVolume(0);
          if (count($res) > 0) {
