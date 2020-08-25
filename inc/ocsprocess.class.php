@@ -989,6 +989,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                         'antivirus'       => false,
                         'uptime'          => false,
                         'officepack'      => false,
+                        'bitlocker'       => false,
                         'winupdatestate'  => false,
                         'osinstall'       => false,
                         'proxysetting'    => false,
@@ -1161,6 +1162,10 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                if ($cfg_ocs["import_winusers"]) {
                   $updates['winuser'] = true;
                   $ocsPlugins[]       = PluginOcsinventoryngOcsClient::PLUGINS_WINUSERS;
+               }
+               if ($cfg_ocs["import_bitlocker"]) {
+                  $updates['bitlockerstatus'] = true;
+                  $ocsPlugins[]         = PluginOcsinventoryngOcsClient::PLUGINS_BITLOCKER;
                }
                if ($cfg_ocs["import_osinstall"]) {
                   $updates['osinstall'] = true;
@@ -1405,6 +1410,10 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                if ($updates['uptime'] && isset($ocsComputer["UPTIME"])) {
                   //import uptime
                   PluginOcsinventoryngUptime::updateUptime($line['id'], $ocsComputer["UPTIME"]);
+               }
+               if ($updates['bitlockerstatus'] && isset($ocsComputer["BITLOCKERSTATUS"])) {
+                  //import bitlocker
+                  PluginOcsinventoryngBitlockerstatus::updateBitlocker($line['computers_id'], $ocsComputer["BITLOCKERSTATUS"], $cfg_ocs, $force);
                }
                /********************* PLUGINS *********************/
             }

@@ -699,6 +699,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       $teamviewer = new PluginOcsinventoryngTeamviewer();
       $teamviewer->deleteByCriteria(['computers_id' => $comp->getField("id")]);
 
+      $bitlocker = new PluginOcsinventoryngBitlockerstatus();
+      $bitlocker->deleteByCriteria(['computers_id' => $comp->getField("id")]);
+
    }
 
 

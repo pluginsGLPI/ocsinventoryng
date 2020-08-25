@@ -112,6 +112,11 @@ function plugin_init_ocsinventoryng() {
                                                            'showForItem_OperatingSystem'];
    }
 
+   if ($DB->tableExists('glpi_plugin_ocsinventoryng_bitlockerstatuses')) {
+      Plugin::registerClass('PluginOcsinventoryngBitlockerstatus',
+         ['addtabon' => 'Computer']);
+   }
+
    Plugin::registerClass('PluginOcsinventoryngOcsServer',
                          ['massiveaction_noupdate_types' => true,
                           'systeminformations_types'     => true]);
@@ -195,7 +200,7 @@ function plugin_init_ocsinventoryng() {
 function plugin_version_ocsinventoryng() {
 
    return ['name'           => "OCS Inventory NG",
-           'version'        => '1.5.6',
+           'version'        => '1.5.7',
            'author'         => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
            'license'        => 'GPLv2+',
            'homepage'       => 'https://github.com/pluginsGLPI/ocsinventoryng',

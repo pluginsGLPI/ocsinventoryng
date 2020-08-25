@@ -906,7 +906,11 @@ JAVASCRIPT;
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Running Process Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/runningProcess) must be installed', 'ocsinventoryng')));
       echo "&nbsp;</td>\n";
-      echo "<td class='center'></td>\n<td></td></tr>\n";
+      echo "<td class='center'>" . __('Bitlocker', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_bitlocker", $this->fields["import_bitlocker"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Bitlocker Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/bitlocker) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td>\n";
 
       echo "</table>";
       echo "</div>";
