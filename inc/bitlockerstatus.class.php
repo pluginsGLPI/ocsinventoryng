@@ -85,7 +85,12 @@ class PluginOcsinventoryngBitlockerstatus extends CommonDBChild {
             $input["encryp_method"]     = isset($bitlocker["ENCRYPMETHOD"]) ? $bitlocker["ENCRYPMETHOD"] : '';
             $input["init_project"]      = isset($bitlocker["INITPROTECT"]) ? $bitlocker["INITPROTECT"] : '';
 
-            $bitlockers->add($input, ['disable_unicity_check' => true], $install_history);
+            if($bitlockers->getFromDBByCrit(["computers_id" => $input["computers_id"]])){
+               $input['id'] = $bitlockers->getID();
+               $bitlockers->update($input, $install_history, ['disable_unicity_check' => true]);
+            } else{
+               $bitlockers->add($input, ['disable_unicity_check' => true], $install_history);
+            }
          }
       }
    }
