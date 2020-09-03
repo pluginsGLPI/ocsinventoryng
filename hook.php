@@ -38,11 +38,11 @@ function plugin_ocsinventoryng_install() {
    $migration = new Migration(150);
    $dbu       = new DbUtils();
 
-   if (!$DB->tableExists("glpi_plugin_ocsinventoryng_customapps")
+   if (!$DB->tableExists("glpi_plugin_ocsinventoryng_bitlockerstatuses")
        && !$DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
        && !$DB->tableExists("ocs_glpi_ocsservers")) {
       //INSTALL
-      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.7.0-empty.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.7.1-empty.sql");
 
       $migration->createRule(['sub_type'     => 'RuleImportComputer',
                               'entities_id'  => 0,
@@ -514,6 +514,14 @@ function plugin_ocsinventoryng_install() {
          $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.6.1-update.sql");
       }
 
+
+
+      /******************* Migration 1.7.0 *******************/
+
+      if (!$DB->tableExists('glpi_plugin_ocsinventoryng_bitlockerstatuses')) {
+         $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.7.1-update.sql");
+      }/*1.7.1*/
+
       $migration->executeMigration();
 
    }
@@ -612,6 +620,7 @@ function plugin_ocsinventoryng_uninstall() {
               "glpi_plugin_ocsinventoryng_runningprocesses",
               "glpi_plugin_ocsinventoryng_services",
               "glpi_plugin_ocsinventoryng_customapps",
+              "glpi_plugin_ocsinventoryng_bitlockerstatuses",
               "glpi_plugin_ocsinventoryng_teamviewers",
               "glpi_plugin_ocsinventoryng_notificationstates",
               "glpi_plugin_ocsinventoryng_ocsalerts"];

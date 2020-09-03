@@ -712,6 +712,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       $customapp = new PluginOcsinventoryngCustomapp();
       $customapp->deleteByCriteria(['computers_id' => $comp->getField("id")]);
 
+      $bitlocker = new PluginOcsinventoryngBitlockerstatus();
+      $bitlocker->deleteByCriteria(['computers_id' => $comp->getField("id")]);
+
    }
 
 

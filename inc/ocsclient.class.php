@@ -72,6 +72,7 @@ abstract class PluginOcsinventoryngOcsClient {
    const PLUGINS_RUNNINGPROCESS       = 0x00011;
    const PLUGINS_ALL                  = 0x00012;
    const PLUGINS_CUSTOMAPP            = 0x00013;
+   const PLUGINS_BITLOCKER            = 0x00014;
 
    private $id;
 
@@ -502,6 +503,10 @@ abstract class PluginOcsinventoryngOcsClient {
          'officepack'            => [
             'plugins' => self::PLUGINS_OFFICE,
             'multi'   => 1,
+         ],
+         'bitlockerstatus'             => [
+            'plugins' => self::PLUGINS_BITLOCKER,
+            'multi'  => 1,
          ],
          'controllers'           => [
             'checksum' => self::CHECKSUM_SYSTEM_CONTROLLERS,

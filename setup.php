@@ -32,7 +32,7 @@ define("PLUGIN_OCSINVENTORYNG_STATE_RUNNING", 2);
 define("PLUGIN_OCSINVENTORYNG_STATE_FINISHED", 3);
 
 define("PLUGIN_OCSINVENTORYNG_LOCKFILE", GLPI_LOCK_DIR . "/ocsinventoryng.lock");
-define('PLUGIN_OCS_VERSION', '1.7.0');
+define('PLUGIN_OCS_VERSION', '1.7.1');
 
 /**
  * Init the hooks of the plugins -Needed
@@ -155,7 +155,7 @@ function plugin_init_ocsinventoryng() {
    $PLUGIN_HOOKS['add_css']['ocsinventoryng'] = 'css/ocsinventoryng.css';
 
    if (Session::getLoginUserID()) {
-
+      $ocsserver = new PluginOcsinventoryngOcsServer();
       // Display a menu entry ?
       if (Session::haveRight("plugin_ocsinventoryng", READ)) {
          $PLUGIN_HOOKS['menu_toadd']['ocsinventoryng'] = ['tools' => 'PluginOcsinventoryngMenu'];
@@ -175,6 +175,10 @@ function plugin_init_ocsinventoryng() {
 
       if (class_exists('PluginMydashboardMenu')) {
          $PLUGIN_HOOKS['mydashboard']['ocsinventoryng'] = ["PluginOcsinventoryngDashboard"];
+      }
+
+      if($ocsserver->getField('import_bitlocker')){
+         $PLUGIN_HOOKS['post_item_form']['ocsinventoryng'] = [PluginOcsinventoryngBitlockerstatus::class,'showForDisk'];
       }
    }
 

@@ -430,6 +430,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
             case "service":
             case "runningprocess" :
             case "officepack" :
+            case "bitlockerstatus":
                if (self::OcsTableExists($table)) {
                   if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
                      $query   = "SELECT * 

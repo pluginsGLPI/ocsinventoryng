@@ -938,6 +938,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                         'officepack'      => false,
                         'winupdatestate'  => false,
                         'osinstall'       => false,
+                        'bitlocker'       => false,
                         'proxysetting'    => false,
                         'networkshare'    => false,
                         'service'         => false,
@@ -1113,6 +1114,10 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                if ($cfg_ocs["import_osinstall"]) {
                   $updates['osinstall'] = true;
                   $ocsPlugins[]         = PluginOcsinventoryngOcsClient::PLUGINS_OSINSTALL;
+               }
+               if ($cfg_ocs["import_bitlocker"]) {
+                  $updates['bitlockerstatus'] = true;
+                  $ocsPlugins[]         = PluginOcsinventoryngOcsClient::PLUGINS_BITLOCKER;
                }
                if ($cfg_ocs["import_networkshare"]) {
                   $updates['networkshare'] = true;
@@ -1300,6 +1305,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                   //import drives
                   PluginOcsinventoryngDisk::updateDisk($line['computers_id'], $ocsComputer["DRIVES"],
                                                        $plugin_ocsinventoryng_ocsservers_id,
+                                                       $updates['bitlockerstatus'],
+                     (isset($ocsComputer['BITLOCKERSTATUS']) ? $ocsComputer['BITLOCKERSTATUS'] : []),
                                                        $cfg_ocs, $force);
                }
                if ($updates['virtualmachines'] && isset($ocsComputer["VIRTUALMACHINES"])) {
@@ -1367,6 +1374,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                   PluginOcsinventoryngCustomapp::updateCustomapp($line['computers_id'], $ocsComputer["CUSTOMAPP"],
                                                                  $cfg_ocs, 1);
                }
+
                /********************* PLUGINS *********************/
             }
             unset($updates);

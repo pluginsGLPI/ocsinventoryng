@@ -58,7 +58,7 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
     * @throws \GlpitestSQLError
     * @internal param int $ocsid : ocs computer id (ID).
     */
-   static function updateDisk($computers_id, $ocsComputer, $ocsservers_id, $cfg_ocs, $force) {
+   static function updateDisk($computers_id, $ocsComputer, $ocsservers_id, $bitlockerstatus, $ocsBitlockerStatus, $cfg_ocs, $force) {
       global $DB;
 
       $uninstall_history = 0;
@@ -71,7 +71,7 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
       }
 
       if ($force) {
-         self::resetDisks($computers_id, $uninstall_history);
+         self::resetDisks($computers_id,$ocsBitlockerStatus, $uninstall_history);
       }
 
       $already_processed = [];
@@ -148,6 +148,7 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
                      $d->reset();
                      $disk['is_dynamic']  = 1;
                      $id_disk             = $d->add($disk, [], $install_history);
+                     $disk['id'] = $id_disk;
                      $already_processed[] = $id_disk;
                   } else {
                      // Only update if needed
@@ -164,10 +165,16 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
                            $toupdate['freesize']       = $disk['freesize'];
                            $toupdate['filesystems_id'] = $disk['filesystems_id'];
                            $d->update($toupdate, $install_history);
+                           $disk['id'] = $id;
                         }
                         $already_processed[] = $id;
                      }
                   }
+               }
+               if ($bitlockerstatus && isset($ocsBitlockerStatus)) {
+                  //import bitlocker
+                  PluginOcsinventoryngBitlockerstatus::updateBitlocker($computers_id, $ocsBitlockerStatus, $disk,
+                     $cfg_ocs, $force);
                }
             }
          }
@@ -201,12 +208,14 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
     * @param $uninstall_history
     * @return void .
     */
-   static function resetDisks($glpi_computers_id, $uninstall_history) {
+   static function resetDisks($glpi_computers_id, $ocsBitlockerStatus, $uninstall_history) {
 
       $dd = new Item_Disk();
       $dd->deleteByCriteria(['items_id'   => $glpi_computers_id,
                              'itemtype'   => 'Computer',
                              'is_dynamic' => 1], 1, $uninstall_history);
-
+      if(!empty($ocsBitlockerStatus)){
+         PluginOcsinventoryngBitlockerstatus::resetBitlocker($glpi_computers_id, $uninstall_history);
+      }
    }
 }

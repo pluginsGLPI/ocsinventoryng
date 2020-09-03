@@ -926,7 +926,12 @@ JAVASCRIPT;
       Dropdown::showYesNo("import_customapp", $this->fields["import_customapp"]);
       echo "&nbsp;";
       Html::showToolTip(nl2br(__('Customapp Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/customapp) must be installed', 'ocsinventoryng')));
-      echo "&nbsp;</td>\n";
+      echo "&nbsp;</td></tr>\n";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Bitlocker', 'ocsinventoryng') . "</td>\n<td>";
+      Dropdown::showYesNo("import_bitlocker", $this->fields["import_bitlocker"]);
+      echo "&nbsp;";
+      Html::showToolTip(nl2br(__('Bitlocker Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/bitlocker) must be installed', 'ocsinventoryng')));
+      echo "&nbsp;</td></tr>\n";
 
       echo "</table>";
       echo "</div>";
