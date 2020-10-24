@@ -964,7 +964,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
       $result = $DB->query($query);
 
       if ($result) {
-         return ($DB->insert_id());
+         return ($DB->insertId());
       }
 
       return false;

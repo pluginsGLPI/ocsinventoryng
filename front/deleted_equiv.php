@@ -63,7 +63,7 @@ if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
       PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    }
 
-   if ($_SESSION["ocs_deleted_equiv"]["total"] != $_SESSION["ocs_deleted_equiv"]["deleted"] && $_SESSION["ocs_deleted_equiv"]["last_req"]) {
+   if ($_SESSION["ocs_deleted_equiv"]["total"] != $_SESSION["ocs_deleted_equiv"]["deleted"] && isset($_SESSION["ocs_deleted_equiv"]["last_req"])) {
 
       echo $_SESSION["ocs_deleted_equiv"]["deleted"] . "/" . $_SESSION["ocs_deleted_equiv"]["total"];
       echo "<br><br>";

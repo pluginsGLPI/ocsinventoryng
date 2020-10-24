@@ -2222,7 +2222,7 @@ function addNotifications() {
                         NOW(), '', NULL,
                         NOW());";
       $DB->queryOrDie($query, $DB->error());
-      $templates_id = $DB->insert_id();
+      $templates_id = $DB->insertId();
       $query        = "INSERT INTO `glpi_notificationtemplatetranslations`
                 VALUES (NULL, $templates_id, '',
                         '##lang.notimported.action## : ##notimported.entity##',
@@ -2267,7 +2267,7 @@ function addNotifications() {
              (`name`, `itemtype`)
              VALUES ('Check rule import entity', 'PluginOcsinventoryngRuleImportEntity');";
       $DB->queryOrDie($query, $DB->error());
-      $templates_id = $DB->insert_id();
+      $templates_id = $DB->insertId();
       //Add translations
       $query = "INSERT INTO `glpi_notificationtemplatetranslations`
                (`notificationtemplates_id`, `subject`, `content_text`, `content_html`)
@@ -2745,7 +2745,7 @@ function plugin_ocsinventoryng_upgrademassocsimport14to15() {
                "VALUES (NULL, 'Computers not imported', 'PluginMassocsimportNotimported',
                         NOW(), '', '', NOW());";
       $DB->queryOrDie($query, $DB->error());
-      $templates_id = $DB->insert_id();
+      $templates_id = $DB->insertId();
       $query        = "INSERT INTO `glpi_notificationtemplatetranslations` " .
                       "VALUES(NULL, $templates_id, '', '##lang.notimported.action## : ##notimported.entity##'," .
                       " '\r\n\n##lang.notimported.action## :&#160;##notimported.entity##\n\n" .
@@ -2874,7 +2874,7 @@ function plugin_ocsinventoryng_add_notifications_alerts() {
              (`name`, `itemtype`)
              VALUES ('Alert machines ocs', 'PluginOcsinventoryngOcsAlert');";
       $DB->queryOrDie($query, $DB->error());
-      $templates_id = $DB->insert_id();
+      $templates_id = $DB->insertId();
 
       $query = "INSERT INTO `glpi_notificationtemplatetranslations`
                 (`notificationtemplates_id`, `subject`, `content_text`, `content_html`)
