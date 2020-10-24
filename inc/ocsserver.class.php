@@ -51,7 +51,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    const OCS2_VERSION_LIMIT   = 6000;
    const OCS2_1_VERSION_LIMIT = 7006;
    const OCS2_2_VERSION_LIMIT = 7009;
-   const OCS2_7_VERSION_LIMIT = 7028;
+   const OCS2_7_VERSION_LIMIT = 7030;
    const ACTION_PURGE_COMPUTER  = 0; // Action cronCleanOldAgents : Purge computer
    const ACTION_DELETE_COMPUTER = 1; // Action cronCleanOldAgents : delete computer
 
@@ -1536,8 +1536,7 @@ JAVASCRIPT;
       $adm->updateAdminInfo($input);
       if (isset($input["ocs_db_passwd"]) && !empty($input["ocs_db_passwd"])) {
          $input["ocs_db_passwd"] = rawurlencode(stripslashes($input["ocs_db_passwd"]));
-         $input["ocs_db_passwd"] = Toolbox::encrypt(stripslashes($input["ocs_db_passwd"]),
-                                                    GLPIKEY);
+         $input["ocs_db_passwd"] = Toolbox::sodiumEncrypt(stripslashes($input["ocs_db_passwd"]));
       } else {
          unset($input["ocs_db_passwd"]);
       }
@@ -1645,7 +1644,7 @@ JAVASCRIPT;
 
       if (isset($input["ocs_db_passwd"]) && !empty($input["ocs_db_passwd"])) {
          $input["ocs_db_passwd"] = rawurlencode(stripslashes($input["ocs_db_passwd"]));
-         $input["ocs_db_passwd"] = Toolbox::encrypt(stripslashes($input["ocs_db_passwd"]),
+         $input["ocs_db_passwd"] = Toolbox::sodiumEncrypt(stripslashes($input["ocs_db_passwd"]),
                                                     GLPIKEY);
       } else {
          unset($input["ocs_db_passwd"]);
@@ -1876,12 +1875,12 @@ JAVASCRIPT;
          if ($config['conn_type'] == self::CONN_TYPE_DB) {
             return new PluginOcsinventoryngOcsDbClient(
                $serverId, $config['ocs_db_host'], $config['ocs_db_user'],
-               Toolbox::decrypt($config['ocs_db_passwd'], GLPIKEY), $config['ocs_db_name']
+               Toolbox::sodiumDecrypt($config['ocs_db_passwd'], GLPIKEY), $config['ocs_db_name']
             );
          } else {
             return new PluginOcsinventoryngOcsSoapClient(
                $serverId, $config['ocs_db_host'], $config['ocs_db_user'],
-               Toolbox::decrypt($config['ocs_db_passwd'], GLPIKEY)
+               Toolbox::sodiumDecrypt($config['ocs_db_passwd'], GLPIKEY)
             );
          }
       }
