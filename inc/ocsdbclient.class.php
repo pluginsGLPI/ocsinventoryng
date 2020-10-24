@@ -1320,7 +1320,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
       $query                                  = "SELECT COUNT(*) FROM `deleted_equiv`";
       $total_count                            = $this->db->query($query);
-      $total                                  = $this->db->fetch_row($total_count);
+      $total                                  = $this->db->fetchRow($total_count);
 
       return intval($total['0']);
    }
@@ -1333,7 +1333,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 //      if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
          $query                                  = "SELECT COUNT(*) FROM `deleted_equiv`";
          $total_count                            = $this->db->query($query);
-         $total                                  = $this->db->fetch_row($total_count);
+         $total                                  = $this->db->fetchRow($total_count);
          $_SESSION["ocs_deleted_equiv"]["total"] = intval($total['0']);
 //      }
       $count   = 0;
