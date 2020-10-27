@@ -220,7 +220,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
 
          $device = new Item_OperatingSystem();
 
-         if ($force) {
+         if ($force || $computerOS != $hardware["OSNAME"]) {
             self::resetOS($options['computers_id'], $uninstall_history);
          }
 
