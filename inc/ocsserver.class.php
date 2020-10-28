@@ -1875,12 +1875,12 @@ JAVASCRIPT;
          if ($config['conn_type'] == self::CONN_TYPE_DB) {
             return new PluginOcsinventoryngOcsDbClient(
                $serverId, $config['ocs_db_host'], $config['ocs_db_user'],
-               Toolbox::sodiumDecrypt($config['ocs_db_passwd'], GLPIKEY), $config['ocs_db_name']
+               Toolbox::sodiumDecrypt($config['ocs_db_passwd']), $config['ocs_db_name']
             );
          } else {
             return new PluginOcsinventoryngOcsSoapClient(
                $serverId, $config['ocs_db_host'], $config['ocs_db_user'],
-               Toolbox::sodiumDecrypt($config['ocs_db_passwd'], GLPIKEY)
+               Toolbox::sodiumDecrypt($config['ocs_db_passwd'])
             );
          }
       }
