@@ -414,7 +414,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
       }
       $result = $DB->query($sql);
 
-      return ($result ? $DB->affected_rows() : -1);
+      return ($result ? $DB->affectedRows() : -1);
    }
 
 

@@ -185,7 +185,7 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
    public function testSetChecksum($checksum, $id)
    {
       $this->client->setChecksum(56, $GLOBALS['idexist']);
-      $res = $this->client->getDB()->affected_rows();
+      $res = $this->client->getDB()->affectedRows();
       $this->assertEquals(1, $res);
       $this->client->setChecksum($GLOBALS['checksum'], $GLOBALS['idexist']);
    }
@@ -336,7 +336,7 @@ class ocsdbclientTest extends PHPUnit_Framework_TestCase
    public function testFalseSetChecksum($checksum, $id)
    {
       $this->client->setChecksum(0, $GLOBALS['idnotexist']);
-      $res = $this->client->getDB()->affected_rows();
+      $res = $this->client->getDB()->affectedRows();
       $this->assertEquals(0, $res);
    }
 
