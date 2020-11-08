@@ -448,7 +448,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $lock                                = $process_params["lock"];
       $defaultentity                       = (isset($process_params["defaultentity"])) ? $process_params["defaultentity"] : -1;
       $defaultrecursive                    = (isset($process_params["defaultrecursive"])) ? $process_params["defaultrecursive"] : 0;
-
+      $disable_unicity_check               = (isset($process_params["disable_unicity_check"])) ? $process_params["disable_unicity_check"] : false;
 
       $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
@@ -478,7 +478,10 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                            'lock'                                => $lock,
                            'defaultentity'                       => $defaultentity,
                            'defaultrecursive'                    => $defaultrecursive,
-                           'cfg_ocs'                             => $cfg_ocs];
+                           'cfg_ocs'                             => $cfg_ocs,
+                           'disable_unicity_check'               => $disable_unicity_check];
+
+
          return self::importComputer($import_params);
       }
 
@@ -499,10 +502,11 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $defaultentity                       = $import_params["defaultentity"];
       $defaultrecursive                    = $import_params["defaultrecursive"];
       $cfg_ocs                             = $import_params["cfg_ocs"];
+      $disable_unicity_check               = $import_params["disable_unicity_check"];
 
       //      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
-            $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
-      $comp = new Computer();
+      $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+      $comp    = new Computer();
 
       $rules_matched = [];
       $ocsClient     = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
@@ -596,7 +600,10 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
             $ocsClient->setChecksum(PluginOcsinventoryngOcsClient::CHECKSUM_ALL, $ocsid);
 
             //ADD IF NOT LINKED
-            $computers_id = $comp->add($input, ['unicity_error_message' => false]);
+            //disable_unicity_check
+            $opt['unicity_error_message'] = false;
+            $opt['disable_unicity_check'] = $disable_unicity_check;
+            $computers_id                 = $comp->add($input, $opt);
             if ($computers_id) {
                if ($cfg_ocs['dohistory'] == 1) {
                   $ocsid      = $computer['META']['ID'];
@@ -653,7 +660,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $plugin_ocsinventoryng_ocsservers_id = $link_params["plugin_ocsinventoryng_ocsservers_id"];
       $computers_id                        = $link_params["computers_id"];
 
-//      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+      //      PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       $cfg_ocs   = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
@@ -772,7 +779,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                             'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                             'cfg_ocs'                             => $cfg_ocs,
                             'force'                               => 1];
-//            self::synchronizeComputer($sync_params, false);
+            //            self::synchronizeComputer($sync_params, false);
             return true;
          }
       } else {
@@ -904,7 +911,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                              WHERE `id` = $ID";
             $DB->query($query);
             //Add  || $data_ocs["META"]["CHECKSUM"] > self::MAX_CHECKSUM for bug of checksum 18446744073689088230
-//            Toolbox::logWarning(intval($cfg_ocs["checksum"]));
+            //            Toolbox::logWarning(intval($cfg_ocs["checksum"]));
 
             if ($force || $computer_ocs["META"]["CHECKSUM"] > self::MAX_CHECKSUM) {
                $ocs_checksum = self::MAX_CHECKSUM;
@@ -1117,7 +1124,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                }
                if ($cfg_ocs["import_bitlocker"]) {
                   $updates['bitlockerstatus'] = true;
-                  $ocsPlugins[]         = PluginOcsinventoryngOcsClient::PLUGINS_BITLOCKER;
+                  $ocsPlugins[]               = PluginOcsinventoryngOcsClient::PLUGINS_BITLOCKER;
                }
                if ($cfg_ocs["import_networkshare"]) {
                   $updates['networkshare'] = true;
@@ -1421,7 +1428,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
     * @internal param the $plugin_ocsinventoryng_ocsservers_id ID of the OCS server
     */
    static function getGeneralIpAddress($plugin_ocsinventoryng_ocsservers_id, $computers_id) {
-      if(!PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)){
+      if (!PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
          return '';
       }
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);

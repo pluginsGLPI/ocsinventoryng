@@ -76,12 +76,20 @@ if (isset($_SESSION["ocs_import"]["id"])) {
       } else {
          $recursive = -1;
       }
+
+      if (isset($_SESSION["ocs_import"]["disable_unicity_check"][$key])) {
+         $disable_unicity_check = $_SESSION["ocs_import"]["disable_unicity_check"][$key];
+      } else {
+         $disable_unicity_check = false;
+      }
+
       if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
          $process_params = ['ocsid'                               => $key,
                             'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                             'lock'                                => 0,
                             'defaultentity'                       => $entity,
-                            'defaultrecursive'                    => $recursive];
+                            'defaultrecursive'                    => $recursive,
+                            'disable_unicity_check'               => $disable_unicity_check];
          $action         = PluginOcsinventoryngOcsProcess::processComputer($process_params);
       }
       PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_import"]['statistics'],
@@ -117,13 +125,13 @@ if (!isset($_POST["import_ok"])) {
    if (isset($_SESSION["ocs_import"])) {
       unset($_SESSION["ocs_import"]);
    }
-   $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-   $deleted_pcs   = $ocsClient->getTotalDeletedComputers();
+   $ocsClient   = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+   $deleted_pcs = $ocsClient->getTotalDeletedComputers();
    if ($deleted_pcs > 0) {
       echo "<div class='center'>";
       echo "<span style='color:firebrick'>";
       echo "<i class='fas fa-exclamation-triangle fa-5x'></i><br><br>";
-      echo __('You have', 'ocsinventoryng')." ". $deleted_pcs . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng');
+      echo __('You have', 'ocsinventoryng') . " " . $deleted_pcs . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng');
       echo "<br>";
       echo __('Please clean them before import or synchronize computers', 'ocsinventoryng');
       echo "</span></div>";
@@ -151,6 +159,9 @@ if (!isset($_POST["import_ok"])) {
             }
             if (isset($_POST['toimport_recursive'])) {
                $_SESSION["ocs_import"]["is_recursive"][$key] = $_POST['toimport_recursive'][$key];
+            }
+            if (isset($_POST['toimport_disable_unicity_check'])) {
+               $_SESSION["ocs_import"]["disable_unicity_check"][$key] = $_POST['toimport_disable_unicity_check'][$key];
             }
             $_SESSION["ocs_import_count"]++;
          }

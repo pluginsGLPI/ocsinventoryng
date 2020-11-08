@@ -2631,7 +2631,7 @@ JAVASCRIPT;
                echo "<table class='tab_cadrehov'>";
 
                if ($usecheckbox) {
-                  $nb_cols = 6;
+                  $nb_cols = 7;
                   if ($advanced && !$tolinked) {
                      $nb_cols += 3;
                   }
@@ -2662,6 +2662,7 @@ JAVASCRIPT;
                echo "<th>" . _n('Information', 'Informations', 2) . "</th>\n";
                echo "<th>" . __('Last OCSNG inventory date', 'ocsinventoryng') . "</th>\n";
                echo "<th>" . __('OCSNG TAG', 'ocsinventoryng') . "</th>\n";
+               echo "<th>" . __('Override unicity check ?', 'ocsinventoryng') . "</th>\n";
                if ($advanced && !$tolinked) {
                   echo "<th>" . __('Match the rule ?', 'ocsinventoryng') . "</th>\n";
                   echo "<th>" . __('Destination entity') . "</th>\n";
@@ -2754,6 +2755,11 @@ JAVASCRIPT;
 
                   echo "<td>" . Html::convDateTime($tab["date"]) . "</td>\n";
                   echo "<td>" . $tab["TAG"] . "</td>\n";
+                  echo "<td>";
+                  $rec = "toimport_disable_unicity_check[" . $tab["id"] . "]";
+                  Dropdown::showYesNo($rec);
+                  echo "</td>\n";
+
                   if ($advanced && !$tolinked) {
                      if (!isset($data['entities_id']) || $data['entities_id'] == -1) {
                         echo "<td class='center'><i style='color:firebrick' class='fas fa-times-circle'></i></td>\n";

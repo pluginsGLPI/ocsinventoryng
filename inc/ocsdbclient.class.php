@@ -1353,7 +1353,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          $res = [];
       }
 //      $_SESSION["ocs_deleted_equiv"]["deleted"] = 0;
-      if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
+      if (empty($_SESSION["ocs_deleted_equiv"]["deleted"])) {
          $_SESSION["ocs_deleted_equiv"]["deleted"] = $count;
       } else {
          $_SESSION["ocs_deleted_equiv"]["deleted"] += $count;
