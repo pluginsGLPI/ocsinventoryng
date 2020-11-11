@@ -524,6 +524,19 @@ function plugin_ocsinventoryng_install() {
 
       $migration->executeMigration();
 
+      /******************* Migration 1.7.2 *******************/
+      // encrypt existing keys if not yet encrypted
+      // if it can be base64 decoded then json decoded, we can consider that it was not encrypted
+      $ocsserver = new PluginOcsinventoryngOcsServer();
+      $dbu    = new DbUtils();
+      foreach ($dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_ocsservers') as $ocs) {
+         if (($b64_decoded = base64_decode($ocs["ocs_db_passwd"], true)) !== false
+             && json_decode($b64_decoded, true) !== null) {
+            $ocsserver->update(['id'            => $ocs['id'],
+                                'ocs_db_passwd' => Toolbox::sodiumEncrypt($ocs["ocs_db_passwd"])]);
+         }
+      }
+
    }
    //Notifications
    addNotifications();
