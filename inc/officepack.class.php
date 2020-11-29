@@ -83,7 +83,7 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
             $id = array_search($softwareversions_id, $imported_licences);
 
             $software_licenses     = new SoftwareLicense();
-            $item_softwarelicenses = new Item_SoftwareVersion();
+            $item_softwarelicenses = new Item_SoftwareLicense();
             if ($id) {
                //-------------------------------------------------------------------------//
                //---- The software exists in this license for this computer --------------//
