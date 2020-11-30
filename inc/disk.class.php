@@ -51,7 +51,9 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
     * @param $computers_id integer : glpi computer id.
     * @param $ocsComputer
     * @param $ocsservers_id integer : ocs server id
-    * @param $history_drives
+    * @param $bitlockerstatus
+    * @param $ocsBitlockerStatus
+    * @param $cfg_ocs
     * @param $force
     *
     * @return void .

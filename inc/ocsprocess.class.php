@@ -1123,7 +1123,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                   $ocsPlugins[]         = PluginOcsinventoryngOcsClient::PLUGINS_OSINSTALL;
                }
                if ($cfg_ocs["import_bitlocker"]) {
-                  $updates['bitlockerstatus'] = true;
+                  $updates['bitlocker'] = true;
                   $ocsPlugins[]               = PluginOcsinventoryngOcsClient::PLUGINS_BITLOCKER;
                }
                if ($cfg_ocs["import_networkshare"]) {
@@ -1312,7 +1312,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                   //import drives
                   PluginOcsinventoryngDisk::updateDisk($line['computers_id'], $ocsComputer["DRIVES"],
                                                        $plugin_ocsinventoryng_ocsservers_id,
-                                                       $updates['bitlockerstatus'],
+                                                       $updates['bitlocker'],
                      (isset($ocsComputer['BITLOCKERSTATUS']) ? $ocsComputer['BITLOCKERSTATUS'] : []),
                                                        $cfg_ocs, $force);
                }
