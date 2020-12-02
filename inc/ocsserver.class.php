@@ -1644,8 +1644,7 @@ JAVASCRIPT;
 
       if (isset($input["ocs_db_passwd"]) && !empty($input["ocs_db_passwd"])) {
          $input["ocs_db_passwd"] = rawurlencode(stripslashes($input["ocs_db_passwd"]));
-         $input["ocs_db_passwd"] = Toolbox::sodiumEncrypt(stripslashes($input["ocs_db_passwd"]),
-                                                    GLPIKEY);
+         $input["ocs_db_passwd"] = Toolbox::sodiumEncrypt(stripslashes($input["ocs_db_passwd"]));
       } else {
          unset($input["ocs_db_passwd"]);
       }
