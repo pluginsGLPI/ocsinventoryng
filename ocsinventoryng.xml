@@ -29,6 +29,10 @@
     </authors>
     <versions>
         <version>
+            <num>1.7.3</num>
+            <compatibility>9.5</compatibility>
+        </version>
+        <version>
             <num>1.7.2</num>
             <compatibility>9.5</compatibility>
         </version>
