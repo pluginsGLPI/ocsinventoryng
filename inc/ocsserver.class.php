@@ -44,14 +44,14 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    public $dohistory = true;
 
    // Connection types
-   const CONN_TYPE_DB         = 0;
-   const CONN_TYPE_SOAP       = 1;
-   const OCS_VERSION_LIMIT    = 4020;
-   const OCS1_3_VERSION_LIMIT = 5004;
-   const OCS2_VERSION_LIMIT   = 6000;
-   const OCS2_1_VERSION_LIMIT = 7006;
-   const OCS2_2_VERSION_LIMIT = 7009;
-   const OCS2_7_VERSION_LIMIT = 7030;
+   const CONN_TYPE_DB           = 0;
+   const CONN_TYPE_SOAP         = 1;
+   const OCS_VERSION_LIMIT      = 4020;
+   const OCS1_3_VERSION_LIMIT   = 5004;
+   const OCS2_VERSION_LIMIT     = 6000;
+   const OCS2_1_VERSION_LIMIT   = 7006;
+   const OCS2_2_VERSION_LIMIT   = 7009;
+   const OCS2_7_VERSION_LIMIT   = 7030;
    const ACTION_PURGE_COMPUTER  = 0; // Action cronCleanOldAgents : Purge computer
    const ACTION_DELETE_COMPUTER = 1; // Action cronCleanOldAgents : delete computer
 
@@ -1998,11 +1998,28 @@ JAVASCRIPT;
       }
       $canedit = Session::haveRight("plugin_ocsinventoryng_clean", UPDATE);
 
+      // ocslinks ocsid
+      $query  =
+         "SELECT `ocsid` " .
+         "FROM `glpi_plugin_ocsinventoryng_ocslinks` " .
+         "WHERE `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id" .
+         (new DbUtils())->getEntitiesRestrictRequest(" AND", "glpi_plugin_ocsinventoryng_ocslinks");
+      $result = $DB->query($query);
+      $ocsids = [];
+      if ($DB->numrows($result) > 0) {
+         while ($data = $DB->fetchAssoc($result)) {
+            $ocsids[] = $data['ocsid'];
+         }
+      }
+
       // Select unexisting OCS hardware
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
       $computerOptions = [
          'COMPLETE' => '0',
+         'FILTER'   => [
+            'IDS' => $ocsids,
+         ]
       ];
 
       $computers = $ocsClient->getComputers($computerOptions);
@@ -2015,21 +2032,28 @@ JAVASCRIPT;
          $hardware = [];
       }
 
-      $query  = "SELECT `ocsid`
-                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                WHERE `plugin_ocsinventoryng_ocsservers_id`
-                           = $plugin_ocsinventoryng_ocsservers_id";
-      $result = $DB->query($query);
+      //      $query  = "SELECT `ocsid`
+      //                FROM `glpi_plugin_ocsinventoryng_ocslinks`
+      //                WHERE `plugin_ocsinventoryng_ocsservers_id`
+      //                           = $plugin_ocsinventoryng_ocsservers_id";
+      //      $result = $DB->query($query);
 
       $ocs_missing = [];
-      if ($DB->numrows($result) > 0) {
-         while ($data = $DB->fetchArray($result)) {
-            $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
-            if (!isset($hardware[$data["ocsid"]])) {
-               $ocs_missing[$data["ocsid"]] = $data["ocsid"];
-            }
+      //      if ($DB->numrows($result) > 0) {
+      //         while ($data = $DB->fetchArray($result)) {
+      //            $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
+      //            if (!isset($hardware[$data["ocsid"]])) {
+      //               $ocs_missing[$data["ocsid"]] = $data["ocsid"];
+      //            }
+      //         }
+      //      }
+
+      foreach ($ocsids as $id) {
+         if (!isset($hardware[$id])) {
+            $ocs_missing[$id] = $id;
          }
       }
+
 
       //Select unexisting computers
       $query_glpi = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`entities_id` AS entities_id,
@@ -2170,47 +2194,44 @@ JAVASCRIPT;
       $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
       // Get linked computer ids in GLPI
-      $already_linked_query  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid
-                               FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                               WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
-                                            = $plugin_ocsinventoryng_ocsservers_id";
-      $already_linked_result = $DB->query($already_linked_query);
+      //      $already_linked_query  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid
+      //                               FROM `glpi_plugin_ocsinventoryng_ocslinks`
+      //                               WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
+      //                                            = $plugin_ocsinventoryng_ocsservers_id" .
+      //                               (new DbUtils())->getEntitiesRestrictRequest(" AND", "glpi_plugin_ocsinventoryng_ocslinks");
+      //      $already_linked_result = $DB->query($already_linked_query);
 
-      if ($DB->numrows($already_linked_result) == 0) {
-         echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
-         echo "<br><a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
-         echo __('Back');
-         echo "</a>";
-         echo "</div>";
-         return;
-      }
+      //      if ($DB->numrows($already_linked_result) == 0) {
+      //         echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
+      //         echo "<br><a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
+      //         echo __('Back');
+      //         echo "</a>";
+      //         echo "</div>";
+      //         return;
+      //      }
 
-      $already_linked_ids = [];
-      while ($data = $DB->fetchAssoc($already_linked_result)) {
-         $already_linked_ids [] = $data['ocsid'];
-      }
+      //      $already_linked_ids = [];
+      //      while ($data = $DB->fetchAssoc($already_linked_result)) {
+      //         $already_linked_ids [] = $data['ocsid'];
+      //      }
 
-      $query    = "SELECT MAX(`last_ocs_update`)
-                   FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                   WHERE `plugin_ocsinventoryng_ocsservers_id`=$plugin_ocsinventoryng_ocsservers_id";
-      $max_date = "0000-00-00 00:00:00";
-      if ($result = $DB->query($query)) {
-         if ($DB->numrows($result) > 0) {
-            $max_date = $DB->result($result, 0, 0);
-         }
-      }
+      $server = new PluginOcsinventoryngServer();
+      $server->getFromDBbyOcsServer($plugin_ocsinventoryng_ocsservers_id);
+      $max_date = $server->fields["max_glpidate"];
 
       // Fetch linked computers from ocs
       $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
       $ocsResult = $ocsClient->getComputers([
-                                               'ORDER'    => 'LASTDATE',
-                                               'COMPLETE' => '0',
-                                               'FILTER'   => [
-                                                  'IDS'      => $already_linked_ids,
-                                                  'CHECKSUM' => $cfg_ocs["checksum"],
+                                               'OFFSET'      => $start,
+                                               'MAX_RECORDS' => $_SESSION['glpilist_limit'],
+                                               'ORDER'       => 'LASTDATE',
+                                               'COMPLETE'    => '0',
+                                               'FILTER'      => [
+                                                  //                                                  'IDS'               => $already_linked_ids,
+                                                  'CHECKSUM'          => $cfg_ocs["checksum"],
                                                   //'INVENTORIED_BEFORE' => 'NOW()',
-                                                  //'INVENTORIED_SINCE' => $max_date,
+                                                  'INVENTORIED_SINCE' => $max_date,
                                                ]
                                             ]);
 
@@ -2219,19 +2240,13 @@ JAVASCRIPT;
             // Get all ids of the returned computers
             $ocs_computer_ids = [];
             $hardware         = [];
-            $computers        = array_slice($ocsResult['COMPUTERS'], $start, $_SESSION['glpilist_limit']);
+            //            $computers        = array_slice($ocsResult['COMPUTERS'], $start, $_SESSION['glpilist_limit']);
+            $computers = $ocsResult['COMPUTERS'];
             foreach ($computers as $computer) {
                $ID                  = $computer['META']['ID'];
                $ocs_computer_ids [] = $ID;
 
-               $hardware[$ID]["date"]     = $computer['META']["LASTDATE"];
-               $hardware[$ID]["checksum"] = $computer['META']["CHECKSUM"];
-               $hardware[$ID]["tag"]      = $computer['META']["TAG"];
-               $hardware[$ID]["name"]     = addslashes($computer['META']["NAME"]);
-            }
-
-            // Fetch all linked computers from GLPI that were returned from OCS
-            $query_glpi  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` AS last_update,
+               $query_glpi  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` AS last_update,
                                   `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` AS computers_id,
                                   `glpi_computers`.`serial` AS serial,
                                   `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid,
@@ -2242,36 +2257,32 @@ JAVASCRIPT;
                            LEFT JOIN `glpi_computers` ON (`glpi_computers`.`id`= `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`)
                            WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
                                        = $plugin_ocsinventoryng_ocsservers_id
-                                  AND `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` IN (" . implode(',', $ocs_computer_ids) . ")
+                                  AND `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` = $ID
                            ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` DESC,
                                     `last_update`,
                                     `name`";
-            $result_glpi = $DB->query($query_glpi);
-
-            // Get all links between glpi and OCS
-            $already_linked = [];
-            if ($DB->numrows($result_glpi) > 0) {
-               while ($data = $DB->fetchAssoc($result_glpi)) {
-                  $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
-                  if (isset($hardware[$data["ocsid"]])) {
-                     $already_linked[$data["ocsid"]]["date"] = $data["last_update"];
-                     $already_linked[$data["ocsid"]]["name"] = $data["name"];
-                     if ($_SESSION["glpiis_ids_visible"] || empty($data["name"])) {
-                        $already_linked[$data["ocsid"]]["name"] = sprintf(__('%1$s (%2$s)'), $data["name"], $data["id"]);
-                     }
-                     $already_linked[$data["ocsid"]]["id"]              = $data["id"];
-                     $already_linked[$data["ocsid"]]["computers_id"]    = $data["computers_id"];
-                     $already_linked[$data["ocsid"]]["serial"]          = $data["serial"];
-                     $already_linked[$data["ocsid"]]["ocsid"]           = $data["ocsid"];
-                     $already_linked[$data["ocsid"]]["use_auto_update"] = $data["use_auto_update"];
+               $result_glpi = $DB->query($query_glpi);
+               if ($DB->numrows($result_glpi) > 0) {
+                  while ($data = $DB->fetchAssoc($result_glpi)) {
+                     $hardware[$ID]["date"]     = $computer['META']["LASTDATE"];
+                     $hardware[$ID]["checksum"] = $computer['META']["CHECKSUM"];
+                     $hardware[$ID]["tag"]      = $computer['META']["TAG"];
+                     $hardware[$ID]["name"]     = addslashes($computer['META']["NAME"]);
+                     $hardware[$ID]["computers_id"] = $data["computers_id"];
+                     $hardware[$ID]["serial"]       = $data["serial"];
+                     $hardware[$ID]["ocsid"]        = $data["ocsid"];
+                     $hardware[$ID]["last_update"]  = $data["last_update"];
+                     $hardware[$ID]["id"]           = $data["id"];
                   }
                }
             }
+
             echo "<div class='center'>";
             echo "<h2>" . __('Computers updated in OCSNG', 'ocsinventoryng') . "</h2>";
 
-            $target = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng/front/ocsng.sync.php';
-            if (($numrows = $ocsResult['TOTAL_COUNT']) > 0) {
+            $target  = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng/front/ocsng.sync.php';
+            $numrows = count($hardware);
+            if ($numrows > 0) {
                $parameters = "check=$check";
                Html::printPager($start, $numrows, $target, $parameters);
 
@@ -2297,13 +2308,12 @@ JAVASCRIPT;
                   echo "<th>" . __('DEBUG') . "</th>";
                }
                echo "<th>&nbsp;</th></tr>\n";
-
-               foreach ($already_linked as $ID => $tab) {
+               foreach ($hardware as $ID => $tab) {
                   echo "<tr class='tab_bg_2 center'>";
                   echo "<td><a href='" . $CFG_GLPI["root_doc"] . "/front/computer.form.php?id=" .
                        $tab["computers_id"] . "'>" . $tab["name"] . "</a></td>\n";
                   echo "<td>" . $tab["serial"] . "</td>\n";
-                  echo "<td>" . Html::convDateTime($tab["date"]) . "</td>\n";
+                  echo "<td>" . Html::convDateTime($tab["last_update"]) . "</td>\n";
                   echo "<td>" . Html::convDateTime($hardware[$tab["ocsid"]]["date"]) . "</td>\n";
                   echo "<td>" . $hardware[$tab["ocsid"]]["tag"] . "</td>\n";
 
@@ -2311,7 +2321,7 @@ JAVASCRIPT;
                      echo "<td>";
                      $checksum_server = intval($cfg_ocs["checksum"]);
                      $checksum_client = intval($hardware[$tab["ocsid"]]["checksum"]);
-                     if ($checksum_client > 0
+                     if ($checksum_server > 0
                          && $checksum_client > 0
                      ) {
                         $result = $checksum_server & $checksum_client;
@@ -2337,6 +2347,12 @@ JAVASCRIPT;
                Html::printPager($start, $numrows, $target, $parameters);
             } else {
                echo "<br><span class='b'>" . __('Update computers', 'ocsinventoryng') . "</span>";
+               echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
+               echo "<br><a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
+               echo __('Back');
+               echo "</a>";
+               echo "</div>";
+
             }
             echo "</div>";
          } else {
@@ -2425,7 +2441,6 @@ JAVASCRIPT;
                           'DISPLAY'  => [
                              'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS
                           ],
-                          'ORDER'    => 'NAME'
       ];
       if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
          $computerOptions['FILTER']['TAGS'] = $tag_limit;
@@ -2515,15 +2530,13 @@ JAVASCRIPT;
          }
       }
       //end first pass for exclude ID if no linked
-      $computerOptions = ['ORDER'    => 'LASTDATE',
-                          'COMPLETE' => '0',
+      $computerOptions = ['COMPLETE' => '0',
                           'FILTER'   => [
                              'EXCLUDE_IDS' => array_merge($already_linked, $exlude_ids)
                           ],
                           'DISPLAY'  => [
                              'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS
                           ],
-                          'ORDER'    => 'NAME'
       ];
 
       if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
@@ -2534,8 +2547,8 @@ JAVASCRIPT;
          $computerOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
       }
 
-      $ocsClient    = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-      $allComputers = $ocsClient->countComputers($computerOptions);
+      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $numrows   = $ocsClient->countComputers($computerOptions);
 
       if ($start != 0) {
          $computerOptions['OFFSET'] = $start;
@@ -2596,7 +2609,7 @@ JAVASCRIPT;
             }
             echo "<div class='center'>";
 
-            if ($numrows = count($allComputers)) {
+            if ($numrows) {
 
                $parameters = "check=$check";
                Html::printPager($start, $numrows, $target, $parameters);
@@ -3160,17 +3173,47 @@ JAVASCRIPT;
          }
          PluginOcsinventoryngOcsProcess::manageDeleted($plugin_ocsinventoryng_ocsservers_id, false);
 
-         $query    = "SELECT MAX(`last_ocs_update`)
-                   FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                   WHERE `plugin_ocsinventoryng_ocsservers_id`= $plugin_ocsinventoryng_ocsservers_id";
-         $max_date = "0000-00-00 00:00:00";
-         if ($result = $DB->query($query)) {
-            if ($DB->numrows($result) > 0) {
-               $max_date = $DB->result($result, 0, 0);
+         //         $query    = "SELECT MAX(`last_ocs_update`)
+         //                   FROM `glpi_plugin_ocsinventoryng_ocslinks`
+         //                   WHERE `plugin_ocsinventoryng_ocsservers_id`= $plugin_ocsinventoryng_ocsservers_id";
+         //         $max_date = "0000-00-00 00:00:00";
+         //         if ($result = $DB->query($query)) {
+         //            if ($DB->numrows($result) > 0) {
+         //               $max_date = $DB->result($result, 0, 0);
+
+         // Get linked computer ids in GLPI
+         $already_linked_query  =
+            "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid " .
+            "FROM `glpi_plugin_ocsinventoryng_ocslinks` " .
+            "INNER JOIN `glpi_computers` on `glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` " .
+            "WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
+         $already_linked_result = $DB->query($already_linked_query);
+
+         $already_linked_ids = [];
+         if ($DB->numrows($already_linked_result) > 0)
+            while ($data = $DB->fetchAssoc($already_linked_result))
+               $already_linked_ids [] = $data['ocsid'];
+
+         // Fetch linked computers from ocs
+         $res = [];
+         if (count($already_linked_ids) > 0) {
+            $ocsResult = $PluginOcsinventoryngDBocs->getComputers([
+                                                                     'MAX_RECORDS' => $cfg_ocs["cron_sync_number"],
+                                                                     'ORDER'       => 'LASTDATE',
+                                                                     'COMPLETE'    => '0',
+                                                                     'FILTER'      => [
+                                                                        'IDS'      => $already_linked_ids,
+                                                                        'CHECKSUM' => $cfg_ocs["checksum"],
+                                                                     ]
+                                                                  ]);
+
+            if (isset($ocsResult['COMPUTERS']) && count($ocsResult['COMPUTERS']) > 0) {
+               foreach ($ocsResult['COMPUTERS'] as $computer)
+                  $res[$computer['META']['ID']] = $computer['META'];
             }
          }
 
-         $res = $PluginOcsinventoryngDBocs->getComputersToUpdate($cfg_ocs, $max_date);
+         //         $res = $PluginOcsinventoryngDBocs->getComputersToUpdate($cfg_ocs, $max_date);
 
          $task->setVolume(0);
          if (count($res) > 0) {

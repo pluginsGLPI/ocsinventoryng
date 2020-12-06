@@ -727,14 +727,11 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    /**
     * @param array $options
     *
-    * @param int   $id
-    *
     * @return array
     * @throws \GlpitestSQLError
     * @see PluginOcsinventoryngOcsClient::getComputers()
-    *
     */
-   public function countComputers($options, $id = 0) {
+   public function countComputers($options) {
 
       if (isset($options['OFFSET'])) {
          $offset = "OFFSET  " . $options['OFFSET'];
@@ -745,11 +742,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          $max_records = "LIMIT  " . $options['MAX_RECORDS'];
       } else {
          $max_records = "";
-      }
-      if (isset($options['ORDER'])) {
-         $order = $options['ORDER'];
-      } else {
-         $order = " LASTDATE ";
       }
 
       if (isset($options['FILTER'])) {
@@ -848,37 +840,26 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       } else {
          $where_condition = "";
       }
-      $join = "";
-      if ((isset($filters['EXCLUDE_TAGS']) and $filters['EXCLUDE_TAGS']) ||
-          (isset($filters['TAGS']) and $filters['TAGS'])) {
-         $join = "LEFT JOIN `accountinfo` ON (`hardware`.`ID` = `accountinfo`.`HARDWARE_ID`) ";
-      }
 
-      if ($id > 0) {
-         $query = "SELECT count(DISTINCT `hardware`.`ID`) FROM `hardware` $join
-                           WHERE `hardware`.`ID` = $id
-                           $where_condition";
-      } else {
-         $query = "SELECT DISTINCT `hardware`.`ID` FROM `hardware` $join
-                           WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
-                           $where_condition
-                           ORDER BY $order
-                           $max_records $offset";
-      }
+      $query =
+         "SELECT count(DISTINCT `hardware`.`ID`) as total " .
+         "FROM `hardware` " .
+         "INNER JOIN `accountinfo` ON `accountinfo`.`HARDWARE_ID` = `hardware`.`ID` " .
+         "WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%' " .
+         "$where_condition
+          $max_records $offset";
+
       $request = $this->db->query($query);
 
       if ($this->db->numrows($request)) {
 
-         while ($hardwareid = $this->db->fetchAssoc($request)) {
-            $hardwareids[] = $hardwareid['ID'];
-         }
-         return $hardwareids;
-      } else {
+         $result = $this->db->fetchAssoc($request);
+         return $result['total'];
 
-         return [];
       }
 
-      return $res;
+      return ['total' => 0];
+
    }
 
    /**
@@ -993,7 +974,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
             $where_checksum = " AND (('" . $checksum . "' & `hardware`.`CHECKSUM`) > '0'";
             if (isset($filters['INVENTORIED_SINCE']) and $filters['INVENTORIED_SINCE']) {
                $since          = $filters['INVENTORIED_SINCE'];
-               $where_checksum .= " OR `hardware`.`LASTDATE` > '$since'";
+               $where_checksum .= " AND `hardware`.`LASTDATE` > '$since'";
             }
             $where_checksum .= ")";
          } else {
@@ -1007,31 +988,41 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       }
 
       if ($id > 0) {
-         $query = "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` 
-                  FROM `hardware`
-                     WHERE `hardware`.`ID` = $id
-                     $where_condition";
+         $query       =
+            "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` " .
+            "FROM `hardware` " .
+            "INNER JOIN `accountinfo` ON `accountinfo`.`HARDWARE_ID` = `hardware`.`ID` " .
+            "WHERE `hardware`.`ID` = $id " .
+            "$where_condition";
+         $count_query = null;
       } else {
-         $query = "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` 
-                  FROM `hardware`, `accountinfo`
-                     WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'
-                     AND `hardware`.`ID` = `accountinfo`.`HARDWARE_ID` $where_condition
-                     ORDER BY $order
-                     $max_records $offset";
+         $query       =
+            "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` " .
+            "FROM `hardware` " .
+            "INNER JOIN `accountinfo` ON `accountinfo`.`HARDWARE_ID` = `hardware`.`ID` " .
+            "WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%' " .
+            "$where_condition " .
+            "ORDER BY $order " .
+            "$max_records $offset";
+         $count_query =
+            "SELECT count(DISTINCT `hardware`.`ID`) as total " .
+            "FROM `hardware` " .
+            "INNER JOIN `accountinfo` ON `accountinfo`.`HARDWARE_ID` = `hardware`.`ID` " .
+            "WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%' " .
+            "$where_condition";
       }
       $request = $this->db->query($query);
 
-      if ($this->db->numrows($request)) {
+      if ($count_query) {
+         $count_request        = $this->db->query($count_query);
+         $count_request_result = $this->db->fetchAssoc($count_request);
+         $count                = $count_request_result['total'];
+      } else {
 
          $count = $this->db->numrows($request);
-         /*$query = "SELECT DISTINCT hardware.ID FROM hardware, accountinfo
-                           WHERE hardware.DEVICEID NOT LIKE '\\_%'
-                           AND hardware.ID = accountinfo.HARDWARE_ID
-                           $where_condition
-                           ORDER BY $order
-                           $max_records  $offset";
+      }
 
-         $request = $this->db->query($query);*/
+      if ($count) {
          $this->getAccountInfoColumns();
          while ($hardwareid = $this->db->fetchAssoc($request)) {
             $hardwareids[] = $hardwareid['ID'];
@@ -1318,9 +1309,9 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     */
    public function getTotalDeletedComputers() {
 
-      $query                                  = "SELECT COUNT(*) FROM `deleted_equiv`";
-      $total_count                            = $this->db->query($query);
-      $total                                  = $this->db->fetchRow($total_count);
+      $query       = "SELECT COUNT(*) FROM `deleted_equiv`";
+      $total_count = $this->db->query($query);
+      $total       = $this->db->fetchRow($total_count);
 
       return intval($total['0']);
    }
@@ -1330,12 +1321,12 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     */
    public function getDeletedComputers() {
 
-//      if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
-         $query                                  = "SELECT COUNT(*) FROM `deleted_equiv`";
-         $total_count                            = $this->db->query($query);
-         $total                                  = $this->db->fetchRow($total_count);
-         $_SESSION["ocs_deleted_equiv"]["total"] = intval($total['0']);
-//      }
+      //      if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
+      $query                                  = "SELECT COUNT(*) FROM `deleted_equiv`";
+      $total_count                            = $this->db->query($query);
+      $total                                  = $this->db->fetchRow($total_count);
+      $_SESSION["ocs_deleted_equiv"]["total"] = intval($total['0']);
+      //      }
       $count   = 0;
       $query   = "SELECT `DATE`,`DELETED`,`EQUIVALENT` 
                   FROM `deleted_equiv` ORDER BY `DATE`,`EQUIVALENT` 
@@ -1352,7 +1343,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       } else {
          $res = [];
       }
-//      $_SESSION["ocs_deleted_equiv"]["deleted"] = 0;
+      //      $_SESSION["ocs_deleted_equiv"]["deleted"] = 0;
       if (empty($_SESSION["ocs_deleted_equiv"]["deleted"])) {
          $_SESSION["ocs_deleted_equiv"]["deleted"] = $count;
       } else {

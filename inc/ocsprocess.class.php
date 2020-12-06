@@ -454,7 +454,9 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
 
       //Check it machine is already present AND was imported by OCS AND still present in GLPI
-      $query  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`id`, `computers_id`, `ocsid`
+      $query  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`id`, 
+                        `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`,  
+                        `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid`
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 LEFT JOIN `glpi_computers`
                      ON `glpi_computers`.`id`=`glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`
@@ -852,7 +854,13 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $force                               = $sync_params["force"];
       $cfg_ocs                             = $sync_params["cfg_ocs"];
 
-      $query  = "SELECT `ocsid`, `computers_id`, `plugin_ocsinventoryng_ocsservers_id`, `entities_id`, `computer_update`, `tag`
+      $query  = "SELECT `ocsid`, 
+                        `computers_id`, 
+                         `plugin_ocsinventoryng_ocsservers_id`, 
+                         `entities_id`, 
+                         `computer_update`, 
+                         `tag`,
+                         `last_update`
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `id` = $ID
                 AND `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
@@ -873,7 +881,9 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
          ];
          $computer_ocs = $ocsClient->getComputer($line['ocsid'], $options);
 
-         if (is_array($computer_ocs) && count($computer_ocs) > 0) {
+         if (is_array($computer_ocs)
+             && count($computer_ocs) > 0
+             && strtotime($computer_ocs["META"]["LASTDATE"]) > strtotime($line['last_update'])) {
             // automatic transfer computer
             if ($CFG_GLPI['transfers_id_auto'] > 0
                 && Session::isMultiEntitiesMode()
@@ -1124,7 +1134,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                }
                if ($cfg_ocs["import_bitlocker"]) {
                   $updates['bitlocker'] = true;
-                  $ocsPlugins[]               = PluginOcsinventoryngOcsClient::PLUGINS_BITLOCKER;
+                  $ocsPlugins[]         = PluginOcsinventoryngOcsClient::PLUGINS_BITLOCKER;
                }
                if ($cfg_ocs["import_networkshare"]) {
                   $updates['networkshare'] = true;

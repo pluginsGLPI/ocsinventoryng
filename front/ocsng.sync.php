@@ -91,7 +91,7 @@ if (!isset($_POST["update_ok"])) {
          echo __('You have', 'ocsinventoryng')." ". $deleted_pcs . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng');
          echo "<br>";
          echo __('Please clean them before import or synchronize computers', 'ocsinventoryng');
-         echo "</span></div>";
+         echo "</span></div><br>";
       }
       if ($display_list) {
          $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
