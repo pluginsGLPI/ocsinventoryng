@@ -827,7 +827,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          if (isset($filters['CHECKSUM']) and $filters['CHECKSUM']) {
             $checksum = $filters['CHECKSUM'];
 
-            $where_checksum = " AND (('" . $checksum . "' & `hardware`.`CHECKSUM`) > '0'";
+            $where_checksum = " AND (('" . $checksum . "' & `hardware`.`CHECKSUM`) > 1";
             if (isset($filters['INVENTORIED_SINCE']) and $filters['INVENTORIED_SINCE']) {
                $since          = $filters['INVENTORIED_SINCE'];
                $where_checksum .= " OR `hardware`.`LASTDATE` > '$since'";
@@ -971,7 +971,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          if (isset($filters['CHECKSUM']) and $filters['CHECKSUM']) {
             $checksum = $filters['CHECKSUM'];
 
-            $where_checksum = " AND (('" . $checksum . "' & `hardware`.`CHECKSUM`) > '0'";
+            $where_checksum = " AND (('" . $checksum . "' & `hardware`.`CHECKSUM`) > 1";
             if (isset($filters['INVENTORIED_SINCE']) and $filters['INVENTORIED_SINCE']) {
                $since          = $filters['INVENTORIED_SINCE'];
                $where_checksum .= " AND `hardware`.`LASTDATE` > '$since'";
@@ -1132,7 +1132,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       $query = "SELECT `hardware`.`ID`
               FROM `hardware`
               INNER JOIN `accountinfo` ON (`hardware`.`ID` = `accountinfo`.`HARDWARE_ID`)
-              WHERE ((`hardware`.`CHECKSUM` & " . $cfg_ocs["checksum"] . ") > 0
+              WHERE ((`hardware`.`CHECKSUM` & " . $cfg_ocs["checksum"] . ") > 1
                      OR `hardware`.`LASTDATE` > '$max_date') ";
 
       // workaround to avoid duplicate when synchro occurs during an inventory

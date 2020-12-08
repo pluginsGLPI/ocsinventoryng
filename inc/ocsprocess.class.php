@@ -675,6 +675,27 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
       $ocs_link_exists = false;
       $numrows         = $DB->numrows($result);
 
+      $options     = [
+         "DISPLAY" => [
+            "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS,
+         ]
+      ];
+      $ocsComputer = $ocsClient->getComputer($ocsid, $options);
+
+      $serial       = (isset($ocsComputer['BIOS']["SSN"])) ? $ocsComputer['BIOS']["SSN"] : "";
+      $ssnblacklist = Blacklist::getSerialNumbers();
+      if (in_array($serial, $ssnblacklist)) {
+         Session::addMessageAfterRedirect(sprintf(__('Unable to link this computer, Serial number is blacklisted (%d)', 'ocsinventoryng'), $ocsid), false, ERROR);
+         return false;
+      }
+
+      $uuid          = (isset($ocsComputer['META']["UUID"])) ? $ocsComputer['META']["UUID"] : "";
+      $uuidblacklist = Blacklist::getUUIDs();
+      if (in_array($uuid, $uuidblacklist)) {
+         Session::addMessageAfterRedirect(sprintf(__('Unable to link this computer, UUID is blacklisted (%d)', 'ocsinventoryng'), $ocsid), false, ERROR);
+         return false;
+      }
+
       // Already link - check if the OCS computer already exists
       if ($numrows > 0) {
          $ocs_link_exists = true;
@@ -700,26 +721,6 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                }
             }
          }
-      }
-      $options     = [
-         "DISPLAY" => [
-            "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS,
-         ]
-      ];
-      $ocsComputer = $ocsClient->getComputer($ocsid, $options);
-
-      $serial       = (isset($ocsComputer['BIOS']["SSN"])) ? $ocsComputer['BIOS']["SSN"] : "";
-      $ssnblacklist = Blacklist::getSerialNumbers();
-      if (in_array($serial, $ssnblacklist)) {
-         Session::addMessageAfterRedirect(sprintf(__('Unable to link this computer, Serial number is blacklisted (%d)', 'ocsinventoryng'), $ocsid), false, ERROR);
-         return false;
-      }
-
-      $uuid          = (isset($ocsComputer['META']["UUID"])) ? $ocsComputer['META']["UUID"] : "";
-      $uuidblacklist = Blacklist::getUUIDs();
-      if (in_array($uuid, $uuidblacklist)) {
-         Session::addMessageAfterRedirect(sprintf(__('Unable to link this computer, UUID is blacklisted (%d)', 'ocsinventoryng'), $ocsid), false, ERROR);
-         return false;
       }
 
       // No ocs_link or ocs id change does not exists so can link
@@ -883,7 +884,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
          if (is_array($computer_ocs)
              && count($computer_ocs) > 0
-             && strtotime($computer_ocs["META"]["LASTDATE"]) > strtotime($line['last_update'])) {
+             && (strtotime($computer_ocs["META"]["LASTDATE"]) > strtotime($line['last_update']) || $force)) {
             // automatic transfer computer
             if ($CFG_GLPI['transfers_id_auto'] > 0
                 && Session::isMultiEntitiesMode()

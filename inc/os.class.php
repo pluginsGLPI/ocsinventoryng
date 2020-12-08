@@ -88,7 +88,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
 
          if (intval($cfg_ocs["import_os_serial"]) > 0) {
             $locks["license_number"] = __('Serial of the operating system');
-            $locks["licenseid"]     = __('Product ID of the operating system');
+            $locks["licenseid"]      = __('Product ID of the operating system');
          }
 
       } else {
@@ -97,7 +97,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
                    "operatingsystemversions_id"      => __('Version of the operating system'),
                    'operatingsystemarchitectures_id' => __('Operating system architecture'),//Enable 9.1
                    "license_number"                  => __('Serial of the operating system'),
-                   "licenseid"                      => __('Product ID of the operating system')];
+                   "licenseid"                       => __('Product ID of the operating system')];
       }
 
       return $locks;
@@ -132,8 +132,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
 
          $hardware = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($options['HARDWARE']));
 
-         if ($options['check_history']) {
-            $sql_computer = "SELECT `glpi_operatingsystems`.`name` AS os_name,
+         $sql_computer = "SELECT `glpi_operatingsystems`.`name` AS os_name,
                                     `glpi_operatingsystemservicepacks`.`name` AS os_sp
                              FROM `glpi_computers`
                            LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks`
@@ -149,19 +148,12 @@ class PluginOcsinventoryngOS extends CommonDBChild {
                                    AND `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
                                           = $ocsServerId";
 
-            $res_computer = $DB->query($sql_computer);
+         $res_computer = $DB->query($sql_computer);
 
-            if ($DB->numrows($res_computer) == 1) {
-               $data_computer = $DB->fetchArray($res_computer);
-               $computerOS    = $data_computer["os_name"];
-               $computerOSSP  = $data_computer["os_sp"];
-
-               //Do not log software history in case of OS or Service Pack change
-               if ($computerOS != $hardware["OSNAME"]
-                   || $computerOSSP != $hardware["OSCOMMENTS"]) {
-                  $install_history = 0;
-               }
-            }
+         if ($DB->numrows($res_computer) == 1) {
+            $data_computer = $DB->fetchArray($res_computer);
+            $computerOS    = $data_computer["os_name"];
+            $computerOSSP  = $data_computer["os_sp"];
          }
 
          $updates        = 0;
@@ -225,23 +217,24 @@ class PluginOcsinventoryngOS extends CommonDBChild {
          }
 
          // Yllen: only check on items_id and itemtype because only one is allowed
-         if ($id = $device->getFromDBByCrit(['items_id'            => $options['computers_id'],
-                                             'itemtype'            => 'Computer'])) {
+         if ($id = $device->getFromDBByCrit(['items_id' => $options['computers_id'],
+                                             'itemtype' => 'Computer'])) {
             // Yllen: do update only if is_dynamic - no change if manual  
             if (($updates > 0) && ($device->fields['is_dynamic'] == 1)) {
                $device->update(['id'                              => $id,
+                                'operatingsystems_id'             => $operatingsystems_id,
                                 'operatingsystemversions_id'      => $operatingsystemversions_id,
                                 'operatingsystemservicepacks_id'  => $operatingsystemservicepacks_id,
                                 'operatingsystemarchitectures_id' => $operatingsystemarchitectures_id,
                                 'license_number'                  => $license_number,
-                                'licenseid'                      => $license_id,
+                                'licenseid'                       => $license_id,
                                 '_nolock'                         => true,
                                 'is_deleted'                      => 0, // Yllen: restoreFromTrash
                                 'entities_id'                     => $options['entities_id']
                                ], $install_history);
             }
          } else {
-            
+
             // Yllen: fix multiple
             self::resetOS($options['computers_id'], $uninstall_history);
 
@@ -253,7 +246,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
                           'operatingsystemservicepacks_id'  => $operatingsystemservicepacks_id,
                           'operatingsystemarchitectures_id' => $operatingsystemarchitectures_id,
                           'license_number'                  => $license_number,
-                          'licenseid'                      => $license_id,
+                          'licenseid'                       => $license_id,
                           '_nolock'                         => true,
                           'is_dynamic'                      => 1,
                           'entities_id'                     => $options['entities_id']
