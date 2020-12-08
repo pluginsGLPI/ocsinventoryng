@@ -407,6 +407,21 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                   echo "</tr>";
 
+                  echo "<tr class='tab_bg_1'>";
+                  echo "<td class='left'>" . __('Checksum', 'ocsinventoryng').
+                       "</td>";
+                  echo "<td class='left'>";
+                  $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($data["plugin_ocsinventoryng_ocsservers_id"]);
+                  echo $ocsClient->getChecksum($data['ocsid']);
+                  echo "</td>";
+
+                  echo "<td class='left'>";
+                  echo "</td>";
+                  echo "<td class='left'>";
+                  echo "</td>";
+
+                  echo "</tr>";
+
                   if (Session::haveRight("plugin_ocsinventoryng_link", UPDATE)) {
                      echo "<tr class='tab_bg_1'>";
                      echo "<td class='center'>";

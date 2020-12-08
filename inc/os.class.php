@@ -132,30 +132,6 @@ class PluginOcsinventoryngOS extends CommonDBChild {
 
          $hardware = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($options['HARDWARE']));
 
-         $sql_computer = "SELECT `glpi_operatingsystems`.`name` AS os_name,
-                                    `glpi_operatingsystemservicepacks`.`name` AS os_sp
-                             FROM `glpi_computers`
-                           LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks`
-                           ON `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` = `glpi_computers`.`id`
-                           LEFT JOIN `glpi_items_operatingsystems`
-                           ON (`glpi_computers`.`id` = `glpi_items_operatingsystems`.`items_id` AND `glpi_items_operatingsystems`.`itemtype` = 'Computer')
-                           LEFT JOIN `glpi_operatingsystems`
-                           ON (`glpi_operatingsystems`.`id` = `glpi_items_operatingsystems`.`operatingsystems_id`)
-                           LEFT JOIN `glpi_operatingsystemservicepacks`
-                           ON (`glpi_operatingsystemservicepacks`.`id` = `glpi_items_operatingsystems`.`operatingsystemservicepacks_id`)
-                             WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid`
-                                          = " . $options['ocs_id'] . "
-                                   AND `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
-                                          = $ocsServerId";
-
-         $res_computer = $DB->query($sql_computer);
-
-         if ($DB->numrows($res_computer) == 1) {
-            $data_computer = $DB->fetchArray($res_computer);
-            $computerOS    = $data_computer["os_name"];
-            $computerOSSP  = $data_computer["os_sp"];
-         }
-
          $updates        = 0;
          $license_number = null;
 
@@ -210,36 +186,35 @@ class PluginOcsinventoryngOS extends CommonDBChild {
             }
          }
 
-         $device = new Item_OperatingSystem();
-
-         if ($force || $computerOS != $hardware["OSNAME"]) {
+         if ($force) {
             self::resetOS($options['computers_id'], $uninstall_history);
          }
-
-         // Yllen: only check on items_id and itemtype because only one is allowed
-         if ($id = $device->getFromDBByCrit(['items_id' => $options['computers_id'],
-                                             'itemtype' => 'Computer'])) {
-            // Yllen: do update only if is_dynamic - no change if manual  
-            if (($updates > 0) && ($device->fields['is_dynamic'] == 1)) {
-               $device->update(['id'                              => $id,
-                                'operatingsystems_id'             => $operatingsystems_id,
-                                'operatingsystemversions_id'      => $operatingsystemversions_id,
-                                'operatingsystemservicepacks_id'  => $operatingsystemservicepacks_id,
-                                'operatingsystemarchitectures_id' => $operatingsystemarchitectures_id,
-                                'license_number'                  => $license_number,
-                                'licenseid'                       => $license_id,
-                                '_nolock'                         => true,
-                                'is_deleted'                      => 0, // Yllen: restoreFromTrash
-                                'entities_id'                     => $options['entities_id']
-                               ], $install_history);
+         $CompOS = new Item_OperatingSystem();
+         $tab    = $CompOS->find(['items_id'    => $options['computers_id'],
+                                  'itemtype'    => 'Computer',
+                                  'entities_id' => $options['entities_id'],
+                                  'is_dynamic'  => 1]);
+         if (count($tab) > 0) {
+            foreach ($tab as $id => $curr) {
+               if ($updates > 0) {
+                  $CompOS->update(['id'                              => $id,
+                                   'operatingsystems_id'             => $operatingsystems_id,
+                                   'operatingsystemversions_id'      => $operatingsystemversions_id,
+                                   'operatingsystemservicepacks_id'  => $operatingsystemservicepacks_id,
+                                   'operatingsystemarchitectures_id' => $operatingsystemarchitectures_id,
+                                   'license_number'                  => $license_number,
+                                   'licenseid'                       => $license_id,
+                                   '_nolock'                         => true,
+                                   'is_deleted'                      => 0, // Yllen: restoreFromTrash
+                                   'entities_id'                     => $options['entities_id']
+                                  ], $install_history);
+               }
             }
          } else {
 
-            // Yllen: fix multiple
             self::resetOS($options['computers_id'], $uninstall_history);
 
-            //            if ($operatingsystems_id) {
-            $device->add(['items_id'                        => $options['computers_id'],
+            $CompOS->add(['items_id'                        => $options['computers_id'],
                           'itemtype'                        => 'Computer',
                           'operatingsystems_id'             => $operatingsystems_id,
                           'operatingsystemversions_id'      => $operatingsystemversions_id,
@@ -249,9 +224,9 @@ class PluginOcsinventoryngOS extends CommonDBChild {
                           'licenseid'                       => $license_id,
                           '_nolock'                         => true,
                           'is_dynamic'                      => 1,
+                          'is_deleted'                      => 0, // Yllen: restoreFromTrash
                           'entities_id'                     => $options['entities_id']
                          ], [], $install_history);
-
          }
       }
    }
