@@ -152,8 +152,10 @@ function plugin_init_ocsinventoryng() {
    $PLUGIN_HOOKS['item_transfer']['ocsinventoryng'] = "plugin_ocsinventoryng_item_transfer";
 
    // Css file
-   $PLUGIN_HOOKS['add_css']['ocsinventoryng'] = 'css/ocsinventoryng.css';
-
+   if (isset($_SESSION['glpiactiveprofile']['interface'])
+       && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
+      $PLUGIN_HOOKS['add_css']['ocsinventoryng'] = 'css/ocsinventoryng.css';
+   }
    if (Session::getLoginUserID()) {
       $ocsserver = new PluginOcsinventoryngOcsServer();
       // Display a menu entry ?

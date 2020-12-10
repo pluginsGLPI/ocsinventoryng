@@ -1117,7 +1117,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       $query    = "SELECT `CHECKSUM` FROM `hardware` WHERE `ID` = $id";
       $checksum = $this->db->query($query);
       $res      = $this->db->fetchAssoc($checksum);
-      return $res["CHECKSUM"];
+      return isset($res["CHECKSUM"])?$res["CHECKSUM"]:0;
    }
 
    /**
