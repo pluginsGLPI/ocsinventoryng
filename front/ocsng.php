@@ -51,6 +51,7 @@ if (isset($_POST["plugin_ocsinventoryng_ocsservers_id"])) {
 }
 
 //PluginOcsinventoryngOcsServer::newOcsMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+echo "<div align='center'><img src='".$CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/pics/ocsinventoryng.png'></div>";
 $menu = new PluginOcsinventoryngMenu();
 $menu->display();
 //load mac constructors in sessionMemory
