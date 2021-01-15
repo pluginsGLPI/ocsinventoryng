@@ -1218,7 +1218,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
                $params['force'] = $force;
 
-               if ($updates['hardware']) {
+               if ($updates['hardware'] || $force) {
                   $params['HARDWARE'] = $ocsComputer['HARDWARE'];
 
                   $params['check_history'] = true;

@@ -73,7 +73,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
          $install_history = 1;
       }
 
-      if ($force && $cfg_ocs["import_monitor"] == 1) { // Only reset monitor as global in unit management
+      if ($force || $cfg_ocs["import_monitor"] == 1) { // Only reset monitor as global in unit management
          self::resetMonitors($computers_id, $uninstall_history);    // try to link monitor with existing
       }
 
@@ -335,16 +335,16 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
          while ($data = $DB->fetchAssoc($result)) {
 
             $conn->delete(['id' => $data['id'], '_no_history' => !$uninstall_history], true, $uninstall_history);
-
-            $query2  = "SELECT COUNT(*)
-                       FROM `glpi_computers_items`
-                       WHERE `items_id` = " . $data['items_id'] . "
-                             AND `itemtype` = 'Monitor'";
-            $result2 = $DB->query($query2);
-
-            if ($DB->result($result2, 0, 0) == 1) {
-               $mon->delete(['id' => $data['items_id'], '_no_history' => !$uninstall_history], true, $uninstall_history);
-            }
+//Really used ???
+//            $query2  = "SELECT COUNT(*)
+//                       FROM `glpi_computers_items`
+//                       WHERE `items_id` = " . $data['items_id'] . "
+//                             AND `itemtype` = 'Monitor'";
+//            $result2 = $DB->query($query2);
+//
+//            if ($DB->result($result2, 0, 0) == 1) {
+//               $mon->delete(['id' => $data['items_id'], '_no_history' => !$uninstall_history], true, $uninstall_history);
+//            }
          }
       }
    }

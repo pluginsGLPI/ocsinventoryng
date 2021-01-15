@@ -204,8 +204,12 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
 
          if (intval($options['cfg_ocs']["import_general_contact"]) > 0
              && !in_array("contact", $options['computers_updates'])) {
-
-            $updates["contact"] = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware["USERID"]);
+            if (!empty($hardware["USERID"])) {
+               $updates["contact"] = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware["USERID"]);
+            } else {
+               $updates["contact"] = "";
+               $updates["users_id"] = 0;
+            }
          }
 
          if (intval($options['cfg_ocs']["import_general_name"]) > 0
