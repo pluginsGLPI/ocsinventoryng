@@ -776,7 +776,7 @@ JAVASCRIPT;
       Dropdown::showYesNo("import_device_controller", $this->fields["import_device_controller"]);
       echo "</td></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . _n('Other component', 'Other components', 2) . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Other component') . "</td>\n<td>";
       Dropdown::showYesNo("import_device_slot", $this->fields["import_device_slot"]);
       echo "</td><td colspan='2'></td></tr>\n";
 

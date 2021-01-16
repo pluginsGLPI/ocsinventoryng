@@ -121,21 +121,22 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
             $mon["is_dynamic"] = 1;
             //Look for a monitor with the same name (and serial if possible) already connected
             //to this computer
-            $query = "SELECT `m`.`id`, `gci`.`is_deleted`
-                      FROM `glpi_monitors` as `m`, `glpi_computers_items` as `gci`
-                      WHERE `m`.`id` = `gci`.`items_id`
-                         AND `gci`.`is_dynamic` = 1
-                         AND `computers_id`= $computers_id
-                         AND `itemtype`= 'Monitor'
-                         AND `m`.`name`='" . $mon["name"] . "'";
-            if ($cfg_ocs["import_monitor"] > 2 && !empty($mon["serial"])) {
-               $query .= " AND `m`.`serial`='" . $mon["serial"] . "'";
-            }
-            $results = $DB->query($query);
-            $id      = false;
-            if ($DB->numrows($results) == 1) {
-               $id = $DB->result($results, 0, 'id');
-            }
+            //15012021 : Unactivated because block link for good computer
+//            $query = "SELECT `m`.`id`, `gci`.`is_deleted`
+//                      FROM `glpi_monitors` as `m`, `glpi_computers_items` as `gci`
+//                      WHERE `m`.`id` = `gci`.`items_id`
+//                         AND `gci`.`is_dynamic` = 1
+//                         AND `computers_id`= $computers_id
+//                         AND `itemtype`= 'Monitor'
+//                         AND `m`.`name`='" . $mon["name"] . "'";
+//            if ($cfg_ocs["import_monitor"] > 2 && !empty($mon["serial"])) {
+//               $query .= " AND `m`.`serial`='" . $mon["serial"] . "'";
+//            }
+//            $results = $DB->query($query);
+//            $id      = false;
+//            if ($DB->numrows($results) == 1) {
+//               $id = $DB->result($results, 0, 'id');
+//            }
 
             if ($id == false) {
                // Clean monitor object

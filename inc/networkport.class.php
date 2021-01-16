@@ -210,8 +210,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
           && $subnet != '0.0.0.0') {
          $IPNetwork = new IPNetwork();
 
-         $condition = ["address" => $subnet,
-                       "netmask" => $mask,
+         $condition = ["address"     => $subnet,
+                       "netmask"     => $mask,
                        "entities_id" => $entities_id];
 
          //To avoid the "Invalid gateway address" error message when adding a gateway to 0.0.0.0
@@ -267,7 +267,6 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
    static function importNetwork($cfg_ocs, $ocsComputer, $computers_id, $entities_id) {
       global $DB;
 
-
       $install_devices_history = 0;
       if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_devices'] == 1 || $cfg_ocs['history_devices'] == 2)) {
          $install_devices_history = 1;
@@ -292,6 +291,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $ocsNetworks[$key]['IPADDRESS'] [] = $ocsNetwork['IPADDRESS'];
          }
       }
+
       $network_ports  = [];
       $network_ifaces = [];
       foreach ($ocsNetworks as $line) {
@@ -302,7 +302,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $network_ports[$mac] = ['virtual' => []];
          }
          $name = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"],
-                                                                    $line['DESCRIPTION']);
+                                                                     $line['DESCRIPTION']);
 
          if (!empty($line['IPADDRESS'])) {
             $ip = $line['IPADDRESS'];
@@ -316,8 +316,9 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             $networkport_type->fields['speed'] = $speed;
          }
 
+         $typen  = (array_push($network_ifaces, $networkport_type) - 1);
          $values = ['name'   => $name,
-                    'type'   => (array_push($network_ifaces, $networkport_type) - 1),
+                    'type'   => $typen,
                     'ip'     => $ip,
                     'result' => $line];
 
@@ -326,17 +327,19 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          //    2°) if there is already one main device
          //    3°) if the networkport is issued by VMWare
          if (((isset($line['VIRTUALDEV'])) && ($line['VIRTUALDEV'] == '1'))
-             || (isset($network_ports[$mac]['main']))
-             || (preg_match('/^vm(k|nic)([0-9]+)$/', $name))) {
-            $network_ports[$mac]['virtual'] [] = $values;
+             || (isset($network_ports[$typen]['main']))
+             || (preg_match('/^vm(k|nic)([0-9]+)$/', $name))
+             || (preg_match('/(V|v)irtual/', $name))) {
+            $network_ports[$typen]['virtual'] [] = $values;
          } else {
-            $network_ports[$mac]['main'] = $values;
+            $network_ports[$typen]['main'] = $values;
          }
       }
 
       $already_known_ports  = [];
       $already_known_ifaces = [];
-      foreach ($network_ports as $mac => $ports) {
+
+      foreach ($network_ports as $id => $ports) {
          if (isset($ports['main'])) {
             $main = $ports['main'];
             $type = $network_ifaces[$main['type']];
@@ -349,7 +352,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                ON (`glpi_devicenetworkcards`.`designation`='" . $main['name'] . "')
                         WHERE `glpi_items_devicenetworkcards`.`itemtype`='Computer'
                            AND `glpi_items_devicenetworkcards`.`items_id`='$computers_id'
-                           AND `glpi_items_devicenetworkcards`.`mac`='$mac'
+                           AND `glpi_items_devicenetworkcards`.`mac`='" . $main['result']['MACADDR'] . "'
                            AND `glpi_items_devicenetworkcards`.`devicenetworkcards_id`=
                                `glpi_devicenetworkcards`.`id`";
             $item_net = $DB->request($query);
@@ -371,7 +374,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                                      'itemtype'              => 'Computer',
                                                      'entities_id'           => $entities_id,
                                                      'devicenetworkcards_id' => $net_id,
-                                                     'mac'                   => $mac,
+                                                     'mac'                   => $main['result']['MACADDR'],
                                                      'is_dynamic'            => 1,
                                                      'is_deleted'            => 0])) {
                      $item_device->update(['id'                    => $item_device->getID(),
@@ -379,7 +382,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                            'itemtype'              => 'Computer',
                                            'entities_id'           => $entities_id,
                                            'devicenetworkcards_id' => $net_id,
-                                           'mac'                   => $mac,
+                                           'mac'                   => $main['result']['MACADDR'],
                                            '_no_history'           => !$install_devices_history,
                                            'is_dynamic'            => 1,
                                            'is_deleted'            => 0], $install_devices_history);
@@ -388,7 +391,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                                         'itemtype'              => 'Computer',
                                         'entities_id'           => $entities_id,
                                         'devicenetworkcards_id' => $net_id,
-                                        'mac'                   => $mac,
+                                        'mac'                   => $main['result']['MACADDR'],
                                         '_no_history'           => !$install_devices_history,
                                         'is_dynamic'            => 1,
                                         'is_deleted'            => 0], [], $install_devices_history);
@@ -403,53 +406,60 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                $already_known_ifaces[] = $item_device->getID();
             }
 
-            if ($type->fields['instantiation_type'] == __CLASS__) {
-               $result     = $main['result'];
-               $inst_input = ['TYPE'    => $result['TYPE'],
-                              'TYPEMIB' => $result['TYPEMIB'],
-                              'speed'   => $result['SPEED']];
-            } else {
-               $inst_input = $type->fields;
-               foreach (['id', 'name', 'OCS_TYPE', 'OCS_TYPEMIB',
-                         'instantiation_type', 'comment'] as $field) {
-                  unset($inst_input[$field]);
+            if ($cfg_ocs["import_ip"] == 1) {
+               if ($type->fields['instantiation_type'] == __CLASS__) {
+                  $result     = $main['result'];
+                  $inst_input = ['TYPE'    => $result['TYPE'],
+                                 'TYPEMIB' => $result['TYPEMIB'],
+                                 'speed'   => $result['SPEED']];
+               } else {
+                  $inst_input = $type->fields;
+                  foreach (['id', 'name', 'OCS_TYPE', 'OCS_TYPEMIB',
+                            'instantiation_type', 'comment'] as $field) {
+                     unset($inst_input[$field]);
+                  }
+               }
+               $inst_input['items_devicenetworkcards_id'] = $item_device->getID();
+
+               $mask    = $main['result']['IPMASK'];
+               $gateway = $main['result']['IPGATEWAY'];
+               $subnet  = $main['result']['IPSUBNET'];
+               $status  = $main['result']['STATUS'];
+               if ($status == "Up") {
+                  $networkports_id = self::updateNetworkPort($main['result']['MACADDR'], $main['name'], $computers_id,
+                                                             $type->fields['instantiation_type'],
+                                                             $inst_input, $main['ip'], false,
+                                                             $cfg_ocs,
+                                                             $already_known_ports,
+                                                             $mask, $gateway, $subnet, $entities_id);
                }
             }
-            $inst_input['items_devicenetworkcards_id'] = $item_device->getID();
-
-            $mask    = $main['result']['IPMASK'];
-            $gateway = $main['result']['IPGATEWAY'];
-            $subnet  = $main['result']['IPSUBNET'];
-
-            $networkports_id = self::updateNetworkPort($mac, $main['name'], $computers_id,
-                                                       $type->fields['instantiation_type'],
-                                                       $inst_input, $main['ip'], false,
-                                                       $cfg_ocs,
-                                                       $already_known_ports,
-                                                       $mask, $gateway, $subnet, $entities_id);
-
             if ($networkports_id < 0) {
                continue;
             }
-
             $already_known_ports[] = $networkports_id;
          } else {
             $networkports_id = 0;
          }
+         if ($cfg_ocs["import_ip"] == 1) {
+            if (isset($ports['virtual']) && $ports['ip'] != '0.0.0.0') {
+               foreach ($ports['virtual'] as $port) {
 
-         foreach ($ports['virtual'] as $port) {
-
-            $mask    = $port['result']['IPMASK'];
-            $gateway = $port['result']['IPGATEWAY'];
-            $subnet  = $port['result']['IPSUBNET'];
-
-            $inst_input = ['networkports_id_alias' => $networkports_id];
-            $id         = self::updateNetworkPort($mac, $port['name'], $computers_id,
-                                                  'NetworkPortAlias', $inst_input, $port['ip'],
-                                                  true, $cfg_ocs, $already_known_ports,
-                                                  $mask, $gateway, $subnet, $entities_id);
-            if ($id > 0) {
-               $already_known_ports[] = $id;
+                  $mask       = $port['result']['IPMASK'];
+                  $gateway    = $port['result']['IPGATEWAY'];
+                  $subnet     = $port['result']['IPSUBNET'];
+                  $status     = $main['result']['STATUS'];
+                  $inst_input = ['networkports_id_alias' => $networkports_id];
+                  if ($status == "Up") {
+                     $id = self::updateNetworkPort($main['result']['MACADDR'], $port['name'], $computers_id,
+                                                   'NetworkPortAlias', $inst_input, $port['ip'],
+                                                   true, $cfg_ocs, $already_known_ports,
+                                                   $mask, $gateway, $subnet, $entities_id);
+                  }
+                  if ($id > 0) {
+                     $already_known_ports[] = $id;
+                  }
+               }
             }
          }
       }
@@ -482,8 +492,6 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
    }
 
    /**
-    * @see NetworkPortInstantiation::getInstantiationHTMLTableHeaders
-    *
     * @param HTMLTableGroup       $group
     * @param HTMLTableSuperHeader $super
     * @param HTMLTableSuperHeader $internet_super
@@ -491,6 +499,8 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
     * @param array                $options
     *
     * @return null|the
+    * @see NetworkPortInstantiation::getInstantiationHTMLTableHeaders
+    *
     */
    function getInstantiationHTMLTableHeaders(HTMLTableGroup $group, HTMLTableSuperHeader $super,
                                              HTMLTableSuperHeader $internet_super = null,
@@ -510,14 +520,14 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
 
    /**
-    * @see NetworkPortInstantiation::getInstantiationHTMLTable()
-    *
     * @param NetworkPort   $netport
     * @param HTMLTableRow  $row
     * @param HTMLTableCell $father
     * @param array         $options
     *
     * @return null|the
+    * @see NetworkPortInstantiation::getInstantiationHTMLTable()
+    *
     */
    function getInstantiationHTMLTable(NetworkPort $netport, HTMLTableRow $row,
                                       HTMLTableCell $father = null, array $options = []) {
@@ -641,13 +651,13 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
 
    /**
+    * @param null $checkitem
+    *
+    * @return array
     * @since version 0.85
     *
     * @see CommonDBTM::getSpecificMassiveActions()
     *
-    * @param null $checkitem
-    *
-    * @return array
     */
    function getSpecificMassiveActions($checkitem = null) {
 
@@ -667,13 +677,13 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
    }
 
    /**
+    * @param MassiveAction $ma
+    *
+    * @return bool|false
     * @since version 0.85
     *
     * @see CommonDBTM::showMassiveActionsSubForm()
     *
-    * @param MassiveAction $ma
-    *
-    * @return bool|false
     */
    static function showMassiveActionsSubForm(MassiveAction $ma) {
 
@@ -688,15 +698,15 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
 
    /**
-    * @since version 0.85
-    *
-    * @see CommonDBTM::processMassiveActionsForOneItemtype()
-    *
     * @param MassiveAction $ma
     * @param CommonDBTM    $item
     * @param array         $ids
     *
     * @return nothing|void
+    * @since version 0.85
+    *
+    * @see CommonDBTM::processMassiveActionsForOneItemtype()
+    *
     */
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
                                                        array $ids) {
