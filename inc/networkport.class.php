@@ -49,26 +49,27 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
 
    /**
-    * @param $mac
-    * @param $name
-    * @param $computers_id
-    * @param $instantiation_type
-    * @param $inst_input
-    * @param $ips
-    * @param $check_name
-    * @param $dohistory
-    * @param $already_known_ports
+    * @param     $mac
+    * @param     $name
+    * @param     $computers_id
+    * @param     $instantiation_type
+    * @param     $inst_input
+    * @param     $ips
+    * @param     $check_name
+    * @param     $cfg_ocs
+    * @param     $already_known_ports
     *
-    * @param $mask
-    * @param $gateway
-    * @param $subnet
-    * @param $entities_id
+    * @param     $mask
+    * @param     $gateway
+    * @param     $subnet
+    * @param     $entities_id
+    * @param int $speed
     *
     * @return int
     */
    static private function updateNetworkPort($mac, $name, $computers_id, $instantiation_type,
                                              $inst_input, $ips, $check_name, $cfg_ocs,
-                                             $already_known_ports, $mask, $gateway, $subnet, $entities_id) {
+                                             $already_known_ports, $mask, $gateway, $subnet, $entities_id, $speed = 0) {
       global $DB;
 
       $network_port = new NetworkPort();
@@ -117,8 +118,10 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          if ($networkports_id === false) {
             return -1;
          }
+
          $inst_input['networkports_id'] = $networkports_id;
          $instantiation                 = $network_port->getInstantiation();
+         $inst_input['speed']           = NetworkPortEthernet::transformPortSpeed($speed, false);
          $instantiation->update($inst_input, $install_network_history);
          unset($instantiation);
 
@@ -126,6 +129,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          $line            = $ports->next();
          $networkports_id = $line['id'];
          $network_port->getFromDB($networkports_id);
+
          if ((!$check_name) && ($network_port->fields['name'] != $name)) {
             $port_input = ['id'         => $network_port->getID(),
                            'name'       => $name,
@@ -136,15 +140,23 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
              && ($network_port->fields['is_dynamic'] == 1)) {
             $network_port->switchInstantiationType($instantiation_type);
             $inst_input['networkports_id'] = $network_port->getID();
+            $inst_input['speed']           = NetworkPortEthernet::transformPortSpeed($speed, false);
             $instantiation                 = $network_port->getInstantiation();
-            $instantiation->add($inst_input);
+
+            $instantiation->add($inst_input, [], $install_network_history);
             unset($instantiation);
          }
          if ($network_port->fields['instantiation_type'] == $instantiation_type) {
             $instantiation                 = $network_port->getInstantiation();
             $inst_input['id']              = $instantiation->getID();
+            $inst_input['speed']           = NetworkPortEthernet::transformPortSpeed($speed, false);
             $inst_input['networkports_id'] = $network_port->getID();
-            $instantiation->update($inst_input, $install_network_history);
+            if ($instantiation->getID() > 0) {
+               $instantiation->update($inst_input, $install_network_history);
+            } else {
+               $instantiation->add($inst_input, [], $install_network_history);
+            }
+
             unset($instantiation);
          }
       }
@@ -168,12 +180,14 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       } else {
          $names = $DB->request($query);
          if ($names->numrows() == 0) {
+            $comp = new Computer();
+            $comp->getFromDB($computers_id);
             $name_input      = ['itemtype'    => 'NetworkPort',
                                 'items_id'    => $networkports_id,
                                 'is_dynamic'  => 1,
                                 'is_deleted'  => 0,
                                 '_no_history' => !$install_network_history,
-                                'name'        => 'OCS-INVENTORY-NG'];
+                                'name'        => $comp->getName()];
             $networknames_id = $network_name->add($name_input);
          } else {
             $line            = $names->next();
@@ -296,10 +310,19 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       $network_ifaces = [];
       foreach ($ocsNetworks as $line) {
          $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
-         $mac  = $line['MACADDR'];
 
-         if (!isset($network_ports[$mac])) {
-            $network_ports[$mac] = ['virtual' => []];
+         $networkport_type = new PluginOcsinventoryngNetworkPortType();
+         $networkport_type->getFromTypeAndTypeMIB($line);
+         $networkport_type->fields['speed'] = $line['SPEED'];
+         //         $speed = NetworkPortEthernet::transformPortSpeed($line['SPEED'], false);
+         //         if (!empty($speed)) {
+         //            $networkport_type->fields['speed'] = $speed;
+         //         }
+
+         $typen = (array_push($network_ifaces, $networkport_type) - 1);
+
+         if (!isset($network_ports[$typen])) {
+            $network_ports[$typen] = ['virtual' => []];
          }
          $name = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"],
                                                                      $line['DESCRIPTION']);
@@ -309,14 +332,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          } else {
             $ip = false;
          }
-         $networkport_type = new PluginOcsinventoryngNetworkPortType();
-         $networkport_type->getFromTypeAndTypeMIB($line);
-         $speed = NetworkPortEthernet::transformPortSpeed($line['SPEED'], false);
-         if (!empty($speed)) {
-            $networkport_type->fields['speed'] = $speed;
-         }
 
-         $typen  = (array_push($network_ifaces, $networkport_type) - 1);
          $values = ['name'   => $name,
                     'type'   => $typen,
                     'ip'     => $ip,
@@ -424,38 +440,43 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                $mask    = $main['result']['IPMASK'];
                $gateway = $main['result']['IPGATEWAY'];
                $subnet  = $main['result']['IPSUBNET'];
+               $speed   = $main['result']['SPEED'];
                $status  = $main['result']['STATUS'];
-               if ($status == "Up") {
-                  $networkports_id = self::updateNetworkPort($main['result']['MACADDR'], $main['name'], $computers_id,
-                                                             $type->fields['instantiation_type'],
-                                                             $inst_input, $main['ip'], false,
-                                                             $cfg_ocs,
-                                                             $already_known_ports,
-                                                             $mask, $gateway, $subnet, $entities_id);
-               }
+               //               if ($status == "Up") {
+               $networkports_id = self::updateNetworkPort($main['result']['MACADDR'], $main['name'], $computers_id,
+                                                          $type->fields['instantiation_type'],
+                                                          $inst_input, $main['ip'], false,
+                                                          $cfg_ocs,
+                                                          $already_known_ports,
+                                                          $mask, $gateway, $subnet, $entities_id, $speed);
+               //               }
             }
             if ($networkports_id < 0) {
                continue;
             }
-            $already_known_ports[] = $networkports_id;
+            if ($networkports_id > 0) {
+               $already_known_ports[] = $networkports_id;
+            }
+
          } else {
             $networkports_id = 0;
          }
          if ($cfg_ocs["import_ip"] == 1) {
-            if (isset($ports['virtual']) && $ports['ip'] != '0.0.0.0') {
+            if (isset($ports['virtual'])) {
                foreach ($ports['virtual'] as $port) {
 
                   $mask       = $port['result']['IPMASK'];
                   $gateway    = $port['result']['IPGATEWAY'];
                   $subnet     = $port['result']['IPSUBNET'];
-                  $status     = $main['result']['STATUS'];
+                  $status     = $port['result']['STATUS'];
+                  $speed      = $port['result']['SPEED'];
                   $inst_input = ['networkports_id_alias' => $networkports_id];
-                  if ($status == "Up") {
-                     $id = self::updateNetworkPort($main['result']['MACADDR'], $port['name'], $computers_id,
-                                                   'NetworkPortAlias', $inst_input, $port['ip'],
-                                                   true, $cfg_ocs, $already_known_ports,
-                                                   $mask, $gateway, $subnet, $entities_id);
-                  }
+                  //                  if ($status == "Up") {
+                  $id = self::updateNetworkPort($main['result']['MACADDR'], $port['name'], $computers_id,
+                                                'NetworkPortAlias', $inst_input, $port['ip'],
+                                                true, $cfg_ocs, $already_known_ports,
+                                                $mask, $gateway, $subnet, $entities_id, $speed);
+                  //                  }
                   if ($id > 0) {
                      $already_known_ports[] = $id;
                   }
