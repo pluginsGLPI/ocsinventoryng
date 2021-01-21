@@ -16,7 +16,6 @@ IF NOT EXIST %plugin_glpi%\run.php GOTO EXIT
 :RUN
 echo Lancement du script
 php %plugin_glpi%\run.php
-pause
 GOTO FIN
 
 :EXIT
