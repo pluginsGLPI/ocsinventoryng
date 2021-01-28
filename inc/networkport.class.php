@@ -340,7 +340,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
          // Virtual dev can be :
          //    1°) specifically defined from OCS
-         //    2°) if there is already one main device
+         //    2°) if the networkport contains Virtual
          //    3°) if the networkport is issued by VMWare
          if (((isset($line['VIRTUALDEV'])) && ($line['VIRTUALDEV'] == '1'))
              || (isset($network_ports[$typen]['main']))
@@ -472,7 +472,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                   $speed      = $port['result']['SPEED'];
                   $inst_input = ['networkports_id_alias' => $networkports_id];
                   //                  if ($status == "Up") {
-                  $id = self::updateNetworkPort($main['result']['MACADDR'], $port['name'], $computers_id,
+                  $id = self::updateNetworkPort($port['result']['MACADDR'], $port['name'], $computers_id,
                                                 'NetworkPortAlias', $inst_input, $port['ip'],
                                                 true, $cfg_ocs, $already_known_ports,
                                                 $mask, $gateway, $subnet, $entities_id, $speed);

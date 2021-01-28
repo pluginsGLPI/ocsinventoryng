@@ -133,7 +133,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
 //               $query .= " AND `m`.`serial`='" . $mon["serial"] . "'";
 //            }
 //            $results = $DB->query($query);
-//            $id      = false;
+            $id      = false;
 //            if ($DB->numrows($results) == 1) {
 //               $id = $DB->result($results, 0, 'id');
 //            }
