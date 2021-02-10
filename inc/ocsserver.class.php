@@ -3156,98 +3156,105 @@ JAVASCRIPT;
    static function cronocsng($task) {
       global $DB;
 
+      $original_glpiname = $_SESSION['glpiname'] ?? null;
       $_SESSION["glpiname"] = 'ocsinventoryng';
 
-      //Get a randon server id
-      $plugin_ocsinventoryng_ocsservers_id = self::getRandomServerID();
+      try {
+         //Get a randon server id
+         $plugin_ocsinventoryng_ocsservers_id = self::getRandomServerID();
 
-      if ($plugin_ocsinventoryng_ocsservers_id > 0) {
-         //Initialize the server connection
-         $PluginOcsinventoryngDBocs = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+         if ($plugin_ocsinventoryng_ocsservers_id > 0) {
+            //Initialize the server connection
+            $PluginOcsinventoryngDBocs = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
-         $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
-         $task->log(__('Launch OCSNG synchronization script from server', 'ocsinventoryng') . " " . $cfg_ocs['name'] . "\n");
+            $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
+            $task->log(__('Launch OCSNG synchronization script from server', 'ocsinventoryng') . " " . $cfg_ocs['name'] . "\n");
 
-         if (!$cfg_ocs["cron_sync_number"]) {
-            return 0;
-         }
-         PluginOcsinventoryngOcsProcess::manageDeleted($plugin_ocsinventoryng_ocsservers_id, false);
-
-         //         $query    = "SELECT MAX(`last_ocs_update`)
-         //                   FROM `glpi_plugin_ocsinventoryng_ocslinks`
-         //                   WHERE `plugin_ocsinventoryng_ocsservers_id`= $plugin_ocsinventoryng_ocsservers_id";
-         //         $max_date = "0000-00-00 00:00:00";
-         //         if ($result = $DB->query($query)) {
-         //            if ($DB->numrows($result) > 0) {
-         //               $max_date = $DB->result($result, 0, 0);
-
-         // Get linked computer ids in GLPI
-         $already_linked_query  =
-            "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid " .
-            "FROM `glpi_plugin_ocsinventoryng_ocslinks` " .
-            "INNER JOIN `glpi_computers` on `glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` " .
-            "WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
-         $already_linked_result = $DB->query($already_linked_query);
-
-         $already_linked_ids = [];
-         if ($DB->numrows($already_linked_result) > 0)
-            while ($data = $DB->fetchAssoc($already_linked_result))
-               $already_linked_ids [] = $data['ocsid'];
-
-         // Fetch linked computers from ocs
-         $res = [];
-         if (count($already_linked_ids) > 0) {
-            $ocsResult = $PluginOcsinventoryngDBocs->getComputers([
-                                                                     'MAX_RECORDS' => $cfg_ocs["cron_sync_number"],
-                                                                     'ORDER'       => 'LASTDATE',
-                                                                     'COMPLETE'    => '0',
-                                                                     'FILTER'      => [
-                                                                        'IDS'      => $already_linked_ids,
-                                                                        'CHECKSUM' => $cfg_ocs["checksum"],
-                                                                     ]
-                                                                  ]);
-
-            if (isset($ocsResult['COMPUTERS']) && count($ocsResult['COMPUTERS']) > 0) {
-               foreach ($ocsResult['COMPUTERS'] as $computer)
-                  $res[$computer['META']['ID']] = $computer['META'];
+            if (!$cfg_ocs["cron_sync_number"]) {
+               return 0;
             }
-         }
+            PluginOcsinventoryngOcsProcess::manageDeleted($plugin_ocsinventoryng_ocsservers_id, false);
 
-         //         $res = $PluginOcsinventoryngDBocs->getComputersToUpdate($cfg_ocs, $max_date);
+            //         $query    = "SELECT MAX(`last_ocs_update`)
+            //                   FROM `glpi_plugin_ocsinventoryng_ocslinks`
+            //                   WHERE `plugin_ocsinventoryng_ocsservers_id`= $plugin_ocsinventoryng_ocsservers_id";
+            //         $max_date = "0000-00-00 00:00:00";
+            //         if ($result = $DB->query($query)) {
+            //            if ($DB->numrows($result) > 0) {
+            //               $max_date = $DB->result($result, 0, 0);
 
-         $task->setVolume(0);
-         if (count($res) > 0) {
+            // Get linked computer ids in GLPI
+            $already_linked_query  =
+               "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid " .
+               "FROM `glpi_plugin_ocsinventoryng_ocslinks` " .
+               "INNER JOIN `glpi_computers` on `glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` " .
+               "WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
+            $already_linked_result = $DB->query($already_linked_query);
 
-            foreach ($res as $k => $data) {
-               if (count($data) > 0) {
-                  // Fetch all linked computers from GLPI that were returned from OCS
-                  $query_glpi  = "SELECT `id`, `ocs_deviceid`
-                                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                                 WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
-                                             = $plugin_ocsinventoryng_ocsservers_id
-                                        AND `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` = '" . $data["ID"] . "'";
-                  $result_glpi = $DB->query($query_glpi);
-                  if ($DB->numrows($result_glpi) > 0) {
-                     while ($values = $DB->fetchAssoc($result_glpi)) {
-                        $task->addVolume(1);
-                        $task->log(sprintf(__('%1$s: %2$s'), _n('Computer', 'Computer', 1),
-                                           sprintf(__('%1$s (%2$s)'), $values["ocs_deviceid"], $values["id"])));
+            $already_linked_ids = [];
+            if ($DB->numrows($already_linked_result) > 0)
+               while ($data = $DB->fetchAssoc($already_linked_result))
+                  $already_linked_ids [] = $data['ocsid'];
 
-                        $sync_params = ['ID'                                  => $values["id"],
-                                        'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                                        'cfg_ocs'                             => $cfg_ocs,
-                                        'force'                               => 0];
-                        PluginOcsinventoryngOcsProcess::synchronizeComputer($sync_params);
+            // Fetch linked computers from ocs
+            $res = [];
+            if (count($already_linked_ids) > 0) {
+               $ocsResult = $PluginOcsinventoryngDBocs->getComputers([
+                                                                        'MAX_RECORDS' => $cfg_ocs["cron_sync_number"],
+                                                                        'ORDER'       => 'LASTDATE',
+                                                                        'COMPLETE'    => '0',
+                                                                        'FILTER'      => [
+                                                                           'IDS'      => $already_linked_ids,
+                                                                           'CHECKSUM' => $cfg_ocs["checksum"],
+                                                                        ]
+                                                                     ]);
 
+               if (isset($ocsResult['COMPUTERS']) && count($ocsResult['COMPUTERS']) > 0) {
+                  foreach ($ocsResult['COMPUTERS'] as $computer)
+                     $res[$computer['META']['ID']] = $computer['META'];
+               }
+            }
+
+            //         $res = $PluginOcsinventoryngDBocs->getComputersToUpdate($cfg_ocs, $max_date);
+
+            $task->setVolume(0);
+            if (count($res) > 0) {
+
+               foreach ($res as $k => $data) {
+                  if (count($data) > 0) {
+                     // Fetch all linked computers from GLPI that were returned from OCS
+                     $query_glpi  = "SELECT `id`, `ocs_deviceid`
+                                    FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                                    WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
+                                                = $plugin_ocsinventoryng_ocsservers_id
+                                          AND `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` = '" . $data["ID"] . "'";
+                     $result_glpi = $DB->query($query_glpi);
+                     if ($DB->numrows($result_glpi) > 0) {
+                        while ($values = $DB->fetchAssoc($result_glpi)) {
+                           $task->addVolume(1);
+                           $task->log(sprintf(__('%1$s: %2$s'), _n('Computer', 'Computer', 1),
+                                             sprintf(__('%1$s (%2$s)'), $values["ocs_deviceid"], $values["id"])));
+
+                           $sync_params = ['ID'                                  => $values["id"],
+                                          'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                          'cfg_ocs'                             => $cfg_ocs,
+                                          'force'                               => 0];
+                           PluginOcsinventoryngOcsProcess::synchronizeComputer($sync_params);
+
+                        }
                      }
                   }
                }
+            } else {
+               return 0;
             }
-         } else {
-            return 0;
          }
+         return 1;
+      } catch (Exception $e) {
+
+      } finally {
+         $_SESSION['glpiname'] = $original_glpiname;
       }
-      return 1;
    }
 
    /**
