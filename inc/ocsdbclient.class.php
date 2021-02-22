@@ -69,10 +69,16 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    public function getComputerRule($id, $tables = []) {
       $computers = [];
 
+      $version = $this->getConfig("GUI_VERSION");
+      $archive = "";
+      if ($version['TVALUE'] >= PluginOcsinventoryngOcsServer::OCS2_8_VERSION_LIMIT) {
+         $archive = "AND `hardware`.`ARCHIVE` = 0";
+      }
+
       $query = "SELECT `hardware`.*,`accountinfo`.`TAG` 
                 FROM `hardware`
                INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
-               WHERE `hardware`.`ID` = $id AND `hardware`.`ARCHIVE` = 0";
+               WHERE `hardware`.`ID` = $id $archive ";
 
       $request = $this->db->query($query);
       while ($meta = $this->db->fetchAssoc($request)) {
@@ -448,10 +454,14 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                }
                break;
             case "hardware" :
+               $archive = "";
+               if ($version['TVALUE'] >= PluginOcsinventoryngOcsServer::OCS2_8_VERSION_LIMIT) {
+                  $archive = "AND `hardware`.`ARCHIVE` = 0";
+               }
                $query   = "SELECT `hardware`.*,`accountinfo`.`TAG` 
                           FROM `hardware`
                           INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
-                          WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") AND `hardware`.`ARCHIVE` = 0 ";
+                          WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") $archive ";
                $request = $this->db->query($query);
                while ($meta = $this->db->fetchAssoc($request)) {
                   $computers[$meta['ID']]["META"]["ID"]       = $meta["ID"];
@@ -841,11 +851,16 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          $where_condition = "";
       }
 
+      $version = $this->getConfig("GUI_VERSION");
+      $archive = "";
+      if ($version['TVALUE'] >= PluginOcsinventoryngOcsServer::OCS2_8_VERSION_LIMIT) {
+         $archive = "AND `hardware`.`ARCHIVE` = 0";
+      }
       $query =
          "SELECT count(DISTINCT `hardware`.`ID`) as total " .
          "FROM `hardware` " .
          "INNER JOIN `accountinfo` ON `accountinfo`.`HARDWARE_ID` = `hardware`.`ID` " .
-         "WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%' AND `hardware`.`ARCHIVE` = 0" .
+         "WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%' $archive " .
          "$where_condition
           $max_records $offset";
 
@@ -987,12 +1002,18 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          $where_condition = "";
       }
 
+      $version = $this->getConfig("GUI_VERSION");
+      $archive = "";
+      if ($version['TVALUE'] >= PluginOcsinventoryngOcsServer::OCS2_8_VERSION_LIMIT) {
+         $archive = "AND `hardware`.`ARCHIVE` = 0";
+      }
+
       if ($id > 0) {
          $query       =
             "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` " .
             "FROM `hardware` " .
             "INNER JOIN `accountinfo` ON `accountinfo`.`HARDWARE_ID` = `hardware`.`ID` " .
-            "WHERE `hardware`.`ID` = $id AND `hardware`.`ARCHIVE` = 0 " .
+            "WHERE `hardware`.`ID` = $id $archive " .
             "$where_condition";
          $count_query = null;
       } else {
@@ -1000,7 +1021,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
             "SELECT DISTINCT `hardware`.`ID`,`hardware`.`LASTDATE`,`hardware`.`NAME` " .
             "FROM `hardware` " .
             "INNER JOIN `accountinfo` ON `accountinfo`.`HARDWARE_ID` = `hardware`.`ID` " .
-            "WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'  AND `hardware`.`ARCHIVE` = 0 " .
+            "WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%' $archive " .
             "$where_condition " .
             "ORDER BY $order " .
             "$max_records $offset";
@@ -1008,7 +1029,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
             "SELECT count(DISTINCT `hardware`.`ID`) as total " .
             "FROM `hardware` " .
             "INNER JOIN `accountinfo` ON `accountinfo`.`HARDWARE_ID` = `hardware`.`ID` " .
-            "WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%'  AND `hardware`.`ARCHIVE` = 0 " .
+            "WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%' $archive " .
             "$where_condition";
       }
       $request = $this->db->query($query);
@@ -1129,11 +1150,18 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     *
     */
    public function getComputersToUpdate($cfg_ocs, $max_date) {
+
+      $version = $this->getConfig("GUI_VERSION");
+      $archive = "";
+      if ($version['TVALUE'] >= PluginOcsinventoryngOcsServer::OCS2_8_VERSION_LIMIT) {
+         $archive = "AND `hardware`.`ARCHIVE` = 0";
+      }
+
       $query = "SELECT `hardware`.`ID`
               FROM `hardware`
               INNER JOIN `accountinfo` ON (`hardware`.`ID` = `accountinfo`.`HARDWARE_ID`)
               WHERE ((`hardware`.`CHECKSUM` & " . $cfg_ocs["checksum"] . ") > 1
-                     OR `hardware`.`LASTDATE` > '$max_date')  AND `hardware`.`ARCHIVE` = 0 ";
+                     OR `hardware`.`LASTDATE` > '$max_date')  $archive ";
 
       // workaround to avoid duplicate when synchro occurs during an inventory
       // "after" insert in ocsweb.hardware  and "before" insert in ocsweb.deleted_equiv

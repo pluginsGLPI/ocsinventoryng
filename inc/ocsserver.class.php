@@ -51,7 +51,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
    const OCS2_VERSION_LIMIT     = 6000;
    const OCS2_1_VERSION_LIMIT   = 7006;
    const OCS2_2_VERSION_LIMIT   = 7009;
-   const OCS2_7_VERSION_LIMIT   = 7030;
+   const OCS2_7_VERSION_LIMIT   = 7023;//https://github.com/OCSInventory-NG/OCSInventory-ocsreports/tree/2.6/files/update
+   const OCS2_8_VERSION_LIMIT   = 7029;//https://github.com/OCSInventory-NG/OCSInventory-ocsreports/tree/2.7/files/update
    const ACTION_PURGE_COMPUTER  = 0; // Action cronCleanOldAgents : Purge computer
    const ACTION_DELETE_COMPUTER = 1; // Action cronCleanOldAgents : delete computer
 
