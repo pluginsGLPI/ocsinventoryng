@@ -984,9 +984,6 @@ JAVASCRIPT;
       if ($loc_id > 0) {
          $input["locations_id"] = $loc_id;
       }
-      if ($dom_id > 0) {
-         $input["domains_id"] = $dom_id;
-      }
 
       $id_printer = 0;
 
@@ -1165,9 +1162,6 @@ JAVASCRIPT;
 
       if ($loc_id > 0) {
          $input["locations_id"] = $loc_id;
-      }
-      if ($dom_id > 0) {
-         $input["domains_id"] = $dom_id;
       }
 
       //if($ocsSnmp['META']['TYPE'] == null){
@@ -1517,9 +1511,6 @@ JAVASCRIPT;
 
       if ($loc_id > 0) {
          $input["locations_id"] = $loc_id;
-      }
-      if ($dom_id > 0 && $itemtype != "Phone") {
-         $input["domains_id"] = $dom_id;
       }
 
       $id_item = 0;
@@ -1974,9 +1965,6 @@ JAVASCRIPT;
 
       if ($loc_id > 0) {
          $input["locations_id"] = $loc_id;
-      }
-      if ($dom_id > 0 && $itemtype != "Phone") {
-         $input["domains_id"] = $dom_id;
       }
 
       $id_item = 0;

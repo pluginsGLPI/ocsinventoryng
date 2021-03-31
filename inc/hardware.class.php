@@ -95,7 +95,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
          }
 
          if (intval($cfg_ocs["import_general_contact"]) > 0) {
-            $locks["contact"] = __('Alternate username');
+            $locks["contact"]  = __('Alternate username');
             $locks["users_id"] = __('User');
          }
 
@@ -104,21 +104,16 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             $locks["computertypes_id"] = __('Type');
          }
 
-         if (intval($cfg_ocs["import_general_domain"]) > 0) {
-            $locks["domains_id"] = __('Domain');
-         }
-
          if (intval($cfg_ocs["import_general_uuid"]) > 0) {
             $locks["uuid"] = __('UUID');
          }
 
       } else {
-         $locks = ["name"       => __('Name'),
-                   "comment"    => __('Comments'),
-                   "contact"    => __('Alternate username'),
-                   "domains_id" => __('Domain'),
-                   "uuid"       => __('UUID'),
-                   "users_id"   => __('User')];
+         $locks = ["name"     => __('Name'),
+                   "comment"  => __('Comments'),
+                   "contact"  => __('Alternate username'),
+                   "uuid"     => __('UUID'),
+                   "users_id" => __('User')];
       }
 
       return $locks;
@@ -196,9 +191,14 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
 
          $updates = [];
 
-         if (intval($options['cfg_ocs']["import_general_domain"]) > 0
-             && !in_array("domains_id", $options['computers_updates'])) {
-            $updates["domains_id"] = Dropdown::importExternal('Domain', PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware["WORKGROUP"]), $options['entities_id']);
+         if (intval($options['cfg_ocs']["import_general_domain"]) > 0) {
+
+            $opt["domains_id"]   = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware["WORKGROUP"]);
+            $opt["entities_id"]  = $options['entities_id'];
+            $opt["computers_id"] = $options['computers_id'];
+            $opt["dohistory"]    = $update_history;
+
+            self::updateComputerDomain($opt);
          }
 
          if (intval($options['cfg_ocs']["import_general_contact"]) > 0
@@ -236,7 +236,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             $updates["_nolock"]     = true;
             $updates["_no_history"] = !$update_history;
             $updates['_auto']       = true;
-            $comp = new Computer();
+            $comp                   = new Computer();
             $comp->update($updates, $update_history);
          }
       }
@@ -424,5 +424,77 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             }
          }
       }
+   }
+
+   /**
+    * @param array $options
+    *
+    * @return void
+    * @throws \GlpitestSQLError
+    */
+   static function updateComputerDomain($options = []) {
+
+      if (isset($options['domains_id'])) {
+         $uninstall_history = 0;
+         $install_history   = 0;
+         if ($options['dohistory'] == 1) {
+            $uninstall_history = 1;
+            $install_history   = 1;
+         }
+
+         $hardware = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($options['domains_id']));
+
+         $domain = new Domain();
+         $dbu = new DbUtils();
+         $condition = ['name' => ['LIKE', $hardware],
+                       'is_deleted'  => 0]
+                      + $dbu->getEntitiesRestrictCriteria('glpi_domains', '', $options['entities_id'], true);
+
+         $tab    = $domain->find($condition);
+
+         if (is_array($tab)
+             && count($tab) > 0) {
+            foreach ($tab as $id => $item) {
+               self::resetDomain($options['computers_id'], $uninstall_history);
+               $CompDomain = new Domain_Item();
+               $CompDomain->add(['items_id'   => $options['computers_id'],
+                                 'itemtype'   => 'Computer',
+                                 'domains_id' => $id,
+                                ], [], $install_history);
+            }
+         } else {
+            self::resetDomain($options['computers_id'], $uninstall_history);
+            $domain     = new Domain();
+            $id         = $domain->add(['name'        => $hardware,
+                                        'entities_id' => $options['entities_id'],
+                                        'is_deleted'  => 0]);
+            if ($id) {
+               $CompDomain = new Domain_Item();
+               $CompDomain->add(['items_id'   => $options['computers_id'],
+                                 'itemtype'   => 'Computer',
+                                 'domains_id' => $id,
+                                ], [], $install_history);
+            }
+         }
+      }
+   }
+
+   /**
+    * Delete old domain link
+    *
+    * @param $glpi_computers_id integer : glpi computer id.
+    * @param $history_hardware
+    *
+    * @return void .
+    */
+   static function resetDomain($glpi_computers_id, $uninstall_history) {
+
+      $linktype = 'Domain_Item';
+
+      $item = new $linktype();
+      $item->deleteByCriteria(['items_id' => $glpi_computers_id,
+                               'itemtype' => 'Computer',
+                              ], 1, $uninstall_history
+      );
    }
 }
