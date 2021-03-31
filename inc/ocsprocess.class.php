@@ -882,6 +882,22 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
          ];
          $computer_ocs = $ocsClient->getComputer($line['ocsid'], $options);
 
+         $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line['computers_id']);
+         $params      = ['computers_id'                        => $line["computers_id"],
+                         'cfg_ocs'                             => $cfg_ocs,
+                         'computers_updates'                   => $locks,
+                         'entities_id'                         => $comp->fields['entities_id'],
+                         'HARDWARE'                            => $computer_ocs['HARDWARE'],
+                         'force'                               => $force,
+         ];
+
+         $params['check_history'] = true;
+         if ($force) {
+            $params['check_history'] = false;
+         }
+
+         PluginOcsinventoryngHardware::updateComputerHardware($params);
+
          if (is_array($computer_ocs)
              && count($computer_ocs) > 0
              && (strtotime($computer_ocs["META"]["LASTDATE"]) > strtotime($line['last_update']) || $force)) {
@@ -1225,8 +1241,6 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                   if ($force) {
                      $params['check_history'] = false;
                   }
-
-                  PluginOcsinventoryngHardware::updateComputerHardware($params);
 
                   PluginOcsinventoryngOS::updateComputerOS($params);
                }

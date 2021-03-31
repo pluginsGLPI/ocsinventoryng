@@ -181,7 +181,6 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
     * @throws \GlpitestSQLError
     */
    static function updateComputerHardware($options = []) {
-      global $DB;
 
       $is_utf8 = $options['cfg_ocs']["ocs_db_utf8"];
       $force   = $options["force"];
@@ -206,9 +205,6 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
              && !in_array("contact", $options['computers_updates'])) {
             if (!empty($hardware["USERID"])) {
                $updates["contact"] = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware["USERID"]);
-            } else {
-               $updates["contact"] = "";
-               $updates["users_id"] = 0;
             }
          }
 
@@ -237,11 +233,9 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
 
          if (count($updates) || $force) {
             $updates["id"]          = $options['computers_id'];
-            $updates["entities_id"] = $options['entities_id'];
             $updates["_nolock"]     = true;
             $updates["_no_history"] = !$update_history;
             $updates['_auto']       = true;
-
             $comp = new Computer();
             $comp->update($updates, $update_history);
          }
