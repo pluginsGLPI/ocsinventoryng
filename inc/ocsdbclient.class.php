@@ -1270,6 +1270,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
                      $tables = ["accesslog",
                                 "accountinfo",
+                                "archive",
                                 "batteries",
                                 "bios",
                                 "controllers",
