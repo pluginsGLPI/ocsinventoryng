@@ -163,7 +163,7 @@ file_put_contents($pidfile, getmypid());
 
 fwrite($log, date("r") . " " . $_SERVER["argv"][0] . " started\n");
 
-$cmd = "php -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --managedeleted=1";
+$cmd = PHP_BINARY." -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --managedeleted=1";
 $out = array();
 $ret = 0;
 exec($cmd, $out, $ret);
@@ -182,7 +182,7 @@ if (function_exists("pcntl_fork")) {
          fwrite($log, "$pid Started\n");
          $pids[$pid] = 1;
       } else {
-         $cmd = "php -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --thread_nbr=$thread_nbr " .
+         $cmd = PHP_BINARY." -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --thread_nbr=$thread_nbr " .
             " --thread_id=$i --process_id=$processid";
          $out = array();
          exec($cmd, $out, $ret);
@@ -205,7 +205,7 @@ if (function_exists("pcntl_fork")) {
    }
 } else {
    # Windows - No fork, so Only one process :(
-   $cmd = "php -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --thread_nbr=1 --thread_id=1 " .
+   $cmd = PHP_BINARY." -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --thread_nbr=1 --thread_id=1 " .
       "--process_id=$processid";
    $out = array();
    exec($cmd, $out, $ret);
