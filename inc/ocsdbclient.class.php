@@ -72,7 +72,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       $version = $this->getConfig("GUI_VERSION");
       $archive = "";
       if ($version['TVALUE'] >= PluginOcsinventoryngOcsServer::OCS2_8_VERSION_LIMIT) {
-         $archive = "AND `hardware`.`ARCHIVE` = 0";
+         $archive = "AND `hardware`.`ARCHIVE` IS NULL";
       }
 
       $query = "SELECT `hardware`.*,`accountinfo`.`TAG` 
@@ -456,7 +456,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
             case "hardware" :
                $archive = "";
                if ($version['TVALUE'] >= PluginOcsinventoryngOcsServer::OCS2_8_VERSION_LIMIT) {
-                  $archive = "AND `hardware`.`ARCHIVE` = 0";
+                  $archive = "AND `hardware`.`ARCHIVE` IS NULL";
                }
                $query   = "SELECT `hardware`.*,`accountinfo`.`TAG` 
                           FROM `hardware`
@@ -854,7 +854,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       $version = $this->getConfig("GUI_VERSION");
       $archive = "";
       if ($version['TVALUE'] >= PluginOcsinventoryngOcsServer::OCS2_8_VERSION_LIMIT) {
-         $archive = "AND `hardware`.`ARCHIVE` = 0";
+         $archive = "AND `hardware`.`ARCHIVE` IS NULL";
       }
       $query =
          "SELECT count(DISTINCT `hardware`.`ID`) as total " .
@@ -1005,7 +1005,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       $version = $this->getConfig("GUI_VERSION");
       $archive = "";
       if ($version['TVALUE'] >= PluginOcsinventoryngOcsServer::OCS2_8_VERSION_LIMIT) {
-         $archive = "AND `hardware`.`ARCHIVE` = 0";
+         $archive = "AND `hardware`.`ARCHIVE` IS NULL";
       }
 
       if ($id > 0) {
@@ -1154,7 +1154,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       $version = $this->getConfig("GUI_VERSION");
       $archive = "";
       if ($version['TVALUE'] >= PluginOcsinventoryngOcsServer::OCS2_8_VERSION_LIMIT) {
-         $archive = "AND `hardware`.`ARCHIVE` = 0";
+         $archive = "AND `hardware`.`ARCHIVE` IS NULL";
       }
 
       $query = "SELECT `hardware`.`ID`
