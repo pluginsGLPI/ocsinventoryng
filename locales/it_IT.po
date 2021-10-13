@@ -225,7 +225,7 @@ msgstr "Per favore attiva il plugin"
 #: front/deleted_equiv.php:90 front/ocsng.clean.php:50
 #: front/ocsng.import.php:134 front/ocsng.link.php:112 front/ocsng.sync.php:91
 msgid "deleted computers into OCS Inventory NG"
-msgstr "Elimina computer in OCS Inventory NG"
+msgstr "computer eliminati in OCS Inventory NG"
 
 #: front/deleted_equiv.php:47 front/deleted_equiv.php:80
 msgid "No new computers to delete"
