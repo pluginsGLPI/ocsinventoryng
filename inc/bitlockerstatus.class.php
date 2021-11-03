@@ -82,7 +82,9 @@ class PluginOcsinventoryngBitlockerstatus extends CommonDBChild {
                $statusText = isset($bitlocker["CONVERSIONSTATUS"]) ? $bitlocker["CONVERSIONSTATUS"] : '';
                $status = [
                   'FullyDecrypted' => 0,
+                  'DISABLED' => 0,
                   'FullyEncrypted' => 1,
+                  'ENABLED' => 1,
                   'EncryptionInProgress' => 2,
                   'DecryptionInProgress' => 2,
                   'EncryptionPaused' => 2,

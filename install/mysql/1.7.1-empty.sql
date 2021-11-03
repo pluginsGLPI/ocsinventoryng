@@ -200,11 +200,13 @@ DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_winupdates`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_winupdates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `computers_id` int(11) NOT NULL DEFAULT '0',
-  `auoptions` int(11) NOT NULL DEFAULT '0',
-  `scheduleinstalldate` timestamp NULL DEFAULT NULL,
-  `lastsuccesstime` timestamp NULL DEFAULT NULL,
-  `detectsuccesstime` timestamp NULL DEFAULT NULL,
-  `downloadsuccesstime` timestamp NULL DEFAULT NULL,
+  `kb` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `title` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `date` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `operation` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `supportlink` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `computers_id` (`computers_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

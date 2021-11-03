@@ -78,14 +78,16 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
       //update data
       if (!empty($ocsComputer)) {
 
-         $wupdate                      = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer));
-         $input                        = [];
-         $input["computers_id"]        = $computers_id;
-         $input["auoptions"]           = $wupdate["AUOPTIONS"];
-         $input["scheduleinstalldate"] = (empty($wupdate["SCHEDULEDINSTALLDATE"]) ? 'NULL' : $wupdate["SCHEDULEDINSTALLDATE"]);
-         $input["lastsuccesstime"]     = $wupdate["LASTSUCCESSTIME"];
-         $input["detectsuccesstime"]   = $wupdate["DETECTSUCCESSTIME"];
-         $input["downloadsuccesstime"] = $wupdate["DOWNLOADSUCCESSTIME"];
+         $wupdate               = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer));
+         $input                 = [];
+         $input["computers_id"] = $computers_id;
+         $input["kb"]           = $wupdate["KB"];
+         $input["title"]        = (empty($wupdate["TITLE"]) ? 'NULL' : $wupdate["TITLE"]);
+         $input["date"]         = $wupdate["DATE"];
+         $input["operation"]    = $wupdate["OPERATION"];
+         $input["status"]       = $wupdate["STATUS"];
+         $input["supportlink"]  = $wupdate["SUPPORTLINK"];
+         $input["description"]  = $wupdate["DESCRIPTION"];
 
          $CompWupdate = new self();
          $CompWupdate->add($input, ['disable_unicity_check' => true], $install_history);
@@ -191,11 +193,13 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
 
          if ($result->numrows() != 0) {
 
-            $header = "<tr><th>" . __('AU Options', 'ocsinventoryng') . "</th>";
-            $header .= "<th>" . __('Schedule Install Date', 'ocsinventoryng') . "</th>";
-            $header .= "<th>" . __('Last Success Time', 'ocsinventoryng') . "</th>";
-            $header .= "<th>" . __('Detect Success Time', 'ocsinventoryng') . "</th>";
-            $header .= "<th>" . __('Download Success Time', 'ocsinventoryng') . "</th>";
+            $header = "<tr><th>" . __('KB', 'ocsinventoryng') . "</th>";
+            $header .= "<th>" . __('Title', 'ocsinventoryng') . "</th>";
+            $header .= "<th>" . __('Date', 'ocsinventoryng') . "</th>";
+            $header .= "<th>" . __('Operation', 'ocsinventoryng') . "</th>";
+            $header .= "<th>" . __('Status', 'ocsinventoryng') . "</th>";
+            $header .= "<th>" . __('Support link', 'ocsinventoryng') . "</th>";
+            $header .= "<th>" . __('Description', 'ocsinventoryng') . "</th>";
             $header .= "</tr>";
             echo $header;
 
@@ -207,32 +211,13 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
 
             foreach ($result as $data) {
                echo "<tr class='tab_bg_2'>";
-               echo "<td>" . self::getAuoptionsName($data['auoptions']) . "</td>";
-               
-               if (DateTime::createFromFormat('Y-m-d H:i:s', $data['scheduleinstalldate']) !== FALSE 
-                  && $data['scheduleinstalldate'] != "0000-00-00 00:00:00") {
-                  echo "<td>" . Html::convDateTime($data['scheduleinstalldate']) . "</td>";
-               } else {
-                  echo "<td>" . __('Automatic') . "</td>";
-               }
-               if (DateTime::createFromFormat('Y-m-d H:i:s', $data['lastsuccesstime']) !== FALSE 
-                  && $data['lastsuccesstime'] != "0000-00-00 00:00:00") {
-                  echo "<td>" . Html::convDateTime($data['lastsuccesstime']) . "</td>";
-               } else {
-                  echo "<td>" . __('Automatic') . "</td>";
-               }
-               if (DateTime::createFromFormat('Y-m-d H:i:s', $data['detectsuccesstime']) !== FALSE 
-                  && $data['detectsuccesstime'] != "0000-00-00 00:00:00") {
-                  echo "<td>" . Html::convDateTime($data['detectsuccesstime']) . "</td>";
-               } else {
-                  echo "<td>" . __('Automatic') . "</td>";
-               }
-               if (DateTime::createFromFormat('Y-m-d H:i:s', $data['downloadsuccesstime']) !== FALSE 
-                  && $data['downloadsuccesstime'] != "0000-00-00 00:00:00") {
-                  echo "<td>" . Html::convDateTime($data['downloadsuccesstime']) . "</td>";
-               } else {
-                  echo "<td>" . __('Automatic') . "</td>";
-               }
+               echo "<td>" . $data['kb'] . "</td>";
+               echo "<td>" . $data['title'] . "</td>";
+               echo "<td>" . $data['date'] . "</td>";
+               echo "<td>" . $data['operation'] . "</td>";
+               echo "<td>" . $data['status'] . "</td>";
+               echo "<td>" . $data['supportlink'] . "</td>";
+               echo "<td>" . $data['description'] . "</td>";
                echo "</tr>";
                Session::addToNavigateListItems(__CLASS__, $data['id']);
             }
