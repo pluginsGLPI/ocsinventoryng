@@ -428,14 +428,14 @@ JAVASCRIPT;
          // SNMP device link feature
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                   <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsngsnmp.link.php'>
-                   <i style='color:firebrick' class='fas fa-arrow-alt-circle-down fa-3x' 
+                   <i style='color:firebrick' class='fas fa-arrow-alt-circle-down fa-2x' 
                            title=\"" . __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "\"></i>
                      <br>" . __('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "
                   </a></td>";
 
          echo "<td class='center b' colspan='2'>
                <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsngsnmp.sync.php'>
-                  <i style='color:cornflowerblue' class='fas fa-sync-alt fa-3x' 
+                  <i style='color:cornflowerblue' class='fas fa-sync-alt fa-2x' 
                      title=\"" . __s('Synchronize snmp devices already imported', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Synchronize snmp devices already imported', 'ocsinventoryng') . "
                </a></td>";
@@ -444,7 +444,7 @@ JAVASCRIPT;
          //SNMP device import feature
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
              <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsngsnmp.import.php'>
-              <i style='color:cornflowerblue' class='fas fa-plus fa-3x' 
+              <i style='color:cornflowerblue' class='fas fa-plus fa-2x' 
                            title=\"" . __s('Import new SNMP devices', 'ocsinventoryng') . "\"></i>
                 <br>" . __('Import new SNMP devices', 'ocsinventoryng') . "
              </a></td>";

@@ -583,9 +583,9 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                   case self::LINK_RESULT_LINK :
                      if (is_array($rulelink_results['found_inventories']) && count($rulelink_results['found_inventories']) > 0) {
                         $computers_id = $rulelink_results['found_inventories'][0];
-                        $link_params = ['ocsid'                               => $ocsid,
-                                        'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                                        'computers_id'                        => $computers_id];
+                        $link_params  = ['ocsid'                               => $ocsid,
+                                         'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                         'computers_id'                        => $computers_id];
                         if (self::linkComputer($link_params)) {
                            return ['status'       => self::COMPUTER_LINKED,
                                    'entities_id'  => $data['entities_id'],
@@ -880,13 +880,13 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
          ];
          $computer_ocs = $ocsClient->getComputer($line['ocsid'], $options);
 
-         $locks = PluginOcsinventoryngOcslink::getLocksForComputer($line['computers_id']);
-         $params      = ['computers_id'                        => $line["computers_id"],
-                         'cfg_ocs'                             => $cfg_ocs,
-                         'computers_updates'                   => $locks,
-                         'entities_id'                         => $comp->fields['entities_id'],
-                         'HARDWARE'                            => $computer_ocs['HARDWARE'],
-                         'force'                               => $force,
+         $locks  = PluginOcsinventoryngOcslink::getLocksForComputer($line['computers_id']);
+         $params = ['computers_id'      => $line["computers_id"],
+                    'cfg_ocs'           => $cfg_ocs,
+                    'computers_updates' => $locks,
+                    'entities_id'       => $comp->fields['entities_id'],
+                    'HARDWARE'          => $computer_ocs['HARDWARE'],
+                    'force'             => $force,
          ];
 
          $params['check_history'] = true;
@@ -1325,9 +1325,9 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                }
                if ($updates['softwares'] && isset($ocsComputer["SOFTWARES"])) {
                   //import softwares
-                  PluginOcsinventoryngSoftware::updateSoftware($cfg_ocs, $line['computers_id'], $ocsComputer["SOFTWARES"],
-                                                               $comp->fields["entities_id"],
-                                                               $updates['officepack'],
+                  PluginOcsinventoryngSoftware::updateSoftware(                             $cfg_ocs, $line['computers_id'], $ocsComputer["SOFTWARES"],
+                                                                                            $comp->fields["entities_id"],
+                                                                                            $updates['officepack'],
                      (isset($ocsComputer['OFFICEPACK']) ? $ocsComputer['OFFICEPACK'] : []), $force);
                }
                if ($updates['drives'] && isset($ocsComputer["DRIVES"])) {
@@ -1421,6 +1421,16 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                $ocsClient->setChecksum($newchecksum, $line['ocsid']);
             }
 
+            $server = new PluginOcsinventoryngServer();
+            $fields["max_glpidate"]                        = $_SESSION['glpi_currenttime'];
+            $fields["plugin_ocsinventoryng_ocsservers_id"] = $plugin_ocsinventoryng_ocsservers_id;
+            if ($server->getFromDBbyOcsServer($plugin_ocsinventoryng_ocsservers_id)) {
+               $fields["id"] = $plugin_ocsinventoryng_ocsservers_id;
+               $server->update($fields);
+            } else {
+               $server->add($fields);
+            }
+
             //Return code to indicate that computer was synchronized
             return ['status'       => self::COMPUTER_SYNCHRONIZED,
                     'entities_id'  => $comp->fields["entities_id"],
@@ -1428,11 +1438,22 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                     'computers_id' => $line['computers_id']];
 
          }
+
+         $server = new PluginOcsinventoryngServer();
+         $fields["max_glpidate"]                        = $_SESSION['glpi_currenttime'];
+         $fields["plugin_ocsinventoryng_ocsservers_id"] = $plugin_ocsinventoryng_ocsservers_id;
+         if ($server->getFromDBbyOcsServer($plugin_ocsinventoryng_ocsservers_id)) {
+            $fields["id"] = $plugin_ocsinventoryng_ocsservers_id;
+            $server->update($fields);
+         } else {
+            $server->add($fields);
+         }
          // ELSE Return code to indicate only last inventory date changed
          return ['status'       => self::COMPUTER_NOTUPDATED,
                  'entities_id'  => $comp->fields["entities_id"],
                  'rule_matched' => [],
                  'computers_id' => $line['computers_id']];
+
       }
    }
 

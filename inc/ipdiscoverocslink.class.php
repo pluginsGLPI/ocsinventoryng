@@ -1398,15 +1398,15 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
                echo Search::showHeaderItem($output_type, __('Subnet mask'), $header_num);
                echo Search::showHeaderItem($output_type, __('DNS', 'ocsinventoryng'), $header_num);
-               echo Search::showHeaderItem($output_type, __('Description') . "<span class='red'>*</span>", $header_num);
-               echo Search::showHeaderItem($output_type, __('OCS Type', 'ocsinventoryng') . "<span class='red'>*</span>", $header_num);
+               echo Search::showHeaderItem($output_type, __('Description') . "<span style='color:red'>*</span>", $header_num);
+               echo Search::showHeaderItem($output_type, __('OCS Type', 'ocsinventoryng') . "<span style='color:red'>*</span>", $header_num);
                if ($action == "import") {
                   echo Search::showHeaderItem($output_type, __('Name'), $header_num);
                   if (Session::isMultiEntitiesMode()) {
                      echo Search::showHeaderItem($output_type, __('Entity'), $header_num);
                   }
 
-                  echo Search::showHeaderItem($output_type, __('GLPI Type', 'ocsinventoryng') . "<span class='red'>*</span>", $header_num);
+                  echo Search::showHeaderItem($output_type, __('GLPI Type', 'ocsinventoryng') . "<span style='color:red'>*</span>", $header_num);
                } else {
                   echo Search::showHeaderItem($output_type, __('Item to link', 'ocsinventoryng'), $header_num, "", 0, "", 'width=15%');
                }
@@ -1537,7 +1537,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                   }
                   echo Search::showHeaderItem($output_type, __('Name'), $header_num);
 
-                  echo Search::showHeaderItem($output_type, __('GLPI Type', 'ocsinventoryng') . "<span class='red'>*</span>", $header_num);
+                  echo Search::showHeaderItem($output_type, __('GLPI Type', 'ocsinventoryng') . "<span style='color:red'>*</span>", $header_num);
                } else {
                   echo Search::showHeaderItem($output_type, __('Item to link', 'ocsinventoryng'), $header_num, "", 0, "", 'width=15%');
                }

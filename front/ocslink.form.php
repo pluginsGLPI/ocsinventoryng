@@ -42,7 +42,7 @@ if (isset($_POST["launch_ocs_resynch"])) {
    $sync_params = ['ID' => $_POST["resynch_id"],
                    'plugin_ocsinventoryng_ocsservers_id' => $ocsservers_id,
                    'cfg_ocs' => $cfg_ocs,
-                  'force' => 1];
+                  'force' => 0];
    PluginOcsinventoryngOcsProcess::synchronizeComputer($sync_params);
    Html::back();
 } else if (isset($_POST["force_ocs_resynch"])) {
