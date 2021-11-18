@@ -35,6 +35,6 @@ Html::header(__('Information about the script', 'ocsinventoryng'), '', "tools", 
 
 $thread = new PluginOcsinventoryngThread();
 $thread->title();
-$thread->showForm($_GET["pid"]);
+$thread->showThreadForm($_GET["pid"]);
 
 Html::footer();

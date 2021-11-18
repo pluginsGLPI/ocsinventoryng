@@ -81,7 +81,7 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild {
       //update data
       foreach ($ocsComputer as $share) {
 
-         $sha   = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($share));
+         $sha   = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($share));
          $input = [];
 
          $input["computers_id"] = $computers_id;

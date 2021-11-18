@@ -363,8 +363,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                          "display_emptychoice" => false]);
 
          echo "</td></tr>";
-         echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
+         echo "<tr class='tab_bg_2'><td colspan='2'>";
+         echo "<div class='alert alert-important alert-warning d-flex'>";
          echo __('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
+         echo "</div>";
          echo "</td></tr>";
          echo "</table></div>";
          Html::closeForm();
@@ -801,12 +803,12 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                                             'required' => 'required']);
             echo "</td></tr>";
             echo "<tr class='tab_bg_2' ><td class='center'>";
-            echo Html::submit(_sx('button', 'Update'), ['name' => 'Modify']);
+            echo Html::submit(_sx('button', 'Update'), ['name' => 'Modify', 'class' => 'btn btn-primary']);
             echo "</td>";
             Html::closeForm();
             echo "<form name=\"idSelection\" action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php?ip=?$ipAdress&ident=2\" method='post'>";
             echo "<td class='center'>";
-            echo Html::submit(_sx('button', 'Cancel'), ['name' => 'Cancel']);
+            echo Html::submit(_sx('button', 'Cancel'), ['name' => 'Cancel', 'class' => 'btn btn-primary']);
             echo "</td></tr></div>";
             Html::closeForm();
          } //this is for the unidentified subnets
@@ -830,12 +832,12 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                                             'required' => 'required']);
             echo "</td></tr>";
             echo "<tr class='tab_bg_2' ><td class='center'>";
-            echo Html::submit(_sx('button', 'Add'), ['name' => 'Add']);
+            echo Html::submit(_sx('button', 'Add'), ['name' => 'Add', 'class' => 'btn btn-primary']);
             echo "</td>";
             Html::closeForm();
             echo "<form name=\"idSelection\" action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php?ip=?$ipAdress&nonident=3\" method='post'>";
             echo "<td class='center'>";
-            echo Html::submit(_sx('button', 'Cancel'), ['name' => 'Cancel']);
+            echo Html::submit(_sx('button', 'Cancel'), ['name' => 'Cancel', 'class' => 'btn btn-primary']);
             echo "</td></tr></div>";
             Html::closeForm();
          }
@@ -925,7 +927,6 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          $input = [
             'is_dynamic'   => 1,
             'locations_id' => 0,
-            'domains_id'   => 0,
             'entities_id'  => $ipDiscoveryObject["entity"],
             'name'         => $ipDiscoveryObject["itemName"],
             'comment'      => $ipDiscoveryObject["itemDescription"]];
@@ -1262,7 +1263,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       echo "&nbsp;";
       $refresh = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php?" . $reload;
       Html::showSimpleForm($refresh, 'refresh', _sx('button', 'Refresh'), [],
-                          "fa-sync-alt fa-3x");
+                          "fa-sync-alt fa-1x");
       echo "</h2>";
       echo "</div>";
 
@@ -1313,7 +1314,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                self::checkBox($target);
                echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
                echo "<div class='center' style=\"width=100%\">";
-               echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'), ['name' => 'deletelink']);
+               echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'), ['name' => 'deletelink', 'class' => 'btn btn-primary']);
                echo "</div>";
                echo "<table width='100%'class='tab_cadrehov'>\n";
                echo Search::showHeaderItem($output_type, __('Item'), $header_num);
@@ -1367,7 +1368,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo "</tbody>";
                echo "</table>\n";
                echo "<div class='center' style=\"width=100%\">";
-               echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'), ['name' => 'deletelink']);
+               echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'), ['name' => 'deletelink', 'class' => 'btn btn-primary']);
                echo "</div>";
                Html::closeForm();
                self::checkBox($target);
@@ -1383,13 +1384,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
                echo "<div class='center' style=\"width=100%\">";
                if ($action == "import") {
-                  echo Html::submit(_sx('button', 'Import'), ['name' => 'IdentifyAndImport']);
+                  echo Html::submit(_sx('button', 'Import'), ['name' => 'IdentifyAndImport', 'class' => 'btn btn-primary']);
                   echo "&nbsp;";
                } else {
-                  echo Html::submit(__('Link', 'ocsinventoryng'), ['name' => 'IdentifyAndLink']);
+                  echo Html::submit(__('Link', 'ocsinventoryng'), ['name' => 'IdentifyAndLink', 'class' => 'btn btn-primary']);
                   echo "&nbsp;";
                }
-               echo Html::submit(_sx('button', 'Delete from OCSNG', 'ocsinventoryng'), ['name' => 'delete']);
+               echo Html::submit(_sx('button', 'Delete from OCSNG', 'ocsinventoryng'), ['name' => 'delete', 'class' => 'btn btn-primary']);
                echo "</div>";
                echo "<table width='100%'class='tab_cadrehov'>\n";
                echo Search::showHeaderItem($output_type, __('Date'), $header_num);
@@ -1496,13 +1497,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo "</table>\n";
                echo "<div class='center' style=\"width=100%\">";
                if ($action == "import") {
-                  echo Html::submit(_sx('button', 'Import'), ['name' => 'IdentifyAndImport']);
+                  echo Html::submit(_sx('button', 'Import'), ['name' => 'IdentifyAndImport', 'class' => 'btn btn-primary']);
                   echo "&nbsp;";
                } else {
-                  echo Html::submit(__('Link', 'ocsinventoryng'), ['name' => 'IdentifyAndLink']);
+                  echo Html::submit(__('Link', 'ocsinventoryng'), ['name' => 'IdentifyAndLink', 'class' => 'btn btn-primary']);
                   echo "&nbsp;";
                }
-               echo Html::submit(_sx('button', 'Delete from OCSNG', 'ocsinventoryng'), ['name' => 'delete']);
+               echo Html::submit(_sx('button', 'Delete from OCSNG', 'ocsinventoryng'), ['name' => 'delete', 'class' => 'btn btn-primary']);
                echo "</div>";
                Html::closeForm();
                self::checkBox($target);
@@ -1516,13 +1517,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
                echo "<div class='center' style=\"width=100%\">";
                if ($action == "import") {
-                  echo Html::submit(_sx('button', 'Import'), ['name' => 'Import']);
+                  echo Html::submit(_sx('button', 'Import'), ['name' => 'Import', 'class' => 'btn btn-primary']);
                   echo "&nbsp;";
                } else {
-                  echo Html::submit(__('Link', 'ocsinventoryng'), ['name' => 'Link']);
+                  echo Html::submit(__('Link', 'ocsinventoryng'), ['name' => 'Link', 'class' => 'btn btn-primary']);
                   echo "&nbsp;";
                }
-               echo Html::submit(_sx('button', 'Delete from OCSNG', 'ocsinventoryng'), ['name' => 'delete']);
+               echo Html::submit(_sx('button', 'Delete from OCSNG', 'ocsinventoryng'), ['name' => 'delete', 'class' => 'btn btn-primary']);
                echo "<table width='100%'class='tab_cadrehov'>";
                echo Search::showHeaderItem($output_type, __('Date'), $header_num);
                echo Search::showHeaderItem($output_type, __('Description'), $header_num);
@@ -1616,13 +1617,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                echo "</table>";
                echo "<div class='center' style=\"width=100%\">";
                if ($action == "import") {
-                  echo Html::submit(_sx('button', 'Import'), ['name' => 'Import']);
+                  echo Html::submit(_sx('button', 'Import'), ['name' => 'Import', 'class' => 'btn btn-primary']);
                   echo "&nbsp;";
                } else {
-                  echo Html::submit(__('Link', 'ocsinventoryng'), ['name' => 'Link']);
+                  echo Html::submit(__('Link', 'ocsinventoryng'), ['name' => 'Link', 'class' => 'btn btn-primary']);
                   echo "&nbsp;";
                }
-               echo Html::submit(_sx('button', 'Delete from OCSNG', 'ocsinventoryng'), ['name' => 'delete']);
+               echo Html::submit(_sx('button', 'Delete from OCSNG', 'ocsinventoryng'), ['name' => 'delete', 'class' => 'btn btn-primary']);
                echo "</div>";
                Html::closeForm();
                self::checkBox($target);

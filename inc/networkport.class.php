@@ -309,7 +309,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
       $network_ports  = [];
       $network_ifaces = [];
       foreach ($ocsNetworks as $line) {
-         $line = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line));
+         $line = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($line));
 
          $networkport_type = new PluginOcsinventoryngNetworkPortType();
          $networkport_type->getFromTypeAndTypeMIB($line);

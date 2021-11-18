@@ -178,7 +178,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
                                                           'condition' => ["is_active" => 1],
                                                           'toadd'     => ['-1' => __('All')]]);
          echo Html::hidden('profile', ['value' => $profiles_id]);
-         echo Html::submit(_sx('button', 'Add'), ['name' => 'addocsserver']);
+         echo Html::submit(_sx('button', 'Add'), ['name' => 'addocsserver', 'class' => 'btn btn-primary']);
       }
 
       echo "</td><td>";
@@ -203,8 +203,10 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
             if ($ocsserver->getFromDB($id)) {
                echo "<br>";
                if (Session::haveRight("profile", UPDATE)) {
-                  echo Html::input('item[' . $configid[$id] . ']', ['type'  => 'checkbox',
-                                                                    'value' => 1]);
+                  Html::showCheckbox([
+                                        'name'      => 'item[' . $configid[$id] . ']',
+                                        'value' => 1
+                                     ]);
                }
                echo $ocsserver->getLink();
             }
@@ -216,7 +218,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
       echo "</td></tr>";
       if ($nbservers && Session::haveRight("profile", UPDATE)) {
          echo "<tr class='tab_bg_1 center'><td>";
-         echo Html::submit(_sx('button', 'Delete'), ['name' => 'delete']);
+         echo Html::submit(_sx('button', 'Delete'), ['name' => 'delete', 'class' => 'btn btn-primary']);
          echo "</td></tr>";
       }
       echo "</table>";
@@ -241,7 +243,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
           && $closeform) {
          echo "<div class='center'>";
          echo Html::hidden('id', ['value' => $profiles_id]);
-         echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
+         echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
          echo "</div>\n";
          Html::closeForm();
       }

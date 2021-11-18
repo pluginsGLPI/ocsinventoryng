@@ -348,7 +348,7 @@ JAVASCRIPT;
       if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
          echo "<tr class='tab_bg_2'><td class='center' colspan='4'>";
          echo Html::hidden('id', ['value' => $ID]);
-         echo Html::submit(_sx('button', 'Save'), ['name' => 'updateSNMP']);
+         echo Html::submit(_sx('button', 'Save'), ['name' => 'updateSNMP', 'class' => 'btn btn-primary']);
          echo "</td></tr>";
       }
 
@@ -390,8 +390,10 @@ JAVASCRIPT;
                                                           "on_change"           => "this.form.submit()",
                                                           "display_emptychoice" => false]);
          echo "</td></tr>";
-         echo "<tr class='tab_bg_2'><td colspan='2' class ='center red'>";
+         echo "<tr class='tab_bg_2'><td colspan='2'>";
+         echo "<div class='alert alert-important alert-warning d-flex'>";
          echo __('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
+         echo "</div>";
          echo "</td></tr>";
          echo "</table></div>";
          Html::closeForm();
@@ -481,7 +483,7 @@ JAVASCRIPT;
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
                $data = $DB->fetchAssoc($result);
-               $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
+               $data = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($data));
 
                if (count($data)) {
                   echo "<table class='tab_cadre_fixe'>";
@@ -652,6 +654,7 @@ JAVASCRIPT;
                $data = $DB->fetchAssoc($result);
 
                if (count($data)) {
+                  echo "<table class='tab_cadre_fixe'>";
                   echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG SNMP Import informations', 'ocsinventoryng') . "</th>";
 
                   echo "<tr class='tab_bg_1'><td>" . __('Import date in GLPI', 'ocsinventoryng');
@@ -769,6 +772,7 @@ JAVASCRIPT;
 
                      }
                   }
+                  echo "</table>";
                }
             }
          }
@@ -789,10 +793,12 @@ JAVASCRIPT;
                $data = $DB->fetchAssoc($result);
 
                if (count($data)) {
+                  echo "<table class='tab_cadre_fixe'>";
                   echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG IPDiscover Import informations', 'ocsinventoryng') . "</th>";
 
                   echo "<tr class='tab_bg_1'><td>" . __('Import date in GLPI', 'ocsinventoryng');
                   echo "</td><td>" . Html::convDateTime($data["last_update"]) . "</td><td colspan='2'></td></tr>";
+                  echo "</table>";
                }
             }
          }
@@ -1009,7 +1015,7 @@ JAVASCRIPT;
           && count($ocsSnmp['MEMORIES']) > 0
           && $ocsSnmp['MEMORIES'][0]['CAPACITY'] > 0) {
 
-         $dev['designation'] = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep(__("Printer Memory", 'ocsinventoryng')));
+         $dev['designation'] = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep(__("Printer Memory", 'ocsinventoryng')));
 
          $item   = new $itemtype();
          $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
@@ -1537,7 +1543,7 @@ JAVASCRIPT;
           && count($ocsSnmp['MEMORIES']) > 0
           && $ocsSnmp['MEMORIES'][0]['CAPACITY'] > 0) {
 
-         $dev['designation'] = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep(__("Computer Memory", 'ocsinventoryng')));
+         $dev['designation'] = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep(__("Computer Memory", 'ocsinventoryng')));
 
          $item   = new $itemtype();
          $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
@@ -1711,7 +1717,7 @@ JAVASCRIPT;
          $virtualmachine = new ComputerVirtualMachine();
          foreach ($ocsSnmp['VIRTUALMACHINES'] as $k => $ocsVirtualmachine) {
 
-            $ocsVirtualmachine  = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsVirtualmachine));
+            $ocsVirtualmachine  = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($ocsVirtualmachine));
             $vm                 = [];
             $vm['name']         = $ocsVirtualmachine['NAME'];
             $vm['vcpu']         = $ocsVirtualmachine['CPU'];
@@ -1845,7 +1851,7 @@ JAVASCRIPT;
 
          foreach ($ocsSnmp['COMPUTERDISKS'] as $k => $ocsComputerDisks) {
 
-            $ocsComputerDisks       = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputerDisks));
+            $ocsComputerDisks       = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($ocsComputerDisks));
             $disk                   = [];
             $disk['computers_id']   = $id_item;
             $disk['name']           = $ocsComputerDisks['FILESYSTEM'];
@@ -2192,7 +2198,7 @@ JAVASCRIPT;
       echo "</td>";
 
       echo "<td>";
-      echo Html::submit(_sx('button', 'Post'), ['name' => 'search']);
+      echo Html::submit(_sx('button', 'Post'), ['name' => 'search', 'class' => 'btn btn-primary']);
       echo "<a class='fas fa-undo reset-search' href='"
            . $target
            . (strpos($target, '?') ? '&amp;' : '?')
@@ -2294,7 +2300,7 @@ JAVASCRIPT;
             $hardware = [];
             $snmp     = array_slice($ocsResult['SNMP'], $start, $_SESSION['glpilist_limit']);
             foreach ($snmp as $data) {
-               $data                          = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
+               $data                          = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($data));
                $id                            = $data['META']['ID'];
                $hardware[$id]["id"]           = $data['META']["ID"];
                $hardware[$id]["date"]         = $data['META']["LASTDATE"];
@@ -2382,9 +2388,9 @@ JAVASCRIPT;
 
                   echo "<tr class='tab_bg_1'><td colspan='10' class='center'>";
                   if (!$tolinked) {
-                     echo Html::submit(_sx('button', 'Import'), ['name' => 'import_ok']);
+                     echo Html::submit(_sx('button', 'Import'), ['name' => 'import_ok', 'class' => 'btn btn-primary']);
                   } else {
-                     echo Html::submit(_sx('button', 'Link', 'ocsinventoryng'), ['name' => 'import_ok']);
+                     echo Html::submit(_sx('button', 'Link', 'ocsinventoryng'), ['name' => 'import_ok', 'class' => 'btn btn-primary']);
                   }
                   echo "</td></tr>\n";
                }
@@ -2470,7 +2476,7 @@ JAVASCRIPT;
                   } else {
 
                      /* $tab['entities_id'] = $p['glpiactiveentities'];
-                       $rulelink         = new RuleImportComputerCollection();
+                       $rulelink         = new RuleImportAssetCollection();
                        $rulelink_results = array();
                        $params           = array('entities_id' => $p['glpiactiveentities'],
                        'plugin_ocsinventoryng_ocsservers_id'
@@ -2485,8 +2491,8 @@ JAVASCRIPT;
                        if (!isset($rulelink_results['action'])
                        || $rulelink_results['action'] != PluginOcsinventoryngOcsProcess::LINK_RESULT_NO_IMPORT){
 
-                       if (!empty($rulelink_results['found_computers'])){
-                       $options['value']  = $rulelink_results['found_computers'][0];
+                       if (!empty($rulelink_results['found_inventories'])){
+                       $options['value']  = $rulelink_results['found_inventories'][0];
                        $options['entity'] = $p['glpiactiveentities'];
                        } */
 
@@ -2552,9 +2558,9 @@ JAVASCRIPT;
 
                echo "<tr class='tab_bg_1'><td colspan='10' class='center'>";
                if (!$tolinked) {
-                  echo Html::submit(_sx('button', 'Import'), ['name' => 'import_ok']);
+                  echo Html::submit(_sx('button', 'Import'), ['name' => 'import_ok', 'class' => 'btn btn-primary']);
                } else {
-                  echo Html::submit(_sx('button', 'Link', 'ocsinventoryng'), ['name' => 'import_ok']);
+                  echo Html::submit(_sx('button', 'Link', 'ocsinventoryng'), ['name' => 'import_ok', 'class' => 'btn btn-primary']);
                }
                echo Html::hidden('plugin_ocsinventoryng_ocsservers_id',
                                  ['value' => $plugin_ocsinventoryng_ocsservers_id]);
@@ -2688,7 +2694,7 @@ JAVASCRIPT;
             $already_linked = [];
             if ($DB->numrows($result) > 0) {
                while ($data = $DB->fetchAssoc($result)) {
-                  $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
+                  $data = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($data));
 
                   $format = 'Y-m-d H:i:s';
                   //                  $last_glpi_update = DateTime::createFromFormat($format, $data['last_update']);
@@ -2712,8 +2718,8 @@ JAVASCRIPT;
 
                echo "<table class='tab_cadre_fixe'>";
                echo "<tr class='tab_bg_1'><td colspan='6' class='center'>";
-               echo Html::submit(_sx('button', 'Synchronize'), ['name' => 'update_ok']);
-               echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'), ['name' => 'delete']);
+               echo Html::submit(_sx('button', 'Synchronize'), ['name' => 'update_ok', 'class' => 'btn btn-primary']);
+               echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'), ['name' => 'delete', 'class' => 'btn btn-primary']);
                echo "</td></tr>\n";
 
                echo "<tr>";
@@ -2739,8 +2745,8 @@ JAVASCRIPT;
                }
 
                echo "<tr class='tab_bg_1'><td colspan='6' class='center'>";
-               echo Html::submit(_sx('button', 'Synchronize'), ['name' => 'update_ok']);
-               echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'), ['name' => 'delete']);
+               echo Html::submit(_sx('button', 'Synchronize'), ['name' => 'update_ok', 'class' => 'btn btn-primary']);
+               echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'), ['name' => 'delete', 'class' => 'btn btn-primary']);
                echo Html::hidden('plugin_ocsinventoryng_ocsservers_id',
                                  ['value' => $plugin_ocsinventoryng_ocsservers_id]);
                echo "</td></tr>";

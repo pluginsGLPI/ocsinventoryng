@@ -144,7 +144,7 @@ class PluginOcsinventoryngBios extends CommonDBChild {
          }
 
          if (count($compupdate) || $force) {
-            Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($compupdate));
+            Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($compupdate));
             $compupdate["id"]          = $params['computers_id'];
             $compupdate["entities_id"] = $params['entities_id'];
             $comp                      = new Computer();

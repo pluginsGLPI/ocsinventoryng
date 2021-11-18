@@ -121,7 +121,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown {
     * @internal param the $ID item's ID
     * @internal param array $field the item's fields
     */
-   function displaySpecificTypeField($ID, $field = []) {
+   function displaySpecificTypeField($ID, $field = [], array $options = []) {
 
       switch ($field['type']) {
          case 'echo' :

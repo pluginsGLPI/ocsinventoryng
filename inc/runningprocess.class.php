@@ -80,7 +80,7 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild {
       //update data
       foreach ($ocsComputer as $runningprocess) {
 
-         $process               = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($runningprocess));
+         $process               = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($runningprocess));
          $input                 = array_change_key_case($process, CASE_LOWER);
          $input["computers_id"] = $computers_id;
          $Runningprocess->add($input, ['disable_unicity_check' => true], $install_history);

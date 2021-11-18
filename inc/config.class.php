@@ -150,7 +150,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
     *
     * @return bool
     */
-   function showForm($options = []) {
+   function showForm($ID, $options = []) {
 
       $this->getFromDB(1);
 
@@ -328,7 +328,10 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "</td>";
       echo "<td rowspan='4' class='middle right'> " . __('Comments') . "</td>";
       echo "<td class='center middle' rowspan='4'>";
-      echo "<textarea cols='40' rows='5' name='comment' >" . $this->fields["comment"] . "</textarea>";
+      Html::textarea(['name'            => 'comment',
+                      'cols'       => 40,
+                      'rows'       => 5,
+                      'enable_richtext' => false]);
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'>";
@@ -345,7 +348,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
       echo "<td> " . __('Refresh information of a process every', 'ocsinventoryng') . " </td><td>";
-      Html::autocompletionTextField($this, "delay_refresh", ['size' => 5]);
+      echo Html::input('delay_refresh', ['value' => $this->fields['delay_refresh'], 'size' => 5]);
       echo "&nbsp;" . _n('second', 'seconds', 2, 'ocsinventoryng') . "</td>";
       echo "</tr>";
 
@@ -382,7 +385,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
 
       echo "<tr class='tab_bg_2'><td colspan='2' class='center'>";
       echo Html::submit((!$status ? _sx('button', 'Lock', 'ocsinventoryng') : _sx('button', 'Unlock')),
-         ['name' => !$status ? "soft_lock" : "soft_unlock"]);
+         ['name' => !$status ? "soft_lock" : "soft_unlock", 'class' => 'btn btn-primary']);
       echo "</td/></tr/></table><br>";
       Html::closeForm();
       echo "</div>";

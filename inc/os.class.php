@@ -130,7 +130,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
             $install_history = 1;
          }
 
-         $hardware = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($options['HARDWARE']));
+         $hardware = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($options['HARDWARE']));
 
          $updates        = 0;
          $license_number = null;

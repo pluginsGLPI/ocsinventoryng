@@ -82,7 +82,7 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
       $d = new Item_Disk();
       if (count($logical_drives) > 0) {
          foreach ($logical_drives as $logical_drive) {
-            $logical_drive = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($logical_drive));
+            $logical_drive = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($logical_drive));
 
             // Only not empty disk
             if ($logical_drive['TOTAL'] > 0) {

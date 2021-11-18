@@ -552,7 +552,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
          if (!is_null($ocsComputer)) {
 
-            $computer = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsComputer));
+            $computer = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($ocsComputer));
 
             $is_recursive = (isset($data['is_recursive']) ? $data['is_recursive'] : 0);
             $input        = self::getComputerInformations($computer, PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id),
@@ -561,7 +561,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
             PluginOcsinventoryngHardware::getFields($ocsComputer, $cfg_ocs, $input);
 
             //Check if machine could be linked with another one already in DB
-            $rulelink = new RuleImportComputerCollection();
+            $rulelink = new RuleImportAssetCollection();
 
             $params           = ['entities_id' => $data['entities_id'],
                                  'plugin_ocsinventoryng_ocsservers_id'
@@ -572,7 +572,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
             //If at least one rule matched
             //else do import as usual
             if (isset($rulelink_results['action'])) {
-               $rules_matched['RuleImportComputer'] = $rulelink_results['_ruleid'];
+               $rules_matched['RuleImportAsset'] = $rulelink_results['_ruleid'];
 
                switch ($rulelink_results['action']) {
                   case self::LINK_RESULT_NO_IMPORT :
@@ -581,18 +581,16 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                              'rule_matched' => $rules_matched];
 
                   case self::LINK_RESULT_LINK :
-                     if (is_array($rulelink_results['found_computers']) && count($rulelink_results['found_computers']) > 0) {
-
-                        foreach ($rulelink_results['found_computers'] as $tmp => $computers_id) {
-                           $link_params = ['ocsid'                               => $ocsid,
-                                           'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                                           'computers_id'                        => $computers_id];
-                           if (self::linkComputer($link_params)) {
-                              return ['status'       => self::COMPUTER_LINKED,
-                                      'entities_id'  => $data['entities_id'],
-                                      'rule_matched' => $rules_matched,
-                                      'computers_id' => $computers_id];
-                           }
+                     if (is_array($rulelink_results['found_inventories']) && count($rulelink_results['found_inventories']) > 0) {
+                        $computers_id = $rulelink_results['found_inventories'][0];
+                        $link_params = ['ocsid'                               => $ocsid,
+                                        'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                                        'computers_id'                        => $computers_id];
+                        if (self::linkComputer($link_params)) {
+                           return ['status'       => self::COMPUTER_LINKED,
+                                   'entities_id'  => $data['entities_id'],
+                                   'rule_matched' => $rules_matched,
+                                   'computers_id' => $computers_id];
                         }
                         break;
                      }
@@ -1200,6 +1198,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                      'PLUGINS'  => $ocsPluginsResult
                   ],
                ];
+
                //launch process
                $ocsComputer = $ocsClient->getComputer($line['ocsid'], $import_options);
 
@@ -1718,14 +1717,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
             echo "&nbsp;" .
                  Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
             return true;
-         case 'plugin_ocsinventoryng_lock_ocsng_field':
-            $fields['all'] = __('All');
-            $fields        += PluginOcsinventoryngOcslink::getLockableFields();
-            Dropdown::showFromArray("field", $fields);
-            echo "&nbsp;" .
-                 Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
-            return true;
          case 'plugin_ocsinventoryng_unlock_ocsng_field':
+         case 'plugin_ocsinventoryng_lock_ocsng_field':
             $fields['all'] = __('All');
             $fields        += PluginOcsinventoryngOcslink::getLockableFields();
             Dropdown::showFromArray("field", $fields);

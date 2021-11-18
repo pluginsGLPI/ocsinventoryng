@@ -491,7 +491,7 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
       echo "<td>";
       Dropdown::show('State', ['name' => "states_id",
                                'used' => $used]);
-      echo Html::submit(_sx('button', 'Add'), ['name' => 'add_state']);
+      echo Html::submit(_sx('button', 'Add'), ['name' => 'add_state', 'class' => 'btn btn-primary']);
       echo "</td>";
       echo "</tr>";
       echo "</table>";
@@ -579,9 +579,9 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM {
          echo Html::hidden('entities_id', ['value' => $ID]);
          if ($entitynotification->fields["id"]) {
             echo Html::hidden('id', ['value' => $entitynotification->fields["id"]]);
-            echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
+            echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
          } else {
-            echo Html::submit(_sx('button', 'Save'), ['name' => 'add']);
+            echo Html::submit(_sx('button', 'Save'), ['name' => 'add', 'class' => 'btn btn-primary']);
          }
          echo "</td></tr>";
          echo "</table>";

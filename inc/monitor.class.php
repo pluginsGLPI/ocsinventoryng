@@ -91,7 +91,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
          if ($cfg_ocs["import_monitor"] > 2 && empty($monitor["SERIAL"])) {
             unset($monitor);
          } else {
-            $monitors[] = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($monitor));
+            $monitors[] = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($monitor));
          }
       }
 

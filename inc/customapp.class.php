@@ -79,7 +79,7 @@ class PluginOcsinventoryngCustomapp extends CommonDBChild {
       //update data
       foreach ($ocsComputer as $app) {
 
-         $customapp                 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($app));
+         $customapp                 = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($app));
          $input                 = [];
          $input["computers_id"] = $computers_id;
          if (!empty($customapp) && isset($customapp["PATH"])) {

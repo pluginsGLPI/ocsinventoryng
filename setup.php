@@ -32,7 +32,7 @@ define("PLUGIN_OCSINVENTORYNG_STATE_RUNNING", 2);
 define("PLUGIN_OCSINVENTORYNG_STATE_FINISHED", 3);
 
 define("PLUGIN_OCSINVENTORYNG_LOCKFILE", GLPI_LOCK_DIR . "/ocsinventoryng.lock");
-define('PLUGIN_OCS_VERSION', '1.7.3');
+define('PLUGIN_OCS_VERSION', '2.0.0');
 
 /**
  * Init the hooks of the plugins -Needed
@@ -41,7 +41,7 @@ function plugin_init_ocsinventoryng() {
    global $PLUGIN_HOOKS, $CFG_GLPI, $DB;
 
    $PLUGIN_HOOKS['csrf_compliant']['ocsinventoryng'] = true;
-   $PLUGIN_HOOKS['use_rules']['ocsinventoryng']      = ['RuleImportEntity', 'RuleImportComputer'];
+   $PLUGIN_HOOKS['use_rules']['ocsinventoryng']      = ['RuleImportEntity', 'RuleImportAsset'];
 
    $PLUGIN_HOOKS['change_profile']['ocsinventoryng'] = ['PluginOcsinventoryngProfile',
                                                         'initProfile'];
@@ -118,25 +118,29 @@ function plugin_init_ocsinventoryng() {
    }
 
    Plugin::registerClass('PluginOcsinventoryngOcsServer',
-                         ['massiveaction_noupdate_types' => true,
+                         [
+//                            'massiveaction_noupdate_types' => true,
                           'systeminformations_types'     => true]);
 
    Plugin::registerClass('PluginOcsinventoryngProfile',
                          ['addtabon' => 'Profile']);
 
    Plugin::registerClass('PluginOcsinventoryngNotimportedcomputer',
-                         ['massiveaction_noupdate_types' => true,
-                          'massiveaction_nodelete_types' => true,
+                         [
+//                            'massiveaction_noupdate_types' => true,
+//                          'massiveaction_nodelete_types' => true,
                           'notificationtemplates_types'  => true]);
 
    Plugin::registerClass('PluginOcsinventoryngRuleImportEntity',
-                         ['massiveaction_noupdate_types' => true,
-                          'massiveaction_nodelete_types' => true,
+                         [
+//                            'massiveaction_noupdate_types' => true,
+//                          'massiveaction_nodelete_types' => true,
                           'notificationtemplates_types'  => true]);
 
    Plugin::registerClass('PluginOcsinventoryngDetail',
-                         ['massiveaction_noupdate_types' => true,
-                          'massiveaction_nodelete_types' => true]);
+//                         ['massiveaction_noupdate_types' => true,
+//                          'massiveaction_nodelete_types' => true]
+   );
 
    Plugin::registerClass('PluginOcsinventoryngNetworkPort',
                          ['networkport_instantiations' => true]);
@@ -175,9 +179,7 @@ function plugin_init_ocsinventoryng() {
 
       $PLUGIN_HOOKS['post_init']['ocsinventoryng'] = 'plugin_ocsinventoryng_postinit';
 
-      if (class_exists('PluginMydashboardMenu')) {
-         $PLUGIN_HOOKS['mydashboard']['ocsinventoryng'] = ["PluginOcsinventoryngDashboard"];
-      }
+      $PLUGIN_HOOKS['mydashboard']['ocsinventoryng'] = ["PluginOcsinventoryngDashboard"];
 
       if($ocsserver->getField('import_bitlocker')){
          $PLUGIN_HOOKS['post_item_form']['ocsinventoryng'] = [PluginOcsinventoryngBitlockerstatus::class,'showForDisk'];
@@ -212,35 +214,11 @@ function plugin_version_ocsinventoryng() {
            'homepage'     => 'https://github.com/pluginsGLPI/ocsinventoryng',
            'requirements' => [
               'glpi' => [
-                 'min' => '9.5',
+                 'min' => '10.0',
+                 'max' => '11.0',
                  'dev' => false
               ]
            ]
    ];
 
-}
-
-
-/**
- * Optional : check prerequisites before install : may print errors or add to message after redirect
- **/
-function plugin_ocsinventoryng_check_prerequisites() {
-
-   if (version_compare(GLPI_VERSION, '9.5', 'lt')
-       || version_compare(GLPI_VERSION, '9.6', 'ge')) {
-      if (method_exists('Plugin', 'messageIncompatible')) {
-         echo Plugin::messageIncompatible('core', '9.5');
-      }
-      return false;
-   }
-   return true;
-}
-
-
-// Uninstall process for plugin : need to return true if succeeded : may display messages or add to message after redirect
-/**
- * @return bool
- */
-function plugin_ocsinventoryng_check_config() {
-   return true;
 }

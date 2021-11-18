@@ -136,7 +136,7 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
 
 
       foreach ($ocsComputer as $software) {
-         $software = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($software));
+         $software = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($software));
 
          //As we cannot be sure that data coming from OCS are in utf8, let's try to encode them
          //if possible

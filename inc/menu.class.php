@@ -82,7 +82,7 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
       $menu['options']['link']['page']  = '/plugins/ocsinventoryng/front/ocsng.link.php';
 
       // Thread
-      $menu['options']['thread']['title'] = __s('Scripts execution of automatic actions', 'ocsinventoryng');
+      $menu['options']['thread']['title'] = __('Scripts execution of automatic actions', 'ocsinventoryng');
       $menu['options']['thread']['page']  = '/plugins/ocsinventoryng/front/thread.php';
 
       // Detail

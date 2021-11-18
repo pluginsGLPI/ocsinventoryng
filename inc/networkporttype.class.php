@@ -102,7 +102,7 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
     * @param       $ID
     * @param array $field
     */
-   function displaySpecificTypeField($ID, $field = []) {
+   function displaySpecificTypeField($ID, $field = [], array $options = []) {
 
       switch ($field['type']) {
          case 'instantiation_type' :

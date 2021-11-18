@@ -108,7 +108,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                      self::showLockIcon($item->getField('id'), $data);
 
                      $ocs_config = PluginOcsinventoryngOcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
-
+                     echo "<table class='tab_cadre_fixe'>";
                      echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG Import informations', 'ocsinventoryng') . "</th></tr>";
 
                      echo "<tr class='tab_bg_1'><td>" . __('Last OCSNG inventory date', 'ocsinventoryng');
@@ -212,6 +212,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                         echo "<td></td>";
                      }
                      echo "</tr>";
+                     echo "</table>";
                   }
                }
 
@@ -226,6 +227,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
 
                   if (count($data)) {
                      $target = Toolbox::getItemTypeFormURL("PluginOcsinventoryngSnmpOcslink");
+                     echo "<table class='tab_cadre_fixe'>";
                      echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG SNMP Import informations', 'ocsinventoryng') . "</th>";
                      $linked = __('Imported object', 'ocsinventoryng');
                      if ($data["linked"]) {
@@ -268,6 +270,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                            }
                         }
                      }
+                     echo "</table>";
                   }
                }
                if (in_array($item->getType(), PluginOcsinventoryngIpdiscoverOcslink::$hardwareItemTypes)) {
@@ -285,10 +288,12 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                         $data = $DB->fetchAssoc($result);
 
                         if (count($data)) {
+                           echo "<table class='tab_cadre_fixe'>";
                            echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG IPDiscover Import informations', 'ocsinventoryng') . "</th>";
 
                            echo "<tr class='tab_bg_1'><td>" . __('Import date in GLPI', 'ocsinventoryng');
                            echo "</td><td>" . Html::convDateTime($data["last_update"]) . "</td><td colspan='2'>&nbsp;</td></tr>";
+                           echo "</table>";
                         }
                      }
                   }
@@ -297,7 +302,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          } else if($plugin_ocsinventoryng_ocsservers_id > 0) {
 
             $ocs_config = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
-
+            echo "<table class='tab_cadre_fixe'>";
             echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG Import informations', 'ocsinventoryng') . "</th></tr>";
             echo "<tr class='tab_bg_1'>";
             echo "<td>" . __('Server');
@@ -313,7 +318,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             echo "</td><td>";
             echo Dropdown::getYesNo(0);
             echo "</td></tr>";
-
+            echo "</table>";
          }
       }
    }
@@ -366,7 +371,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
                $data = $DB->fetchAssoc($result);
-               $data = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($data));
+               $data = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($data));
 
                if (count($data)) {
 
@@ -426,25 +431,25 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                      echo "<tr class='tab_bg_1'>";
                      echo "<td class='center'>";
                      echo Html::hidden('link_id', ['value' => $data["id"]]);
-                     echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
+                     echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
                      echo "</td>";
 
                      echo "<td class='center'>";
                      echo Html::hidden('resynch_id', ['value' => $data["id"]]);
                      echo Html::submit(_sx('button', 'Launch synchronization', 'ocsinventoryng'),
-                                           ['name' => 'launch_ocs_resynch']);
+                                           ['name' => 'launch_ocs_resynch', 'class' => 'btn btn-primary']);
                      echo "</td>";
 
                      echo "<td class='center'>";
                      echo Html::hidden('resynch_id', ['value' => $data["id"]]);
                      echo Html::submit(_sx('button', 'Force full import', 'ocsinventoryng'),
-                                       ['name' => 'force_ocs_resynch']);
+                                       ['name' => 'force_ocs_resynch', 'class' => 'btn btn-primary']);
                      echo "</td>";
 
                      echo "<td class='center'>";
                      echo Html::hidden('items_id', ['value' => $items_id]);
                      echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'),
-                                       ['name' => 'delete_link']);
+                                       ['name' => 'delete_link', 'class' => 'btn btn-primary']);
                      echo "</td>";
 
                      echo "</tr>";
@@ -1302,11 +1307,11 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                    || $field == "license_number"
                    || $field == "use_date"
                ) {
-                  $js = '$("input[name=' . $field . ']").closest("td").prev().append("&nbsp;<i class=\"lockfield' . $field . ' fas fa-lock pointer\"></i>");';
+                  $js = '$("input[name=' . $field . ']").after("&nbsp;<i class=\"btn btn-outline-secondary red lockfield' . $field . ' fas fa-lock pointer\"></i>");';
                } else if ($field == "comment") {
-                  $js = '$("textarea[name=' . $field . ']").closest("td").prev().append("&nbsp;<i class=\"lockfield' . $field . ' fas fa-lock pointer\"></i>");';
+                  $js = '$("textarea[name=' . $field . ']").after("&nbsp;<i class=\"btn btn-outline-secondary red lockfield' . $field . ' fas fa-lock pointer\"></i>");';
                } else {
-                  $js = '$("select[name=' . $field . ']").closest("td").prev().append("&nbsp;<i class=\"lockfield' . $field . ' fas fa-lock pointer\"></i>");';
+                  $js = '$("select[name=' . $field . ']").after("&nbsp;<i class=\"btn btn-outline-secondary red lockfield' . $field . ' fas fa-lock pointer\"></i>");';
                }
                $rootdoc                             = $CFG_GLPI["root_doc"];
                $plugin_ocsinventoryng_ocsservers_id = $data['plugin_ocsinventoryng_ocsservers_id'];

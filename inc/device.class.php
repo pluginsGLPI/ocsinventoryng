@@ -139,7 +139,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
 
             $CompDevice = new $devicetype();
             foreach ($ocsComputer as $line2) {
-               $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+               $line2 = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($line2));
                if (isset($line2["CAPACITY"]) && $line2["CAPACITY"] != "No") {
                   $ram["designation"] = "";
                   if ($line2["TYPE"] != "Empty Slot" && $line2["TYPE"] != "Unknown") {
@@ -210,7 +210,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                                'entities_id' => $entities_id,
                                                'is_dynamic'  => 1]);
             foreach ($ocsComputer as $line2) {
-               $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+               $line2 = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($line2));
                if (!empty($line2["DISKSIZE"]) && preg_match("/disk|spare\sdrive/i", $line2["TYPE"])) {
                   if ($line2["NAME"]) {
                      $dd["designation"] = $line2["NAME"];
@@ -273,7 +273,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                          'is_dynamic'  => 1]);
             //lecteurs
             foreach ($ocsComputer as $line2) {
-               $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+               $line2 = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($line2));
                if (empty($line2["DISKSIZE"]) || !preg_match("/disk/i", $line2["TYPE"])) {
                   if ($line2["NAME"]) {
                      $stor["designation"] = $line2["NAME"];
@@ -330,7 +330,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                             'is_dynamic'  => 1]);
                //Modems
                foreach ($ocsComputer['MODEMS'] as $line2) {
-                  $line2              = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+                  $line2              = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($line2));
                   $mdm["designation"] = $line2["NAME"];
                   $mdm["entities_id"] = $entities_id;
                   if (!empty($line2["DESCRIPTION"])) {
@@ -377,7 +377,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                             'is_dynamic'  => 1]);
 
                foreach ($ocsComputer['PORTS'] as $line2) {
-                  $line2               = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+                  $line2               = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($line2));
                   $port["designation"] = "";
                   if ($line2["TYPE"] != "Other") {
                      $port["designation"] .= $line2["TYPE"];
@@ -434,7 +434,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                             'entities_id' => $entities_id,
                                             'is_dynamic'  => 1]);
                foreach ($ocsComputer['SLOTS'] as $line2) {
-                  $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+                  $line2 = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($line2));
                   if ($line2['NAME']) {
                      if (!$ocs_db_utf8 && !Toolbox::seems_utf8($line2["NAME"])) {
                         $line2["NAME"] = Toolbox::encodeInUtf8($line2["NAME"]);
@@ -487,7 +487,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             $CompDevice  = new $devicetype();
             //Processeurs:
             foreach ($ocsComputer as $line2) {
-               $line2                    = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+               $line2                    = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($line2));
                $processor                = [];
                $processor["designation"] = $line2["TYPE"];
                if (!is_numeric($line2["SPEED"])) {
@@ -555,7 +555,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                          'is_dynamic'  => 1]);
             //carte graphique
             foreach ($ocsComputer as $line2) {
-               $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+               $line2 = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($line2));
                if ($line2['NAME']) {
                   $video["designation"] = $line2["NAME"];
                   $video["entities_id"] = $entities_id;
@@ -608,7 +608,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                          'is_dynamic'  => 1]);
             //carte son
             foreach ($ocsComputer as $line2) {
-               $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+               $line2 = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($line2));
                if ($line2['NAME']) {
                   if (!$ocs_db_utf8 && !Toolbox::seems_utf8($line2["NAME"])) {
                      $line2["NAME"] = Toolbox::encodeInUtf8($line2["NAME"]);
@@ -709,7 +709,7 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                                          'is_dynamic'  => 1]);
 
             foreach ($ocsComputer as $line2) {
-               $line2 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($line2));
+               $line2 = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($line2));
                if ($line2['NAME']) {
                   if (!$ocs_db_utf8 && !Toolbox::seems_utf8($line2["NAME"])) {
                      $line2["NAME"] = Toolbox::encodeInUtf8($line2["NAME"]);

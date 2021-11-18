@@ -50,6 +50,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    public function __construct($id, $dbhost, $dbuser, $dbpassword, $dbdefault) {
       parent::__construct($id);
       $this->db = new PluginOcsinventoryngDBocs($dbhost, $dbuser, $dbpassword, $dbdefault);
+      $this->dbname = $dbdefault;
    }
 
    /**
@@ -57,6 +58,10 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
     */
    public function getDB() {
       return $this->db;
+   }
+
+   public function getSchema() {
+      return $this->dbname;
    }
 
    /**
@@ -173,18 +178,23 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
    function OcsTableExists($tablename) {
 
       // Get a list of tables contained within the database.
-      $result = $this->db->listTables("%$tablename%");
+      $query   = "SELECT table_name as TABLE_NAME
+                FROM information_schema.tables
+                WHERE table_schema = '$this->dbname'
+                 AND table_type ='BASE TABLE'
+                     AND table_name = '$tablename'";
+      $request = $this->db->query($query);
 
-      if (count($result)) {
-         while ($data = $result->next()) {
-            if ($data['TABLE_NAME'] === $tablename) {
-               return true;
-            }
+      while ($data = $this->db->fetchAssoc($request)) {
+         if ($data['TABLE_NAME'] === $tablename) {
+            return true;
          }
+
       }
 
       return false;
    }
+
 
    /*    * ******************* */
    /* PRIVATE  FUNCTIONS */
@@ -299,7 +309,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                }
                break;
             case "softwares" :
-               if ($version['TVALUE'] >= PluginOcsinventoryngOcsServer::OCS2_7_VERSION_LIMIT) {
+               if ($version['TVALUE'] > PluginOcsinventoryngOcsServer::OCS2_7_VERSION_LIMIT) {
                   if (($check & $checksum) || $complete > 0) {
                      if (self::WANTED_DICO_SOFT & $wanted) {
                         $query = "SELECT
@@ -490,6 +500,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                }
                break;
             default :
+
                if (self::OcsTableExists($table)) {
                   if (($check & $checksum) || $complete > 0) {
                      $query   = "SELECT * 
@@ -1001,7 +1012,6 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       } else {
          $where_condition = "";
       }
-
       $version = $this->getConfig("GUI_VERSION");
       $archive = "";
       if ($version['TVALUE'] >= PluginOcsinventoryngOcsServer::OCS2_8_VERSION_LIMIT) {
@@ -1138,7 +1148,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
       $query    = "SELECT `CHECKSUM` FROM `hardware` WHERE `ID` = $id";
       $checksum = $this->db->query($query);
       $res      = $this->db->fetchAssoc($checksum);
-      return isset($res["CHECKSUM"])?$res["CHECKSUM"]:0;
+      return isset($res["CHECKSUM"]) ? $res["CHECKSUM"] : 0;
    }
 
    /**

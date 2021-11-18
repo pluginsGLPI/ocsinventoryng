@@ -69,7 +69,7 @@ class PluginOcsinventoryngOfficepack extends CommonDBChild {
       }
 
       foreach ($ocsOfficePacks as $ocsOfficePack) {
-         $ocsOfficePack = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsOfficePack));
+         $ocsOfficePack = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($ocsOfficePack));
 
          if ($ocsOfficePack['PRODUCT'] == $softwares_name) {
 

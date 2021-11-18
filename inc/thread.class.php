@@ -69,7 +69,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
     * @param $pid
     * @internal param array $options
     */
-   function showForm($pid) {
+   function showThreadForm($pid) {
       global $DB;
 
       $config = new PluginOcsinventoryngConfig();
@@ -424,7 +424,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
          echo "<a onclick= \"if ( unMarkCheckboxes('processes') ) "
               . "return false;\" href='#'>" . __("Uncheck all") . "</a>";
          echo "</td><td align='left' width='80%'>";
-         echo Html::submit(_x('button', 'Delete permanently'), ['name' => 'delete_processes']);
+         echo Html::submit(_x('button', 'Delete permanently'), ['name' => 'delete_processes', 'class' => 'btn btn-primary']);
          echo "</td>";
          echo "</table>";
       }

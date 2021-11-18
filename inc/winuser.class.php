@@ -79,7 +79,7 @@ class PluginOcsinventoryngWinuser extends CommonDBChild {
       //update data
       foreach ($ocsComputer as $wusers) {
 
-         $wuser                 = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($wusers));
+         $wuser                 = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($wusers));
          $input                 = [];
          $input["computers_id"] = $computers_id;
          if (!empty($wuser) && isset($wuser["NAME"])) {

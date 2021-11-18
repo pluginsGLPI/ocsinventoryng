@@ -80,7 +80,7 @@ class PluginOcsinventoryngVirtualmachine extends CommonDBChild {
 
       if (count($ocsVirtualmachines) > 0) {
          foreach ($ocsVirtualmachines as $ocsVirtualmachine) {
-            $ocsVirtualmachine  = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($ocsVirtualmachine));
+            $ocsVirtualmachine  = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($ocsVirtualmachine));
             $vm                 = [];
             $vm['name']         = $ocsVirtualmachine['NAME'];
             $vm['vcpu']         = $ocsVirtualmachine['VCPU'];

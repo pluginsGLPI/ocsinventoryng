@@ -75,7 +75,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
       $reg = new self();
       //update data
       foreach ($ocsComputer as $registry) {
-         $registry              = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($registry));
+         $registry              = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($registry));
          $input                 = [];
          $input["computers_id"] = $computers_id;
          $input["hive"]         = $registry["regtree"];

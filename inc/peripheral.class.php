@@ -83,7 +83,7 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
       foreach ($ocsComputer as $peripheral) {
 
          if ($peripheral["CAPTION"] !== '') {
-            $peripheral     = Toolbox::clean_cross_side_scripting_deep(Toolbox::addslashes_deep($peripheral));
+            $peripheral     = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($peripheral));
             $periph         = [];
             $periph["name"] = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"], $peripheral["CAPTION"]);
             //Look for a monitor with the same name (and serial if possible) already connected
