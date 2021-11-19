@@ -573,7 +573,6 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
             //else do import as usual
             if (isset($rulelink_results['action'])) {
                $rules_matched['RuleImportAsset'] = $rulelink_results['_ruleid'];
-
                switch ($rulelink_results['action']) {
                   case self::LINK_RESULT_NO_IMPORT :
                      return ['status'       => self::COMPUTER_LINK_REFUSED,

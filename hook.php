@@ -1448,7 +1448,7 @@ function plugin_ocsinventoryng_executeActions($params) {
               break;
          }*/
       case 'RuleImportAsset':
-         if ($action->fields['field'] == '_fusion') {
+         if ($action->fields['field'] == '_fusion' || $action->fields['field'] == '_inventory') {
             if ($action->fields["value"] == RuleImportAsset::RULE_ACTION_LINK_OR_IMPORT) {
                if (isset($params['params']['criterias_results']['found_inventories'])) {
                   $output['found_inventories'] = $params['params']['criterias_results']['found_inventories'];

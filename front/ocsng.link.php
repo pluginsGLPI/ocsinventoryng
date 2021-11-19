@@ -101,6 +101,10 @@ if (!isset($_POST["import_ok"])) {
    if (!isset($_GET['start'])) {
       $_GET['start'] = 0;
    }
+   if (isset($_GET['start'])) {
+      $_SESSION['ocs_import']['start'] = $_GET['start'];
+   }
+
    if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
 
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
