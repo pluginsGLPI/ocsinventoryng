@@ -415,8 +415,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
 
       if ($canedit) {
          echo "<table class='tab_glpi' width='95%'>";
-         echo "<tr><td width='30px'><img src=\"" . $CFG_GLPI["root_doc"]
-              . "/pics/arrow-left.png\" alt=''></td><td class='center'>";
+         echo "<tr><td width='30px'><i class='fas fa-level-down-alt fa-flip-horizontal mt-2'></td><td class='center'>";
          echo "<a onclick= \"if ( markCheckboxes('processes') ) "
               . "return false;\" href='#'>" . __("Check all") . "</a></td>";
 

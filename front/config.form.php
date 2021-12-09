@@ -53,8 +53,7 @@ if ($plugin->isActivated("ocsinventoryng")) {
    $config->display(['id' => 1]);
 } else {
    Html::header(__('Setup'), '', "tools", "pluginocsinventoryngmenu", "config");
-   echo "<div class='center'><br><br>";
-   echo "<i class='fas fa-exclamation-triangle fa-4x' style='color:orange'></i><br><br>";
+   echo "<div class='alert alert-important alert-warning d-flex'>";
    echo "<b>" . __('Please activate the plugin', 'ocsinventoryng') . "</b></div>";
 }
 
