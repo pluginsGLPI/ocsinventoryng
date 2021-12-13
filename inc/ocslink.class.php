@@ -1313,7 +1313,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                } else {
                   $js = '$("select[name=' . $field . ']").after("&nbsp;<i class=\"btn btn-outline-secondary red lockfield' . $field . ' fas fa-lock pointer\"></i>");';
                }
-               $rootdoc                             = PLUGIN_OCS_WEBDIR;
+               $root_ocs_doc                             = PLUGIN_OCS_WEBDIR;
                $plugin_ocsinventoryng_ocsservers_id = $data['plugin_ocsinventoryng_ocsservers_id'];
                $js .= '$(document).ready(function() {
                         $(".lockfield' . $field . '").click(function(e) {
@@ -1330,7 +1330,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                           if (check) {
                                  $.ajax({
                                  type: "POST",
-                                 url: "' . $rootdoc . '/ajax/updatelock.php",
+                                 url: "' . $root_ocs_doc . '/ajax/updatelock.php",
                                  data:lock_data,
                                  success: function(){
                                     window.location.reload();
