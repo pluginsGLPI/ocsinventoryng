@@ -153,7 +153,7 @@ class PluginOcsinventoryngProfile extends CommonDBTM {
 
       if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]))
           && $openform) {
-         echo "<form action='" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/profile.form.php' method='post'>";
+         echo "<form action='" . PLUGIN_OCS_WEBDIR . "/front/profile.form.php' method='post'>";
       }
       //Delegating
       echo "<table class='tab_cadre_fixehov'>";

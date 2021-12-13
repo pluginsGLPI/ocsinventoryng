@@ -338,7 +338,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       $dbu = new DbUtils();
       $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', ["is_active" => 1]);
       if ($numberActiveServers > 0) {
-         echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
+         echo "<form action=\"" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php\"
          method='post'>";
          echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an OCSNG server', 'ocsinventoryng') .
@@ -387,7 +387,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
    static function showSubnetSearchForm($action) {
       global $CFG_GLPI;
 
-      echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php?action=$action\"
+      echo "<form action=\"" . PLUGIN_OCS_WEBDIR . "/front/ipdiscover.php?action=$action\"
                 method='post'>";
       echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
       if ($action == "import") {
@@ -626,7 +626,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     * this function load in memory the mac address constructor
     */
    static function loadMacConstructor() {
-      $macFile = GLPI_ROOT . "/plugins/ocsinventoryng/files/macManufacturers.txt";
+      $macFile = PLUGIN_OCS_DIR . "/files/macManufacturers.txt";
       $result  = "";
       $macs    = [];
       if ($file = @fopen($macFile, "r")) {
@@ -656,13 +656,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       global $CFG_GLPI, $DB;
 
       $output_type = Search::HTML_OUTPUT; //0
-      $return      = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php";
-      $link        = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
+      $return      = PLUGIN_OCS_WEBDIR . "/front/ocsng.php";
+      $link        = PLUGIN_OCS_WEBDIR . "/front/ipdiscover.php";
       $choice      = "subnetsChoice=" . $subnetsArray["subnetsChoice"] . "&action=$action";
       $subnets     = $subnetsArray["subnets"];
       $row_num     = 1;
 
-      $hardwareNetwork = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php";
+      $hardwareNetwork = PLUGIN_OCS_WEBDIR . "/front/ipdiscover.import.php";
 
       echo Html::printPager($start, count($subnets), $link, $choice);
       echo Search::showNewLine($output_type, true);
@@ -689,7 +689,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             }
             echo Search::showNewLine($output_type, $row_num % 2);
             $ip   = $subnets[$i]["IP"];
-            $link = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.modifynetwork.php?ip=$ip";
+            $link = PLUGIN_OCS_WEBDIR . "/front/ipdiscover.modifynetwork.php?ip=$ip";
             echo "<td class='center'><a href=\"$link\"" . Search::showItem($output_type, $name, $item_num, $row_num) . "</a></td>";
             echo Search::showItem($output_type, $ip, $item_num, $row_num);
             $link = $hardwareNetwork . "?ip=$ip&status=noninventoried&action=$action";
@@ -762,7 +762,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          }
          $res = $OCSDB->query($addQuery);
          if ($res) {
-            $link = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php?subnetsChoice=2"; //2 is for the known subnets
+            $link = PLUGIN_OCS_WEBDIR . "/front/ipdiscover.php?subnetsChoice=2"; //2 is for the known subnets
             Html::redirect($link);
          }
       } else {
@@ -772,7 +772,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
               FROM subnet
               WHERE `subnet`.`NETID` = '$ipAdress'";
          $result = $OCSDB->query($query);
-         $target = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.modifynetwork.php?ip=$ipAdress\"";
+         $target = PLUGIN_OCS_WEBDIR . "/front/ipdiscover.modifynetwork.php?ip=$ipAdress\"";
 
          echo "<form name=\"idSelection\" action=\"" . $target . " method='post'>";
          echo "<tr class='tab_bg_2' ><td class='center' >" . __('Subnet Name', 'ocsinventoryng') . "</td>";
@@ -806,7 +806,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             echo Html::submit(_sx('button', 'Update'), ['name' => 'Modify', 'class' => 'btn btn-primary']);
             echo "</td>";
             Html::closeForm();
-            echo "<form name=\"idSelection\" action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php?ip=?$ipAdress&ident=2\" method='post'>";
+            echo "<form name=\"idSelection\" action=\"" . PLUGIN_OCS_WEBDIR . "/front/ipdiscover.php?ip=?$ipAdress&ident=2\" method='post'>";
             echo "<td class='center'>";
             echo Html::submit(_sx('button', 'Cancel'), ['name' => 'Cancel', 'class' => 'btn btn-primary']);
             echo "</td></tr></div>";
@@ -835,7 +835,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             echo Html::submit(_sx('button', 'Add'), ['name' => 'Add', 'class' => 'btn btn-primary']);
             echo "</td>";
             Html::closeForm();
-            echo "<form name=\"idSelection\" action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php?ip=?$ipAdress&nonident=3\" method='post'>";
+            echo "<form name=\"idSelection\" action=\"" . PLUGIN_OCS_WEBDIR . "/front/ipdiscover.php?ip=?$ipAdress&nonident=3\" method='post'>";
             echo "<td class='center'>";
             echo Html::submit(_sx('button', 'Cancel'), ['name' => 'Cancel', 'class' => 'btn btn-primary']);
             echo "</td></tr></div>";
@@ -1241,8 +1241,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       global $CFG_GLPI, $DB;
 
       $output_type = Search::HTML_OUTPUT; //0
-      $link        = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php";
-      $return      = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
+      $link        = PLUGIN_OCS_WEBDIR . "/front/ipdiscover.import.php";
+      $return      = PLUGIN_OCS_WEBDIR . "/front/ipdiscover.php";
       $returnargs  = "subnetsChoice=$subnet&action=$action";
       $reload      = "ip=$ipAdress&status=$status&action=$action";
       $backValues  = "?b[]=$ipAdress&b[]=$status";
@@ -1261,7 +1261,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
       echo "<div class='center'>";
       echo "<h2>" . __('Subnet') . " " . $subnet_name . " (" . $ipAdress . ") - " . $status_name;
       echo "&nbsp;";
-      $refresh = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php?" . $reload;
+      $refresh = PLUGIN_OCS_WEBDIR . "/front/ipdiscover.import.php?" . $reload;
       Html::showSimpleForm($refresh, 'refresh', _sx('button', 'Refresh'), [],
                           "fa-sync-alt fa-1x");
       echo "</h2>";
@@ -1310,7 +1310,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                break;
 
             case "imported" :
-               $target = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php" . $backValues;
+               $target = PLUGIN_OCS_WEBDIR . "/front/ipdiscover.import.php" . $backValues;
                self::checkBox($target);
                echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
                echo "<div class='center' style=\"width=100%\">";
@@ -1376,8 +1376,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
 
             case "noninventoried" :
                $ocsTypes       = ["id" => [Dropdown::EMPTY_VALUE], "name" => [Dropdown::EMPTY_VALUE]];
-               $link           = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
-               $target         = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php" . $backValues;
+               $link           = PLUGIN_OCS_WEBDIR . "/front/ipdiscover.php";
+               $target         = PLUGIN_OCS_WEBDIR . "/front/ipdiscover.import.php" . $backValues;
                $macConstructor = "";
                self::getOCSTypes($ocsTypes);
                self::checkBox($target);
@@ -1479,7 +1479,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                               'rand'            => $rand,
                               'myname'          => $myname];
                         //print_r($p);
-                        Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/ajax/dropdownitems.php", $p);
+                        Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", PLUGIN_OCS_WEBDIR . "/ajax/dropdownitems.php", $p);
                         echo "<span id='results_$mynamei$rand'>\n";
                         echo "</span>\n";
                         //}
@@ -1510,8 +1510,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                break;
 
             default :
-               $link           = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.php";
-               $target         = $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ipdiscover.import.php" . $backValues;
+               $link           = PLUGIN_OCS_WEBDIR . "/front/ipdiscover.php";
+               $target         = PLUGIN_OCS_WEBDIR . "/front/ipdiscover.import.php" . $backValues;
                $macConstructor = "";
                self::checkBox($target);
                echo "<form method='post' id='ipdiscover_form' name='ipdiscover_form' action='$target'>";
@@ -1599,7 +1599,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                               'rand'            => $rand,
                               'myname'          => $myname];
 
-                        Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/ajax/dropdownitems.php", $p);
+                        Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", PLUGIN_OCS_WEBDIR . "/ajax/dropdownitems.php", $p);
                         echo "<span id='results_$mynamei$rand'>\n";
                         echo "</span>\n";
 

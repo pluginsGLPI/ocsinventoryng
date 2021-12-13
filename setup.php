@@ -34,6 +34,14 @@ define("PLUGIN_OCSINVENTORYNG_STATE_FINISHED", 3);
 define("PLUGIN_OCSINVENTORYNG_LOCKFILE", GLPI_LOCK_DIR . "/ocsinventoryng.lock");
 define('PLUGIN_OCS_VERSION', '2.0.0');
 
+if (!defined("PLUGIN_OCS_DIR")) {
+   define("PLUGIN_OCS_DIR", Plugin::getPhpDir("ocsinventoryng"));
+   define("PLUGIN_OCS_NOTFULL_DIR", Plugin::getPhpDir("ocsinventoryng",false));
+   define("PLUGIN_OCS_WEBDIR", Plugin::getWebDir("ocsinventoryng"));
+   define("PLUGIN_OCS_NOTFULL_WEBDIR", Plugin::getWebDir("ocsinventoryng",false));
+}
+
+
 /**
  * Init the hooks of the plugins -Needed
  **/

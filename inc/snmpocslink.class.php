@@ -366,7 +366,7 @@ JAVASCRIPT;
       $dbu = new DbUtils();
       $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', ["is_active" => 1]);
       if ($numberActiveServers > 0) {
-         echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
+         echo "<form action=\"" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php\"
                 method='post'>";
          echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an OCSNG server', 'ocsinventoryng') .
@@ -420,21 +420,21 @@ JAVASCRIPT;
          echo "<tr><th colspan='4'>";
          echo __('OCSNG SNMP import', 'ocsinventoryng');
          echo "<br>";
-         echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php?id=" . $plugin_ocsinventoryng_ocsservers_id . "&forcetab=PluginOcsinventoryngSnmpOcslink\$1'>";
+         echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsserver.form.php?id=" . $plugin_ocsinventoryng_ocsservers_id . "&forcetab=PluginOcsinventoryngSnmpOcslink\$1'>";
          echo __('See Setup : SNMP Import before', 'ocsinventoryng');
          echo "</a>";
          echo "</th></tr>";
 
          // SNMP device link feature
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-                  <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsngsnmp.link.php'>
+                  <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsngsnmp.link.php'>
                    <i style='color:firebrick' class='fas fa-arrow-alt-circle-down fa-2x' 
                            title=\"" . __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "\"></i>
                      <br>" . __('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "
                   </a></td>";
 
          echo "<td class='center b' colspan='2'>
-               <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsngsnmp.sync.php'>
+               <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsngsnmp.sync.php'>
                   <i style='color:cornflowerblue' class='fas fa-sync-alt fa-2x' 
                      title=\"" . __s('Synchronize snmp devices already imported', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Synchronize snmp devices already imported', 'ocsinventoryng') . "
@@ -443,7 +443,7 @@ JAVASCRIPT;
 
          //SNMP device import feature
          echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-             <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsngsnmp.import.php'>
+             <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsngsnmp.import.php'>
               <i style='color:cornflowerblue' class='fas fa-plus fa-2x' 
                            title=\"" . __s('Import new SNMP devices', 'ocsinventoryng') . "\"></i>
                 <br>" . __('Import new SNMP devices', 'ocsinventoryng') . "
@@ -2175,9 +2175,9 @@ JAVASCRIPT;
          $p[$key] = $val;
       }
 
-      $target = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng/front/ocsngsnmp.import.php';
+      $target = PLUGIN_OCS_WEBDIR . '/front/ocsngsnmp.import.php';
       if ($p['tolinked'] > 0) {
-         $target = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng/front/ocsngsnmp.link.php';
+         $target = PLUGIN_OCS_WEBDIR . '/front/ocsngsnmp.link.php';
       }
 
       echo "<form name='form' method='post' action='" . $target . "'>";
@@ -2252,9 +2252,9 @@ JAVASCRIPT;
       if ($tolinked) {
          $title = __('Import new SNMP devices into glpi', 'ocsinventoryng');
       }
-      $target = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng/front/ocsngsnmp.import.php';
+      $target = PLUGIN_OCS_WEBDIR . '/front/ocsngsnmp.import.php';
       if ($tolinked) {
-         $target = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng/front/ocsngsnmp.link.php';
+         $target = PLUGIN_OCS_WEBDIR . '/front/ocsngsnmp.link.php';
       }
 
       if (!$start) {
@@ -2548,7 +2548,7 @@ JAVASCRIPT;
                               'rand'     => $rand,
                               'myname'   => $myname];
                         //print_r($p);
-                        Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/ajax/dropdownitems.php", $p);
+                        Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", PLUGIN_OCS_WEBDIR . "/ajax/dropdownitems.php", $p);
                         echo "<span id='results_$mynamei$rand'>\n";
                         echo "</span>\n";
                      }
@@ -2708,7 +2708,7 @@ JAVASCRIPT;
             echo "<div class='center'>";
             echo "<h2>" . __('Snmp device updated in OCSNG', 'ocsinventoryng') . "</h2>";
 
-            $target = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng/front/ocsngsnmp.sync.php';
+            $target = PLUGIN_OCS_WEBDIR . '/front/ocsngsnmp.sync.php';
             if (($numrows = $ocsResult['TOTAL_COUNT']) > 0) {
                $parameters = "check=$check";
                Html::printPager($start, $numrows, $target, $parameters);

@@ -33,7 +33,7 @@
 function plugin_ocsinventoryng_install() {
    global $DB;
 
-   include_once(GLPI_ROOT . "/plugins/ocsinventoryng/inc/profile.class.php");
+   include_once(PLUGIN_OCS_DIR. "/inc/profile.class.php");
 
    $migration = new Migration(150);
    $dbu       = new DbUtils();
@@ -42,7 +42,7 @@ function plugin_ocsinventoryng_install() {
        && !$DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
        && !$DB->tableExists("ocs_glpi_ocsservers")) {
       //INSTALL
-      $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/2.0.0-empty.sql");
+      $DB->runFile(PLUGIN_OCS_DIR. "/install/mysql/2.0.0-empty.sql");
 
       //$migration->createRule(['sub_type'     => 'RuleImportAsset',
       //                        'entities_id'  => 0,
@@ -113,7 +113,7 @@ function plugin_ocsinventoryng_install() {
       } else if (!$DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
                  && $DB->tableExists("ocs_glpi_ocsservers")) {
 
-         $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.0.0-update.sql");
+         $DB->runFile(PLUGIN_OCS_DIR. "/install/mysql/1.0.0-update.sql");
 
          // recuperation des droits du core
          // creation de la table glpi_plugin_ocsinventoryng_profiles vide
@@ -394,7 +394,7 @@ function plugin_ocsinventoryng_install() {
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_antivirus')
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'linksnmp_name')) {
 
-         $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.3.0-update.sql");
+         $DB->runFile(PLUGIN_OCS_DIR. "/install/mysql/1.3.0-update.sql");
       }/*1.3.0*/
 
       /******************* Migration 1.3.2 *******************/
@@ -402,7 +402,7 @@ function plugin_ocsinventoryng_install() {
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocslinks', 'uptime')
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_officepack')) {
 
-         $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.3.2-update.sql");
+         $DB->runFile(PLUGIN_OCS_DIR. "/install/mysql/1.3.2-update.sql");
       }/*1.3.2*/
 
       /******************* Migration 1.3.3 *******************/
@@ -410,7 +410,7 @@ function plugin_ocsinventoryng_install() {
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'use_checkruleimportentity')
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_teamviewer')) {
 
-         $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.3.3-update.sql");
+         $DB->runFile(PLUGIN_OCS_DIR. "/install/mysql/1.3.3-update.sql");
       }/*1.3.3*/
 
       /******************* Migration 1.3.4 *******************/
@@ -418,7 +418,7 @@ function plugin_ocsinventoryng_install() {
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_proxysetting')
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_winusers')) {
 
-         $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.3.4-update.sql");
+         $DB->runFile(PLUGIN_OCS_DIR. "/install/mysql/1.3.4-update.sql");
       }/*1.3.4 */
 
       /******************* Migration 1.4.0 *******************/
@@ -460,7 +460,7 @@ function plugin_ocsinventoryng_install() {
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_osinstall')
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_networkshare')) {
 
-         $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.4.3-update.sql");
+         $DB->runFile(PLUGIN_OCS_DIR. "/install/mysql/1.4.3-update.sql");
       }/*1.4.3*/
 
       /******************* Migration 1.4.4 *******************/
@@ -468,7 +468,7 @@ function plugin_ocsinventoryng_install() {
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_runningprocess')
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_service')) {
 
-         $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.4.4-update.sql");
+         $DB->runFile(PLUGIN_OCS_DIR. "/install/mysql/1.4.4-update.sql");
       }/*1.4.4*/
 
       /******************* Migration 1.5.0 *******************/
@@ -508,10 +508,10 @@ function plugin_ocsinventoryng_install() {
 
       /******************* Migration 1.6.0 *******************/
       if ($DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'states_id_default')) {
-         $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.6.0-update.sql");
+         $DB->runFile(PLUGIN_OCS_DIR. "/install/mysql/1.6.0-update.sql");
       }
       if (!$DB->tableExists('glpi_plugin_ocsinventoryng_customapps')) {
-         $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.6.1-update.sql");
+         $DB->runFile(PLUGIN_OCS_DIR. "/install/mysql/1.6.1-update.sql");
       }
 
 
@@ -519,7 +519,7 @@ function plugin_ocsinventoryng_install() {
       /******************* Migration 1.7.0 *******************/
 
       if (!$DB->tableExists('glpi_plugin_ocsinventoryng_bitlockerstatuses')) {
-         $DB->runFile(GLPI_ROOT . "/plugins/ocsinventoryng/install/mysql/1.7.1-update.sql");
+         $DB->runFile(PLUGIN_OCS_DIR. "/install/mysql/1.7.1-update.sql");
       }/*1.7.1*/
 
       $migration->executeMigration();
@@ -606,8 +606,8 @@ function plugin_ocsinventoryng_install() {
 function plugin_ocsinventoryng_uninstall() {
    global $DB;
 
-   include_once(GLPI_ROOT . "/plugins/ocsinventoryng/inc/profile.class.php");
-   include_once(GLPI_ROOT . "/plugins/ocsinventoryng/inc/menu.class.php");
+   include_once(PLUGIN_OCS_DIR. "/inc/profile.class.php");
+   include_once(PLUGIN_OCS_DIR. "/inc/menu.class.php");
 
    $dbu    = new DbUtils();
    $tables = ["glpi_plugin_ocsinventoryng_ocsservers",

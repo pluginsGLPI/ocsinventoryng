@@ -121,7 +121,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                      echo "<td>" . __('Server');
                      echo "</td><td>";
                      if (Session::haveRight("plugin_ocsinventoryng", READ)) {
-                        echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php?id="
+                        echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsserver.form.php?id="
                              . $ocs_config['id'] . "'>" . $ocs_config['name'] . "</a>";
                      } else {
                         echo $ocs_config['name'];
@@ -308,7 +308,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             echo "<td>" . __('Server');
             echo "</td><td>";
             if (Session::haveRight("plugin_ocsinventoryng", READ)) {
-               echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php?id="
+               echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsserver.form.php?id="
                     . $plugin_ocsinventoryng_ocsservers_id . "'>" . $ocs_config['name'] . "</a>";
             } else {
                echo $ocs_config['name'];
@@ -1313,7 +1313,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                } else {
                   $js = '$("select[name=' . $field . ']").after("&nbsp;<i class=\"btn btn-outline-secondary red lockfield' . $field . ' fas fa-lock pointer\"></i>");';
                }
-               $rootdoc                             = $CFG_GLPI["root_doc"];
+               $rootdoc                             = PLUGIN_OCS_WEBDIR;
                $plugin_ocsinventoryng_ocsservers_id = $data['plugin_ocsinventoryng_ocsservers_id'];
                $js .= '$(document).ready(function() {
                         $(".lockfield' . $field . '").click(function(e) {
@@ -1330,7 +1330,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                           if (check) {
                                  $.ajax({
                                  type: "POST",
-                                 url: "' . $rootdoc . '/plugins/ocsinventoryng/ajax/updatelock.php",
+                                 url: "' . $rootdoc . '/ajax/updatelock.php",
                                  data:lock_data,
                                  success: function(){
                                     window.location.reload();

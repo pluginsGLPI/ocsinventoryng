@@ -54,7 +54,7 @@ if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
          echo "</table></div>";
 
       }
-      echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
+      echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
       echo __('Back');
       echo "</a>";
    }
@@ -90,7 +90,7 @@ if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
          echo "<tr class='tab_bg_1'><td>" . __('deleted computers into OCS Inventory NG', 'ocsinventoryng') . "</td><td>" . $count . "/" . $total . "</td></tr>";
          echo "</table></div>";
       }
-      echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
+      echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
       echo __('Back');
       echo "</a>";
    }

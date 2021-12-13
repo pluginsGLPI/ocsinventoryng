@@ -134,12 +134,12 @@ class PluginOcsinventoryngConfig extends CommonDBTM {
       echo "<table class='tab_cadre_fixe'>";
       echo "<tr><th>" . __('Configuration') . "</th></tr>";
       echo "<tr class='tab_bg_1'><td class='center b'>";
-      echo "<a href='" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsserver.php'>" .
+      echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsserver.php'>" .
            _n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng') . "</a>";
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'><td class='center b'>";
-      echo "<a href='" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/config.form.php'>" .
+      echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/config.form.php'>" .
            self::getTypeName() . "</a>";
       echo "</td></tr>";
       echo "</table>";

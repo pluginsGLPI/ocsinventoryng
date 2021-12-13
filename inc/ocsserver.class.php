@@ -245,7 +245,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $dbu                 = new DbUtils();
       $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', ["is_active" => 1]);
       if ($numberActiveServers > 0) {
-         echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
+         echo "<form action=\"" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php\"
                 method='post'>";
          echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an OCSNG server', 'ocsinventoryng') .
@@ -301,7 +301,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          //config server
          if ($isactive) {
             echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-                  <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
+                  <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
                     <i style='color:steelblue' class='fas fa-cogs fa-2x' 
                         title=\"" . __s('Configuration of OCSNG server', 'ocsinventoryng') . "\"></i>
                    <br><br>" . sprintf(__('Configuration of OCSNG server %s', 'ocsinventoryng'), $name) . "
@@ -310,7 +310,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             if ($usemassimport && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
                //config massimport
                echo "<td class='center b' colspan='2'>
-                     <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/config.form.php'>
+                     <a href='" . PLUGIN_OCS_WEBDIR . "/front/config.form.php'>
                       <i style='color:steelblue' class='fas fa-sync-alt fa-2x' 
                         title=\"" . __s('Automatic synchronization\'s configuration', 'ocsinventoryng') . "\"></i>
                         <br><br>" . __("Automatic synchronization's configuration", 'ocsinventoryng') . "
@@ -366,7 +366,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers',
                                                         ["is_active" => 1]);
       if ($numberActiveServers > 0) {
-         echo "<form action=\"" . $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/front/ocsng.php\"
+         echo "<form action=\"" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php\"
                 method='post'>";
          echo "<div class='center'><table class='tab_cadre_fixe' width='40%' cellpadding='10'>";
          echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an OCSNG server', 'ocsinventoryng') .
@@ -418,7 +418,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
       echo "<br>";
       if (Session::haveRight("plugin_ocsinventoryng", READ)
           && $isactive) {
-         echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsserver.form.php?id=" . $plugin_ocsinventoryng_ocsservers_id . "&forcetab=PluginOcsinventoryngOcsServer\$2'>";
+         echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsserver.form.php?id=" . $plugin_ocsinventoryng_ocsservers_id . "&forcetab=PluginOcsinventoryngOcsServer\$2'>";
          echo __('See Setup : Datas to import before', 'ocsinventoryng');
          echo "</a>";
          echo "</th></tr>";
@@ -433,7 +433,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                echo "<tr class='tab_bg_1'>";
                if (Session::haveRight("plugin_ocsinventoryng_import", READ)) {
                   echo "<td class='center b' colspan='2'>
-                  <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.import.php'>";
+                  <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.import.php'>";
                   echo "<i style='color:steelblue' class='fas fa-plus fa-2x' 
                            title=\"" . __s('Import new computers', 'ocsinventoryng') . "\"></i>";
                   echo "<br>" . __('Import new computers', 'ocsinventoryng') . "
@@ -444,7 +444,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                if ($usemassimport && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
                   //threads
                   echo "<td class='center b' colspan='2'>
-                     <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/thread.php?plugin_ocsinventoryng_ocsservers_id=" . $plugin_ocsinventoryng_ocsservers_id . "'>
+                     <a href='" . PLUGIN_OCS_WEBDIR . "/front/thread.php?plugin_ocsinventoryng_ocsservers_id=" . $plugin_ocsinventoryng_ocsservers_id . "'>
                       <i style='color:steelblue' class='fas fa-play fa-2x' 
                            title=\"" . __s('Scripts execution of automatic actions', 'ocsinventoryng') . "\"></i>
                         <br>" . __('Scripts execution of automatic actions', 'ocsinventoryng') . "
@@ -459,7 +459,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                echo "<tr class='tab_bg_1'>";
                if (Session::haveRight("plugin_ocsinventoryng_sync", READ) && $isactive) {
                   echo "<td class='center b' colspan='2'>
-                  <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.sync.php'>
+                  <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.sync.php'>
                   <i style='color:steelblue' class='fas fa-sync-alt fa-2x' 
                            title=\"" . __s('Synchronize computers already imported', 'ocsinventoryng') . "\"></i>
                      <br>" . __('Synchronize computers already imported', 'ocsinventoryng') . "
@@ -471,7 +471,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                if ($log && Session::haveRight("plugin_ocsinventoryng_import", READ) && $usemassimport) {
                   //host imported by thread
                   echo "<td class='center b' colspan='2'>
-                     <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/detail.php'>
+                     <a href='" . PLUGIN_OCS_WEBDIR . "/front/detail.php'>
                      <i style='color:green' class='fas fa-check fa-2x' 
                            title=\"" . __s('Computers imported by automatic actions', 'ocsinventoryng') . "\"></i>
                         <br>" . __('Computers imported by automatic actions', 'ocsinventoryng') . "
@@ -488,7 +488,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
 
                if (Session::haveRight("plugin_ocsinventoryng_link", READ) && $isactive) {
                   echo "<td class='center b' colspan='2'>
-                  <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.link.php'>
+                  <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.link.php'>
                   <i style='color:steelblue' class='fas fa-arrow-alt-circle-down fa-2x' 
                            title=\"" . __s('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng') . "\"></i>
                      <br>" . __('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng') . "
@@ -500,7 +500,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                if ($usemassimport && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
                   //host not imported by thread
                   echo "<td class='center b' colspan='2'>
-                     <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/notimportedcomputer.php'>
+                     <a href='" . PLUGIN_OCS_WEBDIR . "/front/notimportedcomputer.php'>
                      <i style='color:firebrick' class='fas fa-times fa-2x' 
                            title=\"" . __s('Computers not imported by automatic actions', 'ocsinventoryng') . "\"></i>
                         <br>" . __('Computers not imported by automatic actions', 'ocsinventoryng') . "
@@ -524,7 +524,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          if (Session::haveRight(static::$rightname, UPDATE)) {
             echo "<td class='center b' colspan='2'>";
 
-            echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/deleted_equiv.php'>
+            echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/deleted_equiv.php'>
             <i style='color:steelblue' class='fas fa-trash fa-2x' 
                            title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Clean OCSNG deleted computers', 'ocsinventoryng') . "
@@ -542,7 +542,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
             echo "<td colspan='2'></td>";
          }
          echo "<td class='center b' colspan='2'>
-               <a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.clean.php'>
+               <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.clean.php'>
                <i style='color:steelblue' class='fas fa-trash fa-2x' 
                            title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Clean links between GLPI and OCSNG', 'ocsinventoryng') . "
@@ -608,8 +608,8 @@ JAVASCRIPT;
 
       echo "<tr class='tab_bg_2'>\n";
       echo "<td class='top'>\n";
-      echo Html::css("/plugins/ocsinventoryng/lib/jquery-ui/jquery-ui.min.css");
-      echo Html::script("/plugins/ocsinventoryng/lib/jquery-ui/jquery-ui.min.js");
+      echo Html::css(PLUGIN_OCS_NOTFULL_DIR."/lib/jquery-ui/jquery-ui.min.css");
+      echo Html::script(PLUGIN_OCS_NOTFULL_DIR."/lib/jquery-ui/jquery-ui.min.js");
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
          function accordion(id, openall) {
@@ -2132,7 +2132,7 @@ JAVASCRIPT;
       echo "<div class='center'>";
       echo "<h2>" . __('Clean links between GLPI and OCSNG', 'ocsinventoryng') . "</h2>";
 
-      $target = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng/front/ocsng.clean.php';
+      $target = PLUGIN_OCS_WEBDIR . '/front/ocsng.clean.php';
       if (($numrows = count($already_linked)) > 0) {
          $parameters = "check=$check";
          Html::printPager($start, $numrows, $target, $parameters);
@@ -2193,7 +2193,7 @@ JAVASCRIPT;
          Html::printPager($start, $numrows, $target, $parameters);
       } else {
          echo "<div class='center b '>" . __('No item to clean', 'ocsinventoryng') . "</div>";
-         echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
+         echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
          echo __('Back');
          echo "</a>";
       }
@@ -2235,7 +2235,7 @@ JAVASCRIPT;
 
       //      if ($DB->numrows($already_linked_result) == 0) {
       //         echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
-      //         echo "<br><a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
+      //         echo "<br><a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
       //         echo __('Back');
       //         echo "</a>";
       //         echo "</div>";
@@ -2315,7 +2315,7 @@ JAVASCRIPT;
             echo "<div class='center'>";
             echo "<h2>" . __('Computers updated in OCSNG', 'ocsinventoryng') . "</h2>";
 
-            $target  = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng/front/ocsng.sync.php';
+            $target  = PLUGIN_OCS_WEBDIR . '/front/ocsng.sync.php';
             $numrows = count($hardware);
             if ($numrows > 0) {
                $parameters = "check=$check";
@@ -2383,7 +2383,7 @@ JAVASCRIPT;
             } else {
                echo "<br><span class='b'>" . __('Update computers', 'ocsinventoryng') . "</span>";
                echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
-               echo "<br><a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
+               echo "<br><a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
                echo __('Back');
                echo "</a>";
                echo "</div>";
@@ -2392,14 +2392,14 @@ JAVASCRIPT;
             echo "</div>";
          } else {
             echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
-            echo "<br><a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
+            echo "<br><a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
             echo __('Back');
             echo "</a>";
             echo "</div>";
          }
       } else {
          echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
-         echo "<br><a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
+         echo "<br><a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
          echo __('Back');
          echo "</a>";
          echo "</div>";
@@ -2449,9 +2449,9 @@ JAVASCRIPT;
       if ($tolinked) {
          $title = __('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng');
       }
-      $target = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng/front/ocsng.import.php';
+      $target = PLUGIN_OCS_WEBDIR . '/front/ocsng.import.php';
       if ($tolinked) {
-         $target = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng/front/ocsng.link.php';
+         $target = PLUGIN_OCS_WEBDIR . '/front/ocsng.link.php';
       }
 
       // Get all links between glpi and OCS
@@ -2533,7 +2533,10 @@ JAVASCRIPT;
                       || isset($rulelink_results['found_inventories'][0]) && $rulelink_results['found_inventories'][0] == 0) {
                      continue;
                   } else {
-                     $hardware[$id]["computers_id_founded"] = $rulelink_results['found_inventories'][0];
+                     if (isset($rulelink_results['found_inventories'][0])) {
+                        $hardware[$id]["computers_id_founded"] = $rulelink_results['found_inventories'][0];
+                     }
+
                   }
                } else {
                   $tab['entities_id'] = $entities_id;
@@ -2878,7 +2881,7 @@ JAVASCRIPT;
                     "</td></tr>\n";
                echo "</table>";
                echo "<br><div class='center'>";
-               echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
+               echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
                echo __('Back');
                echo "</a>";
                echo "</div>";
@@ -2893,7 +2896,7 @@ JAVASCRIPT;
                  "</td></tr>\n";
             echo "</table></div>";
             echo "<br><div class='center'>";
-            echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
+            echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
             echo __('Back');
             echo "</a>";
             echo "</div>";
@@ -2907,7 +2910,7 @@ JAVASCRIPT;
               "</td></tr>\n";
          echo "</table></div>";
          echo "<br><div class='center'>";
-         echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/ocsinventoryng/front/ocsng.php'>";
+         echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
          echo __('Back');
          echo "</a>";
          echo "</div>";

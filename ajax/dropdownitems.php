@@ -62,7 +62,7 @@ if (isset($_POST["itemtype"])
    }
 
    echo Html::jsAjaxDropdown($_POST['myname'], $field_id,
-      $CFG_GLPI['root_doc'] . "/plugins/ocsinventoryng/ajax/getDropdownFindItem.php",
+                             PLUGIN_OCS_WEBDIR . "/ajax/getDropdownFindItem.php",
       $p);
 
 }
