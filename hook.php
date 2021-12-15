@@ -422,37 +422,40 @@ function plugin_ocsinventoryng_install() {
       }/*1.3.4 */
 
       /******************* Migration 1.4.0 *******************/
-      include_once(GLPI_ROOT . "/inc/devicefirmware.class.php");
-      include_once(GLPI_ROOT . "/inc/item_devicefirmware.class.php");
-      foreach ($dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_devicebiosdatas') as $ocsbios) {
+      if ($DB->tableExists('glpi_plugin_ocsinventoryng_ocsservers')
+          && $DB->tableExists('glpi_plugin_ocsinventoryng_devicebiosdatas')) {
+         include_once(GLPI_ROOT . "/inc/devicefirmware.class.php");
+         include_once(GLPI_ROOT . "/inc/item_devicefirmware.class.php");
+         foreach ($dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_devicebiosdatas') as $ocsbios) {
 
-         $DeviceBios               = new DeviceFirmware();
-         $bios["designation"]      = addslashes($ocsbios["designation"]);
-         $bios["comment"]          = addslashes($ocsbios["comment"]);
-         $bios["entities_id"]      = $ocsbios["entities_id"];
-         $bios["is_recursive"]     = $ocsbios["is_recursive"];
-         $bios["manufacturers_id"] = $ocsbios["manufacturers_id"];
-         $bios["version"]          = addslashes($ocsbios["assettag"]);
-         $date                     = str_replace("/", "-", $ocsbios["date"]);
-         $date                     = date("Y-m-d", strtotime($date));
-         $bios["date"]             = $date;
+            $DeviceBios               = new DeviceFirmware();
+            $bios["designation"]      = addslashes($ocsbios["designation"]);
+            $bios["comment"]          = addslashes($ocsbios["comment"]);
+            $bios["entities_id"]      = $ocsbios["entities_id"];
+            $bios["is_recursive"]     = $ocsbios["is_recursive"];
+            $bios["manufacturers_id"] = $ocsbios["manufacturers_id"];
+            $bios["version"]          = addslashes($ocsbios["assettag"]);
+            $date                     = str_replace("/", "-", $ocsbios["date"]);
+            $date                     = date("Y-m-d", strtotime($date));
+            $bios["date"]             = $date;
 
-         $bios_id = $DeviceBios->import($bios);
+            $bios_id = $DeviceBios->import($bios);
 
-         $condition = ["plugin_ocsinventoryng_devicebiosdatas_id" => $ocsbios["id"]];
-         foreach ($dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_items_devicebiosdatas', $condition) as $item_bios) {
-            $CompDevice = new Item_DeviceFirmware();
-            $CompDevice->add(['items_id'           => $item_bios['items_id'],
-                              'itemtype'           => $item_bios['itemtype'],
-                              'devicefirmwares_id' => $bios_id,
-                              'is_dynamic'         => 1,
-                              'entities_id'        => $item_bios['entities_id']], [], false);
+            $condition = ["plugin_ocsinventoryng_devicebiosdatas_id" => $ocsbios["id"]];
+            foreach ($dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_items_devicebiosdatas', $condition) as $item_bios) {
+               $CompDevice = new Item_DeviceFirmware();
+               $CompDevice->add(['items_id'           => $item_bios['items_id'],
+                                 'itemtype'           => $item_bios['itemtype'],
+                                 'devicefirmwares_id' => $bios_id,
+                                 'is_dynamic'         => 1,
+                                 'entities_id'        => $item_bios['entities_id']], [], false);
 
+            }
          }
-      }
 
-      $migration->dropTable("glpi_plugin_ocsinventoryng_devicebiosdatas");
-      $migration->dropTable("glpi_plugin_ocsinventoryng_items_devicebiosdatas");
+         $migration->dropTable("glpi_plugin_ocsinventoryng_devicebiosdatas");
+         $migration->dropTable("glpi_plugin_ocsinventoryng_items_devicebiosdatas");
+      }
       /*1.4.0*/
 
       /******************* Migration 1.4.3 *******************/
