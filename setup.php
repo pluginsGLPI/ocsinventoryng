@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
 -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2016 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
 -------------------------------------------------------------------------
@@ -32,7 +32,7 @@ define("PLUGIN_OCSINVENTORYNG_STATE_RUNNING", 2);
 define("PLUGIN_OCSINVENTORYNG_STATE_FINISHED", 3);
 
 define("PLUGIN_OCSINVENTORYNG_LOCKFILE", GLPI_LOCK_DIR . "/ocsinventoryng.lock");
-define('PLUGIN_OCS_VERSION', '2.0.0-rc1');
+define('PLUGIN_OCS_VERSION', '2.0.0-rc2');
 
 if (!defined("PLUGIN_OCS_DIR")) {
    define("PLUGIN_OCS_DIR", Plugin::getPhpDir("ocsinventoryng"));

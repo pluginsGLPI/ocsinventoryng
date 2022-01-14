@@ -3,7 +3,7 @@
 /*
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2016 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
