@@ -364,8 +364,8 @@ CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_configs` (
    `allow_ocs_update` tinyint NOT NULL default '0',
    `log_imported_computers` tinyint NOT NULL default '0',
    `comment` text,
-   `delay_ocs` int unsigned NOT NULL default '-1',
-   `use_newocs_alert` int unsigned NOT NULL default '-1',
+   `delay_ocs` int NOT NULL default '-1',
+   `use_newocs_alert` int NOT NULL default '-1',
    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
@@ -495,8 +495,8 @@ DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_ocsalerts`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_ocsalerts` (
   `id` int unsigned NOT NULL auto_increment,
   `entities_id` int unsigned NOT NULL default '0',
-  `delay_ocs` int unsigned NOT NULL default '-1',
-  `use_newocs_alert` int unsigned NOT NULL default '-1',
+  `delay_ocs` int NOT NULL default '-1',
+  `use_newocs_alert` int NOT NULL default '-1',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
