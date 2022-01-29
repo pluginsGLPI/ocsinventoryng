@@ -424,8 +424,8 @@ function plugin_ocsinventoryng_install() {
       /******************* Migration 1.4.0 *******************/
       if ($DB->tableExists('glpi_plugin_ocsinventoryng_ocsservers')
           && $DB->tableExists('glpi_plugin_ocsinventoryng_devicebiosdatas')) {
-         include_once(GLPI_ROOT . "/inc/devicefirmware.class.php");
-         include_once(GLPI_ROOT . "/inc/item_devicefirmware.class.php");
+         include_once(GLPI_ROOT . "/src/DeviceFirmware.php");
+         include_once(GLPI_ROOT . "/src/Item_DeviceFirmware.php");
          foreach ($dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_devicebiosdatas') as $ocsbios) {
 
             $DeviceBios               = new DeviceFirmware();
