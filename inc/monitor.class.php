@@ -155,7 +155,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
                                FROM `glpi_monitors`
                                WHERE `name` = '" . $mon["name"] . "'
                                   AND `is_global` = 1 ";
-                  if ($CFG_GLPI['transfers_id_auto'] < 1) {
+                  if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
                      $query .= " AND `entities_id` = $entity";
                   }
                   $result_search = $DB->query($query);
@@ -182,7 +182,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
                                FROM `glpi_monitors`
                                WHERE `serial` LIKE '%" . $mon["serial"] . "%'
                                   AND `is_global` = 0 ";
-                     if ($CFG_GLPI['transfers_id_auto'] < 1) {
+                     if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
                         $query .= " AND `entities_id` = $entity";
                      }
                      $result_search = $DB->query($query);
@@ -207,7 +207,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
                                         AND `name` = '" . $mon["name"] . "'
                                               AND `is_global` = 0
                                               AND `glpi_computers_items`.`computers_id` IS NULL";
-                        if ($CFG_GLPI['transfers_id_auto'] < 1) {
+                        if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
                            $query .= " AND `entities_id` = '$entity'";
                         }
                         $result_search = $DB->query($query);

@@ -2951,7 +2951,7 @@ JAVASCRIPT;
          if ($only_url) {
             return $url;
          }
-         return "<a class='btn btn-primary' target='_blank' href='$url'>" . $todisplay . "</a>";
+         return "<a class='submit btn btn-primary' target='_blank' href='$url'>" . $todisplay . "</a>";
       }
       return $url;
    }

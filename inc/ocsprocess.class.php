@@ -720,9 +720,10 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
          if ($ocs_id_change
              || ($idlink = PluginOcsinventoryngOcslink::ocsLink($link_params))) {
-
+            $comp = new Computer();
+            $comp->getFromDB($computers_id);
             // automatic transfer computer
-            if (($CFG_GLPI['transfers_id_auto'] > 0) && Session::isMultiEntitiesMode()) {
+            if ((Entity::getUsedConfig('transfers_strategy', $comp->fields['entities_id'], 'transfers_id', 0) > 0) && Session::isMultiEntitiesMode()) {
 
                // Retrieve data from glpi_plugin_ocsinventoryng_ocslinks
                $ocsLink = new PluginOcsinventoryngOcslink();
@@ -739,8 +740,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                }
             }
 
-            $comp = new Computer();
-            $comp->getFromDB($computers_id);
+
             $input["id"]          = $computers_id;
             $input["entities_id"] = $comp->fields['entities_id'];
             $input["is_dynamic"]  = 1;
@@ -818,7 +818,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
          }
 
          $transfer = new Transfer();
-         $transfer->getFromDB($CFG_GLPI['transfers_id_auto']);
+         $transfer->getFromDB(Entity::getUsedConfig('transfers_strategy', $data['entities_id'], 'transfers_id', 0));
 
          $item_to_transfer = ["Computer" => [$line_links['computers_id']
                                              => $line_links['computers_id']]];
@@ -892,7 +892,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
              && count($computer_ocs) > 0
              && (strtotime($computer_ocs["META"]["LASTDATE"]) > strtotime($line['last_update']) || $force)) {
             // automatic transfer computer
-            if ($CFG_GLPI['transfers_id_auto'] > 0
+            if (Entity::getUsedConfig('transfers_strategy', $comp->fields['entities_id'], 'transfers_id', 0) > 0
                 && Session::isMultiEntitiesMode()
                 && $transfer == true) {
                self::transferComputer($line);

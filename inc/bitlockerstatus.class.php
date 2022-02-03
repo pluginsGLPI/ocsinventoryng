@@ -58,7 +58,7 @@ class PluginOcsinventoryngBitlockerstatus extends CommonDBChild {
    static function updateBitlocker($computers_id, $ocsBitlockerStatus, $disk, $cfg_ocs, $force = 0) {
 
       $uninstall_history = 0;
-      $item_disk = new Item_Disk();
+      $item_disk         = new Item_Disk();
       if ($cfg_ocs['dohistory'] == 1 && ($cfg_ocs['history_plugins'] == 1 || $cfg_ocs['history_plugins'] == 3)) {
          $uninstall_history = 1;
       }
@@ -71,55 +71,55 @@ class PluginOcsinventoryngBitlockerstatus extends CommonDBChild {
       //update data
       foreach ($ocsBitlockerStatus as $bitlockerstatus) {
 
-         $bitlocker             = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($bitlockerstatus));
-         $input                 = [];
-         $inputBitlockers       = [];
-         $inputBitlockers["computers_id"] = $computers_id;
+         $bitlocker                        = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($bitlockerstatus));
+         $input                            = [];
+         $inputBitlockers                  = [];
+         $inputBitlockers["computers_id"]  = $computers_id;
          $inputBitlockers["item_disks_id"] = $disk['id'];
 
          if (!empty($bitlocker) && isset($bitlocker["DRIVE"])) {
-            if($bitlocker["DRIVE"] == $disk['mountpoint']){
-               $statusText = isset($bitlocker["CONVERSIONSTATUS"]) ? $bitlocker["CONVERSIONSTATUS"] : '';
-               $status = [
-                  'FullyDecrypted' => 0,
-                  'FullyEncrypted' => 1,
+            if ($bitlocker["DRIVE"] == $disk['mountpoint']) {
+               $statusText                    = isset($bitlocker["CONVERSIONSTATUS"]) ? $bitlocker["CONVERSIONSTATUS"] : '';
+               $status                        = [
+                  'FullyDecrypted'       => 0,
+                  'FullyEncrypted'       => 1,
                   'EncryptionInProgress' => 2,
                   'DecryptionInProgress' => 2,
-                  'EncryptionPaused' => 2,
-                  'DecryptionPaused' => 2
+                  'EncryptionPaused'     => 2,
+                  'DecryptionPaused'     => 2
                ];
-               $input["encryption_status"]           = $status[$statusText];
-               $input["encryption_tool"]             = 'bitlocker';
-               $input["encryption_algorithm"]        = isset($bitlocker["ENCRYPMETHOD"]) ? $bitlocker["ENCRYPMETHOD"] : '';
-//               $input["encryption_type"] =
+               $input["encryption_status"]    = $status[$statusText];
+               $input["encryption_tool"]      = 'bitlocker';
+               $input["encryption_algorithm"] = isset($bitlocker["ENCRYPMETHOD"]) ? $bitlocker["ENCRYPMETHOD"] : '';
+               //               $input["encryption_type"] =
                $inputBitlockers["volume_type"]       = isset($bitlocker["VOLUMETYPE"]) ? $bitlocker["VOLUMETYPE"] : '';
                $inputBitlockers["protection_status"] = isset($bitlocker["PROTECTIONSTATUS"]) ? $bitlocker["PROTECTIONSTATUS"] : '';
                $inputBitlockers["init_project"]      = isset($bitlocker["INITPROTECT"]) ? $bitlocker["INITPROTECT"] : '';
 
-               if($item_disk->getFromDB($disk['id'])){
+               if ($item_disk->getFromDB($disk['id'])) {
                   $input['id'] = $disk['id'];
                   $item_disk->update($input, $install_history, ['disable_unicity_check' => true]);
                }
-               if($bitlockers->getFromDBByCrit(["computers_id" => $computers_id])){
+               if ($bitlockers->getFromDBByCrit(["computers_id" => $computers_id])) {
                   $inputBitlockers['id'] = $bitlockers->getID();
                   $bitlockers->update($inputBitlockers, $install_history, ['disable_unicity_check' => true]);
-               } else{
+               } else {
                   $bitlockers->add($inputBitlockers, ['disable_unicity_check' => true], $install_history);
                }
             }
-//            $input["drive"]             = isset($bitlocker["DRIVE"]) ? $bitlocker["DRIVE"] : '';
-//            $input["volume_type"]       = isset($bitlocker["VOLUMETYPE"]) ? $bitlocker["VOLUMETYPE"] : '';
-//            $input["conversion_status"] = isset($bitlocker["CONVERSIONSTATUS"]) ? $bitlocker["CONVERSIONSTATUS"] : '';
-//            $input["protection_status"] = isset($bitlocker["PROTECTIONSTATUS"]) ? $bitlocker["PROTECTIONSTATUS"] : '';
-//            $input["encryp_method"]     = isset($bitlocker["ENCRYPMETHOD"]) ? $bitlocker["ENCRYPMETHOD"] : '';
-//            $input["init_project"]      = isset($bitlocker["INITPROTECT"]) ? $bitlocker["INITPROTECT"] : '';
+            //            $input["drive"]             = isset($bitlocker["DRIVE"]) ? $bitlocker["DRIVE"] : '';
+            //            $input["volume_type"]       = isset($bitlocker["VOLUMETYPE"]) ? $bitlocker["VOLUMETYPE"] : '';
+            //            $input["conversion_status"] = isset($bitlocker["CONVERSIONSTATUS"]) ? $bitlocker["CONVERSIONSTATUS"] : '';
+            //            $input["protection_status"] = isset($bitlocker["PROTECTIONSTATUS"]) ? $bitlocker["PROTECTIONSTATUS"] : '';
+            //            $input["encryp_method"]     = isset($bitlocker["ENCRYPMETHOD"]) ? $bitlocker["ENCRYPMETHOD"] : '';
+            //            $input["init_project"]      = isset($bitlocker["INITPROTECT"]) ? $bitlocker["INITPROTECT"] : '';
 
-//            if($bitlockers->getFromDBByCrit(["computers_id" => $input["computers_id"]])){
-//               $input['id'] = $bitlockers->getID();
-//               $bitlockers->update($input, $install_history, ['disable_unicity_check' => true]);
-//            } else{
-//               $bitlockers->add($input, ['disable_unicity_check' => true], $install_history);
-//            }
+            //            if($bitlockers->getFromDBByCrit(["computers_id" => $input["computers_id"]])){
+            //               $input['id'] = $bitlockers->getID();
+            //               $bitlockers->update($input, $install_history, ['disable_unicity_check' => true]);
+            //            } else{
+            //               $bitlockers->add($input, ['disable_unicity_check' => true], $install_history);
+            //            }
          }
       }
    }
@@ -138,38 +138,38 @@ class PluginOcsinventoryngBitlockerstatus extends CommonDBChild {
    }
 
    /**
-    * @see CommonGLPI::getTabNameForItem()
-    *
     * @param \CommonGLPI $item
     * @param int         $withtemplate
     *
     * @return array|string
     * @throws \GlpitestSQLError
+    * @see CommonGLPI::getTabNameForItem()
+    *
     */
-//   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-//
-//      $plugin_ocsinventoryng_ocsservers_id = PluginOcsinventoryngOcslink::getOCSServerForItem($item);
-//      if ($plugin_ocsinventoryng_ocsservers_id > 0
-//         && PluginOcsinventoryngOcsServer::serverIsActive($plugin_ocsinventoryng_ocsservers_id)) {
-//
-//         PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
-//         $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
-//         // can exists for template
-//         if (($item->getType() == 'Computer')
-//            && Computer::canView()
-//            && $cfg_ocs["import_bitlocker"]) {
-//            $nb = 0;
-//            if ($_SESSION['glpishow_count_on_tabs']) {
-//               $dbu = new DbUtils();
-//               $nb = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_bitlockerstatuses',
-//                  ["computers_id" => $item->getID()]);
-//            }
-//            return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
-//         }
-//         return '';
-//      }
-//      return '';
-//   }
+   //   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
+   //
+   //      $plugin_ocsinventoryng_ocsservers_id = PluginOcsinventoryngOcslink::getOCSServerForItem($item);
+   //      if ($plugin_ocsinventoryng_ocsservers_id > 0
+   //         && PluginOcsinventoryngOcsServer::serverIsActive($plugin_ocsinventoryng_ocsservers_id)) {
+   //
+   //         PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
+   //         $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+   //         // can exists for template
+   //         if (($item->getType() == 'Computer')
+   //            && Computer::canView()
+   //            && $cfg_ocs["import_bitlocker"]) {
+   //            $nb = 0;
+   //            if ($_SESSION['glpishow_count_on_tabs']) {
+   //               $dbu = new DbUtils();
+   //               $nb = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_bitlockerstatuses',
+   //                  ["computers_id" => $item->getID()]);
+   //            }
+   //            return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
+   //         }
+   //         return '';
+   //      }
+   //      return '';
+   //   }
 
 
    /**
@@ -179,11 +179,11 @@ class PluginOcsinventoryngBitlockerstatus extends CommonDBChild {
     *
     * @return bool|true
     */
-//   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-//
-//      self::showForComputer($item, $withtemplate);
-//      return true;
-//   }
+   //   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
+   //
+   //      self::showForComputer($item, $withtemplate);
+   //      return true;
+   //   }
 
    /**
     * Print the computers windows update states
@@ -196,13 +196,14 @@ class PluginOcsinventoryngBitlockerstatus extends CommonDBChild {
    // TODO
    static function showForDisk($item) {
       global $DB;
-      if(get_class($item['item']) == Item_Disk::class){
+      if (get_class($item['item']) == Item_Disk::class) {
          $bitlockerstatus = new self();
 
-         $computers_id = $item['item']->getField('items_id');
+         $computers_id  = $item['item']->getField('items_id');
          $item_disks_id = $item['item']->getField('id');
 
-         if ($bitlockerstatus->getFromDBByCrit(['computers_id' => $computers_id, 'item_disks_id' => $item_disks_id])) {
+         if ($bitlockerstatus->getFromDBByCrit(['computers_id' => $computers_id,
+                                                'item_disks_id' => $item_disks_id])) {
             echo "<tr class='tab_bg_1'>";
             echo "<td>" . __('Volume type', 'ocsinventoryng') . "</td>";
             echo "<td>" . Html::input('volume_type', ['value' => $bitlockerstatus->getField('volume_type')]) . "</td>";
@@ -213,7 +214,7 @@ class PluginOcsinventoryngBitlockerstatus extends CommonDBChild {
             echo "<td>" . __('Volume initialization for protection', 'ocsinventoryng') . "</td>";
             echo "<td>" . Html::input('init_project', ['value' => $bitlockerstatus->getField('init_project')]) . "</td>";
             echo "</tr>";
-            }
+         }
       }
    }
 }

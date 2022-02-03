@@ -172,11 +172,11 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
                         $already_processed[] = $id;
                      }
                   }
-               }
-               if ($bitlockerstatus && isset($ocsBitlockerStatus)) {
-                  //import bitlocker
-                  PluginOcsinventoryngBitlockerstatus::updateBitlocker($computers_id, $ocsBitlockerStatus, $disk,
-                     $cfg_ocs, $force);
+                  if ($bitlockerstatus && isset($ocsBitlockerStatus)) {
+                     //import bitlocker
+                     PluginOcsinventoryngBitlockerstatus::updateBitlocker($computers_id, $ocsBitlockerStatus, $disk,
+                                                                          $cfg_ocs, $force);
+                  }
                }
             }
          }

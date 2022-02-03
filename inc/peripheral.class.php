@@ -122,7 +122,7 @@ class PluginOcsinventoryngPeripheral extends CommonDBChild {
                                            FROM `glpi_peripherals`
                                            WHERE `name` = '" . $periph["name"] . "'
                                            AND `is_global` = 1 ";
-                  if ($CFG_GLPI['transfers_id_auto'] < 1) {
+                  if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
                      $query .= " AND `entities_id` = '$entity'";
                   }
                   $result_search = $DB->query($query);
