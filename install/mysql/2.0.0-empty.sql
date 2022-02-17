@@ -87,11 +87,11 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `import_proxysetting` tinyint NOT NULL DEFAULT '0',
   `import_winusers` tinyint NOT NULL DEFAULT '0',
   `import_teamviewer` tinyint NOT NULL DEFAULT '0',
-  `import_osinstall` TINYINT(1) NOT NULL DEFAULT '0',
-  `import_networkshare` TINYINT(1) NOT NULL DEFAULT '0',
+  `import_osinstall` tinyint NOT NULL DEFAULT '0',
+  `import_networkshare` tinyint NOT NULL DEFAULT '0',
   `import_os_serial` tinyint NOT NULL DEFAULT '1',
-  `import_customapp` TINYINT(1) NOT NULL DEFAULT '0',
-  `import_bitlocker` TINYINT(1) NOT NULL DEFAULT '0',
+  `import_customapp` tinyint NOT NULL DEFAULT '0',
+  `import_bitlocker` tinyint NOT NULL DEFAULT '0',
   `import_ip` tinyint NOT NULL DEFAULT '1',
   `import_disk` tinyint NOT NULL DEFAULT '1',
   `import_monitor_comment` tinyint NOT NULL DEFAULT '0',
@@ -213,8 +213,8 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_winupdates` (
 
 DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_osinstalls`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_osinstalls` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `computers_id` INT(11) NOT NULL DEFAULT '0',
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `computers_id` int unsigned NOT NULL DEFAULT '0',
   `build_version` VARCHAR(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `install_date` VARCHAR(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `codeset` VARCHAR(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -245,8 +245,8 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_proxysettings` (
 
 DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_networkshares`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_networkshares` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `computers_id` INT(11) NOT NULL DEFAULT '0',
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `computers_id` int unsigned NOT NULL DEFAULT '0',
   `drive` VARCHAR(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `path` VARCHAR(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `size` VARCHAR(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -358,7 +358,7 @@ DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_configs`;
 CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_configs` (
    `id` int unsigned NOT NULL auto_increment,
    `thread_log_frequency` int unsigned NOT NULL default '10',
-   `is_displayempty` int(1) NOT NULL default '1',
+   `is_displayempty` int unsigned NOT NULL default '1',
    `import_limit` int unsigned NOT NULL default '0',
    `delay_refresh` int unsigned NOT NULL default '0',
    `allow_ocs_update` tinyint NOT NULL default '0',
@@ -388,12 +388,12 @@ CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_details` (
 
 DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_notimportedcomputers`;
 CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_notimportedcomputers` (
-   `id` INT( 11 ) NOT NULL  auto_increment,
+   `id` int unsigned NOT NULL  auto_increment,
    `entities_id` int unsigned NOT NULL default '0',
    `rules_id` TEXT,
    `comment` text NULL,
-   `ocsid` INT( 11 ) NOT NULL DEFAULT '0',
-   `plugin_ocsinventoryng_ocsservers_id` INT( 11 ) NOT NULL ,
+   `ocsid` int unsigned NOT NULL DEFAULT '0',
+   `plugin_ocsinventoryng_ocsservers_id` int unsigned NOT NULL ,
    `ocs_deviceid` VARCHAR( 255 ) NOT NULL ,
    `useragent` VARCHAR( 255 ) NOT NULL ,
    `tag` VARCHAR( 255 ) NOT NULL ,
@@ -402,7 +402,7 @@ CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_notimportedcomputers` (
    `ipaddr` VARCHAR( 255 ) NOT NULL ,
    `domain` VARCHAR( 255 ) NOT NULL ,
    `last_inventory` timestamp NULL DEFAULT NULL,
-   `reason` INT( 11 ) NOT NULL ,
+   `reason` int unsigned NOT NULL ,
    PRIMARY KEY ( `id` ),
    UNIQUE KEY `ocs_id` (`plugin_ocsinventoryng_ocsservers_id`,`ocsid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
@@ -457,8 +457,8 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ruleimportentities` (
 
 DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_runningprocesses`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_runningprocesses` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `computers_id` INT(11) NOT NULL DEFAULT '0',
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `computers_id` int unsigned NOT NULL DEFAULT '0',
   `cpuusage` VARCHAR(255) DEFAULT NULL,
   `tty` VARCHAR(255) DEFAULT NULL,
   `started` VARCHAR(15) DEFAULT NULL,
@@ -476,8 +476,8 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_runningprocesses` (
 
 DROP TABLE IF EXISTS `glpi_plugin_ocsinventoryng_services`;
 CREATE TABLE `glpi_plugin_ocsinventoryng_services` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `computers_id` INT(11) NOT NULL DEFAULT '0',
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `computers_id` int unsigned NOT NULL DEFAULT '0',
   `svcname` VARCHAR(128) NOT NULL,
   `svcdn` VARCHAR(255) NOT NULL,
   `svcstate` VARCHAR(32) DEFAULT NULL,
