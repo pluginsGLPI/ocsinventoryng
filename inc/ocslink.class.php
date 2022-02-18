@@ -188,7 +188,8 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
                         echo "<td></td>";
                      }
 
-                     if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
+                     if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)
+                     && strtotime($data["last_ocs_update"]) > strtotime($data["last_update"])) {
                         echo "<td class='center' colspan='2'>";
                         Html::showSimpleForm($target, 'launch_ocs_resynch',
                                              _sx('button', 'Launch synchronization', 'ocsinventoryng'),

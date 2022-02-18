@@ -144,7 +144,8 @@ JAVASCRIPT;
 
       echo "<tr class='tab_bg_2'>\n";
       echo "<td class='top'>\n";
-
+      echo Html::css(PLUGIN_OCS_NOTFULL_DIR."/lib/jquery-ui/jquery-ui.min.css");
+      echo Html::script(PLUGIN_OCS_NOTFULL_DIR."/lib/jquery-ui/jquery-ui.min.js");
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
          function accordions(id, openall) {

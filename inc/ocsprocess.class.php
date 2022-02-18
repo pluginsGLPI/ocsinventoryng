@@ -613,7 +613,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                   $sync_params = ['ID'                                  => $idlink,
                                   'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                                   'cfg_ocs'                             => $cfg_ocs,
-                                  'force'                               => 0];
+                                  'force'                               => 1];
                   self::synchronizeComputer($sync_params);
                }
 
@@ -872,21 +872,24 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
          ];
          $computer_ocs = $ocsClient->getComputer($line['ocsid'], $options);
 
-         $locks  = PluginOcsinventoryngOcslink::getLocksForComputer($line['computers_id']);
-         $params = ['computers_id'      => $line["computers_id"],
-                    'cfg_ocs'           => $cfg_ocs,
-                    'computers_updates' => $locks,
-                    'entities_id'       => $comp->fields['entities_id'],
-                    'HARDWARE'          => $computer_ocs['HARDWARE'],
-                    'force'             => $force,
-         ];
+         if (is_array($computer_ocs)
+             && count($computer_ocs) > 0) {
+            $locks  = PluginOcsinventoryngOcslink::getLocksForComputer($line['computers_id']);
+            $params = ['computers_id'      => $line["computers_id"],
+                       'cfg_ocs'           => $cfg_ocs,
+                       'computers_updates' => $locks,
+                       'entities_id'       => $comp->fields['entities_id'],
+                       'HARDWARE'          => $computer_ocs['HARDWARE'],
+                       'force'             => $force,
+            ];
 
-         $params['check_history'] = true;
-         if ($force) {
-            $params['check_history'] = false;
+            $params['check_history'] = true;
+            if ($force) {
+               $params['check_history'] = false;
+            }
+
+            PluginOcsinventoryngHardware::updateComputerHardware($params);
          }
-
-         PluginOcsinventoryngHardware::updateComputerHardware($params);
 
          if (is_array($computer_ocs)
              && count($computer_ocs) > 0

@@ -140,7 +140,9 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
             $CompDevice = new $devicetype();
             foreach ($ocsComputer as $line2) {
                $line2 = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($line2));
-               if (isset($line2["CAPACITY"]) && $line2["CAPACITY"] != "No") {
+               if (isset($line2["CAPACITY"])
+                   && $line2["CAPACITY"] != "No"
+                   && $line2["CAPACITY"] > 0) {
                   $ram["designation"] = "";
                   if ($line2["TYPE"] != "Empty Slot" && $line2["TYPE"] != "Unknown") {
                      $ram["designation"] = $line2["TYPE"];
@@ -151,9 +153,9 @@ class PluginOcsinventoryngDevice extends CommonDBChild {
                      }
                      $ram["designation"] .= $line2["DESCRIPTION"];
                   }
-                  if (!is_numeric($line2["CAPACITY"])) {
-                     $line2["CAPACITY"] = 0;
-                  }
+//                  if (!is_numeric($line2["CAPACITY"])) {
+//                     $line2["CAPACITY"] = 0;
+//                  }
                   if (is_numeric($line2["CAPACITY"])) {
                      $ram["size_default"] = $line2["CAPACITY"];
                   }
