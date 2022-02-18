@@ -127,37 +127,37 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
 
       } else {
          $line            = $ports->next();
-         $networkports_id = $line['id'];
-         $network_port->getFromDB($networkports_id);
-
-         if ((!$check_name) && ($network_port->fields['name'] != $name)) {
-            $port_input = ['id'         => $network_port->getID(),
-                           'name'       => $name,
-                           'is_dynamic' => 1];
-            $network_port->update($port_input, $install_network_history);
-         }
-         if (($network_port->fields['instantiation_type'] != $instantiation_type)
-             && ($network_port->fields['is_dynamic'] == 1)) {
-            $network_port->switchInstantiationType($instantiation_type);
-            $inst_input['networkports_id'] = $network_port->getID();
-            $inst_input['speed']           = NetworkPortEthernet::transformPortSpeed($speed, false);
-            $instantiation                 = $network_port->getInstantiation();
-
-            $instantiation->add($inst_input, [], $install_network_history);
-            unset($instantiation);
-         }
-         if ($network_port->fields['instantiation_type'] == $instantiation_type) {
-            $instantiation                 = $network_port->getInstantiation();
-            $inst_input['id']              = $instantiation->getID();
-            $inst_input['speed']           = NetworkPortEthernet::transformPortSpeed($speed, false);
-            $inst_input['networkports_id'] = $network_port->getID();
-            if ($instantiation->getID() > 0) {
-               $instantiation->update($inst_input, $install_network_history);
-            } else {
-               $instantiation->add($inst_input, [], $install_network_history);
+         $networkports_id = $line['id'] ?? 0;
+         if ($network_port->getFromDB($networkports_id)) {
+            if ((!$check_name) && ($network_port->fields['name'] != $name)) {
+               $port_input = ['id'         => $network_port->getID(),
+                              'name'       => $name,
+                              'is_dynamic' => 1];
+               $network_port->update($port_input, $install_network_history);
             }
+            if (($network_port->fields['instantiation_type'] != $instantiation_type)
+                && ($network_port->fields['is_dynamic'] == 1)) {
+               $network_port->switchInstantiationType($instantiation_type);
+               $inst_input['networkports_id'] = $network_port->getID();
+               $inst_input['speed']           = NetworkPortEthernet::transformPortSpeed($speed, false);
+               $instantiation                 = $network_port->getInstantiation();
 
-            unset($instantiation);
+               $instantiation->add($inst_input, [], $install_network_history);
+               unset($instantiation);
+            }
+            if ($network_port->fields['instantiation_type'] == $instantiation_type) {
+               $instantiation                 = $network_port->getInstantiation();
+               $inst_input['id']              = $instantiation->getID();
+               $inst_input['speed']           = NetworkPortEthernet::transformPortSpeed($speed, false);
+               $inst_input['networkports_id'] = $network_port->getID();
+               if ($instantiation->getID() > 0) {
+                  $instantiation->update($inst_input, $install_network_history);
+               } else {
+                  $instantiation->add($inst_input, [], $install_network_history);
+               }
+
+               unset($instantiation);
+            }
          }
       }
 
@@ -523,10 +523,10 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
     * @see NetworkPortInstantiation::getInstantiationHTMLTableHeaders
     *
     */
-   function getInstantiationHTMLTableHeaders(HTMLTableGroup $group, HTMLTableSuperHeader $super,
+   function getInstantiationHTMLTableHeaders(HTMLTableGroup       $group, HTMLTableSuperHeader $super,
                                              HTMLTableSuperHeader $internet_super = null,
-                                             HTMLTableHeader $father = null,
-                                             array $options = []) {
+                                             HTMLTableHeader      $father = null,
+                                             array                $options = []) {
 
       DeviceNetworkCard::getHTMLTableHeader('NetworkPortWifi', $group, $super, null,
                                             $options);
@@ -550,7 +550,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
     * @see NetworkPortInstantiation::getInstantiationHTMLTable()
     *
     */
-   function getInstantiationHTMLTable(NetworkPort $netport, HTMLTableRow $row,
+   function getInstantiationHTMLTable(NetworkPort   $netport, HTMLTableRow $row,
                                       HTMLTableCell $father = null, array $options = []) {
 
       DeviceNetworkCard::getHTMLTableCellsForItem($row, $this, null, $options);
@@ -730,7 +730,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
     *
     */
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
-                                                       array $ids) {
+                                                       array         $ids) {
 
       switch ($ma->getAction()) {
          case "plugin_ocsinventoryng_update_networkport_type":
