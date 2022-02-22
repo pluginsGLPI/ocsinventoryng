@@ -974,8 +974,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
 
             if (!isset($filters['CHECKSUM'])) {
                $since       = $filters['INVENTORIED_SINCE'];
-               $where_since = " AND (`hardware`.`LASTDATE` > ";
-               $where_since .= "'" . $since . "'";
+               $where_since = " AND (`hardware`.`LASTDATE` > (UNIX_TIMESTAMP('" .$since. "')";
+//               $where_since .= "'" . $since . "'";
                $where_since .= ") ";
             } else {
                $where_since = "";
@@ -987,8 +987,8 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
          if (isset($filters['INVENTORIED_BEFORE']) and $filters['INVENTORIED_BEFORE']) {
 
             $before       = $filters['INVENTORIED_BEFORE'];
-            $where_before = " AND (UNIX_TIMESTAMP(`hardware`.`LASTDATE`) < (UNIX_TIMESTAMP(" . $before . ")-180";
-            // $where_before .= "'" .$before. "'";
+            $where_before = " AND (`hardware`.`LASTDATE` < (UNIX_TIMESTAMP('" .$before. "')";
+//             $where_before .= "'" .$before. "'";
             $where_before .= ")) ";
          } else {
             $where_before = "";

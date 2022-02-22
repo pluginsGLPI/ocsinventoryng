@@ -493,47 +493,47 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
    static function resetSoftwares($glpi_computers_id, $uninstall_history) {
       global $DB;
 
-      $query  = "SELECT *
-                FROM `glpi_items_softwareversions`
-                WHERE `items_id` = $glpi_computers_id
-                     AND `itemtype` = 'Computer'
-                     AND `is_dynamic` = 1";
-      $result = $DB->query($query);
-
-      if ($DB->numrows($result) > 0) {
-         while ($data = $DB->fetchAssoc($result)) {
-            $query2  = "SELECT COUNT(*)
-                       FROM `glpi_items_softwareversions`
-                       WHERE `softwareversions_id` = " . $data['softwareversions_id'];
-            $result2 = $DB->query($query2);
-
-            if ($DB->result($result2, 0, 0) == 1) {
-               $vers = new SoftwareVersion();
-               $vers->getFromDB($data['softwareversions_id']);
-               $query3  = "SELECT COUNT(*)
-                          FROM `glpi_softwareversions`
-                          WHERE `softwares_id`= " . $vers->fields['softwares_id'];
-               $result3 = $DB->query($query3);
-
-               if ($DB->result($result3, 0, 0) == 1) {
-                  $soft = new Software();
-                  $soft->delete(['id'          => $vers->fields['softwares_id'],
-                                 '_no_history' => !$uninstall_history],
-                                true,
-                                $uninstall_history);
-               }
-               $vers->delete(["id"          => $data['softwareversions_id'],
-                              '_no_history' => !$uninstall_history],
-                             true,
-                             $uninstall_history);
-            }
-         }
+//      $query  = "SELECT *
+//                FROM `glpi_items_softwareversions`
+//                WHERE `items_id` = $glpi_computers_id
+//                     AND `itemtype` = 'Computer'
+//                     AND `is_dynamic` = 1";
+//      $result = $DB->query($query);
+//
+//      if ($DB->numrows($result) > 0) {
+//         while ($data = $DB->fetchAssoc($result)) {
+//            $query2  = "SELECT COUNT(*)
+//                       FROM `glpi_items_softwareversions`
+//                       WHERE `softwareversions_id` = " . $data['softwareversions_id'];
+//            $result2 = $DB->query($query2);
+//
+//            if ($DB->result($result2, 0, 0) == 1) {
+//               $vers = new SoftwareVersion();
+//               $vers->getFromDB($data['softwareversions_id']);
+//               $query3  = "SELECT COUNT(*)
+//                          FROM `glpi_softwareversions`
+//                          WHERE `softwares_id`= " . $vers->fields['softwares_id'];
+//               $result3 = $DB->query($query3);
+//
+//               if ($DB->result($result3, 0, 0) == 1) {
+//                  $soft = new Software();
+//                  $soft->delete(['id'          => $vers->fields['softwares_id'],
+//                                 '_no_history' => !$uninstall_history],
+//                                true,
+//                                $uninstall_history);
+//               }
+//               $vers->delete(["id"          => $data['softwareversions_id'],
+//                              '_no_history' => !$uninstall_history],
+//                             true,
+//                             $uninstall_history);
+//            }
+//         }
 
          $csv = new Item_SoftwareVersion();
          $csv->deleteByCriteria(['items_id' => $glpi_computers_id,
                                  'itemtype' => 'Computer',
                                  'is_dynamic'   => 1], 1, $uninstall_history);
 
-      }
+//      }
    }
 }

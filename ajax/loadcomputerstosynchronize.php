@@ -55,8 +55,8 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                                             'FILTER'   => [
                                                //                                                  'IDS'               => $already_linked_ids,
                                                'CHECKSUM'          => $cfg_ocs["checksum"],
-                                               //'INVENTORIED_BEFORE' => 'NOW()',
-                                               'INVENTORIED_SINCE' => $max_date,
+//                                               'INVENTORIED_BEFORE' => 'NOW()',
+//                                               'INVENTORIED_BEFORE' => $max_date,
                                             ]
                                          ]);
 
@@ -69,6 +69,7 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
          foreach ($computers as $computer) {
             $ID          = $computer['META']['ID'];
             $query_glpi  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` AS last_update,
+                                    `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update` AS last_ocs_update,
                                   `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` AS computers_id,
                                   `glpi_computers`.`serial` AS serial,
                                   `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid,
@@ -86,33 +87,35 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
             $result_glpi = $DB->query($query_glpi);
             if ($DB->numrows($result_glpi) > 0) {
                while ($data = $DB->fetchAssoc($result_glpi)) {
-
-                  $checksum_debug = "";
-                  if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
-                     $checksum_server = intval($cfg_ocs["checksum"]);
-                     $checksum_client = intval($computer['META']["CHECKSUM"]);
-                     if ($checksum_server > 0
-                         && $checksum_client > 0
-                     ) {
-                        $result         = $checksum_server & $checksum_client;
-                        $checksum_debug = intval($result);
+                  if (strtotime($computer['META']["LASTDATE"]) > strtotime($data["last_update"])) {
+                     $checksum_debug = "";
+                     if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
+                        $checksum_server = intval($cfg_ocs["checksum"]);
+                        $checksum_client = intval($computer['META']["CHECKSUM"]);
+                        if ($checksum_server > 0
+                            && $checksum_client > 0
+                        ) {
+                           $result         = $checksum_server & $checksum_client;
+                           $checksum_debug = intval($result);
+                        }
+                     } else {
+                        $checksum_debug = $computer['META']["CHECKSUM"];
                      }
-                  } else {
-                     $checksum_debug = $computer['META']["CHECKSUM"];
+
+                     $hardware["data"][] = [
+                        'checked'        => "",
+                        'id'             => $data["id"],
+                        'ocsid'          => $data["ocsid"],
+                        'name'           => addslashes($computer['META']["NAME"]),
+                        'date'           => $computer['META']["LASTDATE"],
+                        'TAG'            => $computer['META']["TAG"],
+                        'computers_id'   => $data["computers_id"],
+                        'serial'         => $data["serial"],
+                        'last_update'    => $data["last_update"],
+                        'checksum_debug' => $checksum_debug,
+                     ];
                   }
 
-                  $hardware["data"][] = [
-                     'checked'        => "",
-                     'id'             => $data["id"],
-                     'ocsid'          => $data["ocsid"],
-                     'name'           => addslashes($computer['META']["NAME"]),
-                     'date'           => $computer['META']["LASTDATE"],
-                     'TAG'            => $computer['META']["TAG"],
-                     'computers_id'   => $data["computers_id"],
-                     'serial'         => $data["serial"],
-                     'last_update'    => $data["last_update"],
-                     'checksum_debug' => $checksum_debug,
-                  ];
                }
             }
          }
