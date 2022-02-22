@@ -33,19 +33,36 @@ Session::checkRight("plugin_ocsinventoryng_link", READ);
 
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "link");
 
+if (isset($_POST["id"]) && is_array($_POST["id"])) {
+
+   foreach ($_POST['id'] as $key => $id) {
+      $_SESSION["ocs_link"][$id]["ocsid"] = $id;
+      foreach ($_POST['item_to_link'] as $k => $item_to_link) {
+         if ($k == $key) {
+            $_SESSION["ocs_link"][$id]["computers_id"] = $item_to_link;
+         }
+      }
+   }
+
+   $_SESSION["ocs_link_count"] = count($_POST['id']);
+} else {
+   $_SESSION["ocs_link_count"] = 0;
+   unset($_SESSION["ocs_link"]);
+}
+
 $CFG_GLPI["use_ajax"] = 1;
 
 //First time this screen is displayed : set the import mode to 'basic'
 if (!isset($_SESSION["change_import_mode"])) {
-   $_SESSION["change_import_mode"] = false;
+   $_SESSION["change_import_mode"] = 0;
 }
 
 //Changing the import mode
 if (isset($_POST["change_import_mode"])) {
    if ('id' == "false") {
-      $_SESSION["change_import_mode"] = false;
+      $_SESSION["change_import_mode"] = 0;
    } else {
-      $_SESSION["change_import_mode"] = true;
+      $_SESSION["change_import_mode"] = 1;
    }
 }
 
@@ -89,7 +106,7 @@ if (isset($_SESSION["ocs_link"])) {
       Html::displayProgressBar(400, 100);
 
       unset($_SESSION["ocs_link"]);
-      echo "<div class='center b'>" . __('Successful importation') . "<br>";
+      echo "<div class='center b'>" . __('Successful link', 'ocsinventoryng') . "<br>";
       echo "<a href='" . $_SERVER['PHP_SELF'] . "'>" . __('Back') . "</a></div>";
    }
 }
@@ -121,10 +138,7 @@ if (!isset($_POST["import_ok"])) {
 
       $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                       'import_mode'                         => $_SESSION["change_import_mode"],
-                      'check'                               => $_GET['check'],
-                      'start'                               => $_GET['start'],
-                      'entities_id'                         => $_SESSION['glpiactiveentities'],
-                      'tolinked'                            => true];
+                      'entities_id'                         => $_SESSION['glpiactiveentities']];
       PluginOcsinventoryngOcsServer::showComputersToAdd($show_params);
    }
 } else {

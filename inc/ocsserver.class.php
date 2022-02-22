@@ -435,8 +435,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                   echo "<td class='center b' colspan='2'>
                   <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.import.php'>";
                   echo "<i style='color:steelblue' class='fas fa-plus fa-2x' 
-                           title=\"" . __s('Import new computers', 'ocsinventoryng') . "\"></i>";
-                  echo "<br>" . __('Import new computers', 'ocsinventoryng') . "
+                           title=\"" . __s('Import or link new computers', 'ocsinventoryng') . "\"></i>";
+                  echo "<br>" . __('Import or link new computers', 'ocsinventoryng') . "
                   </a></td>";
                } else {
                   echo "<td class='center b' colspan='2'></td>";
@@ -482,20 +482,10 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
                echo "</tr>\n";
             }
             //link
-            if (Session::haveRight("plugin_ocsinventoryng_link", READ)
-                || Session::haveRight("plugin_ocsinventoryng", READ)) {
+            if (Session::haveRight("plugin_ocsinventoryng", READ)) {
                echo "<tr class='tab_bg_1'>";
 
-               if (Session::haveRight("plugin_ocsinventoryng_link", READ) && $isactive) {
-                  echo "<td class='center b' colspan='2'>
-                  <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.link.php'>
-                  <i style='color:steelblue' class='fas fa-arrow-alt-circle-down fa-2x' 
-                           title=\"" . __s('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng') . "\"></i>
-                     <br>" . __('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng') . "
-                  </a></td>";
-               } else {
-                  echo "<td class='center b' colspan='2'></td>";
-               }
+               echo "<td class='center b' colspan='2'></td>";
 
                if ($usemassimport && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
                   //host not imported by thread
@@ -608,8 +598,8 @@ JAVASCRIPT;
 
       echo "<tr class='tab_bg_2'>\n";
       echo "<td class='top'>\n";
-      echo Html::css(PLUGIN_OCS_NOTFULL_DIR."/lib/jquery-ui/jquery-ui.min.css");
-      echo Html::script(PLUGIN_OCS_NOTFULL_DIR."/lib/jquery-ui/jquery-ui.min.js");
+      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/jquery-ui/jquery-ui.min.css");
+      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/jquery-ui/jquery-ui.min.js");
       echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
          function accordion(id, openall) {
@@ -2209,11 +2199,27 @@ JAVASCRIPT;
     * @return bool|void
     */
    static function showComputersToSynchronize($show_params) {
-      global $DB, $CFG_GLPI;
+
+      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/datatables.min.css");
+      //      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css");
+      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/ColReorder-1.5.2/css/colReorder.dataTables.min.css");
+      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Responsive-2.2.3/css/responsive.dataTables.min.css");
+      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Select-1.3.1/css/select.dataTables.min.css");
+
+      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/datatables.min.js");
+      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Responsive-2.2.3/js/dataTables.responsive.min.js");
+      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Select-1.3.1/js/dataTables.select.min.js");
+      //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/dataTables.buttons.min.js");
+      //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.html5.min.js");
+      //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.print.min.js");
+      //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.colVis.min.js");
+      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/ColReorder-1.5.2/js/dataTables.colReorder.min.js");
+      //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/JSZip-2.5.0/jszip.min.js");
+      //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/pdfmake-0.1.36/pdfmake.min.js");
+      //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/pdfmake-0.1.36/vfs_fonts.js");
+
 
       $plugin_ocsinventoryng_ocsservers_id = $show_params["plugin_ocsinventoryng_ocsservers_id"];
-      $check                               = $show_params["check"];
-      $start                               = $show_params["start"];
 
       if (!self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
          return false;
@@ -2223,186 +2229,128 @@ JAVASCRIPT;
          return false;
       }
 
-      $cfg_ocs = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
+      $title      = __('Computers updated in OCSNG', 'ocsinventoryng');
+      $target     = PLUGIN_OCS_WEBDIR . '/front/ocsng.sync.php';
+      $languages  = json_encode(self::getJsLanguages());
+      $columnDefs = "[ {
+               orderable: false,
+               className: 'select-checkbox',
+               targets:0,
+               },{
+               targets: [1],
+                visible: false
+               }]";
 
-      // Get linked computer ids in GLPI
-      //      $already_linked_query  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid
-      //                               FROM `glpi_plugin_ocsinventoryng_ocslinks`
-      //                               WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
-      //                                            = $plugin_ocsinventoryng_ocsservers_id" .
-      //                               (new DbUtils())->getEntitiesRestrictRequest(" AND", "glpi_plugin_ocsinventoryng_ocslinks");
-      //      $already_linked_result = $DB->query($already_linked_query);
+      $columns = "[
+                     { 'data': 'checked' },
+                      { 'data': 'ocsid' },
+                      { 'data': 'name' },
+                      { 'data': 'serial' },
+                      { 'data': 'last_update' },
+                      { 'data': 'date' },
+                      { 'data': 'TAG' },
+                      { 'data': 'checksum_debug' },
+                       ]";
 
-      //      if ($DB->numrows($already_linked_result) == 0) {
-      //         echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
-      //         echo "<br><a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
-      //         echo __('Back');
-      //         echo "</a>";
-      //         echo "</div>";
-      //         return;
-      //      }
+      echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
+      echo "</div>";
+      //      $entities = json_encode($entities_id);
+      echo "<script>
+            $('#ajax_loader').show();
+            $(document).ready(function () {
+                   var table = $('#OcsTable').DataTable({
+                      ajax: {
+                          url: '../ajax/loadcomputerstosynchronize.php',
+                          type:'POST',
+                          data: {plugin_ocsinventoryng_ocsservers_id: $plugin_ocsinventoryng_ocsservers_id
+                                },
+                          datatype: 'json'
+                      },
+                      paging: true,
+                      pageLength: 25,
+                      stateSave: true,
+                      columnDefs: $columnDefs,
+                     'select': {
+                        'style': 'multi',
+                        'selector': 'td:first-child'
+                     },
+                     'order': [[1, 'asc']],
+                       columns: $columns,
+                       processing: true,
+                       responsive: true,
+                       initComplete: function () {
+                            $('#ajax_loader').hide();
+                      },
+                     'language': $languages,
+                   });
+                   table.on('click', 'th.select-checkbox', function() {
+                   if ($('th.select-checkbox').hasClass('selected')) {
+                       table.rows().deselect();
+                       $('th.select-checkbox').removeClass('selected');
+                   } else {
+                       table.rows().select();
+                       $('th.select-checkbox').addClass('selected');
+                   }
+                  }).on('select deselect', function() {
+                   ('Some selection or deselection going on')
+                   if (table.rows({
+                           selected: true
+                       }).count() !== table.rows().count()) {
+                       $('th.select-checkbox').removeClass('selected');
+                   } else {
+                       $('th.select-checkbox').addClass('selected');
+                   }
+                  });
+                  // Handle form submission event 
+                  $('#ocsng_form').on('submit', function(e){
+                     var form = this;
+                     var rows_selected = table.rows('.selected').data();
+                     // Iterate over all selected checkboxes
+                     rows_selected.each( function ( value, index ) {
+                        // Create a hidden element 
+                        $(form).append(
+                            $('<input>')
+                               .attr('type', 'hidden')
+                               .attr('name', 'toupdate[]')
+                               .val(value.id)
+                        );
+                     });
+                  });
+               });
+            </script>";
 
-      //      $already_linked_ids = [];
-      //      while ($data = $DB->fetchAssoc($already_linked_result)) {
-      //         $already_linked_ids [] = $data['ocsid'];
-      //      }
-
-      $server = new PluginOcsinventoryngServer();
-      $server->getFromDBbyOcsServer($plugin_ocsinventoryng_ocsservers_id);
-      $max_date = "0000-00-00 00:00:00";
-      if (isset($server->fields["max_glpidate"])) {
-         $max_date = $server->fields["max_glpidate"];
+      echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
+      echo "<div class='center'>";
+      echo "<table id='OcsTable' class='display' cellspacing='0' style='width: 100%!important;'>";
+      echo "<thead>";
+      $nbcols = 8;
+      // Set display type for export if define
+      $output_type = Search::HTML_OUTPUT;
+      if (isset($values["display_type"])) {
+         $output_type = $values["display_type"];
       }
 
-      // Fetch linked computers from ocs
-      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+      $header_num = 1;
+      echo "<tr><th colspan='" . $nbcols . "'>" . $title . "</th></tr>";
+      //Column title
+      echo Search::showNewLine($output_type);
+      echo Search::showHeaderItem($output_type, __('All', 'ocsinventoryng'), $header_num);
+      echo Search::showHeaderItem($output_type, __('ID'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Name'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Serial number'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Import date in GLPI', 'ocsinventoryng'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Last OCSNG inventory date', 'ocsinventoryng'), $header_num);
+      echo Search::showHeaderItem($output_type, __('OCSNG TAG', 'ocsinventoryng'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Checksum', 'ocsinventoryng'), $header_num);
+      echo "</thead>";
+      echo Search::showFooter($output_type, $title);
 
-      $ocsResult = $ocsClient->getComputers([
-                                               'OFFSET'      => $start,
-                                               'MAX_RECORDS' => $_SESSION['glpilist_limit'],
-                                               'ORDER'       => 'LASTDATE',
-                                               'COMPLETE'    => '0',
-                                               'FILTER'      => [
-                                                  //                                                  'IDS'               => $already_linked_ids,
-                                                  'CHECKSUM'          => $cfg_ocs["checksum"],
-                                                  //'INVENTORIED_BEFORE' => 'NOW()',
-                                                  'INVENTORIED_SINCE' => $max_date,
-                                               ]
-                                            ]);
+      echo Html::submit(_sx('button', 'Synchronize'), ['name' => 'update_ok', 'class' => 'btn btn-primary']);
+      Html::closeForm();
 
-      if (isset($ocsResult['COMPUTERS'])) {
-         if (count($ocsResult['COMPUTERS']) > 0) {
-            // Get all ids of the returned computers
-            $ocs_computer_ids = [];
-            $hardware         = [];
-            //            $computers        = array_slice($ocsResult['COMPUTERS'], $start, $_SESSION['glpilist_limit']);
-            $computers = $ocsResult['COMPUTERS'];
-            foreach ($computers as $computer) {
-               $ID                  = $computer['META']['ID'];
-               $ocs_computer_ids [] = $ID;
-
-               $query_glpi  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` AS last_update,
-                                  `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` AS computers_id,
-                                  `glpi_computers`.`serial` AS serial,
-                                  `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid,
-                                  `glpi_computers`.`name` AS name,
-                                  `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update`,
-                                  `glpi_plugin_ocsinventoryng_ocslinks`.`id`
-                           FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                           LEFT JOIN `glpi_computers` ON (`glpi_computers`.`id`= `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`)
-                           WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
-                                       = $plugin_ocsinventoryng_ocsservers_id
-                                  AND `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` = $ID
-                           ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` DESC,
-                                    `last_update`,
-                                    `name`";
-               $result_glpi = $DB->query($query_glpi);
-               if ($DB->numrows($result_glpi) > 0) {
-                  while ($data = $DB->fetchAssoc($result_glpi)) {
-                     $hardware[$ID]["date"]         = $computer['META']["LASTDATE"];
-                     $hardware[$ID]["checksum"]     = $computer['META']["CHECKSUM"];
-                     $hardware[$ID]["tag"]          = $computer['META']["TAG"];
-                     $hardware[$ID]["name"]         = addslashes($computer['META']["NAME"]);
-                     $hardware[$ID]["computers_id"] = $data["computers_id"];
-                     $hardware[$ID]["serial"]       = $data["serial"];
-                     $hardware[$ID]["ocsid"]        = $data["ocsid"];
-                     $hardware[$ID]["last_update"]  = $data["last_update"];
-                     $hardware[$ID]["id"]           = $data["id"];
-                  }
-               }
-            }
-
-            echo "<div class='center'>";
-            echo "<h2>" . __('Computers updated in OCSNG', 'ocsinventoryng') . "</h2>";
-
-            $target  = PLUGIN_OCS_WEBDIR . '/front/ocsng.sync.php';
-            $numrows = count($hardware);
-            if ($numrows > 0) {
-               $parameters = "check=$check";
-               Html::printPager($start, $numrows, $target, $parameters);
-
-               echo "<form method='post' id='ocsng_form' name='ocsng_form' action='" . $target . "'>";
-               self::checkBox($target);
-
-               echo "<table class='tab_cadre_fixe'>";
-               $colspan = 6;
-               if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
-                  $colspan = 7;
-               }
-               echo "<tr class='tab_bg_1'><td colspan='$colspan' class='center'>";
-               echo Html::submit(_sx('button', 'Synchronize'),
-                                 ['name' => 'update_ok', 'class' => 'btn btn-primary']);
-               echo "</td></tr>\n";
-
-               echo "<tr><th>" . __('Update computers', 'ocsinventoryng') . "</th>";
-               echo "<th>" . __('Serial number') . "</th>";
-               echo "<th>" . __('Import date in GLPI', 'ocsinventoryng') . "</th>";
-               echo "<th>" . __('Last OCSNG inventory date', 'ocsinventoryng') . "</th>";
-               echo "<th>" . __('OCSNG TAG', 'ocsinventoryng') . "</th>";
-               if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
-                  echo "<th>" . __('DEBUG') . "</th>";
-               }
-               echo "<th>&nbsp;</th></tr>\n";
-               foreach ($hardware as $ID => $tab) {
-                  echo "<tr class='tab_bg_2 center'>";
-                  echo "<td><a href='" . $CFG_GLPI["root_doc"] . "/front/computer.form.php?id=" .
-                       $tab["computers_id"] . "'>" . $tab["name"] . "</a></td>\n";
-                  echo "<td>" . $tab["serial"] . "</td>\n";
-                  echo "<td>" . Html::convDateTime($tab["last_update"]) . "</td>\n";
-                  echo "<td>" . Html::convDateTime($hardware[$tab["ocsid"]]["date"]) . "</td>\n";
-                  echo "<td>" . $hardware[$tab["ocsid"]]["tag"] . "</td>\n";
-
-                  if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
-                     echo "<td>";
-                     $checksum_server = intval($cfg_ocs["checksum"]);
-                     $checksum_client = intval($hardware[$tab["ocsid"]]["checksum"]);
-                     if ($checksum_server > 0
-                         && $checksum_client > 0
-                     ) {
-                        $result = $checksum_server & $checksum_client;
-                        echo intval($result);
-                     }
-                     echo "</td>";
-                  }
-
-                  echo "<td><input type='checkbox' name='toupdate[" . $tab["id"] . "]' " .
-                       (($check == "all") ? "checked" : "") . "></td></tr>\n";
-               }
-
-               echo "<tr class='tab_bg_1'><td colspan='$colspan' class='center'>";
-               echo Html::submit(_sx('button', 'Synchronize'), ['name' => 'update_ok', 'class' => 'btn btn-primary']);
-               echo Html::hidden('plugin_ocsinventoryng_ocsservers_id',
-                                 ['value' => $plugin_ocsinventoryng_ocsservers_id]);
-               echo "</td></tr>";
-
-               echo "<tr class='tab_bg_1'><td colspan='$colspan' class='center'>";
-               self::checkBox($target);
-               echo "</table>\n";
-               Html::closeForm();
-               Html::printPager($start, $numrows, $target, $parameters);
-            } else {
-               echo "<br><span class='b'>" . __('Update computers', 'ocsinventoryng') . "</span>";
-               echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
-               echo "<br><a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
-               echo __('Back');
-               echo "</a>";
-               echo "</div>";
-
-            }
-            echo "</div>";
-         } else {
-            echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
-            echo "<br><a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
-            echo __('Back');
-            echo "</a>";
-            echo "</div>";
-         }
-      } else {
-         echo "<div class='center b'>" . __('No new computer to be updated', 'ocsinventoryng');
-         echo "<br><a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
-         echo __('Back');
-         echo "</a>";
-         echo "</div>";
+      if (isset($_SESSION["ocs_update"]['statistics'])) {
+         echo "<br>";
+         PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_update"]['statistics'], true);
       }
    }
 
@@ -2418,18 +2366,31 @@ JAVASCRIPT;
     * @internal param indicates $check if checkboxes are checked or not
     * @internal param display $start a list of computers starting at rowX
     * @internal param a $entities_id list of entities in which computers can be added or linked
-    * @internal param false $tolinked for an import, true for a link
     *
     */
    static function showComputersToAdd($show_params) {
-      global $DB, $CFG_GLPI;
+
+      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/datatables.min.css");
+      //      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css");
+      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/ColReorder-1.5.2/css/colReorder.dataTables.min.css");
+      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Responsive-2.2.3/css/responsive.dataTables.min.css");
+      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Select-1.3.1/css/select.dataTables.min.css");
+
+      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/datatables.min.js");
+      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Responsive-2.2.3/js/dataTables.responsive.min.js");
+      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Select-1.3.1/js/dataTables.select.min.js");
+      //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/dataTables.buttons.min.js");
+      //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.html5.min.js");
+      //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.print.min.js");
+      //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.colVis.min.js");
+      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/ColReorder-1.5.2/js/dataTables.colReorder.min.js");
+      //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/JSZip-2.5.0/jszip.min.js");
+      //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/pdfmake-0.1.36/pdfmake.min.js");
+      //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/pdfmake-0.1.36/vfs_fonts.js");
 
       $plugin_ocsinventoryng_ocsservers_id = $show_params["plugin_ocsinventoryng_ocsservers_id"];
       $advanced                            = $show_params["import_mode"];
-      $check                               = $show_params["check"];
-//      $start                               = $show_params["start"];
       $entities_id                         = $show_params["entities_id"];
-      $tolinked                            = $show_params["tolinked"];
 
       if (!self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
          return false;
@@ -2442,478 +2403,173 @@ JAVASCRIPT;
       }
 
       $caneditimport = Session::haveRight('plugin_ocsinventoryng_import', UPDATE);
-      $caneditlink   = Session::haveRight('plugin_ocsinventoryng_link', UPDATE);
-      $usecheckbox   = ($tolinked && $caneditlink) || (!$tolinked && $caneditimport);
-
-      $title = __('Import new computers', 'ocsinventoryng');
-      if ($tolinked) {
-         $title = __('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng');
-      }
-      $target = PLUGIN_OCS_WEBDIR . '/front/ocsng.import.php';
-      if ($tolinked) {
-         $target = PLUGIN_OCS_WEBDIR . '/front/ocsng.link.php';
-      }
-
-      // Get all links between glpi and OCS
-      $query_glpi     = "SELECT ocsid
-                     FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                     WHERE `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
-      $result_glpi    = $DB->query($query_glpi);
-      $already_linked = [];
-      if ($DB->numrows($result_glpi) > 0) {
-         while ($data = $DB->fetchArray($result_glpi)) {
-            $already_linked [] = $data["ocsid"];
-         }
+      //      $caneditlink   = Session::haveRight('plugin_ocsinventoryng_link', UPDATE);
+      $usecheckbox  = $caneditimport;
+      $title        = __('Import or link new computers', 'ocsinventoryng');
+      $target       = PLUGIN_OCS_WEBDIR . '/front/ocsng.import.php';
+      $languages    = json_encode(self::getJsLanguages());
+      $nbcols = 8;
+      $colsadvanced = "false";
+      if ($advanced) {
+         $colsadvanced = "true";
+         $nbcols = 13;
       }
 
-      $cfg_ocs         = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
+      $columnDefs = "[ {
+               orderable: false,
+               className: 'select-checkbox',
+               targets: [0],
+               },{
+               targets: [1],
+                visible: false
+               }]";
 
-      $computerOptions = ['COMPLETE' => '0',
-                          'FILTER'   => [
-                             'EXCLUDE_IDS' => $already_linked
-                          ],
-                          'DISPLAY'  => [
-                             'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
-                                           | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS
-                          ],
-      ];
+      $columns = "[
+                      { 'data': 'checked' },
+                      { 'data': 'id'},
+                      { 'data': 'name' },
+                      { 'data': 'serial' },
+                      { 'data': 'manufacturer' },
+                      { 'data': 'model' },
+                      { 'data': 'infos' },
+                      { 'data': 'date' },
+                      { 'data': 'TAG' },
+                      { 'data': 'toimport_disable_unicity_check' },
+                      { 'data': 'rule_matched'},
+                      { 'data': 'toimport_entities'},
+                      { 'data': 'toimport_recursive'},
+                      { 'data': 'computers_id_founded'},
+                       ]";
 
-      if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
-         $computerOptions['FILTER']['TAGS'] = $tag_limit;
-      }
+      echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
+      echo "</div>";
+      $entities = json_encode($entities_id);
+      echo "<script>
+            $('#ajax_loader').show();
+            $(document).ready(function () {
+                   var table = $('#OcsTable').DataTable({
+                      ajax: {
+                          url: '../ajax/loadcomputerstoimport.php',
+                          type:'POST',
+                          data: {plugin_ocsinventoryng_ocsservers_id: $plugin_ocsinventoryng_ocsservers_id,
+                                 entities_id: $entities,
+                                 advanced: $advanced
+                                },
+                          datatype: 'json'
+                      },
+                      paging: true,
+                      pageLength: 25,
+                      stateSave: true,
+                      columnDefs: $columnDefs,
+                     'select': {
+                        'style': 'multi',
+                        'selector': 'td:first-child'
+                     },
+                     'order': [[1, 'asc']],
+                       columns: $columns,
+                       processing: true,
+                       responsive: true,
+                       initComplete: function () {
+                            $('#ajax_loader').hide();
+                      },
+                     'language': $languages,
+                   });
+                   table.columns( [1] ).visible( false );
+                   table.columns( [9, 10, 11, 12, 13] ).visible( $colsadvanced );
+                   table.on('click', 'th.select-checkbox', function() {
+                   if ($('th.select-checkbox').hasClass('selected')) {
+                       table.rows().deselect();
+                       $('th.select-checkbox').removeClass('selected');
+                   } else {
+                       table.rows().select();
+                       $('th.select-checkbox').addClass('selected');
+                   }
+                  }).on('select deselect', function() {
+                   ('Some selection or deselection going on')
+                   if (table.rows({
+                           selected: true
+                       }).count() !== table.rows().count()) {
+                       $('th.select-checkbox').removeClass('selected');
+                   } else {
+                       $('th.select-checkbox').addClass('selected');
+                   }
+                  });
+                  // Handle form submission event 
+                  $('#ocsng_form').on('submit', function(e){
+                     var form = this;
+                     var rows_selected = table.rows('.selected').data();
+                     // Iterate over all selected checkboxes
+                     rows_selected.each( function ( value, index ) {
+                        // Create a hidden element 
+                        $(form).append(
+                            $('<input>')
+                               .attr('type', 'hidden')
+                               .attr('name', 'toadd[]')
+                               .val(value.id)
+                        );
+                     });
+                  });
+               });
+            </script>";
 
-      if ($cfg_ocs["tag_exclude"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
-         $computerOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
-      }
-
-      $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-//      $numrows   = $ocsClient->countComputers($computerOptions);
-
-//      if ($start != 0) {
-//         $computerOptions['OFFSET'] = $start;
-//      }
-//      $computerOptions['MAX_RECORDS'] = $_SESSION['glpilist_limit'];
-      $ocsResult                      = $ocsClient->getComputers($computerOptions);
-
-      $computers = (isset($ocsResult['COMPUTERS']) ? $ocsResult['COMPUTERS'] : []);
-
-      $hardware = [];
-      if (isset($computers)) {
-         if (count($computers)) {
-            // Get all hardware from OCS DB
-
-            foreach ($computers as $data) {
-
-               $data = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($data));
-               $id                    = $data['META']['ID'];
-               $input = [
-                  'itemtype'    => "Computer",
-                  'name'        => $data['META']["NAME"],
-                  'entities_id' => $entities_id,
-                  'serial'      => $data['BIOS']["SSN"] ?? '',
-                  'is_dynamic'  => 1,
-                  'ocsid'       => $id,
-                  'id'          => $id,
-               ];
-
-               if ($tolinked) {
-                  $tab['entities_id'] = $entities_id;
-                  $tab['itemtype']    = "Computer";
-                  $rulelink           = new RuleImportAssetCollection();
-
-                  $params = ['entities_id' => $entities_id,
-                             'plugin_ocsinventoryng_ocsservers_id'
-                                           => $plugin_ocsinventoryng_ocsservers_id,
-                             'return'      => true
-                  ];
-
-                  $rulelink_results = $rulelink->processAllRules($input, [], $params);
-
-                  if (isset($rulelink_results['_no_rule_matches'])
-                      || isset($rulelink_results['found_inventories'][0]) && $rulelink_results['found_inventories'][0] == 0) {
-                     continue;
-                  } else {
-                     if (isset($rulelink_results['found_inventories'][0])) {
-                        $hardware[$id]["computers_id_founded"] = $rulelink_results['found_inventories'][0];
-                     }
-
-                  }
-               } else {
-                  $tab['entities_id'] = $entities_id;
-                  $tab['itemtype']    = "Computer";
-                  $rulelink           = new RuleImportAssetCollection();
-                  $params             = ['entities_id' => $entities_id,
-                                         'plugin_ocsinventoryng_ocsservers_id'
-                                                       => $plugin_ocsinventoryng_ocsservers_id,
-                                         'return'      => true
-                  ];
-                  $rulelink_results   = $rulelink->processAllRules($input, [], $params);
-
-                  if (isset($rulelink_results['found_inventories'][0]) && $rulelink_results['found_inventories'][0] > 0) {
-                     continue;
-                  }
-               }
-
-               $hardware[$id]["date"] = $data['META']["LASTDATE"];
-               $hardware[$id]["name"] = $data['META']["NAME"];
-               $hardware[$id]["TAG"]  = $data['META']["TAG"];
-               $hardware[$id]["id"]   = $data['META']["ID"];
-               $hardware[$id]["UUID"] = $data['META']["UUID"];
-               $contact               = $data['META']["USERID"];
-
-               if (!empty($contact)) {
-                  $query                         = "SELECT `id`
-                            FROM `glpi_users`
-                            WHERE `name` = '" . $contact . "';";
-                  $result                        = $DB->query($query);
-                  $hardware[$id]["locations_id"] = 0;
-                  if ($DB->numrows($result) == 1) {
-                     $user_id = $DB->result($result, 0, 0);
-                     $user    = new User();
-                     $user->getFromDB($user_id);
-                     $hardware[$id]["locations_id"] = $user->fields["locations_id"];
-                  }
-               }
-               if (isset($data['BIOS']) && count($data['BIOS'])) {
-                  $hardware[$id]["serial"]       = $data['BIOS']["SSN"];
-                  $hardware[$id]["model"]        = $data['BIOS']["SMODEL"];
-                  $hardware[$id]["manufacturer"] = $data['BIOS']["SMANUFACTURER"];
-               } else {
-                  $hardware[$id]["serial"]       = '';
-                  $hardware[$id]["model"]        = '';
-                  $hardware[$id]["manufacturer"] = '';
-               }
-
-               if (isset($data['NETWORKS']) && count($data['NETWORKS'])) {
-                  $hardware[$id]["NETWORKS"] = $data["NETWORKS"];
-               }
-            }
-            $values = [
-               'order' => 'DESC',
-               'start' => 0,
-            ];
-            if (isset($_SESSION['ocs_import'])) {
-               foreach ($_SESSION['ocs_import'] as $option => $value) {
-                  $values[$option] = $value;
-               }
-            }
-
-            echo "<div class='center'>";
-            $cpt = count($hardware);
-            if ($cpt) {
-
-               $parameters = "check=$check";
-               Html::printPager($values['start'], $cpt, $target, $parameters);
-
-               // delete end
-               array_splice($hardware, $values['start'] + $_SESSION['glpilist_limit']);
-               // delete begin
-               if ($values['start'] > 0) {
-                  array_splice($hardware, 0, $values['start']);
-               }
-
-               //Show preview form only in import even in multi-entity mode because computer import
-               //can be refused by a rule
-               if (!$tolinked) {
-                  echo "<div class='firstbloc'>";
-                  echo "<form method='post' name='ocsng_import_mode' id='ocsng_import_mode'
-                         action='$target'>\n";
-                  echo "<table class='tab_cadre_fixe'>";
-                  echo "<tr><th>" . __('Manual import mode', 'ocsinventoryng') . "</th></tr>\n";
-                  echo "<tr class='tab_bg_1'><td class='center'>";
-                  if ($advanced) {
-                     Html::showSimpleForm($target, 'change_import_mode', __('Disable preview', 'ocsinventoryng'), ['id' => 'false']);
-                  } else {
-                     Html::showSimpleForm($target, 'change_import_mode', __('Enable preview', 'ocsinventoryng'), ['id' => 'true']);
-                  }
-                  echo "</td></tr>";
-                  echo "<tr class='tab_bg_1'><td class='center b'>" .
-                       __('Check first that duplicates have been correctly managed in OCSNG', 'ocsinventoryng') . "</td>";
-                  echo "</tr></table>";
-                  Html::closeForm();
-                  echo "</div>";
-               }
-
-               echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
-               if ($usecheckbox) {
-                  self::checkBox($target);
-               }
-               echo "<table class='tab_cadrehov'>";
-
-               if ($usecheckbox) {
-                  $nb_cols = 7;
-                  if ($advanced && !$tolinked) {
-                     $nb_cols += 3;
-                  }
-                  if ($tolinked) {
-                     $nb_cols += 1;
-                  }
-                  if (($tolinked && $caneditlink) || (!$tolinked && $caneditimport)) {
-                     $nb_cols += 1;
-                  }
-
-                  echo "<tr class='tab_bg_1'><td colspan='" . $nb_cols . "' class='center'>";
-                  if (($tolinked && $caneditlink)) {
-                     echo Html::submit(_sx('button', 'Link', 'ocsinventoryng'), ['name' => 'import_ok', 'class' => 'btn btn-primary']);
-                     echo "&nbsp;";
-                     echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'), ['name' => 'delete_link', 'class' => 'btn btn-primary']);
-                  } else if (!$tolinked && $caneditimport) {
-                     echo Html::submit(_sx('button', 'Import'), ['name' => 'import_ok', 'class' => 'btn btn-primary']);
-                  }
-               }
-               echo "</td></tr>\n";
-               echo "<tr>";
-               if ($usecheckbox) {
-                  echo "<th width='5%'>&nbsp;</th>";
-               }
-               echo "<th>" . __('Name') . "</th>\n";
-               echo "<th>" . __('Manufacturer') . "</th>\n";
-               echo "<th>" . __('Model') . "</th>\n";
-               echo "<th>" . _n('Information', 'Informations', 2) . "</th>\n";
-               echo "<th>" . __('Last OCSNG inventory date', 'ocsinventoryng') . "</th>\n";
-               echo "<th>" . __('OCSNG TAG', 'ocsinventoryng') . "</th>\n";
-               echo "<th>" . __('Override unicity check ?', 'ocsinventoryng') . "</th>\n";
-               if ($advanced && !$tolinked) {
-                  echo "<th>" . __('Match the rule ?', 'ocsinventoryng') . "</th>\n";
-                  echo "<th>" . __('Destination entity') . "</th>\n";
-                  echo "<th>" . __('Child entities') . "</th>\n";
-               }
-               if ($tolinked) {
-                  echo "<th width='30%'>" . __('Item to link', 'ocsinventoryng') . "</th>";
-               }
-               echo "</tr>\n";
-
-               $rule = new RuleImportEntityCollection();
-               foreach ($hardware as $ID => $tab) {
-
-                  $data = [];
-
-                  echo "<tr class='tab_bg_2'>";
-                  if ($usecheckbox) {
-                     echo "<td>";
-                     echo "<input type='checkbox' name='toimport[" . $tab["id"] . "]' " .
-                          ($check == "all" ? "checked" : "") . ">";
-                     echo "</td>";
-                  }
-                  if ($advanced && !$tolinked) {
-                     $recursive = isset($tab["is_recursive"]) ? $tab["is_recursive"] : 0;
-                     $data      = $rule->processAllRules(['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                                                          '_source'       => 'ocsinventoryng',
-                                                          'is_recursive'  => $recursive,
-                                                         ], ['is_recursive' => $recursive], ['ocsid' => $tab["id"]]);
-                  }
-                  echo "<td>" . $tab["name"] . "</td>\n";
-                  echo "<td>" . $tab["manufacturer"] . "</td>";
-                  echo "<td>" . $tab["model"] . "</td>";
-
-                  echo "<td>";
-                  $ssnblacklist = Blacklist::getSerialNumbers();
-                  $ok           = 1;
-                  $msg          = "";
-                  if (!in_array($tab['serial'], $ssnblacklist)) {
-                     $msg = sprintf(__('%1$s : %2$s'), __('Serial number'), $tab["serial"]);
-                  } else {
-                     $msg = "<span class='red'>";
-                     $msg .= sprintf(__('%1$s : %2$s'), __('Blacklisted serial number', 'ocsinventoryng'), $tab["serial"]);
-                     $msg .= "</span>";
-                     $ok  = 0;
-                  }
-                  $uuidblacklist = Blacklist::getUUIDs();
-
-                  if (!in_array($tab['UUID'], $uuidblacklist)) {
-                     $msg .= "<br>";
-                     $msg .= sprintf(__('%1$s : %2$s'), __('UUID'), $tab["UUID"]);
-                  } else {
-                     $msg .= "<br>";
-                     $msg .= "<span class='red'>";
-                     $msg .= sprintf(__('%1$s : %2$s'), __('Blacklisted UUID', 'ocsinventoryng'), $tab["UUID"]);
-                     $msg .= "</span>";
-                     $ok  = 0;
-                  }
-                  if (isset($tab['NETWORKS'])) {
-                     $networks = $tab['NETWORKS'];
-
-                     $ipblacklist  = Blacklist::getIPs();
-                     $macblacklist = Blacklist::getMACs();
-
-                     foreach ($networks as $opt) {
-
-                        if (isset($opt['MACADDR'])) {
-                           if (!in_array($opt['MACADDR'], $macblacklist)) {
-                              $msg .= "<br>";
-                              $msg .= sprintf(__('%1$s : %2$s'), __('MAC'), $opt['MACADDR']);
-                           } else {
-                              $msg .= "<br>";
-                              $msg .= "<span class='red'>";
-                              $msg .= sprintf(__('%1$s : %2$s'), __('Blacklisted MAC', 'ocsinventoryng'), $opt['MACADDR']);
-                              $msg .= "</span>";
-                              //$ok = 0;
-                           }
-                           if (!in_array($opt['IPADDRESS'], $ipblacklist)) {
-                              $msg .= " - ";
-                              $msg .= sprintf(__('%1$s : %2$s'), __('IP'), $opt['IPADDRESS']);
-                           } else {
-                              $msg .= " - ";
-                              $msg .= "<span class='red'>";
-                              $msg .= sprintf(__('%1$s : %2$s'), __('Blacklisted IP', 'ocsinventoryng'), $opt['IPADDRESS']);
-                              $msg .= "</span>";
-                              //$ok = 0;
-                           }
-                        }
-                     }
-                  }
-                  $valTip = "&nbsp;" . Html::showToolTip(
-                        $msg, [
-                               'awesome-class' => 'fa-comments',
-                               'display'       => false,
-                               'autoclose'     => false,
-                               'onclick'       => true
-                            ]
-                     );
-                  echo $valTip;
-                  echo "</td>";
-
-                  echo "<td>" . Html::convDateTime($tab["date"]) . "</td>\n";
-                  echo "<td>" . $tab["TAG"] . "</td>\n";
-                  echo "<td>";
-                  $rec = "toimport_disable_unicity_check[" . $tab["id"] . "]";
-                  Dropdown::showYesNo($rec);
-                  echo "</td>\n";
-
-                  if ($advanced && !$tolinked) {
-                     if (!isset($data['entities_id']) || $data['entities_id'] == -1) {
-                        echo "<td class='center'><i style='color:firebrick' class='fas fa-times-circle'></i></td>\n";
-                        $data['entities_id'] = -1;
-                     } else {
-                        echo "<td  width='15%' class='center'>";
-                        $tmprule = new RuleImportEntity();
-                        if ($tmprule->can($data['_ruleid'], READ)) {
-                           echo "<a href='" . $tmprule->getLinkURL() . "'>" . $tmprule->getName() . "</a>";
-                        } else {
-                           echo $tmprule->getName();
-                        }
-                        echo "</td>\n";
-                     }
-                     echo "<td width='20%'>";
-                     $ent = "toimport_entities[" . $tab["id"] . "]";
-                     Entity::dropdown(['name'     => $ent,
-                                       'value'    => $data['entities_id'],
-                                       'comments' => 0]);
-                     echo "</td>\n";
-                     echo "<td width='20%'>";
-                     if (!isset($data['is_recursive'])) {
-                        $data['is_recursive'] = 0;
-                     }
-                     $rec = "toimport_recursive[" . $tab["id"] . "]";
-                     Dropdown::showYesNo($rec, $data['is_recursive']);
-                     echo "</td>\n";
-                  }
-
-                  if ($tolinked) {
-                     $ko = 0;
-                     echo "<td  width='30%'>";
-
-                     //Look for the computer using automatic link criterias as defined in OCSNG configuration
-                     $options       = ['name' => "tolink[" . $tab["id"] . "]"];
-                     $show_dropdown = true;
-                     //If the computer is not explicitly refused by a rule
-                     if ($ok) {
-
-                        if (isset($tab["computers_id_founded"])) {
-                           $options['value']  = $tab["computers_id_founded"];
-                           $options['entity'] = $entities_id;
-                        }
-                        $options['width'] = "100%";
-
-                        if (isset($options['value']) && $options['value'] > 0) {
-
-                           $query = "SELECT *
-                                     FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                                     WHERE `computers_id` = '" . $options['value'] . "' ";
-
-                           $result = $DB->query($query);
-                           if ($DB->numrows($result) > 0) {
-                              $ko = 1;
-                           }
-                        }
-                        $options['comments'] = false;
-                        Computer::dropdown($options);
-                        if ($ko > 0) {
-                           echo "<div class='red'>";
-                           echo __('Warning ! This computer is already linked with another OCS computer.', 'ocsinventoryng');
-                           echo "</br>";
-                           echo __('Check first that duplicates have been correctly managed in OCSNG', 'ocsinventoryng');
-                           echo "</div>";
-                        }
-                     } else {
-                        echo "<i style='color:firebrick' class='fas fa-times-circle'></i>";
-                     }
-                     echo "</td>";
-                  }
-                  echo "</tr>\n";
-               }
-               if ($usecheckbox) {
-                  echo "<tr class='tab_bg_1'><td colspan='" . $nb_cols . "' class='center'>";
-                  if ($tolinked) {
-                     echo Html::submit(_sx('button', 'Link', 'ocsinventoryng'), ['name' => 'import_ok', 'class' => 'btn btn-primary']);
-                     echo "&nbsp;";
-                     echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'), ['name' => 'delete_link', 'class' => 'btn btn-primary']);
-                  } else {
-                     echo Html::submit(_sx('button', 'Import'), ['name' => 'import_ok', 'class' => 'btn btn-primary']);
-                  }
-                  echo Html::hidden('plugin_ocsinventoryng_ocsservers_id',
-                                    ['value' => $plugin_ocsinventoryng_ocsservers_id]);
-                  echo "</td></tr>";
-               }
-               echo "</table>\n";
-               Html::closeForm();
-
-               if ($usecheckbox) {
-                  self::checkBox($target);
-               }
-
-               Html::printPager($values['start'], $cpt, $target, $parameters);
-            } else {
-               echo "<table class='tab_cadre_fixe'>";
-               echo "<tr><th>" . $title . "</th></tr>\n";
-               echo "<tr class='tab_bg_1'>";
-               echo "<td class='center b'>" . __('No new computer to be imported', 'ocsinventoryng') .
-                    "</td></tr>\n";
-               echo "</table>";
-               echo "<br><div class='center'>";
-               echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
-               echo __('Back');
-               echo "</a>";
-               echo "</div>";
-            }
-            echo "</div>";
-         } else {
-            echo "<div class='center'>";
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr><th>" . $title . "</th></tr>\n";
-            echo "<tr class='tab_bg_1'>";
-            echo "<td class='center b'>" . __('No new computer to be imported', 'ocsinventoryng') .
-                 "</td></tr>\n";
-            echo "</table></div>";
-            echo "<br><div class='center'>";
-            echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
-            echo __('Back');
-            echo "</a>";
-            echo "</div>";
-         }
+      //Show preview form only in import even in multi-entity mode because computer import
+      //can be refused by a rule
+      echo "<div class='firstbloc'>";
+      echo "<form method='post' name='ocsng_import_mode' id='ocsng_import_mode'
+                               action='$target'>\n";
+      echo "<table class='tab_cadre_fixe'>";
+      echo "<tr><th class='center'>" . __('Manual import mode', 'ocsinventoryng') . "</th></tr>\n";
+      echo "<tr class='tab_bg_1'><td class='center'>";
+      if ($advanced) {
+         Html::showSimpleForm($target, 'change_import_mode', __('Disable preview', 'ocsinventoryng'), ['id' => 'false']);
       } else {
-         echo "<div class='center'>";
-         echo "<table class='tab_cadre_fixe'>";
-         echo "<tr><th>" . $title . "</th></tr>\n";
-         echo "<tr class='tab_bg_1'>";
-         echo "<td class='center b'>" . __('No new computer to be imported', 'ocsinventoryng') .
-              "</td></tr>\n";
-         echo "</table></div>";
-         echo "<br><div class='center'>";
-         echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
-         echo __('Back');
-         echo "</a>";
-         echo "</div>";
+         Html::showSimpleForm($target, 'change_import_mode', __('Enable preview', 'ocsinventoryng'), ['id' => 'true']);
+      }
+      echo "</td></tr>";
+      echo "<tr class='tab_bg_1'><td class='center b'>" .
+           __('Check first that duplicates have been correctly managed in OCSNG', 'ocsinventoryng') . "</td>";
+      echo "</tr></table>";
+      Html::closeForm();
+      echo "</div>";
+
+      echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
+      echo "<div class='center'>";
+      echo "<table id='OcsTable' class='display' cellspacing='0' style='width: 100%!important;'>";
+      echo "<thead>";
+
+      // Set display type for export if define
+      $output_type = Search::HTML_OUTPUT;
+      if (isset($values["display_type"])) {
+         $output_type = $values["display_type"];
+      }
+
+      $header_num = 1;
+      echo "<tr><th colspan='" . $nbcols . "'>" . $title . "</th></tr>";
+      //Column title
+      echo Search::showNewLine($output_type);
+      echo Search::showHeaderItem($output_type, __('All', 'ocsinventoryng'), $header_num);
+      echo Search::showHeaderItem($output_type, __('ID'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Name'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Serial number'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Manufacturer'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Model'), $header_num);
+      echo Search::showHeaderItem($output_type, _n('Information', 'Informations', 2), $header_num);
+      echo Search::showHeaderItem($output_type, __('Last OCSNG inventory date', 'ocsinventoryng'), $header_num);
+      echo Search::showHeaderItem($output_type, __('OCSNG TAG', 'ocsinventoryng'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Override unicity check ?', 'ocsinventoryng'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Match the rule ?', 'ocsinventoryng'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Destination entity'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Child entities'), $header_num);
+      echo Search::showHeaderItem($output_type, __('Item to link', 'ocsinventoryng'), $header_num);
+      echo "</thead>";
+      echo Search::showFooter($output_type, $title);
+
+      echo Html::submit($title, ['name' => 'import_ok', 'class' => 'btn btn-primary']);
+      Html::closeForm();
+
+      if (isset($_SESSION["ocs_import"]['statistics'])) {
+         echo "<br>";
+         PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_import"]['statistics'], true);
       }
    }
 
@@ -3367,5 +3023,53 @@ JAVASCRIPT;
             echo "</td></tr>";
          }
       }
+   }
+
+   /**
+    * Get all languages for a specific library
+    *
+    * @return array $languages
+    * @internal param string $name name of the library :
+    *    Currently available :
+    *        sDashboard (for Datatable),
+    *        mydashboard (for our own)
+    */
+   static function getJsLanguages() {
+
+      $languages                    = [];
+      $languages['sEmptyTable']     = __('No data available in table', 'ocsinventoryng');
+      $languages['sInfo']           = __('Showing _START_ to _END_ of _TOTAL_ entries', 'ocsinventoryng');
+      $languages['sInfoEmpty']      = __('Showing 0 to 0 of 0 entries', 'ocsinventoryng');
+      $languages['sInfoFiltered']   = __('(filtered from _MAX_ total entries)', 'ocsinventoryng');
+      $languages['sInfoPostFix']    = __('');
+      $languages['sInfoThousands']  = __(',');
+      $languages['sLengthMenu']     = __('Show _MENU_ entries', 'ocsinventoryng');
+      $languages['sLoadingRecords'] = __('Loading') . "...";
+      $languages['sProcessing']     = __('Processing') . "...";
+      $languages['sSearch']         = __('Search') . ":";
+      $languages['sZeroRecords']    = __('No matching records found', 'ocsinventoryng');
+      $languages['oPaginate']       = [
+         'sFirst'    => __('First'),
+         'sLast'     => __('Last'),
+         'sNext'     => " " . __('Next'),
+         'sPrevious' => __('Previous')
+      ];
+      $languages['oAria']           = [
+         'sSortAscending'  => __(': activate to sort column ascending', 'ocsinventoryng'),
+         'sSortDescending' => __(': activate to sort column descending', 'ocsinventoryng')
+      ];
+      $languages['close']           = __("Close", "ocsinventoryng");
+      $languages['maximize']        = __("Maximize", "ocsinventoryng");
+      $languages['minimize']        = __("Minimize", "ocsinventoryng");
+      $languages['refresh']         = __("Refresh", "ocsinventoryng");
+      $languages['buttons']         = [
+         'colvis' => __('Column visibility', 'ocsinventoryng'),
+      ];
+
+      $languages['select'] = [
+         'rows' => __('%d rows selected', 'ocsinventoryng'),
+      ];
+
+      return $languages;
    }
 }
