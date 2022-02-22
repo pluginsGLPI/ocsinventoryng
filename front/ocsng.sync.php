@@ -55,12 +55,10 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
       Html::displayProgressBar(400, $percent);
 
       Html::redirect($_SERVER['PHP_SELF']);
-
    }
 }
 
 if (!isset($_POST["update_ok"])) {
-
    if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
       $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
       $deleted_pcs   = $ocsClient->getTotalDeletedComputers();

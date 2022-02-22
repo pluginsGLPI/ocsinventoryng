@@ -1429,7 +1429,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                     'computers_id' => $line['computers_id']];
 
          }
-         
+
          // ELSE Return code to indicate only last inventory date changed
          return ['status'       => self::COMPUTER_NOTUPDATED,
                  'entities_id'  => $comp->fields["entities_id"],

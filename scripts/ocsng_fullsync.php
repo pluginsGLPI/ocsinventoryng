@@ -350,7 +350,7 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
    // Get newly inventoried computers
    $firstQueryOptions = $computerOptions;
    if ($server->fields["max_glpidate"] != '0000-00-00 00:00:00') {
-      $firstQueryOptions['FILTER']['INVENTORIED_SINCE'] = $server->fields["max_glpidate"];
+      $firstQueryOptions['FILTER']['INVENTORIED_BEFORE'] = $server->fields["max_glpidate"];
    }
 
    $firstQueryOptions['FILTER']['CHECKSUM'] = intval($cfg_ocs["checksum"]);
