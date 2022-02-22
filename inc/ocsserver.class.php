@@ -533,7 +533,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM {
          }
          echo "<td class='center b' colspan='2'>
                <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.clean.php'>
-               <i style='color:steelblue' class='fas fa-trash fa-2x' 
+               <i style='color:steelblue' class='fas fa-broom fa-2x' 
                            title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Clean links between GLPI and OCSNG', 'ocsinventoryng') . "
                </a>";
@@ -2139,8 +2139,18 @@ JAVASCRIPT;
          if ($canedit) {
             self::checkBox($target);
          }
+
          echo "<table class='tab_cadre'>";
-         echo "<tr><th>" . __('Item') . "</th><th>" . __('Import date in GLPI', 'ocsinventoryng') . "</th>";
+
+         echo "<tr class='tab_bg_1'><td colspan='6' class='center'>";
+         if ($canedit) {
+            echo Html::submit(_sx('button', 'Clean'), ['name' => 'clean_ok', 'class' => 'btn btn-primary']);
+         }
+         echo "</td></tr>\n";
+
+         echo "<tr class='tab_bg_1 center'>";
+         echo "<th>" . __('Item') . "</th>";
+         echo "<th>" . __('Import date in GLPI', 'ocsinventoryng') . "</th>";
          echo "<th>" . __('Existing in GLPI', 'ocsinventoryng') . "</th>";
          echo "<th>" . __('Existing in OCSNG', 'ocsinventoryng') . "</th>";
          if (Session::isMultiEntitiesMode()) {
@@ -2150,12 +2160,6 @@ JAVASCRIPT;
             echo "<th>&nbsp;</th>";
          }
          echo "</tr>\n";
-
-         echo "<tr class='tab_bg_1'><td colspan='6' class='center'>";
-         if ($canedit) {
-            echo Html::submit(_sx('button', 'Clean'), ['name' => 'clean_ok', 'class' => 'btn btn-primary']);
-         }
-         echo "</td></tr>\n";
 
          foreach ($already_linked as $ID => $tab) {
             echo "<tr class='tab_bg_2 center'>";
@@ -2869,8 +2873,6 @@ JAVASCRIPT;
                      $res[$computer['META']['ID']] = $computer['META'];
                }
             }
-
-            //         $res = $PluginOcsinventoryngDBocs->getComputersToUpdate($cfg_ocs, $max_date);
 
             $task->setVolume(0);
             if (count($res) > 0) {

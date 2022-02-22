@@ -204,7 +204,8 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
     * @return string
     */
    static function getLinkToCreateFromTypeAndTypeMIB(array $fields = []) {
-      $link = static::getFormURL() . '?TYPE=' . $fields['TYPE'] . '&TYPEMIB=' . $fields['TYPEMIB'];
+
+      $link = PLUGIN_OCS_WEBDIR .'/front/networkporttype.form.php?TYPE=' . $fields['TYPE'] . '&TYPEMIB=' . $fields['TYPEMIB'];
       if (!empty($fields['speed'])) {
          $speed = NetworkPortEthernet::transformPortSpeed($fields['speed'], false);
          if (!empty($speed)) {
@@ -212,10 +213,12 @@ class PluginOcsinventoryngNetworkPortType extends CommonDropdown {
          }
       }
       $link .= '&rand=1'; // To reload main window
+      echo Ajax::createIframeModalWindow('create_network',
+                                         $link,
+                                         ['title'   => __('Create')]);
 
-      Ajax::createIframeModalWindow('create_network', $link, ['title' => __('Create')]);
 
-      return "<a href='#' onClick=\"$('#create_network').dialog('open');\">" . __('Create') . "</a>";
+      return "<a href='#' data-bs-toggle='modal' data-bs-target='#create_network' class='submit btn btn-primary' title='" . __('Create') . "' >".__('Create')."</a>";
    }
 
 

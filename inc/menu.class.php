@@ -52,8 +52,8 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
 
       $menu                    = [];
       $menu['title']           = self::getMenuName();
-      $menu['page']            = PLUGIN_OCS_NOTFULL_WEBDIR."/front/ocsng.php";
-      $menu['links']['search'] = PLUGIN_OCS_NOTFULL_WEBDIR."/front/ocsng.php";
+      $menu['page']            = PLUGIN_OCS_NOTFULL_WEBDIR . "/front/ocsng.php";
+      $menu['links']['search'] = PLUGIN_OCS_NOTFULL_WEBDIR . "/front/ocsng.php";
 
       if (Session::haveRight(static::$rightname, UPDATE)
           || Session::haveRight("config", UPDATE)) {
@@ -63,67 +63,59 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
          $menu['config_page'] = PluginOcsinventoryngConfig::getSearchURL(false);
       }
 
-      // Ocsserver
-      $menu['options']['ocsserver']['title']           = __s("Configuration of OCSNG server", 'ocsinventoryng');
-      $menu['options']['ocsserver']['page']            = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ocsserver.php';
-      $menu['options']['ocsserver']['links']['add']    = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ocsserver.form.php';
-      $menu['options']['ocsserver']['links']['search'] = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ocsserver.php';
-
+      $usemassimport = PluginOcsinventoryngOcsServer::useMassImport();
       // Import
-      $menu['options']['import']['title'] = __s('Import new computers', 'ocsinventoryng');
-      $menu['options']['import']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ocsng.import.php';
-
+      if (Session::haveRight("plugin_ocsinventoryng_import", READ)) {
+         $menu['links']["<i class='fas fa-plus fa-1x' title='" . __s('Import new computers', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_NOTFULL_WEBDIR . '/front/ocsng.import.php';
+      }
       // Sync
-      $menu['options']['sync']['title'] = __s('Synchronize computers already imported', 'ocsinventoryng');
-      $menu['options']['sync']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ocsng.sync.php';
-
+      if (Session::haveRight("plugin_ocsinventoryng_sync", READ)) {
+         $menu['links']["<i class='fas fa-sync-alt fa-1x' title='" . __s('Synchronize computers already imported', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_NOTFULL_WEBDIR . '/front/ocsng.sync.php';
+      }
       // Thread
-      $menu['options']['thread']['title'] = __('Scripts execution of automatic actions', 'ocsinventoryng');
-      $menu['options']['thread']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/thread.php';
-
+      if ($usemassimport && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+         $menu['links']["<i class='fas fa-play fa-1x' title='" . __('Scripts execution of automatic actions', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_NOTFULL_WEBDIR . '/front/thread.php';
+      }
       // Detail
-      $menu['options']['detail']['title'] = __('Computers imported by automatic actions', 'ocsinventoryng');
-      $menu['options']['detail']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/detail.php';
-
+      $log = PluginOcsinventoryngConfig::logProcessedComputers();
+      if ($log && Session::haveRight("plugin_ocsinventoryng_import", READ) && $usemassimport) {
+         $menu['links']["<i class='fas fa-check fa-1x' title='" . __('Computers imported by automatic actions', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_NOTFULL_WEBDIR . '/front/detail.php';
+      }
       // Notimported
-      $menu['options']['notimported']['title'] = __s('Computers not imported by automatic actions', 'ocsinventoryng');
-      $menu['options']['notimported']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/notimportedcomputer.php';
-
-      // networkport
-      $menu['options']['networkport']['title'] = _n('Unknown imported network port type', 'Unknown imported network ports types', 2, 'ocsinventoryng');
-      $menu['options']['networkport']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/networkport.php';
-
+      if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $usemassimport) {
+         $menu['links']["<i class='fas fa-times fa-1x' title='" . __s('Computers not imported by automatic actions', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_NOTFULL_WEBDIR . '/front/notimportedcomputer.php';
+         // networkport
+         $menu['links']["<i class='fas fa-network-wired fa-1x' title='" . _n('Unknown imported network port type', 'Unknown imported network ports types', 2, 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_NOTFULL_WEBDIR . '/front/networkport.php';
+      }
       if (Session::haveRight("plugin_ocsinventoryng_clean", UPDATE)
           || Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
          if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
             // Deleted_equiv
-            $menu['options']['deleted_equiv']['title'] = __s('Clean OCSNG deleted computers', 'ocsinventoryng');
-            $menu['options']['deleted_equiv']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/deleted_equiv.php';
+            $menu['links']["<i class='fas fa-trash fa-1x' title='" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_NOTFULL_WEBDIR . '/front/deleted_equiv.php';
          }
          // Clean
-         $menu['options']['clean']['title'] = __s('Clean links between GLPI and OCSNG', 'ocsinventoryng');
-         $menu['options']['clean']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ocsng.clean.php';
+         $menu['links']["<i class='fas fa-broom fa-1x' title='" . __s('Clean links between GLPI and OCSNG', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_NOTFULL_WEBDIR . '/front/ocsng.clean.php';
       }
 
       // Import
-      $menu['options']['importsnmp']['title'] = __s('Import new snmp devices', 'ocsinventoryng');
-      $menu['options']['importsnmp']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ocsngsnmp.import.php';
-
-      // Sync
-      $menu['options']['syncsnmp']['title'] = __s('Synchronize snmp devices already imported', 'ocsinventoryng');
-      $menu['options']['syncsnmp']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ocsngsnmp.sync.php';
-
-      // Link
-      $menu['options']['synclink']['title'] = __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng');
-      $menu['options']['synclink']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ocsngsnmp.link.php';
-
-      //ipdiscover
-      $menu['options']['importipdiscover']['title'] = __s('IPDiscover Import', 'ocsinventoryng');
-      $menu['options']['importipdiscover']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ipdiscover.php';
-
-      //Modify Network
-      $menu['options']['modifysubnet']['title'] = __s('Modify Subnet', 'ocsinventoryng');
-      $menu['options']['modifysubnet']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ipdiscover.modifynetwork.php';
+      //      $menu['options']['importsnmp']['title'] = __s('Import new snmp devices', 'ocsinventoryng');
+      //      $menu['options']['importsnmp']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ocsngsnmp.import.php';
+      //
+      //      // Sync
+      //      $menu['options']['syncsnmp']['title'] = __s('Synchronize snmp devices already imported', 'ocsinventoryng');
+      //      $menu['options']['syncsnmp']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ocsngsnmp.sync.php';
+      //
+      //      // Link
+      //      $menu['options']['synclink']['title'] = __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng');
+      //      $menu['options']['synclink']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ocsngsnmp.link.php';
+      //
+      //      //ipdiscover
+      //      $menu['options']['importipdiscover']['title'] = __s('IPDiscover Import', 'ocsinventoryng');
+      //      $menu['options']['importipdiscover']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ipdiscover.php';
+      //
+      //      //Modify Network
+      //      $menu['options']['modifysubnet']['title'] = __s('Modify Subnet', 'ocsinventoryng');
+      //      $menu['options']['modifysubnet']['page']  = PLUGIN_OCS_NOTFULL_WEBDIR.'/front/ipdiscover.modifynetwork.php';
 
       $menu['icon'] = self::getIcon();
 
@@ -186,7 +178,7 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
                      $ocsClient = new PluginOcsinventoryngOcsServer();
                      $client    = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
                      $version   = $client->getTextConfig('GUI_VERSION');
-                     $snmp    = ($client->getIntConfig('SNMP') > 0)?true:false;
+                     $snmp      = ($client->getIntConfig('SNMP') > 0) ? true : false;
                      if ($version > $ocsClient::OCS2_1_VERSION_LIMIT && $snmp) {
                         $ong[3] = __('SNMP Import', 'ocsinventoryng');
                      }
