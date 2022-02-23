@@ -96,6 +96,9 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
 
          if (intval($cfg_ocs["import_general_contact"]) > 0) {
             $locks["contact"]  = __('Alternate username');
+         }
+
+         if (intval($cfg_ocs["link_with_user"]) > 0) {
             $locks["users_id"] = __('User');
          }
 
@@ -202,6 +205,13 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
          }
 
          if (intval($options['cfg_ocs']["import_general_contact"]) > 0
+             && !in_array("contact", $options['computers_updates'])) {
+            if (!empty($hardware["USERID"])) {
+               $updates["contact"] = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware["USERID"]);
+            }
+         }
+
+         if (intval($options['cfg_ocs']["link_with_user"]) > 0
              && !in_array("contact", $options['computers_updates'])) {
             if (!empty($hardware["USERID"])) {
                $updates["contact"] = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware["USERID"]);
@@ -396,7 +406,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
       global $DB;
 
       $contact = (isset($ocsComputer['META']["USERID"])) ? $ocsComputer['META']["USERID"] : "";
-      if (!empty($contact)) {
+      if (!empty($contact) && $cfg_ocs["link_with_user"] > 0) {
          $query  = "SELECT `id`
                    FROM `glpi_users`
                    WHERE `name` = '" . $contact . "';";

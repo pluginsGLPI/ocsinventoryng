@@ -65,6 +65,7 @@ CREATE TABLE `glpi_plugin_ocsinventoryng_ocsservers` (
   `import_general_type` tinyint NOT NULL DEFAULT '1',
   `import_general_domain` tinyint NOT NULL DEFAULT '1',
   `import_general_contact` tinyint NOT NULL DEFAULT '1',
+  `link_with_user` tinyint NOT NULL DEFAULT '1',
   `import_user_group_default` tinyint NOT NULL DEFAULT '1',
   `import_user_location` tinyint NOT NULL DEFAULT '1',
   `import_user_group` tinyint NOT NULL DEFAULT '1',

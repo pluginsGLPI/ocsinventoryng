@@ -962,20 +962,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
 
       if ($id && $identify) {
          //identify object
-         //WAS IS DAS ? CHMA
-         $userId      = Session::getLoginUserID();
-         $query       = "SELECT `glpi_users`.`name` 
-                         FROM `glpi_users`
-                         WHERE glpi_users.id like '$userId'";
-         $queryResult = $DB->query($query);
-         $userAssoc   = $DB->fetchAssoc($queryResult);
-
-         if ($userAssoc) {
+         $user = new User();
+         if ($user->getFromDB(Session::getLoginUserID())) {
             $ocsClient   = new PluginOcsinventoryngOcsServer();
             $DBOCS       = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
             $ocsType     = $ipDiscoveryObject["ocsItemType"];
             $description = $ipDiscoveryObject["itemDescription"];
-            $user        = $userAssoc["name"];
+            $user        = $user->fields["name"];
             $ocsQuery    = "INSERT INTO `network_devices` (`description`,`type`,`macaddr`,`user`)
                             VALUES('$description','$ocsType','$mac','$user')";
             $DBOCS->query($ocsQuery);
@@ -1039,20 +1032,13 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
 
          if ($identify) {
             //identify object
-            //WAS IS DAS ? CHMA
-            $userId      = Session::getLoginUserID();
-            $query       = "SELECT `glpi_users`.`name` 
-                         FROM `glpi_users`
-                         WHERE glpi_users.id like '$userId'";
-            $queryResult = $DB->query($query);
-            $userAssoc   = $DB->fetchAssoc($queryResult);
-
-            if ($userAssoc) {
+            $user = new User();
+            if ($user->getFromDB(Session::getLoginUserID())) {
                $ocsClient   = new PluginOcsinventoryngOcsServer();
                $DBOCS       = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
                $ocsType     = $tab["ocsType"];
                $description = $tab["description"];
-               $user        = $userAssoc["name"];
+               $user        = $user->fields["name"];
                $ocsQuery    = "INSERT INTO `network_devices` (`description`,`type`,`macaddr`,`user`)
                             VALUES('$description','$ocsType','" . $tab["mac"] . "','$user')";
                $DBOCS->query($ocsQuery);

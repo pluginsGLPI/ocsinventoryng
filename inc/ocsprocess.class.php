@@ -417,6 +417,9 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
       if (intval($cfg_ocs["import_general_contact"]) == 0) {
          unset($input["contact"]);
+      }
+
+      if (intval($cfg_ocs["link_with_user"]) == 0) {
          unset($input["users_id"]);
       }
 

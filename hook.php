@@ -517,13 +517,11 @@ function plugin_ocsinventoryng_install() {
          $DB->runFile(PLUGIN_OCS_DIR. "/install/mysql/1.6.1-update.sql");
       }
 
-
-
       /******************* Migration 1.7.0 *******************/
 
       if (!$DB->tableExists('glpi_plugin_ocsinventoryng_bitlockerstatuses')) {
          $DB->runFile(PLUGIN_OCS_DIR. "/install/mysql/1.7.1-update.sql");
-      }/*1.7.1*/
+      }
 
       $migration->executeMigration();
 
@@ -540,7 +538,14 @@ function plugin_ocsinventoryng_install() {
          }
       }
 
+      /******************* Migration 2.0.0 *******************/
+
+      if (!$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'link_with_user')) {
+         $DB->runFile(PLUGIN_OCS_DIR. "/install/mysql/2.0.0-update.sql");
+      }/*1.7.1*/
    }
+
+
    //Notifications
    addNotifications();
 

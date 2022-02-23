@@ -695,26 +695,33 @@ JAVASCRIPT;
       echo "<th colspan='4'>" . __('User informations', 'ocsinventoryng');
       echo "</th></tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Alternate username') . "</td>\n<td>";
+      echo "<tr class='tab_bg_2'><td class='center'>" . __('Alternate username'). "</td>\n<td>";
       Dropdown::showYesNo("import_general_contact", $this->fields["import_general_contact"]);
       echo "</td>";
-      echo "<td class='center'>" . __('Affect default group of user by default', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("import_user_group_default", $this->fields["import_user_group_default"]);
-      echo "&nbsp;";
-      Html::showToolTip(nl2br(__('Depends on contact import', 'ocsinventoryng')));
-      echo "</td></tr>\n";
+      echo "<td class='center'>" . __('Link with user', 'ocsinventoryng'). "</td>\n<td>";
+      $import_array = ["0" => __('No import'),
+                       "1" => __('From user login / contact', 'ocsinventoryng')];
+      Dropdown::showFromArray("link_with_user", $import_array, ['value' => $this->fields["link_with_user"]]);
+      echo "</td>";
+      echo "</tr>\n";
 
-      echo "<tr class='tab_bg_2'><td class='center'>" . __('Affect user location by default', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("import_user_location", $this->fields["import_user_location"]);
-      echo "&nbsp;";
-      Html::showToolTip(nl2br(__('Depends on contact import', 'ocsinventoryng')));
-      echo "</td>\n";
-      echo "<td class='center'>" . __('Affect first group of user by default', 'ocsinventoryng') . "</td>\n<td>";
-      Dropdown::showYesNo("import_user_group", $this->fields["import_user_group"]);
-      echo "&nbsp;";
-      Html::showToolTip(nl2br(__('Depends on contact import', 'ocsinventoryng')));
-      echo "</td></tr>\n";
+      if ($this->fields["link_with_user"] > 0) {
+         echo "<td colspan='2'></td>";
+         echo "<td class='center'>" . __('Affect default group of user by default', 'ocsinventoryng') . "</td>\n<td>";
+         Dropdown::showYesNo("import_user_group_default", $this->fields["import_user_group_default"]);
+         echo "</td>";
+         echo "</tr>\n";
+      }
 
+
+      if ($this->fields["link_with_user"] > 0) {
+         echo "<tr class='tab_bg_2'><td class='center'>" . __('Affect user location by default', 'ocsinventoryng') . "</td>\n<td>";
+         Dropdown::showYesNo("import_user_location", $this->fields["import_user_location"]);
+         echo "</td>\n";
+         echo "<td class='center'>" . __('Affect first group of user by default', 'ocsinventoryng') . "</td>\n<td>";
+         Dropdown::showYesNo("import_user_group", $this->fields["import_user_group"]);
+         echo "</td></tr>\n";
+      }
       echo "</table>";
       echo "</div>";
 
@@ -1575,6 +1582,7 @@ JAVASCRIPT;
       $checksum = 0;
       if (//$this->fields["import_device_processor"] ||
          $this->fields["import_general_contact"]
+         || $this->fields["link_with_user"]
          || $this->fields["import_general_comment"]
          || $this->fields["import_general_domain"]
          || $this->fields["import_general_os"]
