@@ -302,6 +302,10 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             }
          }
 
+         if (isset($data['users_id'])) {
+            $tmp['users_id'] = $data['users_id'];
+         }
+
          //If there's a recursive to update
          if (isset($data['is_recursive'])) {
             $tmp['is_recursive'] = $data['is_recursive'];
@@ -416,6 +420,9 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             $user_id = $DB->result($result, 0, 0);
             $user    = new User();
             $user->getFromDB($user_id);
+
+            $values['users_id'] = $user_id;
+
             if ($cfg_ocs["import_user_location"] > 0) {
                $values['locations_id'] = $user->fields["locations_id"];
             }
