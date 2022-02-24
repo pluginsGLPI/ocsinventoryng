@@ -55,10 +55,21 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
     * @return array
     */
    function getWidgetsForItem() {
-      return [
-         $this->getType() . "1" => __("Last synchronization of computers by month", "ocsinventoryng") . "&nbsp;<i class='fas fa-bar-chart'></i>",
-         $this->getType() . "2" => __("Detail of imported computers", "ocsinventoryng") . "&nbsp;<i class='fas fa-pie-chart'></i>",
+
+      $widgets = [
+         __('Bar charts', "mydashboard") => [
+            $this->getType() . "1" => ["title"   => __("Last synchronization of computers by month", "ocsinventoryng"),
+                                       "icon"    => "fas fa-chart-bar",
+                                       "comment" => __("Display synchronization of computers by month", "ocsinventoryng")],
+         ],
+         __('Pie charts', "mydashboard") => [
+            $this->getType() . "2" => ["title"   => __("Detail of imported computers", "ocsinventoryng"),
+                                       "icon"    => "fas fa-chart-pie",
+                                       "comment" => __("Number of OCSNG computers, Fusion Inventory computer, without agent computers", "ocsinventoryng")],
+         ]
       ];
+
+      return $widgets;
    }
 
    /**

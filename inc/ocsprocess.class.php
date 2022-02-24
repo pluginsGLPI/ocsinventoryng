@@ -483,7 +483,6 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                            'cfg_ocs'                             => $cfg_ocs,
                            'disable_unicity_check'               => $disable_unicity_check];
 
-
          return self::importComputer($import_params);
       }
 
@@ -623,7 +622,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                   $sync_params = ['ID'                                  => $idlink,
                                   'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                                   'cfg_ocs'                             => $cfg_ocs,
-                                  'force'                               => 0];
+                                  'force'                               => 1];
                   self::synchronizeComputer($sync_params);
                }
 
@@ -778,11 +777,13 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
                $changes[2] = $ocsid;
                PluginOcsinventoryngOcslink::history($computers_id, $changes, PluginOcsinventoryngOcslink::HISTORY_OCS_LINK);
             }
-            $sync_params = ['ID'                                  => $idlink,
-                            'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                            'cfg_ocs'                             => $cfg_ocs,
-                            'force'                               => 1];
-            //            self::synchronizeComputer($sync_params, false);
+            if ($idlink) {
+               $sync_params = ['ID' => $idlink,
+                  'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                  'cfg_ocs' => $cfg_ocs,
+                  'force' => 1];
+               self::synchronizeComputer($sync_params, false);
+            }
             return true;
          }
       } else {
@@ -1234,14 +1235,15 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
                $params['force'] = $force;
 
-               $params['HARDWARE'] = $ocsComputer['HARDWARE'];
-
                $params['check_history'] = true;
                if ($force) {
                   $params['check_history'] = false;
                }
 
-               PluginOcsinventoryngOS::updateComputerOS($params);
+               if (isset($ocsComputer['HARDWARE'])) {
+                  $params['HARDWARE'] = $ocsComputer['HARDWARE'];
+                  PluginOcsinventoryngOS::updateComputerOS($params);
+               }
 
                if ($updates['bios'] && isset($ocsComputer['BIOS'])) {
                   $params['BIOS'] = $ocsComputer['BIOS'];

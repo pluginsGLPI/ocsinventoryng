@@ -925,7 +925,6 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
          $input = [
             'is_dynamic'   => 1,
             'locations_id' => 0,
-            'domains_id'   => 0,
             'entities_id'  => $ipDiscoveryObject["entity"],
             'name'         => $ipDiscoveryObject["itemName"],
             'comment'      => $ipDiscoveryObject["itemDescription"]];

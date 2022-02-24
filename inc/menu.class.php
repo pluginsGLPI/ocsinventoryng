@@ -78,8 +78,8 @@ class PluginOcsinventoryngMenu extends CommonGLPI {
       $menu['options']['sync']['page']  = '/plugins/ocsinventoryng/front/ocsng.sync.php';
 
       // Link
-      $menu['options']['link']['title'] = __s('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng');
-      $menu['options']['link']['page']  = '/plugins/ocsinventoryng/front/ocsng.link.php';
+//      $menu['options']['link']['title'] = __s('Link new OCSNG computers to existing GLPI computers', 'ocsinventoryng');
+//      $menu['options']['link']['page']  = '/plugins/ocsinventoryng/front/ocsng.link.php';
 
       // Thread
       $menu['options']['thread']['title'] = __s('Scripts execution of automatic actions', 'ocsinventoryng');
