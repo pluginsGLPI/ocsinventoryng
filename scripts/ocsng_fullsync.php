@@ -220,19 +220,23 @@ function FirstPass($ocsservers_id) {
 
       if (count($ocsResult['COMPUTERS'])) {
          $max_id = key($ocsResult['COMPUTERS']);
+         foreach ($ocsResult['COMPUTERS'] as $id => $meta) {
+            if (isset($meta['META']["LASTDATE"])) {
+               $max_date = $meta['META']["LASTDATE"];
+            }
+         }
       } else {
          $max_id = 0;
-      }
-
-      // Compute lastest synchronization date
-      $query    = "SELECT MAX(`last_ocs_update`)
+         // Compute lastest synchronization date
+         $query    = "SELECT MAX(`last_ocs_update`)
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `plugin_ocsinventoryng_ocsservers_id` = '$ocsservers_id'";
-      $max_date = "0000-00-00 00:00:00";
-      if ($result = $DB->query($query)) {
-         if ($DB->numrows($result) > 0) {
-            if ($DB->result($result, 0, 0) != '') {
-               $max_date = $DB->result($result, 0, 0);
+         $max_date = "0000-00-00 00:00:00";
+         if ($result = $DB->query($query)) {
+            if ($DB->numrows($result) > 0) {
+               if ($DB->result($result, 0, 0) != '') {
+                  $max_date = $DB->result($result, 0, 0);
+               }
             }
          }
       }
@@ -328,9 +332,7 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
 
    $computerOptions = array(
       'COMPLETE' => '0',
-      //      'FILTER'   => array(
-      //         'INVENTORIED_BEFORE' => "NOW()",
-      //      )
+      'ORDER'    => 'LASTDATE',
    );
 
    // Limit the number of imported records according to config
@@ -349,9 +351,9 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
 
    // Get newly inventoried computers
    $firstQueryOptions = $computerOptions;
-   if ($server->fields["max_glpidate"] != '0000-00-00 00:00:00') {
-      $firstQueryOptions['FILTER']['INVENTORIED_BEFORE'] = $server->fields["max_glpidate"];
-   }
+//   if ($server->fields["max_glpidate"] != '0000-00-00 00:00:00') {
+//      $firstQueryOptions['FILTER']['INVENTORIED_BEFORE'] = $server->fields["max_glpidate"];
+//   }
 
    $firstQueryOptions['FILTER']['CHECKSUM'] = intval($cfg_ocs["checksum"]);
 
@@ -385,8 +387,32 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
    if (isset($ocsResult['COMPUTERS'])) {
       if (isset($ocsResult['COMPUTERS'])) {
          foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
-            if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
-               $ocsComputers[$ID] = $computer;
+
+            $query_glpi  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` AS last_update,
+                                    `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update` AS last_ocs_update,
+                                  `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` AS computers_id,
+                                  `glpi_computers`.`serial` AS serial,
+                                  `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid,
+                                  `glpi_computers`.`name` AS name,
+                                  `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update`,
+                                  `glpi_plugin_ocsinventoryng_ocslinks`.`id`
+                           FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                           LEFT JOIN `glpi_computers` ON (`glpi_computers`.`id`= `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`)
+                           WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
+                                       = $ocsServerId
+                                  AND `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` = $ID
+                           ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` DESC,
+                                    `last_update`,
+                                    `name`";
+            $result_glpi = $DB->query($query_glpi);
+            if ($DB->numrows($result_glpi) > 0) {
+               while ($data = $DB->fetchAssoc($result_glpi)) {
+                  if (strtotime($computer['META']["LASTDATE"]) > strtotime($data["last_update"])) {
+                     if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
+                        $ocsComputers[$ID] = $computer;
+                     }
+                  }
+               }
             }
          }
       }

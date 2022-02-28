@@ -316,7 +316,8 @@ class PluginOcsinventoryngSoftware extends CommonDBChild {
             // delete cause a getFromDB, so fields contains values
             $verid = $item_softwarelicenses->getField('softwareversions_id');
 
-            if ($dbu->countElementsInTable('glpi_items_softwarelicenses', ["softwarelicenses_id" => $verid]) == 0) {
+            if (is_int($verid)
+                && $dbu->countElementsInTable('glpi_items_softwarelicenses', ["softwarelicenses_id" => $verid]) == 0) {
 
                $vers = new SoftwareVersion();
                if ($vers->getFromDB($verid)

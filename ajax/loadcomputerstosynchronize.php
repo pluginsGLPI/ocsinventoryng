@@ -1,27 +1,29 @@
 <?php
 /*
+ * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
- Accesscontrols plugin for GLPI
- Copyright (C) 2009-2022 by the accesscontrols Development Team.
+ ocsinventoryng plugin for GLPI
+ Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
 
+ https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
 
  LICENSE
 
- This file is part of accesscontrols.
+ This file is part of ocsinventoryng.
 
- Accesscontrols is free software; you can redistribute it and/or modify
+ ocsinventoryng is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
  (at your option) any later version.
 
- Accesscontrols is distributed in the hope that it will be useful,
+ ocsinventoryng is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with accesscontrols. If not, see <http://www.gnu.org/licenses/>.
+ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
@@ -39,26 +41,42 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
    $server = new PluginOcsinventoryngServer();
    $server->getFromDBbyOcsServer($plugin_ocsinventoryng_ocsservers_id);
-   $max_date = "0000-00-00 00:00:00";
-   if (isset($server->fields["max_glpidate"])) {
-      $max_date = $server->fields["max_glpidate"];
-   }
+
+   $config    = new PluginOcsinventoryngConfig();
+   $config->getFromDB(1);
    $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
    // Fetch linked computers from ocs
    $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
-   $ocsResult = $ocsClient->getComputers([
-                                            //                                            'OFFSET'      => $start,
-                                            //                                            'MAX_RECORDS' => $_SESSION['glpilist_limit'],
-                                            'ORDER'    => 'LASTDATE',
-                                            'COMPLETE' => '0',
-                                            'FILTER'   => [
-                                               //                                                  'IDS'               => $already_linked_ids,
-                                               'CHECKSUM'          => $cfg_ocs["checksum"],
-//                                               'INVENTORIED_BEFORE' => 'NOW()',
-//                                               'INVENTORIED_BEFORE' => $max_date,
-                                            ]
-                                         ]);
+   $computerOptions = array(
+      'COMPLETE' => '0',
+      'ORDER'    => 'LASTDATE',
+   );
+
+   // Limit the number of imported records according to config
+   if ($config->fields["import_limit"] > 0) {
+      $computerOptions['MAX_RECORDS'] = $config->fields["import_limit"];
+   }
+
+   // Filter tags according to config
+   if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
+      $computerOptions['FILTER']['TAGS'] = $tag_limit;
+   }
+
+   if ($cfg_ocs["tag_limit"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
+      $computerOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
+   }
+
+   // Get newly inventoried computers
+   $firstQueryOptions = $computerOptions;
+//   if ($server->fields["max_glpidate"] != '0000-00-00 00:00:00') {
+//      $firstQueryOptions['FILTER']['INVENTORIED_BEFORE'] = $server->fields["max_glpidate"];
+//   }
+
+   $firstQueryOptions['FILTER']['CHECKSUM'] = intval($cfg_ocs["checksum"]);
+
+
+   $ocsResult = $ocsClient->getComputers($firstQueryOptions);
 
    $computers = (isset($ocsResult['COMPUTERS']) ? $ocsResult['COMPUTERS'] : []);
 

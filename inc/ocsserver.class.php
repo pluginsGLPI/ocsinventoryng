@@ -2465,7 +2465,7 @@ JAVASCRIPT;
                           type:'POST',
                           data: {plugin_ocsinventoryng_ocsservers_id: $plugin_ocsinventoryng_ocsservers_id,
                                  entities_id: $entities,
-                                 advanced: $advanced
+                                 advanced: '$advanced'
                                 },
                           datatype: 'json'
                       },
