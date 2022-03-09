@@ -413,6 +413,8 @@ function plugin_ocsinventoryng_importFromOcsServer($threads_id, $cfg_ocs, $serve
                      }
                   }
                }
+            } else {
+               $ocsComputers[$ID] = $computer;
             }
          }
       }
