@@ -1393,7 +1393,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
          }
          if (array_key_exists($field,
                               PluginOcsinventoryngOcsAdminInfosLink::getAdministrativeInfosLockableFields($plugin_ocsinventoryng_ocsservers_id))) {
-            PluginOcsinventoryngOcsProcess::updateAdministrativeInfo($params);
+            PluginOcsinventoryngOcsAdminInfosLink::updateAdministrativeInfo($params);
          }
          if (array_key_exists($field,
                               PluginOcsinventoryngHardware::getRuleLockableFields($plugin_ocsinventoryng_ocsservers_id, $ocsid))) {
