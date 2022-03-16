@@ -1561,7 +1561,7 @@ JAVASCRIPT;
       $adm->updateAdminInfo($input);
       if (isset($input["ocs_db_passwd"]) && !empty($input["ocs_db_passwd"])) {
          $input["ocs_db_passwd"] = rawurlencode(stripslashes($input["ocs_db_passwd"]));
-         $input["ocs_db_passwd"] = (new GLPIKey())->decrypt(stripslashes($input["ocs_db_passwd"]));
+         $input["ocs_db_passwd"] = (new GLPIKey())->encrypt(stripslashes($input["ocs_db_passwd"]));
       } else {
          unset($input["ocs_db_passwd"]);
       }
@@ -1670,7 +1670,7 @@ JAVASCRIPT;
 
       if (isset($input["ocs_db_passwd"]) && !empty($input["ocs_db_passwd"])) {
          $input["ocs_db_passwd"] = rawurlencode(stripslashes($input["ocs_db_passwd"]));
-         $input["ocs_db_passwd"] = (new GLPIKey())->decrypt(stripslashes($input["ocs_db_passwd"]));
+         $input["ocs_db_passwd"] = (new GLPIKey())->encrypt(stripslashes($input["ocs_db_passwd"]));
       } else {
          unset($input["ocs_db_passwd"]);
       }
