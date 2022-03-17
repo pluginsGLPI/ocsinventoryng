@@ -299,7 +299,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient {
                }
                break;
             case "softwares" :
-               if ($version['TVALUE'] >= PluginOcsinventoryngOcsServer::OCS2_7_VERSION_LIMIT) {
+               if ($version['TVALUE'] >= PluginOcsinventoryngOcsServer::OCS2_8_VERSION_LIMIT) {
                   if (($check & $checksum) || $complete > 0) {
                      if (self::WANTED_DICO_SOFT & $wanted) {
                         $query = "SELECT
