@@ -200,6 +200,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             $opt["entities_id"]  = $options['entities_id'];
             $opt["computers_id"] = $options['computers_id'];
             $opt["dohistory"]    = $update_history;
+            $opt["force"]        = $options['force'];
 
             self::updateComputerDomain($opt);
          }
@@ -469,18 +470,19 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
 
          $tab    = $domain->find($condition);
 
+         if ($options['force']) {
+            self::resetDomain($options['computers_id'], $uninstall_history);
+         }
          if (is_array($tab)
              && count($tab) > 0) {
             foreach ($tab as $id => $item) {
-               self::resetDomain($options['computers_id'], $uninstall_history);
                $CompDomain = new Domain_Item();
-               $CompDomain->add(['items_id'   => $options['computers_id'],
+               $CompDomain->update(['items_id'   => $options['computers_id'],
                                  'itemtype'   => 'Computer',
                                  'domains_id' => $id,
                                 ], [], $install_history);
             }
          } else {
-            self::resetDomain($options['computers_id'], $uninstall_history);
             $domain     = new Domain();
             $id         = $domain->add(['name'        => $hardware,
                                         'entities_id' => $options['entities_id'],
