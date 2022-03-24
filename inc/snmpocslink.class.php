@@ -864,29 +864,25 @@ JAVASCRIPT;
          $itemtype = $p['itemtype'];
 
          $loc_id = 0;
-         $dom_id = 0;
          if ($cfg_ocs['importsnmp_location']) {
             $loc_id = Dropdown::importExternal('Location', PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['META']['LOCATION']));
-         }
-         if ($cfg_ocs['importsnmp_domain']) {
-            $dom_id = Dropdown::importExternal('Domain', PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['META']['DOMAIN']));
          }
 
          if ($itemtype == "NetworkEquipment") {
 
-            $id = self::addOrUpdateNetworkEquipment($itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add", false, $cfg_ocs);
+            $id = self::addOrUpdateNetworkEquipment($itemtype, 0, $ocsSnmp, $loc_id, "add", false, $cfg_ocs);
 
          } else if ($itemtype == "Printer") {
 
-            $id = self::addOrUpdatePrinter($itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add", false, $cfg_ocs);
+            $id = self::addOrUpdatePrinter($itemtype, 0, $ocsSnmp, $loc_id, "add", false, $cfg_ocs);
 
          } else if ($itemtype == "Computer") {
 
-            $id = self::addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add", false, $cfg_ocs);
+            $id = self::addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, 0, $ocsSnmp, $loc_id, "add", false, $cfg_ocs);
 
          } else if ($itemtype == "Peripheral" || $itemtype == "Phone") {
 
-            $id = self::addOrUpdateOther($itemtype, 0, $ocsSnmp, $loc_id, $dom_id, "add", false, $cfg_ocs);
+            $id = self::addOrUpdateOther($itemtype, 0, $ocsSnmp, $loc_id, "add", false, $cfg_ocs);
 
          }
          //TODOSNMP
@@ -925,7 +921,6 @@ JAVASCRIPT;
     * @param int  $ID
     * @param      $ocsSnmp
     * @param      $loc_id
-    * @param      $dom_id
     * @param      $action
     * @param bool $linked
     *
@@ -934,7 +929,7 @@ JAVASCRIPT;
     * @return int
     * @throws \GlpitestSQLError
     */
-   static function addOrUpdatePrinter($itemtype, $ID, $ocsSnmp, $loc_id, $dom_id, $action, $linked, $cfg_ocs) {
+   static function addOrUpdatePrinter($itemtype, $ID, $ocsSnmp, $loc_id, $action, $linked, $cfg_ocs) {
       global $DB;
 
       $snmpDevice = new $itemtype();
@@ -1125,7 +1120,6 @@ JAVASCRIPT;
     * @param int  $ID
     * @param      $ocsSnmp
     * @param      $loc_id
-    * @param      $dom_id
     * @param      $action
     * @param bool $linked
     *
@@ -1133,7 +1127,7 @@ JAVASCRIPT;
     * @return int
     * @throws \GlpitestSQLError
     */
-   static function addOrUpdateNetworkEquipment($itemtype, $ID, $ocsSnmp, $loc_id, $dom_id, $action, $linked, $cfg_ocs) {
+   static function addOrUpdateNetworkEquipment($itemtype, $ID, $ocsSnmp, $loc_id, $action, $linked, $cfg_ocs) {
       global $DB;
 
       $snmpDevice = new $itemtype();
@@ -1479,7 +1473,6 @@ JAVASCRIPT;
     * @param int  $ID
     * @param      $ocsSnmp
     * @param      $loc_id
-    * @param      $dom_id
     * @param      $action
     * @param bool $linked
     *
@@ -1487,7 +1480,7 @@ JAVASCRIPT;
     * @return int
     * @throws \GlpitestSQLError
     */
-   static function addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID, $ocsSnmp, $loc_id, $dom_id, $action, $linked, $cfg_ocs) {
+   static function addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID, $ocsSnmp, $loc_id, $action, $linked, $cfg_ocs) {
       global $DB;
 
       $snmpDevice = new $itemtype();
@@ -1934,14 +1927,13 @@ JAVASCRIPT;
     * @param int  $ID
     * @param      $ocsSnmp
     * @param      $loc_id
-    * @param      $dom_id
     * @param      $action
     * @param bool $linked
     *
     * @param      $cfg_ocs
     * @return int
     */
-   static function addOrUpdateOther($itemtype, $ID, $ocsSnmp, $loc_id, $dom_id, $action, $linked, $cfg_ocs) {
+   static function addOrUpdateOther($itemtype, $ID, $ocsSnmp, $loc_id, $action, $linked, $cfg_ocs) {
       global $DB;
 
       $snmpDevice = new $itemtype();
@@ -2080,23 +2072,18 @@ JAVASCRIPT;
       $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
       $loc_id = 0;
-      $dom_id = 0;
+
       if (($cfg_ocs['importsnmp_location'] && $linked == 0)
           || ($cfg_ocs['linksnmp_location'] && $linked)) {
          $loc_id = Dropdown::importExternal('Location',
                                             PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
                                                                                                $ocsSnmp['META']['LOCATION']));
       }
-      if (($cfg_ocs['importsnmp_domain'] && $linked == 0)
-          || ($cfg_ocs['linksnmp_domain'] && $linked)) {
-         $dom_id = Dropdown::importExternal('Domain',
-                                            PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
-                                                                                               $ocsSnmp['META']['DOMAIN']));
-      }
+
       if ($itemtype == "Printer") {
 
          self::addOrUpdatePrinter($itemtype, $items_id,
-                                  $ocsSnmp, $loc_id, $dom_id, "update", $linked, $cfg_ocs);
+                                  $ocsSnmp, $loc_id, "update", $linked, $cfg_ocs);
 
          $now = date("Y-m-d H:i:s");
          $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks` 
@@ -2108,7 +2095,7 @@ JAVASCRIPT;
          ];
       } else if ($itemtype == "NetworkEquipment") {
 
-         self::addOrUpdateNetworkEquipment($itemtype, $items_id, $ocsSnmp, $loc_id, $dom_id,
+         self::addOrUpdateNetworkEquipment($itemtype, $items_id, $ocsSnmp, $loc_id,
                                            "update", $linked, $cfg_ocs);
 
          $now = date("Y-m-d H:i:s");
@@ -2123,7 +2110,7 @@ JAVASCRIPT;
       } else if ($itemtype == "Computer") {
 
          self::addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, $items_id,
-                                   $ocsSnmp, $loc_id, $dom_id, "update", $linked, $cfg_ocs);
+                                   $ocsSnmp, $loc_id, "update", $linked, $cfg_ocs);
 
          $now = date("Y-m-d H:i:s");
          $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks` 
@@ -2138,7 +2125,7 @@ JAVASCRIPT;
                  || $itemtype == "Phone"
       ) {
 
-         self::addOrUpdateOther($itemtype, $items_id, $ocsSnmp, $loc_id, $dom_id, "update", $linked, $cfg_ocs);
+         self::addOrUpdateOther($itemtype, $items_id, $ocsSnmp, $loc_id, "update", $linked, $cfg_ocs);
 
          $now = date("Y-m-d H:i:s");
          $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks` 
