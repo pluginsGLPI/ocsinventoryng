@@ -372,7 +372,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM {
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
                $data = $DB->fetchAssoc($result);
-               $data = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($data));
+               $data = Glpi\Toolbox\Sanitizer::sanitize($data);
 
                if (count($data)) {
 

@@ -116,7 +116,7 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
             if (count($data) > 0) {
                $i++;
                $nb = count($data);
-               $data = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($data));
+               $data = Glpi\Toolbox\Sanitizer::sanitize($data);
                $hardware[$data["ID"]] = $data["DEVICEID"];
                echo "$i/$nb\r";
             }
@@ -134,7 +134,7 @@ foreach ($DB->request('glpi_plugin_ocsinventoryng_ocsservers', $crit) as $serv) 
       if ($nb > 0) {
          for ($i = 1; $data = $DB->fetchArray($result); $i++) {
             $nbchk++;
-            $data = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($data));
+            $data = Glpi\Toolbox\Sanitizer::sanitize($data);
             if (isset ($hardware[$data["ocsid"]])) {
                echo "$i/$nb\r";
             } else {

@@ -78,7 +78,7 @@ class PluginOcsinventoryngOsinstall extends CommonDBChild {
       //update data
       if (!empty($ocsComputer)) {
 
-         $os                     = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($ocsComputer));
+         $os                     = Glpi\Toolbox\Sanitizer::sanitize($ocsComputer);
          $input                  = [];
          $input["computers_id"]  = $computers_id;
          $input["build_version"] = $os["BUILDVER"];

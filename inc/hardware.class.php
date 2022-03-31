@@ -190,7 +190,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
       }
 
       if (isset($options['HARDWARE'])) {
-         $hardware = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($options['HARDWARE']));
+         $hardware = Glpi\Toolbox\Sanitizer::sanitize($options['HARDWARE']);
 
          $updates = [];
 
@@ -460,7 +460,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild {
             $install_history   = 1;
          }
 
-         $hardware = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($options['domains_id']));
+         $hardware = Glpi\Toolbox\Sanitizer::sanitize($options['domains_id']);
 
          $domain = new Domain();
          $dbu = new DbUtils();

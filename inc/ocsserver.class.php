@@ -2071,7 +2071,7 @@ JAVASCRIPT;
       $ocs_missing = [];
       //      if ($DB->numrows($result) > 0) {
       //         while ($data = $DB->fetchArray($result)) {
-      //            $data = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($data));
+      //            $data = Glpi\Toolbox\Sanitizer::sanitize($data);
       //            if (!isset($hardware[$data["ocsid"]])) {
       //               $ocs_missing[$data["ocsid"]] = $data["ocsid"];
       //            }
@@ -2111,7 +2111,7 @@ JAVASCRIPT;
       $already_linked = [];
       if ($DB->numrows($result_glpi) > 0) {
          while ($data = $DB->fetchAssoc($result_glpi)) {
-            $data = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($data));
+            $data = Glpi\Toolbox\Sanitizer::sanitize($data);
 
             $already_linked[$data["ocsid"]]["entities_id"]  = $data["entities_id"];
             $already_linked[$data["ocsid"]]["ocs_deviceid"] = $data["ocs_deviceid"];

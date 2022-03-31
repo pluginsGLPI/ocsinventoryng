@@ -78,7 +78,7 @@ class PluginOcsinventoryngWinupdate extends CommonDBChild {
       //update data
       if (!empty($ocsComputer)) {
 
-         $wupdate                      = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($ocsComputer));
+         $wupdate                      = Glpi\Toolbox\Sanitizer::sanitize($ocsComputer);
          $input                        = [];
          $input["computers_id"]        = $computers_id;
          $input["auoptions"]           = $wupdate["AUOPTIONS"];

@@ -550,7 +550,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
 
          if (!is_null($ocsComputer)) {
 
-            $computer = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($ocsComputer));
+            $computer = Glpi\Toolbox\Sanitizer::sanitize($ocsComputer);
 
             $is_recursive = (isset($data['is_recursive']) ? $data['is_recursive'] : 0);
             $input        = self::getComputerInformations($computer, PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id),

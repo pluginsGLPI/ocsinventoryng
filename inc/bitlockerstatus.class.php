@@ -71,7 +71,7 @@ class PluginOcsinventoryngBitlockerstatus extends CommonDBChild {
       //update data
       foreach ($ocsBitlockerStatus as $bitlockerstatus) {
 
-         $bitlocker                        = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($bitlockerstatus));
+         $bitlocker                        = Glpi\Toolbox\Sanitizer::sanitize($bitlockerstatus);
          $input                            = [];
          $inputBitlockers                  = [];
          $inputBitlockers["computers_id"]  = $computers_id;

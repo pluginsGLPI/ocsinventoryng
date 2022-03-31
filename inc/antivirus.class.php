@@ -70,7 +70,7 @@ class PluginOcsinventoryngAntivirus extends CommonDBChild {
       //update data
       foreach ($ocsComputer as $anti) {
 
-         $antivirus = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($anti));
+         $antivirus = Glpi\Toolbox\Sanitizer::sanitize($anti);
          $input     = [];
 
          if (isset($antivirus["CATEGORY"]) && $antivirus["CATEGORY"] == "AntiVirus") {

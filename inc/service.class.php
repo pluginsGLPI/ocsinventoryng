@@ -81,7 +81,7 @@ class PluginOcsinventoryngService extends CommonDBChild {
       //update data
       foreach ($ocsComputer as $service) {
 
-         $service               = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($service));
+         $service               = Glpi\Toolbox\Sanitizer::sanitize($service);
          $input                 = array_change_key_case($service, CASE_LOWER);
          $input["computers_id"] = $computers_id;
 

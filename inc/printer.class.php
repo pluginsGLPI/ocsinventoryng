@@ -82,7 +82,7 @@ class PluginOcsinventoryngPrinter extends CommonDBChild {
       $p    = new Printer();
 
       foreach ($ocsComputer as $printer) {
-         $printer = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($printer));
+         $printer = Glpi\Toolbox\Sanitizer::sanitize($printer);
          $print   = [];
          // TO TEST : PARSE NAME to have real name.
          $print['name'] = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"], $printer['NAME']);

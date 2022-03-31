@@ -90,7 +90,7 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
          foreach ($computers as $data) {
 
-            $data  = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($data));
+            $data  = Glpi\Toolbox\Sanitizer::sanitize($data);
             $id    = $data['META']['ID'];
             $input = [
                'itemtype'    => "Computer",

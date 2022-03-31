@@ -80,7 +80,7 @@ class PluginOcsinventoryngProxysetting extends CommonDBChild {
       //update data
       foreach ($ocsComputer as $prox) {
 
-         $proxy = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($prox));
+         $proxy = Glpi\Toolbox\Sanitizer::sanitize($prox);
          $input = [];
 
          $input["computers_id"] = $computers_id;

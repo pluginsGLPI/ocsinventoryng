@@ -484,7 +484,7 @@ JAVASCRIPT;
             $result = $DB->query($query);
             if ($DB->numrows($result) > 0) {
                $data = $DB->fetchAssoc($result);
-               $data = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($data));
+               $data = Glpi\Toolbox\Sanitizer::sanitize($data);
 
                if (count($data)) {
                   echo "<table class='tab_cadre_fixe'>";
@@ -1011,7 +1011,7 @@ JAVASCRIPT;
           && count($ocsSnmp['MEMORIES']) > 0
           && $ocsSnmp['MEMORIES'][0]['CAPACITY'] > 0) {
 
-         $dev['designation'] = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep(__("Printer Memory", 'ocsinventoryng')));
+         $dev['designation'] = Glpi\Toolbox\Sanitizer::sanitize(__("Printer Memory", 'ocsinventoryng'));
 
          $item   = new $itemtype();
          $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
@@ -1537,7 +1537,7 @@ JAVASCRIPT;
           && count($ocsSnmp['MEMORIES']) > 0
           && $ocsSnmp['MEMORIES'][0]['CAPACITY'] > 0) {
 
-         $dev['designation'] = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep(__("Computer Memory", 'ocsinventoryng')));
+         $dev['designation'] = Glpi\Toolbox\Sanitizer::sanitize(__("Computer Memory", 'ocsinventoryng'));
 
          $item   = new $itemtype();
          $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
@@ -1711,7 +1711,7 @@ JAVASCRIPT;
          $virtualmachine = new ComputerVirtualMachine();
          foreach ($ocsSnmp['VIRTUALMACHINES'] as $k => $ocsVirtualmachine) {
 
-            $ocsVirtualmachine  = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($ocsVirtualmachine));
+            $ocsVirtualmachine  = Glpi\Toolbox\Sanitizer::sanitize($ocsVirtualmachine);
             $vm                 = [];
             $vm['name']         = $ocsVirtualmachine['NAME'];
             $vm['vcpu']         = $ocsVirtualmachine['CPU'];
@@ -1845,7 +1845,7 @@ JAVASCRIPT;
 
          foreach ($ocsSnmp['COMPUTERDISKS'] as $k => $ocsComputerDisks) {
 
-            $ocsComputerDisks       = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($ocsComputerDisks));
+            $ocsComputerDisks       = Glpi\Toolbox\Sanitizer::sanitize($ocsComputerDisks);
             $disk                   = [];
             $disk['computers_id']   = $id_item;
             $disk['name']           = $ocsComputerDisks['FILESYSTEM'];
@@ -2288,7 +2288,7 @@ JAVASCRIPT;
             $hardware = [];
             $snmp     = array_slice($ocsResult['SNMP'], $start, $_SESSION['glpilist_limit']);
             foreach ($snmp as $data) {
-               $data                          = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($data));
+               $data                          = Glpi\Toolbox\Sanitizer::sanitize($data);
                $id                            = $data['META']['ID'];
                $hardware[$id]["id"]           = $data['META']["ID"];
                $hardware[$id]["date"]         = $data['META']["LASTDATE"];
@@ -2682,7 +2682,7 @@ JAVASCRIPT;
             $already_linked = [];
             if ($DB->numrows($result) > 0) {
                while ($data = $DB->fetchAssoc($result)) {
-                  $data = Glpi\Toolbox\Sanitizer::sanitize(Toolbox::addslashes_deep($data));
+                  $data = Glpi\Toolbox\Sanitizer::sanitize($data);
 
                   $format = 'Y-m-d H:i:s';
                   //                  $last_glpi_update = DateTime::createFromFormat($format, $data['last_update']);
