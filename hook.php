@@ -1236,11 +1236,11 @@ function plugin_ocsinventoryng_getRuleCriteria($params) {
          $criteria['TAG']['field']     = 'TAG';
          $criteria['TAG']['name']      = __('OCSNG TAG', 'ocsinventoryng');
          $criteria['TAG']['linkfield'] = 'HARDWARE_ID';
-
-         $criteria['DOMAIN']['table']     = 'hardware';
-         $criteria['DOMAIN']['field']     = 'WORKGROUP';
-         $criteria['DOMAIN']['name']      = __('Domain');
-         $criteria['DOMAIN']['linkfield'] = '';
+//
+//         $criteria['DOMAIN']['table']     = 'hardware';
+//         $criteria['DOMAIN']['field']     = 'WORKGROUP';
+//         $criteria['DOMAIN']['name']      = __('Domain');
+//         $criteria['DOMAIN']['linkfield'] = '';
 
          $criteria['OCS_SERVER']['table']     = 'glpi_plugin_ocsinventoryng_ocsservers';
          $criteria['OCS_SERVER']['field']     = 'name';
@@ -1251,30 +1251,30 @@ function plugin_ocsinventoryng_getRuleCriteria($params) {
          $criteria['OCS_SERVER']['virtual']   = true;
          $criteria['OCS_SERVER']['id']        = 'ocs_server';
 
-         $criteria['IPSUBNET']['table']     = 'networks';
-         $criteria['IPSUBNET']['field']     = 'IPSUBNET';
-         $criteria['IPSUBNET']['name']      = __('Subnet');
-         $criteria['IPSUBNET']['linkfield'] = 'HARDWARE_ID';
+//         $criteria['IPSUBNET']['table']     = 'networks';
+//         $criteria['IPSUBNET']['field']     = 'IPSUBNET';
+//         $criteria['IPSUBNET']['name']      = __('Subnet');
+//         $criteria['IPSUBNET']['linkfield'] = 'HARDWARE_ID';
 
-         $criteria['IPADDRESS']['table']     = 'networks';
-         $criteria['IPADDRESS']['field']     = 'IPADDRESS';
-         $criteria['IPADDRESS']['name']      = __('IP address');
-         $criteria['IPADDRESS']['linkfield'] = 'HARDWARE_ID';
-
-         $criteria['MACHINE_NAME']['table']     = 'hardware';
-         $criteria['MACHINE_NAME']['field']     = 'NAME';
-         $criteria['MACHINE_NAME']['name']      = __("Computer's name");
-         $criteria['MACHINE_NAME']['linkfield'] = '';
+//         $criteria['IPADDRESS']['table']     = 'networks';
+//         $criteria['IPADDRESS']['field']     = 'IPADDRESS';
+//         $criteria['IPADDRESS']['name']      = __('IP address');
+//         $criteria['IPADDRESS']['linkfield'] = 'HARDWARE_ID';
+//
+//         $criteria['MACHINE_NAME']['table']     = 'hardware';
+//         $criteria['MACHINE_NAME']['field']     = 'NAME';
+//         $criteria['MACHINE_NAME']['name']      = __("Computer's name");
+//         $criteria['MACHINE_NAME']['linkfield'] = '';
 
          $criteria['DESCRIPTION']['table']     = 'hardware';
          $criteria['DESCRIPTION']['field']     = 'DESCRIPTION';
          $criteria['DESCRIPTION']['name']      = __('Description');
          $criteria['DESCRIPTION']['linkfield'] = '';
-
-         $criteria['SSN']['table']     = 'bios';
-         $criteria['SSN']['field']     = 'SSN';
-         $criteria['SSN']['name']      = __('Serial number');
-         $criteria['SSN']['linkfield'] = 'HARDWARE_ID';
+//
+//         $criteria['SSN']['table']     = 'bios';
+//         $criteria['SSN']['field']     = 'SSN';
+//         $criteria['SSN']['name']      = __('Serial number');
+//         $criteria['SSN']['linkfield'] = 'HARDWARE_ID';
          break;
 
       case 'RuleImportAsset':

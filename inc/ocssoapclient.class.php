@@ -581,4 +581,8 @@ class PluginOcsinventoryngOcsSoapClient extends PluginOcsinventoryngOcsClient {
 
       return is_string($res) ? trim($res) : $res;
    }
+
+   public function getTotalDeletedComputers() {
+      // TODO: Implement getTotalDeletedComputers() method.
+   }
 }
