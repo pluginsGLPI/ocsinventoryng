@@ -145,6 +145,10 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
    }
    $thread = new PluginOcsinventoryngThread();
 
+   $plugin_ocsinventoryng_ocsservers_id = $ocsservers_id;
+   if ($ocsservers_id == -1) {
+      $plugin_ocsinventoryng_ocsservers_id = 0;
+   }
    //Prepare datas to log in db
    $fields["start_time"]                          = date("Y-m-d H:i:s");
    $fields["threadid"]                            = $threadid;
