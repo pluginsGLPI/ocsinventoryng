@@ -1419,11 +1419,14 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM {
             // Update OCS Cheksum
             $oldChecksum = $ocsClient->getChecksum($line['ocsid']);
             $newchecksum = $oldChecksum - $mixed_checksum;
-            if (isset($computer_ocs['OFFICEPACK'])) {
-               $ocsClient->setChecksum($newchecksum | PluginOcsinventoryngOcsClient::CHECKSUM_SOFTWARE, $line['ocsid']);
-            } else {
-               $ocsClient->setChecksum($newchecksum, $line['ocsid']);
+            if ($newchecksum > 0) {
+               if (isset($computer_ocs['OFFICEPACK'])) {
+                  $ocsClient->setChecksum($newchecksum | PluginOcsinventoryngOcsClient::CHECKSUM_SOFTWARE, $line['ocsid']);
+               } else {
+                  $ocsClient->setChecksum($newchecksum, $line['ocsid']);
+               }
             }
+
 
             //Return code to indicate that computer was synchronized
             return ['status'       => self::COMPUTER_SYNCHRONIZED,

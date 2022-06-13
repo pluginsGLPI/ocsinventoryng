@@ -153,7 +153,7 @@ if (isset ($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
    $fields["start_time"]                          = date("Y-m-d H:i:s");
    $fields["threadid"]                            = $threadid;
    $fields["status"]                              = PLUGIN_OCSINVENTORYNG_STATE_STARTED;
-   $fields["plugin_ocsinventoryng_ocsservers_id"] = $ocsservers_id;
+   $fields["plugin_ocsinventoryng_ocsservers_id"] = $plugin_ocsinventoryng_ocsservers_id;
    $fields["imported_machines_number"]            = 0;
    $fields["synchronized_machines_number"]        = 0;
    $fields["not_unique_machines_number"]          = 0;
