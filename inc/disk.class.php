@@ -118,7 +118,7 @@ class PluginOcsinventoryngDisk extends CommonDBChild {
                      $disk['name'] = $disk['mountpoint'];
                   }
                   $disk['filesystems_id'] = Dropdown::importExternal('Filesystem', $logical_drive["FILESYSTEM"]);
-               } else if (in_array($logical_drive['FILESYSTEM'], ['FAT', 'FAT32', 'NTFS', 'reFS'])) {
+               } else if (in_array($logical_drive['FILESYSTEM'], ['FAT', 'FAT32', 'NTFS', 'REFS'])) {
                   if (!empty($logical_drive['VOLUMN'])) {
                      $disk['name'] = $logical_drive['VOLUMN'];
                   } else {
