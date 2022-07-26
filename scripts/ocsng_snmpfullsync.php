@@ -65,13 +65,7 @@ if (($mem > 0) && ($mem < (64 * 1024 * 1024))) {
 }
 
 //Check if plugin is installed
-$plugin = new Plugin();
-if (!$plugin->isInstalled("ocsinventoryng")) {
-   echo "Disabled plugin\n";
-   exit (1);
-}
-
-if (!$plugin->isActivated("ocsinventoryng")) {
+if (!Plugin::isPluginActive("ocsinventoryng")) {
    echo "Disabled plugin\n";
    exit (1);
 }

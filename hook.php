@@ -777,9 +777,7 @@ function plugin_ocsinventoryng_getDropdown() {
  **/
 function plugin_ocsinventoryng_getDatabaseRelations() {
 
-   $plugin = new Plugin();
-
-   if ($plugin->isActivated("ocsinventoryng")) {
+   if (Plugin::isPluginActive("ocsinventoryng")) {
       return ["glpi_plugin_ocsinventoryng_ocsservers"
               => ["glpi_plugin_ocsinventoryng_ocslinks"             => "plugin_ocsinventoryng_ocsservers_id",
                   "glpi_plugin_ocsinventoryng_ocsadmininfoslinks"   => "plugin_ocsinventoryng_ocsservers_id",
@@ -917,9 +915,7 @@ function plugin_ocsinventoryng_MassiveActions($type) {
 function plugin_ocsinventoryng_getAddSearchOptions($itemtype) {
 
    $sopt   = [];
-   $plugin = new Plugin();
-
-   if ($plugin->isActivated("ocsinventoryng")) {
+   if (Plugin::isPluginActive("ocsinventoryng")) {
       if ($itemtype == 'Computer') {
          if (Session::haveRight("plugin_ocsinventoryng_view", READ)) {
 

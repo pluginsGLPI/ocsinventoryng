@@ -288,7 +288,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild {
                // 1 : the management mode IS NOT global
                // 2 : a deconnection's status have been defined
                // 3 : unique with serial
-               if (($mode >= 2) && (strlen($decoConf) > 0)) {
+               if (($mode >= 2) && isset($decoConf) && (strlen($decoConf) > 0)) {
 
                   //Delete periph from glpi
                   if ($decoConf == "delete") {

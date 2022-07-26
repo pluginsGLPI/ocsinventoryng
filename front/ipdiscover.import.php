@@ -35,8 +35,7 @@ Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "importipdiscover");
 
-$plugin = new Plugin();
-if ($plugin->isActivated("ocsinventoryng")) {
+if (Plugin::isPluginActive("ocsinventoryng")) {
    $ip = new PluginOcsinventoryngIpdiscoverOcslink();
 
    if (!isset($_GET['action'])) {

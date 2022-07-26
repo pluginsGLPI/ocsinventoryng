@@ -31,8 +31,7 @@ include('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-$plugin = new Plugin();
-if ($plugin->isActivated("ocsinventoryng")) {
+if (Plugin::isPluginActive("ocsinventoryng")) {
    $config = new PluginOcsinventoryngConfig();
 
    global $CFG_GLPI;

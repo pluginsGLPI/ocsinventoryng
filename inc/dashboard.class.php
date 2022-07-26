@@ -196,8 +196,8 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                   $name_agent[] = __('OCS Inventory NG', 'ocsinventoryng');
                }
             }
-            $plugin = new Plugin();
-            if ($plugin->isActivated("fusioninventory")) {
+
+            if (Plugin::isPluginActive("fusioninventory")) {
 
                $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
                                  FROM `glpi_computers`
@@ -220,7 +220,7 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                   }
                }
             }
-            if ($plugin->isActivated("fusioninventory")) {
+            if (Plugin::isPluginActive("fusioninventory")) {
                $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
                               FROM `glpi_computers`
                               LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks` 

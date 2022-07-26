@@ -28,8 +28,7 @@
 
 include('../../../inc/includes.php');
 
-$plugin = new Plugin();
-if ($plugin->isActivated("ocsinventoryng")) {
+if (Plugin::isPluginActive("ocsinventoryng")) {
    $state    = new PluginOcsinventoryngNotificationState();
    $ocsalert = new PluginOcsinventoryngOcsAlert();
 
