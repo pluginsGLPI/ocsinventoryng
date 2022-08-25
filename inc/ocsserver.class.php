@@ -2420,11 +2420,11 @@ JAVASCRIPT;
       $title        = __('Import or link new computers', 'ocsinventoryng');
       $target       = PLUGIN_OCS_WEBDIR . '/front/ocsng.import.php';
       $languages    = json_encode(self::getJsLanguages());
-      $nbcols = 8;
+      $nbcols = 9;
       $colsadvanced = "false";
       if ($advanced) {
          $colsadvanced = "true";
-         $nbcols = 13;
+         $nbcols = 14;
       }
 
       $columnDefs = "[ {

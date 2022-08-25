@@ -91,15 +91,16 @@ class PluginOcsinventoryngDBocs extends DBmysql
       }
 
       $hostport = explode(":", $host);
+      $password = (isset($password))?rawurldecode($this->dbpassword):$this->dbpassword;
       if (count($hostport) < 2) {
          // Host
-         $this->dbh->real_connect($host, $this->dbuser, rawurldecode($this->dbpassword), $this->dbdefault);
+         $this->dbh->real_connect($host, $this->dbuser,$password , $this->dbdefault);
       } else if (intval($hostport[1]) > 0) {
          // Host:port
-         $this->dbh->real_connect($hostport[0], $this->dbuser, rawurldecode($this->dbpassword), $this->dbdefault, $hostport[1]);
+         $this->dbh->real_connect($hostport[0], $this->dbuser, $password, $this->dbdefault, $hostport[1]);
       } else {
          // :Socket
-         $this->dbh->real_connect($hostport[0], $this->dbuser, rawurldecode($this->dbpassword), $this->dbdefault, ini_get('mysqli.default_port'), $hostport[1]);
+         $this->dbh->real_connect($hostport[0], $this->dbuser, $password, $this->dbdefault, ini_get('mysqli.default_port'), $hostport[1]);
       }
       //Add for OCS
       $this->dbh->options(MYSQLI_OPT_CONNECT_TIMEOUT, 10);

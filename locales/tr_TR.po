@@ -4,14 +4,14 @@
 # 
 # Translators:
 # Amandine Manceau, 2018
-# Kaya Zeren <kayazeren@gmail.com>, 2013-2020
+# Kaya Zeren <kayazeren@gmail.com>, 2013-2020,2022
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-22 13:50+0100\n"
-"PO-Revision-Date: 2022-02-22 12:51+0000\n"
-"Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>\n"
+"POT-Creation-Date: 2022-08-25 11:16+0200\n"
+"PO-Revision-Date: 2012-05-25 15:03+0000\n"
+"Last-Translator: Kaya Zeren <kayazeren@gmail.com>, 2013-2020,2022\n"
 "Language-Team: Turkish (Turkey) (http://www.transifex.com/yllen/GLPI_ocsinventoryng/language/tr_TR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,124 +19,124 @@ msgstr ""
 "Language: tr_TR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: hook.php:767 front/notimportedcomputer.php:34 inc/menu.class.php:93
+#: hook.php:772 front/notimportedcomputer.php:34 inc/menu.class.php:86
 #: inc/notificationtargetnotimportedcomputer.class.php:43
 #: inc/notificationtargetnotimportedcomputer.class.php:94
 #: inc/ocsserver.class.php:495 inc/ocsserver.class.php:496
-#: inc/thread.class.php:108 inc/thread.class.php:316
+#: inc/thread.class.php:108 inc/thread.class.php:315
 msgid "Computers not imported by automatic actions"
 msgstr "Otomatik işlemlerle içe aktarılmamış bilgisayarlar"
 
-#: hook.php:863
+#: hook.php:866
 msgid "Restart import"
-msgstr "Yeniden İçe Aktar"
+msgstr "Yeniden içe aktar"
 
-#: hook.php:865
+#: hook.php:868
 msgid "Import in the entity"
 msgstr "Birim içine aktar"
 
-#: hook.php:869
+#: hook.php:872
 msgid "Delete computer in OCSNG"
 msgstr "Bilgisayarı OCSNG üzerinden sil"
 
-#: hook.php:880 inc/ocslink.class.php:195 inc/ocslink.class.php:440
+#: hook.php:883 inc/ocslink.class.php:195 inc/ocslink.class.php:440
 msgctxt "button"
 msgid "Launch synchronization"
 msgstr "Eşitlemeyi başlat"
 
-#: hook.php:883 inc/ocslink.class.php:207 inc/ocslink.class.php:446
+#: hook.php:886 inc/ocslink.class.php:207 inc/ocslink.class.php:446
 msgctxt "button"
 msgid "Force full import"
 msgstr "Tam içe aktarım yapılsın"
 
-#: hook.php:885
+#: hook.php:888
 msgid "Lock fields"
 msgstr "Alanları kilitle"
 
-#: hook.php:888
+#: hook.php:891
 msgid "Unlock fields"
 msgstr "Alanların kilidini aç"
 
-#: hook.php:898
+#: hook.php:901
 msgid "Update networkport types"
 msgstr "Ağ kapısı türlerini güncelle"
 
-#: hook.php:923 hook.php:930 hook.php:938 hook.php:944 hook.php:950
-#: hook.php:957 hook.php:964 hook.php:971 hook.php:978 hook.php:985
-#: hook.php:994 hook.php:1003 hook.php:1012 hook.php:1022 hook.php:1030
-#: hook.php:1037 hook.php:1044 hook.php:1055
+#: hook.php:924 hook.php:931 hook.php:939 hook.php:945 hook.php:951
+#: hook.php:958 hook.php:965 hook.php:972 hook.php:979 hook.php:986
+#: hook.php:995 hook.php:1004 hook.php:1013 hook.php:1023 hook.php:1031
+#: hook.php:1038 hook.php:1045 hook.php:1056
 #: inc/notimportedcomputer.class.php:737 inc/ocslink.class.php:476
-#: inc/ocsserver.class.php:2655 inc/ocsserver.class.php:2659
-#: inc/ocsserver.class.php:2663 inc/profile.class.php:54
-#: inc/ruleimportentity.class.php:61 inc/thread.class.php:616
+#: inc/ocsserver.class.php:2667 inc/ocsserver.class.php:2671
+#: inc/ocsserver.class.php:2675 inc/profile.class.php:54
+#: inc/ruleimportentity.class.php:61 inc/thread.class.php:617
 msgid "OCSNG"
 msgstr "OCSNG"
 
-#: hook.php:923 hook.php:1055 inc/ocslink.class.php:119
+#: hook.php:924 hook.php:1056 inc/ocslink.class.php:119
 msgid "GLPI import date"
 msgstr "GLPI içine aktarılma tarihi"
 
-#: hook.php:930 inc/config.class.php:251 inc/config.class.php:293
-#: inc/ipdiscoverocslink.class.php:1290
+#: hook.php:931 inc/config.class.php:251 inc/config.class.php:293
+#: inc/ipdiscoverocslink.class.php:1276
 #: inc/notificationtargetocsalert.class.php:77
 #: inc/notificationtargetocsalert.class.php:129
 #: inc/notimportedcomputer.class.php:90 inc/notimportedcomputer.class.php:304
-#: inc/ocslink.class.php:114 inc/ocsserver.class.php:2342
-#: inc/ocsserver.class.php:2557
+#: inc/ocslink.class.php:114 inc/ocsserver.class.php:2354
+#: inc/ocsserver.class.php:2569
 msgid "Last OCSNG inventory date"
 msgstr "Son OCSNG envanter tarihi"
 
-#: hook.php:938 inc/ocslink.class.php:154 inc/ocslink.class.php:401
+#: hook.php:939 inc/ocslink.class.php:154 inc/ocslink.class.php:401
 msgid "Automatic update OCSNG"
 msgstr "Otomatik OCSNG güncellemesi"
 
-#: hook.php:944 inc/notimportedcomputer.class.php:81
+#: hook.php:945 inc/notimportedcomputer.class.php:81
 #: inc/notimportedcomputer.class.php:258 inc/ocslink.class.php:116
 msgid "Inventory agent"
 msgstr "Envanter ajanı"
 
-#: hook.php:950 hook.php:1232 hook.php:1285
+#: hook.php:951 hook.php:1233 hook.php:1286
 #: inc/notificationtargetnotimportedcomputer.class.php:92
 #: inc/notimportedcomputer.class.php:78 inc/notimportedcomputer.class.php:283
 #: inc/ocslink.class.php:146 inc/ocslink.class.php:394
-#: inc/ocsserver.class.php:2343 inc/ocsserver.class.php:2558
+#: inc/ocsserver.class.php:2355 inc/ocsserver.class.php:2570
 msgid "OCSNG TAG"
 msgstr "OCSNG ETİKETİ"
 
-#: hook.php:957 inc/detail.class.php:54
+#: hook.php:958 inc/detail.class.php:54
 #: inc/notificationtargetnotimportedcomputer.class.php:96
 #: inc/notimportedcomputer.class.php:65 inc/notimportedcomputer.class.php:240
 msgid "OCSNG ID"
 msgstr "OCSNG KODU"
 
-#: hook.php:964 inc/ocslink.class.php:132
+#: hook.php:965 inc/ocslink.class.php:132
 msgid "Last OCSNG connection date"
 msgstr "Son OCSNG bağlantısı tarihi"
 
-#: hook.php:971 inc/ocslink.class.php:139
+#: hook.php:972 inc/ocslink.class.php:139
 msgid "IP Source"
-msgstr "IP Kaynağı"
+msgstr "IP kaynağı"
 
-#: hook.php:978 inc/ocslink.class.php:167 inc/ocslink.class.php:269
-#: inc/ocslink.class.php:408 inc/ocsserver.class.php:871
+#: hook.php:979 inc/ocslink.class.php:167 inc/ocslink.class.php:269
+#: inc/ocslink.class.php:408 inc/ocsserver.class.php:878
 #: inc/snmpocslink.class.php:516 inc/snmpocslink.class.php:699
 msgid "Uptime"
 msgstr "Çalışma süresi"
 
-#: hook.php:994 hook.php:1003 inc/ocsserver.class.php:826
+#: hook.php:995 hook.php:1004 inc/ocsserver.class.php:833
 #: inc/registrykey.class.php:48 inc/registrykey.class.php:156
 msgid "Registry"
-msgstr "Kayıt Defteri"
+msgstr "Kayıt defteri"
 
-#: hook.php:995 inc/registrykey.class.php:140
+#: hook.php:996 inc/registrykey.class.php:140
 msgid "Key/Value"
-msgstr "Anahtar/Değer"
+msgstr "Anahtar/değer"
 
-#: hook.php:1004
+#: hook.php:1005
 msgid "OCSNG name"
 msgstr "OCSNG adı"
 
-#: hook.php:1012 hook.php:1242 hook.php:1278 inc/config.class.php:138
+#: hook.php:1013 hook.php:1243 hook.php:1279 inc/config.class.php:138
 #: inc/config.class.php:253 inc/config.class.php:295
 #: inc/notificationtargetocsalert.class.php:79
 #: inc/notificationtargetocsalert.class.php:131 inc/ocsserver.class.php:65
@@ -147,27 +147,27 @@ msgid_plural "OCSNG servers"
 msgstr[0] "OCSNG sunucusu"
 msgstr[1] "OCSNG sunucusu"
 
-#: hook.php:1022 inc/proxysetting.class.php:200
+#: hook.php:1023 inc/proxysetting.class.php:200
 msgid "Proxy enabled"
 msgstr "Vekil sunucu etkin"
 
-#: hook.php:1030 inc/proxysetting.class.php:202
+#: hook.php:1031 inc/proxysetting.class.php:202
 msgid "Proxy address"
 msgstr "Vekil sunucu adresi"
 
-#: hook.php:1037 inc/service.class.php:186
+#: hook.php:1038 inc/service.class.php:186
 msgid "Name of the service"
 msgstr "Hizmet adı"
 
-#: hook.php:1044 inc/runningprocess.class.php:190
+#: hook.php:1045 inc/runningprocess.class.php:190
 msgid "Process name"
 msgstr "İşlem adı"
 
-#: hook.php:1055 inc/menu.class.php:195 inc/snmpocslink.class.php:73
+#: hook.php:1056 inc/menu.class.php:183 inc/snmpocslink.class.php:73
 msgid "SNMP Import"
-msgstr "SNMP İçe Aktarma"
+msgstr "SNMP içe aktarma"
 
-#: hook.php:1321 inc/ocslink.class.php:51 inc/ocslink.class.php:383
+#: hook.php:1322 inc/ocslink.class.php:51 inc/ocslink.class.php:383
 #: inc/ocslink.class.php:540 inc/ocslink.class.php:553
 #: inc/ocslink.class.php:566 inc/ocslink.class.php:830
 msgid "OCSNG link"
@@ -175,66 +175,66 @@ msgid_plural "OCSNG links"
 msgstr[0] "OCSNG bağlantısı"
 msgstr[1] "OCSNG bağlantısı"
 
-#: hook.php:1503
+#: hook.php:1505
 msgid "Link possible"
 msgstr "Bağlantı yapılabilir"
 
-#: hook.php:1507
+#: hook.php:1509
 msgid "Import refused"
 msgstr "İçe aktarma reddedildi"
 
-#: hook.php:1511
+#: hook.php:1513
 msgid "New computer created in GLPI"
 msgstr "GLPI içinde yeni bilgisayar oluşturuldu"
 
-#: hook.php:1523
+#: hook.php:1525
 msgid "Link with computer"
 msgstr "Bilgisayarlarla bağlantı"
 
-#: hook.php:1775
+#: hook.php:1777
 msgid "Locked field"
 msgid_plural "Locked fields"
 msgstr[0] "Kilitli alan"
 msgstr[1] "Kilitli alan"
 
-#: hook.php:1791
+#: hook.php:1793
 msgid "You don't use locks - See setup for activate them"
-msgstr "kilit kullanılamaz - Etkinleştirmek için ayarlar bölümüne bakın"
+msgstr "Kilit kullanamazsınız - Etkinleştirmek için ayarlar bölümüne bakın"
 
-#: hook.php:2021
+#: hook.php:2023
 msgid ""
 "The startup date field is locked by ocsinventoryng please unlock it before "
 "update."
 msgstr "Başlangıç tarihi alanı ocsinventoryng tarafından kilitlenmiş. Lütfen güncellemeden önce kilidini açın."
 
-#: ajax/loadcomputerstoimport.php:119
+#: ajax/loadcomputerstoimport.php:121
 msgid "Blacklisted serial number"
 msgstr "Kara listeye alınmış seri numarası"
 
-#: ajax/loadcomputerstoimport.php:131
+#: ajax/loadcomputerstoimport.php:133
 msgid "Blacklisted UUID"
 msgstr "Kara listeye alınmış UUID"
 
-#: ajax/loadcomputerstoimport.php:150
+#: ajax/loadcomputerstoimport.php:152
 msgid "Blacklisted MAC"
 msgstr "Kara listeye alınmış MAC"
 
-#: ajax/loadcomputerstoimport.php:160
+#: ajax/loadcomputerstoimport.php:162
 msgid "Blacklisted IP"
 msgstr "Kara listeye alınmış IP"
 
-#: front/config.form.php:51 inc/config.class.php:64
+#: front/config.form.php:50 inc/config.class.php:64
 #: inc/ocsserver.class.php:315 inc/ocsserver.class.php:316
 msgid "Automatic synchronization's configuration"
 msgstr "Otomatik eşitleme ayarları"
 
-#: front/config.form.php:57 front/config.php:46
+#: front/config.form.php:56 front/config.php:45
 msgid "Please activate the plugin"
 msgstr "Lütfen uygulama ekini etkinleştirin"
 
 #: front/deleted_equiv.php:43 front/deleted_equiv.php:53
 #: front/deleted_equiv.php:91 front/ocsng.clean.php:50
-#: front/ocsng.import.php:124 front/ocsng.link.php:133 front/ocsng.sync.php:71
+#: front/ocsng.import.php:124 front/ocsng.link.php:133 front/ocsng.sync.php:69
 msgid "deleted computers into OCS Inventory NG"
 msgstr "OCS Inventory NG üzerinden silinmiş bilgisayarlar"
 
@@ -242,44 +242,44 @@ msgstr "OCS Inventory NG üzerinden silinmiş bilgisayarlar"
 msgid "No new computers to delete"
 msgstr "Silinecek yeni bir bilgisayar yok"
 
-#: front/deleted_equiv.php:51 front/deleted_equiv.php:89
-#: inc/menu.class.php:104 inc/ocsserver.class.php:519
-#: inc/ocsserver.class.php:520 inc/ocsserver.class.php:537
+#: front/deleted_equiv.php:51 front/deleted_equiv.php:89 inc/menu.class.php:94
+#: inc/ocsserver.class.php:519 inc/ocsserver.class.php:520
+#: inc/ocsserver.class.php:537
 msgid "Clean OCSNG deleted computers"
 msgstr "OCSNG üzerinden silinmiş bilgisayarları temizle"
 
-#: front/detail.php:34 inc/menu.class.php:89 inc/ocsserver.class.php:476
+#: front/detail.php:34 inc/menu.class.php:82 inc/ocsserver.class.php:476
 #: inc/ocsserver.class.php:477 inc/thread.class.php:105
-#: inc/thread.class.php:313
+#: inc/thread.class.php:312
 msgid "Computers imported by automatic actions"
 msgstr "Otomatik işlemlerle içe aktarılmış bilgisayarlar"
 
-#: front/networkport.php:34 inc/menu.class.php:97 inc/networkport.class.php:47
+#: front/networkport.php:34 inc/menu.class.php:88 inc/networkport.class.php:47
 msgid "Unknown imported network port type"
 msgid_plural "Unknown imported network ports types"
 msgstr[0] "İçe aktarılmış bilinmeyen ağ kapısı türü"
 msgstr[1] "İçe aktarılmış bilinmeyen ağ kapısı türü"
 
 #: front/ocsng.clean.php:50 front/ocsng.import.php:124
-#: front/ocsng.link.php:133 front/ocsng.sync.php:71
+#: front/ocsng.link.php:133 front/ocsng.sync.php:69
 msgid "You have"
 msgstr "Elinizde"
 
 #: front/ocsng.clean.php:52 front/ocsng.import.php:126
-#: front/ocsng.link.php:135 front/ocsng.sync.php:73
+#: front/ocsng.link.php:135 front/ocsng.sync.php:71
 msgid "Please clean them before import or synchronize computers"
 msgstr "Lütfen bilgisayarları içe aktarmadan ya da eşitlemeden önce bunları temizleyin"
 
-#: front/ocsng.clean.php:65 inc/menu.class.php:108 inc/ocsserver.class.php:538
-#: inc/ocsserver.class.php:2123 inc/profile.class.php:271
+#: front/ocsng.clean.php:65 inc/menu.class.php:97 inc/ocsserver.class.php:538
+#: inc/ocsserver.class.php:2131 inc/profile.class.php:271
 msgid "Clean links between GLPI and OCSNG"
 msgstr "GLPI ve OCSNG arasındaki bağlantıları temizle"
 
 #: front/ocsng.link.php:109 front/ocsngsnmp.link.php:79
 msgid "Successful link"
-msgstr "Başarılı bağlantısı"
+msgstr "Başarılı bağlantı"
 
-#: front/ocsngsnmp.import.php:95 inc/ocsserver.class.php:844
+#: front/ocsngsnmp.import.php:95 inc/ocsserver.class.php:851
 msgid "No import: the plugin will not import these elements"
 msgstr "İçe aktarılmasın: Uygulama eki bu bileşenleri içe aktarmayacak"
 
@@ -291,11 +291,11 @@ msgstr "Eşitlenmesin: Uygulama eki bu bileşenleri eşitlemeyecek"
 msgid "Information about the script"
 msgstr "Betikle ilgili bilgiler"
 
-#: front/thread.php:41 inc/thread.class.php:301
+#: front/thread.php:41 inc/thread.class.php:300
 msgid "Processes execution of automatic actions"
 msgstr "Otomatik işlemleri yürütür"
 
-#: inc/bitlockerstatus.class.php:45 inc/ocsserver.class.php:923
+#: inc/bitlockerstatus.class.php:45 inc/ocsserver.class.php:930
 msgid "Bitlocker"
 msgstr "Bitlocker"
 
@@ -344,13 +344,13 @@ msgid "No used alerts, please activate the automatic actions"
 msgstr "Kullanılmış uyarı yok, lütfen otomatik işlemleri etkinleştirin"
 
 #: inc/config.class.php:252 inc/config.class.php:294
-#: inc/ipdiscoverocslink.class.php:1325
+#: inc/ipdiscoverocslink.class.php:1311
 #: inc/notificationtargetocsalert.class.php:78
 #: inc/notificationtargetocsalert.class.php:130 inc/ocslink.class.php:237
-#: inc/ocslink.class.php:295 inc/ocsserver.class.php:2143
-#: inc/ocsserver.class.php:2341 inc/snmpocslink.class.php:496
+#: inc/ocslink.class.php:295 inc/ocsserver.class.php:2161
+#: inc/ocsserver.class.php:2353 inc/snmpocslink.class.php:496
 #: inc/snmpocslink.class.php:661 inc/snmpocslink.class.php:800
-#: inc/snmpocslink.class.php:2730
+#: inc/snmpocslink.class.php:2717
 msgid "Import date in GLPI"
 msgstr "GLPI üzerindeki tarih içe aktarılsın"
 
@@ -399,11 +399,11 @@ msgctxt "button"
 msgid "Lock"
 msgstr "Kilitle"
 
-#: inc/config.class.php:431 inc/thread.class.php:394
+#: inc/config.class.php:431 inc/thread.class.php:395
 msgid "All servers"
 msgstr "Tüm sunucular"
 
-#: inc/customapp.class.php:51 inc/ocsserver.class.php:918
+#: inc/customapp.class.php:51 inc/ocsserver.class.php:925
 msgid "Customapp"
 msgstr "Özel uygulama"
 
@@ -416,7 +416,7 @@ msgstr "Sunucuya erişilemiyor"
 
 #: inc/dashboard.class.php:60
 msgid "Bar charts"
-msgstr ""
+msgstr "Çubuk çizelgeler"
 
 #: inc/dashboard.class.php:61 inc/dashboard.class.php:126
 msgid "Last synchronization of computers by month"
@@ -424,11 +424,11 @@ msgstr "Bilgisayarların aya göre son eşitleme zamanı"
 
 #: inc/dashboard.class.php:63
 msgid "Display synchronization of computers by month"
-msgstr ""
+msgstr "Bilgisayarların eşitlenmesi aya göre görüntülensin"
 
 #: inc/dashboard.class.php:65
 msgid "Pie charts"
-msgstr ""
+msgstr "Daire çizelgeler"
 
 #: inc/dashboard.class.php:66 inc/dashboard.class.php:260
 msgid "Detail of imported computers"
@@ -438,7 +438,7 @@ msgstr "İçe aktarılmış bilgisayarların ayrıntıları"
 msgid ""
 "Number of OCSNG computers, Fusion Inventory computer, without agent "
 "computers"
-msgstr ""
+msgstr "OCSNG bilgisayarlarının sayısı, Fusion Inventory bilgisayarı, ajan olmayan bilgisayarlar"
 
 #: inc/dashboard.class.php:133
 msgid "Computers number"
@@ -479,37 +479,36 @@ msgstr "İş parçacığı"
 msgid "Rules checked"
 msgstr "Denetlenen kural"
 
-#: inc/detail.class.php:198 inc/ocsprocess.class.php:1574
+#: inc/detail.class.php:198 inc/ocsprocess.class.php:1560
 msgid "Computers imported"
 msgstr "İçe aktarılan bilgisayar"
 
-#: inc/detail.class.php:201 inc/ocsprocess.class.php:1576
-#: inc/thread.class.php:107 inc/thread.class.php:315
+#: inc/detail.class.php:201 inc/ocsprocess.class.php:1562
+#: inc/thread.class.php:107 inc/thread.class.php:314
 msgid "Computers linked"
 msgstr "Bağlanan bilgisayar"
 
-#: inc/detail.class.php:204 inc/ocsprocess.class.php:1577
-#: inc/thread.class.php:110 inc/thread.class.php:317
+#: inc/detail.class.php:204 inc/ocsprocess.class.php:1563
+#: inc/thread.class.php:110 inc/thread.class.php:316
 msgid "Computers not updated"
 msgstr "Güncellenmeyen bilgisayar"
 
-#: inc/detail.class.php:207 inc/ocsprocess.class.php:1575
-#: inc/thread.class.php:106 inc/thread.class.php:314
+#: inc/detail.class.php:207 inc/ocsprocess.class.php:1561
+#: inc/thread.class.php:106 inc/thread.class.php:313
 msgid "Computers synchronized"
 msgstr "Eşitlenen bilgisayar"
 
-#: inc/detail.class.php:210 inc/thread.class.php:111 inc/thread.class.php:318
+#: inc/detail.class.php:210 inc/thread.class.php:111 inc/thread.class.php:317
 msgid "Computers not unique"
 msgstr "Eşsiz olmayan bilgisayar"
 
-#: inc/hardware.class.php:225 inc/ocsprocess.class.php:370
+#: inc/hardware.class.php:236 inc/ocsprocess.class.php:370
 msgid "Swap"
 msgstr "Değiştir"
 
-#: inc/ipdiscoverocslink.class.php:48 inc/menu.class.php:125
-#: inc/menu.class.php:180
+#: inc/ipdiscoverocslink.class.php:48 inc/menu.class.php:168
 msgid "IPDiscover Import"
-msgstr "IPDiscover İçe Aktarma"
+msgstr "IPDiscover içe aktarma"
 
 #: inc/ipdiscoverocslink.class.php:344 inc/ocsserver.class.php:251
 #: inc/ocsserver.class.php:372 inc/snmpocslink.class.php:373
@@ -525,149 +524,127 @@ msgstr "Açılan kutuda OCSNG sunucunuz görüntülenmiyorsa lütfen proilinizin
 
 #: inc/ipdiscoverocslink.class.php:394
 msgid "Import IPDiscover"
-msgstr "IPDiscover İçe Aktarılsın"
+msgstr "IPDiscover içe aktarılsın"
 
 #: inc/ipdiscoverocslink.class.php:397
 msgid "Link IPDiscover"
-msgstr "IPDiscover Bağlantısı"
+msgstr "IPDiscover bağlantısı"
 
 #: inc/ipdiscoverocslink.class.php:405
 msgid "All Subnets"
-msgstr "Tüm Alt Ağlar"
+msgstr "Tüm alt ağlar"
 
 #: inc/ipdiscoverocslink.class.php:406
 msgid "Known Subnets"
-msgstr "Bilinen Alt Ağlar"
+msgstr "Bilinen alt ağlar"
 
 #: inc/ipdiscoverocslink.class.php:407
 msgid "Unknown Subnets"
-msgstr "Bilinmeyen Alt Ağlar"
+msgstr "Bilinmeyen alt ağlar"
 
-#: inc/ipdiscoverocslink.class.php:673 inc/ipdiscoverocslink.class.php:1255
+#: inc/ipdiscoverocslink.class.php:673 inc/ipdiscoverocslink.class.php:1241
 msgid "Non Inventoried"
-msgstr "Envantere Eklenmemiş"
+msgstr "Envantere eklenmemiş"
 
-#: inc/ipdiscoverocslink.class.php:674 inc/ipdiscoverocslink.class.php:1251
+#: inc/ipdiscoverocslink.class.php:674 inc/ipdiscoverocslink.class.php:1237
 msgid "Inventoried"
-msgstr "Envantere Eklenmiş"
+msgstr "Envantere eklenmiş"
 
-#: inc/ipdiscoverocslink.class.php:675 inc/ipdiscoverocslink.class.php:1257
+#: inc/ipdiscoverocslink.class.php:675 inc/ipdiscoverocslink.class.php:1243
 msgid "Identified"
 msgstr "Belirlenmiş"
 
-#: inc/ipdiscoverocslink.class.php:676 inc/ipdiscoverocslink.class.php:1253
+#: inc/ipdiscoverocslink.class.php:676 inc/ipdiscoverocslink.class.php:1239
 msgid "Imported / Linked"
-msgstr "İçe Aktarılmış / Bağlanmış"
+msgstr "İçe aktarılmış / bağlanmış"
 
-#: inc/ipdiscoverocslink.class.php:770 inc/menu.class.php:129
+#: inc/ipdiscoverocslink.class.php:770
 msgid "Modify Subnet"
-msgstr "Alt Ağı Değiştir"
+msgstr "Alt ağı değiştir"
 
 #: inc/ipdiscoverocslink.class.php:778
 msgid "Subnet Name"
-msgstr "Alt Ağ Adı"
+msgstr "Alt ağ adı"
 
 #: inc/ipdiscoverocslink.class.php:790 inc/ipdiscoverocslink.class.php:820
 msgid "Choose ID"
-msgstr "Kodu Seçin"
+msgstr "Kodu seçin"
 
-#: inc/ipdiscoverocslink.class.php:988
+#: inc/ipdiscoverocslink.class.php:981
 msgid "Unable to add. an object with same MAC address already exists."
 msgstr "Aynı MAC adresine sahip başka bir nesne bulunduğundan eklenemedi."
 
-#: inc/ipdiscoverocslink.class.php:1278
+#: inc/ipdiscoverocslink.class.php:1264
 msgid "No new IPDiscover device to import"
 msgstr "İçe aktarılabilecek yeni bir IPDiscover aygıtı bulunamadı"
 
-#: inc/ipdiscoverocslink.class.php:1317 inc/ipdiscoverocslink.class.php:1371
+#: inc/ipdiscoverocslink.class.php:1303 inc/ipdiscoverocslink.class.php:1357
 #: inc/ocslink.class.php:452 inc/snmpocslink.class.php:523
-#: inc/snmpocslink.class.php:2723 inc/snmpocslink.class.php:2750
+#: inc/snmpocslink.class.php:2710 inc/snmpocslink.class.php:2737
 msgctxt "button"
 msgid "Delete link"
 msgstr "Bağlantıyı sil"
 
-#: inc/ipdiscoverocslink.class.php:1390 inc/ipdiscoverocslink.class.php:1503
-#: inc/ipdiscoverocslink.class.php:1523 inc/ipdiscoverocslink.class.php:1623
+#: inc/ipdiscoverocslink.class.php:1376 inc/ipdiscoverocslink.class.php:1489
+#: inc/ipdiscoverocslink.class.php:1509 inc/ipdiscoverocslink.class.php:1609
 #: inc/notificationtargetruleimportentity.class.php:125
 msgid "Link"
 msgstr "Bağlantı"
 
-#: inc/ipdiscoverocslink.class.php:1393 inc/ipdiscoverocslink.class.php:1506
-#: inc/ipdiscoverocslink.class.php:1526 inc/ipdiscoverocslink.class.php:1626
+#: inc/ipdiscoverocslink.class.php:1379 inc/ipdiscoverocslink.class.php:1492
+#: inc/ipdiscoverocslink.class.php:1512 inc/ipdiscoverocslink.class.php:1612
 msgctxt "button"
 msgid "Delete from OCSNG"
 msgstr "OCSNG üzerinden sil"
 
-#: inc/ipdiscoverocslink.class.php:1400
+#: inc/ipdiscoverocslink.class.php:1386
 msgid "DNS"
 msgstr "DNS"
 
-#: inc/ipdiscoverocslink.class.php:1402 inc/ipdiscoverocslink.class.php:1530
+#: inc/ipdiscoverocslink.class.php:1388 inc/ipdiscoverocslink.class.php:1516
 msgid "OCS Type"
-msgstr "OCS Türü"
+msgstr "OCS türü"
 
-#: inc/ipdiscoverocslink.class.php:1409 inc/ipdiscoverocslink.class.php:1540
+#: inc/ipdiscoverocslink.class.php:1395 inc/ipdiscoverocslink.class.php:1526
 msgid "GLPI Type"
-msgstr "GLPI Türü"
+msgstr "GLPI türü"
 
-#: inc/ipdiscoverocslink.class.php:1411 inc/ipdiscoverocslink.class.php:1542
-#: inc/ocsserver.class.php:2563 inc/snmpocslink.class.php:2416
+#: inc/ipdiscoverocslink.class.php:1397 inc/ipdiscoverocslink.class.php:1528
+#: inc/ocsserver.class.php:2575 inc/snmpocslink.class.php:2403
 msgid "Item to link"
 msgstr "Bağlanacak öge"
 
-#: inc/menu.class.php:67 inc/ocsserver.class.php:306
-msgid "Configuration of OCSNG server"
-msgstr "OCSNG sunucusunun ayarları"
-
-#: inc/menu.class.php:73
+#: inc/menu.class.php:69
 msgid "Import new computers"
 msgstr "Yeni bilgisayarlar içe aktarılsın"
 
-#: inc/menu.class.php:77 inc/ocsserver.class.php:464
+#: inc/menu.class.php:73 inc/ocsserver.class.php:464
 #: inc/ocsserver.class.php:465
 msgid "Synchronize computers already imported"
 msgstr "Önceden içe aktarılmış bilgisayarlar eşitlensin"
 
-#: inc/menu.class.php:81
-msgid "Link new OCSNG computers to existing GLPI computers"
-msgstr "Yeni OCSNG bilgisayarları var olan GLPI bilgisayarlarıyla bağlansın"
-
-#: inc/menu.class.php:85 inc/ocsserver.class.php:449
+#: inc/menu.class.php:77 inc/ocsserver.class.php:449
 #: inc/ocsserver.class.php:450
 msgid "Scripts execution of automatic actions"
 msgstr "Otomatik işlemlerin betik yürütmesi"
 
-#: inc/menu.class.php:113
-msgid "Import new snmp devices"
-msgstr "Yeni SNMP aygıtları içe aktarılsın"
-
-#: inc/menu.class.php:117 inc/snmpocslink.class.php:440
-#: inc/snmpocslink.class.php:441
-msgid "Synchronize snmp devices already imported"
-msgstr "Önceden içe aktarılmış SNMP aygıtları eşitlensin"
-
-#: inc/menu.class.php:121 inc/snmpocslink.class.php:433
-#: inc/snmpocslink.class.php:434
-msgid "Link SNMP devices to existing GLPI objects"
-msgstr "Yeni SNMP aygıtları var olan GLPI nesneleri ile bağlansın"
-
-#: inc/menu.class.php:169
+#: inc/menu.class.php:157
 msgid "Server Setup"
-msgstr "Sunucu Ayarları"
+msgstr "Sunucu ayarları"
 
-#: inc/menu.class.php:171
+#: inc/menu.class.php:159
 msgid "Inventory Import"
-msgstr "Envanter İçe Aktarma"
+msgstr "Envanter içe aktarma"
 
-#: inc/menu.class.php:205
+#: inc/menu.class.php:193
 msgid "No OCSNG server defined"
 msgstr "OCSNG sunucusu tanımlanmamış"
 
-#: inc/menu.class.php:207
+#: inc/menu.class.php:195
 msgid "You must to configure a OCSNG server"
 msgstr "Bir OCSNG sunucusu ayarlamalısınız"
 
-#: inc/menu.class.php:209
+#: inc/menu.class.php:197
 msgid "Add a OCSNG server"
 msgstr "Bir OCSNG sunucusu ekleyin"
 
@@ -719,13 +696,13 @@ msgstr "Ethernet ortamı hızı"
 
 #: inc/networkporttype.class.php:174
 msgid "Wifi card Version"
-msgstr "WiFi kartının sürümü"
+msgstr "Wi-Fi kartının sürümü"
 
 #: inc/networkporttype.class.php:180
 msgid "Transform unknown ports that match"
 msgstr "Bilinmeyen kapılar şuna göre dönüştürülsün"
 
-#: inc/networkshare.class.php:51 inc/ocsserver.class.php:902
+#: inc/networkshare.class.php:51 inc/ocsserver.class.php:909
 msgid "Network shares"
 msgstr "Ağ paylaşımları"
 
@@ -740,7 +717,7 @@ msgstr "Kota"
 #: inc/notificationtargetnotimportedcomputer.class.php:97
 #: inc/notimportedcomputer.class.php:72 inc/notimportedcomputer.class.php:266
 msgid "Device ID"
-msgstr "Aygıt Kodu"
+msgstr "Aygıt kodu"
 
 #: inc/notificationtargetocsalert.class.php:44 inc/ocsalert.class.php:98
 msgid "Computers not synchronized with OCS-NG since X days"
@@ -757,7 +734,7 @@ msgstr "Bileşenler otomatik işlemler kuralı ile eşleşmiyor"
 
 #: inc/notificationtargetruleimportentity.class.php:65
 msgid "Verification of assignment rules for entities and locations"
-msgstr "varlık ve konumlar için atama kuralları doğrulaması"
+msgstr "Varlık ve konumlar için atama kuralları doğrulaması"
 
 #: inc/notificationtargetruleimportentity.class.php:88
 msgid "No rules match"
@@ -817,7 +794,7 @@ msgstr "OCS Inventory NG içe aktarma bilgileri"
 
 #: inc/ocslink.class.php:185
 msgid "OCS NG Interface"
-msgstr "OCSNG Arayüzü"
+msgstr "OCSNG arayüzü"
 
 #: inc/ocslink.class.php:232 inc/snmpocslink.class.php:491
 #: inc/snmpocslink.class.php:659
@@ -840,21 +817,21 @@ msgid "Force SNMP synchronization"
 msgstr "SNMP eşitlemesi zorlansın"
 
 #: inc/ocslink.class.php:266 inc/snmpocslink.class.php:513
-#: inc/snmpocslink.class.php:696 inc/snmpocslink.class.php:2731
+#: inc/snmpocslink.class.php:696 inc/snmpocslink.class.php:2718
 msgid "Last OCSNG SNMP inventory date"
 msgstr "Son OCSNG SNMP envanter tarihi"
 
 #: inc/ocslink.class.php:293 inc/snmpocslink.class.php:798
 msgid "OCS Inventory NG IPDiscover Import informations"
-msgstr "OCS Inventory NG IPDiscover İçe Aktarma Bilgileri"
+msgstr "OCS Inventory NG IPDiscover içe aktarma bilgileri"
 
 #: inc/ocslink.class.php:387
 msgid "OCSNG DEVICE ID"
 msgstr "OCSNG AYGIT KODU"
 
-#: inc/ocslink.class.php:417 inc/ocsserver.class.php:2344
+#: inc/ocslink.class.php:417 inc/ocsserver.class.php:2356
 msgid "Checksum"
-msgstr ""
+msgstr "Sağlama"
 
 #: inc/ocslink.class.php:512 inc/ocslink.class.php:543
 #: inc/ocslink.class.php:556 inc/ocslink.class.php:569
@@ -891,81 +868,81 @@ msgstr "Bilgisayarın %1$s olan OCSNG etiketi %2$s olarak değiştirildi"
 msgid "Unlock field and import OCSNG data"
 msgstr "Alanın kilidini aç ve OCSNG verilerini içe aktar"
 
-#: inc/ocsprocess.class.php:683
+#: inc/ocsprocess.class.php:686
 #, php-format
 msgid "Unable to link this computer, Serial number is blacklisted (%d)"
 msgstr "Seri numarası (%d) kara listeye alınmış olduğundan, bu bilgisayar ile bağlantı kurulamadı"
 
-#: inc/ocsprocess.class.php:690
+#: inc/ocsprocess.class.php:693
 #, php-format
 msgid "Unable to link this computer, UUID is blacklisted (%d)"
 msgstr "UUID (%d) kara listeye alınmış olduğundan, bu bilgisayar ile bağlantı kurulamadı"
 
 #. TRANS: %s is the OCS id
-#: inc/ocsprocess.class.php:787
+#: inc/ocsprocess.class.php:790
 #, php-format
 msgid ""
 "Unable to import, GLPI computer is already related to an element of OCSNG "
 "(%d)"
 msgstr "İçe aktarılamadı, GLPI bilgisayarı zaten bir OCSNG bileşeni ile ilişkilendirilmiş (%d)"
 
-#: inc/ocsprocess.class.php:1578
+#: inc/ocsprocess.class.php:1564
 msgid "Computers don't check any rule"
 msgstr "Bilgisayarların herhangi bir kurala uygunluğu aranmıyor"
 
-#: inc/ocsprocess.class.php:1579
+#: inc/ocsprocess.class.php:1565
 msgid "Duplicate computers"
 msgstr "Çift kaydedilmiş bilgisayarlar"
 
-#: inc/ocsprocess.class.php:1580
+#: inc/ocsprocess.class.php:1566
 msgid "Computers whose import is refused by a rule"
 msgstr "Bir kurala uymadığı için içe aktarılmayan bilgisayarlar"
 
-#: inc/ocsprocess.class.php:1582
+#: inc/ocsprocess.class.php:1568
 msgid "SNMP objects imported"
 msgstr "SNMP nesneleri içe aktarıldı"
 
-#: inc/ocsprocess.class.php:1583
+#: inc/ocsprocess.class.php:1569
 msgid "SNMP objects synchronized"
 msgstr "SNMP nesneleri eşitlendi"
 
-#: inc/ocsprocess.class.php:1584
+#: inc/ocsprocess.class.php:1570
 msgid "SNMP objects linked"
 msgstr "SNMP nesneleri bağlandı"
 
-#: inc/ocsprocess.class.php:1585
+#: inc/ocsprocess.class.php:1571
 msgid "SNMP objects not updated"
 msgstr "SNMP nesneleri güncellenemedi"
 
-#: inc/ocsprocess.class.php:1586
+#: inc/ocsprocess.class.php:1572
 msgid "SNMP objects not imported"
 msgstr "SNMP nesneleri içe aktarılmadı"
 
-#: inc/ocsprocess.class.php:1589
+#: inc/ocsprocess.class.php:1575
 msgid "IPDISCOVER objects imported"
 msgstr "IPDISCOVER nesnesi içe aktarıldı"
 
-#: inc/ocsprocess.class.php:1590
+#: inc/ocsprocess.class.php:1576
 msgid "IPDISCOVER objects synchronized"
 msgstr "IPDISCOVER nesnesi eşitlendi"
 
-#: inc/ocsprocess.class.php:1591
+#: inc/ocsprocess.class.php:1577
 msgid "IPDISCOVER objects not updated"
 msgstr "IPDISCOVER nesnesi güncellenmedi"
 
-#: inc/ocsprocess.class.php:1592
+#: inc/ocsprocess.class.php:1578
 msgid "IPDISCOVER objects not imported"
 msgstr "IPDISCOVER içe aktarılamadı"
 
-#: inc/ocsprocess.class.php:1690
+#: inc/ocsprocess.class.php:1676
 msgid "Statistics of the OCSNG SNMP import"
 msgstr "OCSN SNMP içe aktarma istatistikleri"
 
-#: inc/ocsprocess.class.php:1692
+#: inc/ocsprocess.class.php:1678
 msgid "Statistics of the OCSNG IPDISCOVER import"
 msgstr "IPDISCOVER içe aktarma istatistikleri"
 
-#: inc/ocsprocess.class.php:1694
+#: inc/ocsprocess.class.php:1680
 msgid "Statistics of the OCSNG link"
 msgstr "OCSNG bağlantı istatistikleri"
 
@@ -973,11 +950,11 @@ msgstr "OCSNG bağlantı istatistikleri"
 msgid "Datas to import"
 msgstr "İçe aktarılacak veriler"
 
-#: inc/ocsserver.class.php:86 inc/ocsserver.class.php:1203
+#: inc/ocsserver.class.php:86 inc/ocsserver.class.php:1210
 msgid "Import options"
 msgstr "İçe aktarma ayarları"
 
-#: inc/ocsserver.class.php:87 inc/ocsserver.class.php:1089
+#: inc/ocsserver.class.php:87 inc/ocsserver.class.php:1096
 msgid "General history"
 msgstr "Genel geçmiş"
 
@@ -989,9 +966,13 @@ msgstr "OCSNG konsolu"
 msgid "Expert sync mode"
 msgstr "Uzman eşitleme kipi"
 
-#: inc/ocsserver.class.php:217 inc/ocsserver.class.php:1379
+#: inc/ocsserver.class.php:217 inc/ocsserver.class.php:1386
 msgid "Database in UTF8"
 msgstr "Veritabanı UTF8"
+
+#: inc/ocsserver.class.php:306
+msgid "Configuration of OCSNG server"
+msgstr "OCSNG sunucusunun ayarları"
 
 #: inc/ocsserver.class.php:307
 #, php-format
@@ -1012,12 +993,12 @@ msgstr "Öge bağlantısı için seçim ölçütü kural ayarları"
 
 #: inc/ocsserver.class.php:422
 msgid "See Setup : Datas to import before"
-msgstr "Ayarlara Bakın: Önce içe aktarılacak veriler"
+msgstr "Ayarlara bakın: Önce içe aktarılacak veriler"
 
 #: inc/ocsserver.class.php:438 inc/ocsserver.class.php:439
-#: inc/ocsserver.class.php:2408
+#: inc/ocsserver.class.php:2420
 msgid "Import or link new computers"
-msgstr ""
+msgstr "Yeni bilgisayarları içe aktarın ya da bağlayın"
 
 #: inc/ocsserver.class.php:505
 msgid ""
@@ -1055,572 +1036,575 @@ msgid "User informations"
 msgstr "Kullanıcı bilgileri"
 
 #: inc/ocsserver.class.php:701
+msgid "Link with user"
+msgstr ""
+
+#: inc/ocsserver.class.php:703
+msgid "From user login / contact"
+msgstr ""
+
+#: inc/ocsserver.class.php:710
 msgid "Affect default group of user by default"
 msgstr "Varsayılan olarak varsayılan kullanıcı grubu etkilensin"
 
-#: inc/ocsserver.class.php:704 inc/ocsserver.class.php:710
-#: inc/ocsserver.class.php:715
-msgid "Depends on contact import"
-msgstr "Kişi içe aktarmaya bağlı olarak"
-
-#: inc/ocsserver.class.php:707
+#: inc/ocsserver.class.php:718
 msgid "Affect user location by default"
 msgstr "Varsayılan olarak kullanıcı konumu etkllensin"
 
-#: inc/ocsserver.class.php:712
+#: inc/ocsserver.class.php:721
 msgid "Affect first group of user by default"
 msgstr "Varsayılan olarak ilk kullanıcı grubu etkilensin"
 
-#: inc/ocsserver.class.php:731
+#: inc/ocsserver.class.php:738
 msgid "After 7006 version of OCS Inventory NG"
 msgstr "OCS Unventory NG 7006 sürümünden sonra"
 
-#: inc/ocsserver.class.php:768
+#: inc/ocsserver.class.php:775
 msgid "After 7009 version of OCS Inventory NG && Depends on Bios import"
 msgstr "OCS Unventory NG 7009 sürümünden sonra ve Bios alımına bağlı"
 
-#: inc/ocsserver.class.php:774
+#: inc/ocsserver.class.php:781
 msgid "Other component"
-msgstr ""
+msgstr "Diğer bileşen"
 
-#: inc/ocsserver.class.php:783
+#: inc/ocsserver.class.php:790
 msgid "Linked objects"
 msgstr "Bağlantılı nesneler"
 
-#: inc/ocsserver.class.php:789 inc/ocsserver.class.php:793
+#: inc/ocsserver.class.php:796 inc/ocsserver.class.php:800
 msgid "Global import"
 msgstr "Toplu içe aktarma"
 
-#: inc/ocsserver.class.php:790 inc/ocsserver.class.php:794
-#: inc/ocsserver.class.php:819
+#: inc/ocsserver.class.php:797 inc/ocsserver.class.php:801
+#: inc/ocsserver.class.php:826
 msgid "Unit import"
 msgstr "Birim içe aktarma"
 
-#: inc/ocsserver.class.php:795
+#: inc/ocsserver.class.php:802
 msgid "Unit import on serial number"
 msgstr "Seri numarasına göre birim içe aktarma"
 
-#: inc/ocsserver.class.php:796
+#: inc/ocsserver.class.php:803
 msgid "Unit import serial number only"
 msgstr "Yalnız seri numarasına göre birim içe aktarma"
 
-#: inc/ocsserver.class.php:845
+#: inc/ocsserver.class.php:852
 msgid ""
 "Global import: everything is imported but the material is globally managed "
 "(without duplicate)"
 msgstr "Genel içe aktarma: Her şey içe aktarılır ancak malzemeler tek noktadan yönetilir (kopyalanmaz)"
 
-#: inc/ocsserver.class.php:846
+#: inc/ocsserver.class.php:853
 msgid "Unit import: everything is imported as it is"
 msgstr "Birim içe aktarma: Her şey olduğu gibi içe aktarılır"
 
-#: inc/ocsserver.class.php:855
+#: inc/ocsserver.class.php:862
 msgid "OCS Inventory NG plugins"
 msgstr "OCS Inventory NG uygulama ekleri"
 
-#: inc/ocsserver.class.php:860
+#: inc/ocsserver.class.php:867
 msgid "Microsoft Office licenses"
 msgstr "Microsoft Office lisansları"
 
-#: inc/ocsserver.class.php:863
+#: inc/ocsserver.class.php:870
 msgid ""
 "Depends on software import and OfficePack Plugin for "
 "(https://github.com/PluginsOCSInventory-NG/officepack) OCSNG must be "
 "installed"
 msgstr "OCSNG için yazılım içe aktarma ve OfficePack Uygulama eki (https://github.com/PluginsOCSInventory-NG/officepack) kurulmuş olmalıdır"
 
-#: inc/ocsserver.class.php:864
+#: inc/ocsserver.class.php:871
 msgid "Antivirus"
 msgstr "Antivirus"
 
-#: inc/ocsserver.class.php:867
+#: inc/ocsserver.class.php:874
 msgid ""
 "Security Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/security) must be installed"
-msgstr "OCSNG için Güvenlik Uygulama Eki (https://github.com/PluginsOCSInventory-NG/security) kurulmuş olmalıdır"
+msgstr "OCSNG için güvenlik uygulama eki (https://github.com/PluginsOCSInventory-NG/security) kurulmuş olmalıdır"
 
-#: inc/ocsserver.class.php:874
+#: inc/ocsserver.class.php:881
 msgid ""
 "Uptime Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/uptime) "
 "must be installed"
-msgstr "OCSNG için Uptime Uygulama Eki (https://github.com/PluginsOCSInventory-NG/uptime) kurulmuş olmalıdır"
+msgstr "OCSNG için Uptime uygulama eki (https://github.com/PluginsOCSInventory-NG/uptime) kurulmuş olmalıdır"
 
-#: inc/ocsserver.class.php:875
+#: inc/ocsserver.class.php:882
 msgid "Windows Update State"
-msgstr "Windows Güncelleme Durumu"
+msgstr "Windows güncelleme durumu"
 
-#: inc/ocsserver.class.php:878
+#: inc/ocsserver.class.php:885
 msgid ""
 "Winupdate Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/winupdate) must be installed"
 msgstr "OCSNG için Winupdate Uygulama Eki (https://github.com/PluginsOCSInventory-NG/winupdate) kurulmuş olmalıdır"
 
-#: inc/ocsserver.class.php:881
+#: inc/ocsserver.class.php:888
 msgid "Teamviewer"
-msgstr "Teamviewer"
+msgstr "TeamViewer"
 
-#: inc/ocsserver.class.php:884
+#: inc/ocsserver.class.php:891
 msgid ""
 "Teamviewer Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/teamviewer) must be installed"
-msgstr "OCSNG için Teamviewer Uygulama Eki (https://github.com/PluginsOCSInventory-NG/teamviewer) kurulmuş olmalıdır"
+msgstr "OCSNG için TeamViewer uygulama eki (https://github.com/PluginsOCSInventory-NG/teamviewer) kurulmuş olmalıdır"
 
-#: inc/ocsserver.class.php:885 inc/proxysetting.class.php:51
+#: inc/ocsserver.class.php:892 inc/proxysetting.class.php:51
 msgid "Proxy Settings"
-msgstr "Vekil Sunucu Ayarları"
+msgstr "Vekil sunucu ayarları"
 
-#: inc/ocsserver.class.php:888
+#: inc/ocsserver.class.php:895
 msgid ""
 "Navigator Proxy Setting Plugin for OCSNG "
 "(https://github.com/PluginsOCSInventory-NG/navigatorproxysetting) must be "
 "installed"
-msgstr "OCSNG için Navigator Vekil Sunucu Ayarları Uygulama Eki (https://github.com/PluginsOCSInventory-NG/navigatorproxysetting) kurulmuş olmalıdır"
+msgstr "OCSNG için Navigator vekil sunucu ayarları uygulama eki (https://github.com/PluginsOCSInventory-NG/navigatorproxysetting) kurulmuş olmalıdır"
 
-#: inc/ocsserver.class.php:891 inc/winuser.class.php:51
+#: inc/ocsserver.class.php:898 inc/winuser.class.php:51
 msgid "Windows Users"
-msgstr "Windows Kullanıcıları"
+msgstr "Windows kullanıcıları"
 
-#: inc/ocsserver.class.php:894
+#: inc/ocsserver.class.php:901
 msgid ""
 "Winusers Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/winusers) must be installed"
-msgstr "OCSNG için Winusers Uygulama Eki (https://github.com/PluginsOCSInventory-NG/winusers) kurulmuş olmalıdır"
+msgstr "OCSNG için Winusers uygulama eki (https://github.com/PluginsOCSInventory-NG/winusers) kurulmuş olmalıdır"
 
-#: inc/ocsserver.class.php:896 inc/osinstall.class.php:51
+#: inc/ocsserver.class.php:903 inc/osinstall.class.php:51
 msgid "OS Informations"
-msgstr "OS bilgileri"
+msgstr "İşletim sistemi bilgileri"
 
-#: inc/ocsserver.class.php:899
+#: inc/ocsserver.class.php:906
 msgid ""
 "OSInstall Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/osinstall) must be installed"
-msgstr "OCSNG için OSInstall Uygulama Eki (https://github.com/PluginsOCSInventory-NG/osinstall) kurulmuş olmalıdır"
+msgstr "OCSNG için OSInstall uygulama eki (https://github.com/PluginsOCSInventory-NG/osinstall) kurulmuş olmalıdır"
 
-#: inc/ocsserver.class.php:905
+#: inc/ocsserver.class.php:912
 msgid ""
 "Networkshare Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/networkshare) must be installed"
 msgstr "OCSNG için Networkshare uygulama eki (https://github.com/PluginsOCSInventory-NG/networkshare) kurulmuş olmalıdır"
 
-#: inc/ocsserver.class.php:907
+#: inc/ocsserver.class.php:914
 msgid "Service"
 msgstr "Hizmet"
 
-#: inc/ocsserver.class.php:910
+#: inc/ocsserver.class.php:917
 msgid ""
 "Service Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/services) must be installed"
-msgstr "OCSNG için Hizmet Uygulama Eki (https://github.com/PluginsOCSInventory-NG/services) kurulmuş olmalıdır"
+msgstr "OCSNG için Sevice uygulama eki (https://github.com/PluginsOCSInventory-NG/services) kurulmuş olmalıdır"
 
-#: inc/ocsserver.class.php:913 inc/runningprocess.class.php:51
+#: inc/ocsserver.class.php:920 inc/runningprocess.class.php:51
 msgid "Running Process"
-msgstr "Çalışan İşlemler"
+msgstr "Çalışan işlemler"
 
-#: inc/ocsserver.class.php:916
+#: inc/ocsserver.class.php:923
 msgid ""
 "Running Process Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/runningProcess) must be installed"
-msgstr "OCSNG için Çalışan İşlemler Uygulama Eki (https://github.com/PluginsOCSInventory-NG/runningProcess) kurulmuş olmalıdır"
+msgstr "OCSNG için çalışan işlemler uygulama eki (https://github.com/PluginsOCSInventory-NG/runningProcess) kurulmuş olmalıdır"
 
-#: inc/ocsserver.class.php:921
+#: inc/ocsserver.class.php:928
 msgid ""
 "Customapp Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/customapp) must be installed"
-msgstr "OCSNG için Özel Uygulamalar Uygulama Eki (https://github.com/PluginsOCSInventory-NG/customapp) kurulmuş olmalıdır"
+msgstr "OCSNG için özel uygulamalar uygulama eki (https://github.com/PluginsOCSInventory-NG/customapp) kurulmuş olmalıdır"
 
-#: inc/ocsserver.class.php:926
+#: inc/ocsserver.class.php:933
 msgid ""
 "Bitlocker Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/bitlocker) must be installed"
 msgstr "OCSNG için Bitlocker uygulama eki (https://github.com/PluginsOCSInventory-NG/bitlocker) kurulmuş olmalı"
 
-#: inc/ocsserver.class.php:934
+#: inc/ocsserver.class.php:941
 msgid "OCSNG administrative information"
 msgstr "OCSNG yönetim bilgileri"
 
-#: inc/ocsserver.class.php:1027
+#: inc/ocsserver.class.php:1034
 msgid "Installation / Update / Uninstallation"
 msgstr "Kurulum / Güncelleme / Kaldırma"
 
-#: inc/ocsserver.class.php:1028
+#: inc/ocsserver.class.php:1035
 msgid "Installation / Update"
 msgstr "Kurulum / Güncelleme"
 
-#: inc/ocsserver.class.php:1029
+#: inc/ocsserver.class.php:1036
 msgid "Uninstallation"
 msgstr "Kaldırma"
 
-#: inc/ocsserver.class.php:1093
+#: inc/ocsserver.class.php:1100
 msgid "Do history"
 msgstr "Do geçmişi"
 
-#: inc/ocsserver.class.php:1097
+#: inc/ocsserver.class.php:1104
 msgid "System history"
-msgstr "Sistem Geçmişi"
+msgstr "Sistem geçmişi"
 
-#: inc/ocsserver.class.php:1113
+#: inc/ocsserver.class.php:1120
 msgid "Bios history"
 msgstr "Bios geçmişi"
 
-#: inc/ocsserver.class.php:1130
+#: inc/ocsserver.class.php:1137
 msgid "Devices history"
 msgstr "Aygıt geçmişi"
 
-#: inc/ocsserver.class.php:1134
+#: inc/ocsserver.class.php:1141
 msgid "Volumes history"
 msgstr "Birim geçmişi"
 
-#: inc/ocsserver.class.php:1138
+#: inc/ocsserver.class.php:1145
 msgid "Network history"
 msgstr "Ağ geçmişi"
 
-#: inc/ocsserver.class.php:1142
+#: inc/ocsserver.class.php:1149
 msgid "Monitor connection history"
 msgstr "Ekran bağlanma geçmişi"
 
-#: inc/ocsserver.class.php:1146
+#: inc/ocsserver.class.php:1153
 msgid "Printer connection history"
 msgstr "Yazıcı bağlanma geçmişi"
 
-#: inc/ocsserver.class.php:1150
+#: inc/ocsserver.class.php:1157
 msgid "Peripheral connection history"
 msgstr "Çevre birimi bağlanma geçmişi"
 
-#: inc/ocsserver.class.php:1154
+#: inc/ocsserver.class.php:1161
 msgid "Software connection history"
 msgstr "Yazılım bağlanma geçmişi"
 
-#: inc/ocsserver.class.php:1157
+#: inc/ocsserver.class.php:1164
 msgid "Virtual machines history"
 msgstr "Sanal makinalar geçmişi"
 
-#: inc/ocsserver.class.php:1160
+#: inc/ocsserver.class.php:1167
 msgid "Administrative infos history"
 msgstr "Yönetimsel bilgiler geçmişi"
 
-#: inc/ocsserver.class.php:1163
+#: inc/ocsserver.class.php:1170
 msgid "Plugins history"
 msgstr "Uygulama eki geçmişi"
 
-#: inc/ocsserver.class.php:1167
+#: inc/ocsserver.class.php:1174
 msgid "OS history"
 msgstr "İşletim sistemi geçmişi"
 
-#: inc/ocsserver.class.php:1195
+#: inc/ocsserver.class.php:1202
 msgid "Web address of the OCSNG console"
 msgstr "OCSNG konsolunun web adresi"
 
-#: inc/ocsserver.class.php:1206
+#: inc/ocsserver.class.php:1213
 msgid "Limit the import to the following tags (separator $, nothing for all)"
 msgstr "Yalnız şu etiketler içe aktarılsın (ayıraç $, tümü için boş bırakın)"
 
-#: inc/ocsserver.class.php:1214
+#: inc/ocsserver.class.php:1221
 msgid "Exclude the following tags (separator $, nothing for all)"
 msgstr "Şu etiketler içe aktarılmasın (ayıraç $, tümü için boş bırakın)"
 
-#: inc/ocsserver.class.php:1225
+#: inc/ocsserver.class.php:1232
 msgid ""
 "Define the action to do on link with other objects when computer is "
 "disconnecting from them"
 msgstr "Bilgisayar bağlantısı kesildiğinde bağlantı üzerindeki diğer nesnelere uygulanacak işlemi seçin"
 
-#: inc/ocsserver.class.php:1229
+#: inc/ocsserver.class.php:1236
 msgid "Behavior when disconnecting"
 msgstr "Bağlantı kesilme davranışı"
 
-#: inc/ocsserver.class.php:1230
+#: inc/ocsserver.class.php:1237
 msgid "Preserve link"
 msgstr "Bağlantı korunsun"
 
-#: inc/ocsserver.class.php:1231
+#: inc/ocsserver.class.php:1238
 msgid "Put the link in dustbin and add a lock"
 msgstr "Bağlantı çöpe atılsın ve kilitlensin"
 
-#: inc/ocsserver.class.php:1232
+#: inc/ocsserver.class.php:1239
 msgid "Delete  the link permanently"
 msgstr "Bağlantı kalıcı olarak silinsin"
 
-#: inc/ocsserver.class.php:1238
+#: inc/ocsserver.class.php:1245
 msgid ""
 "If Use the OCSNG software dictionary parameter is checked, no software will "
 "be imported before you setup them into OCS"
 msgstr "OCSNG yazılım sözlüğü kullanılsın seçeneği etkinleştirilmiş ise OCS içine kurulmayan yazılımlar alınmaz"
 
-#: inc/ocsserver.class.php:1242 inc/ocsserver.class.php:3020
+#: inc/ocsserver.class.php:1249 inc/ocsserver.class.php:3030
 msgid "Use the OCSNG software dictionary"
 msgstr "OCSNG yazılım sözlüğü kullanılsın"
 
-#: inc/ocsserver.class.php:1249
+#: inc/ocsserver.class.php:1256
 msgid ""
 "The automatic task ocsng is launched only if server is not in expert mode"
 msgstr "OCSNG otomatik görevi yalnız sunucu uzman kipinde olmadığında yürütülür"
 
-#: inc/ocsserver.class.php:1250
+#: inc/ocsserver.class.php:1257
 msgid ""
 "The automatic task ocsng only synchronize existant computers, it doesn't "
 "import new computers"
 msgstr "OCSNG otomatik görevi yalnız yeni bilgisayarlar içe aktarmıyorsa var olan bilgisayarları eşitleyebilir"
 
-#: inc/ocsserver.class.php:1251
+#: inc/ocsserver.class.php:1258
 msgid ""
 "If you want to import new computers, disable this parameter, change to "
 "expert mode and use script from system"
 msgstr "Yeni bilgisayarlar içe aktarmak istiyorsanız bu seçeneği devre dışı bırakın, uzman kipine geçin ve sistem betiğini kullanın"
 
-#: inc/ocsserver.class.php:1257
+#: inc/ocsserver.class.php:1264
 msgid "Number of items to synchronize via the automatic OCSNG action"
 msgstr "Otomatik OCSNG işlemiyle eşitlenecek öge sayısı"
 
-#: inc/ocsserver.class.php:1265
+#: inc/ocsserver.class.php:1272
 msgid "Behavior to the deletion of a computer in OCSNG"
 msgstr "OCSNG tarafında bir bilgisayarı silme davranışı"
 
-#: inc/ocsserver.class.php:1271
+#: inc/ocsserver.class.php:1278
 #, php-format
 msgid "Change to state %s"
 msgstr "Durumu %s olarak değiştirilsin"
 
-#: inc/ocsserver.class.php:1313
+#: inc/ocsserver.class.php:1320
 msgid "Database"
 msgstr "Veritabanı"
 
-#: inc/ocsserver.class.php:1318
+#: inc/ocsserver.class.php:1325
 msgid "Standard (allow manual actions)"
 msgstr "Standard (el ile işlem yapılabilir)"
 
-#: inc/ocsserver.class.php:1319
+#: inc/ocsserver.class.php:1326
 msgid "Expert (Fully automatic, for large configuration)"
 msgstr "Uzman (Tam otomatik, geniş ayarlar için)"
 
-#: inc/ocsserver.class.php:1323
+#: inc/ocsserver.class.php:1330
 msgid "Connection type"
 msgstr "Bağlantı türü"
 
-#: inc/ocsserver.class.php:1350
+#: inc/ocsserver.class.php:1357
 msgctxt "button"
 msgid "Reload Checksum"
-msgstr "Sağlamayı Yeniden Yükle"
+msgstr "Sağlamayı yeniden yükle"
 
-#: inc/ocsserver.class.php:1357 inc/ocsserver.class.php:3018
+#: inc/ocsserver.class.php:1364 inc/ocsserver.class.php:3028
 msgid "Host"
 msgstr "Sunucu"
 
-#: inc/ocsserver.class.php:1362
+#: inc/ocsserver.class.php:1369
 msgid "Like http://127.0.0.1 for SOAP method"
 msgstr "http://127.0.0.1 for SOAP yöntemi gibi"
 
-#: inc/ocsserver.class.php:1364
+#: inc/ocsserver.class.php:1371
 msgid "Synchronisation method"
 msgstr "Eşitleme yöntemi"
 
-#: inc/ocsserver.class.php:1415
+#: inc/ocsserver.class.php:1422
 msgid "Use automatic action for clean old agents & drop from OCSNG software"
 msgstr "Eski ajanları temizleyerek OCSNG üzerinden silmek için otomatik işlem kullanılsın"
 
-#: inc/ocsserver.class.php:1441
+#: inc/ocsserver.class.php:1448
 msgid "Number of days without inventory for cleaning"
 msgstr "Temizlik için envanterde bulunmayacak gün sayısı"
 
-#: inc/ocsserver.class.php:1450
+#: inc/ocsserver.class.php:1457
 msgid "Use automatic action restore deleted computer"
 msgstr "Silinmiş bilgisayar için otomatik geri yükleme işlemi kullanılsın"
 
-#: inc/ocsserver.class.php:1469
+#: inc/ocsserver.class.php:1476
 msgid ""
 "Number of days for the restoration of computers from the date of last "
 "inventory"
 msgstr "Son envanter tarihinden sonra bilgisayarların geri yükleneceği gün sayısı"
 
-#: inc/ocsserver.class.php:1478
+#: inc/ocsserver.class.php:1485
 msgid "Use automatic action to check entity assignment rules"
 msgstr "Varlık atama kurallarını denetlemek için otomatik işlem kullanılsın"
 
-#: inc/ocsserver.class.php:1480
+#: inc/ocsserver.class.php:1487
 msgid ""
 "Use automatic action to check and send a notification for machines that no "
 "longer respond the entity and location assignment rules"
 msgstr "Varlık ve konum atama kurallarına artık yanıt vermeyen aygıtlar için otomatik işlem kullanılsın ve bir bildirim gönderilsin"
 
-#: inc/ocsserver.class.php:1488
+#: inc/ocsserver.class.php:1495
 msgid "Use automatic locks"
 msgstr "Otomatik kilitler kullanılsın"
 
-#: inc/ocsserver.class.php:1514
+#: inc/ocsserver.class.php:1521
 msgid "Connecting to the database"
 msgstr "Veritabanı bağlantısı kuruluyor"
 
-#: inc/ocsserver.class.php:1521
+#: inc/ocsserver.class.php:1528
 msgid "Connection to the database failed"
 msgstr "Veritabanı bağlantısı kurulamadı"
 
-#: inc/ocsserver.class.php:1524
+#: inc/ocsserver.class.php:1531
 msgid "Invalid OCSNG Version: RC3 is required"
-msgstr "OCSNG Sürümü Geçersiz: RC3 gerekli"
+msgstr "OCSNG sürümü geçersiz: RC3 gerekli"
 
-#: inc/ocsserver.class.php:1527
+#: inc/ocsserver.class.php:1534
 msgid "Invalid OCSNG configuration (TRACE_DELETED must be active)"
 msgstr "OCSNG ayarları geçersiz (TRACE_DELETED etkinleştirilmiş olmalı)"
 
-#: inc/ocsserver.class.php:1536
+#: inc/ocsserver.class.php:1543
 msgid "Connection to database successful"
 msgstr "Veritabanı bağlantısı kuruldu"
 
-#: inc/ocsserver.class.php:1537
+#: inc/ocsserver.class.php:1544
 msgid "Valid OCSNG configuration and version"
 msgstr "Geçerli OCSNG ayarları ve sürümü"
 
-#: inc/ocsserver.class.php:1659
+#: inc/ocsserver.class.php:1667
 msgid "Unable to add. The OCSNG server already exists."
 msgstr "Eklenemiyor. OCSNG sunucusu zaten var."
 
-#: inc/ocsserver.class.php:2144
+#: inc/ocsserver.class.php:2162
 msgid "Existing in GLPI"
 msgstr "GLPI içinde var"
 
-#: inc/ocsserver.class.php:2145
+#: inc/ocsserver.class.php:2163
 msgid "Existing in OCSNG"
 msgstr "OCSNG içinde var"
 
-#: inc/ocsserver.class.php:2185
+#: inc/ocsserver.class.php:2197
 msgid "No item to clean"
 msgstr "Temizlenecek bir öge yok"
 
-#: inc/ocsserver.class.php:2232
+#: inc/ocsserver.class.php:2244
 msgid "Computers updated in OCSNG"
 msgstr "OCSNG üzerinde güncellenmiş bilgisayarlar"
 
-#: inc/ocsserver.class.php:2337 inc/ocsserver.class.php:2550
+#: inc/ocsserver.class.php:2349 inc/ocsserver.class.php:2562
 msgid "All"
-msgstr ""
+msgstr "Tümü"
 
-#: inc/ocsserver.class.php:2521
+#: inc/ocsserver.class.php:2533
 msgid "Manual import mode"
 msgstr "El ile aktarım kipi"
 
-#: inc/ocsserver.class.php:2524
+#: inc/ocsserver.class.php:2536
 msgid "Disable preview"
 msgstr "Ön izleme kullanılmasın"
 
-#: inc/ocsserver.class.php:2526
+#: inc/ocsserver.class.php:2538
 msgid "Enable preview"
 msgstr "Ön izleme kullanılsın"
 
-#: inc/ocsserver.class.php:2530
+#: inc/ocsserver.class.php:2542
 msgid "Check first that duplicates have been correctly managed in OCSNG"
 msgstr "Önce, OCSNG de çift kayıt olup olmadığını denetleyin"
 
-#: inc/ocsserver.class.php:2559
+#: inc/ocsserver.class.php:2571
 msgid "Override unicity check ?"
 msgstr "Bütünlük denetimi değiştirilsin mi?"
 
-#: inc/ocsserver.class.php:2560
+#: inc/ocsserver.class.php:2572
 msgid "Match the rule ?"
 msgstr "Kurala uyulsun mu?"
 
-#: inc/ocsserver.class.php:2636
+#: inc/ocsserver.class.php:2648
 msgid "Purge computers in OCSNG"
 msgstr "Bilgisayarları OCSNG üzerinden sil"
 
-#: inc/ocsserver.class.php:2639
+#: inc/ocsserver.class.php:2651
 msgid "Delete computers"
 msgstr "Bilgisayarları sil"
 
-#: inc/ocsserver.class.php:2656
+#: inc/ocsserver.class.php:2668
 msgid "Launch OCSNG synchronization script"
 msgstr "OCSNG eşitleme betiğini çalıştır"
 
-#: inc/ocsserver.class.php:2660
+#: inc/ocsserver.class.php:2672
 msgid "Clean old agents & drop from OCSNG software"
 msgstr "Eski ajanları temizleyerek OCSNG üzerinden sil"
 
-#: inc/ocsserver.class.php:2664
+#: inc/ocsserver.class.php:2676
 msgid "Restore computers from the date of last inventory"
 msgstr "Son envanter tarihinden sonraki bilgisayarları geri yükle"
 
-#: inc/ocsserver.class.php:2710
+#: inc/ocsserver.class.php:2722
 msgid "Clean old agents OK"
 msgstr "Eski ajanlar temizlendi"
 
-#: inc/ocsserver.class.php:2713
+#: inc/ocsserver.class.php:2725
 msgid "Clean old agents failed"
 msgstr "Eski ajanlar temizlenemedi"
 
-#: inc/ocsserver.class.php:2725
+#: inc/ocsserver.class.php:2737
 msgid "Delete computers OK"
 msgstr "Bilgisayarlar silindi"
 
-#: inc/ocsserver.class.php:2728
+#: inc/ocsserver.class.php:2740
 msgid "Delete computers failed"
 msgstr "Bilgisayarlar silinemedi"
 
-#: inc/ocsserver.class.php:2794
+#: inc/ocsserver.class.php:2806
 msgid "Restore computers OK"
 msgstr "Bilgisayarlar geri yüklendi"
 
-#: inc/ocsserver.class.php:2797
+#: inc/ocsserver.class.php:2809
 msgid "Restore computers failed"
 msgstr "Bilgisayarlar geri yüklenemedi"
 
-#: inc/ocsserver.class.php:2826
+#: inc/ocsserver.class.php:2838
 msgid "Launch OCSNG synchronization script from server"
 msgstr "OCSNG eşitleme betiğini sunucudan çalıştır"
 
-#: inc/ocsserver.class.php:3040
-msgid "No data available in table"
-msgstr ""
-
-#: inc/ocsserver.class.php:3041
-msgid "Showing _START_ to _END_ of _TOTAL_ entries"
-msgstr ""
-
-#: inc/ocsserver.class.php:3042
-msgid "Showing 0 to 0 of 0 entries"
-msgstr ""
-
-#: inc/ocsserver.class.php:3043
-msgid "(filtered from _MAX_ total entries)"
-msgstr ""
-
-#: inc/ocsserver.class.php:3046
-msgid "Show _MENU_ entries"
-msgstr ""
-
 #: inc/ocsserver.class.php:3050
+msgid "No data available in table"
+msgstr "Tabloda kullanılabilecek bir veri yok"
+
+#: inc/ocsserver.class.php:3051
+msgid "Showing _START_ to _END_ of _TOTAL_ entries"
+msgstr "Toplam _TOTAL_ kaydın _START_ ile _END_ arası görüntüleniyor "
+
+#: inc/ocsserver.class.php:3052
+msgid "Showing 0 to 0 of 0 entries"
+msgstr "0 - 0 / 0 kayıt görüntüleniyor"
+
+#: inc/ocsserver.class.php:3053
+msgid "(filtered from _MAX_ total entries)"
+msgstr "(toplam _MAX_ kayıttan süzülen)"
+
+#: inc/ocsserver.class.php:3056
+msgid "Show _MENU_ entries"
+msgstr "_MENU_ kayıtlarını görüntüle"
+
+#: inc/ocsserver.class.php:3060
 msgid "No matching records found"
-msgstr ""
+msgstr "Eşleşen bir kayıt bulunamadı"
 
-#: inc/ocsserver.class.php:3058
+#: inc/ocsserver.class.php:3068
 msgid ": activate to sort column ascending"
-msgstr ""
+msgstr ": Sütuna göre artan sıralama için etkinleştirin"
 
-#: inc/ocsserver.class.php:3059
+#: inc/ocsserver.class.php:3069
 msgid ": activate to sort column descending"
-msgstr ""
+msgstr ": Sütuna göre azalan sıralama için etkinleştirin"
 
-#: inc/ocsserver.class.php:3061
+#: inc/ocsserver.class.php:3071
 msgid "Close"
-msgstr ""
+msgstr "Kapat"
 
-#: inc/ocsserver.class.php:3062
+#: inc/ocsserver.class.php:3072
 msgid "Maximize"
-msgstr ""
+msgstr "Büyüt"
 
-#: inc/ocsserver.class.php:3063
+#: inc/ocsserver.class.php:3073
 msgid "Minimize"
-msgstr ""
+msgstr "Küçült"
 
-#: inc/ocsserver.class.php:3064
+#: inc/ocsserver.class.php:3074
 msgid "Refresh"
-msgstr ""
+msgstr "Yenile"
 
-#: inc/ocsserver.class.php:3066
+#: inc/ocsserver.class.php:3076
 msgid "Column visibility"
-msgstr ""
+msgstr "Sütun görünürlüğü"
 
-#: inc/ocsserver.class.php:3070
+#: inc/ocsserver.class.php:3080
 #, php-format
 msgid "%d rows selected"
-msgstr ""
+msgstr "%d satır seçildi"
 
 #: inc/osinstall.class.php:162
 msgid "Build version"
@@ -1636,11 +1620,11 @@ msgstr "Ülke kodu"
 
 #: inc/osinstall.class.php:176
 msgid "OS Language"
-msgstr "OS Dili"
+msgstr "İşletim sistemi dili"
 
 #: inc/osinstall.class.php:178
 msgid "Current Timezone"
-msgstr "Geçerli Saat Dilimi"
+msgstr "Geçerli saat dilimi"
 
 #: inc/osinstall.class.php:183
 msgid "Locale"
@@ -1670,7 +1654,7 @@ msgstr "Bilgisayarı bağla"
 
 #: inc/proxysetting.class.php:201
 msgid "Auto Config URL"
-msgstr "Otomatik Yapılandırma Adresi"
+msgstr "Otomatik yapılandırma adresi"
 
 #: inc/proxysetting.class.php:203
 msgid "Proxy exceptions"
@@ -1704,7 +1688,7 @@ msgstr "%s varlığına yerleştirme kurallarına uymayan ögeler: %s"
 
 #: inc/runningprocess.class.php:191
 msgid "Process ID"
-msgstr "İşlem Kodu"
+msgstr "İşlem kodu"
 
 #: inc/runningprocess.class.php:193
 msgid "Process memory"
@@ -1728,7 +1712,7 @@ msgstr "Tam ad"
 
 #: inc/service.class.php:188
 msgid "Service Status"
-msgstr "Hizmet Durumu"
+msgstr "Hizmet durumu"
 
 #: inc/service.class.php:190
 msgid "Start type"
@@ -1940,10 +1924,18 @@ msgstr "OCSNG SNMP içe aktarma"
 
 #: inc/snmpocslink.class.php:425
 msgid "See Setup : SNMP Import before"
-msgstr "Ayarlara Bakın: Önce SNMP içe aktarma"
+msgstr "Ayarlara bakın: Önce SNMP içe aktarma"
+
+#: inc/snmpocslink.class.php:433 inc/snmpocslink.class.php:434
+msgid "Link SNMP devices to existing GLPI objects"
+msgstr "Yeni SNMP aygıtları var olan GLPI nesneleri ile bağlansın"
+
+#: inc/snmpocslink.class.php:440 inc/snmpocslink.class.php:441
+msgid "Synchronize snmp devices already imported"
+msgstr "Önceden içe aktarılmış SNMP aygıtları eşitlensin"
 
 #: inc/snmpocslink.class.php:449 inc/snmpocslink.class.php:450
-#: inc/snmpocslink.class.php:2252
+#: inc/snmpocslink.class.php:2239
 msgid "Import new SNMP devices"
 msgstr "Yeni SNMP aygıtları içe aktarılsın"
 
@@ -1955,80 +1947,80 @@ msgstr "Kartuş bilgileri"
 msgid "Trays informations"
 msgstr "Tepsi bilgileri"
 
-#: inc/snmpocslink.class.php:1019
+#: inc/snmpocslink.class.php:1014
 msgid "Printer Memory"
-msgstr "Yazıcı Belleği"
+msgstr "Yazıcı belleği"
 
-#: inc/snmpocslink.class.php:1547
+#: inc/snmpocslink.class.php:1540
 msgid "Computer Memory"
-msgstr "Bilgisayar Belleği"
+msgstr "Bilgisayar belleği"
 
-#: inc/snmpocslink.class.php:2186
+#: inc/snmpocslink.class.php:2173
 msgid "Filter SNMP Objects list"
 msgstr "SNMP nesne listesini süz"
 
-#: inc/snmpocslink.class.php:2189
+#: inc/snmpocslink.class.php:2176
 msgid "By itemtype"
 msgstr "Öge türüne göre"
 
-#: inc/snmpocslink.class.php:2195
+#: inc/snmpocslink.class.php:2182
 msgid "By IP"
 msgstr "IP adresine göre"
 
-#: inc/snmpocslink.class.php:2254
+#: inc/snmpocslink.class.php:2241
 msgid "Import new SNMP devices into glpi"
 msgstr "Yeni SNMP aygıtları GLPI içine aktarılsın"
 
-#: inc/snmpocslink.class.php:2357
+#: inc/snmpocslink.class.php:2344
 msgid ""
 "Caution! The imported data (see your configuration) will overwrite the "
 "existing one"
 msgstr "Dikkat! İçe aktarılmış veri (ayarlarınıza bakın) var olan verinin üzerine yazılacak"
 
-#: inc/snmpocslink.class.php:2394 inc/snmpocslink.class.php:2564
+#: inc/snmpocslink.class.php:2381 inc/snmpocslink.class.php:2551
 msgctxt "button"
 msgid "Link"
 msgstr "Bağlantı"
 
-#: inc/snmpocslink.class.php:2408
+#: inc/snmpocslink.class.php:2395
 msgid "Contact SNMP"
-msgstr "SNMP İlgili"
+msgstr "SNMP ilgili"
 
-#: inc/snmpocslink.class.php:2409
+#: inc/snmpocslink.class.php:2396
 msgid "Location SNMP"
-msgstr "SNMP Konum"
+msgstr "SNMP konum"
 
-#: inc/snmpocslink.class.php:2410
+#: inc/snmpocslink.class.php:2397
 msgid "Type SNMP"
-msgstr "SNMP Türü"
+msgstr "SNMP türü"
 
-#: inc/snmpocslink.class.php:2413
+#: inc/snmpocslink.class.php:2400
 msgid "Item type to create"
 msgstr "Eklenecek öge türü"
 
-#: inc/snmpocslink.class.php:2583 inc/snmpocslink.class.php:2593
-#: inc/snmpocslink.class.php:2602
+#: inc/snmpocslink.class.php:2570 inc/snmpocslink.class.php:2580
+#: inc/snmpocslink.class.php:2589
 msgid "No new SNMP device to be imported"
 msgstr "Alınacak yeni bir SNMP aygıtı bulunamadı"
 
-#: inc/snmpocslink.class.php:2647 inc/snmpocslink.class.php:2765
-#: inc/snmpocslink.class.php:2768
+#: inc/snmpocslink.class.php:2634 inc/snmpocslink.class.php:2752
+#: inc/snmpocslink.class.php:2755
 msgid "No new SNMP device to be updated"
 msgstr "Güncellenecek yeni bir SNMP aygıtı bulunamadı"
 
-#: inc/snmpocslink.class.php:2710
+#: inc/snmpocslink.class.php:2697
 msgid "Snmp device updated in OCSNG"
 msgstr "SNMP aygıtı OCSNG üzerinde güncellendi"
 
-#: inc/snmpocslink.class.php:2727
+#: inc/snmpocslink.class.php:2714
 msgid "GLPI Object"
-msgstr "GLPI Nesnesi"
+msgstr "GLPI nesnesi"
 
-#: inc/snmpocslink.class.php:2729
+#: inc/snmpocslink.class.php:2716
 msgid "OCS SNMP device"
 msgstr "OCS SNMP aygıtı"
 
-#: inc/snmpocslink.class.php:2761
+#: inc/snmpocslink.class.php:2748
 msgid "Update SNMP device"
 msgstr "SNMP aygıtını güncelle"
 
@@ -2038,15 +2030,15 @@ msgstr "Yazılım OCSNG eşitlemesi tarafından silindi"
 
 #: inc/teamviewer.class.php:53
 msgid "Teamviewer access"
-msgstr "Teamviewer erişimi"
+msgstr "TeamViewer erişimi"
 
 #: inc/teamviewer.class.php:190
 msgid "Teamviewer ID"
-msgstr "Teamviewer Kimliği"
+msgstr "TeamViewer kimliği"
 
 #: inc/teamviewer.class.php:242 inc/teamviewer.class.php:305
 msgid "Teamviewer direct access"
-msgstr "Doğrudan Teamviewer erişimi"
+msgstr "Doğrudan TeamViewer erişimi"
 
 #: inc/thread.class.php:62
 msgid "Back to processes list"
@@ -2056,19 +2048,19 @@ msgstr "İşlem listesine geri dön"
 msgid "Process information"
 msgstr "İşlem bilgileri"
 
-#: inc/thread.class.php:103 inc/thread.class.php:311
+#: inc/thread.class.php:103 inc/thread.class.php:310
 msgid "Beginning date of execution"
 msgstr "Yürütme başlangıç tarihi"
 
-#: inc/thread.class.php:104 inc/thread.class.php:312
+#: inc/thread.class.php:104 inc/thread.class.php:311
 msgid "Ending date of execution"
 msgstr "Yürütme bitiş tarihi"
 
-#: inc/thread.class.php:112 inc/thread.class.php:319
+#: inc/thread.class.php:112 inc/thread.class.php:318
 msgid "Computers refused"
 msgstr "Reddedilen bilgisayarlar"
 
-#: inc/thread.class.php:113 inc/thread.class.php:320
+#: inc/thread.class.php:113 inc/thread.class.php:319
 msgid "Process time execution"
 msgstr "İşlem yürütme zamanı"
 
@@ -2084,58 +2076,58 @@ msgstr "işlenme yüzdesi"
 msgid "Total of treated computers"
 msgstr "İşlenen bilgisayar toplamı"
 
-#: inc/thread.class.php:303
+#: inc/thread.class.php:302
 msgid "See all servers"
 msgstr "Tüm sunucular görüntülensin"
 
-#: inc/thread.class.php:310
+#: inc/thread.class.php:309
 msgid "Number of threads"
 msgstr "İş parçacığı sayısı"
 
-#: inc/thread.class.php:462
+#: inc/thread.class.php:463
 msgid "Maximum"
 msgstr "En fazla"
 
 #. TRANS: means computers by second
-#: inc/thread.class.php:505
+#: inc/thread.class.php:506
 msgid "pc/s"
 msgstr "bilg./s"
 
-#: inc/thread.class.php:616
+#: inc/thread.class.php:617
 msgid "Clean processes"
 msgstr "İşlemleri temizle"
 
-#: inc/thread.class.php:617
+#: inc/thread.class.php:618
 msgid "Delete processes after"
 msgstr "İşlemler şundan sonra silinsin"
 
 #: inc/winupdate.class.php:51
 msgid "Windows Updates"
-msgstr "Windows Güncellemeleri"
+msgstr "Windows güncellemeleri"
 
 #: inc/winupdate.class.php:194
 msgid "AU Options"
-msgstr "Otomatik Güncelleme Ayarları"
+msgstr "Otomatik güncelleme ayarları"
 
 #: inc/winupdate.class.php:195
 msgid "Schedule Install Date"
-msgstr "Kurulum Tarihi Zamanla"
+msgstr "Kurulum tarihi zamanla"
 
 #: inc/winupdate.class.php:196
 msgid "Last Success Time"
-msgstr "Son Başarılı Zaman"
+msgstr "Son başarılı zaman"
 
 #: inc/winupdate.class.php:197
 msgid "Detect Success Time"
-msgstr "Son Algılama Zamanı"
+msgstr "Son algılama zamanı"
 
 #: inc/winupdate.class.php:198
 msgid "Download Success Time"
-msgstr "Son İndirme Zamanı"
+msgstr "Son indirme zamanı"
 
 #: inc/winupdate.class.php:261
 msgid "Automatic Updates is required and users can configure it"
-msgstr "Otomatik Güncellemeler zorunludur ve kullanıcılar tarafından ayarlanabilir"
+msgstr "Otomatik güncellemeler zorunludur ve kullanıcılar tarafından ayarlanabilir"
 
 #: inc/winupdate.class.php:264
 msgid "Automatically download and schedule installation"
@@ -2151,11 +2143,11 @@ msgstr "İndirmeden önce bildir"
 
 #: inc/winupdate.class.php:273
 msgid "Disables AU"
-msgstr "Otomatik Güncelleme Yapılmasın"
+msgstr "Otomatik güncelleme yapılmasın"
 
 #: inc/winuser.class.php:199
 msgid "Disabled"
-msgstr "Devre Dışı"
+msgstr "Devre dışı"
 
 #: inc/winuser.class.php:200
 msgid "SID"
