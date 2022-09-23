@@ -111,36 +111,39 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
             $query        .= " GROUP BY periodsync_name ORDER BY periodsync ASC";
             $result       = $DB->query($query);
             $nb           = $DB->numrows($result);
+
+             $nbcomputers     = __('Computers number', 'ocsinventoryng');
+
             $tabdata      = [];
             $tabnames     = [];
             $tabsyncdates = [];
             if ($nb) {
                while ($data = $DB->fetchAssoc($result)) {
-                  $tabdata[]      = $data['nb'];
+
+                   $tabdata['data'][] = $data['nb'];
+                   $tabdata['type']   = 'bar';
+                   $tabdata['name']   = $nbcomputers;
                   $tabnames[]     = $data['periodsync_name'];
                   $tabsyncdates[] = $data['periodsync'];
                }
             }
 
             $widget = new PluginMydashboardHtml();
-            $widget->setWidgetTitle(__("Last synchronization of computers by month", "ocsinventoryng"));
+             $title = __("Last synchronization of computers by month", "ocsinventoryng");
+             $comment = "";
+            $widget->setWidgetTitle($title);
 
 
             $dataBarset = json_encode($tabdata);
             $labelsBar  = json_encode($tabnames);
             $tabsyncset = json_encode($tabsyncdates);
 
-            $nbcomputers     = __('Computers number', 'ocsinventoryng');
-            $nbcomputers     = addslashes($nbcomputers);
-            $colors          = PluginMydashboardColor::getColors(1, 0);
-            $backgroundColor = json_encode($colors);
-
-            $graph_datas = ['name'            => $name,
+            $graph_datas = ['title'   => $title,
+                            'comment' => $comment,
+                            'name'            => $name,
                             'ids'             => $tabsyncset,
                             'data'            => $dataBarset,
-                            'labels'          => $labelsBar,
-                            'label'           => $nbcomputers,
-                            'backgroundColor' => $backgroundColor];
+                            'labels'          => $labelsBar];
 
             $graph = PluginMydashboardBarChart::launchGraph($graph_datas, []);
 
@@ -192,7 +195,9 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
 
             if ($nb) {
                while ($data = $DB->fetchAssoc($result)) {
-                  $counts[]     = $data["nb"];
+//                  $counts[]     = $data["nb"];
+                   $counts[] = ['value' => $data['nb'],
+                                'name' =>  __('OCS Inventory NG', 'ocsinventoryng')];
                   $name_agent[] = __('OCS Inventory NG', 'ocsinventoryng');
                }
             }
@@ -215,8 +220,10 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
 
                if ($nb) {
                   while ($data = $DB->fetchAssoc($result)) {
-                     $counts[]     = $data["nb"];
+//                     $counts[]     = $data["nb"];
                      $name_agent[] = __('Fusion Inventory', 'ocsinventoryng');
+                      $counts[] = ['value' => $data['nb'],
+                                  'name' =>  __('Fusion Inventory', 'ocsinventoryng')];
                   }
                }
             }
@@ -251,26 +258,28 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
 
             if ($nb) {
                while ($data = $DB->fetchAssoc($result)) {
-                  $counts[]     = $data["nb"];
+//                  $counts[]     = $data["nb"];
                   $name_agent[] = __('Without agent', 'ocsinventoryng');
+                   $counts[] = ['value' => $data['nb'],
+                                'name' =>  __('Without agent', 'ocsinventoryng')];
                }
             }
 
             $widget = new PluginMydashboardHtml();
             $title  = __("Detail of imported computers", "ocsinventoryng");
             $widget->setWidgetTitle($title);
+             $comment = "";
 
-            $palette            = PluginMydashboardColor::getColors(2);
-            $backgroundPieColor = json_encode($palette);
             $dataPieset         = json_encode($counts);
             $labelsPie          = json_encode($name_agent);
 
-            $graph_datas = ['name'            => $name,
+            $graph_datas = ['title'   => $title,
+                            'comment' => $comment,
+                            'name'            => $name,
                             'ids'             => json_encode([]),
                             'data'            => $dataPieset,
                             'labels'          => $labelsPie,
-                            'label'           => $title,
-                            'backgroundColor' => $backgroundPieColor];
+                            'label'           => $title];
 
             //            if ($onclick == 1) {
             $graph_criterias = ['widget' => $widgetId];
