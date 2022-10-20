@@ -534,7 +534,7 @@ function plugin_ocsinventoryng_install() {
          if (($b64_decoded = base64_decode($ocs["ocs_db_passwd"], true)) !== false
              && json_decode($b64_decoded, true) !== null) {
             $ocsserver->update(['id'            => $ocs['id'],
-                                'ocs_db_passwd' => (new GLPIKey())->decrypt($ocs["ocs_db_passwd"])]);
+                                'ocs_db_passwd' => rawurlencode(stripslashes((new GLPIKey())->encrypt($ocs["ocs_db_passwd"])))]);
          }
       }
 

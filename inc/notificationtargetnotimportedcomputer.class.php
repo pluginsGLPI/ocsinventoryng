@@ -49,7 +49,7 @@ class PluginOcsinventoryngNotificationTargetNotImportedcomputer extends Notifica
     * @param       $event
     * @param array $options
     */
-   function getDatasForTemplate($event, $options = []) {
+   function addDataForTemplate($event, $options = []) {
       global $CFG_GLPI;
 
       $this->data['##notimported.entity##'] = Dropdown::getDropdownName('glpi_entities',
