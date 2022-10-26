@@ -178,43 +178,47 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
             }
          }
       } else {
-         $names = $DB->request($query);
-         if ($names->numrows() == 0) {
-            $comp = new Computer();
-            $comp->getFromDB($computers_id);
-            $name_input      = ['itemtype'    => 'NetworkPort',
-                                'items_id'    => $networkports_id,
-                                'is_dynamic'  => 1,
-                                'is_deleted'  => 0,
-                                '_no_history' => !$install_network_history,
-                                'name'        => $comp->getName()];
-            $networknames_id = $network_name->add($name_input);
-         } else {
-            $line            = $names->next();
-            $networknames_id = $line['id'];
-            foreach ($names as $line) {
-               if (($line['is_dynamic'] == 1) && ($line['id'] != $networknames_id)) {
-                  $network_port->delete($line, true, $uninstall_network_history);
-               }
-            }
-         }
-
-         $ip_address              = new IPAddress();
-         $already_known_addresses = [];
-         $query                   = "SELECT `id`, `name`, `is_dynamic`, `mainitems_id`
+          $networknames_id = 0;
+          $names           = $DB->request($query);
+          if ($names->numrows() == 0) {
+              $comp = new Computer();
+              $comp->getFromDB($computers_id);
+              $name_input      = ['itemtype'    => 'NetworkPort',
+                                  'items_id'    => $networkports_id,
+                                  'is_dynamic'  => 1,
+                                  'is_deleted'  => 0,
+                                  '_no_history' => !$install_network_history,
+                                  'name'        => $comp->getName()];
+              $networknames_id = $network_name->add($name_input);
+          } else {
+              $line            = $names->next();
+              $networknames_id = $line['id'];
+              if ($networknames_id > 0) {
+                  foreach ($names as $line) {
+                      if (($line['is_dynamic'] == 1) && ($line['id'] != $networknames_id)) {
+                          $network_port->delete($line, true, $uninstall_network_history);
+                      }
+                  }
+              }
+          }
+          if ($networknames_id > 0) {
+              $ip_address              = new IPAddress();
+              $already_known_addresses = [];
+              $query                   = "SELECT `id`, `name`, `is_dynamic`, `mainitems_id`
                                      FROM `glpi_ipaddresses`
                                      WHERE `itemtype` = 'NetworkName'
                                        AND `items_id` = $networknames_id
                                      ORDER BY `is_dynamic`";
-         foreach ($DB->request($query) as $line) {
-            if (in_array($line['name'], $ips)
-                && !empty($line['mainitems_id'])) {
-               $already_known_addresses[] = $line['id'];
-               $ips                       = array_diff($ips, [$line['name']]);
-            } else if ($line['is_dynamic'] == 1) {
-               $ip_address->delete($line, true, $uninstall_network_history);
-            }
-         }
+              foreach ($DB->request($query) as $line) {
+                  if (in_array($line['name'], $ips)
+                      && !empty($line['mainitems_id'])) {
+                      $already_known_addresses[] = $line['id'];
+                      $ips                       = array_diff($ips, [$line['name']]);
+                  } else if ($line['is_dynamic'] == 1) {
+                      $ip_address->delete($line, true, $uninstall_network_history);
+                  }
+              }
+          }
       }
 
 
