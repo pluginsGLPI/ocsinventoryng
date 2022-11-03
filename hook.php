@@ -72,7 +72,8 @@ function plugin_ocsinventoryng_install() {
                              [['field'       => 'entities_id',
                                'action_type' => 'assign',
                                'value'       => 0]]);
-
+       //Notifications
+       addNotifications();
    } else {
 
       //UPDATE
@@ -545,9 +546,6 @@ function plugin_ocsinventoryng_install() {
       }/*1.7.1*/
    }
 
-
-   //Notifications
-   addNotifications();
 
    $cron = new CronTask();
    if (!$cron->getFromDBbyName('PluginOcsinventoryngThread', 'CleanOldThreads')) {

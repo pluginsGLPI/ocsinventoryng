@@ -323,7 +323,7 @@ class PluginOcsinventoryngTeamviewer extends CommonDBChild {
     *
     * @return array
     */
-   static function generateLinkContents($link, CommonDBTM $item) {
+   public static function generateLinkContents($link, CommonDBTM $item, bool $safe_url = true) {
 
       if (strstr($link, "[TWID]")) {
          $link = str_replace("[TWID]", $item->fields['twid'], $link);
