@@ -31,73 +31,74 @@
 /**
  * Class PluginOcsinventoryngDashboard
  */
-class PluginOcsinventoryngDashboard extends CommonGLPI {
+class PluginOcsinventoryngDashboard extends CommonGLPI
+{
+    public $widgets = [];
+    private $options;
+    private $form;
 
-   public  $widgets = [];
-   private $options;
-   private $form;
+    /**
+     * PluginOcsinventoryngDashboard constructor.
+     *
+     * @param array $options
+     */
+    public function __construct($options = [])
+    {
+        $this->options    = $options;
+        $this->interfaces = ["central"];
+    }
 
-   /**
-    * PluginOcsinventoryngDashboard constructor.
-    *
-    * @param array $options
-    */
-   function __construct($options = []) {
-      $this->options    = $options;
-      $this->interfaces = ["central"];
-   }
+    public function init()
+    {
+    }
 
-   function init() {
 
-   }
+     /**
+      * @return \array[][]
+      */
+    public function getWidgetsForItem()
+    {
+        $widgets = [
+            PluginMydashboardMenu::$INVENTORY => [
+                $this->getType() . "1" => ["title"   => __("Last synchronization of computers by month", "ocsinventoryng"),
+                                           "type"    => PluginMydashboardWidget::$BAR,
+                                           "comment" => __("Display synchronization of computers by month", "ocsinventoryng")],
+                $this->getType() . "2" => ["title"   => __("Detail of imported computers", "ocsinventoryng"),
+                                           "type"    => PluginMydashboardWidget::$PIE,
+                                           "comment" => __("Number of OCSNG computers, Fusion Inventory computer, without agent computers", "ocsinventoryng")],
+            ],
+        ];
 
-   /**
-    * @return array
-    */
-   function getWidgetsForItem() {
+        return $widgets;
+    }
 
-      $widgets = [
-         __('Bar charts', "mydashboard") => [
-            $this->getType() . "1" => ["title"   => __("Last synchronization of computers by month", "ocsinventoryng"),
-                                       "icon"    => "ti ti-chart-bar",
-                                       "comment" => __("Display synchronization of computers by month", "ocsinventoryng")],
-         ],
-         __('Pie charts', "mydashboard") => [
-            $this->getType() . "2" => ["title"   => __("Detail of imported computers", "ocsinventoryng"),
-                                       "icon"    => "ti ti-chart-pie",
-                                       "comment" => __("Number of OCSNG computers, Fusion Inventory computer, without agent computers", "ocsinventoryng")],
-         ]
-      ];
+    /**
+     * @param $widgetId
+     *
+     * @return PluginMydashboardDatatable|PluginMydashboardHBarChart|PluginMydashboardHtml|PluginMydashboardLineChart|PluginMydashboardPieChart|PluginMydashboardVBarChart
+     */
+    public function getWidgetContentForItem($widgetId, $opt = [])
+    {
+        global $DB;
 
-      return $widgets;
-   }
+        if (empty($this->form)) {
+            $this->init();
+        }
+        switch ($widgetId) {
+            case $this->getType() . "1":
+                $name = 'LastSynchroChart';
 
-   /**
-    * @param $widgetId
-    *
-    * @return PluginMydashboardDatatable|PluginMydashboardHBarChart|PluginMydashboardHtml|PluginMydashboardLineChart|PluginMydashboardPieChart|PluginMydashboardVBarChart
-    */
-   function getWidgetContentForItem($widgetId, $opt = []) {
-      global $DB;
+                $criterias = [];
 
-      if (empty($this->form)) {
-         $this->init();
-      }
-      switch ($widgetId) {
-         case $this->getType() . "1":
-            $name = 'LastSynchroChart';
+                $params  = ["preferences" => [],
+                            "criterias"   => $criterias,
+                            "opt"         => $opt];
+                $options = PluginMydashboardHelper::manageCriterias($params);
 
-            $criterias = [];
+                $opt  = $options['opt'];
+                $crit = $options['crit'];
 
-            $params  = ["preferences" => [],
-                        "criterias"   => $criterias,
-                        "opt"         => $opt];
-            $options = PluginMydashboardHelper::manageCriterias($params);
-
-            $opt  = $options['opt'];
-            $crit = $options['crit'];
-
-            $query = "SELECT DISTINCT
+                $query = "SELECT DISTINCT
                            DATE_FORMAT(`glpi_plugin_ocsinventoryng_ocslinks`.`last_update`, '%b %Y') AS periodsync_name,
                            COUNT(`glpi_plugin_ocsinventoryng_ocslinks`.`id`) AS nb,
                            DATE_FORMAT(`glpi_plugin_ocsinventoryng_ocslinks`.`last_update`, '%Y-%m') AS periodsync
@@ -107,79 +108,78 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                         WHERE `glpi_computers`.`is_deleted` = 0 
                         AND `glpi_computers`.`entities_id` = " . $_SESSION["glpiactive_entity"];
 
-            //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-            $query        .= " GROUP BY periodsync_name ORDER BY periodsync ASC";
-            $result       = $DB->query($query);
-            $nb           = $DB->numrows($result);
+                //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
+                $query        .= " GROUP BY periodsync_name ORDER BY periodsync ASC";
+                $result       = $DB->query($query);
+                $nb           = $DB->numrows($result);
 
-             $nbcomputers     = __('Computers number', 'ocsinventoryng');
+                $nbcomputers     = __('Computers number', 'ocsinventoryng');
 
-            $tabdata      = [];
-            $tabnames     = [];
-            $tabsyncdates = [];
-            if ($nb) {
-               while ($data = $DB->fetchAssoc($result)) {
+                $tabdata      = [];
+                $tabnames     = [];
+                $tabsyncdates = [];
+                if ($nb) {
+                    while ($data = $DB->fetchAssoc($result)) {
+                        $tabdata['data'][] = $data['nb'];
+                        $tabdata['type']   = 'bar';
+                        $tabdata['name']   = $nbcomputers;
+                        $tabnames[]     = $data['periodsync_name'];
+                        $tabsyncdates[] = $data['periodsync'];
+                    }
+                }
 
-                   $tabdata['data'][] = $data['nb'];
-                   $tabdata['type']   = 'bar';
-                   $tabdata['name']   = $nbcomputers;
-                  $tabnames[]     = $data['periodsync_name'];
-                  $tabsyncdates[] = $data['periodsync'];
-               }
-            }
-
-            $widget = new PluginMydashboardHtml();
-             $title = __("Last synchronization of computers by month", "ocsinventoryng");
-             $comment = "";
-            $widget->setWidgetTitle($title);
+                $widget = new PluginMydashboardHtml();
+                $title = __("Last synchronization of computers by month", "ocsinventoryng");
+                $comment = "";
+                $widget->setWidgetTitle($title);
 
 
-            $dataBarset = json_encode($tabdata);
-            $labelsBar  = json_encode($tabnames);
-            $tabsyncset = json_encode($tabsyncdates);
+                $dataBarset = json_encode($tabdata);
+                $labelsBar  = json_encode($tabnames);
+                $tabsyncset = json_encode($tabsyncdates);
 
-            $graph_datas = ['title'   => $title,
-                            'comment' => $comment,
-                            'name'            => $name,
-                            'ids'             => $tabsyncset,
-                            'data'            => $dataBarset,
-                            'labels'          => $labelsBar];
+                $graph_datas = ['title'   => $title,
+                                'comment' => $comment,
+                                'name'            => $name,
+                                'ids'             => $tabsyncset,
+                                'data'            => $dataBarset,
+                                'labels'          => $labelsBar];
 
-            $graph = PluginMydashboardBarChart::launchGraph($graph_datas, []);
+                $graph = PluginMydashboardBarChart::launchGraph($graph_datas, []);
 
-            $params = ["widgetId"  => $widgetId,
-                       "name"      => $name,
-                       "onsubmit"  => false,
-                       "opt"       => $opt,
-                       "criterias" => $criterias,
-                       "export"    => true,
-                       "canvas"    => true,
-                       "nb"        => $nb];
-            $widget->setWidgetHeader(PluginMydashboardHelper::getGraphHeader($params));
-            $widget->setWidgetHtmlContent(
-               $graph
-            );
+                $params = ["widgetId"  => $widgetId,
+                           "name"      => $name,
+                           "onsubmit"  => false,
+                           "opt"       => $opt,
+                           "criterias" => $criterias,
+                           "export"    => true,
+                           "canvas"    => true,
+                           "nb"        => $nb];
+                $widget->setWidgetHeader(PluginMydashboardHelper::getGraphHeader($params));
+                $widget->setWidgetHtmlContent(
+                    $graph
+                );
 
-            return $widget;
-            break;
+                return $widget;
+                break;
 
-         case $this->getType() . "2":
-            $name = 'InventoryTypePieChart';
+            case $this->getType() . "2":
+                $name = 'InventoryTypePieChart';
 
-            $criterias = [];
+                $criterias = [];
 
-            $params  = ["preferences" => [],
-                        "criterias"   => $criterias,
-                        "opt"         => $opt];
-            $options = PluginMydashboardHelper::manageCriterias($params);
+                $params  = ["preferences" => [],
+                            "criterias"   => $criterias,
+                            "opt"         => $opt];
+                $options = PluginMydashboardHelper::manageCriterias($params);
 
-            $opt  = $options['opt'];
-            $crit = $options['crit'];
+                $opt  = $options['opt'];
+                $crit = $options['crit'];
 
-            $counts     = [];
-            $name_agent = [];
+                $counts     = [];
+                $name_agent = [];
 
-            $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
+                $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
                               FROM `glpi_computers`
                               LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks` 
                               ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` ) 
@@ -187,24 +187,23 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                               AND `glpi_computers`.`is_template` = 0 
                               AND `glpi_computers`.`entities_id` = " . $_SESSION["glpiactive_entity"];
 
-            //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-            $query .= " AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` = 1) )";
+                //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
+                $query .= " AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` = 1) )";
 
-            $result = $DB->query($query);
-            $nb     = $DB->numrows($result);
+                $result = $DB->query($query);
+                $nb     = $DB->numrows($result);
 
-            if ($nb) {
-               while ($data = $DB->fetchAssoc($result)) {
+                if ($nb) {
+                    while ($data = $DB->fetchAssoc($result)) {
 //                  $counts[]     = $data["nb"];
-                   $counts[] = ['value' => $data['nb'],
-                                'name' =>  __('OCS Inventory NG', 'ocsinventoryng')];
-                  $name_agent[] = __('OCS Inventory NG', 'ocsinventoryng');
-               }
-            }
+                        $counts[] = ['value' => $data['nb'],
+                                     'name' =>  __('OCS Inventory NG', 'ocsinventoryng')];
+                        $name_agent[] = __('OCS Inventory NG', 'ocsinventoryng');
+                    }
+                }
 
-            if (Plugin::isPluginActive("fusioninventory")) {
-
-               $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
+                if (Plugin::isPluginActive("fusioninventory")) {
+                    $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
                                  FROM `glpi_computers`
                                  LEFT JOIN `glpi_plugin_fusioninventory_inventorycomputercomputers` 
                                  ON (`glpi_computers`.`id` = `glpi_plugin_fusioninventory_inventorycomputercomputers`.`computers_id` ) 
@@ -212,23 +211,23 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                                  AND `glpi_computers`.`is_template` = 0
                                  AND `glpi_computers`.`entities_id` = " . $_SESSION["glpiactive_entity"];
 
-               //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-               $query .= " AND ( `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` NOT LIKE '' )";
+                    //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
+                    $query .= " AND ( `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` NOT LIKE '' )";
 
-               $result = $DB->query($query);
-               $nb     = $DB->numrows($result);
+                    $result = $DB->query($query);
+                    $nb     = $DB->numrows($result);
 
-               if ($nb) {
-                  while ($data = $DB->fetchAssoc($result)) {
+                    if ($nb) {
+                        while ($data = $DB->fetchAssoc($result)) {
 //                     $counts[]     = $data["nb"];
-                     $name_agent[] = __('Fusion Inventory', 'ocsinventoryng');
-                      $counts[] = ['value' => $data['nb'],
-                                  'name' =>  __('Fusion Inventory', 'ocsinventoryng')];
-                  }
-               }
-            }
-            if (Plugin::isPluginActive("fusioninventory")) {
-               $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
+                            $name_agent[] = __('Fusion Inventory', 'ocsinventoryng');
+                            $counts[] = ['value' => $data['nb'],
+                                        'name' =>  __('Fusion Inventory', 'ocsinventoryng')];
+                        }
+                    }
+                }
+                if (Plugin::isPluginActive("fusioninventory")) {
+                    $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
                               FROM `glpi_computers`
                               LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks` 
                               ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` ) 
@@ -238,10 +237,10 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                               AND `glpi_computers`.`is_template` = 0
                               AND `glpi_computers`.`entities_id` = " . $_SESSION["glpiactive_entity"];
 
-               //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-               $query .= " AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`last_update` LIKE '' OR `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` IS NULL) AND (`glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` LIKE '' OR `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` IS NULL) )";
-            } else {
-               $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
+                    //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
+                    $query .= " AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`last_update` LIKE '' OR `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` IS NULL) AND (`glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` LIKE '' OR `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` IS NULL) )";
+                } else {
+                    $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
                               FROM `glpi_computers`
                               LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks` 
                               ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` ) 
@@ -249,59 +248,59 @@ class PluginOcsinventoryngDashboard extends CommonGLPI {
                               AND `glpi_computers`.`is_template` = 0 
                               AND `glpi_computers`.`entities_id` = " . $_SESSION["glpiactive_entity"];
 
-               //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-               $query .= " AND (`glpi_plugin_ocsinventoryng_ocslinks`.`last_update` LIKE '' 
+                    //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
+                    $query .= " AND (`glpi_plugin_ocsinventoryng_ocslinks`.`last_update` LIKE '' 
                OR `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` IS NULL) ";
-            }
-            $result = $DB->query($query);
-            $nb     = $DB->numrows($result);
+                }
+                $result = $DB->query($query);
+                $nb     = $DB->numrows($result);
 
-            if ($nb) {
-               while ($data = $DB->fetchAssoc($result)) {
+                if ($nb) {
+                    while ($data = $DB->fetchAssoc($result)) {
 //                  $counts[]     = $data["nb"];
-                  $name_agent[] = __('Without agent', 'ocsinventoryng');
-                   $counts[] = ['value' => $data['nb'],
-                                'name' =>  __('Without agent', 'ocsinventoryng')];
-               }
-            }
+                        $name_agent[] = __('Without agent', 'ocsinventoryng');
+                        $counts[] = ['value' => $data['nb'],
+                                     'name' =>  __('Without agent', 'ocsinventoryng')];
+                    }
+                }
 
-            $widget = new PluginMydashboardHtml();
-            $title  = __("Detail of imported computers", "ocsinventoryng");
-            $widget->setWidgetTitle($title);
-             $comment = "";
+                $widget = new PluginMydashboardHtml();
+                $title  = __("Detail of imported computers", "ocsinventoryng");
+                $widget->setWidgetTitle($title);
+                $comment = "";
 
-            $dataPieset         = json_encode($counts);
-            $labelsPie          = json_encode($name_agent);
+                $dataPieset         = json_encode($counts);
+                $labelsPie          = json_encode($name_agent);
 
-            $graph_datas = ['title'   => $title,
-                            'comment' => $comment,
-                            'name'            => $name,
-                            'ids'             => json_encode([]),
-                            'data'            => $dataPieset,
-                            'labels'          => $labelsPie,
-                            'label'           => $title];
+                $graph_datas = ['title'   => $title,
+                                'comment' => $comment,
+                                'name'            => $name,
+                                'ids'             => json_encode([]),
+                                'data'            => $dataPieset,
+                                'labels'          => $labelsPie,
+                                'label'           => $title];
 
             //            if ($onclick == 1) {
-            $graph_criterias = ['widget' => $widgetId];
+                $graph_criterias = ['widget' => $widgetId];
             //            }
 
-            $graph = PluginMydashboardPieChart::launchPieGraph($graph_datas, $graph_criterias);
+                $graph = PluginMydashboardPieChart::launchPieGraph($graph_datas, $graph_criterias);
 
-            $params = ["widgetId"  => $widgetId,
-                       "name"      => $name,
-                       "onsubmit"  => false,
-                       "opt"       => [],
-                       "criterias" => [],
-                       "export"    => true,
-                       "canvas"    => true,
-                       "nb"        => $nb];
-            $widget->setWidgetHeader(PluginMydashboardHelper::getGraphHeader($params));
-            $widget->setWidgetHtmlContent(
-               $graph
-            );
+                $params = ["widgetId"  => $widgetId,
+                           "name"      => $name,
+                           "onsubmit"  => false,
+                           "opt"       => [],
+                           "criterias" => [],
+                           "export"    => true,
+                           "canvas"    => true,
+                           "nb"        => $nb];
+                $widget->setWidgetHeader(PluginMydashboardHelper::getGraphHeader($params));
+                $widget->setWidgetHtmlContent(
+                    $graph
+                );
 
-            return $widget;
-            break;
-      }
-   }
+                return $widget;
+                break;
+        }
+    }
 }
