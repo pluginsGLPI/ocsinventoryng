@@ -303,4 +303,22 @@ class PluginOcsinventoryngDashboard extends CommonGLPI
                 break;
         }
     }
+
+    /**
+     * @param $selected_id
+     *
+     * @return string
+     */
+    public static function pluginOcsinventoryngDashboard1link($params)
+    {
+        global $CFG_GLPI;
+
+        $options['reset'][] = 'reset';
+
+        $options = PluginMydashboardChart::addCriteria(10002, 'contains', $params["params"]["dateinv"], 'AND');
+
+        return  $CFG_GLPI["root_doc"] . '/front/computer.php?is_deleted=0&' .
+                Toolbox::append_params($options, "&");
+
+    }
 }
