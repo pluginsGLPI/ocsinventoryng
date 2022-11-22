@@ -38,9 +38,8 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginOcsinventoryngOcsServer extends CommonDBTM
 {
-
-    static $types     = ['Computer'];
-    static $rightname = "plugin_ocsinventoryng";
+    public static $types     = ['Computer'];
+    public static $rightname = "plugin_ocsinventoryng";
     // From CommonDBTM
     public $dohistory = true;
 
@@ -62,7 +61,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
      *
      * @return translated
      */
-    static function getTypeName($nb = 0) {
+    public static function getTypeName($nb = 0)
+    {
         return _n('OCSNG server', 'OCSNG servers', $nb, 'ocsinventoryng');
     }
 
@@ -72,10 +72,11 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
      *
      * @return string
      */
-    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    {
         if (!$withtemplate) {
             switch ($item->getType()) {
-                case __CLASS__ :
+                case __CLASS__:
                     //If connection to the OCS DB  is ok, and all rights are ok too
                     $ong[1] = __('Test');
 
@@ -93,7 +94,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
 
                     return $ong;
             }
-
         }
         return '';
     }
@@ -105,27 +105,27 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
      *
      * @return bool
      */
-    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    {
         if ($item->getType() == __CLASS__) {
             switch ($tabnum) {
-                case 1 :
+                case 1:
                     $item->showDBConnectionStatus($item->getID());
                     break;
 
-                case 2 :
+                case 2:
                     $item->ocsFormConfig($item->getID());
                     break;
 
-                case 3 :
+                case 3:
                     $item->ocsFormImportOptions($item->getID());
                     break;
 
-                case 4 :
+                case 4:
                     $item->ocsHistoryConfig($item->getID());
                     break;
 
-                case 5 :
+                case 5:
                     self::showOcsReportsConsole($item->getID());
                     break;
             }
@@ -138,22 +138,21 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
      *
      * @return array
      */
-    function defineTabs($options = []) {
-
+    public function defineTabs($options = [])
+    {
         $ong = [];
         $this->addDefaultFormTab($ong);
         $this->addStandardTab(__CLASS__, $ong, $options);
         $this->addStandardTab('PluginOcsinventoryngSnmpOcslink', $ong, $options);
         $this->addStandardTab('Log', $ong, $options);
         return $ong;
-
     }
 
     /**
      * @return array
      */
-    function rawSearchOptions() {
-
+    public function rawSearchOptions()
+    {
         $tab = [];
 
         $tab[] = [
@@ -238,7 +237,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
      * @return void (display)
      * @throws \GlpitestSQLError
      */
-    static function setupMenu($plugin_ocsinventoryng_ocsservers_id) {
+    public static function setupMenu($plugin_ocsinventoryng_ocsservers_id)
+    {
         global $CFG_GLPI, $DB;
         $name       = "";
         $ocsservers = [];
@@ -320,9 +320,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                     echo "<td colspan='2'></td>";
                 }
                 echo "</tr>\n";
-
             }
-
         }
 
         echo "<tr><th colspan='4'>";
@@ -359,13 +357,16 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
      * @return void (display)
      * @throws \GlpitestSQLError
      */
-    static function importMenu($plugin_ocsinventoryng_ocsservers_id) {
+    public static function importMenu($plugin_ocsinventoryng_ocsservers_id)
+    {
         global $DB;
         $name                = "";
         $ocsservers          = [];
         $dbu                 = new DbUtils();
-        $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers',
-                                                          ["is_active" => 1]);
+        $numberActiveServers = $dbu->countElementsInTable(
+            'glpi_plugin_ocsinventoryng_ocsservers',
+            ["is_active" => 1]
+        );
         if ($numberActiveServers > 0) {
             echo "<form action=\"" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php\"
                 method='post'>";
@@ -428,7 +429,6 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
         if (Session::haveRight("plugin_ocsinventoryng", READ)) {
             //config server
             if ($isactive) {
-
                 if (Session::haveRight("plugin_ocsinventoryng_import", READ)) {
                     //manual import
                     echo "<tr class='tab_bg_1'>";
@@ -553,8 +553,8 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
      * @return bool
      * @internal param form $target target
      */
-    function ocsFormConfig($ID) {
-
+    public function ocsFormConfig($ID)
+    {
         if (!Session::haveRight("plugin_ocsinventoryng", READ)) {
             return false;
         }
@@ -1029,8 +1029,8 @@ JAVASCRIPT;
         echo "</div>\n";
     }
 
-    static function getHistoryValues() {
-
+    public static function getHistoryValues()
+    {
         $values = [__('None'),
                    __('Installation / Update / Uninstallation', 'ocsinventoryng'),
                    __('Installation / Update', 'ocsinventoryng'),
@@ -1039,12 +1039,11 @@ JAVASCRIPT;
         return $values;
     }
 
-    function showHistoryDropdown($name) {
-
+    public function showHistoryDropdown($name)
+    {
         $value  = $this->fields[$name];
         $values = self::getHistoryValues();
         return Dropdown::showFromArray($name, $values, ['value' => $value]);
-
     }
 
 
@@ -1056,8 +1055,8 @@ JAVASCRIPT;
      *
      * @return bool
      */
-    function ocsHistoryConfig($ID) {
-
+    public function ocsHistoryConfig($ID)
+    {
         if (!Session::haveRight("plugin_ocsinventoryng", READ)) {
             return false;
         }
@@ -1194,8 +1193,8 @@ JAVASCRIPT;
      * @internal param $withtemplate (default '')
      * @internal param $templateid (default '')
      */
-    function ocsFormImportOptions($ID) {
-
+    public function ocsFormImportOptions($ID)
+    {
         $this->getFromDB($ID);
         echo "<div class='center'>";
         echo "<form name='formconfig' action='" . Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer") . "' method='post'>";
@@ -1294,7 +1293,8 @@ JAVASCRIPT;
     /**
      *
      */
-    function post_getEmpty() {
+    public function post_getEmpty()
+    {
         $this->fields['ocs_db_host'] = "localhost";
         $this->fields['ocs_db_name'] = "ocsweb";
         $this->fields['ocs_db_user'] = "ocsuser";
@@ -1312,8 +1312,8 @@ JAVASCRIPT;
      *
      * @return void (display)
      */
-    function showForm($ID, $options = []) {
-
+    public function showForm($ID, $options = [])
+    {
         $this->initForm($ID, $options);
         $this->showFormHeader($options);
 
@@ -1330,8 +1330,11 @@ JAVASCRIPT;
         echo "<tr class='tab_bg_1'>";
         echo "<td class='center'>" . __('Connection type', 'ocsinventoryng') . "</td>";
         echo "<td id='conn_type_container'>";
-        Dropdown::showFromArray('conn_type', $conn_type_values,
-                                ['value' => $this->fields['conn_type']]);
+        Dropdown::showFromArray(
+            'conn_type',
+            $conn_type_values,
+            ['value' => $this->fields['conn_type']]
+        );
         echo "</td>";
         echo "<td class='center'>" . __("Active") . "</td>";
         echo "<td>";
@@ -1354,9 +1357,12 @@ JAVASCRIPT;
         if ($ID) {
             printf(__('%1$s : %2$s'), "Checksum", $this->fields["checksum"]);
             echo "&nbsp;";
-            Html::showSimpleForm(Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer"), 'force_checksum',
-                                 _sx('button', 'Reload Checksum', 'ocsinventoryng'),
-                                 ['id' => $ID]);
+            Html::showSimpleForm(
+                Toolbox::getItemTypeFormURL("PluginOcsinventoryngOcsServer"),
+                'force_checksum',
+                _sx('button', 'Reload Checksum', 'ocsinventoryng'),
+                ['id' => $ID]
+            );
         }
         echo "</td>";
         echo "</tr>";
@@ -1508,7 +1514,8 @@ JAVASCRIPT;
      *
      * @return boolean
      * */
-    static function useMassImport() {
+    public static function useMassImport()
+    {
         $dbu = new DbUtils();
         return $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', ["use_massimport" => 1]);
     }
@@ -1516,8 +1523,8 @@ JAVASCRIPT;
     /**
      * @param $ID
      * */
-    function showDBConnectionStatus($ID) {
-
+    public function showDBConnectionStatus($ID)
+    {
         $out   = "<br><div class='center'>\n";
         $out   .= "<table class='tab_cadre_fixe'>";
         $out   .= "<tr><th>" . __('Connecting to the database', 'ocsinventoryng') . "</th></tr>\n";
@@ -1528,13 +1535,13 @@ JAVASCRIPT;
             if (!self::checkOCSconnection($ID)) {
                 $style = "alert-warning";
                 $msg   = __('Connection to the database failed', 'ocsinventoryng');
-            } else if (!self::checkVersion($ID)) {
+            } elseif (!self::checkVersion($ID)) {
                 $style = "alert-warning";
                 $msg   = __('Invalid OCSNG Version: RC3 is required', 'ocsinventoryng');
-            } else if (!self::checkTraceDeleted($ID)) {
+            } elseif (!self::checkTraceDeleted($ID)) {
                 $style = "alert-warning";
                 $msg   = __('Invalid OCSNG configuration (TRACE_DELETED must be active)', 'ocsinventoryng');
-                // TODO
+            // TODO
                 /* } else if (!self::checkConfig(4)) {
                   $out .= __('Access denied on database (Need write rights on hardware.CHECKSUM necessary)',
                   'ocsinventoryng');
@@ -1557,8 +1564,8 @@ JAVASCRIPT;
      *
      * @return datas
      */
-    function prepareInputForUpdate($input) {
-
+    public function prepareInputForUpdate($input)
+    {
         $adm = new PluginOcsinventoryngOcsAdminInfosLink();
         $adm->updateAdminInfo($input);
         if (isset($input["ocs_db_passwd"]) && !empty($input["ocs_db_passwd"])) {
@@ -1578,8 +1585,8 @@ JAVASCRIPT;
     /**
      *
      */
-    function pre_updateInDB() {
-
+    public function pre_updateInDB()
+    {
         // Update checksum
         $checksum = 0;
         if (//$this->fields["import_device_processor"] ||
@@ -1589,7 +1596,6 @@ JAVASCRIPT;
             || $this->fields["import_general_domain"]
             || $this->fields["import_general_os"]
             || $this->fields["import_general_name"]) {
-
             $checksum |= pow(2, PluginOcsinventoryngOcsProcess::HARDWARE_FL);
         }
         if ($this->fields["import_device_bios"]) {
@@ -1657,7 +1663,8 @@ JAVASCRIPT;
      *
      * @return bool|datas
      */
-    function prepareInputForAdd($input) {
+    public function prepareInputForAdd($input)
+    {
         global $DB;
 
         // Check if server config does not exists
@@ -1686,7 +1693,8 @@ JAVASCRIPT;
     /**
      *
      */
-    function post_addItem() {
+    public function post_addItem()
+    {
         global $DB;
 
         $query = "INSERT INTO  `glpi_plugin_ocsinventoryng_ocsservers_profiles` (`id` ,`plugin_ocsinventoryng_ocsservers_id` , `profiles_id`)
@@ -1697,8 +1705,8 @@ JAVASCRIPT;
     /**
      *
      */
-    function cleanDBonPurge() {
-
+    public function cleanDBonPurge()
+    {
         $link = new PluginOcsinventoryngOcslink();
         $link->deleteByCriteria(['plugin_ocsinventoryng_ocsservers_id' => $this->fields['id']]);
 
@@ -1743,7 +1751,8 @@ JAVASCRIPT;
      *
      * @return int
      */
-    static function getServerByComputerID($ID) {
+    public static function getServerByComputerID($ID)
+    {
         global $DB;
 
         $sql    = "SELECT `plugin_ocsinventoryng_ocsservers_id`
@@ -1769,7 +1778,8 @@ JAVASCRIPT;
      * @return int
      * @throws \GlpitestSQLError
      */
-    static function getOCSIDByComputerID($ID, $ocsservers_id) {
+    public static function getOCSIDByComputerID($ID, $ocsservers_id)
+    {
         global $DB;
 
         $sql    = "SELECT `ocsid`
@@ -1789,7 +1799,8 @@ JAVASCRIPT;
      *
      * return an ocs server id
      * */
-    static function getRandomServerID() {
+    public static function getRandomServerID()
+    {
         global $DB;
 
         $sql    = "SELECT `id`
@@ -1810,7 +1821,8 @@ JAVASCRIPT;
     /**
      * @return int|Value
      */
-    static function getFirstServer() {
+    public static function getFirstServer()
+    {
         global $DB;
 
         $query   = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
@@ -1836,7 +1848,8 @@ JAVASCRIPT;
      * @return int|null|string[] of $confVar fields or false if unfound.
      * @throws \GlpitestSQLError
      */
-    static function getConfig($id) {
+    public static function getConfig($id)
+    {
         global $DB;
 
         $data = 0;
@@ -1862,8 +1875,8 @@ JAVASCRIPT;
      *
      * @return mixed
      */
-    static function getDevicesManagementMode($ocs_config, $itemtype) {
-
+    public static function getDevicesManagementMode($ocs_config, $itemtype)
+    {
         switch ($itemtype) {
             case 'Monitor':
                 return $ocs_config["import_monitor"];
@@ -1887,7 +1900,8 @@ JAVASCRIPT;
      * @internal param the $plugin_ocsinventoryng_ocsservers_id ocs server id
      *
      */
-    static function checkOCSconnection($serverId) {
+    public static function checkOCSconnection($serverId)
+    {
         return self::getDBocs($serverId)->checkConnection();
     }
 
@@ -1898,21 +1912,26 @@ JAVASCRIPT;
      *
      * @return PluginOcsinventoryngOcsClient the ocs client (database or soap)
      */
-    static function getDBocs($serverId) {
-
+    public static function getDBocs($serverId)
+    {
         if ($serverId) {
             $config = self::getConfig($serverId);
             if (isset($config['conn_type'])) {
                 if ($config['conn_type'] == self::CONN_TYPE_DB) {
                     return new PluginOcsinventoryngOcsDbClient(
-                        $serverId, $config['ocs_db_host'], $config['ocs_db_user'],
-                        rawurldecode(stripslashes((new GLPIKey())->decrypt($config['ocs_db_passwd']))), $config['ocs_db_name']
-                        );
+                        $serverId,
+                        $config['ocs_db_host'],
+                        $config['ocs_db_user'],
+                        rawurldecode(stripslashes((new GLPIKey())->decrypt($config['ocs_db_passwd']))),
+                        $config['ocs_db_name']
+                    );
                 } else {
                     return new PluginOcsinventoryngOcsSoapClient(
-                        $serverId, $config['ocs_db_host'], $config['ocs_db_user'],
+                        $serverId,
+                        $config['ocs_db_host'],
+                        $config['ocs_db_user'],
                         rawurldecode(stripslashes((new GLPIKey())->decrypt($config['ocs_db_passwd'])))
-                        );
+                    );
                 }
             }
         }
@@ -1925,7 +1944,8 @@ JAVASCRIPT;
      *
      * @return bool
      */
-    static function serverIsActive($serverID) {
+    public static function serverIsActive($serverID)
+    {
         $ocsserver = new self();
         if ($ocsserver->getFromDB($serverID)) {
             return $ocsserver->isActive();
@@ -1939,8 +1959,8 @@ JAVASCRIPT;
      *
      * @return string
      */
-    static function getTagLimit($cfg_ocs) {
-
+    public static function getTagLimit($cfg_ocs)
+    {
         $WHERE = "";
         if (!empty($cfg_ocs["tag_limit"])) {
             $splitter = explode("$", trim($cfg_ocs["tag_limit"]));
@@ -1974,7 +1994,8 @@ JAVASCRIPT;
      *
      * @return bool
      */
-    public static function checkVersion($ID) {
+    public static function checkVersion($ID)
+    {
         $client  = self::getDBocs($ID);
         $version = $client->getTextConfig('GUI_VERSION');
 
@@ -1999,7 +2020,8 @@ JAVASCRIPT;
      *
      * @return int
      */
-    public static function checkTraceDeleted($ID) {
+    public static function checkTraceDeleted($ID)
+    {
         $client = self::getDBocs($ID);
         return $client->getIntConfig('TRACE_DELETED');
     }
@@ -2015,7 +2037,8 @@ JAVASCRIPT;
      *
      * @return bool
      */
-    static function showComputersToClean($show_params) {
+    public static function showComputersToClean($show_params)
+    {
         global $DB, $CFG_GLPI;
 
         $plugin_ocsinventoryng_ocsservers_id = $show_params["plugin_ocsinventoryng_ocsservers_id"];
@@ -2213,8 +2236,8 @@ JAVASCRIPT;
      *
      * @return bool|void
      */
-    static function showComputersToSynchronize($show_params) {
-
+    public static function showComputersToSynchronize($show_params)
+    {
         echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/datatables.min.css");
         //      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css");
         echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/ColReorder-1.5.2/css/colReorder.dataTables.min.css");
@@ -2383,7 +2406,10 @@ JAVASCRIPT;
      * @internal param a $entities_id list of entities in which computers can be added or linked
      *
      */
-    static function showComputersToAdd($show_params) {
+    public static function showComputersToAdd($show_params)
+    {
+
+        $advanced = 0;
 
         echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/datatables.min.css");
         //      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css");
@@ -2535,11 +2561,12 @@ JAVASCRIPT;
         echo "<table class='tab_cadre_fixe'>";
         echo "<tr><th class='center'>" . __('Manual import mode', 'ocsinventoryng') . "</th></tr>\n";
         echo "<tr class='tab_bg_1'><td class='center'>";
-        if ($advanced) {
-            Html::showSimpleForm($target, 'change_import_mode', __('Disable preview', 'ocsinventoryng'), ['id' => 'false']);
-        } else {
-            Html::showSimpleForm($target, 'change_import_mode', __('Enable preview', 'ocsinventoryng'), ['id' => 'true']);
-        }
+
+//        if ($advanced) {
+//            Html::showSimpleForm($target, 'change_import_mode', __('Disable preview', 'ocsinventoryng'), ['id' => 'false']);
+//        } else {
+//            Html::showSimpleForm($target, 'change_import_mode', __('Enable preview', 'ocsinventoryng'), ['id' => 'true']);
+//        }
         echo "</td></tr>";
         echo "<tr class='tab_bg_1'><td class='center b'>" .
              __('Check first that duplicates have been correctly managed in OCSNG', 'ocsinventoryng') . "</td>";
@@ -2602,8 +2629,8 @@ JAVASCRIPT;
      *
      * @return string
      */
-    static function getComputerLinkToOcsConsole($plugin_ocsinventoryng_ocsservers_id, $ocsid, $todisplay, $only_url = false) {
-
+    public static function getComputerLinkToOcsConsole($plugin_ocsinventoryng_ocsservers_id, $ocsid, $todisplay, $only_url = false)
+    {
         $ocs_config = self::getConfig($plugin_ocsinventoryng_ocsservers_id);
         $url        = '';
 
@@ -2631,7 +2658,8 @@ JAVASCRIPT;
      *
      * @return array
      */
-    static function getValuesActionCron() {
+    public static function getValuesActionCron()
+    {
         $values                               = [];
         $values[self::ACTION_PURGE_COMPUTER]  = self::getActionCronName(self::ACTION_PURGE_COMPUTER);
         $values[self::ACTION_DELETE_COMPUTER] = self::getActionCronName(self::ACTION_DELETE_COMPUTER);
@@ -2645,14 +2673,15 @@ JAVASCRIPT;
      *
      * @return type
      */
-    static function getActionCronName($value) {
+    public static function getActionCronName($value)
+    {
         switch ($value) {
-            case self::ACTION_PURGE_COMPUTER :
+            case self::ACTION_PURGE_COMPUTER:
                 return __('Purge computers in OCSNG', 'ocsinventoryng');
 
-            case self::ACTION_DELETE_COMPUTER :
+            case self::ACTION_DELETE_COMPUTER:
                 return __('Delete computers', 'ocsinventoryng');
-            default :
+            default:
                 // Return $value if not define
                 return $value;
         }
@@ -2663,7 +2692,8 @@ JAVASCRIPT;
      *
      * @return array
      */
-    static function cronInfo($name) {
+    public static function cronInfo($name)
+    {
         // no translation for the name of the project
         switch ($name) {
             case 'ocsng':
@@ -2688,7 +2718,8 @@ JAVASCRIPT;
      *
      * @return int
      */
-    static function cronCleanOldAgents($task) {
+    public static function cronCleanOldAgents($task)
+    {
         global $DB;
 
         $CronTask = new CronTask();
@@ -2702,11 +2733,12 @@ JAVASCRIPT;
 
         $cron_status                         = 0;
         $plugin_ocsinventoryng_ocsservers_id = 0;
-        foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers",
-                              "`is_active` = 1 AND `use_cleancron` = 1") as $config) {
+        foreach ($DB->request(
+            "glpi_plugin_ocsinventoryng_ocsservers",
+            "`is_active` = 1 AND `use_cleancron` = 1"
+        ) as $config) {
             $plugin_ocsinventoryng_ocsservers_id = $config["id"];
             if ($plugin_ocsinventoryng_ocsservers_id > 0) {
-
                 $ocsClient = self::getDBocs($plugin_ocsinventoryng_ocsservers_id);
                 $agents    = $ocsClient->getOldAgents($config["cleancron_nb_days"]);
 
@@ -2716,7 +2748,6 @@ JAVASCRIPT;
                     $computers  = [];
                     $can_update = PluginOcsinventoryngConfig::canUpdateOCS();
                     if (count($agents) > 0 && $can_update) {
-
                         $nb = $ocsClient->deleteOldAgents($agents);
                         if ($nb) {
                             $cron_status = 1;
@@ -2760,7 +2791,8 @@ JAVASCRIPT;
      * @global type $CFG_GLPI
      *
      */
-    static function cronRestoreOldAgents($task) {
+    public static function cronRestoreOldAgents($task)
+    {
         global $DB;
 
         $CronTask = new CronTask();
@@ -2774,8 +2806,10 @@ JAVASCRIPT;
 
         $cron_status                         = 0;
         $plugin_ocsinventoryng_ocsservers_id = 0;
-        foreach ($DB->request("glpi_plugin_ocsinventoryng_ocsservers",
-                              "`is_active` = 1 AND `use_cleancron` = 1 AND `use_restorationcron` = 1") as $config) {
+        foreach ($DB->request(
+            "glpi_plugin_ocsinventoryng_ocsservers",
+            "`is_active` = 1 AND `use_cleancron` = 1 AND `use_restorationcron` = 1"
+        ) as $config) {
             $plugin_ocsinventoryng_ocsservers_id = $config["id"];
             if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                 $delay = $config['delay_restorationcron'];
@@ -2799,8 +2833,13 @@ JAVASCRIPT;
                         $changes[0] = 0;
                         $changes[2] = "";
                         $changes[1] = "";
-                        Log::history($data['id'], 'Computer', $changes, 0,
-                                     Log::HISTORY_RESTORE_ITEM);
+                        Log::history(
+                            $data['id'],
+                            'Computer',
+                            $changes,
+                            0,
+                            Log::HISTORY_RESTORE_ITEM
+                        );
                         //                  $computer->update(array('id' => $data['id'], 'is_deleted' => 0));
                     }
                     $cron_status = 1;
@@ -2823,7 +2862,8 @@ JAVASCRIPT;
      *
      * @return int
      */
-    static function cronocsng($task) {
+    public static function cronocsng($task)
+    {
         global $DB;
 
         $original_glpiname    = $_SESSION['glpiname'] ?? null;
@@ -2862,9 +2902,11 @@ JAVASCRIPT;
                 $already_linked_result = $DB->query($already_linked_query);
 
                 $already_linked_ids = [];
-                if ($DB->numrows($already_linked_result) > 0)
-                    while ($data = $DB->fetchAssoc($already_linked_result))
+                if ($DB->numrows($already_linked_result) > 0) {
+                    while ($data = $DB->fetchAssoc($already_linked_result)) {
                         $already_linked_ids [] = $data['ocsid'];
+                    }
+                }
 
                 // Fetch linked computers from ocs
                 $res = [];
@@ -2880,14 +2922,14 @@ JAVASCRIPT;
                                                                           ]);
 
                     if (isset($ocsResult['COMPUTERS']) && count($ocsResult['COMPUTERS']) > 0) {
-                        foreach ($ocsResult['COMPUTERS'] as $computer)
+                        foreach ($ocsResult['COMPUTERS'] as $computer) {
                             $res[$computer['META']['ID']] = $computer['META'];
+                        }
                     }
                 }
 
                 $task->setVolume(0);
                 if (count($res) > 0) {
-
                     foreach ($res as $k => $data) {
                         if (count($data) > 0) {
                             // Fetch all linked computers from GLPI that were returned from OCS
@@ -2900,15 +2942,17 @@ JAVASCRIPT;
                             if ($DB->numrows($result_glpi) > 0) {
                                 while ($values = $DB->fetchAssoc($result_glpi)) {
                                     $task->addVolume(1);
-                                    $task->log(sprintf(__('%1$s: %2$s'), _n('Computer', 'Computer', 1),
-                                                       sprintf(__('%1$s (%2$s)'), $values["ocs_deviceid"], $values["id"])));
+                                    $task->log(sprintf(
+                                        __('%1$s: %2$s'),
+                                        _n('Computer', 'Computer', 1),
+                                        sprintf(__('%1$s (%2$s)'), $values["ocs_deviceid"], $values["id"])
+                                    ));
 
                                     $sync_params = ['ID'                                  => $values["id"],
                                                     'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                                                     'cfg_ocs'                             => $cfg_ocs,
                                                     'force'                               => 0];
                                     PluginOcsinventoryngOcsProcess::synchronizeComputer($sync_params);
-
                                 }
                             }
                         }
@@ -2919,7 +2963,6 @@ JAVASCRIPT;
             }
             return 1;
         } catch (Exception $e) {
-
         } finally {
             $_SESSION['glpiname'] = $original_glpiname;
         }
@@ -2931,7 +2974,8 @@ JAVASCRIPT;
      *
      * @param $type string class name
      * */
-    static function registerType($type) {
+    public static function registerType($type)
+    {
         if (!in_array($type, self::$types)) {
             self::$types[] = $type;
         }
@@ -2944,8 +2988,8 @@ JAVASCRIPT;
      *
      * @return array of types
      * */
-    static function getTypes($all = false) {
-
+    public static function getTypes($all = false)
+    {
         if ($all) {
             return self::$types;
         }
@@ -2970,8 +3014,8 @@ JAVASCRIPT;
     /**
      * @param $id
      */
-    static function showOcsReportsConsole($id) {
-
+    public static function showOcsReportsConsole($id)
+    {
         $ocsconfig = self::getConfig($id);
 
         echo "<div class='center'>";
@@ -2986,8 +3030,8 @@ JAVASCRIPT;
      * *@since version 0.84
      *
      */
-    static function checkBox($target) {
-
+    public static function checkBox($target)
+    {
         echo "<a href='" . $target . "?check=all' " .
              "onclick= \"if (markCheckboxes('ocsng_form')) return false;\">" . __('Check all') .
              "</a>&nbsp;/&nbsp;\n";
@@ -3018,7 +3062,8 @@ JAVASCRIPT;
     /**
      * @internal param $width
      */
-    function showSystemInformations() {
+    public function showSystemInformations()
+    {
         $dbu        = new DbUtils();
         $ocsServers = $dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_ocsservers', ["is_active" => 1]);
         if (!empty($ocsServers)) {
@@ -3026,7 +3071,6 @@ JAVASCRIPT;
 
             $msg = '';
             foreach ($ocsServers as $ocsServer) {
-
                 echo "<tr class='tab_bg_1'><td>";
                 $msg = __('Host', 'ocsinventoryng') . ": " . $ocsServer['ocs_db_host'] . "";
                 $msg .= "<br>" . __('Connection') . ": " . (self::checkOCSconnection($ocsServer['id']) ? "Ok" : "KO");
@@ -3047,8 +3091,8 @@ JAVASCRIPT;
      *        sDashboard (for Datatable),
      *        mydashboard (for our own)
      */
-    static function getJsLanguages() {
-
+    public static function getJsLanguages()
+    {
         $languages                    = [];
         $languages['sEmptyTable']     = __('No data available in table', 'ocsinventoryng');
         $languages['sInfo']           = __('Showing _START_ to _END_ of _TOTAL_ entries', 'ocsinventoryng');

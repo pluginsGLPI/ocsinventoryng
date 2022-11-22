@@ -37,9 +37,13 @@ $display_list = true;
 
 if (isset($_SESSION["ocs_update"]['computers'])) {
     if ($count = count($_SESSION["ocs_update"]['computers'])) {
-        $percent = min(100,
-                       round(100 * ($_SESSION["ocs_update_count"] - $count) / $_SESSION["ocs_update_count"],
-                             0));
+        $percent = min(
+            100,
+            round(
+                100 * ($_SESSION["ocs_update_count"] - $count) / $_SESSION["ocs_update_count"],
+                0
+            )
+        );
 
 
         $key         = array_pop($_SESSION["ocs_update"]['computers']);
@@ -47,11 +51,13 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
         $sync_params = ['ID'                                  => $key,
                         'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                         'cfg_ocs'                             => $cfg_ocs,
-                        'force'                               => 0];
+                        'force'                               => 1];
         $action      = PluginOcsinventoryngOcsProcess::synchronizeComputer($sync_params);
 
-        PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_update"]['statistics'],
-                                                               $action['status']);
+        PluginOcsinventoryngOcsProcess::manageImportStatistics(
+            $_SESSION["ocs_update"]['statistics'],
+            $action['status']
+        );
         Html::displayProgressBar(400, $percent);
 
         Html::redirect($_SERVER['PHP_SELF']);
@@ -61,7 +67,6 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
 if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
     && $_SESSION["plugin_ocsinventoryng_ocsservers_id"] > -1) {
     if (!isset($_POST["update_ok"])) {
-
         $ocsClient   = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
         $deleted_pcs = $ocsClient->getTotalDeletedComputers();
         if ($deleted_pcs > 0) {
@@ -77,7 +82,6 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
             $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"]];
             PluginOcsinventoryngOcsServer::showComputersToSynchronize($show_params);
         }
-
     } else {
         if (isset($_POST['toupdate']) && count($_POST['toupdate']) > 0) {
             $_SESSION["ocs_update_count"] = 0;
@@ -89,7 +93,6 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
         }
         Html::redirect($_SERVER['PHP_SELF']);
     }
-
 } else {
     echo "<div align='center'>";
     echo "<i class='fas fa-exclamation-triangle fa-4x' style='color:orange'></i>";

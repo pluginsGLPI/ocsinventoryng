@@ -161,28 +161,35 @@ class PluginOcsinventoryngOS extends CommonDBChild {
             $operatingsystemversions_id = 0;
             if (!in_array("operatingsystemversions_id", $options['computers_updates'])) {
                $osv_data                   = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware['OSVERSION']);
-               $operatingsystemversions_id = Dropdown::importExternal('OperatingSystemVersion', $osv_data);
-               if ($operatingsystemversions_id > 0) {
-                  $updates++;
-               }
+                if ($osv_data) {
+                    $operatingsystemversions_id = Dropdown::importExternal('OperatingSystemVersion', $osv_data);
+                    if ($operatingsystemversions_id > 0) {
+                        $updates++;
+                    }
+                }
             }
             $operatingsystemservicepacks_id = 0;
             if (!in_array("operatingsystemservicepacks_id", $options['computers_updates'])) {
 
                $ossp_data                      = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware['OSCOMMENTS']);
-               $operatingsystemservicepacks_id = Dropdown::importExternal('OperatingSystemServicePack', $ossp_data);
-               if ($operatingsystemservicepacks_id > 0) {
-                  $updates++;
+               if ($ossp_data) {
+                   $operatingsystemservicepacks_id = Dropdown::importExternal('OperatingSystemServicePack', $ossp_data);
+                   if ($operatingsystemservicepacks_id > 0) {
+                       $updates++;
+                   }
                }
+
             }
             $operatingsystemarchitectures_id = 0;
             if (!in_array("operatingsystemarchitectures_id", $options['computers_updates'])
                 && isset($hardware["ARCH"])) {
-               $osa_data                        = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware['ARCH']);
-               $operatingsystemarchitectures_id = Dropdown::importExternal('OperatingSystemArchitecture', $osa_data);
-               if ($operatingsystemarchitectures_id > 0) {
-                  $updates++;
-               }
+                $osa_data                        = PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($is_utf8, $hardware['ARCH']);
+                if ($osa_data) {
+                    $operatingsystemarchitectures_id = Dropdown::importExternal('OperatingSystemArchitecture', $osa_data);
+                    if ($operatingsystemarchitectures_id > 0) {
+                        $updates++;
+                    }
+                }
             }
          }
 

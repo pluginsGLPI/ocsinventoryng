@@ -49,7 +49,6 @@ if (isset($_POST["change_import_mode"])) {
 }
 
 if (isset($_SESSION["ocs_import"]['computers'])) {
-
     if ((isset($_SESSION["ocs_import"]["connection"])
          && $_SESSION["ocs_import"]["connection"] == false)
         || !isset($_SESSION["ocs_import"]["connection"])) {
@@ -58,17 +57,19 @@ if (isset($_SESSION["ocs_import"]['computers'])) {
             $_SESSION["ocs_import"]["id"] = [];
 
             Html::redirect($_SERVER['PHP_SELF']);
-
         } else {
             $_SESSION["ocs_import"]["connection"] = true;
         }
     }
 
     if ($count = count($_SESSION["ocs_import"]['computers'])) {
-
-        $percent = min(100,
-                       round(100 * ($_SESSION["ocs_import_count"] - $count) / $_SESSION["ocs_import_count"],
-                             0));
+        $percent = min(
+            100,
+            round(
+                100 * ($_SESSION["ocs_import_count"] - $count) / $_SESSION["ocs_import_count"],
+                0
+            )
+        );
 
         $key = array_pop($_SESSION["ocs_import"]['computers']);
 
@@ -106,20 +107,19 @@ if (isset($_SESSION["ocs_import"]['computers'])) {
 
         $action = PluginOcsinventoryngOcsProcess::processComputer($process_params);
 
-        PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_import"]['statistics'],
-                                                               $action['status']);
+        PluginOcsinventoryngOcsProcess::manageImportStatistics(
+            $_SESSION["ocs_import"]['statistics'],
+            $action['status']
+        );
         Html::displayProgressBar(400, $percent);
 
         Html::redirect($_SERVER['PHP_SELF']);
-
     }
 }
 
 if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
     && $_SESSION["plugin_ocsinventoryng_ocsservers_id"] > -1) {
-
     if (!isset($_POST["import_ok"])) {
-
         $ocsClient   = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
         $deleted_pcs = $ocsClient->getTotalDeletedComputers();
         if ($deleted_pcs > 0) {
@@ -134,7 +134,6 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
                         'import_mode'                         => $_SESSION["change_import_mode"],
                         'entities_id'                         => $_SESSION['glpiactiveentities']];
         PluginOcsinventoryngOcsServer::showComputersToAdd($show_params);
-
     } else {
         if (isset($_POST['toadd']) && count($_POST['toadd']) > 0) {
             $_SESSION["ocs_import_count"] = 0;
@@ -166,7 +165,6 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
         }
         Html::redirect($_SERVER['PHP_SELF']);
     }
-
 } else {
     echo "<div align='center'>";
     echo "<i class='fas fa-exclamation-triangle fa-4x' style='color:orange'></i>";

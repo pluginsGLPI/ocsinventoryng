@@ -249,7 +249,7 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
    foreach ($ocsResult['SNMP'] as $ID => $snmpids) {
       
       
-      $last_update = date('Y-m-d H:m:s');
+      $last_update = date('Y-m-d H:i:s');
       //Compute lastest synchronization date
       $query = "SELECT `last_update`
                 FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
