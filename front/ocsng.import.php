@@ -33,19 +33,27 @@ Session::checkRight("plugin_ocsinventoryng_import", READ);
 
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "import");
 
-//$display_list = true;
 //First time this screen is displayed : set the import mode to 'basic'
 if (!isset($_SESSION["change_import_mode"])) {
     $_SESSION["change_import_mode"] = 0;
 }
 
+if (!isset($_SESSION["change_link_mode"])) {
+    $_SESSION["change_link_mode"] = 0;
+}
+
 //Changing the import mode
+if (isset($_POST["simple_mode"])) {
+    $_SESSION["change_import_mode"] = 0;
+    $_SESSION["change_link_mode"] = 0;
+}
+
 if (isset($_POST["change_import_mode"])) {
-    if ($_POST['id'] == "false") {
-        $_SESSION["change_import_mode"] = 0;
-    } else {
-        $_SESSION["change_import_mode"] = 1;
-    }
+    $_SESSION["change_import_mode"] = 1;
+}
+
+if (isset($_POST["change_link_mode"])) {
+    $_SESSION["change_link_mode"] = 1;
 }
 
 if (isset($_SESSION["ocs_import"]['computers'])) {
@@ -132,6 +140,7 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
 
         $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                         'import_mode'                         => $_SESSION["change_import_mode"],
+                        'link_mode'                           => $_SESSION["change_link_mode"],
                         'entities_id'                         => $_SESSION['glpiactiveentities']];
         PluginOcsinventoryngOcsServer::showComputersToAdd($show_params);
     } else {

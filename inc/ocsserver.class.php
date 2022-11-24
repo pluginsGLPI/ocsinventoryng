@@ -2408,9 +2408,6 @@ JAVASCRIPT;
      */
     public static function showComputersToAdd($show_params)
     {
-
-        $advanced = 0;
-
         echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/datatables.min.css");
         //      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css");
         echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/ColReorder-1.5.2/css/colReorder.dataTables.min.css");
@@ -2430,8 +2427,10 @@ JAVASCRIPT;
         //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/pdfmake-0.1.36/vfs_fonts.js");
 
         $plugin_ocsinventoryng_ocsservers_id = $show_params["plugin_ocsinventoryng_ocsservers_id"];
-        $advanced                            = $show_params["import_mode"];
+        $advancedimport                      = $show_params["import_mode"] ?? 0;
+        $advancedlink                        = $show_params["link_mode"] ?? 0;
         $entities_id                         = $show_params["entities_id"];
+
 
         if (!self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
             return false;
@@ -2451,7 +2450,7 @@ JAVASCRIPT;
         $languages    = json_encode(self::getJsLanguages());
         $nbcols       = 9;
         $colsadvanced = "false";
-        if ($advanced) {
+        if ($advancedimport || $advancedlink) {
             $colsadvanced = "true";
             $nbcols       = 14;
         }
@@ -2494,7 +2493,8 @@ JAVASCRIPT;
                           type:'POST',
                           data: {plugin_ocsinventoryng_ocsservers_id: $plugin_ocsinventoryng_ocsservers_id,
                                  entities_id: $entities,
-                                 advanced: '$advanced'
+                                 importmode: $advancedimport,
+                                 linkmode: $advancedlink
                                 },
                           datatype: 'json'
                       },
@@ -2562,11 +2562,14 @@ JAVASCRIPT;
         echo "<tr><th class='center'>" . __('Manual import mode', 'ocsinventoryng') . "</th></tr>\n";
         echo "<tr class='tab_bg_1'><td class='center'>";
 
-//        if ($advanced) {
-//            Html::showSimpleForm($target, 'change_import_mode', __('Disable preview', 'ocsinventoryng'), ['id' => 'false']);
-//        } else {
-//            Html::showSimpleForm($target, 'change_import_mode', __('Enable preview', 'ocsinventoryng'), ['id' => 'true']);
-//        }
+        if ($advancedimport || $advancedlink) {
+            Html::showSimpleForm($target, 'simple_mode', __('Disable preview', 'ocsinventoryng'));
+        } else {
+            Html::showSimpleForm($target, 'change_import_mode', __('Enable preview for import', 'ocsinventoryng'));
+            echo "&nbsp;";
+            Html::showSimpleForm($target, 'change_link_mode', __('Enable preview for linking', 'ocsinventoryng'));
+        }
+
         echo "</td></tr>";
         echo "<tr class='tab_bg_1'><td class='center b'>" .
              __('Check first that duplicates have been correctly managed in OCSNG', 'ocsinventoryng') . "</td>";
@@ -2598,11 +2601,15 @@ JAVASCRIPT;
         echo Search::showHeaderItem($output_type, _n('Information', 'Informations', 2), $header_num);
         echo Search::showHeaderItem($output_type, __('Last OCSNG inventory date', 'ocsinventoryng'), $header_num);
         echo Search::showHeaderItem($output_type, __('OCSNG TAG', 'ocsinventoryng'), $header_num);
+//        if ($advancedimport) {
         echo Search::showHeaderItem($output_type, __('Override unicity check ?', 'ocsinventoryng'), $header_num);
         echo Search::showHeaderItem($output_type, __('Match the rule ?', 'ocsinventoryng'), $header_num);
         echo Search::showHeaderItem($output_type, __('Destination entity'), $header_num);
         echo Search::showHeaderItem($output_type, __('Child entities'), $header_num);
+//        }
+//        if ($advancedlink) {
         echo Search::showHeaderItem($output_type, __('Item to link', 'ocsinventoryng'), $header_num);
+//        }
         echo "</thead>";
         echo Search::showFooter($output_type, $title);
 

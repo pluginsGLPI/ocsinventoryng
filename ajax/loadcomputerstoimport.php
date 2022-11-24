@@ -35,8 +35,8 @@ Session::checkLoginUser();
 
 $plugin_ocsinventoryng_ocsservers_id = $_POST["plugin_ocsinventoryng_ocsservers_id"];
 $entities_id                         = $_POST["entities_id"];
-$advanced                            = $_POST["advanced"];
-$advanced = 0;
+$advancedimport                      = $_POST["importmode"];
+$advancedlink                        = $_POST["linkmode"];
 
 $hardware["data"] = [];
 
@@ -57,11 +57,12 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
     $computerOptions = ['COMPLETE' => '0',
                         'FILTER'   => [
-                           'EXCLUDE_IDS' => $already_linked
+                            'EXCLUDE_IDS' => $already_linked
                         ],
                         'DISPLAY'  => [
-                           'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
-                                         | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS
+                            'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
+                                          | PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
+                                          | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS
                         ],
     ];
 
@@ -74,13 +75,14 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
     }
 
     $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-   //      $numrows   = $ocsClient->countComputers($computerOptions);
+    //      $numrows   = $ocsClient->countComputers($computerOptions);
 
-   //      if ($start != 0) {
-   //         $computerOptions['OFFSET'] = $start;
-   //      }
-   //      $computerOptions['MAX_RECORDS'] = $_SESSION['glpilist_limit'];
-    $ocsResult = $ocsClient->getComputers($computerOptions);
+    //      if ($start != 0) {
+    //         $computerOptions['OFFSET'] = $start;
+    //      }
+    //      $computerOptions['MAX_RECORDS'] = $_SESSION['glpilist_limit'];
+
+    $ocsResult                      = $ocsClient->getComputers($computerOptions);
 
     $computers = (isset($ocsResult['COMPUTERS']) ? $ocsResult['COMPUTERS'] : []);
 
@@ -89,18 +91,17 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
             // Get all hardware from OCS DB
 
             foreach ($computers as $data) {
-
                 $computerinput = [];
-                $data  = Glpi\Toolbox\Sanitizer::sanitize($data);
-                $id    = $data['META']['ID'];
-                $input = [
-                   'itemtype'    => "Computer",
-                   'name'        => $data['META']["NAME"],
-                   'entities_id' => $entities_id,
-                   'serial'      => $data['BIOS']["SSN"] ?? '',
-                   'is_dynamic'  => 1,
-                   'ocsid'       => $id,
-                   'id'          => $id,
+                $data          = Glpi\Toolbox\Sanitizer::sanitize($data);
+                $id            = $data['META']['ID'];
+                $input         = [
+                    'itemtype'    => "Computer",
+                    'name'        => $data['META']["NAME"],
+                    'entities_id' => $entities_id,
+                    'serial'      => $data['BIOS']["SSN"] ?? '',
+                    'is_dynamic'  => 1,
+                    'ocsid'       => $id,
+                    'id'          => $id,
                 ];
 
                 $serial       = "";
@@ -168,46 +169,49 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                 }
 
                 $valTip = "&nbsp;" . Html::showToolTip(
-                    $msg,
-                    [
-                           'awesome-class' => 'fa-comments',
-                           'display'       => false,
-                           'autoclose'     => false,
-                           'onclick'       => true
+                        $msg,
+                        [
+                            'awesome-class' => 'fa-comments',
+                            'display'       => false,
+                            'autoclose'     => false,
+                            'onclick'       => true
                         ]
-                );
+                    );
 
-                $toimport_disable_unicity_check= "";
-                $rule_matched         = "";
-                $toimport_entities    = "";
-                $toimport_recursive   = "";
-                $computers_id_founded = "";
+                $toimport_disable_unicity_check = "";
+                $rule_matched                   = "";
+                $toimport_entities              = "";
+                $toimport_recursive             = "";
+                $computers_id_founded           = "";
 
-                if ($advanced) {
+                if ($advancedimport) {
                     $rec                            = "disable_unicity_check[" . $id . "]";
                     $toimport_disable_unicity_check = Dropdown::showYesNo($rec, 0, -1, ['display' => false]);
 
-                    $rule      = new RuleImportEntityCollection();
+                    $rule = new RuleImportEntityCollection();
 
                     $values = [];
 
                     $recursive = isset($data["is_recursive"]) ? $data["is_recursive"] : 0;
 
-                    $computerinput = $input;
-                    $computerinput['ip'] = $opt['IPADDRESS'];
+                    $computerinput           = $input;
+                    $computerinput['ip']     = $opt['IPADDRESS'];
                     $computerinput['subnet'] = $opt['IPSUBNET'];
-                    if (isset($data['WORKGROUP'])) {
-                        $computerinput['domain'] = $data["WORKGROUP"];
+
+                    if (isset($data['HARDWARE']['WORKGROUP'])) {
+                        $computerinput['domain'] = $data['HARDWARE']['WORKGROUP'];
                     }
-//                    $computerinput['oscomment'] = $opt['oscomment'];
+                    if (isset($data['HARDWARE']['OSCOMMENTS'])) {
+                        $computerinput['oscomment'] = $data['HARDWARE']['OSCOMMENTS'];
+                    }
 
                     $computerinput['_source'] = 'ocsinventoryng';
 
-                    $datar     = $rule->processAllRules(
+                    $datar = $rule->processAllRules(
                         $computerinput + ['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                             '_source'       => 'ocsinventoryng',
-                             'is_recursive'  => $recursive,
-                            ],
+                                          '_source'       => 'ocsinventoryng',
+                                          'is_recursive'  => $recursive,
+                        ],
                         ['is_recursive' => $recursive],
                         ['ocsid' => $id, 'return' => true]
                     );
@@ -235,7 +239,7 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                     $toimport_recursive = Dropdown::showYesNo($rec, $datar['is_recursive'], -1, ['display' => false]);
                 }
                 //Look for the computer using automatic link criterias as defined in OCSNG configuration
-                if ($advanced) {
+                if ($advancedlink) {
                     $rulelink         = new RuleImportAssetCollection();
                     $params           = ['entities_id'                         => $entities_id,
                                          'itemtype'                            => 'Computer',
@@ -247,41 +251,42 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
                     if (isset($rulelink_results['found_inventories'][0])
                         && $rulelink_results['found_inventories'][0] > 0) {
-                        $options['value']  = $rulelink_results['found_inventories'][0];
-                        $options['entity'] = $entities_id;
-
-                        $options['width'] = "100%";
-
-                  //                  if (isset($options['value']) && $options['value'] > 0) {
-                  //
-                  //                     $query  = "SELECT *
-                  //                            FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                  //                            WHERE `computers_id` = '" . $options['value'] . "' ";
-                  //                     $result = $DB->query($query);
-                  //                     if ($DB->numrows($result) > 0) {
-                  //                        $ko = 1;
-                  //                     }
-                  //                  }
-                        $options['comments']  = false;
-                        $options['display']   = false;
-                        $computers_id_founded = Computer::dropdown($options);
+                        $options['value'] = $rulelink_results['found_inventories'][0];
                     }
+                    $options['entity'] = $entities_id;
+
+                    $options['width'] = "100%";
+
+                    //                  if (isset($options['value']) && $options['value'] > 0) {
+                    //
+                    //                     $query  = "SELECT *
+                    //                            FROM `glpi_plugin_ocsinventoryng_ocslinks`
+                    //                            WHERE `computers_id` = '" . $options['value'] . "' ";
+                    //                     $result = $DB->query($query);
+                    //                     if ($DB->numrows($result) > 0) {
+                    //                        $ko = 1;
+                    //                     }
+                    //                  }
+                    $options['comments']  = false;
+                    $options['display']   = false;
+                    $computers_id_founded = Computer::dropdown($options);
+                    //                    }
                 }
                 $hardware["data"][] = [
-                   'checked'                        => "",
-                   'id'                             => $data['META']["ID"],
-                   'name'                           => $data['META']["NAME"],
-                   'date'                           => $data['META']["LASTDATE"],
-                   'TAG'                            => $data['META']["TAG"],
-                   'serial'                         => $serial,
-                   'model'                          => $model,
-                   'manufacturer'                   => $manufacturer,
-                   'infos'                          => $valTip,
-                   'toimport_disable_unicity_check' => $toimport_disable_unicity_check,
-                   'rule_matched'                   => $rule_matched,
-                   'toimport_entities'              => $toimport_entities,
-                   'toimport_recursive'             => $toimport_recursive,
-                   'computers_id_founded'           => $computers_id_founded
+                    'checked'                        => "",
+                    'id'                             => $data['META']["ID"],
+                    'name'                           => $data['META']["NAME"],
+                    'date'                           => $data['META']["LASTDATE"],
+                    'TAG'                            => $data['META']["TAG"],
+                    'serial'                         => $serial,
+                    'model'                          => $model,
+                    'manufacturer'                   => $manufacturer,
+                    'infos'                          => $valTip,
+                    'toimport_disable_unicity_check' => $toimport_disable_unicity_check,
+                    'rule_matched'                   => $rule_matched,
+                    'toimport_entities'              => $toimport_entities,
+                    'toimport_recursive'             => $toimport_recursive,
+                    'computers_id_founded'           => $computers_id_founded
                 ];
             }
         }
