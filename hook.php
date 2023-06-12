@@ -1373,10 +1373,12 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
         case 'RuleImportEntity':
         case 'RuleImportAsset':
             $ocsservers_id = 0;
-            if ($params['rule_itemtype'] == 'RuleImportEntity') {
+            if ($params['rule_itemtype'] == 'RuleImportEntity' && array_key_exists('ocsservers_id',$params['values']['input'])) {
                 $ocsservers_id = $params['values']['input']['ocsservers_id'];
             } else {
-                $ocsservers_id = $params['values']['params']['plugin_ocsinventoryng_ocsservers_id'];
+                if (array_key_exists('plugin_ocsinventoryng_ocsservers_id',$params['values']['params'])) {
+                    $ocsservers_id = $params['values']['params']['plugin_ocsinventoryng_ocsservers_id'];
+                }
             }
 
             $rule_parameters = [
