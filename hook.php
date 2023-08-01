@@ -810,8 +810,8 @@ function plugin_ocsinventoryng_getDatabaseRelations()
                   "glpi_plugin_ocsinventoryng_registrykeys" => "computers_id",
                   "glpi_plugin_ocsinventoryng_details"      => "computers_id"],
 
-              "glpi_networkports"
-              => ["glpi_plugin_ocsinventoryng_networkports" => "networkports_id"],
+              //"glpi_networkports"
+              //=> ["glpi_plugin_ocsinventoryng_networkports" => "networkports_id"],
 
               "glpi_profiles"
               => ["glpi_plugin_ocsinventoryng_ocsservers_profiles" => "profiles_id"]];
@@ -1374,9 +1374,13 @@ function plugin_ocsinventoryng_ruleCollectionPrepareInputDataForProcess($params)
         case 'RuleImportAsset':
             $ocsservers_id = 0;
             if ($params['rule_itemtype'] == 'RuleImportEntity') {
-                $ocsservers_id = $params['values']['input']['ocsservers_id'];
+                if (isset($params['values']['input']['ocsservers_id'])) {
+                   $ocsservers_id = $params['values']['input']['ocsservers_id'];
+                }
             } else {
-                $ocsservers_id = $params['values']['params']['plugin_ocsinventoryng_ocsservers_id'];
+                if (isset($params['values']['params']['plugin_ocsinventoryng_ocsservers_id'])) {
+                   $ocsservers_id = $params['values']['params']['plugin_ocsinventoryng_ocsservers_id'];
+                }
             }
 
             $rule_parameters = [
