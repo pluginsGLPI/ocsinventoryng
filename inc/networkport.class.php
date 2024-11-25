@@ -425,7 +425,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
                }
                $already_known_ifaces[] = $item_device->getID();
             }
-
+             $networkports_id = -1;
             if ($cfg_ocs["import_ip"] == 1) {
                if ($type->fields['instantiation_type'] == __CLASS__) {
                   $result     = $main['result'];

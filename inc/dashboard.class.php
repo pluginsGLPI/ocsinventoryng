@@ -31,7 +31,7 @@
 /**
  * Class PluginOcsinventoryngDashboard
  */
-class PluginOcsinventoryngDashboard extends CommonGLPI
+class PluginOcsinventoryngDashboard extends PluginMydashboardHtml
 {
     public $widgets = [];
     private $options;
@@ -56,14 +56,16 @@ class PluginOcsinventoryngDashboard extends CommonGLPI
      /**
       * @return \array[][]
       */
-    public function getWidgetsForItem()
+    public static function getWidgetsForItem()
     {
         $widgets = [
             PluginMydashboardMenu::$INVENTORY => [
-                $this->getType() . "1" => ["title"   => __("Last synchronization of computers by month", "ocsinventoryng"),
+                self::getType() . "1" => ["id" => 1,
+                                           "title"   => __("Last synchronization of computers by month", "ocsinventoryng"),
                                            "type"    => PluginMydashboardWidget::$BAR,
                                            "comment" => __("Display synchronization of computers by month", "ocsinventoryng")],
-                $this->getType() . "2" => ["title"   => __("Detail of imported computers", "ocsinventoryng"),
+                self::getType() . "2" => ["id" => 2,
+                                           "title"   => __("Detail of imported computers", "ocsinventoryng"),
                                            "type"    => PluginMydashboardWidget::$PIE,
                                            "comment" => __("Number of OCSNG computers, Fusion Inventory computer, without agent computers", "ocsinventoryng")],
             ],
@@ -128,10 +130,13 @@ class PluginOcsinventoryngDashboard extends CommonGLPI
                     }
                 }
 
-                $widget = new PluginMydashboardHtml();
-                $title = __("Last synchronization of computers by month", "ocsinventoryng");
-                $comment = "";
+                $widget = new parent();
+                $widgets = self::getWidgetsForItem();
+                $title   = __("Last synchronization of computers by month", "ocsinventoryng");
+                $comment = __("Display synchronization of computers by month", "ocsinventoryng");
                 $widget->setWidgetTitle($title);
+                $widget->setWidgetComment($comment);
+                $widget->toggleWidgetRefresh();
 
 
                 $dataBarset = json_encode($tabdata);
@@ -264,10 +269,13 @@ class PluginOcsinventoryngDashboard extends CommonGLPI
                     }
                 }
 
-                $widget = new PluginMydashboardHtml();
-                $title  = __("Detail of imported computers", "ocsinventoryng");
+                $widget = new parent();
+                $widgets = self::getWidgetsForItem();
+                $title   = __("Detail of imported computers", "ocsinventoryng");
+                $comment = __("Number of OCSNG computers, Fusion Inventory computer, without agent computers", "ocsinventoryng");
                 $widget->setWidgetTitle($title);
-                $comment = "";
+                $widget->setWidgetComment($comment);
+                $widget->toggleWidgetRefresh();
 
                 $dataPieset         = json_encode($counts);
                 $labelsPie          = json_encode($name_agent);

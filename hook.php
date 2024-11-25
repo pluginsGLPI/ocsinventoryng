@@ -655,7 +655,7 @@ function plugin_ocsinventoryng_uninstall()
               "glpi_plugin_ocsinventoryng_ocsalerts"];
 
     foreach ($tables as $table) {
-        $DB->query("DROP TABLE IF EXISTS `$table`;");
+        $DB->dropTable($table);
     }
 
     $old_tables = ["glpi_plugin_ocsinventoryng_profiles",
@@ -663,20 +663,15 @@ function plugin_ocsinventoryng_uninstall()
                   "glpi_plugin_ocsinventoryng_items_devicebiosdatas"];
 
     foreach ($old_tables as $table) {
-        $DB->query("DROP TABLE IF EXISTS `$table`;");
+        $DB->dropTable($table);
     }
 
     $tables_glpi = ["glpi_savedsearches", "glpi_displaypreferences", "glpi_logs"];
 
     foreach ($tables_glpi as $table_glpi) {
-        $DB->query("DELETE
-                  FROM `" . $table_glpi . "`
-                  WHERE `itemtype` IN ('PluginMassocsimportNotimported',
-                                       'PluginMassocsimportDetail',
-                                       'PluginOcsinventoryngOcsServer',
-                                       'PluginOcsinventoryngNotimportedcomputer',
-                                       'PluginOcsinventoryngDetail',
-                                       'PluginOcsinventoryngRuleImportEntity')");
+        $DB->delete($table_glpi, ['itemtype' => ['LIKE' => 'PluginMassocsimport%']]);
+
+        $DB->delete($table_glpi, ['itemtype' => ['LIKE' => 'PluginOcsinventoryng%']]);
     }
 
     $tables_ocs = ["ocs_glpi_crontasks", "ocs_glpi_displaypreferences",

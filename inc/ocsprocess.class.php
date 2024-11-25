@@ -537,8 +537,10 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM
 //                'id'          => $id,
             ];
             $computerinput = $input;
-            $computerinput['ip'] = $ocsComputer['NETWORKS'][0]['IPADDRESS'];
-            $computerinput['subnet'] = $ocsComputer['NETWORKS'][0]['IPSUBNET'];
+            if (isset($ocsComputer['NETWORKS'])) {
+              $computerinput['ip'] = $ocsComputer['NETWORKS'][0]['IPADDRESS'];
+              $computerinput['subnet'] = $ocsComputer['NETWORKS'][0]['IPSUBNET'];
+            }
             if (isset($ocsComputer['HARDWARE']['WORKGROUP'])) {
                 $computerinput['domain'] = $ocsComputer['HARDWARE']['WORKGROUP'];
             }
