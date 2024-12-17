@@ -259,19 +259,22 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          }
       }
 
-      if ($ips) {
-         foreach ($ips as $ip) {
-            $ip_input = ['name'        => $ip,
-                         'itemtype'    => 'NetworkName',
-                         'items_id'    => $networknames_id,
-                         '_no_history' => !$install_network_history,
-                         'is_dynamic'  => 1,
-                         'is_deleted'  => 0];
-            $ip_address->add($ip_input);
-         }
-      }
+       if ($ips) {
+           foreach ($ips as $ip) {
+               $ip_address = new IPAddress();
+               $ip_input = [
+                   'name' => $ip,
+                   'itemtype' => 'NetworkName',
+                   'items_id' => $networknames_id,
+                   '_no_history' => !$install_network_history,
+                   'is_dynamic' => 1,
+                   'is_deleted' => 0
+               ];
+               $ip_address->add($ip_input);
+           }
+       }
 
-      return $network_port->getID();
+       return $network_port->getID();
    }
 
    // importNetwork
