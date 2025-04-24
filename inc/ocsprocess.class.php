@@ -913,7 +913,7 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM
             $ocsClient    = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
             $options      = [
                "DISPLAY" => [
-                  "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE,
+                  "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE  | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS,
                   'PLUGINS'  => PluginOcsinventoryngOcsClient::PLUGINS_ALL
                ]
             ];

@@ -492,31 +492,31 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation {
          }
       }
 
-      $query = "SELECT `id`
-                FROM `glpi_networkports`
-                WHERE `itemtype` = 'Computer'
-                   AND `items_id` = $computers_id
-                   AND `is_dynamic` = 1";
-      if (count($already_known_ports) > 0) {
-         $query .= " AND `id` NOT IN ('" . implode("', '", $already_known_ports) . "')";
-      }
-      $network_ports = new NetworkPort();
-      foreach ($DB->request($query) as $line) {
-         $network_ports->delete($line, true, $uninstall_network_history);
-      }
-
-      $query = "SELECT `id`
-                FROM `glpi_items_devicenetworkcards`
-                WHERE `itemtype` = 'Computer'
-                   AND `items_id` = $computers_id
-                   AND `is_dynamic` = 1";
-      if (count($already_known_ifaces) > 0) {
-         $query .= " AND `id` NOT IN ('" . implode("', '", $already_known_ifaces) . "')";
-      }
-      $item_device = new Item_DeviceNetworkCard();
-      foreach ($DB->request($query) as $line) {
-         $item_device->delete($line, true, $uninstall_network_history);
-      }
+//      $query = "SELECT `id`
+//                FROM `glpi_networkports`
+//                WHERE `itemtype` = 'Computer'
+//                   AND `items_id` = $computers_id
+//                   AND `is_dynamic` = 1";
+//      if (count($already_known_ports) > 0) {
+//         $query .= " AND `id` NOT IN ('" . implode("', '", $already_known_ports) . "')";
+//      }
+//      $network_ports = new NetworkPort();
+//      foreach ($DB->request($query) as $line) {
+//         $network_ports->delete($line, true, $uninstall_network_history);
+//      }
+//
+//      $query = "SELECT `id`
+//                FROM `glpi_items_devicenetworkcards`
+//                WHERE `itemtype` = 'Computer'
+//                   AND `items_id` = $computers_id
+//                   AND `is_dynamic` = 1";
+//      if (count($already_known_ifaces) > 0) {
+//         $query .= " AND `id` NOT IN ('" . implode("', '", $already_known_ifaces) . "')";
+//      }
+//      $item_device = new Item_DeviceNetworkCard();
+//      foreach ($DB->request($query) as $line) {
+//         $item_device->delete($line, true, $uninstall_network_history);
+//      }
    }
 
    /**

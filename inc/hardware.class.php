@@ -464,6 +464,8 @@ class PluginOcsinventoryngHardware extends CommonDBChild
         $values['itemtype'] = 'Computer';
 
         //TODO TAG OCS / sous-reseau / systeme eploit comment / source / domaine / adresse ip
+        $values['ip'] = $ocsComputer['HARDWARE']['IPADDR'];
+
     }
 
     /**
