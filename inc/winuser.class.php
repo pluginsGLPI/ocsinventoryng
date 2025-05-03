@@ -86,7 +86,7 @@ class PluginOcsinventoryngWinuser extends CommonDBChild {
             $input["name"]        = $wuser["NAME"];
             $input["type"]        = (isset($wuser["TYPE"]) ? $wuser["TYPE"] : '');
             $input["description"] = (isset($wuser["TYPE"]) ? $wuser["DESCRIPTION"] : '');
-            $input["disabled"]    = (isset($wuser["TYPE"]) ? $wuser["DISABLED"] : '');
+            $input["disabled"]    = (isset($wuser["TYPE"]) ? $wuser["STATUS"] : '');
             $input["sid"]         = (isset($wuser["TYPE"]) ? $wuser["SID"] : '');
 
             $winusers->add($input, ['disable_unicity_check' => true], $install_history);
@@ -196,7 +196,7 @@ class PluginOcsinventoryngWinuser extends CommonDBChild {
             $header = "<tr><th>" . __('Name') . "</th>";
             $header .= "<th>" . __('Type') . "</th>";
             $header .= "<th>" . __('Description') . "</th>";
-            $header .= "<th>" . __('Disabled', 'ocsinventoryng') . "</th>";
+            $header .= "<th>" . __('Status', 'ocsinventoryng') . "</th>";
             $header .= "<th>" . __('SID', 'ocsinventoryng') . "</th>";
             $header .= "</tr>";
             echo $header;
