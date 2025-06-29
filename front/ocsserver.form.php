@@ -1,9 +1,10 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -27,49 +28,48 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+
 
 Session::checkRight("plugin_ocsinventoryng", READ);
 
 $ocs = new PluginOcsinventoryngOcsServer();
 
 if (!isset($_GET["id"]) || $_GET["id"] == -1) {
-   $_GET["id"] = "";
+    $_GET["id"] = "";
 }
 
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsserver");
 
 //Delete template or server
-if (isset ($_POST["purge"])) {
-   $ocs->check($_POST['id'], PURGE);
-   $ocs->delete($_POST);
-   $ocs->redirectToList();
+if (isset($_POST["purge"])) {
+    $ocs->check($_POST['id'], PURGE);
+    $ocs->delete($_POST);
+    $ocs->redirectToList();
 
-   //Update server
-} else if (isset ($_POST["update"])
-   || isset ($_POST["updateSNMP"])
+    //Update server
+} elseif (isset($_POST["update"])
+   || isset($_POST["updateSNMP"])
 ) {
-   $ocs->check($_POST['id'], UPDATE);
-   $ocs->update($_POST);
-   Html::back();
+    $ocs->check($_POST['id'], UPDATE);
+    $ocs->update($_POST);
+    Html::back();
 
-   //Add new server
-} else if (isset ($_POST["add"])) {
-   $ocs->check(-1, CREATE, $_POST);
-   $newID = $ocs->add($_POST);
-   if ($_SESSION['glpibackcreated']) {
-      Html::redirect($ocs->getFormURL() . "?id=" . $newID);
-   }
-   Html::back();
+    //Add new server
+} elseif (isset($_POST["add"])) {
+    $ocs->check(-1, CREATE, $_POST);
+    $newID = $ocs->add($_POST);
+    if ($_SESSION['glpibackcreated']) {
+        Html::redirect($ocs->getFormURL() . "?id=" . $newID);
+    }
+    Html::back();
 
-   //Other
-} else if (isset ($_POST["force_checksum"])) {
-   $ocs->check($_POST['id'], UPDATE);
-   $_POST['checksum'] = 0;
-   $ocs->update($_POST);
-   Html::back();
-
+    //Other
+} elseif (isset($_POST["force_checksum"])) {
+    $ocs->check($_POST['id'], UPDATE);
+    $_POST['checksum'] = 0;
+    $ocs->update($_POST);
+    Html::back();
 } else {
-   $ocs->display($_GET);
+    $ocs->display($_GET);
 }
 Html::footer();

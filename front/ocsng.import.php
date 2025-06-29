@@ -1,9 +1,10 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -26,8 +27,6 @@
  along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
-
-include('../../../inc/includes.php');
 
 Session::checkRight("plugin_ocsinventoryng_import", READ);
 
@@ -106,12 +105,12 @@ if (isset($_SESSION["ocs_import"]['computers'])) {
         }
 
         $process_params = ['ocsid'                               => $key,
-                           'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                           'lock'                                => 0,
-                           'defaultentity'                       => $entity,
-                           'defaultrecursive'                    => $recursive,
-                           'disable_unicity_check'               => $disable_unicity_check,
-                           'computers_id'                        => $computers_id];
+            'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+            'lock'                                => 0,
+            'defaultentity'                       => $entity,
+            'defaultrecursive'                    => $recursive,
+            'disable_unicity_check'               => $disable_unicity_check,
+            'computers_id'                        => $computers_id];
 
         $action = PluginOcsinventoryngOcsProcess::processComputer($process_params);
 
@@ -119,9 +118,9 @@ if (isset($_SESSION["ocs_import"]['computers'])) {
             $_SESSION["ocs_import"]['statistics'],
             $action['status']
         );
-        Html::displayProgressBar(400, $percent);
+        Html::getProgressBar($percent);
 
-        Html::redirect($_SERVER['PHP_SELF']);
+        Html::redirect(PLUGIN_OCS_WEBDIR . '/front/ocsng.import.php');
     }
 }
 
@@ -139,9 +138,9 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
         }
 
         $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                        'import_mode'                         => $_SESSION["change_import_mode"],
-                        'link_mode'                           => $_SESSION["change_link_mode"],
-                        'entities_id'                         => $_SESSION['glpiactiveentities']];
+            'import_mode'                         => $_SESSION["change_import_mode"],
+            'link_mode'                           => $_SESSION["change_link_mode"],
+            'entities_id'                         => $_SESSION['glpiactiveentities']];
         PluginOcsinventoryngOcsServer::showComputersToAdd($show_params);
     } else {
         if (isset($_POST['toadd']) && count($_POST['toadd']) > 0) {
@@ -172,7 +171,7 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
                 }
             }
         }
-        Html::redirect($_SERVER['PHP_SELF']);
+        Html::redirect(PLUGIN_OCS_WEBDIR . '/front/ocsng.import.php');
     }
 } else {
     echo "<div align='center'>";
@@ -187,4 +186,4 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
     echo "</a>";
     echo "</div></div>";
 }
-Html::footer();
+Html::footer();//5Z4H25J

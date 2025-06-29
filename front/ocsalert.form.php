@@ -2,7 +2,7 @@
 /*
   -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
   -------------------------------------------------------------------------
@@ -26,7 +26,7 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+
 
 if (Plugin::isPluginActive("ocsinventoryng")) {
    $state    = new PluginOcsinventoryngNotificationState();

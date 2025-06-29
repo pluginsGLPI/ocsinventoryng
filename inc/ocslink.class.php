@@ -99,7 +99,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                       WHERE `computers_id` = $items_id " .
                              $dbu->getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
 
-                    $result = $DB->query($query);
+                    $result = $DB->doQuery($query);
                     if ($DB->numrows($result) > 0) {
                         $data = $DB->fetchAssoc($result);
 
@@ -228,7 +228,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                       FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
                       WHERE `items_id` = " . $items_id . " AND  `itemtype` = '" . $item->getType() . "'";
 
-                    $result = $DB->query($query);
+                    $result = $DB->doQuery($query);
                     if ($DB->numrows($result) > 0) {
                         $data = $DB->fetchAssoc($result);
 
@@ -292,7 +292,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                             FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
                             WHERE `items_id` = " . $items_id . " AND  `itemtype` = '" . $item->getType() . "'";
 
-                            $result = $DB->query($query);
+                            $result = $DB->doQuery($query);
                             if ($DB->numrows($result) > 0) {
                                 $data = $DB->fetchAssoc($result);
 
@@ -376,10 +376,9 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                       WHERE `computers_id` = $items_id " .
                          $dbu->getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
 
-                $result = $DB->query($query);
+                $result = $DB->doQuery($query);
                 if ($DB->numrows($result) > 0) {
                     $data = $DB->fetchAssoc($result);
-                    $data = Glpi\Toolbox\Sanitizer::sanitize($data);
 
                     if (count($data)) {
                         echo "<div class='center'>";
@@ -605,7 +604,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
         global $DB;
 
         if ($meta) {
-            $data_ocs = Toolbox::addslashes_deep($meta);
+            $data_ocs = $meta;
 
             if (isset($data_ocs["TAG"])
                 && isset($line["tag"])
@@ -615,7 +614,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                       SET `tag` = '" . $data_ocs["TAG"] . "'
                       WHERE `computers_id` = " . $line["computers_id"];
 
-                if ($DB->query($query)) {
+                if ($DB->doQuery($query)) {
                     $changes[0] = '0';
                     $changes[1] = $line["tag"];
                     $changes[2] = $data_ocs["TAG"];
@@ -648,11 +647,12 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
         }
         if (!$link->getField('is_global')) {
             // Handle case where already used, should never happen (except from OCS sync)
-            $query  = "SELECT `id`, `computers_id`
-                   FROM `glpi_computers_items`
-                   WHERE `glpi_computers_items`.`items_id` = " . $item->input['items_id'] . "
-                         AND `glpi_computers_items`.`itemtype` = '" . $item->input['itemtype'] . "'";
-            $result = $DB->query($query);
+            $query  = "SELECT `id`, `items_id_asset`
+                   FROM `glpi_assets_assets_peripheralassets`
+                   WHERE `items_id_peripheral` = " . $item->input['items_id'] . "
+                         AND `itemtype_peripheral` = '" . $item->input['itemtype'] . "'
+                         AND `itemtype_asset` = 'Computer'";
+            $result = $DB->doQuery($query);
 
             while ($data = $DB->fetchAssoc($result)) {
                 $temp = clone $item;
@@ -812,17 +812,17 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                         if ($decoConf == "delete") {
                             $tmp["id"] = $comp->getID();
                             $query     = "DELETE
-                         FROM `glpi_computers_items`
+                         FROM `glpi_assets_assets_peripheralassets`
                          WHERE `id`= " . $tmp['id'];
-                            $DB->query($query);
+                            $DB->doQuery($query);
                         //Put periph in dustbin
                         } elseif ($decoConf == "trash") {
                             $tmp["id"] = $comp->getID();
                             $query     = "UPDATE
-                         `glpi_computers_items`
+                         `glpi_assets_assets_peripheralassets`
                    SET `is_deleted` = 1
                          WHERE `id`= " . $tmp['id'];
-                            $DB->query($query);
+                            $DB->doQuery($query);
                         }
                     }
                 } // $ocsservers_id>0
@@ -969,7 +969,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                 WHERE `computers_id` = " . $item->getID() . " " .
                  $dbu->getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
 
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
         if ($DB->numrows($result) > 0) {
             $data = $DB->fetchAssoc($result);
 
@@ -1029,7 +1029,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                 VALUES ($computers_id, '$ocsid', '" . $ocsComputer['META']['DEVICEID'] . "',
                         '" . $_SESSION["glpi_currenttime"] . "', '$plugin_ocsinventoryng_ocsservers_id',
                         " . $comp->fields['entities_id'] . ", '" . addslashes($ocsComputer['META']['TAG']) . "')";
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
 
         if ($result) {
             return ($DB->insertId());
@@ -1060,7 +1060,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                          AND `plugin_ocsinventoryng_ocsservers_id`
                                  = $plugin_ocsinventoryng_ocsservers_id";
 
-            if ($result = $DB->query($query)) {
+            if ($result = $DB->doQuery($query)) {
                 if ($DB->numrows($result) > 0) {
                     $data = $DB->fetchArray($result);
 
@@ -1089,7 +1089,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                     $query = "DELETE
                          FROM `glpi_plugin_ocsinventoryng_ocslinks`
                          WHERE `id` = " . $data["id"];
-                    $DB->query($query);
+                    $DB->doQuery($query);
                 }
             }
         }
@@ -1109,7 +1109,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `computers_id` = $computers_id";
 
-        if ($result = $DB->query($query)) {
+        if ($result = $DB->doQuery($query)) {
             if ($DB->numrows($result)) {
                 $dbu                                 = new DbUtils();
                 $tab                                 = $dbu->importArrayFromDB($DB->result($result, 0, "computer_update"));
@@ -1129,7 +1129,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                          SET `computer_update` = '" . addslashes($dbu->exportArrayToDB($newtab)) . "'
                          WHERE `computers_id` = $computers_id";
 
-                    if ($DB->query($query)) {
+                    if ($DB->doQuery($query)) {
                         return true;
                     }
                 }
@@ -1154,7 +1154,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `computers_id` = $computers_id";
 
-        if ($result = $DB->query($query)) {
+        if ($result = $DB->doQuery($query)) {
             if ($DB->numrows($result)) {
                 $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($DB->result($result, 0, "plugin_ocsinventoryng_ocsservers_id"));
                 if ($cfg_ocs["use_locks"]) {
@@ -1171,7 +1171,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                             SET `computer_update` = '" . addslashes($dbu->exportArrayToDB($tab)) . "'
                             WHERE `computers_id` = $computers_id";
 
-                        if ($DB->query($query)) {
+                        if ($DB->doQuery($query)) {
                             return true;
                         }
                     }
@@ -1200,14 +1200,14 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `computers_id` = $computers_id";
 
-        if ($result = $DB->query($query)) {
+        if ($result = $DB->doQuery($query)) {
             if ($DB->numrows($result)) {
                 $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($DB->result($result, 0, "plugin_ocsinventoryng_ocsservers_id"));
                 if ($lock && $cfg_ocs["use_locks"]) {
                     $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                          SET `computer_update` = '" . $newArray . "'
                          WHERE `computers_id` = $computers_id";
-                    $DB->query($query);
+                    $DB->doQuery($query);
 
                     return true;
                 }
@@ -1232,7 +1232,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `computers_id` = $computers_id";
 
-        if ($result = $DB->query($query)) {
+        if ($result = $DB->doQuery($query)) {
             if ($DB->numrows($result)) {
                 $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($DB->result($result, 0, "plugin_ocsinventoryng_ocsservers_id"));
                 if ($cfg_ocs["use_locks"]) {
@@ -1247,7 +1247,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
                     $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                          SET `$field` = '" . addslashes($dbu->exportArrayToDB($tab)) . "'
                          WHERE `computers_id` = $computers_id";
-                    $DB->query($query);
+                    $DB->doQuery($query);
 
                     return true;
                 }
@@ -1271,7 +1271,7 @@ class PluginOcsinventoryngOcslink extends CommonDBTM
       FROM `glpi_plugin_ocsinventoryng_ocslinks`
       WHERE `computers_id` = $ID";
         $locks  = [];
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
         if ($DB->numrows($result) == 1) {
             $data = $DB->fetchAssoc($result);
 

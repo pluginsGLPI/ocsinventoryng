@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
@@ -66,7 +66,7 @@ if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
       PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_updatesnmp"]['statistics'],
          $action['status'], true);
       PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false, true);
-      Html::displayProgressBar(400, $percent);
+       Html::getProgressBar($percent);
 
       Html::redirect($_SERVER['PHP_SELF']);
 

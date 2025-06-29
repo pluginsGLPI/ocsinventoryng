@@ -1,9 +1,10 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -27,7 +28,7 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
@@ -50,7 +51,6 @@ if (!isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
     echo "</a>";
     echo "</div></div>";
 } else {
-
     echo "<div class='center'>";
     $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
     if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
@@ -68,7 +68,6 @@ if (!isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
                 echo "</th>";
                 echo "<tr class='tab_bg_1'><td>" . __('deleted computers into OCS Inventory NG', 'ocsinventoryng') . "</td><td>" . $_SESSION["ocs_deleted_equiv"]['computers_deleted'] . "</td></tr>";
                 echo "</table></div>";
-
             }
             echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php'>";
             echo __('Back');
@@ -81,18 +80,23 @@ if (!isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
 
         if ($_SESSION["ocs_deleted_equiv"]["total"] != $_SESSION["ocs_deleted_equiv"]["deleted"]
             && isset($_SESSION["ocs_deleted_equiv"]["last_req"])) {
-
             echo $_SESSION["ocs_deleted_equiv"]["deleted"] . "/" . $_SESSION["ocs_deleted_equiv"]["total"];
             echo "<br><br>";
             $count   = $_SESSION["ocs_deleted_equiv"]["deleted"];
-            $percent = min(100,
-                           round(100 * ($count) / $_SESSION["ocs_deleted_equiv"]["total"],
-                                 0));
-            Html::displayProgressBar(400, $percent, $param['forcepadding'] = true);
+            if ($_SESSION["ocs_deleted_equiv"]["total"] > 0) {
+                $percent = min(
+                    100,
+                    round(
+                        100 * ($count) / $_SESSION["ocs_deleted_equiv"]["total"],
+                        0
+                    )
+                );
+                Html::getProgressBar($percent, "%");
+            }
+
+
             PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-
         } else {
-
             if ($_SESSION["ocs_deleted_equiv"]["total"] === 0) {
                 echo "<div class='center b'>" . __('No new computers to delete', 'ocsinventoryng') . ".</div>";
             } else {

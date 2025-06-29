@@ -4,7 +4,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -90,7 +90,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
               FROM `" . $this->getTable() . "`
               WHERE `processid` = '$pid'
               ORDER BY `threadid` ASC";
-      $result = $DB->query($sql);
+      $result = $DB->doQuery($sql);
 
       echo "<div class='center' id='tabsbody'>";
       echo "<form name=cas action='' method='post'>";
@@ -194,7 +194,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       $sql = "SELECT `status`
               FROM `" . $this->getTable() . "`
               WHERE `processid` = '$pid'";
-      $result = $DB->query($sql);
+      $result = $DB->doQuery($sql);
       $status = 0;
       $thread_number = 0;
 
@@ -225,7 +225,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
          $sql = "DELETE
                  FROM `" . $this->getTable() . "`
                  WHERE (`end_time` < DATE_ADD(NOW(), INTERVAL -" . $delete_frequency . " HOUR)) OR `end_time` IS NULL";
-         $DB->query($sql);
+         $DB->doQuery($sql);
          //foreach($DB->request($sql) as $data) {
          // Requires to clean details
          //   $this->delete(array('id'=>$data['id']), true);
@@ -287,7 +287,7 @@ class PluginOcsinventoryngThread extends CommonDBTM {
       $sql .= " GROUP BY `processid`
               ORDER BY `id` DESC
               LIMIT 50";
-      $result = $DB->query($sql);
+      $result = $DB->doQuery($sql);
 
       echo "<div class='center'>";
       echo "<form name='processes' id='processes' action='$target' method='post'>";

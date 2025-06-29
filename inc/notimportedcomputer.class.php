@@ -4,7 +4,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -384,7 +384,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
             $query  = "SELECT `id` FROM `glpi_plugin_ocsinventoryng_notimportedcomputers`
                     WHERE `ocsid`='" . $ocsid . "' 
                     AND `plugin_ocsinventoryng_ocsservers_id`= '" . $ocsservers_id . "'";
-            $result = $DB->query($query);
+            $result = $DB->doQuery($query);
             if ($DB->numrows($result) > 0) {
                 $input['id'] = $DB->result($result, 0, 'id');
                 $this->update($input);
@@ -423,7 +423,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
             // Use truncate to reset id
             $sql = "TRUNCATE `" . $this->getTable() . "`";
         }
-        $result = $DB->query($sql);
+        $result = $DB->doQuery($sql);
 
         return ($result ? $DB->affectedRows() : -1);
     }
@@ -466,7 +466,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
                 WHERE `MAC` IN (SELECT `MACADDR`
                                 FROM `networks`
                                 WHERE `networks`.`HARDWARE_ID` = '" . $ocs_id . "')";
-        $DBocs->query($query);
+        $DBocs->doQuery($query);
 
         $tables = ["accesslog", "accountinfo", "batteries", "bios", "controllers", "cpus", "devices",
                    "download_history", "download_servers", "drives", "groups",
@@ -479,14 +479,14 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
                 $query = "DELETE
                       FROM `" . $table . "`
                       WHERE `hardware_id` = '" . $ocs_id . "'";
-                $DBocs->query($query);
+                $DBocs->doQuery($query);
             }
         }
 
         $query = "DELETE
                 FROM `hardware`
                 WHERE `ID` = '" . $ocs_id . "'";
-        $DBocs->query($query);
+        $DBocs->doQuery($query);
     }
 
     public static function OcsTableExists($ocs_server_id, $tablename)
@@ -759,7 +759,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
                 FROM `glpi_alerts`
                 WHERE `itemtype` = 'PluginOcsinventoryngNotimportedcomputer'
                       AND `items_id` = " . $this->fields['id'];
-        $DB->query($query);
+        $DB->doQuery($query);
     }
 
 

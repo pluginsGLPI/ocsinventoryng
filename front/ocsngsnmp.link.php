@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
@@ -52,7 +52,7 @@ if (isset($_SESSION["ocs_linksnmp"]["id"])) {
       $percent = min(100,
          round(100 * ($_SESSION["ocs_linksnmp_count"] - $count) / $_SESSION["ocs_linksnmp_count"], 0));
 
-      Html::displayProgressBar(400, $percent);
+       Html::getProgressBar($percent);
 
       $key = array_pop($_SESSION["ocs_linksnmp"]["id"]);
 
@@ -73,7 +73,7 @@ if (isset($_SESSION["ocs_linksnmp"]["id"])) {
          $params);
       Html::redirect($_SERVER['PHP_SELF']);
    } else {
-      Html::displayProgressBar(400, 100);
+       Html::getProgressBar(100);
 
       unset($_SESSION["ocs_link"]);
       echo "<div class='center b'>" . __('Successful link', 'ocsinventoryng') . "<br>";

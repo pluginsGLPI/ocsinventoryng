@@ -1,9 +1,10 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -192,7 +193,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild
         }
 
         if (isset($options['HARDWARE'])) {
-            $hardware = Glpi\Toolbox\Sanitizer::sanitize($options['HARDWARE']);
+            $hardware = $options['HARDWARE'];
 
             $updates = [];
 
@@ -378,22 +379,37 @@ class PluginOcsinventoryngHardware extends CommonDBChild
      *
      * @return array|int
      */
-    public static function getUserGroup($entity, $userid, $filter = '', $first = true)
+    public static function getUserGroup($entity, $userid)
     {
         global $DB;
 
-        $dbu = new DbUtils();
-        $query = "SELECT `glpi_groups`.`id`
-                FROM `glpi_groups_users`
-                INNER JOIN `glpi_groups` ON (`glpi_groups`.`id` = `glpi_groups_users`.`groups_id`)
-                WHERE `glpi_groups_users`.`users_id` = " . $userid .
-            $dbu->getEntitiesRestrictRequest(' AND ', 'glpi_groups', '', $entity, true);
-
-        if ($filter) {
-            $query .= "AND (" . $filter . ")";
-        }
         $rep = [];
-        foreach ($DB->request($query) as $data) {
+        $first = true;
+        $criteria = [
+            'SELECT' => 'glpi_groups.id',
+            'FROM' => 'glpi_groups_users',
+            'INNER JOIN'       => [
+                'glpi_groups' => [
+                    'ON' => [
+                        'glpi_groups' => 'id',
+                        'glpi_groups_users'          => 'groups_id',
+                    ],
+                ],
+            ],
+            'WHERE' => [
+                'glpi_groups_users.users_id' => $userid,
+            ],
+        ];
+        $criteria['WHERE'] = $criteria['WHERE'] + getEntitiesRestrictCriteria(
+            'glpi_groups',
+            '',
+            $entity,
+            true
+        );
+        $criteria['WHERE'] = $criteria['WHERE'] + ['glpi_groups.is_itemgroup' => 1];
+
+        $iterator = $DB->request($criteria);
+        foreach ($iterator as $data) {
             if ($first) {
                 return $data['id'];
             }
@@ -423,7 +439,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild
             $query = "SELECT `id`
                    FROM `glpi_users`
                    WHERE `name` = '" . $contact . "';";
-            $result = $DB->query($query);
+            $result = $DB->doQuery($query);
 
             if ($DB->numrows($result) == 1) {
                 $user_id = $DB->result($result, 0, 0);
@@ -445,7 +461,7 @@ class PluginOcsinventoryngHardware extends CommonDBChild
                     if ($computers_id > 0 && $comp->getFromDB($computers_id)) {
                         $entities_id = $comp->fields["entities_id"];
                     }
-                    $values['groups_id'] = self::getUserGroup($entities_id, $user_id, '`is_itemgroup`', true);
+                    $values['groups_id'] = self::getUserGroup($entities_id, $user_id);
                 }
             }
         }
@@ -484,12 +500,12 @@ class PluginOcsinventoryngHardware extends CommonDBChild
                 $install_history = 1;
             }
 
-            $hardware = Glpi\Toolbox\Sanitizer::sanitize($options['domains_id']);
+            $hardware = $options['domains_id'];
 
             $domain = new Domain();
             $dbu = new DbUtils();
             $condition = ['name' => ['LIKE', $hardware],
-                    'is_deleted' => 0]
+                'is_deleted' => 0]
                 + $dbu->getEntitiesRestrictCriteria('glpi_domains', '', $options['entities_id'], true);
 
             $tab = $domain->find($condition);

@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -147,7 +147,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
             $query              = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                          SET `computer_update` = '" . addslashes($dbu->exportArrayToDB($computer_updates)) . "'
                          WHERE `computers_id` = $computers_id";
-            $DB->query($query);
+            $DB->doQuery($query);
          }
       }
       return $computer_updates;
@@ -278,7 +278,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
       $queryListUpdate = "SELECT `ocs_column`, `glpi_column`
                           FROM `glpi_plugin_ocsinventoryng_ocsadmininfoslinks`
                           WHERE `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
-      $result          = $DB->query($queryListUpdate);
+      $result          = $DB->doQuery($queryListUpdate);
 
       if ($DB->numrows($result) > 0) {
 
@@ -378,7 +378,7 @@ class PluginOcsinventoryngOcsAdminInfosLink extends CommonDBTM {
       $query .= $dbu->getEntitiesRestrictRequest(' AND ', 'glpi_groups', '',
                                                  $entities_id, true);
 
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
 
       if ($DB->numrows($result) == 0) {
          $group                = new Group();

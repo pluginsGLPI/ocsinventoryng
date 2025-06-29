@@ -4,7 +4,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -31,6 +31,7 @@
 /**
  * Class PluginOcsinventoryngOcsDbClient
  */
+#[AllowDynamicProperties]
 class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 {
 
@@ -90,7 +91,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
                WHERE `hardware`.`ID` = $id $archive ";
 
-        $request = $this->db->query($query);
+        $request = $this->db->doQuery($query);
         while ($meta = $this->db->fetchAssoc($request)) {
             $computers["META"]["ID"]       = $meta["ID"];
             $computers["META"]["CHECKSUM"] = $meta["CHECKSUM"];
@@ -106,7 +107,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         $query   = "SELECT * 
                   FROM `hardware` 
                   WHERE `ID` = $id";
-        $request = $this->db->query($query);
+        $request = $this->db->doQuery($query);
         while ($hardware = $this->db->fetchAssoc($request)) {
             $computers[strtoupper('hardware')] = $hardware;
         }
@@ -114,7 +115,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         foreach ($tables as $table) {
             if ($table == "accountinfo") {
                 $query   = "SELECT * FROM `accountinfo` WHERE `HARDWARE_ID` = $id";
-                $request = $this->db->query($query);
+                $request = $this->db->doQuery($query);
                 while ($accountinfo = $this->db->fetchAssoc($request)) {
                     foreach ($accountinfo as $column => $value) {
                         if (preg_match('/fields_\d+/', $column, $matches)) {
@@ -125,15 +126,15 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                                 $query          = "SELECT `ID`, `NAME` 
                                             FROM `accountinfo_config`
                                            WHERE `ID` = $col";
-                                $requestcolname = $this->db->query($query);
+                                $requestcolname = $this->db->doQuery($query);
                                 $colname        = $this->db->fetchAssoc($requestcolname);
                                 if ($colname['NAME'] != "") {
                                     if (!is_null($value)) {
-                                        $name         = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" . Toolbox::addslashes_deep($value);
+                                        $name         = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" . $value;
                                         $query        = "SELECT `TVALUE`, `NAME` 
                                                 FROM `config` 
                                                 WHERE `NAME` = '" . $name . "'";
-                                        $requestvalue = $this->db->query($query);
+                                        $requestvalue = $this->db->doQuery($query);
                                         $custom_value = $this->db->fetchAssoc($requestvalue);
                                         if (isset($custom_value['TVALUE'])) {
                                                 $accountinfo[$column] = $custom_value['TVALUE'];
@@ -155,7 +156,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                     $query   = "SELECT * 
                           FROM `" . $table . "` 
                           WHERE `HARDWARE_ID` = $id";
-                    $request = $this->db->query($query);
+                    $request = $this->db->doQuery($query);
                     while ($computer = $this->db->fetchAssoc($request)) {
                         if ($table == 'networks') {
                             $computers[strtoupper($table)][] = $computer;
@@ -185,7 +186,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                 WHERE table_schema = '$this->dbname'
                  AND table_type ='BASE TABLE'
                      AND table_name = '$tablename'";
-        $request = $this->db->query($query);
+        $request = $this->db->doQuery($query);
 
         while ($data = $this->db->fetchAssoc($request)) {
             if ($data['TABLE_NAME'] === $tablename) {
@@ -266,7 +267,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                         $query   = "SELECT * 
                               FROM `accountinfo` 
                               WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-                        $request = $this->db->query($query);
+                        $request = $this->db->doQuery($query);
                         while ($accountinfo = $this->db->fetchAssoc($request)) {
                             foreach ($accountinfo as $column => $value) {
                                 if (preg_match('/fields_\d+/', $column, $matches)) {
@@ -277,16 +278,16 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                                          $query          = "SELECT `ID`,`NAME` 
                                                   FROM `accountinfo_config`
                                                   WHERE `ID` = $col";
-                                         $requestcolname = $this->db->query($query);
+                                         $requestcolname = $this->db->doQuery($query);
                                          $colname        = $this->db->fetchAssoc($requestcolname);
                                         if ($colname['NAME'] != "") {
                                             if (!is_null($value)) {
                                                     $name         = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" .
-                                                    Toolbox::addslashes_deep($value);
+                                                    $value;
                                                     $query        = "SELECT `TVALUE`, `NAME`
                                                     FROM `config` 
                                                     WHERE `NAME` = '" . $name . "'";
-                                                    $requestvalue = $this->db->query($query);
+                                                    $requestvalue = $this->db->doQuery($query);
                                                     $custom_value = $this->db->fetchAssoc($requestvalue);
                                                 if (isset($custom_value['TVALUE'])) {
                                                     $accountinfo[$column] = $custom_value['TVALUE'];
@@ -356,7 +357,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                             }
 
                             $query   .= " ORDER BY  `software`.`id` DESC";
-                            $request = $this->db->query($query);
+                            $request = $this->db->doQuery($query);
                             while ($software = $this->db->fetchAssoc($request)) {
                                  $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
                             }
@@ -405,7 +406,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                             }
 
                             $query   .= " ORDER BY  `softwares`.`id` DESC";
-                            $request = $this->db->query($query);
+                            $request = $this->db->doQuery($query);
                             while ($software = $this->db->fetchAssoc($request)) {
                                 $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
                             }
@@ -422,7 +423,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                          FROM `registry`
                          LEFT JOIN `regconfig` ON (`registry`.`NAME` = `regconfig`.`NAME`)
                          WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-                        $request = $this->db->query($query);
+                        $request = $this->db->doQuery($query);
                         while ($reg = $this->db->fetchAssoc($request)) {
                             if ($multi) {
                                 $computers[$reg['HARDWARE_ID']][strtoupper($table)][] = $reg;
@@ -451,7 +452,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                              $query   = "SELECT * 
                              FROM `$table` 
                              WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-                             $request = $this->db->query($query);
+                             $request = $this->db->doQuery($query);
                             while ($plugin = $this->db->fetchAssoc($request)) {
                                 if ($multi) {
                                       $computers[$plugin['HARDWARE_ID']][strtoupper($table)][$plugin['ID']] = $plugin;
@@ -471,7 +472,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                           FROM `hardware`
                           INNER JOIN `accountinfo` ON (`hardware`.`id` = `accountinfo`.`HARDWARE_ID`)
                           WHERE `hardware`.`ID` IN (" . implode(',', $ids) . ") $archive ";
-                    $request = $this->db->query($query);
+                    $request = $this->db->doQuery($query);
                     while ($meta = $this->db->fetchAssoc($request)) {
                         $computers[$meta['ID']]["META"]["ID"]       = $meta["ID"];
                         $computers[$meta['ID']]["META"]["CHECKSUM"] = $meta["CHECKSUM"];
@@ -488,7 +489,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                         $query   = "SELECT * 
                               FROM `" . $table . "` 
                               WHERE `ID` IN (" . implode(',', $ids) . ")";
-                        $request = $this->db->query($query);
+                        $request = $this->db->doQuery($query);
                         while ($hardware = $this->db->fetchAssoc($request)) {
                             if ($multi) {
                                 $computers[$hardware['ID']][strtoupper($table)][] = $hardware;
@@ -504,7 +505,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                              $query   = "SELECT * 
                              FROM `" . $table . "` 
                              WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-                             $request = $this->db->query($query);
+                             $request = $this->db->doQuery($query);
                             while ($computer = $this->db->fetchAssoc($request)) {
                                 if ($multi) {
                                       $computers[$computer['HARDWARE_ID']][strtoupper($table)][] = $computer;
@@ -536,7 +537,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         $query   = "SELECT * 
                   FROM `snmp` 
                   WHERE `ID` IN (" . implode(',', $ids) . ")";
-        $request = $this->db->query($query);
+        $request = $this->db->doQuery($query);
         while ($snmp_request = $this->db->fetchAssoc($request)) {
             $snmp[$snmp_request['ID']]['META'] = $snmp_request;
         }
@@ -545,7 +546,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $query   = "SELECT * 
                       FROM `snmp_printers`
                       WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
+            $request = $this->db->doQuery($query);
             while ($snmp_request = $this->db->fetchAssoc($request)) {
                 $snmp[$snmp_request['SNMP_ID']]['PRINTER'][] = $snmp_request;
             }
@@ -554,7 +555,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $query   = "SELECT * 
                     FROM `snmp_cartridges` 
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
+            $request = $this->db->doQuery($query);
             while ($snmp_request = $this->db->fetchAssoc($request)) {
                 $snmp[$snmp_request['SNMP_ID']]['CARTRIDGES'][] = $snmp_request;
             }
@@ -563,7 +564,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $query   = "SELECT * 
                     FROM `snmp_switchs` 
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
+            $request = $this->db->doQuery($query);
             while ($snmp_request = $this->db->fetchAssoc($request)) {
                 $snmp[$snmp_request['SNMP_ID']]['SWITCH'][] = $snmp_request;
             }
@@ -572,7 +573,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $query   = "SELECT * 
                     FROM `snmp_cards` 
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
+            $request = $this->db->doQuery($query);
             while ($snmp_request = $this->db->fetchAssoc($request)) {
                 $snmp[$snmp_request['SNMP_ID']]['CARDS'][] = $snmp_request;
             }
@@ -581,7 +582,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $query   = "SELECT * 
                     FROM `snmp_powersupplies` 
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
+            $request = $this->db->doQuery($query);
             while ($snmp_request = $this->db->fetchAssoc($request)) {
                 $snmp[$snmp_request['SNMP_ID']]['POWERSUPPLIES'][] = $snmp_request;
             }
@@ -590,7 +591,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $query   = "SELECT * 
                     FROM `snmp_firewalls` 
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
+            $request = $this->db->doQuery($query);
             while ($snmp_request = $this->db->fetchAssoc($request)) {
                 $snmp[$snmp_request['SNMP_ID']]['FIREWALLS'][] = $snmp_request;
             }
@@ -599,7 +600,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $query   = "SELECT * 
                     FROM `snmp_fans` 
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
+            $request = $this->db->doQuery($query);
             while ($snmp_request = $this->db->fetchAssoc($request)) {
                 $snmp[$snmp_request['SNMP_ID']]['FANS'][] = $snmp_request;
             }
@@ -608,7 +609,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $query   = "SELECT * 
                     FROM `snmp_trays` 
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
+            $request = $this->db->doQuery($query);
             while ($snmp_request = $this->db->fetchAssoc($request)) {
                 $snmp[$snmp_request['SNMP_ID']]['TRAYS'][] = $snmp_request;
             }
@@ -617,7 +618,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $query   = "SELECT * 
                     FROM `snmp_memories` 
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
+            $request = $this->db->doQuery($query);
             while ($snmp_request = $this->db->fetchAssoc($request)) {
                 $snmp[$snmp_request['SNMP_ID']]['MEMORIES'][] = $snmp_request;
             }
@@ -626,7 +627,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $query   = "SELECT * 
                     FROM `snmp_cpus` 
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
+            $request = $this->db->doQuery($query);
             while ($snmp_request = $this->db->fetchAssoc($request)) {
                 $snmp[$snmp_request['SNMP_ID']]['CPU'][] = $snmp_request;
             }
@@ -635,7 +636,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $query   = "SELECT * 
                     FROM `snmp_networks` 
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
+            $request = $this->db->doQuery($query);
             while ($snmp_request = $this->db->fetchAssoc($request)) {
                 $snmp[$snmp_request['SNMP_ID']]['NETWORKS'][] = $snmp_request;
             }
@@ -644,7 +645,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $query   = "SELECT * 
                     FROM `snmp_virtualmachines` 
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
+            $request = $this->db->doQuery($query);
             while ($snmp_request = $this->db->fetchAssoc($request)) {
                 $snmp[$snmp_request['SNMP_ID']]['VIRTUALMACHINES'][] = $snmp_request;
             }
@@ -653,7 +654,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $query   = "SELECT * 
                     FROM `snmp_softwares` 
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
+            $request = $this->db->doQuery($query);
             while ($snmp_request = $this->db->fetchAssoc($request)) {
                 $snmp[$snmp_request['SNMP_ID']]['SOFTWARES'][] = $snmp_request;
             }
@@ -662,7 +663,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $query   = "SELECT * 
                     FROM `snmp_drives` 
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
-            $request = $this->db->query($query);
+            $request = $this->db->doQuery($query);
             while ($snmp_request = $this->db->fetchAssoc($request)) {
                 $snmp[$snmp_request['SNMP_ID']]['COMPUTERDISKS'][] = $snmp_request;
             }
@@ -732,7 +733,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     */
     public function updateBios($ssn, $id)
     {
-        $this->db->query("UPDATE `bios` SET `SSN` = '" . $ssn . "'" . " WHERE `HARDWARE_ID` = $id");
+        $this->db->doQuery("UPDATE `bios` SET `SSN` = '" . $ssn . "'" . " WHERE `HARDWARE_ID` = $id");
     }
 
    /**
@@ -744,7 +745,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     */
     public function updateTag($tag, $id)
     {
-        $this->db->query("UPDATE `accountinfo` SET `TAG` = '" . $tag . "' WHERE `HARDWARE_ID` = $id");
+        $this->db->doQuery("UPDATE `accountinfo` SET `TAG` = '" . $tag . "' WHERE `HARDWARE_ID` = $id");
     }
 
    /**
@@ -875,7 +876,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
          "$where_condition
           $max_records $offset";
 
-        $request = $this->db->query($query);
+        $request = $this->db->doQuery($query);
 
         if ($this->db->numrows($request)) {
             $result = $this->db->fetchAssoc($request);
@@ -1037,10 +1038,10 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             "WHERE `hardware`.`DEVICEID` NOT LIKE '\\_%' $archive " .
             "$where_condition";
         }
-        $request = $this->db->query($query);
+        $request = $this->db->doQuery($query);
 
         if ($count_query) {
-            $count_request        = $this->db->query($count_query);
+            $count_request        = $this->db->doQuery($count_query);
             $count_request_result = $this->db->fetchAssoc($count_request);
             $count                = $count_request_result['total'];
         } else {
@@ -1094,7 +1095,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     {
         $res    = false;
         $query  = "SELECT `IVALUE`, `TVALUE` FROM `config` WHERE `NAME` = '" . $this->db->escape($key) . "'";
-        $config = $this->db->query($query);
+        $config = $this->db->doQuery($query);
         if ($config->num_rows > 0) {
             while ($conf = $this->db->fetchAssoc($config)) {
                 $res = $conf;
@@ -1116,7 +1117,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         $query = "UPDATE `config` 
                 SET `IVALUE` = '" . $ivalue . "', `TVALUE` = '" . $this->db->escape($tvalue) . "' 
                 WHERE `NAME` = '" . $this->db->escape($key) . "'";
-        $this->db->query($query);
+        $this->db->doQuery($query);
     }
 
    /**
@@ -1129,7 +1130,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     public function setChecksum($checksum, $id)
     {
         $query = "UPDATE `hardware` SET `CHECKSUM` = $checksum WHERE `ID` = $id";
-        $this->db->query($query);
+        $this->db->doQuery($query);
     }
 
    /**
@@ -1142,7 +1143,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     public function getChecksum($id)
     {
         $query    = "SELECT `CHECKSUM` FROM `hardware` WHERE `ID` = $id";
-        $checksum = $this->db->query($query);
+        $checksum = $this->db->doQuery($query);
         $res      = $this->db->fetchAssoc($checksum);
         return isset($res["CHECKSUM"]) ? $res["CHECKSUM"] : 0;
     }
@@ -1182,7 +1183,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         $query .= " ORDER BY `hardware`.`LASTDATE` ASC
                   LIMIT " . intval($cfg_ocs["cron_sync_number"]);
 
-        $res  = $this->db->query($query);
+        $res  = $this->db->doQuery($query);
         $data = [];
 
         if ($res->num_rows > 0) {
@@ -1200,7 +1201,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     {
         $query = "SELECT `ID`, `DEVICEID`
                     FROM `hardware`";
-        $res   = $this->db->query($query);
+        $res   = $this->db->doQuery($query);
         $data  = [];
 
         if ($res->num_rows > 0) {
@@ -1221,7 +1222,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         $query = "SELECT `ID`
                     FROM `hardware`
                     WHERE `ID` = $id";
-        $res   = $this->db->query($query);
+        $res   = $this->db->doQuery($query);
 
         if ($res->num_rows > 0) {
             return true;
@@ -1243,7 +1244,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                      WHERE ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) 
                      AND ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY)) 
                      AND `deviceid` <> '_SYSTEMGROUP_' AND `deviceid` <> '_DOWNLOADGROUP_'";
-        $res   = $this->db->query($query);
+        $res   = $this->db->doQuery($query);
         $data  = [];
 
         if ($res->num_rows > 0) {
@@ -1270,7 +1271,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                       FROM `hardware` 
                       WHERE `id` = $agent";
 
-                $res = $this->db->query($query);
+                $res = $this->db->doQuery($query);
 
                 if ($res->num_rows > 0) {
                     while ($num = $this->db->fetchAssoc($res)) {
@@ -1319,19 +1320,19 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                                 foreach ($tables as $table) {
                                     if (self::OcsTableExists($table)) {
                                         $sql = "DELETE FROM `$table` WHERE `HARDWARE_ID` = $agent";
-                                        $this->db->query($sql);
+                                        $this->db->doQuery($sql);
                                     }
                                 }
                             }
                             $sql = "DELETE FROM `download_enable` WHERE `SERVER_ID` = $agent";
-                            $this->db->query($sql);
+                            $this->db->doQuery($sql);
 
                             $sql = "DELETE FROM `hardware` WHERE `id` = $agent";
-                            $this->db->query($sql);
+                            $this->db->doQuery($sql);
 
                           //Deleted computers tracking
                             $sql = "INSERT INTO `deleted_equiv` (`DELETED`,`EQUIVALENT`) VALUES('$did','NULL')";
-                            $this->db->query($sql);
+                            $this->db->doQuery($sql);
                             $i++;
                         }
                     }
@@ -1348,7 +1349,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     {
 
         $query       = "SELECT COUNT(*) FROM `deleted_equiv`";
-        $total_count = $this->db->query($query);
+        $total_count = $this->db->doQuery($query);
         $total       = $this->db->fetchRow($total_count);
 
         return intval($total['0']);
@@ -1362,7 +1363,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
 
        //      if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
         $query                                  = "SELECT COUNT(*) FROM `deleted_equiv`";
-        $total_count                            = $this->db->query($query);
+        $total_count                            = $this->db->doQuery($query);
         $total                                  = $this->db->fetchRow($total_count);
         $_SESSION["ocs_deleted_equiv"]["total"] = intval($total['0']);
        //      }
@@ -1370,7 +1371,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
         $query   = "SELECT `DATE`,`DELETED`,`EQUIVALENT` 
                   FROM `deleted_equiv` ORDER BY `DATE`,`EQUIVALENT` 
                   LIMIT 300";
-        $deleted = $this->db->query($query);
+        $deleted = $this->db->doQuery($query);
         while ($del = $this->db->fetchAssoc($deleted)) {
             $computers[] = $del;
         }
@@ -1415,7 +1416,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $equiv_clean = "AND `EQUIVALENT` = '" . $this->db->escape($equivclean) . "'";
         }
         $query  .= $equiv_clean;
-        $delete = $this->db->query($query);
+        $delete = $this->db->doQuery($query);
         $res    = $delete;
         return $res;
     }
@@ -1433,7 +1434,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
     {
         if ($table == 'accountinfo') {
             $query   = "SHOW COLUMNS FROM `$table`";
-            $columns = $this->db->query($query);
+            $columns = $this->db->doQuery($query);
             while ($column = $this->db->fetchAssoc($columns)) {
                 $res[$column['Field']] = $column['Field'];
             }
@@ -1540,7 +1541,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
                         WHERE `snmp`.`SNMPDEVICEID` NOT LIKE '\\_%'
                         AND `snmp`.`ID` = `snmp_accountinfo`.`SNMP_ID` ";
         $query   .= $where_condition;
-        $request = $this->db->query($query);
+        $request = $this->db->doQuery($query);
 
         if ($this->db->numrows($request)) {
             $count   = $this->db->numrows($request);
@@ -1551,7 +1552,7 @@ class PluginOcsinventoryngOcsDbClient extends PluginOcsinventoryngOcsClient
             $query   .= $where_condition;
             $query   .= "ORDER BY $order
                      $max_records  $offset";
-            $request = $this->db->query($query);
+            $request = $this->db->doQuery($query);
             $this->getAccountInfoColumns();
             while ($snmpid = $this->db->fetchAssoc($request)) {
                 $snmpids[] = $snmpid['ID'];

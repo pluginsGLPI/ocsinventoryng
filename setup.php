@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
 -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
 -------------------------------------------------------------------------
@@ -27,6 +27,10 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
+use Glpi\Plugin\Hooks;
+
+Global $CFG_GLPI;
+
 define("PLUGIN_OCSINVENTORYNG_STATE_STARTED", 1);
 define("PLUGIN_OCSINVENTORYNG_STATE_RUNNING", 2);
 define("PLUGIN_OCSINVENTORYNG_STATE_FINISHED", 3);
@@ -37,8 +41,8 @@ define('PLUGIN_OCS_VERSION', '2.0.5');
 if (!defined("PLUGIN_OCS_DIR")) {
     define("PLUGIN_OCS_DIR", Plugin::getPhpDir("ocsinventoryng"));
     define("PLUGIN_OCS_NOTFULL_DIR", Plugin::getPhpDir("ocsinventoryng", false));
-    define("PLUGIN_OCS_WEBDIR", Plugin::getWebDir("ocsinventoryng"));
-    define("PLUGIN_OCS_NOTFULL_WEBDIR", Plugin::getWebDir("ocsinventoryng", false));
+    $root = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng';
+    define("PLUGIN_OCS_WEBDIR", $root);
 }
 
 
@@ -137,7 +141,8 @@ function plugin_init_ocsinventoryng()
         );
 
         if (class_exists('PluginOcsinventoryngTeamviewer')) {
-            Link::registerTag(PluginOcsinventoryngTeamviewer::$tags);
+            //TODO v11
+//            Link::registerTag(PluginOcsinventoryngTeamviewer::$tags);
         }
     }
 
@@ -202,7 +207,7 @@ function plugin_init_ocsinventoryng()
     // Css file
     if (isset($_SESSION['glpiactiveprofile']['interface'])
         && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
-        $PLUGIN_HOOKS['add_css']['ocsinventoryng'] = 'css/ocsinventoryng.css';
+        $PLUGIN_HOOKS[Hooks::ADD_CSS]['ocsinventoryng'] = 'css/ocsinventoryng.css';
     }
     if (Session::getLoginUserID()) {
         $ocsserver = new PluginOcsinventoryngOcsServer();
@@ -258,8 +263,8 @@ function plugin_version_ocsinventoryng()
             'homepage'     => 'https://github.com/pluginsGLPI/ocsinventoryng',
             'requirements' => [
                'glpi' => [
-                  'min' => '10.0',
-                  'max' => '11.0',
+                  'min' => '11.0',
+                  'max' => '12.0',
                   'dev' => false
                ]
             ]

@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -36,6 +36,8 @@ Session::checkLoginUser();
 $plugin_ocsinventoryng_ocsservers_id = $_POST["plugin_ocsinventoryng_ocsservers_id"];
 
 $hardware["data"] = [];
+
+global $DB;
 
 if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
@@ -102,7 +104,7 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                            ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` DESC,
                                     `last_update`,
                                     `name`";
-            $result_glpi = $DB->query($query_glpi);
+            $result_glpi = $DB->doQuery($query_glpi);
             if ($DB->numrows($result_glpi) > 0) {
                while ($data = $DB->fetchAssoc($result_glpi)) {
                   if (strtotime($computer['META']["LASTDATE"]) > strtotime($data["last_update"])) {

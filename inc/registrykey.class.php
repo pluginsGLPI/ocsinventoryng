@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -75,7 +75,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
       $reg = new self();
       //update data
       foreach ($ocsComputer as $registry) {
-         $registry              = Glpi\Toolbox\Sanitizer::sanitize($registry);
+
          $input                 = [];
          $input["computers_id"] = $computers_id;
          $input["hive"]         = $registry["regtree"];
@@ -125,7 +125,7 @@ class PluginOcsinventoryngRegistryKey extends CommonDBTM {
                 FROM `glpi_plugin_ocsinventoryng_registrykeys`
                 WHERE `computers_id` = $ID";
 
-      if ($result = $DB->query($query)) {
+      if ($result = $DB->doQuery($query)) {
          if ($DB->numrows($result) != 0) {
             echo "<div class='center'><table class='tab_cadre_fixe'>";
             echo "<tr><th colspan='4'>" . sprintf(_n('%d registry key found',

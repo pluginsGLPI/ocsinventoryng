@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -49,7 +49,7 @@ if ($argv) {
    }
 }
 
-include('../../../inc/includes.php');
+
 
 $CFG_GLPI["debug"] = 0;
 
@@ -77,7 +77,7 @@ $sql = "SELECT *
         FROM `hardware`
         ORDER BY `ID` DESC
         LIMIT 0,1";
-$res = $DBocs->query($sql);
+$res = $DBocs->doQuery($sql);
 
 if (!($res && $DBocs->numrows($res) > 0)) {
    die("No data from OCS\n");
@@ -98,7 +98,7 @@ $sql = "SELECT *
               AND `itemtype` = 1
               AND `linked_action` IN (8,10,11)
         ORDER BY `id` DESC";
-$res = $DB->query($sql);
+$res = $DB->doQuery($sql);
 if (!$res) {
    die("No data from GLPI\n");
 }
@@ -133,7 +133,7 @@ while ($event = $DB->fetchArray($res)) {
          $sql = "SELECT `DEVICEID`
                  FROM `hardware`
                  WHERE `ID` = '" . $event["old_value"] . "'";
-         $resocs = $DBocs->query($sql);
+         $resocs = $DBocs->doQuery($sql);
 
          $olddevid = "";
          if ($hard = $DBocs->fetchArray($resocs)) {
@@ -155,7 +155,7 @@ while ($event = $DB->fetchArray($res)) {
          }
 
          if ($run) {
-            $resupd = $DB->query($sql);
+            $resupd = $DB->doQuery($sql);
             if ($res) {
                $nbupd += $DB->affectedRows();
 
@@ -194,7 +194,7 @@ while ($event = $DB->fetchArray($res)) {
             $comp->update($input);
 
             // Unlink the computer
-            $resupd = $DB->query($sql);
+            $resupd = $DB->doQuery($sql);
             if ($res) {
                $nbupd += $DB->affectedRows();
 

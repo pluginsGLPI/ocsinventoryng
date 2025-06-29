@@ -2,7 +2,7 @@
 /*
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -48,7 +48,7 @@ class PluginOcsinventoryngNotificationState extends CommonDBTM {
       $query = "SELECT *
                  FROM `" . $this->getTable() . "`
                  ORDER BY `states_id` ASC ";
-      if ($result = $DB->query($query)) {
+      if ($result = $DB->doQuery($query)) {
          $number = $DB->numrows($result);
          if ($number != 0) {
 

@@ -1,9 +1,10 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -27,7 +28,6 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -40,12 +40,14 @@ $advancedlink                        = $_POST["linkmode"];
 
 $hardware["data"] = [];
 
+global $DB;
+
 if ($plugin_ocsinventoryng_ocsservers_id > 0) {
     // Get all links between glpi and OCS
     $query_glpi     = "SELECT ocsid
                      FROM `glpi_plugin_ocsinventoryng_ocslinks`
                      WHERE `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
-    $result_glpi    = $DB->query($query_glpi);
+    $result_glpi    = $DB->doQuery($query_glpi);
     $already_linked = [];
     if ($DB->numrows($result_glpi) > 0) {
         while ($data = $DB->fetchArray($result_glpi)) {
@@ -56,14 +58,14 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
     $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
     $computerOptions = ['COMPLETE' => '0',
-                        'FILTER'   => [
-                            'EXCLUDE_IDS' => $already_linked
-                        ],
-                        'DISPLAY'  => [
-                            'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
-                                          | PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
-                                          | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS
-                        ],
+        'FILTER'   => [
+            'EXCLUDE_IDS' => $already_linked,
+        ],
+        'DISPLAY'  => [
+            'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
+                          | PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
+                          | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS,
+        ],
     ];
 
     if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
@@ -84,7 +86,7 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
     $ocsResult                      = $ocsClient->getComputers($computerOptions);
 
-    $computers = (isset($ocsResult['COMPUTERS']) ? $ocsResult['COMPUTERS'] : []);
+    $computers = ($ocsResult['COMPUTERS'] ?? []);
 
     if (isset($computers)) {
         if (count($computers)) {
@@ -92,7 +94,7 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
             foreach ($computers as $data) {
                 $computerinput = [];
-                $data          = Glpi\Toolbox\Sanitizer::sanitize($data);
+
                 $id            = $data['META']['ID'];
                 $input         = [
                     'itemtype'    => "Computer",
@@ -169,14 +171,14 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                 }
 
                 $valTip = "&nbsp;" . Html::showToolTip(
-                        $msg,
-                        [
-                            'awesome-class' => 'fa-comments',
-                            'display'       => false,
-                            'autoclose'     => false,
-                            'onclick'       => true
-                        ]
-                    );
+                    $msg,
+                    [
+                        'awesome-class' => 'fa-comments',
+                        'display'       => false,
+                        'autoclose'     => false,
+                        'onclick'       => true,
+                    ]
+                );
 
                 $toimport_disable_unicity_check = "";
                 $rule_matched                   = "";
@@ -192,7 +194,7 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
                     $values = [];
 
-                    $recursive = isset($data["is_recursive"]) ? $data["is_recursive"] : 0;
+                    $recursive = $data["is_recursive"] ?? 0;
 
                     $computerinput           = $input;
                     $computerinput['ip']     = $opt['IPADDRESS'];
@@ -209,8 +211,8 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
                     $datar = $rule->processAllRules(
                         $computerinput + ['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                                          '_source'       => 'ocsinventoryng',
-                                          'is_recursive'  => $recursive,
+                            '_source'       => 'ocsinventoryng',
+                            'is_recursive'  => $recursive,
                         ],
                         ['is_recursive' => $recursive],
                         ['ocsid' => $id, 'return' => true]
@@ -228,9 +230,9 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                     }
                     $ent               = "toimport_entities[" . $id . "]";
                     $toimport_entities = Entity::dropdown(['name'     => $ent,
-                                                           'value'    => $datar['entities_id'],
-                                                           'comments' => 0,
-                                                           'display'  => false]);
+                        'value'    => $datar['entities_id'],
+                        'comments' => 0,
+                        'display'  => false]);
 
                     if (!isset($datar['is_recursive'])) {
                         $datar['is_recursive'] = 0;
@@ -242,11 +244,11 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                 if ($advancedlink) {
                     $rulelink         = new RuleImportAssetCollection();
                     $params           = ['entities_id'                         => $entities_id,
-                                         'itemtype'                            => 'Computer',
-                                         'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                                         'ocsid'                               => $id,
-                                         'return'                              => true];
-                    $rulelink_results = $rulelink->processAllRules(Toolbox::stripslashes_deep($input), [], $params);
+                        'itemtype'                            => 'Computer',
+                        'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                        'ocsid'                               => $id,
+                        'return'                              => true];
+                    $rulelink_results = $rulelink->processAllRules($input, [], $params);
                     $options          = ['name' => "tolink[" . $id . "]"];
 
                     if (isset($rulelink_results['found_inventories'][0])
@@ -262,7 +264,7 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                     //                     $query  = "SELECT *
                     //                            FROM `glpi_plugin_ocsinventoryng_ocslinks`
                     //                            WHERE `computers_id` = '" . $options['value'] . "' ";
-                    //                     $result = $DB->query($query);
+                    //                     $result = $DB->doQuery($query);
                     //                     if ($DB->numrows($result) > 0) {
                     //                        $ko = 1;
                     //                     }
@@ -286,7 +288,7 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                     'rule_matched'                   => $rule_matched,
                     'toimport_entities'              => $toimport_entities,
                     'toimport_recursive'             => $toimport_recursive,
-                    'computers_id_founded'           => $computers_id_founded
+                    'computers_id_founded'           => $computers_id_founded,
                 ];
             }
         }

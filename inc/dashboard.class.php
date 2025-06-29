@@ -4,7 +4,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -112,7 +112,7 @@ class PluginOcsinventoryngDashboard extends PluginMydashboardHtml
 
                 //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
                 $query        .= " GROUP BY periodsync_name ORDER BY periodsync ASC";
-                $result       = $DB->query($query);
+                $result       = $DB->doQuery($query);
                 $nb           = $DB->numrows($result);
 
                 $nbcomputers     = __('Computers number', 'ocsinventoryng');
@@ -195,7 +195,7 @@ class PluginOcsinventoryngDashboard extends PluginMydashboardHtml
                 //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
                 $query .= " AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` = 1) )";
 
-                $result = $DB->query($query);
+                $result = $DB->doQuery($query);
                 $nb     = $DB->numrows($result);
 
                 if ($nb) {
@@ -219,7 +219,7 @@ class PluginOcsinventoryngDashboard extends PluginMydashboardHtml
                     //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
                     $query .= " AND ( `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` NOT LIKE '' )";
 
-                    $result = $DB->query($query);
+                    $result = $DB->doQuery($query);
                     $nb     = $DB->numrows($result);
 
                     if ($nb) {
@@ -257,7 +257,7 @@ class PluginOcsinventoryngDashboard extends PluginMydashboardHtml
                     $query .= " AND (`glpi_plugin_ocsinventoryng_ocslinks`.`last_update` LIKE '' 
                OR `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` IS NULL) ";
                 }
-                $result = $DB->query($query);
+                $result = $DB->doQuery($query);
                 $nb     = $DB->numrows($result);
 
                 if ($nb) {

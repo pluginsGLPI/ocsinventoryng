@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -53,7 +53,7 @@ $USEDBREPLICATE        = 0;
 $DBCONNECTION_REQUIRED = 1;
 
 // MASS IMPORT for OCSNG
-include('../../../inc/includes.php');
+
 
 $_SESSION["glpicronuserrunning"] = $_SESSION["glpiname"] = 'ocsinventoryng';
 // Check PHP Version - sometime (debian) cli version != module version
@@ -105,7 +105,7 @@ if (isset($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
                 FROM `glpi_plugin_ocsinventoryng_ocsservers`
                 WHERE `is_active`
                   AND `use_massimport`";
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
 
         echo "=====================================================\n";
         while ($ocsservers = $DB->fetchArray($result)) {
@@ -173,7 +173,7 @@ if (isset($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
                 FROM `glpi_plugin_ocsinventoryng_ocsservers`
                 WHERE `is_active`
                   AND `use_massimport`";
-        $res   = $DB->query($query);
+        $res   = $DB->doQuery($query);
 
         while ($ocsservers = $DB->fetchArray($res)) {
             $result = SecondPass($tid, $ocsservers["id"], $thread_nbr, $threadid, $fields, $config);
@@ -231,7 +231,7 @@ function FirstPass($ocsservers_id)
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `plugin_ocsinventoryng_ocsservers_id` = '$ocsservers_id'";
             $max_date = "0000-00-00 00:00:00";
-            if ($result = $DB->query($query)) {
+            if ($result = $DB->doQuery($query)) {
                 if ($DB->numrows($result) > 0) {
                     if ($DB->result($result, 0, 0) != '') {
                         $max_date = $DB->result($result, 0, 0);
@@ -415,7 +415,7 @@ function plugin_ocsinventoryng_importFromOcsServer(
                            ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` DESC,
                                     `last_update`,
                                     `name`";
-            $result_glpi = $DB->query($query_glpi);
+            $result_glpi = $DB->doQuery($query_glpi);
             if ($DB->numrows($result_glpi) > 0) {
                 while ($data = $DB->fetchAssoc($result_glpi)) {
                     if (strtotime($computer['META']["LASTDATE"]) > strtotime($data["last_update"])) {
@@ -484,7 +484,7 @@ function plugin_ocsinventoryng_importFromOcsServer(
                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
                 WHERE `plugin_ocsinventoryng_ocsservers_id` = '$ocsServerId'";
     $max_date = "0000-00-00 00:00:00";
-    if ($result = $DB->query($query)) {
+    if ($result = $DB->doQuery($query)) {
         if ($DB->numrows($result) > 0) {
             if ($DB->result($result, 0, 0) != '') {
                 $max_date = $DB->result($result, 0, 0);

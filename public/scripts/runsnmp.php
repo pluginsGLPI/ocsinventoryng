@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -95,9 +95,13 @@ function exit_if_already_running($pidfile)
    $pid = intval(file_get_contents($pidfile));
 
    # No pid, probably no daemon present
-   if (!$pid || @pcntl_getpriority($pid) === false) {
+   if (!$pid
+//      || @pcntl_getpriority($pid) === false
+   ) {
+      echo "Script already running : script can't run !\n";
       return 1;
    }
+
    exit (1);
 }
 
@@ -128,7 +132,7 @@ ini_set("max_execution_time", "0");
 
 chdir(dirname($_SERVER["argv"][0]));
 define("GLPI_ROOT", realpath(dirname($_SERVER["argv"][0]) . "/../../.."));
-require GLPI_ROOT . "/inc/based_config.php";
+require GLPI_ROOT . "/config/based_config.php";
 
 $processid = date("zHi");
 $server_id = "";
@@ -136,15 +140,15 @@ $thread_nbr = 2;
 
 if (function_exists("sys_get_temp_dir")) {
    # PHP > 5.2.x
-   $pidfile = sys_get_temp_dir() . "/ocsng_fullsync.pid";
+   $pidfile = sys_get_temp_dir() . "/ocsng_snmpfullsync.pid";
 } else if (DIRECTORY_SEPARATOR == '/') {
    # Unix/Linux
-   $pidfile = "/tmp/ocsng_fullsync.pid";
+   $pidfile = "/tmp/ocsng_snmpfullsync.pid";
 } else {
    # Windows
-   $pidfile = GLPI_LOG_DIR . "/ocsng_fullsync.pid";
+   $pidfile = GLPI_LOG_DIR . "/ocsng_snmpfullsync.pid";
 }
-$logfilename = GLPI_LOG_DIR . "/ocsng_fullsync.log";
+$logfilename = GLPI_LOG_DIR . "/ocsng_snmpfullsync.log";
 
 if (!is_writable(GLPI_LOCK_DIR)) {
    echo "\tERROR : " . GLPI_LOCK_DIR . " not writable\n";
@@ -163,7 +167,7 @@ file_put_contents($pidfile, getmypid());
 
 fwrite($log, date("r") . " " . $_SERVER["argv"][0] . " started\n");
 
-$cmd = PHP_BINARY." -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --managedeleted=1";
+$cmd = "php -q -d -f ocsng_snmpfullsync.php --ocs_server_id=$server_id";
 $out = array();
 $ret = 0;
 exec($cmd, $out, $ret);
@@ -182,7 +186,7 @@ if (function_exists("pcntl_fork")) {
          fwrite($log, "$pid Started\n");
          $pids[$pid] = 1;
       } else {
-         $cmd = PHP_BINARY." -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --thread_nbr=$thread_nbr " .
+         $cmd = "php -q -d -f ocsng_snmpfullsync.php --ocs_server_id=$server_id --thread_nbr=$thread_nbr " .
             " --thread_id=$i --process_id=$processid";
          $out = array();
          exec($cmd, $out, $ret);
@@ -205,13 +209,13 @@ if (function_exists("pcntl_fork")) {
    }
 } else {
    # Windows - No fork, so Only one process :(
-   $cmd = PHP_BINARY." -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --thread_nbr=1 --thread_id=1 " .
+   $cmd = "php -q -d -f ocsng_snmpfullsync.php --ocs_server_id=$server_id " .
       "--process_id=$processid";
-   $out = array();
-   exec($cmd, $out, $ret);
-   foreach ($out as $line) {
-      fwrite($log, $line . "\n");
-   }
+//   $out = array();
+//   exec($cmd, $out, $ret);
+//   foreach ($out as $line) {
+//      fwrite($log, $line . "\n");
+//   }
 }
 
 cleanup($pidfile);

@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -51,7 +51,7 @@ $USEDBREPLICATE = 0;
 $DBCONNECTION_REQUIRED = 1;
 
 // MASS IMPORT for OCSNG
-include('../../../inc/includes.php');
+
 
 $_SESSION["glpicronuserrunning"] = $_SESSION["glpiname"] = 'ocsinventoryng';
 // Check PHP Version - sometime (debian) cli version != module version
@@ -136,7 +136,7 @@ if ($ocsservers_id != -1) {
                 FROM `glpi_plugin_ocsinventoryng_ocsservers`
                 WHERE `is_active`
                   AND `use_massimport`";
-   $res = $DB->query($query);
+   $res = $DB->doQuery($query);
 
    while ($ocsservers = $DB->fetchArray($res)) {
       $result = launchSync($tid, $ocsservers["id"], $thread_nbr, $threadid, $fields, $config);
@@ -227,7 +227,7 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
                                FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
                                WHERE `glpi_plugin_ocsinventoryng_snmpocslinks`.`plugin_ocsinventoryng_ocsservers_id`
                                             = '$ocsServerId'";
-   $already_linked_result = $DB->query($already_linked_query);
+   $already_linked_result = $DB->doQuery($already_linked_query);
    $already_linked_ocs_ids = array();
 
    if ($DB->numrows($already_linked_result) > 0) {
@@ -255,7 +255,7 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
                 FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
                 WHERE `ocs_id` = '$ID'";
 
-      if ($result = $DB->query($query)) {
+      if ($result = $DB->doQuery($query)) {
          if ($DB->numrows($result) > 0) {
             if ($DB->result($result, 0, 0) != '') {
                $last_update = $DB->result($result, 0, 0);
@@ -276,7 +276,7 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
       $query = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`id`
                                   FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
                                   WHERE `ocs_id` IN (" . implode(",", $already_linked_ocs_ids) . ")";
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
 
 
       if ($DB->numrows($result) > 0) {

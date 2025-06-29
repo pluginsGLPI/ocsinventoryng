@@ -1,6 +1,6 @@
 <?php
 
-include('../../../inc/includes.php');
+
 
 $plug = new Plugin;
 

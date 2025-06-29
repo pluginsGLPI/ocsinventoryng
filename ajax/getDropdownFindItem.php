@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -27,8 +27,6 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
-
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -39,15 +37,17 @@ global $CFG_GLPI;
 if (!isset($_POST) || empty($_POST)) {
    $_POST = $_GET;
 }
+use Glpi\Exception\Http\NotFoundHttpException;
+
 // Security
 if (!$DB->tableExists($_POST['table'])) {
-   exit();
+    throw new \Glpi\Exception\Http\NotFoundHttpException();
 }
 
 $itemtypeisplugin = isPluginItemType($_POST['itemtype']);
 $dbu = new DbUtils();
 if (!$item = $dbu->getItemForItemtype($_POST['itemtype'])) {
-   exit;
+    throw new \Glpi\Exception\Http\NotFoundHttpException();
 }
 
 if ($item->isEntityAssign()) {
@@ -110,7 +110,7 @@ $query = "SELECT *
           $where
           ORDER BY `name`
           $LIMIT";
-$result = $DB->query($query);
+$result = $DB->doQuery($query);
 
 $datas = [];
 

@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
- Copyright (C) 2015-2022 by the ocsinventoryng Development Team.
+ Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
 
  https://github.com/pluginsGLPI/ocsinventoryng
  -------------------------------------------------------------------------
@@ -130,7 +130,7 @@ class PluginOcsinventoryngOS extends CommonDBChild {
             $install_history = 1;
          }
 
-         $hardware = Glpi\Toolbox\Sanitizer::sanitize($options['HARDWARE']);
+         $hardware = $options['HARDWARE'];
 
          $updates        = 0;
          $license_number = null;
