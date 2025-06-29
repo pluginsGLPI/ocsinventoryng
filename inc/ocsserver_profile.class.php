@@ -35,7 +35,6 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginOcsinventoryngOcsserver_Profile extends CommonDBTM {
 
-
    static $rightname = "profile";
 
 }

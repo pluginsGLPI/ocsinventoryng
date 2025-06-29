@@ -33,14 +33,10 @@ if (!defined('GLPI_ROOT')) {
 }
 
 /**
- * Class PluginOcsinventoryngRunningprocess
+ * Class PluginOcsinventoryngCustomapp
  */
-class PluginOcsinventoryngRunningprocess extends CommonDBChild
+class PluginOcsinventoryngCustomapp
 {
-    // From CommonDBChild
-    public static $itemtype = 'Computer';
-    public static $items_id = 'computers_id';
-
     public static $rightname = "plugin_ocsinventoryng";
 
     /**
@@ -50,20 +46,20 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild
      */
     public static function getTypeName($nb = 0)
     {
-        return __('Running Process', 'ocsinventoryng');
+        return __('Customapp', 'ocsinventoryng');
     }
 
     /**
-     * Update config of the Runningprocess
+     * Update config of the Customapps
      *
-     * This function erase old data and import the new ones about Runningprocess
+     * This function erase old data and import the new ones about Customapp
      *
      * @param $computers_id integer : glpi computer id.
      * @param $ocsComputer
      * @param $history_plugins boolean
      * @param $force
      */
-    public static function updateRunningprocess($computers_id, $ocsComputer, $cfg_ocs, $force)
+    public static function updateCustomapp($computers_id, $ocsComputer, $cfg_ocs, $force)
     {
 
         $uninstall_history = 0;
@@ -76,30 +72,33 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild
         }
 
         if ($force) {
-            self::resetRunningProcess($computers_id, $uninstall_history);
+            self::resetCustomapp($computers_id, $uninstall_history);
         }
-        $Runningprocess = new self();
-
+        $customapps = new self();
         //update data
-        foreach ($ocsComputer as $process) {
-            $input                 = array_change_key_case($process, CASE_LOWER);
+        foreach ($ocsComputer as $customapp) {
+            $input                 = [];
             $input["computers_id"] = $computers_id;
-            $Runningprocess->add($input, ['disable_unicity_check' => true], $install_history);
+            if (!empty($customapp) && isset($customapp["PATH"])) {
+                $input["path"]        = $customapp["PATH"];
+                $input["text"]        = ($customapp["TEXT"] ?? '');
+
+                $customapps->add($input, ['disable_unicity_check' => true], $install_history);
+            }
         }
     }
 
     /**
-     * Delete old Runningprocess entries
+     * Delete old Customapp entries
      *
      * @param $glpi_computers_id integer : glpi computer id.
      * @param $uninstall_history boolean
-     *
      */
-    public static function resetRunningProcess($glpi_computers_id, $uninstall_history)
+    public static function resetCustomapp($glpi_computers_id, $uninstall_history)
     {
 
-        $runningprocess = new self();
-        $runningprocess->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $uninstall_history);
+        $customapp = new self();
+        $customapp->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $uninstall_history);
     }
 
     /**
@@ -121,12 +120,12 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild
             // can exists for template
             if (($item->getType() == 'Computer')
              && Computer::canView()
-             && $cfg_ocs["import_runningprocess"]) {
+             && $cfg_ocs["import_customapp"]) {
                 $nb = 0;
                 if ($_SESSION['glpishow_count_on_tabs']) {
                     $dbu = new DbUtils();
                     $nb = $dbu->countElementsInTable(
-                        'glpi_plugin_ocsinventoryng_runningprocesses',
+                        'glpi_plugin_ocsinventoryng_customapps',
                         ["computers_id" => $item->getID()]
                     );
                 }
@@ -170,6 +169,7 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild
      *
      * @return bool
 */
+    // TODO
     public static function showForComputer(Computer $comp, $withtemplate = '')
     {
         global $DB;
@@ -184,22 +184,19 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild
         echo "<div class='spaced center'>";
 
         if ($result = $DB->request([
-            'FROM' => 'glpi_plugin_ocsinventoryng_osinstalls',
+            'FROM' => 'glpi_plugin_ocsinventoryng_customapps',
             'WHERE' => ['computers_id' => $ID],
-            'ORDER' => 'processname',
+            'ORDER' => 'path',
         ])) {
+
             echo "<table class='tab_cadre_fixehov'>";
-            echo "<tr class='noHover'><th colspan='7'>" . self::getTypeName($result->numrows()) .
+            $colspan = 5;
+            echo "<tr class='noHover'><th colspan='$colspan'>" . self::getTypeName($result->numrows()) .
               "</th></tr>";
 
             if ($result->numrows() != 0) {
-                $header = "<tr><th>" . __('Process name', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Process ID', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('User') . "</th>";
-                $header .= "<th>" . sprintf(__('%1$s (%2$s)'), __('Process memory', 'ocsinventoryng'), __('Mio')) . "</th>";
-                $header .= "<th>" . __('Command line', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Description') . "</th>";
-                $header .= "<th>" . __('Company', 'ocsinventoryng') . "</th>";
+                $header = "<tr><th>" . __('Path') . "</th>";
+                $header .= "<th>" . __('Text') . "</th>";
                 $header .= "</tr>";
                 echo $header;
 
@@ -216,19 +213,15 @@ class PluginOcsinventoryngRunningprocess extends CommonDBChild
 
                 foreach ($result as $data) {
                     echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . $data['processname'] . "</td>";
-                    echo "<td>" . $data['processid'] . "</td>";
-                    echo "<td>" . $data['username'] . "</td>";
-                    echo "<td>" . $data['processmemory'] . "</td>";
-                    echo "<td>" . $data['commandline'] . "</td>";
-                    echo "<td>" . $data['description'] . "</td>";
-                    echo "<td>" . $data['company'] . "</td>";
+                    echo "<td>" . $data['path'] . "</td>";
+                    echo "<td>" . $data['text'] . "</td>";
+
                     echo "</tr>";
                     Session::addToNavigateListItems(__CLASS__, $data['id']);
                 }
                 echo $header;
             } else {
-                echo "<tr class='tab_bg_2'><th colspan='7'>" . __('No item found') . "</th></tr>";
+                echo "<tr class='tab_bg_2'><th colspan='$colspan'>" . __('No results found') . "</th></tr>";
             }
 
             echo "</table>";

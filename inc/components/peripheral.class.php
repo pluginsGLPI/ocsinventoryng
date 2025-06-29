@@ -36,14 +36,9 @@ if (!defined('GLPI_ROOT')) {
  * Class PluginOcsinventoryngPeripheral
  */
 use Glpi\Asset\Asset_PeripheralAsset;
-class PluginOcsinventoryngPeripheral extends CommonDBChild
+class PluginOcsinventoryngPeripheral
 {
-    // From CommonDBChild
-    public static $itemtype = 'Computer';
-    public static $items_id = 'computers_id';
-
     public static $rightname = "plugin_ocsinventoryng";
-
 
     /**
      *

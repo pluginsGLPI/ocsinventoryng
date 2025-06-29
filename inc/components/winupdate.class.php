@@ -33,14 +33,10 @@ if (!defined('GLPI_ROOT')) {
 }
 
 /**
- * Class PluginOcsinventoryngWinuser
+ * Class PluginOcsinventoryngWinupdate
  */
-class PluginOcsinventoryngWinuser extends CommonDBChild
+class PluginOcsinventoryngWinupdate
 {
-    // From CommonDBChild
-    public static $itemtype = 'Computer';
-    public static $items_id = 'computers_id';
-
     public static $rightname = "plugin_ocsinventoryng";
 
     /**
@@ -50,20 +46,20 @@ class PluginOcsinventoryngWinuser extends CommonDBChild
      */
     public static function getTypeName($nb = 0)
     {
-        return __('Windows Users', 'ocsinventoryng');
+        return __('Windows Updates', 'ocsinventoryng');
     }
 
     /**
-     * Update config of the WinUsers
+     * Update config of the Winupdatestate
      *
-     * This function erase old data and import the new ones about WinUser
+     * This function erase old data and import the new ones about Winupdate
      *
      * @param $computers_id integer : glpi computer id.
      * @param $ocsComputer
      * @param $history_plugins boolean
      * @param $force
      */
-    public static function updateWinuser($computers_id, $ocsComputer, $cfg_ocs, $force)
+    public static function updateWinupdatestate($computers_id, $ocsComputer, $cfg_ocs, $force)
     {
 
         $uninstall_history = 0;
@@ -76,36 +72,36 @@ class PluginOcsinventoryngWinuser extends CommonDBChild
         }
 
         if ($force) {
-            self::resetWinuser($computers_id, $uninstall_history);
+            self::resetWinupdatestate($computers_id, $uninstall_history);
         }
-        $winusers = new self();
         //update data
-        foreach ($ocsComputer as $wuser) {
-            $input                 = [];
-            $input["computers_id"] = $computers_id;
-            if (!empty($wuser) && isset($wuser["NAME"])) {
-                $input["name"]        = $wuser["NAME"];
-                $input["type"]        = ($wuser["TYPE"] ?? '');
-                $input["description"] = (isset($wuser["TYPE"]) ? $wuser["DESCRIPTION"] : '');
-                $input["disabled"]    = (isset($wuser["TYPE"]) ? $wuser["STATUS"] : '');
-                $input["sid"]         = (isset($wuser["TYPE"]) ? $wuser["SID"] : '');
+        if (!empty($ocsComputer)) {
+            $wupdate                      = $ocsComputer;
+            $input                        = [];
+            $input["computers_id"]        = $computers_id;
+            $input["auoptions"]           = $wupdate["AUOPTIONS"];
+            $input["scheduleinstalldate"] = (empty($wupdate["SCHEDULEDINSTALLDATE"]) ? 'NULL' : $wupdate["SCHEDULEDINSTALLDATE"]);
+            $input["lastsuccesstime"]     = $wupdate["LASTSUCCESSTIME"];
+            $input["detectsuccesstime"]   = $wupdate["DETECTSUCCESSTIME"];
+            $input["downloadsuccesstime"] = $wupdate["DOWNLOADSUCCESSTIME"];
 
-                $winusers->add($input, ['disable_unicity_check' => true], $install_history);
-            }
+            $CompWupdate = new self();
+            $CompWupdate->add($input, ['disable_unicity_check' => true], $install_history);
         }
     }
 
     /**
-     * Delete old Winuser entries
+     * Delete old Winupdatestate entries
      *
      * @param $glpi_computers_id integer : glpi computer id.
      * @param $uninstall_history boolean
+     *
      */
-    public static function resetWinuser($glpi_computers_id, $uninstall_history)
+    public static function resetWinupdatestate($glpi_computers_id, $uninstall_history)
     {
 
-        $wuser = new self();
-        $wuser->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $uninstall_history);
+        $win = new self();
+        $win->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $uninstall_history);
     }
 
     /**
@@ -115,7 +111,6 @@ class PluginOcsinventoryngWinuser extends CommonDBChild
      * @param int         $withtemplate
      *
      * @return array|string
-     * @throws \GlpitestSQLError
      */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
@@ -127,12 +122,12 @@ class PluginOcsinventoryngWinuser extends CommonDBChild
             // can exists for template
             if (($item->getType() == 'Computer')
              && Computer::canView()
-             && $cfg_ocs["import_winusers"]) {
+             && $cfg_ocs["import_winupdatestate"]) {
                 $nb = 0;
                 if ($_SESSION['glpishow_count_on_tabs']) {
                     $dbu = new DbUtils();
                     $nb = $dbu->countElementsInTable(
-                        'glpi_plugin_ocsinventoryng_winusers',
+                        'glpi_plugin_ocsinventoryng_winupdates',
                         ["computers_id" => $item->getID()]
                     );
                 }
@@ -188,10 +183,10 @@ class PluginOcsinventoryngWinuser extends CommonDBChild
         }
 
         echo "<div class='spaced center'>";
+
         if ($result = $DB->request([
-            'FROM' => 'glpi_plugin_ocsinventoryng_winusers',
+            'FROM' => 'glpi_plugin_ocsinventoryng_winupdates',
             'WHERE' => ['computers_id' => $ID],
-            'ORDER' => 'type',
         ])) {
             echo "<table class='tab_cadre_fixehov'>";
             $colspan = 5;
@@ -199,11 +194,11 @@ class PluginOcsinventoryngWinuser extends CommonDBChild
               "</th></tr>";
 
             if ($result->numrows() != 0) {
-                $header = "<tr><th>" . __('Name') . "</th>";
-                $header .= "<th>" . __('Type') . "</th>";
-                $header .= "<th>" . __('Description') . "</th>";
-                $header .= "<th>" . __('Status', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('SID', 'ocsinventoryng') . "</th>";
+                $header = "<tr><th>" . __('AU Options', 'ocsinventoryng') . "</th>";
+                $header .= "<th>" . __('Schedule Install Date', 'ocsinventoryng') . "</th>";
+                $header .= "<th>" . __('Last Success Time', 'ocsinventoryng') . "</th>";
+                $header .= "<th>" . __('Detect Success Time', 'ocsinventoryng') . "</th>";
+                $header .= "<th>" . __('Download Success Time', 'ocsinventoryng') . "</th>";
                 $header .= "</tr>";
                 echo $header;
 
@@ -220,21 +215,73 @@ class PluginOcsinventoryngWinuser extends CommonDBChild
 
                 foreach ($result as $data) {
                     echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . $data['name'] . "</td>";
-                    echo "<td>" . $data['type'] . "</td>";
-                    echo "<td>" . $data['description'] . "</td>";
-                    echo "<td>" . $data['disabled'] . "</td>";
-                    echo "<td>" . $data['sid'] . "</td>";
+                    echo "<td>" . self::getAuoptionsName($data['auoptions']) . "</td>";
+
+                    if (DateTime::createFromFormat('Y-m-d H:i:s', $data['scheduleinstalldate']) !== false
+                     && $data['scheduleinstalldate'] != "0000-00-00 00:00:00") {
+                        echo "<td>" . Html::convDateTime($data['scheduleinstalldate']) . "</td>";
+                    } else {
+                        echo "<td>" . __('Automatic') . "</td>";
+                    }
+                    if (DateTime::createFromFormat('Y-m-d H:i:s', $data['lastsuccesstime']) !== false
+                    && $data['lastsuccesstime'] != "0000-00-00 00:00:00") {
+                        echo "<td>" . Html::convDateTime($data['lastsuccesstime']) . "</td>";
+                    } else {
+                        echo "<td>" . __('Automatic') . "</td>";
+                    }
+                    if (DateTime::createFromFormat('Y-m-d H:i:s', $data['detectsuccesstime']) !== false
+                    && $data['detectsuccesstime'] != "0000-00-00 00:00:00") {
+                        echo "<td>" . Html::convDateTime($data['detectsuccesstime']) . "</td>";
+                    } else {
+                        echo "<td>" . __('Automatic') . "</td>";
+                    }
+                    if (DateTime::createFromFormat('Y-m-d H:i:s', $data['downloadsuccesstime']) !== false
+                    && $data['downloadsuccesstime'] != "0000-00-00 00:00:00") {
+                        echo "<td>" . Html::convDateTime($data['downloadsuccesstime']) . "</td>";
+                    } else {
+                        echo "<td>" . __('Automatic') . "</td>";
+                    }
                     echo "</tr>";
                     Session::addToNavigateListItems(__CLASS__, $data['id']);
                 }
                 echo $header;
             } else {
-                echo "<tr class='tab_bg_2'><th colspan='$colspan'>" . __('No item found') . "</th></tr>";
+                echo "<tr class='tab_bg_2'><th colspan='$colspan'>" . __('No results found') . "</th></tr>";
             }
 
             echo "</table>";
         }
         echo "</div>";
+    }
+
+    /**
+     * Get Auoptions Name
+     *
+     * @param $value Auoptions ID
+     *
+     * @return Auoptions|translated
+     */
+    public static function getAuoptionsName($value)
+    {
+
+        switch ($value) {
+            case 5:
+                return __('Automatic Updates is required and users can configure it', 'ocsinventoryng');
+
+            case 4:
+                return __('Automatically download and schedule installation', 'ocsinventoryng');
+
+            case 3:
+                return __('Automatically download and notify of installation', 'ocsinventoryng');
+
+            case 2:
+                return __('Notify before download', 'ocsinventoryng');
+
+            case 1:
+                return __('Disables AU', 'ocsinventoryng');
+            default:
+                // Return $value if not define
+                return $value;
+        }
     }
 }

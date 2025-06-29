@@ -33,14 +33,10 @@ if (!defined('GLPI_ROOT')) {
 }
 
 /**
- * Class PluginOcsinventoryngNetworkshare
+ * Class PluginOcsinventoryngService
  */
-class PluginOcsinventoryngNetworkshare extends CommonDBChild
+class PluginOcsinventoryngService
 {
-    // From CommonDBChild
-    public static $itemtype = 'Computer';
-    public static $items_id = 'computers_id';
-
     public static $rightname = "plugin_ocsinventoryng";
 
     /**
@@ -50,20 +46,20 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild
      */
     public static function getTypeName($nb = 0)
     {
-        return __('Network shares', 'ocsinventoryng');
+        return __('Services', 'ocsinventoryng');
     }
 
     /**
-     * Update config of the Networkshare
+     * Update config of the Service
      *
-     * This function erase old data and import the new ones about Networkshare
+     * This function erase old data and import the new ones about Service
      *
      * @param $computers_id integer : glpi computer id.
      * @param $ocsComputer
      * @param $history_plugins boolean
      * @param $force
      */
-    public static function updateNetworkshare($computers_id, $ocsComputer, $cfg_ocs, $force)
+    public static function updateService($computers_id, $ocsComputer, $cfg_ocs, $force)
     {
 
         $uninstall_history = 0;
@@ -76,41 +72,32 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild
         }
 
         if ($force) {
-            self::resetNetworkshare($computers_id, $uninstall_history);
+            self::resetService($computers_id, $uninstall_history);
         }
 
-        $ocsShares = new self();
+        $ocsService = new self();
 
         //update data
-        foreach ($ocsComputer as $sha) {
-
-            $input = [];
-
+        foreach ($ocsComputer as $service) {
+            $input                 = array_change_key_case($service, CASE_LOWER);
             $input["computers_id"] = $computers_id;
-            $input["drive"]        = $sha["DRIVE"];
-            $input["path"]         = $sha["PATH"];
-            $input["size"]         = $sha["SIZE"];
-            $input["freespace"]    = $sha["FREESPACE"];
-            $input["quota"]        = $sha["QUOTA"];
-            $ocsShares->add($input, ['disable_unicity_check' => true], $install_history);
-        }
 
+            $ocsService->add($input, ['disable_unicity_check' => true], $install_history);
+        }
     }
 
-
     /**
-     * Delete old Networkshare entries
+     * Delete old Services entries
      *
      * @param $glpi_computers_id integer : glpi computer id.
      * @param $uninstall_history boolean
      *
      */
-    public static function resetNetworkshare($glpi_computers_id, $uninstall_history)
+    public static function resetService($glpi_computers_id, $uninstall_history)
     {
 
-        $share = new self();
-        $share->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $uninstall_history);
-
+        $service = new self();
+        $service->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $uninstall_history);
     }
 
     /**
@@ -120,31 +107,29 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild
      * @param int         $withtemplate
      *
      * @return array|string
-     * @throws \GlpitestSQLError
      */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
 
         $plugin_ocsinventoryng_ocsservers_id = PluginOcsinventoryngOcslink::getOCSServerForItem($item);
         if ($plugin_ocsinventoryng_ocsservers_id > 0
-            && PluginOcsinventoryngOcsServer::serverIsActive($plugin_ocsinventoryng_ocsservers_id)) {
-
-
+          && PluginOcsinventoryngOcsServer::serverIsActive($plugin_ocsinventoryng_ocsservers_id)) {
             $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
             // can exists for template
             if (($item->getType() == 'Computer')
-                && Computer::canView()
-                && $cfg_ocs["import_networkshare"]) {
+             && Computer::canView()
+             && $cfg_ocs["import_service"]) {
                 $nb = 0;
                 if ($_SESSION['glpishow_count_on_tabs']) {
                     $dbu = new DbUtils();
                     $nb = $dbu->countElementsInTable(
-                        'glpi_plugin_ocsinventoryng_networkshares',
+                        'glpi_plugin_ocsinventoryng_services',
                         ["computers_id" => $item->getID()]
                     );
                 }
                 return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
             }
+            return '';
         }
         return '';
     }
@@ -164,7 +149,7 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild
             echo "<div class='spaced center'>";
             echo "<table class='tab_cadre_fixehov'>";
             echo "<tr class='noHover'><th colspan='5'>" . self::getTypeName(0) .
-               "</th></tr>";
+            "</th></tr>";
             echo "<tr class='tab_bg_2'><th colspan='5'>" . __('Server unreachable', 'ocsinventoryng') . "</th></tr>";
             echo "</table>";
             echo "</div>";
@@ -189,31 +174,30 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild
         $ID = $comp->fields['id'];
 
         if (!$comp->getFromDB($ID)
-            || !$comp->can($ID, READ)) {
+          || !$comp->can($ID, READ)) {
             return false;
         }
-
         echo "<div class='spaced center'>";
 
         if ($result = $DB->request([
-            'FROM' => 'glpi_plugin_ocsinventoryng_networkshares',
+            'FROM' => 'glpi_plugin_ocsinventoryng_services',
             'WHERE' => ['computers_id' => $ID],
-            'ORDER' => 'drive',
+            'ORDER' => 'svcname',
         ])) {
-
             echo "<table class='tab_cadre_fixehov'>";
-            $colspan = 6;
-            echo "<tr class='noHover'><th colspan='$colspan'>" . self::getTypeName($result->numrows()) .
-                 "</th></tr>";
+            echo "<tr class='noHover'><th colspan='9'>" . self::getTypeName($result->numrows()) .
+              "</th></tr>";
 
             if ($result->numrows() != 0) {
-
-                $header = "<tr><th>" . _n('Drive', 'Drives', 1) . "</th>";
-                $header .= "<th>" . __('Path', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Global size') . "</th>";
-                $header .= "<th>" . __('Free size') . "</th>";
-                $header .= "<th>" . __('Free percentage') . "</th>";
-                $header .= "<th>" . __('Quota', 'ocsinventoryng') . "</th>";
+                $header = "<tr><th>" . __('Name of the service', 'ocsinventoryng') . "</th>";
+                $header .= "<th>" . __('Full name', 'ocsinventoryng') . "</th>";
+                $header .= "<th>" . __('Service Status', 'ocsinventoryng') . "</th>";
+                $header .= "<th>" . __('Description') . "</th>";
+                $header .= "<th>" . __('Start type', 'ocsinventoryng') . "</th>";
+                $header .= "<th>" . __('Access path', 'ocsinventoryng') . "</th>";
+                $header .= "<th>" . __('Session', 'ocsinventoryng') . "</th>";
+                $header .= "<th>" . __('Exit code', 'ocsinventoryng') . "</th>";
+                $header .= "<th>" . __('Spec Exit code', 'ocsinventoryng') . "</th>";
                 $header .= "</tr>";
                 echo $header;
 
@@ -230,29 +214,21 @@ class PluginOcsinventoryngNetworkshare extends CommonDBChild
 
                 foreach ($result as $data) {
                     echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . $data['drive'] . "</td>";
-                    echo "<td>" . $data['path'] . "</td>";
-                    $tmp = Toolbox::getSize(str_replace(",", ".", $data['size']) * 1024 * 1024 * 1024 * 1024);
-                    echo "<td>" . $tmp . "</td>";
-                    $tmp = Toolbox::getSize(str_replace(",", ".", $data['freespace']) * 1024 * 1024 * 1024 * 1024);
-                    echo "<td>" . $tmp . "</td>";
-
-                    echo "<td>";
-                    $percent = 0;
-                    $total = str_replace(",", ".", $data['size']);
-                    $free = str_replace(",", ".", $data['freespace']);
-                    if ($total > 0) {
-                        $percent = round(100 * $free / $total);
-                    }
-                    Html::getProgressBar($percent);
-                    echo "</td>";
-                    echo "<td>" . $data['quota'] . "</td>";
+                    echo "<td>" . $data['svcname'] . "</td>";
+                    echo "<td>" . $data['svcdn'] . "</td>";
+                    echo "<td>" . $data['svcstate'] . "</td>";
+                    echo "<td>" . $data['svcdesc'] . "</td>";
+                    echo "<td>" . $data['svcstartmode'] . "</td>";
+                    echo "<td>" . $data['svcpath'] . "</td>";
+                    echo "<td>" . $data['svcstartname'] . "</td>";
+                    echo "<td>" . $data['svcexitcode'] . "</td>";
+                    echo "<td>" . $data['svcspecexitcode'] . "</td>";
                     echo "</tr>";
                     Session::addToNavigateListItems(__CLASS__, $data['id']);
                 }
                 echo $header;
             } else {
-                echo "<tr class='tab_bg_2'><th colspan='$colspan'>" . __('No item found') . "</th></tr>";
+                echo "<tr class='tab_bg_2'><th colspan='9'>" . __('No results found') . "</th></tr>";
             }
 
             echo "</table>";

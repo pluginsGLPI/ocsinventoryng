@@ -32,30 +32,29 @@
  */
 class PluginOcsinventoryngConfig extends CommonDBTM
 {
+    /**
+     * @var string
+     */
+    public static $rightname = "plugin_ocsinventoryng";
 
-   /**
-    * @var string
-    */
-    static $rightname = "plugin_ocsinventoryng";
-
-   /**
-    * @param int $nb
-    *
-    * @return string|translated
-    */
-    static function getTypeName($nb = 0)
+    /**
+     * @param int $nb
+     *
+     * @return string|translated
+     */
+    public static function getTypeName($nb = 0)
     {
         return __("Plugin setup", 'ocsinventoryng');
     }
 
 
-   /**
-    * @param CommonGLPI $item
-    * @param int        $withtemplate
-    *
-    * @return array|string
-    */
-    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    /**
+     * @param CommonGLPI $item
+     * @param int        $withtemplate
+     *
+     * @return array|string
+     */
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
 
         if (!$withtemplate) {
@@ -74,14 +73,14 @@ class PluginOcsinventoryngConfig extends CommonDBTM
     }
 
 
-   /**
-    * @param CommonGLPI $item
-    * @param int        $tabnum
-    * @param int        $withtemplate
-    *
-    * @return bool
-    */
-    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    /**
+     * @param CommonGLPI $item
+     * @param int        $tabnum
+     * @param int        $withtemplate
+     *
+     * @return bool
+     */
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
 
         switch ($item->getType()) {
@@ -104,12 +103,12 @@ class PluginOcsinventoryngConfig extends CommonDBTM
     }
 
 
-   /**
-    * @param array $options
-    *
-    * @return array
-    */
-    function defineTabs($options = [])
+    /**
+     * @param array $options
+     *
+     * @return array
+     */
+    public function defineTabs($options = [])
     {
 
         $ong = [];
@@ -130,10 +129,10 @@ class PluginOcsinventoryngConfig extends CommonDBTM
         return $config;
     }
 
-   /**
-    *
-    */
-    static function showMenu()
+    /**
+     *
+     */
+    public static function showMenu()
     {
         global $CFG_GLPI;
 
@@ -151,12 +150,12 @@ class PluginOcsinventoryngConfig extends CommonDBTM
         echo "</table>";
     }
 
-   /**
-    * @param array $options
-    *
-    * @return bool
-    */
-    function showForm($ID, $options = [])
+    /**
+     * @param array $options
+     *
+     * @return bool
+     */
+    public function showForm($ID, $options = [])
     {
 
         $this->getFromDB(1);
@@ -192,7 +191,7 @@ class PluginOcsinventoryngConfig extends CommonDBTM
         return true;
     }
 
-    static function displayAlerts()
+    public static function displayAlerts()
     {
         global $DB;
 
@@ -279,10 +278,10 @@ class PluginOcsinventoryngConfig extends CommonDBTM
 
         if ($synchro_ocs != 0) {
             foreach ($DB->request([
-             'FROM' => 'glpi_plugin_ocsinventoryng_ocsservers',
-             'WHERE' => [
-                 'is_active' => '1'
-             ]
+                'FROM' => 'glpi_plugin_ocsinventoryng_ocsservers',
+                'WHERE' => [
+                    'is_active' => '1',
+                ],
             ]) as $config) {
                 $query  = PluginOcsinventoryngOcsAlert::query($delay_ocs, $config, $_SESSION["glpiactive_entity"]);
 
@@ -322,11 +321,11 @@ class PluginOcsinventoryngConfig extends CommonDBTM
     }
 
 
-   /**
-    * @return bool
-    * @internal param $target
-    */
-    function showFormAutomaticSynchronization()
+    /**
+     * @return bool
+     * @internal param $target
+     */
+    public function showFormAutomaticSynchronization()
     {
 
         if (!Session::haveRight("plugin_ocsinventoryng_sync", READ)) {
@@ -343,9 +342,9 @@ class PluginOcsinventoryngConfig extends CommonDBTM
         echo "<td rowspan='4' class='middle right'> " . __('Comments') . "</td>";
         echo "<td class='center middle' rowspan='4'>";
         Html::textarea(['name'            => 'comment',
-                      'cols'       => 40,
-                      'rows'       => 5,
-                      'enable_richtext' => false]);
+            'cols'       => 40,
+            'rows'       => 5,
+            'enable_richtext' => false]);
         echo "</td></tr>";
 
         echo "<tr class='tab_bg_1'>";
@@ -367,16 +366,16 @@ class PluginOcsinventoryngConfig extends CommonDBTM
         echo "</tr>";
 
         $this->showFormButtons(['canedit' => $canedit,
-                              'candel'  => false]);
+            'candel'  => false]);
 
         return true;
     }
 
 
-   /**
-    *
-    */
-    function showScriptLock()
+    /**
+     *
+     */
+    public function showScriptLock()
     {
 
         echo "<div class='center'>";
@@ -409,19 +408,19 @@ class PluginOcsinventoryngConfig extends CommonDBTM
     }
 
 
-   /**
-    * @return bool
-    */
-    static function isScriptLocked()
+    /**
+     * @return bool
+     */
+    public static function isScriptLocked()
     {
         return file_exists(PLUGIN_OCSINVENTORYNG_LOCKFILE);
     }
 
 
-   /**
-    *
-    */
-    function setScriptLock()
+    /**
+     *
+     */
+    public function setScriptLock()
     {
 
         $fp = fopen(PLUGIN_OCSINVENTORYNG_LOCKFILE, "w+");
@@ -429,10 +428,10 @@ class PluginOcsinventoryngConfig extends CommonDBTM
     }
 
 
-   /**
-    *
-    */
-    function removeScriptLock()
+    /**
+     *
+     */
+    public function removeScriptLock()
     {
 
         if (file_exists(PLUGIN_OCSINVENTORYNG_LOCKFILE)) {
@@ -441,10 +440,10 @@ class PluginOcsinventoryngConfig extends CommonDBTM
     }
 
 
-   /**
-    * @return mixed
-    */
-    function getAllOcsServers()
+    /**
+     * @return mixed
+     */
+    public function getAllOcsServers()
     {
         global $DB;
 
@@ -462,10 +461,10 @@ class PluginOcsinventoryngConfig extends CommonDBTM
     }
 
 
-   /**
-    * @return mixed
-    */
-    static function canUpdateOCS()
+    /**
+     * @return mixed
+     */
+    public static function canUpdateOCS()
     {
 
         $config = new PluginOcsinventoryngConfig();
@@ -473,10 +472,10 @@ class PluginOcsinventoryngConfig extends CommonDBTM
         return $config->fields['allow_ocs_update'];
     }
 
-   /**
-    * @return mixed
-    */
-    static function logProcessedComputers()
+    /**
+     * @return mixed
+     */
+    public static function logProcessedComputers()
     {
 
         $config = new PluginOcsinventoryngConfig();
@@ -484,20 +483,20 @@ class PluginOcsinventoryngConfig extends CommonDBTM
         return $config->fields['log_imported_computers'];
     }
 
-   /**
-    * Display debug information for current object
-    **/
-    function showDebug()
+    /**
+     * Display debug information for current object
+     **/
+    public function showDebug()
     {
 
         NotificationEvent::debugEvent(
             new PluginOcsinventoryngNotimportedcomputer(),
             ['entities_id' => 0,
-            'notimported' => []]
+                'notimported' => []]
         );
     }
 
-   //----------------- Getters and setters -------------------//
+    //----------------- Getters and setters -------------------//
 
     public function useNewocsAlert()
     {

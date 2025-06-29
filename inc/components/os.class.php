@@ -34,14 +34,9 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginOcsinventoryngOS
  */
-class PluginOcsinventoryngOS extends CommonDBChild {
-
-   // From CommonDBChild
-   static public $itemtype = 'Computer';
-   static public $items_id = 'computers_id';
+class PluginOcsinventoryngOS  {
 
    static $rightname = "plugin_ocsinventoryng";
-
 
    /**
     * Update lockable fields of an item

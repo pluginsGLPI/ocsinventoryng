@@ -36,14 +36,10 @@ if (!defined('GLPI_ROOT')) {
  * Class PluginOcsinventoryngMonitor
  */
 use Glpi\Asset\Asset_PeripheralAsset;
-class PluginOcsinventoryngMonitor extends CommonDBChild
+
+class PluginOcsinventoryngMonitor
 {
-    // From CommonDBChild
-    public static $itemtype = 'Computer';
-    public static $items_id = 'computers_id';
-
     public static $rightname = "plugin_ocsinventoryng";
-
 
     /**
      *
@@ -58,7 +54,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild
      */
     public static function importMonitor($monitor_params)
     {
-        global $DB, $CFG_GLPI;
+        global $DB;
 
         $cfg_ocs       = $monitor_params["cfg_ocs"];
         $computers_id  = $monitor_params["computers_id"];
@@ -340,7 +336,7 @@ class PluginOcsinventoryngMonitor extends CommonDBChild
                       AND `is_dynamic` = 1";
         $result = $DB->doQuery($query);
 
-//        $mon = new Monitor();
+        //        $mon = new Monitor();
         if ($DB->numrows($result) > 0) {
             $conn = new Asset_PeripheralAsset();
 

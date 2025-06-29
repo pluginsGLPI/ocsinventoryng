@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -28,37 +29,34 @@
  */
 
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
 /**
  * Class PluginOcsinventoryngUptime
  */
-class PluginOcsinventoryngUptime extends CommonDBChild {
+class PluginOcsinventoryngUptime
+{
+    public static $rightname = "plugin_ocsinventoryng";
 
-   // From CommonDBChild
-   static public $itemtype = 'Computer';
-   static public $items_id = 'computers_id';
+    /**
+     * @param $id
+     * @param $ocsComputer
+     *
+     * @throws \GlpitestSQLError
+     */
+    public static function updateUptime($id, $ocsComputer)
+    {
+        global $DB;
 
-   static $rightname = "plugin_ocsinventoryng";
-
-   /**
-    * @param $id
-    * @param $ocsComputer
-    *
-    * @throws \GlpitestSQLError
-    */
-   static function updateUptime($id, $ocsComputer) {
-      global $DB;
-
-      if ($id) {
-         if (isset($ocsComputer["DURATION"])) {
-            $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
+        if ($id) {
+            if (isset($ocsComputer["DURATION"])) {
+                $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
                       SET `uptime` = '" . $ocsComputer["DURATION"] . "'
                       WHERE `id` = $id";
 
-            $DB->doQuery($query);
-         }
-      }
-   }
+                $DB->doQuery($query);
+            }
+        }
+    }
 }

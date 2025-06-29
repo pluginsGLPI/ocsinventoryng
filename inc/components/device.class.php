@@ -35,11 +35,8 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginOcsinventoryngService
  */
-class PluginOcsinventoryngDevice extends CommonDBChild
+class PluginOcsinventoryngDevice
 {
-    // From CommonDBChild
-    public static $itemtype = 'Computer';
-    public static $items_id = 'computers_id';
 
     public static $rightname = "plugin_ocsinventoryng";
 
@@ -667,10 +664,12 @@ class PluginOcsinventoryngDevice extends CommonDBChild
                 $mb["designation"] = $ocsComputer["MMODEL"];
 
                 $mb["entities_id"]      = $entities_id;
-                $mb["manufacturers_id"] = Dropdown::importExternal(
-                    'Manufacturer',
-                    PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($ocs_db_utf8, $ocsComputer["MMANUFACTURER"])
-                );
+                if (PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($ocs_db_utf8, $ocsComputer["MMANUFACTURER"]) != null) {
+                    $mb["manufacturers_id"] = Dropdown::importExternal(
+                        'Manufacturer',
+                        PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($ocs_db_utf8, $ocsComputer["MMANUFACTURER"])
+                    );
+                }
 
                 $DeviceMB              = new DeviceMotherboard();
                 $devicemotherboards_id = $DeviceMB->import($mb);

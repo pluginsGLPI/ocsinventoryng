@@ -2694,7 +2694,7 @@ JAVASCRIPT;
         //        if ($advancedimport) {
         echo Search::showHeaderItem($output_type, __('Override unicity check ?', 'ocsinventoryng'), $header_num);
         echo Search::showHeaderItem($output_type, __('Match the rule ?', 'ocsinventoryng'), $header_num);
-        echo Search::showHeaderItem($output_type, __('Destination entity'), $header_num);
+        echo Search::showHeaderItem($output_type, __('Destination entity', 'ocsinventoryng'), $header_num);
         echo Search::showHeaderItem($output_type, __('Child entities'), $header_num);
         //        }
         //        if ($advancedlink) {

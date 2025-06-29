@@ -34,12 +34,8 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginOcsinventoryngSoftware
  */
-class PluginOcsinventoryngSoftware extends CommonDBChild
+class PluginOcsinventoryngSoftware
 {
-
-   // From CommonDBChild
-    public static $itemtype = 'Computer';
-    public static $items_id = 'computers_id';
 
     static $rightname = "plugin_ocsinventoryng";
 

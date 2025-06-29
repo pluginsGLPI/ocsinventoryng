@@ -35,12 +35,8 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginOcsinventoryngAntivirus
  */
-class PluginOcsinventoryngAntivirus extends CommonDBChild
+class PluginOcsinventoryngAntivirus
 {
-    // From CommonDBChild
-    public static $itemtype = 'Computer';
-    public static $items_id = 'computers_id';
-
     public static $rightname = "plugin_ocsinventoryng";
 
     /**
@@ -71,7 +67,6 @@ class PluginOcsinventoryngAntivirus extends CommonDBChild
         $av = new ItemAntivirus();
         //update data
         foreach ($ocsComputer as $anti) {
-
             $input     = [];
 
             if (isset($antivirus["CATEGORY"]) && $antivirus["CATEGORY"] == "AntiVirus") {
@@ -108,6 +103,5 @@ class PluginOcsinventoryngAntivirus extends CommonDBChild
         $av->deleteByCriteria(['items_id' => $glpi_computers_id,
             'itemtype' => 'Computer',
             'is_dynamic'   => 1], 1, $uninstall_history);
-
     }
 }

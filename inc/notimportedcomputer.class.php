@@ -57,39 +57,39 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
     public function getAdditionalFields()
     {
         return [['name'  => 'reason',
-                 'label' => __('Reason of rejection'),
-                 'type'  => 'reason'],
-                ['name'  => 'rules_id',
-                 'label' => __('Verified rules', 'ocsinventoryng'),
-                 'type'  => 'echo_rule'],
-                ['name'  => 'ocsid',
-                 'label' => __('OCSNG ID', 'ocsinventoryng'),
-                 'type'  => 'text'],
-                ['name'  => 'plugin_ocsinventoryng_ocsservers_id',
-                 'label' => __('Server'),
-                 'type'  => 'echo_dropdown',
-                 'table' => 'glpi_plugin_ocsinventoryng_ocsservers'],
-                ['name'  => 'ocs_deviceid',
-                 'label' => __('Device ID', 'ocsinventoryng'),
-                 'type'  => 'text'],
-                ['name'  => 'serial',
-                 'label' => __('Serial number'),
-                 'type'  => 'text'],
-                ['name'  => 'tag',
-                 'label' => __('OCSNG TAG', 'ocsinventoryng'),
-                 'type'  => 'text'],
-                ['name'  => 'useragent',
-                 'label' => __('Inventory agent', 'ocsinventoryng'),
-                 'type'  => 'text'],
-                ['name'  => 'ipaddr',
-                 'label' => __('IP'),
-                 'type'  => 'text'],
-                ['name'  => 'domain',
-                 'label' => __('Domain'),
-                 'type'  => 'text'],
-                ['name'  => 'last_inventory',
-                 'label' => __('Last OCSNG inventory date', 'ocsinventoryng'),
-                 'type'  => 'echo_datetime']];
+            'label' => __('Reason of rejection'),
+            'type'  => 'reason'],
+            ['name'  => 'rules_id',
+                'label' => __('Verified rules', 'ocsinventoryng'),
+                'type'  => 'echo_rule'],
+            ['name'  => 'ocsid',
+                'label' => __('OCSNG ID', 'ocsinventoryng'),
+                'type'  => 'text'],
+            ['name'  => 'plugin_ocsinventoryng_ocsservers_id',
+                'label' => __('Server'),
+                'type'  => 'echo_dropdown',
+                'table' => 'glpi_plugin_ocsinventoryng_ocsservers'],
+            ['name'  => 'ocs_deviceid',
+                'label' => __('Device ID', 'ocsinventoryng'),
+                'type'  => 'text'],
+            ['name'  => 'serial',
+                'label' => __('Serial number'),
+                'type'  => 'text'],
+            ['name'  => 'tag',
+                'label' => __('OCSNG TAG', 'ocsinventoryng'),
+                'type'  => 'text'],
+            ['name'  => 'useragent',
+                'label' => __('Inventory agent', 'ocsinventoryng'),
+                'type'  => 'text'],
+            ['name'  => 'ipaddr',
+                'label' => __('IP'),
+                'type'  => 'text'],
+            ['name'  => 'domain',
+                'label' => __('Domain'),
+                'type'  => 'text'],
+            ['name'  => 'last_inventory',
+                'label' => __('Last OCSNG inventory date', 'ocsinventoryng'),
+                'type'  => 'echo_datetime']];
     }
 
 
@@ -234,107 +234,107 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
         $tab = [];
 
         $tab[] = [
-           'id'   => 'common',
-           'name' => _n(
-               'Computer not imported',
-               'Computers not imported',
-               2,
-               'ocsinventoryng'
-           )
+            'id'   => 'common',
+            'name' => _n(
+                'Computer not imported',
+                'Computers not imported',
+                2,
+                'ocsinventoryng'
+            ),
         ];
 
         $tab[] = [
-           'id'       => '1',
-           'table'    => $this->getTable(),
-           'field'    => 'ocsid',
-           'name'     => __('OCSNG ID', 'ocsinventoryng'),
-           'datatype' => 'integer'
+            'id'       => '1',
+            'table'    => $this->getTable(),
+            'field'    => 'ocsid',
+            'name'     => __('OCSNG ID', 'ocsinventoryng'),
+            'datatype' => 'integer',
         ];
-      //
-      //      $tab[] = [
-      //         'id'            => '2',
-      //         'table'         => $this->getTable(),
-      //         'field'         => 'name',
-      //         'name'          => __('OCSNG name', 'ocsinventoryng'),
-      //         'datatype'      => 'itemlink',
-      //         'massiveaction' => false,
-      //         'itemlink_type' => $this->getType()
-      //      ];
+        //
+        //      $tab[] = [
+        //         'id'            => '2',
+        //         'table'         => $this->getTable(),
+        //         'field'         => 'name',
+        //         'name'          => __('OCSNG name', 'ocsinventoryng'),
+        //         'datatype'      => 'itemlink',
+        //         'massiveaction' => false,
+        //         'itemlink_type' => $this->getType()
+        //      ];
 
         $tab[] = [
-           'id'       => '3',
-           'table'    => $this->getTable(),
-           'field'    => 'useragent',
-           'name'     => __('Inventory agent', 'ocsinventoryng'),
-           'datatype' => 'text'
-        ];
-
-        $tab[] = [
-           'id'       => '4',
-           'table'    => $this->getTable(),
-           'field'    => 'ocs_deviceid',
-           'name'     => __('Device ID', 'ocsinventoryng'),
-           'datatype' => 'text'
+            'id'       => '3',
+            'table'    => $this->getTable(),
+            'field'    => 'useragent',
+            'name'     => __('Inventory agent', 'ocsinventoryng'),
+            'datatype' => 'text',
         ];
 
         $tab[] = [
-           'id'        => '5',
-           'table'     => 'glpi_plugin_ocsinventoryng_ocsservers',
-           'field'     => 'name',
-           'name'      => __('Server'),
-           'linkfield' => 'plugin_ocsinventoryng_ocsservers_id',
-           'datatype'  => 'dropdown'
+            'id'       => '4',
+            'table'    => $this->getTable(),
+            'field'    => 'ocs_deviceid',
+            'name'     => __('Device ID', 'ocsinventoryng'),
+            'datatype' => 'text',
         ];
 
         $tab[] = [
-           'id'    => '6',
-           'table' => $this->getTable(),
-           'field' => 'tag',
-           'name'  => __('OCSNG TAG', 'ocsinventoryng'),
+            'id'        => '5',
+            'table'     => 'glpi_plugin_ocsinventoryng_ocsservers',
+            'field'     => 'name',
+            'name'      => __('Server'),
+            'linkfield' => 'plugin_ocsinventoryng_ocsservers_id',
+            'datatype'  => 'dropdown',
         ];
 
         $tab[] = [
-           'id'    => '7',
-           'table' => $this->getTable(),
-           'field' => 'ipaddr',
-           'name'  => __('IP'),
+            'id'    => '6',
+            'table' => $this->getTable(),
+            'field' => 'tag',
+            'name'  => __('OCSNG TAG', 'ocsinventoryng'),
         ];
 
         $tab[] = [
-           'id'    => '8',
-           'table' => $this->getTable(),
-           'field' => 'domain',
-           'name'  => __('Domain'),
+            'id'    => '7',
+            'table' => $this->getTable(),
+            'field' => 'ipaddr',
+            'name'  => __('IP'),
         ];
 
         $tab[] = [
-           'id'       => '9',
-           'table'    => $this->getTable(),
-           'field'    => 'last_inventory',
-           'name'     => __('Last OCSNG inventory date', 'ocsinventoryng'),
-           'datatype' => 'datetime'
+            'id'    => '8',
+            'table' => $this->getTable(),
+            'field' => 'domain',
+            'name'  => __('Domain'),
         ];
 
         $tab[] = [
-           'id'    => '10',
-           'table' => $this->getTable(),
-           'field' => 'reason',
-           'name'  => __('Reason of rejection'),
+            'id'       => '9',
+            'table'    => $this->getTable(),
+            'field'    => 'last_inventory',
+            'name'     => __('Last OCSNG inventory date', 'ocsinventoryng'),
+            'datatype' => 'datetime',
         ];
 
         $tab[] = [
-           'id'    => '11',
-           'table' => $this->getTable(),
-           'field' => 'serial',
-           'name'  => __('Serial number'),
+            'id'    => '10',
+            'table' => $this->getTable(),
+            'field' => 'reason',
+            'name'  => __('Reason of rejection'),
         ];
 
         $tab[] = [
-           'id'       => '80',
-           'table'    => 'glpi_entities',
-           'field'    => 'completename',
-           'name'     => __('Entity'),
-           'datatype' => 'dropdown'
+            'id'    => '11',
+            'table' => $this->getTable(),
+            'field' => 'serial',
+            'name'  => __('Serial number'),
+        ];
+
+        $tab[] = [
+            'id'       => '80',
+            'table'    => 'glpi_entities',
+            'field'    => 'completename',
+            'name'     => __('Entity'),
+            'datatype' => 'dropdown',
         ];
 
         return $tab;
@@ -349,29 +349,29 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
     {
         global $DB;
 
-      //      PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id);
+        //      PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id);
         $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
         $options   = [
-           "DISPLAY" => [
-              "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
-                            | PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
-           ]
+            "DISPLAY" => [
+                "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
+                              | PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
+            ],
         ];
         $computer  = $ocsClient->getComputer($ocsid, $options);
 
         if ((isset($computer["HARDWARE"]) && $computer["HARDWARE"])
             && (isset($computer["BIOS"]) && $computer["BIOS"])) {
             $input["_ocs"]                                = true;
-            $input["name"]                                = isset($computer["META"]["NAME"]) ? $computer["META"]["NAME"] : 'null';
-            $input["domain"]                              = isset($computer["HARDWARE"]["WORKGROUP"]) ? $computer["HARDWARE"]["WORKGROUP"] : 'null';
+            $input["name"]                                = $computer["META"]["NAME"] ?? 'null';
+            $input["domain"]                              = $computer["HARDWARE"]["WORKGROUP"] ?? 'null';
             $input["tag"]                                 = $computer["META"]["TAG"];
             $input["ocs_deviceid"]                        = $computer["HARDWARE"]["DEVICEID"];
-            $input["ipaddr"]                              = isset($computer["HARDWARE"]["IPSRC"]) ? $computer["HARDWARE"]["IPSRC"] : 'null';
+            $input["ipaddr"]                              = $computer["HARDWARE"]["IPSRC"] ?? 'null';
             $input["plugin_ocsinventoryng_ocsservers_id"] = $ocsservers_id;
             $input["ocsid"]                               = $ocsid;
             $input["last_inventory"]                      = $computer["HARDWARE"]["LASTCOME"];
-            $input["useragent"]                           = isset($computer["HARDWARE"]["USERAGENT"]) ? $computer["HARDWARE"]["USERAGENT"] : 'null';
-            $input["serial"]                              = isset($computer["BIOS"]["SSN"]) ? $computer["BIOS"]["SSN"] : '';
+            $input["useragent"]                           = $computer["HARDWARE"]["USERAGENT"] ?? 'null';
+            $input["serial"]                              = $computer["BIOS"]["SSN"] ?? '';
             $input["reason"]                              = $reason['status'];
             $input["comment"]                             = "";
             if (isset($reason['entities_id'])) {
@@ -469,10 +469,10 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
         $DBocs->doQuery($query);
 
         $tables = ["accesslog", "accountinfo", "batteries", "bios", "controllers", "cpus", "devices",
-                   "download_history", "download_servers", "drives", "groups",
-                   "groups_cache", "inputs", "itmgmt_comments", "javainfo", "jounallog",
-                   "locks", "memories", "modems", "monitors", "networks", "ports", "printers",
-                   "registry", "saas", "sim", "slots", "softwares", "sounds", "storages", "usbdevices", "videos", "virtualmachines"];
+            "download_history", "download_servers", "drives", "groups",
+            "groups_cache", "inputs", "itmgmt_comments", "javainfo", "jounallog",
+            "locks", "memories", "modems", "monitors", "networks", "ports", "printers",
+            "registry", "saas", "sim", "slots", "softwares", "sounds", "storages", "usbdevices", "videos", "virtualmachines"];
 
         foreach ($tables as $table) {
             if (self::OcsTableExists($ocs_server_id, $table)) {
@@ -563,7 +563,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
     public static function computerImport($params = [])
     {
         if (isset($params['id'])) {
-            $notimported = new PluginOcsinventoryngNotimportedcomputer;
+            $notimported = new PluginOcsinventoryngNotimportedcomputer();
             $notimported->getFromDB($params['id']);
 
             if (!PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
@@ -577,23 +577,23 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
             $changes = self::getOcsComputerInfos($notimported->fields);
             if (isset($params['force'])) {
                 $process_params = ['ocsid'                               => $notimported->fields['ocsid'],
-                                   'plugin_ocsinventoryng_ocsservers_id' => $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
-                                   'lock'                                => 0,
-                                   'force'                               => $params['force'],
-                                   'defaultentity'                       => $params['entity'],
-                                   'defaultrecursive'                    => 0];
+                    'plugin_ocsinventoryng_ocsservers_id' => $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
+                    'lock'                                => 0,
+                    'force'                               => $params['force'],
+                    'defaultentity'                       => $params['entity'],
+                    'defaultrecursive'                    => 0];
             } else {
                 $process_params = ['ocsid'                               => $notimported->fields['ocsid'],
-                                   'plugin_ocsinventoryng_ocsservers_id' => $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
-                                   'lock'                                => 0];
+                    'plugin_ocsinventoryng_ocsservers_id' => $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
+                    'lock'                                => 0];
             }
             $result         = PluginOcsinventoryngOcsProcess::processComputer($process_params);
 
             if (in_array(
                 $result['status'],
                 [PluginOcsinventoryngOcsProcess::COMPUTER_IMPORTED,
-                 PluginOcsinventoryngOcsProcess::COMPUTER_LINKED,
-                 PluginOcsinventoryngOcsProcess::COMPUTER_SYNCHRONIZED]
+                    PluginOcsinventoryngOcsProcess::COMPUTER_LINKED,
+                    PluginOcsinventoryngOcsProcess::COMPUTER_SYNCHRONIZED]
             )) {
                 $notimported->delete(['id' => $params['id']]);
 
@@ -635,12 +635,12 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
     public static function linkComputer($params = [])
     {
         if (isset($params['id'])) {
-            $notimported = new PluginOcsinventoryngNotimportedcomputer;
+            $notimported = new PluginOcsinventoryngNotimportedcomputer();
             $notimported->getFromDB($params['id']);
 
             $link_params = ['ocsid'                               => $notimported->fields['ocsid'],
-                            'plugin_ocsinventoryng_ocsservers_id' => $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
-                            'computers_id'                        => $params['computers_id']];
+                'plugin_ocsinventoryng_ocsservers_id' => $notimported->fields['plugin_ocsinventoryng_ocsservers_id'],
+                'computers_id'                        => $params['computers_id']];
             if (!PluginOcsinventoryngOcsServer::checkOCSconnection($notimported->fields['plugin_ocsinventoryng_ocsservers_id'])) {
                 Session::addMessageAfterRedirect(
                     __("Error to contact ocs server", 'ocsinventoryng'),
@@ -672,9 +672,9 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
     {
         $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($params['plugin_ocsinventoryng_ocsservers_id']);
         $options   = [
-           "DISPLAY" => [
-              "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
-           ]
+            "DISPLAY" => [
+                "CHECKSUM" => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
+            ],
         ];
         $computer  = $ocsClient->getComputer($params['ocsid'], $options);
         $changes   = [];
@@ -726,7 +726,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
                 'not_imported',
                 new PluginOcsinventoryngNotimportedcomputer(),
                 ['entities_id' => $entity,
-                 'notimported' => $items]
+                    'notimported' => $items]
             )
             ) {
                 $alert             = new Alert();
@@ -773,7 +773,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
         switch ($name) {
             case "SendAlerts":
                 return ['description' => __('OCSNG', 'ocsinventoryng')
-                                         . " - " . __('Not imported computers alert', 'ocsinventoryng')];
+                                            . " - " . __('Not imported computers alert', 'ocsinventoryng')];
         }
     }
 
@@ -859,8 +859,7 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
         MassiveAction $ma,
         CommonDBTM $item,
         array $ids
-    )
-    {
+    ) {
         $notimport = new PluginOcsinventoryngNotimportedcomputer();
 
         switch ($ma->getAction()) {
@@ -869,8 +868,8 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
 
                 foreach ($ids as $id) {
                     if (PluginOcsinventoryngNotimportedcomputer::computerImport(['id'     => $id,
-                                                                                 'force'  => true,
-                                                                                 'entity' => $input['entity']])) {
+                        'force'  => true,
+                        'entity' => $input['entity']])) {
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                     } else {
                         $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);

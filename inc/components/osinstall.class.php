@@ -35,11 +35,8 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginOcsinventoryngOsinstall
  */
-class PluginOcsinventoryngOsinstall extends CommonDBChild
+class PluginOcsinventoryngOsinstall
 {
-    // From CommonDBChild
-    public static $itemtype = 'Computer';
-    public static $items_id = 'computers_id';
 
     public static $rightname = "plugin_ocsinventoryng";
 
@@ -188,7 +185,7 @@ class PluginOcsinventoryngOsinstall extends CommonDBChild
                                 echo "<td colspan='2'></td></tr>";
                             }
                         } else {
-                            echo "<tr class='tab_bg_2'><td colspan='$colspan'>" . __('No item found') . "</td></tr>";
+                            echo "<tr class='tab_bg_2'><td colspan='$colspan'>" . __('No results found') . "</td></tr>";
                         }
 
                         echo "</table>";
