@@ -526,7 +526,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM
         //No entity or location predefined, check rules
         if ($defaultentity == -1) {
             //Try to affect computer to an entity
-            $rule = new RuleImportEntityCollection();
+            //$rule = new RuleImportEntityCollection();
+            $rule = new RuleImportAssetCollection();
 
             $input = [
                 'itemtype'    => "Computer",
@@ -555,6 +556,8 @@ class PluginOcsinventoryngOcsProcess extends CommonDBTM
                 [],
                 ['ocsid' => $ocsid]
             );
+
+            $data['entities_id']=$data['rules_id'];
 
             if (isset($data['_ignore_import']) && $data['_ignore_import'] == 1) {
                 //ELSE Return code to indicates that the machine was not imported because it doesn't matched rules
