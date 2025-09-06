@@ -148,7 +148,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
                         $port_input = [
                             'id' => $network_port->getID(),
                             'name' => $name,
-                            'is_dynamic' => 1
+                            'is_dynamic' => 1,
                         ];
                         $network_port->update($port_input, $install_network_history);
                     }
@@ -406,9 +406,9 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
                         'glpi_devicenetworkcards' => [
                             'ON' => [
                                 'glpi_items_devicenetworkcards' => 'devicenetworkcards_id',
-                                'glpi_devicenetworkcards'          => 'id'
-                            ]
-                        ]
+                                'glpi_devicenetworkcards'          => 'id',
+                            ],
+                        ],
                     ],
                     'WHERE' => [
                         'glpi_items_devicenetworkcards.itemtype' => 'Computer',

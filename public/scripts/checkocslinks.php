@@ -158,20 +158,23 @@ foreach ($DB->request([
 if (isset($_GET['dup'])) {
     echo "+ Search duplicate links\n";
 
-    $query = "SELECT `computers_id`, COUNT(*) as cpt
-             FROM `glpi_plugin_ocsinventoryng_ocslinks`
-             GROUP BY `computers_id`
-             HAVING `cpt`>1";
-
-    foreach ($DB->request($query) as $data) {
+    foreach ($DB->request([
+        'SELECT'    => [
+            'computers_id',
+            'COUNT' => '* AS cpt'
+        ],
+        'FROM' => 'glpi_plugin_ocsinventoryng_ocslinks',
+        'GROUPBY'   => 'computers_id',
+        'HAVING'    => ['cpt' => ['>', 1]]]) as $data) {
         printf("%4d links for computer #%d\n", $data['cpt'], $data['computers_id']);
-        $query2 = "SELECT `id`, `plugin_ocsinventoryng_ocsservers_id`,
-                        `ocsid`, `ocs_deviceid`, `computers_id`, `last_update`
-                 FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                 WHERE `computers_id` = " . $data['computers_id'] ."
-                 ORDER BY `last_update`";
+
         $i = 1;
-        foreach ($DB->request($query2) as $data2) {
+        foreach ($DB->request([
+            'FROM' => 'glpi_plugin_ocsinventoryng_ocslinks',
+            'WHERE'     => [
+                'computers_id'  => $data['computers_id']
+            ],
+            'ORDERBY'    => 'last_update']) as $data2) {
             $del = ($i < $data['cpt']); // Keep the more recent
             printf(
                 "%12d : %s (%d-%d, last=%s) : %s\n",

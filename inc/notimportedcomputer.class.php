@@ -709,15 +709,30 @@ class PluginOcsinventoryngNotimportedcomputer extends CommonDropdown
 
         $items_infos = [];
 
-        $query = "SELECT `glpi_plugin_ocsinventoryng_notimportedcomputers`.*
-               FROM `glpi_plugin_ocsinventoryng_notimportedcomputers`
-               LEFT JOIN `glpi_alerts`
-                  ON (`glpi_plugin_ocsinventoryng_notimportedcomputers`.`id` = `glpi_alerts`.`items_id`
-                      AND `glpi_alerts`.`itemtype` = 'PluginOcsinventoryngNotimportedcomputer'
-                      AND `glpi_alerts`.`type` = '" . Alert::END . "')
-               WHERE `glpi_alerts`.`date` IS NULL";
+        $iterator = $DB->request([
+            'SELECT'    => [
+                'glpi_plugin_ocsinventoryng_notimportedcomputers.*',
+            ],
+            'FROM'      => 'glpi_plugin_ocsinventoryng_notimportedcomputers',
+            'LEFT JOIN'       => [
+                'glpi_alerts' => [
+                    'ON' => [
+                        'glpi_plugin_ocsinventoryng_notimportedcomputers'   => 'id',
+                        'glpi_alerts'                  => 'items_id', [
+                            'AND' => [
+                                'glpi_alerts.itemtype' => 'PluginOcsinventoryngNotimportedcomputer',
+                                'glpi_alerts.type' => Alert::END,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'WHERE'     => [
+                'glpi_alerts.date'  => null,
+            ],
+        ]);
 
-        foreach ($DB->request($query) as $notimported) {
+        foreach ($iterator as $notimported) {
             $items_infos[$notimported['entities_id']][$notimported['id']] = $notimported;
         }
 

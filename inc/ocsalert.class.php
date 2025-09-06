@@ -121,23 +121,59 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM
         $date_ocs        = date("Y-m-d", $delay_stamp_ocs);
         $date_ocs        = $date_ocs . " 00:00:00";
 
-        $query = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update`,
-                      `glpi_plugin_ocsinventoryng_ocslinks`.`last_update`,
-                      `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`, 
-                      `glpi_computers`.*,
-                      `glpi_items_operatingsystems`.`operatingsystems_id`
-            FROM `glpi_plugin_ocsinventoryng_ocslinks`
-            LEFT JOIN `glpi_computers` ON `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` = `glpi_computers`.`id`
-            LEFT JOIN `glpi_items_operatingsystems` ON (`glpi_computers`.`id` = `glpi_items_operatingsystems`.`items_id` 
-                AND `glpi_items_operatingsystems`.`itemtype` = 'Computer')
-            WHERE `glpi_computers`.`is_deleted` = 0
-            AND `glpi_computers`.`is_template` = 0
-            AND `last_ocs_update` >= '" . $date_ocs . "' 
-            AND `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id` = '" . $config["id"] . "' ";
-        $query .= "AND `glpi_computers`.`entities_id` = '" . $entity . "' ";
-        $query .= " ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update` ASC";
+//        $query = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update`,
+//                      `glpi_plugin_ocsinventoryng_ocslinks`.`last_update`,
+//                      `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`,
+//                      `glpi_computers`.*,
+//                      `glpi_items_operatingsystems`.`operatingsystems_id`
+//            FROM `glpi_plugin_ocsinventoryng_ocslinks`
+//            LEFT JOIN `glpi_computers` ON `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` = `glpi_computers`.`id`
+//            LEFT JOIN `glpi_items_operatingsystems` ON (`glpi_computers`.`id` = `glpi_items_operatingsystems`.`items_id`
+//                AND `glpi_items_operatingsystems`.`itemtype` = 'Computer')
+//            WHERE `glpi_computers`.`is_deleted` = 0
+//            AND `glpi_computers`.`is_template` = 0
+//            AND `last_ocs_update` >= '" . $date_ocs . "'
+//            AND `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id` = '" . $config["id"] . "' ";
+//        $query .= "AND `glpi_computers`.`entities_id` = '" . $entity . "' ";
+//        $query .= " ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update` ASC";
 
-        return $query;
+
+        $criteria = [
+            'SELECT' => ['glpi_plugin_ocsinventoryng_ocslinks.last_ocs_update',
+                'glpi_plugin_ocsinventoryng_ocslinks.last_update',
+                'glpi_plugin_ocsinventoryng_ocslinks.plugin_ocsinventoryng_ocsservers_id',
+                'glpi_computers.*',
+                'glpi_items_operatingsystems.operatingsystems_id'],
+            'FROM' => 'glpi_plugin_ocsinventoryng_ocslinks',
+            'LEFT JOIN'       => [
+                'glpi_computers' => [
+                    'ON' => [
+                        'glpi_plugin_ocsinventoryng_ocslinks' => 'computers_id',
+                        'glpi_computers'          => 'id'
+                    ]
+                ],
+                'glpi_items_operatingsystems' => [
+                    'ON' => [
+                        'glpi_computers'   => 'id',
+                        'glpi_items_operatingsystems'                  => 'items_id', [
+                            'AND' => [
+                                'glpi_items_operatingsystems.itemtype' => 'Computer',
+                            ],
+                        ],
+                    ]
+                ],
+            ],
+            'WHERE' => [
+                'glpi_computers.is_deleted' => 0,
+                'glpi_computers.is_template' => 0,
+                'glpi_plugin_ocsinventoryng_ocslinks.plugin_ocsinventoryng_ocsservers_id' => $config["id"],
+                'last_ocs_update'=> ['>=', $date_ocs],
+            ],
+            'ORDERBY' => 'glpi_plugin_ocsinventoryng_ocslinks.last_ocs_update ASC',
+        ];
+
+
+        return $criteria;
     }
 
     /**
@@ -155,38 +191,83 @@ class PluginOcsinventoryngOcsAlert extends CommonDBTM
         $date_ocs        = date("Y-m-d", $delay_stamp_ocs);
         $date_ocs        = $date_ocs . " 00:00:00";
 
-        $query = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update`,
-                        `glpi_plugin_ocsinventoryng_ocslinks`.`last_update`,
-                        `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`, 
-                        `glpi_computers`.*,
-                        `glpi_items_operatingsystems`.`operatingsystems_id`
-                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                  LEFT JOIN `glpi_computers` 
-                    ON `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` = `glpi_computers`.`id`
-                  LEFT JOIN `glpi_items_operatingsystems` 
-                    ON (`glpi_computers`.`id` = `glpi_items_operatingsystems`.`items_id` 
-                      AND `glpi_items_operatingsystems`.`itemtype` = 'Computer')
-                WHERE `glpi_computers`.`is_deleted` = 0
-                AND `glpi_computers`.`is_template` = 0
-                AND `last_ocs_update` <= '" . $date_ocs . "' 
-                AND `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id` = " . $config["id"];
+//        $query = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update`,
+//                        `glpi_plugin_ocsinventoryng_ocslinks`.`last_update`,
+//                        `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`,
+//                        `glpi_computers`.*,
+//                        `glpi_items_operatingsystems`.`operatingsystems_id`
+//                FROM `glpi_plugin_ocsinventoryng_ocslinks`
+//                  LEFT JOIN `glpi_computers`
+//                    ON `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` = `glpi_computers`.`id`
+//                  LEFT JOIN `glpi_items_operatingsystems`
+//                    ON (`glpi_computers`.`id` = `glpi_items_operatingsystems`.`items_id`
+//                      AND `glpi_items_operatingsystems`.`itemtype` = 'Computer')
+//                WHERE `glpi_computers`.`is_deleted` = 0
+//                AND `glpi_computers`.`is_template` = 0
+//                AND `last_ocs_update` <= '" . $date_ocs . "'
+//                AND `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id` = " . $config["id"];
+//
+//        $query_state = "SELECT `states_id`
+//            FROM `glpi_plugin_ocsinventoryng_notificationstates` ";
+//        $result_state = $DB->doQuery($query_state);
+//        if ($DB->numrows($result_state) > 0) {
+//            $query .= " AND (`glpi_computers`.`states_id` = 999999 ";
+//            while ($data_state = $DB->fetchArray($result_state)) {
+//                $type_where = "OR `glpi_computers`.`states_id` = " . $data_state["states_id"] . " ";
+//                $query      .= " $type_where ";
+//            }
+//            $query .= ") ";
+//        }
+//
+//        $query .= " AND `glpi_computers`.`entities_id` = $entity";
+//        $query .= " ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update` DESC";
 
-        $query_state = "SELECT `states_id`
-            FROM `glpi_plugin_ocsinventoryng_notificationstates` ";
-        $result_state = $DB->doQuery($query_state);
-        if ($DB->numrows($result_state) > 0) {
-            $query .= " AND (`glpi_computers`.`states_id` = 999999 ";
-            while ($data_state = $DB->fetchArray($result_state)) {
-                $type_where = "OR `glpi_computers`.`states_id` = " . $data_state["states_id"] . " ";
-                $query      .= " $type_where ";
-            }
-            $query .= ") ";
+        $states = [];
+
+        foreach ($DB->request([
+            'SELECT' => 'states_id',
+            'FROM' => 'glpi_plugin_ocsinventoryng_notificationstates']) as $data) {
+            $states[] = $data["states_id"];
         }
 
-        $query .= " AND `glpi_computers`.`entities_id` = $entity";
-        $query .= " ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update` DESC";
 
-        return $query;
+        $criteria = [
+            'SELECT' => ['glpi_plugin_ocsinventoryng_ocslinks.last_ocs_update',
+                'glpi_plugin_ocsinventoryng_ocslinks.last_update',
+                'glpi_plugin_ocsinventoryng_ocslinks.plugin_ocsinventoryng_ocsservers_id',
+                'glpi_computers.*',
+                'glpi_items_operatingsystems.operatingsystems_id'],
+            'FROM' => 'glpi_plugin_ocsinventoryng_ocslinks',
+            'LEFT JOIN'       => [
+                'glpi_computers' => [
+                    'ON' => [
+                        'glpi_plugin_ocsinventoryng_ocslinks' => 'computers_id',
+                        'glpi_computers'          => 'id'
+                    ]
+                ],
+                'glpi_items_operatingsystems' => [
+                    'ON' => [
+                        'glpi_computers'   => 'id',
+                        'glpi_items_operatingsystems'                  => 'items_id', [
+                            'AND' => [
+                                'glpi_items_operatingsystems.itemtype' => 'Computer',
+                            ],
+                        ],
+                    ]
+                ],
+            ],
+            'WHERE' => [
+                'glpi_computers.is_deleted' => 0,
+                'glpi_computers.is_template' => 0,
+                'glpi_computers.entities_id' => $entity,
+                'glpi_plugin_ocsinventoryng_ocslinks.plugin_ocsinventoryng_ocsservers_id' => $config["id"],
+                'last_ocs_update'=> ['<=', $date_ocs],
+            ],
+            'ORDERBY' => 'glpi_plugin_ocsinventoryng_ocslinks.last_ocs_update DESC',
+        ];
+        $criteria['WHERE'] = $criteria['WHERE'] + ['glpi_computers.states_id' => $states];
+
+        return $criteria;
     }
 
     /**

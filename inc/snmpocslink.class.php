@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -36,25 +37,24 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginOcsinventoryngSnmpOcslink extends CommonDBTM
 {
-
-    static $snmptypes = ['Computer', 'NetworkEquipment', 'Peripheral', 'Phone', 'Printer'];
-    static $rightname = "plugin_ocsinventoryng";
-   /** @const */
+    public static $snmptypes = ['Computer', 'NetworkEquipment', 'Peripheral', 'Phone', 'Printer'];
+    public static $rightname = "plugin_ocsinventoryng";
+    /** @const */
     private static $CARTRIDGE_COLOR_CYAN    = ['cyan'];
     private static $CARTRIDGE_COLOR_MAGENTA = ['magenta'];
     private static $CARTRIDGE_COLOR_YELLOW  = ['yellow', 'jaune'];
     private static $CARTRIDGE_COLOR_BLACK   = ['black', 'noir'];
-    const OTHER_DATA = 'other';
+    public const OTHER_DATA = 'other';
 
-   /**
-    * @see inc/CommonGLPI::getTabNameForItem()
-    *
-    * @param $item               CommonGLPI object
-    * @param $withtemplate (default 0)
-    *
-    * @return string|translated
-    */
-    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    /**
+     * @see inc/CommonGLPI::getTabNameForItem()
+     *
+     * @param $item               CommonGLPI object
+     * @param $withtemplate (default 0)
+     *
+     * @return string|translated
+     */
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
 
         if (in_array($item->getType(), self::$snmptypes)
@@ -68,7 +68,7 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM
              && PluginOcsinventoryngOcsServer::checkTraceDeleted($item->getID())) {
                 $client  = PluginOcsinventoryngOcsServer::getDBocs($item->getID());
                 $version = $client->getTextConfig('GUI_VERSION');
-                $snmp    = ($client->getIntConfig('SNMP') > 0)?true:false;
+                $snmp    = ($client->getIntConfig('SNMP') > 0) ? true : false;
 
                 if ($version > PluginOcsinventoryngOcsServer::OCS2_1_VERSION_LIMIT && $snmp) {
                     return __('SNMP Import', 'ocsinventoryng');
@@ -79,14 +79,14 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM
     }
 
 
-   /**
-    * @param $item            CommonGLPI object
-    * @param $tabnum (default 1)
-    * @param $withtemplate (default 0)
-    *
-    * @return bool|true
-    */
-    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    /**
+     * @param $item            CommonGLPI object
+     * @param $tabnum (default 1)
+     * @param $withtemplate (default 0)
+     *
+     * @return bool|true
+     */
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
 
         if (in_array($item->getType(), self::$snmptypes)) {
@@ -98,13 +98,13 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM
         return true;
     }
 
-   /**
-    * @param $ID
-    *
-    * @internal param $withtemplate (default '')
-    * @internal param $templateid (default '')
-    */
-    function ocsFormSNMPImportOptions($ID)
+    /**
+     * @param $ID
+     *
+     * @internal param $withtemplate (default '')
+     * @internal param $templateid (default '')
+     */
+    public function ocsFormSNMPImportOptions($ID)
     {
 
         $conf = new PluginOcsinventoryngOcsServer();
@@ -132,19 +132,19 @@ class PluginOcsinventoryngSnmpOcslink extends CommonDBTM
          </script>
 JAVASCRIPT;
         $values = [-1 => Dropdown::EMPTY_VALUE,
-                 0  => __('No'),
-                 1  => __('Yes')];
+            0  => __('No'),
+            1  => __('Yes')];
 
         Dropdown::showFromArray('init_all', $values, [
-         'width'     => '10%',
-         'on_change' => "form_init_all(this.value);"
+            'width'     => '10%',
+            'on_change' => "form_init_all(this.value);",
         ]);
         echo "</th></tr>";
 
         echo "<tr class='tab_bg_2'>\n";
         echo "<td class='top'>\n";
-        echo Html::css(PLUGIN_OCS_NOTFULL_DIR."/lib/jquery-ui/jquery-ui.min.css");
-        echo Html::script(PLUGIN_OCS_NOTFULL_DIR."/lib/jquery-ui/jquery-ui.min.js");
+        echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/jquery-ui/jquery-ui.min.css");
+        echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/jquery-ui/jquery-ui.min.js");
         echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
          function accordions(id, openall) {
@@ -251,11 +251,11 @@ JAVASCRIPT;
         echo "</table><br>";
         echo "</div>";
 
-       //Components
+        //Components
 
         echo "<h2><a href='#'>" . __('General SNMP link options', 'ocsinventoryng') . "</a></h2>";
 
-       /******Link ***/
+        /******Link ***/
         echo "<div>";
         echo "<table class='tab_cadre' width='100%'>";
         echo "<tr><th colspan='4'>" . __('General SNMP link options', 'ocsinventoryng') . "</th></tr>\n";
@@ -357,10 +357,10 @@ JAVASCRIPT;
         echo "</div>";
     }
 
-   /**
-    * @param $plugin_ocsinventoryng_ocsservers_id
-    */
-    static function snmpMenu($plugin_ocsinventoryng_ocsservers_id)
+    /**
+     * @param $plugin_ocsinventoryng_ocsservers_id
+     */
+    public static function snmpMenu($plugin_ocsinventoryng_ocsservers_id)
     {
         global $CFG_GLPI, $DB;
         $ocsservers = [];
@@ -375,21 +375,33 @@ JAVASCRIPT;
 
             echo "<tr class='tab_bg_2'><td class='center'>" . __('Name') . "</td>";
             echo "<td class='center'>";
-            $query = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
-                   FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
-                   LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
-                      ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
-                   WHERE `profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . " 
-                   AND `glpi_plugin_ocsinventoryng_ocsservers`.`is_active`= 1
-                   ORDER BY `name` ASC";
+            $iterator = $DB->request([
+                'SELECT'    => [
+                    'glpi_plugin_ocsinventoryng_ocsservers.id',
+                ],
+                'FROM'      => 'glpi_plugin_ocsinventoryng_ocsservers_profiles',
+                'LEFT JOIN'       => [
+                    'glpi_plugin_ocsinventoryng_ocsservers' => [
+                        'ON' => [
+                            'glpi_plugin_ocsinventoryng_ocsservers_profiles' => 'plugin_ocsinventoryng_ocsservers_id',
+                            'glpi_plugin_ocsinventoryng_ocsservers'          => 'id',
+                        ],
+                    ],
+                ],
+                'WHERE'     => [
+                    'profiles_id'  => $_SESSION["glpiactiveprofile"]['id'],
+                    'is_active' => 1,
+                ],
+                'ORDERBY'   => 'name ASC',
+            ]);
 
-            foreach ($DB->request($query) as $data) {
+            foreach ($iterator as $data) {
                 $ocsservers[] = $data['id'];
             }
             Dropdown::show('PluginOcsinventoryngOcsServer', ["condition"           => ["id" => $ocsservers],
-                                                          "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                                                          "on_change"           => "this.form.submit()",
-                                                          "display_emptychoice" => false]);
+                "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                "on_change"           => "this.form.submit()",
+                "display_emptychoice" => false]);
             echo "</td></tr>";
             echo "<tr class='tab_bg_2'><td colspan='2'>";
             echo "<div class='alert alert-important alert-warning d-flex'>";
@@ -399,24 +411,39 @@ JAVASCRIPT;
             echo "</table></div>";
             Html::closeForm();
         }
-        $sql      = "SELECT `name`, `is_active`
-              FROM `glpi_plugin_ocsinventoryng_ocsservers`
-              LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers_profiles`
-                  ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
-              WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`id` = " . $plugin_ocsinventoryng_ocsservers_id . " 
-              AND `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'];
-        $result   = $DB->doQuery($sql);
+
+        $iterator = $DB->request([
+            'SELECT'    => [
+                'glpi_plugin_ocsinventoryng_ocsservers.name',
+                'glpi_plugin_ocsinventoryng_ocsservers.is_active',
+            ],
+            'FROM'      => 'glpi_plugin_ocsinventoryng_ocsservers',
+            'LEFT JOIN'       => [
+                'glpi_plugin_ocsinventoryng_ocsservers_profiles' => [
+                    'ON' => [
+                        'glpi_plugin_ocsinventoryng_ocsservers_profiles' => 'plugin_ocsinventoryng_ocsservers_id',
+                        'glpi_plugin_ocsinventoryng_ocsservers'          => 'id',
+                    ],
+                ],
+            ],
+            'WHERE'     => [
+                'glpi_plugin_ocsinventoryng_ocsservers.id'  => $plugin_ocsinventoryng_ocsservers_id,
+                'glpi_plugin_ocsinventoryng_ocsservers_profiles.profiles_id' => $_SESSION["glpiactiveprofile"]['id'],
+            ],
+        ]);
+
         $isactive = 0;
-        if ($DB->numrows($result) > 0) {
-            $datas    = $DB->fetchArray($result);
-            $name     = " : " . $datas["name"];
-            $isactive = $datas["is_active"];
+        if (count($iterator) > 0) {
+            foreach ($iterator as $datas) {
+                $name = " : " . $datas["name"];
+                $isactive = $datas["is_active"];
+            }
         }
         if ($isactive) {
             $client = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
-           //if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $version > PluginOcsinventoryngOcsServer::OCS2_1_VERSION_LIMIT && $snmp) {
-           //host not imported by thread
+            //if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $version > PluginOcsinventoryngOcsServer::OCS2_1_VERSION_LIMIT && $snmp) {
+            //host not imported by thread
             echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
             echo "<tr><th colspan='4'>";
             echo __('OCSNG SNMP import', 'ocsinventoryng');
@@ -426,7 +453,7 @@ JAVASCRIPT;
             echo "</a>";
             echo "</th></tr>";
 
-           // SNMP device link feature
+            // SNMP device link feature
             echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                   <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsngsnmp.link.php'>
                    <i style='color:firebrick' class='fas fa-arrow-alt-circle-down fa-2x' 
@@ -442,7 +469,7 @@ JAVASCRIPT;
                </a></td>";
             echo "</tr>";
 
-           //SNMP device import feature
+            //SNMP device import feature
             echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
              <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsngsnmp.import.php'>
               <i style='color:cornflowerblue' class='fas fa-plus fa-2x' 
@@ -456,20 +483,20 @@ JAVASCRIPT;
         }
     }
 
-   /**
-    * Show OcsLink of an item
-    *
-    * @param $item                   CommonDBTM object
-    *
-    * @return void
-    * @throws \GlpitestSQLError
-    * @internal param int|string $withtemplate integer  withtemplate param (default '')
-    */
-    static function showForItem(CommonDBTM $item)
+    /**
+     * Show OcsLink of an item
+     *
+     * @param $item                   CommonDBTM object
+     *
+     * @return void
+     * @throws \GlpitestSQLError
+     * @internal param int|string $withtemplate integer  withtemplate param (default '')
+     */
+    public static function showForItem(CommonDBTM $item)
     {
         global $DB;
 
-       //$target = Toolbox::getItemTypeFormURL(__CLASS__);
+        //$target = Toolbox::getItemTypeFormURL(__CLASS__);
 
         if (in_array($item->getType(), self::$snmptypes)) {
             $items_id = $item->getField('id');
@@ -486,59 +513,59 @@ JAVASCRIPT;
                     $data = $DB->fetchAssoc($result);
 
                     if (count($data)) {
-                         echo "<table class='tab_cadre_fixe'>";
-                         echo "<tr class='tab_bg_1'><th colspan='2'>" . __('OCS Inventory NG SNMP Import informations', 'ocsinventoryng') . "</th>";
-                         $linked = __('Imported object', 'ocsinventoryng');
+                        echo "<table class='tab_cadre_fixe'>";
+                        echo "<tr class='tab_bg_1'><th colspan='2'>" . __('OCS Inventory NG SNMP Import informations', 'ocsinventoryng') . "</th>";
+                        $linked = __('Imported object', 'ocsinventoryng');
                         if ($data["linked"]) {
                             $linked = __('Linked object', 'ocsinventoryng');
                         }
-                         echo "<tr class='tab_bg_1'><td>" . __('Import date in GLPI', 'ocsinventoryng');
-                         echo "</td><td>" . Html::convDateTime($data["last_update"]) . " (" . $linked . ")</td></tr>";
+                        echo "<tr class='tab_bg_1'><td>" . __('Import date in GLPI', 'ocsinventoryng');
+                        echo "</td><td>" . Html::convDateTime($data["last_update"]) . " (" . $linked . ")</td></tr>";
 
-                         $linked_ids [] = $data['ocs_id'];
-                         $ocsClient     = PluginOcsinventoryngOcsServer::getDBocs($data['plugin_ocsinventoryng_ocsservers_id']);
-                         $ocsResult     = $ocsClient->getSnmp([
-                                                          'MAX_RECORDS' => 1,
-                                                          'FILTER'      => [
-                                                             'IDS' => $linked_ids,
-                                                          ]
-                                                       ]);
+                        $linked_ids [] = $data['ocs_id'];
+                        $ocsClient     = PluginOcsinventoryngOcsServer::getDBocs($data['plugin_ocsinventoryng_ocsservers_id']);
+                        $ocsResult     = $ocsClient->getSnmp([
+                            'MAX_RECORDS' => 1,
+                            'FILTER'      => [
+                                'IDS' => $linked_ids,
+                            ],
+                        ]);
                         if (isset($ocsResult['SNMP'])) {
                             if (count($ocsResult['SNMP']) > 0) {
                                 foreach ($ocsResult['SNMP'] as $snmp) {
-                                         $LASTDATE = $snmp['META']['LASTDATE'];
-                                         $UPTIME   = $snmp['META']['UPTIME'];
+                                    $LASTDATE = $snmp['META']['LASTDATE'];
+                                    $UPTIME   = $snmp['META']['UPTIME'];
 
-                                         echo "<tr class='tab_bg_1'><td>" . __('Last OCSNG SNMP inventory date', 'ocsinventoryng');
-                                         echo "</td><td>" . Html::convDateTime($LASTDATE) . "</td></tr>";
+                                    echo "<tr class='tab_bg_1'><td>" . __('Last OCSNG SNMP inventory date', 'ocsinventoryng');
+                                    echo "</td><td>" . Html::convDateTime($LASTDATE) . "</td></tr>";
 
-                                         echo "<tr class='tab_bg_1'><td>" . __('Uptime', 'ocsinventoryng');
-                                         echo "</td><td>" . $UPTIME . "</td></tr>";
+                                    echo "<tr class='tab_bg_1'><td>" . __('Uptime', 'ocsinventoryng');
+                                    echo "</td><td>" . $UPTIME . "</td></tr>";
 
-                                         echo "<tr class='tab_bg_1 center'><td colspan='2'>";
-                                         $target = Toolbox::getItemTypeFormURL(__CLASS__);
+                                    echo "<tr class='tab_bg_1 center'><td colspan='2'>";
+                                    $target = Toolbox::getItemTypeFormURL(__CLASS__);
 
-                                         Html::showSimpleForm(
-                                             $target,
-                                             'delete_link',
-                                             _sx('button', 'Delete link', 'ocsinventoryng'),
-                                             ['items_id'                            => $items_id,
-                                                 'itemtype'                            => $item->getType(),
-                                                 'id'                                  => $data["id"],
-                                             'plugin_ocsinventoryng_ocsservers_id' => $data["plugin_ocsinventoryng_ocsservers_id"]]
-                                         );
-                                         echo "</td></tr>";
+                                    Html::showSimpleForm(
+                                        $target,
+                                        'delete_link',
+                                        _sx('button', 'Delete link', 'ocsinventoryng'),
+                                        ['items_id'                            => $items_id,
+                                            'itemtype'                            => $item->getType(),
+                                            'id'                                  => $data["id"],
+                                            'plugin_ocsinventoryng_ocsservers_id' => $data["plugin_ocsinventoryng_ocsservers_id"]]
+                                    );
+                                    echo "</td></tr>";
                                 }
                                 if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
-                                     echo "</table><table class='tab_cadre_fixe'>";
-                                     echo "<tr class='tab_bg_1'><th colspan='2'>" . __('SNMP Debug') . "</th>";
-                                     echo "<tr class='tab_bg_1'>";
-                                     echo "<td  colspan='2'>";
-                                     echo "<pre>";
-                                     print_r($ocsResult['SNMP']);
-                                     echo "</pre>";
-                                     echo "</td></tr>";
-                                     echo "</table>";
+                                    echo "</table><table class='tab_cadre_fixe'>";
+                                    echo "<tr class='tab_bg_1'><th colspan='2'>" . __('SNMP Debug') . "</th>";
+                                    echo "<tr class='tab_bg_1'>";
+                                    echo "<td  colspan='2'>";
+                                    echo "<pre>";
+                                    print_r($ocsResult['SNMP']);
+                                    echo "</pre>";
+                                    echo "</td></tr>";
+                                    echo "</table>";
                                 }
                             } else {
                                 echo "</table>";
@@ -552,93 +579,93 @@ JAVASCRIPT;
         }
     }
 
-   /**
-    * if Printer purged
-    *
-    * @param $print   Printer object
-    **/
-    static function purgePrinter(Printer $print)
+    /**
+     * if Printer purged
+     *
+     * @param $print   Printer object
+     **/
+    public static function purgePrinter(Printer $print)
     {
         $snmp = new self();
         $snmp->deleteByCriteria(['items_id' => $print->getField("id"),
-                               'itemtype' => $print->getType()]);
+            'itemtype' => $print->getType()]);
 
         $ipdiscover = new PluginOcsinventoryngIpdiscoverOcslink();
         $ipdiscover->deleteByCriteria(['items_id' => $print->getField("id"),
-                                     'itemtype' => $print->getType()]);
+            'itemtype' => $print->getType()]);
     }
 
-   /**
-    * if Printer purged
-    *
-    * @param $per   Peripheral object
-    **/
-    static function purgePeripheral(Peripheral $per)
+    /**
+     * if Printer purged
+     *
+     * @param $per   Peripheral object
+     **/
+    public static function purgePeripheral(Peripheral $per)
     {
         $snmp = new self();
         $snmp->deleteByCriteria(['items_id' => $per->getField("id"),
-                               'itemtype' => $per->getType()]);
+            'itemtype' => $per->getType()]);
         $ipdiscover = new PluginOcsinventoryngIpdiscoverOcslink();
         $ipdiscover->deleteByCriteria(['items_id' => $per->getField("id"),
-                                     'itemtype' => $per->getType()]);
+            'itemtype' => $per->getType()]);
     }
 
-   /**
-    * if NetworkEquipment purged
-    *
-    * @param NetworkEquipment $net
-    *
-    * @internal param NetworkEquipment $comp object
-    */
-    static function purgeNetworkEquipment(NetworkEquipment $net)
+    /**
+     * if NetworkEquipment purged
+     *
+     * @param NetworkEquipment $net
+     *
+     * @internal param NetworkEquipment $comp object
+     */
+    public static function purgeNetworkEquipment(NetworkEquipment $net)
     {
         $snmp = new self();
         $snmp->deleteByCriteria(['items_id' => $net->getField("id"),
-                               'itemtype' => $net->getType()]);
+            'itemtype' => $net->getType()]);
         $ipdiscover = new PluginOcsinventoryngIpdiscoverOcslink();
         $ipdiscover->deleteByCriteria(['items_id' => $net->getField("id"),
-                                     'itemtype' => $net->getType()]);
+            'itemtype' => $net->getType()]);
     }
 
-   /**
-    * if Computer purged
-    *
-    * @param $comp   Computer object
-    **/
-    static function purgeComputer(Computer $comp)
+    /**
+     * if Computer purged
+     *
+     * @param $comp   Computer object
+     **/
+    public static function purgeComputer(Computer $comp)
     {
         $snmp = new self();
         $snmp->deleteByCriteria(['items_id' => $comp->getField("id"),
-                               'itemtype' => $comp->getType()]);
+            'itemtype' => $comp->getType()]);
         $ipdiscover = new PluginOcsinventoryngIpdiscoverOcslink();
         $ipdiscover->deleteByCriteria(['items_id' => $comp->getField("id"),
-                                     'itemtype' => $comp->getType()]);
+            'itemtype' => $comp->getType()]);
     }
 
-   /**
-    * if Phone purged
-    *
-    * @param $pho   Phone object
-    **/
-    static function purgePhone(Phone $pho)
+    /**
+     * if Phone purged
+     *
+     * @param $pho   Phone object
+     **/
+    public static function purgePhone(Phone $pho)
     {
         $snmp = new self();
         $snmp->deleteByCriteria(['items_id' => $pho->getField("id"),
-                               'itemtype' => $pho->getType()]);
+            'itemtype' => $pho->getType()]);
         $ipdiscover = new PluginOcsinventoryngIpdiscoverOcslink();
         $ipdiscover->deleteByCriteria(['items_id' => $pho->getField("id"),
-                                     'itemtype' => $pho->getType()]);
+            'itemtype' => $pho->getType()]);
     }
 
-   /**
-    * Show simple inventory information of an item
-    *
-    * @param $item                   CommonDBTM object
-    *
-    * @return void
-    * @throws \GlpitestSQLError
-    */
-    static function showSimpleForItem(CommonDBTM $item)
+    /**
+     * Show simple inventory information of an item
+     *
+     * @param $item                   CommonDBTM object
+     *
+     * @return void
+     * @throws \GlpitestSQLError
+     */
+    public static function showSimpleForItem(CommonDBTM $item)
     {
         global $DB;
 
@@ -659,15 +686,15 @@ JAVASCRIPT;
                     $data = $DB->fetchAssoc($result);
 
                     if (count($data)) {
-                         echo "<table class='tab_cadre_fixe'>";
-                         echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG SNMP Import informations', 'ocsinventoryng') . "</th>";
+                        echo "<table class='tab_cadre_fixe'>";
+                        echo "<tr class='tab_bg_1'><th colspan='4'>" . __('OCS Inventory NG SNMP Import informations', 'ocsinventoryng') . "</th>";
 
-                         echo "<tr class='tab_bg_1'><td>" . __('Import date in GLPI', 'ocsinventoryng');
-                         $linked = __('Imported object', 'ocsinventoryng');
+                        echo "<tr class='tab_bg_1'><td>" . __('Import date in GLPI', 'ocsinventoryng');
+                        $linked = __('Imported object', 'ocsinventoryng');
                         if ($data["linked"]) {
                             $linked = __('Linked object', 'ocsinventoryng');
                         }
-                         echo "</td><td>" . Html::convDateTime($data["last_update"]) . " (" . $linked . ")</td>";
+                        echo "</td><td>" . Html::convDateTime($data["last_update"]) . " (" . $linked . ")</td>";
                         if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
                             echo "<td class='center' colspan='2'>";
                             Html::showSimpleForm(
@@ -675,9 +702,9 @@ JAVASCRIPT;
                                 'force_ocssnmp_resynch',
                                 _sx('button', 'Force SNMP synchronization', 'ocsinventoryng'),
                                 ['items_id'                            => $items_id,
-                                         'itemtype'                            => $item->getType(),
-                                         'id'                                  => $data["id"],
-                                         'plugin_ocsinventoryng_ocsservers_id' => $data["plugin_ocsinventoryng_ocsservers_id"]]
+                                    'itemtype'                            => $item->getType(),
+                                    'id'                                  => $data["id"],
+                                    'plugin_ocsinventoryng_ocsservers_id' => $data["plugin_ocsinventoryng_ocsservers_id"]]
                             );
                             echo "</td></tr>";
                         } else {
@@ -688,22 +715,22 @@ JAVASCRIPT;
                         $linked_ids [] = $data['ocs_id'];
                         $ocsClient     = PluginOcsinventoryngOcsServer::getDBocs($data['plugin_ocsinventoryng_ocsservers_id']);
                         $ocsResult     = $ocsClient->getSnmp([
-                                                          'MAX_RECORDS' => 1,
-                                                          'FILTER'      => [
-                                                             'IDS' => $linked_ids,
-                                                          ]
-                                                       ]);
+                            'MAX_RECORDS' => 1,
+                            'FILTER'      => [
+                                'IDS' => $linked_ids,
+                            ],
+                        ]);
                         if (isset($ocsResult['SNMP'])) {
                             if (count($ocsResult['SNMP']) > 0) {
                                 foreach ($ocsResult['SNMP'] as $snmp) {
-                                         $LASTDATE = $snmp['META']['LASTDATE'];
-                                         $UPTIME   = $snmp['META']['UPTIME'];
+                                    $LASTDATE = $snmp['META']['LASTDATE'];
+                                    $UPTIME   = $snmp['META']['UPTIME'];
 
-                                         echo "<tr class='tab_bg_1'><td>" . __('Last OCSNG SNMP inventory date', 'ocsinventoryng');
-                                         echo "</td><td>" . Html::convDateTime($LASTDATE) . "</td>";
+                                    echo "<tr class='tab_bg_1'><td>" . __('Last OCSNG SNMP inventory date', 'ocsinventoryng');
+                                    echo "</td><td>" . Html::convDateTime($LASTDATE) . "</td>";
 
-                                         echo "<td>" . __('Uptime', 'ocsinventoryng');
-                                         echo "</td><td>" . $UPTIME . "</td></tr>";
+                                    echo "<td>" . __('Uptime', 'ocsinventoryng');
+                                    echo "</td><td>" . $UPTIME . "</td></tr>";
                                 }
                             }
                         }
@@ -713,16 +740,16 @@ JAVASCRIPT;
                             if (isset($ocsResult['SNMP'])) {
                                 if (count($ocsResult['SNMP']) > 0) {
                                     foreach ($ocsResult['SNMP'] as $snmp) {
-                                            $cartridges = $snmp['CARTRIDGES'];
-                                            $trays      = $snmp['TRAYS'];
+                                        $cartridges = $snmp['CARTRIDGES'];
+                                        $trays      = $snmp['TRAYS'];
                                     }
                                 }
                             }
                             if (count($cartridges) > 0) {
                                 $colors = [self::$CARTRIDGE_COLOR_BLACK,
-                                   self::$CARTRIDGE_COLOR_CYAN,
-                                   self::$CARTRIDGE_COLOR_MAGENTA,
-                                   self::$CARTRIDGE_COLOR_YELLOW];
+                                    self::$CARTRIDGE_COLOR_CYAN,
+                                    self::$CARTRIDGE_COLOR_MAGENTA,
+                                    self::$CARTRIDGE_COLOR_YELLOW];
 
                                 echo "<tr class='tab_bg_1'><th colspan='4'>" . __('Cartridges informations', 'ocsinventoryng') . "</th>";
                                 foreach ($cartridges as $cartridge) {
@@ -746,7 +773,7 @@ JAVASCRIPT;
                                         }
                                         $percent = 0;
                                         if ($cartridge['LEVEL'] > 0) {
-                                             $percent = ($cartridge['LEVEL'] * 100) / $cartridge['MAXCAPACITY'];
+                                            $percent = ($cartridge['LEVEL'] * 100) / $cartridge['MAXCAPACITY'];
                                         }
                                         echo "<td colspan='2'><div class='ocsinventoryng_toner_level'><div class='ocsinventoryng_toner_level $class' style='width:" . $percent . "%'></div></div></td>";
                                         echo "<td>" . $cartridge['LEVEL'] . " %</td>";
@@ -758,26 +785,26 @@ JAVASCRIPT;
                                 echo "<tr class='tab_bg_1'><th colspan='4'>" . __('Trays informations', 'ocsinventoryng') . "</th>";
                                 foreach ($trays as $tray) {
                                     if ($tray['NAME'] != "Bypass Tray") {
-                                           echo "<tr class='tab_bg_1'>";
-                                           echo "<td>" . $tray['DESCRIPTION'] . "</td>";
-                                           $class   = 'ocsinventoryng_toner_level_other';
-                                           $percent = 0;
+                                        echo "<tr class='tab_bg_1'>";
+                                        echo "<td>" . $tray['DESCRIPTION'] . "</td>";
+                                        $class   = 'ocsinventoryng_toner_level_other';
+                                        $percent = 0;
                                         if ($tray['LEVEL'] > 0) {
                                             $percent = ($tray['LEVEL'] * 100) / $tray['MAXCAPACITY'];
                                         }
-                                          echo "<td colspan='2'><div class='ocsinventoryng_toner_level'><div class='ocsinventoryng_toner_level $class' style='width:" . $percent . "%'></div></div></td>";
-                                          echo "<td>" . $tray['LEVEL'] . " / " . $tray['MAXCAPACITY'] . "</td>";
-                                          echo "</tr>";
+                                        echo "<td colspan='2'><div class='ocsinventoryng_toner_level'><div class='ocsinventoryng_toner_level $class' style='width:" . $percent . "%'></div></div></td>";
+                                        echo "<td>" . $tray['LEVEL'] . " / " . $tray['MAXCAPACITY'] . "</td>";
+                                        echo "</tr>";
                                     }
                                 }
                             }
                         }
-                         echo "</table>";
+                        echo "</table>";
                     }
                 }
             }
         }
-       //IPDiscover Links
+        //IPDiscover Links
         if (in_array($item->getType(), PluginOcsinventoryngIpdiscoverOcslink::$hardwareItemTypes)) {
             $items_id = $item->getField('id');
 
@@ -805,23 +832,23 @@ JAVASCRIPT;
         }
     }
 
-   // SNMP PART HERE
+    // SNMP PART HERE
 
-   /**
-    * @param     $ocsid
-    * @param     $plugin_ocsinventoryng_ocsservers_id
-    * @param int $lock
-    * @param     $params
-    *
-    * @return array
-    */
-    static function processSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $params)
+    /**
+     * @param     $ocsid
+     * @param     $plugin_ocsinventoryng_ocsservers_id
+     * @param int $lock
+     * @param     $params
+     *
+     * @return array
+     */
+    public static function processSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $params)
     {
         global $DB;
 
 
 
-       //Check it machine is already present AND was imported by OCS AND still present in GLPI
+        //Check it machine is already present AND was imported by OCS AND still present in GLPI
         $query                                      = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`id`
              FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
              WHERE `ocs_id` = '$ocsid'
@@ -830,21 +857,21 @@ JAVASCRIPT;
 
         if ($DB->numrows($result_glpi_plugin_ocsinventoryng_ocslinks)) {
             $datas = $DB->fetchArray($result_glpi_plugin_ocsinventoryng_ocslinks);
-           //Return code to indicates that the machine was synchronized
-           //or only last inventory date changed
+            //Return code to indicates that the machine was synchronized
+            //or only last inventory date changed
             return self::updateSnmp($datas["id"], $plugin_ocsinventoryng_ocsservers_id);
         }
         return self::importSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $params);
     }
 
-   /**
-    * @param $ocsid
-    * @param $plugin_ocsinventoryng_ocsservers_id
-    * @param $params
-    *
-    * @return array
-    */
-    static function importSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $params)
+    /**
+     * @param $ocsid
+     * @param $plugin_ocsinventoryng_ocsservers_id
+     * @param $params
+     *
+     * @return array
+     */
+    public static function importSnmp($ocsid, $plugin_ocsinventoryng_ocsservers_id, $params)
     {
         global $DB;
 
@@ -857,7 +884,7 @@ JAVASCRIPT;
 
         $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
         $cfg_ocs   = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
-       //TODOSNMP entites_id ?
+        //TODOSNMP entites_id ?
 
         $ocsSnmp = $ocsClient->getSnmpDevice($ocsid);
 
@@ -878,11 +905,11 @@ JAVASCRIPT;
             } elseif ($itemtype == "Peripheral" || $itemtype == "Phone") {
                 $id = self::addOrUpdateOther($itemtype, 0, $ocsSnmp, $loc_id, "add", false, $cfg_ocs);
             }
-           //TODOSNMP
-           //Monitor & Phone ???
+            //TODOSNMP
+            //Monitor & Phone ???
             if (isset($id)) {
                 $date = date("Y-m-d H:i:s");
-               //Add to snmp link
+                //Add to snmp link
 
                 $query = "INSERT INTO `glpi_plugin_ocsinventoryng_snmpocslinks`
                        SET `items_id` = $id,
@@ -903,48 +930,48 @@ JAVASCRIPT;
             }
         } else {
             return ['status' => PluginOcsinventoryngOcsProcess::SNMP_FAILED_IMPORT,
-                 //'entities_id'  => $data['entities_id'],
+                //'entities_id'  => $data['entities_id'],
             ];
         }
     }
 
-   /**
-    * @param      $plugin_ocsinventoryng_ocsservers_id
-    * @param      $itemtype
-    * @param int  $ID
-    * @param      $ocsSnmp
-    * @param      $loc_id
-    * @param      $action
-    * @param bool $linked
-    *
-    * @param      $cfg_ocs
-    *
-    * @return int
-    * @throws \GlpitestSQLError
-    */
-    static function addOrUpdatePrinter($itemtype, $ID, $ocsSnmp, $loc_id, $action, $linked, $cfg_ocs)
+    /**
+     * @param      $plugin_ocsinventoryng_ocsservers_id
+     * @param      $itemtype
+     * @param int  $ID
+     * @param      $ocsSnmp
+     * @param      $loc_id
+     * @param      $action
+     * @param bool $linked
+     *
+     * @param      $cfg_ocs
+     *
+     * @return int
+     * @throws \GlpitestSQLError
+     */
+    public static function addOrUpdatePrinter($itemtype, $ID, $ocsSnmp, $loc_id, $action, $linked, $cfg_ocs)
     {
         global $DB;
 
         $snmpDevice = new $itemtype();
 
         $input = [
-         "is_dynamic"    => 1,
-         "entities_id"   => (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0),
-         "have_ethernet" => 1,
+            "is_dynamic"    => 1,
+            "entities_id"   => ($_SESSION['glpiactive_entity'] ?? 0),
+            "have_ethernet" => 1,
         ];
 
-       //TODOSNMP TO TEST:
-       //'PRINTER' =>
-       // array (size=1)
-       //   0 =>
-       //     array (size=6)
-       //       'SNMP_ID' => string '4' (length=1)
-       //       'NAME' => string 'MP C3003' (length=8)
-       //       'SERIALNUMBER' => string 'E1543632108' (length=11)
-       //       'COUNTER' => string '98631 sheets' (length=12)
-       //       'STATUS' => string 'idle' (length=4)
-       //       'ERRORSTATE' => string '' (length=0)
+        //TODOSNMP TO TEST:
+        //'PRINTER' =>
+        // array (size=1)
+        //   0 =>
+        //     array (size=6)
+        //       'SNMP_ID' => string '4' (length=1)
+        //       'NAME' => string 'MP C3003' (length=8)
+        //       'SERIALNUMBER' => string 'E1543632108' (length=11)
+        //       'COUNTER' => string '98631 sheets' (length=12)
+        //       'STATUS' => string 'idle' (length=4)
+        //       'ERRORSTATE' => string '' (length=0)
 
         if (($cfg_ocs['importsnmp_name'] && $action == "add")
           || ($cfg_ocs['linksnmp_name'] && $linked)
@@ -993,7 +1020,7 @@ JAVASCRIPT;
             }
 
             $snmpDevice->update($input, $cfg_ocs['history_hardware'], ['unicity_error_message' => false,
-                                                                    '_no_history'           => !$cfg_ocs['history_hardware']]);
+                '_no_history'           => !$cfg_ocs['history_hardware']]);
         }
 
         if ($id_printer > 0
@@ -1007,7 +1034,7 @@ JAVASCRIPT;
             $dev['designation'] = __("Printer Memory", 'ocsinventoryng');
 
             $item   = new $itemtype();
-            $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
+            $entity = ($_SESSION['glpiactive_entity'] ?? 0);
             if ($item->getFromDB($id_printer)) {
                 $entity = $item->fields['entities_id'];
             }
@@ -1028,15 +1055,15 @@ JAVASCRIPT;
                             AND `itemtype` = '" . $itemtype . "'";
                     $DB->doQuery($query);
                 }
-               //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
-               //            $CompDevice->deleteByCriteria(array('items_id' => $id_printer,
-               //               'itemtype' => $itemtype), 1);
+                //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+                //            $CompDevice->deleteByCriteria(array('items_id' => $id_printer,
+                //               'itemtype' => $itemtype), 1);
                 $CompDevice->add(['items_id'          => $id_printer,
-                              'itemtype'          => $itemtype,
-                              'size'              => $ocsSnmp['MEMORIES'][0]['CAPACITY'],
-                              'entities_id'       => $entity,
-                              'devicememories_id' => $device_id,
-                              'is_dynamic'        => 1], [], $cfg_ocs['history_devices']);
+                    'itemtype'          => $itemtype,
+                    'size'              => $ocsSnmp['MEMORIES'][0]['CAPACITY'],
+                    'entities_id'       => $entity,
+                    'devicememories_id' => $device_id,
+                    'is_dynamic'        => 1], [], $cfg_ocs['history_devices']);
             }
         }
 
@@ -1046,33 +1073,32 @@ JAVASCRIPT;
               || ($action == "update" && $cfg_ocs['importsnmp_createport'] && !$linked)
               || ($action == "update" && $cfg_ocs['linksnmp_createport'] && $linked))
         ) {
-           //Delete Existing network config
-            $query = "SELECT `id`
-                FROM `glpi_networkports`
-                WHERE `items_id` = $id_printer
-                AND `itemtype` = '" . $itemtype . "'";
+            //Delete Existing network config
+            foreach ($DB->request([
+                'SELECT' => 'id',
+                'FROM' => 'glpi_networkports',
+                'WHERE' => ['items_id' => $id_printer,
+                    'itemtype' => $itemtype]]) as $networkPortID) {
 
-            foreach ($DB->request($query) as $networkPortID) {
-                $queryPort = "SELECT `id`
-             FROM `glpi_networknames`
-             WHERE `items_id` = " . $networkPortID['id'] . "
-               AND `itemtype` = 'NetworkPort'";
-
-                foreach ($DB->request($queryPort) as $networkNameID) {
+                foreach ($DB->request([
+                    'SELECT' => 'id',
+                    'FROM' => 'glpi_networknames',
+                    'WHERE' => ['items_id' => $networkPortID['id'],
+                        'itemtype' => 'NetworkPort']]) as $networkNameID) {
                     $ipAddress = new IPAddress();
                     $ipAddress->deleteByCriteria(['items_id' => $networkNameID['id'],
-                                             'itemtype' => 'NetworkName'], 1);
+                        'itemtype' => 'NetworkName'], 1);
                 }
 
                 $nn = new NetworkName();
                 $nn->deleteByCriteria(['items_id' => $networkPortID['id'],
-                                   'itemtype' => 'NetworkPort'], 1);
+                    'itemtype' => 'NetworkPort'], 1);
             }
             $np = new NetworkPort();
             $np->deleteByCriteria(['items_id' => $id_printer,
-                                'itemtype' => $itemtype], 1);
+                'itemtype' => $itemtype], 1);
 
-           //Add network port
+            //Add network port
             $ip  = $ocsSnmp['META']['IPADDR'];
             $mac = $ocsSnmp['META']['MACADDR'];
 
@@ -1081,21 +1107,21 @@ JAVASCRIPT;
 
             if (count($data) < 1) {
                 $item   = new $itemtype();
-                $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
+                $entity = ($_SESSION['glpiactive_entity'] ?? 0);
                 if ($item->getFromDB($id_printer)) {
                     $entity = $item->fields['entities_id'];
                 }
 
                 $port_input = ['name'                     => $ocsSnmp['PRINTER'][0]['NAME'],
-                           'mac'                      => $mac,
-                           'items_id'                 => $id_printer,
-                           'itemtype'                 => $itemtype,
-                           'instantiation_type'       => "NetworkPortEthernet",
-                           "entities_id"              => $entity,
-                           "NetworkName__ipaddresses" => ["-100" => $ip],
-                           '_create_children'         => 1,
-                           //'is_dynamic'                => 1,
-                           'is_deleted'               => 0];
+                    'mac'                      => $mac,
+                    'items_id'                 => $id_printer,
+                    'itemtype'                 => $itemtype,
+                    'instantiation_type'       => "NetworkPortEthernet",
+                    "entities_id"              => $entity,
+                    "NetworkName__ipaddresses" => ["-100" => $ip],
+                    '_create_children'         => 1,
+                    //'is_dynamic'                => 1,
+                    'is_deleted'               => 0];
 
                 $np->add($port_input, [], $cfg_ocs['history_network']);
             }
@@ -1104,28 +1130,28 @@ JAVASCRIPT;
         return $id_printer;
     }
 
-   /**
-    * @param      $itemtype
-    * @param int  $ID
-    * @param      $ocsSnmp
-    * @param      $loc_id
-    * @param      $action
-    * @param bool $linked
-    *
-    * @param      $cfg_ocs
-    * @return int
-    * @throws \GlpitestSQLError
-    */
-    static function addOrUpdateNetworkEquipment($itemtype, $ID, $ocsSnmp, $loc_id, $action, $linked, $cfg_ocs)
+    /**
+     * @param      $itemtype
+     * @param int  $ID
+     * @param      $ocsSnmp
+     * @param      $loc_id
+     * @param      $action
+     * @param bool $linked
+     *
+     * @param      $cfg_ocs
+     * @return int
+     * @throws \GlpitestSQLError
+     */
+    public static function addOrUpdateNetworkEquipment($itemtype, $ID, $ocsSnmp, $loc_id, $action, $linked, $cfg_ocs)
     {
         global $DB;
 
         $snmpDevice = new $itemtype();
         $dbu = new DbUtils();
         $input = [
-         "is_dynamic"   => 1,
-         "entities_id"  => (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0),
-         "is_recursive" => 0,
+            "is_dynamic"   => 1,
+            "entities_id"  => ($_SESSION['glpiactive_entity'] ?? 0),
+            "is_recursive" => 0,
         ];
 
         if (($cfg_ocs['importsnmp_name'] && $action == "add")
@@ -1155,11 +1181,11 @@ JAVASCRIPT;
             $input["locations_id"] = $loc_id;
         }
 
-       //if($ocsSnmp['META']['TYPE'] == null){
-       //   $type_id = self::checkIfExist("NetworkEquipmentType", "Network Device");
-       //} else {
-       //   $type_id = self::checkIfExist("network", $ocsSnmp['META']['TYPE']);
-       //}
+        //if($ocsSnmp['META']['TYPE'] == null){
+        //   $type_id = self::checkIfExist("NetworkEquipmentType", "Network Device");
+        //} else {
+        //   $type_id = self::checkIfExist("network", $ocsSnmp['META']['TYPE']);
+        //}
 
         if (!empty($ocsSnmp['SWITCH'])) {
             if (($cfg_ocs['importsnmp_manufacturer'] && $action == "add")
@@ -1190,13 +1216,13 @@ JAVASCRIPT;
              || ($action == "update" && $cfg_ocs['linksnmp_serial'] && $linked)) {
                 $input['serial'] = $ocsSnmp['SWITCH'][0]['SERIALNUMBER'];
             }
-           //TODOSNMP = chassis ??
-           //$mod_id = Dropdown::importExternal('NetworkEquipmentModel',
-           //PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
-           //$ocsSnmp['SWITCH'][0]['REFERENCE']));
-           //$input['networkequipmentmodels_id'] = $mod_id;
-           // TODOSNMP ?
-           //$input['networkequipmenttypes_id'] = self::checkIfExist("NetworkEquipmentType", "Switch");
+            //TODOSNMP = chassis ??
+            //$mod_id = Dropdown::importExternal('NetworkEquipmentModel',
+            //PluginOcsinventoryngOcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
+            //$ocsSnmp['SWITCH'][0]['REFERENCE']));
+            //$input['networkequipmentmodels_id'] = $mod_id;
+            // TODOSNMP ?
+            //$input['networkequipmenttypes_id'] = self::checkIfExist("NetworkEquipmentType", "Switch");
         }
         if (!empty($ocsSnmp['FIREWALLS'])) {
             if (($cfg_ocs['importsnmp_serial'] && $action == "add")
@@ -1205,8 +1231,8 @@ JAVASCRIPT;
              || ($action == "update" && $cfg_ocs['linksnmp_serial'] && $linked)) {
                 $input['serial'] = $ocsSnmp['FIREWALLS']['SERIALNUMBER'];
             }
-           // TODOSNMP ?
-           //$input['networkequipmenttypes_id'] = self::checkIfExist("NetworkEquipmentType", "Firewall");
+            // TODOSNMP ?
+            //$input['networkequipmenttypes_id'] = self::checkIfExist("NetworkEquipmentType", "Firewall");
         }
         $id_network = 0;
         if ($action == "add") {
@@ -1218,11 +1244,11 @@ JAVASCRIPT;
                 $input["entities_id"] = $snmpDevice->fields['entities_id'];
             }
             $snmpDevice->update($input, $cfg_ocs['history_hardware'], ['unicity_error_message' => false,
-                                                                    '_no_history'           => !$cfg_ocs['history_hardware']]);
+                '_no_history'           => !$cfg_ocs['history_hardware']]);
         }
 
         if ($id_network > 0
-         //&& $action == "add"
+            //&& $action == "add"
         ) {
             if (isset($ocsSnmp['POWERSUPPLIES'])
              && (($cfg_ocs['importsnmp_power'] && $action == "add")
@@ -1240,9 +1266,9 @@ JAVASCRIPT;
                 $pow['comment']          = $ocsSnmp['POWERSUPPLIES'][0]['DESCRIPTION'];
 
                 $item   = new $itemtype();
-                $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
+                $entity = ($_SESSION['glpiactive_entity'] ?? 0);
                 if ($item->getFromDB($id_network)) {
-                     $entity = $item->fields['entities_id'];
+                    $entity = $item->fields['entities_id'];
                 }
 
                 $pow['entities_id'] = $entity;
@@ -1261,15 +1287,15 @@ JAVASCRIPT;
                             AND `itemtype` = '" . $itemtype . "'";
                         $DB->doQuery($query);
                     }
-                   //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
-                   //               $CompDevice->deleteByCriteria(array('items_id' => $id_network,
-                   //                  'itemtype' => $itemtype), 1);
+                    //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+                    //               $CompDevice->deleteByCriteria(array('items_id' => $id_network,
+                    //                  'itemtype' => $itemtype), 1);
                     $CompDevice->add(['items_id'               => $id_network,
-                                 'itemtype'               => $itemtype,
-                                 'entities_id'            => $entity,
-                                 'serial'                 => $serial,
-                                 'devicepowersupplies_id' => $power_id,
-                                 'is_dynamic'             => 1], [], $cfg_ocs['history_devices']);
+                        'itemtype'               => $itemtype,
+                        'entities_id'            => $entity,
+                        'serial'                 => $serial,
+                        'devicepowersupplies_id' => $power_id,
+                        'is_dynamic'             => 1], [], $cfg_ocs['history_devices']);
                 }
             }
 
@@ -1286,7 +1312,7 @@ JAVASCRIPT;
                 $dev['comment']     = $ocsSnmp['FANS'][0]['DESCRIPTION'];
 
                 $item   = new $itemtype();
-                $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
+                $entity = ($_SESSION['glpiactive_entity'] ?? 0);
                 if ($item->getFromDB($id_network)) {
                     $entity = $item->fields['entities_id'];
                 }
@@ -1306,14 +1332,14 @@ JAVASCRIPT;
                             AND `itemtype` = '" . $itemtype . "'";
                         $DB->doQuery($query);
                     }
-                   //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
-                   //               $CompDevice->deleteByCriteria(array('items_id' => $id_network,
-                   //                  'itemtype' => $itemtype), 1);
+                    //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+                    //               $CompDevice->deleteByCriteria(array('items_id' => $id_network,
+                    //                  'itemtype' => $itemtype), 1);
                     $CompDevice->add(['items_id'      => $id_network,
-                                 'itemtype'      => $itemtype,
-                                 'entities_id'   => $entity,
-                                 'devicepcis_id' => $device_id,
-                                 'is_dynamic'    => 1], [], $cfg_ocs['history_devices']);
+                        'itemtype'      => $itemtype,
+                        'entities_id'   => $entity,
+                        'devicepcis_id' => $device_id,
+                        'is_dynamic'    => 1], [], $cfg_ocs['history_devices']);
                 }
             }
         }
@@ -1322,76 +1348,64 @@ JAVASCRIPT;
               || ($cfg_ocs['linksnmp_createport'] && $linked)
               || ($action == "update" && $cfg_ocs['importsnmp_createport'] && !$linked)
               || ($action == "update" && $cfg_ocs['linksnmp_createport'] && $linked))) {
-           //Add local port
+            //Add local port
             $ip  = $ocsSnmp['META']['IPADDR'];
             $mac = $ocsSnmp['META']['MACADDR'];
 
-           //if ($cfg_ocs['history_devices']) {
+            foreach ($DB->request([
+                'SELECT' => 'id',
+                'FROM' => 'glpi_networkports',
+                'WHERE' => ['items_id' => $id_network,
+                    'itemtype' => $itemtype]]) as $networkPortID) {
 
-           //$table = getTableForItemType("NetworkPort");
-           //$query = "DELETE
-           //                FROM `glpi_networkports`
-           //                WHERE `items_id` = '" . $id_network . "'
-           //                AND `itemtype` = '" . $itemtype . "'
-           //                 AND `instantiation_type` = 'NetworkPortLocal'";
-           //$DB->doQuery($query);
-           //}
-
-            $query = "SELECT `id`
-                FROM `glpi_networkports`
-                WHERE `items_id` = $id_network
-                AND `itemtype` = '" . $itemtype . "'";
-
-            foreach ($DB->request($query) as $networkPortID) {
-                $queryPort = "SELECT `id`
-             FROM `glpi_networknames`
-             WHERE `items_id` = " . $networkPortID['id'] . "
-               AND `itemtype` = 'NetworkPort'";
-
-                foreach ($DB->request($queryPort) as $networkNameID) {
+                foreach ($DB->request([
+                    'SELECT' => 'id',
+                    'FROM' => 'glpi_networknames',
+                    'WHERE' => ['items_id' => $networkPortID['id'],
+                        'itemtype' => 'NetworkPort']]) as $networkNameID) {
                     $ipAddress = new IPAddress();
                     $ipAddress->deleteByCriteria(['items_id' => $networkNameID['id'],
-                                             'itemtype' => 'NetworkName'], 1);
+                        'itemtype' => 'NetworkName'], 1);
                 }
 
                 $nn = new NetworkName();
                 $nn->deleteByCriteria(['items_id' => $networkPortID['id'],
-                                   'itemtype' => 'NetworkPort'], 1);
+                    'itemtype' => 'NetworkPort'], 1);
             }
             $np = new NetworkPort();
             $np->deleteByCriteria(['items_id' => $id_network,
-                                'itemtype' => $itemtype], 1);
+                'itemtype' => $itemtype], 1);
 
             $np = new NetworkPort();
             $data = $np->find(['mac' => $mac, 'items_id' => $id_network, 'itemtype' => $itemtype]);
             if (count($data) < 1) {
                 $item   = new $itemtype();
-                $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
+                $entity = ($_SESSION['glpiactive_entity'] ?? 0);
                 if ($item->getFromDB($id_network)) {
                     $entity = $item->fields['entities_id'];
                 }
 
                 $port_input = ['name'                     => $ocsSnmp['META']['NAME'],
-                           'mac'                      => $mac,
-                           'items_id'                 => $id_network,
-                           'itemtype'                 => $itemtype,
-                           'instantiation_type'       => "NetworkPortLocal",
-                           "entities_id"              => $entity,
-                           "NetworkName__ipaddresses" => ["-100" => $ip],
-                           '_create_children'         => 1,
-                           'is_dynamic'               => 1,
-                           'is_deleted'               => 0];
+                    'mac'                      => $mac,
+                    'items_id'                 => $id_network,
+                    'itemtype'                 => $itemtype,
+                    'instantiation_type'       => "NetworkPortLocal",
+                    "entities_id"              => $entity,
+                    "NetworkName__ipaddresses" => ["-100" => $ip],
+                    '_create_children'         => 1,
+                    'is_dynamic'               => 1,
+                    'is_deleted'               => 0];
 
                 $np->add($port_input, [], $cfg_ocs['history_network']);
             }
 
-           //All PORTS
+            //All PORTS
             if ($id_network > 0
              && isset($ocsSnmp['NETWORKS'])
              && count($ocsSnmp['NETWORKS']) > 0) {
                 foreach ($ocsSnmp['NETWORKS'] as $k => $net) {
-                   //$dev["designation"] = $net['SLOT'];
-                   //$dev["comment"] = $net['TYPE'];
+                    //$dev["designation"] = $net['SLOT'];
+                    //$dev["comment"] = $net['TYPE'];
                     $mac = $net['MACADDR'];
 
                     $net['DEVICENAME'] = str_replace("SEP", "", $net['DEVICENAME']);
@@ -1401,21 +1415,21 @@ JAVASCRIPT;
                     $data = $np->find(['mac' => $mac, 'items_id' => $id_network, 'itemtype' => $itemtype, 'instantiation_type' => 'NetworkPortEthernet']);
                     if (count($data) < 1) {
                         $item   = new $itemtype();
-                        $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
+                        $entity = ($_SESSION['glpiactive_entity'] ?? 0);
                         if ($item->getFromDB($id_network)) {
                             $entity = $item->fields['entities_id'];
                         }
 
                         $port_input = ['name'               => $net['SLOT'],
-                                 'mac'                => $mac,
-                                 'items_id'           => $id_network,
-                                 'itemtype'           => $itemtype,
-                                 'instantiation_type' => "NetworkPortEthernet",
-                                 "entities_id"        => $entity,
-                                 //"NetworkName__ipaddresses" => array("-100" => $ip),
-                                 '_create_children'   => 1,
-                                 'is_dynamic'         => 1,
-                                 'is_deleted'         => 0];
+                            'mac'                => $mac,
+                            'items_id'           => $id_network,
+                            'itemtype'           => $itemtype,
+                            'instantiation_type' => "NetworkPortEthernet",
+                            "entities_id"        => $entity,
+                            //"NetworkName__ipaddresses" => array("-100" => $ip),
+                            '_create_children'   => 1,
+                            'is_dynamic'         => 1,
+                            'is_deleted'         => 0];
 
                         $np_src = $np->add($port_input, [], $cfg_ocs['history_network']);
                     }
@@ -1426,11 +1440,11 @@ JAVASCRIPT;
                         if (count($datas) > 0) {
                             foreach ($datas as $data) {
                                 $link->getFromDBByCrit(['networkports_id_1' => $np_src,
-                                                'networkports_id_2' => $data['id']]);
+                                    'networkports_id_2' => $data['id']]);
                                 if (count($link->fields) < 1) {
-                                        $link_input = ['networkports_id_1' => $np_src,
-                                          'networkports_id_2' => $data['id']];
-                                        $link->add($link_input, [], $cfg_ocs['history_network']);
+                                    $link_input = ['networkports_id_1' => $np_src,
+                                        'networkports_id_2' => $data['id']];
+                                    $link->add($link_input, [], $cfg_ocs['history_network']);
                                 }
                             }
                         }
@@ -1443,39 +1457,39 @@ JAVASCRIPT;
     }
 
 
-   /**
-    * @param        $mac
-    * @param string $separator
-    *
-    * @return string
-    */
+    /**
+     * @param        $mac
+     * @param string $separator
+     *
+     * @return string
+     */
     public static function addMacSeparator($mac, $separator = ':')
     {
         return join($separator, str_split($mac, 2));
     }
 
-   /**
-    * @param      $plugin_ocsinventoryng_ocsservers_id
-    * @param      $itemtype
-    * @param int  $ID
-    * @param      $ocsSnmp
-    * @param      $loc_id
-    * @param      $action
-    * @param bool $linked
-    *
-    * @param      $cfg_ocs
-    * @return int
-    * @throws \GlpitestSQLError
-    */
-    static function addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID, $ocsSnmp, $loc_id, $action, $linked, $cfg_ocs)
+    /**
+     * @param      $plugin_ocsinventoryng_ocsservers_id
+     * @param      $itemtype
+     * @param int  $ID
+     * @param      $ocsSnmp
+     * @param      $loc_id
+     * @param      $action
+     * @param bool $linked
+     *
+     * @param      $cfg_ocs
+     * @return int
+     * @throws \GlpitestSQLError
+     */
+    public static function addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID, $ocsSnmp, $loc_id, $action, $linked, $cfg_ocs)
     {
         global $DB;
 
         $snmpDevice = new $itemtype();
         $dbu = new DbUtils();
         $input = [
-         "is_dynamic"  => 1,
-         "entities_id" => (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0)
+            "is_dynamic"  => 1,
+            "entities_id" => ($_SESSION['glpiactive_entity'] ?? 0),
         ];
 
         if (($cfg_ocs['importsnmp_name'] && $action == "add")
@@ -1515,7 +1529,7 @@ JAVASCRIPT;
                 $input,
                 $cfg_ocs['history_hardware'],
                 ['unicity_error_message' => false,
-                '_no_history'           => !$cfg_ocs['history_hardware']]
+                    '_no_history'           => !$cfg_ocs['history_hardware']]
             );
         }
 
@@ -1530,7 +1544,7 @@ JAVASCRIPT;
             $dev['designation'] = __("Computer Memory", 'ocsinventoryng');
 
             $item   = new $itemtype();
-            $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
+            $entity = ($_SESSION['glpiactive_entity'] ?? 0);
             if ($item->getFromDB($id_item)) {
                 $entity = $item->fields['entities_id'];
             }
@@ -1549,15 +1563,15 @@ JAVASCRIPT;
                             AND `itemtype` = '" . $itemtype . "'";
                     $DB->doQuery($query);
                 }
-               //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
-               //            $CompDevice->deleteByCriteria(array('items_id' => $id_item,
-               //               'itemtype' => $itemtype), 1);
+                //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+                //            $CompDevice->deleteByCriteria(array('items_id' => $id_item,
+                //               'itemtype' => $itemtype), 1);
                 $CompDevice->add(['items_id'          => $id_item,
-                              'itemtype'          => $itemtype,
-                              'size'              => $ocsSnmp['MEMORIES'][0]['CAPACITY'],
-                              'entities_id'       => $entity,
-                              'devicememories_id' => $device_id,
-                              'is_dynamic'        => 1], [], $cfg_ocs['history_devices']);
+                    'itemtype'          => $itemtype,
+                    'size'              => $ocsSnmp['MEMORIES'][0]['CAPACITY'],
+                    'entities_id'       => $entity,
+                    'devicememories_id' => $device_id,
+                    'is_dynamic'        => 1], [], $cfg_ocs['history_devices']);
             }
         }
 
@@ -1577,25 +1591,25 @@ JAVASCRIPT;
                       AND `itemtype` = '" . $itemtype . "'";
                 $DB->doQuery($query);
             }
-           //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
-           //         $CompDevice->deleteByCriteria(array('items_id' => $id_item,
-           //                                             'itemtype' => $itemtype), 1);
+            //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+            //         $CompDevice->deleteByCriteria(array('items_id' => $id_item,
+            //                                             'itemtype' => $itemtype), 1);
 
             foreach ($ocsSnmp['NETWORKS'] as $k => $net) {
                 $dev["designation"] = $net['SLOT'];
                 $dev["comment"]     = $net['TYPE'];
                 $mac                = $net['MACADDR'];
-               /*$speed = 0;
+                /*$speed = 0;
               if (strstr($processor['SPEED'], "GHz")) {
-                $speed = str_replace("GHz", "", $processor['SPEED']);
-                $speed = $speed * 1000;
+                 $speed = str_replace("GHz", "", $processor['SPEED']);
+                 $speed = $speed * 1000;
               }
               if (strstr($processor['SPEED'], "MHz")) {
-                $speed = str_replace("MHz", "", $processor['SPEED']);
-               }*/
+                 $speed = str_replace("MHz", "", $processor['SPEED']);
+                }*/
 
                 $item   = new $itemtype();
-                $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
+                $entity = ($_SESSION['glpiactive_entity'] ?? 0);
                 if ($item->getFromDB($id_item)) {
                     $entity = $item->fields['entities_id'];
                 }
@@ -1607,11 +1621,11 @@ JAVASCRIPT;
 
                 if ($device_id) {
                     $CompDevice->add(['items_id'              => $id_item,
-                                 'itemtype'              => $itemtype,
-                                 'mac'                   => $mac,
-                                 'entities_id'           => $entity,
-                                 'devicenetworkcards_id' => $device_id,
-                                 'is_dynamic'            => 1], [], $cfg_ocs['history_devices']);
+                        'itemtype'              => $itemtype,
+                        'mac'                   => $mac,
+                        'entities_id'           => $entity,
+                        'devicenetworkcards_id' => $device_id,
+                        'is_dynamic'            => 1], [], $cfg_ocs['history_devices']);
                 }
             }
         }
@@ -1623,7 +1637,7 @@ JAVASCRIPT;
               || ($action == "update" && $cfg_ocs['importsnmp_computersoftwares'] && !$linked)
               || ($action == "update" && $cfg_ocs['linksnmp_computersoftwares'] && $linked))
           && count($ocsSnmp['SOFTWARES']) > 0) {
-            $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
+            $entity = ($_SESSION['glpiactive_entity'] ?? 0);
             if ($item->getFromDB($id_item)) {
                 $entity = $item->fields['entities_id'];
             }
@@ -1645,9 +1659,9 @@ JAVASCRIPT;
                             AND `itemtype` = '" . $itemtype . "'";
                 $DB->doQuery($query);
             }
-           //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
-           //         $CompDevice->deleteByCriteria(array('items_id' => $id_item,
-           //                                             'itemtype' => $itemtype), 1);
+            //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
+            //         $CompDevice->deleteByCriteria(array('items_id' => $id_item,
+            //                                             'itemtype' => $itemtype), 1);
 
             foreach ($ocsSnmp['CPU'] as $k => $processor) {
                 $dev["designation"]      = $processor['TYPE'];
@@ -1660,15 +1674,15 @@ JAVASCRIPT;
                 );
                 $speed                   = 0;
                 if (strstr($processor['SPEED'], "GHz")) {
-                     $speed = str_replace("GHz", "", $processor['SPEED']);
-                     $speed = $speed * 1000;
+                    $speed = str_replace("GHz", "", $processor['SPEED']);
+                    $speed = $speed * 1000;
                 }
                 if (strstr($processor['SPEED'], "MHz")) {
                     $speed = str_replace("MHz", "", $processor['SPEED']);
                 }
 
                 $item   = new $itemtype();
-                $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
+                $entity = ($_SESSION['glpiactive_entity'] ?? 0);
                 if ($item->getFromDB($id_item)) {
                     $entity = $item->fields['entities_id'];
                 }
@@ -1680,11 +1694,11 @@ JAVASCRIPT;
 
                 if ($device_id) {
                     $CompDevice->add(['items_id'            => $id_item,
-                                 'itemtype'            => $itemtype,
-                                 'frequency'           => $speed,
-                                 'entities_id'         => $entity,
-                                 'deviceprocessors_id' => $device_id,
-                                 'is_dynamic'          => 1], [], $cfg_ocs['history_devices']);
+                        'itemtype'            => $itemtype,
+                        'frequency'           => $speed,
+                        'entities_id'         => $entity,
+                        'deviceprocessors_id' => $device_id,
+                        'is_dynamic'          => 1], [], $cfg_ocs['history_devices']);
                 }
             }
         }
@@ -1709,8 +1723,8 @@ JAVASCRIPT;
                 $vm['is_dynamic']   = 1;
 
                 $vm['virtualmachinestates_id'] = Dropdown::importExternal('VirtualMachineState', $ocsVirtualmachine['POWER']);
-               //$vm['virtualmachinetypes_id'] = Dropdown::importExternal('VirtualMachineType', $ocsVirtualmachine['VMTYPE']);
-               //$vm['virtualmachinesystems_id'] = Dropdown::importExternal('VirtualMachineType', $ocsVirtualmachine['SUBSYSTEM']);
+                //$vm['virtualmachinetypes_id'] = Dropdown::importExternal('VirtualMachineType', $ocsVirtualmachine['VMTYPE']);
+                //$vm['virtualmachinesystems_id'] = Dropdown::importExternal('VirtualMachineType', $ocsVirtualmachine['SUBSYSTEM']);
 
                 $query = "SELECT `id`
                          FROM `glpi_computervirtualmachines`
@@ -1719,7 +1733,7 @@ JAVASCRIPT;
                 if ($ocsVirtualmachine['UUID']) {
                     $query .= " AND `uuid`='" . $ocsVirtualmachine['UUID'] . "'";
                 } else {
-                   // Failback on name
+                    // Failback on name
                     $query .= " AND `name`='" . $ocsVirtualmachine['NAME'] . "'";
                 }
 
@@ -1742,8 +1756,8 @@ JAVASCRIPT;
                     }
                     $already_processed[] = $id;
                 }
-               // Delete Unexisting Items not found in OCS
-               //Look for all ununsed virtual machines
+                // Delete Unexisting Items not found in OCS
+                //Look for all ununsed virtual machines
                 $criteria = [
                     'SELECT' => 'id',
                     'FROM' => 'glpi_computervirtualmachines',
@@ -1757,10 +1771,10 @@ JAVASCRIPT;
                 }
                 $iterator = $DB->request($criteria);
                 foreach ($iterator as $data) {
-                   //Delete all connexions
+                    //Delete all connexions
                     $virtualmachine->delete(['id'             => $data['id'],
-                                        '_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                                        '_no_history'    => !$cfg_ocs['history_vm']], true, $cfg_ocs['history_vm']);
+                        '_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                        '_no_history'    => !$cfg_ocs['history_vm']], true, $cfg_ocs['history_vm']);
                 }
             }
         }
@@ -1770,33 +1784,32 @@ JAVASCRIPT;
               || ($cfg_ocs['linksnmp_createport'] && $linked)
               || ($action == "update" && $cfg_ocs['importsnmp_createport'] && !$linked)
               || ($action == "update" && $cfg_ocs['linksnmp_createport'] && $linked))) {
-           //Delete Existing network config
-            $query = "SELECT `id`
-                FROM `glpi_networkports`
-                WHERE `items_id` = $id_item
-                AND `itemtype` = '" . $itemtype . "'";
+            //Delete Existing network config
+            foreach ($DB->request([
+                'SELECT' => 'id',
+                'FROM' => 'glpi_networkports',
+                'WHERE' => ['items_id' => $id_item,
+                    'itemtype' => $itemtype]]) as $networkPortID) {
 
-            foreach ($DB->request($query) as $networkPortID) {
-                $queryPort = "SELECT `id`
-             FROM `glpi_networknames`
-             WHERE `items_id` = '" . $networkPortID['id'] . "'
-               AND `itemtype` = 'NetworkPort'";
-
-                foreach ($DB->request($queryPort) as $networkNameID) {
+                foreach ($DB->request([
+                    'SELECT' => 'id',
+                    'FROM' => 'glpi_networkports',
+                    'WHERE' => ['items_id' => $networkPortID['id'],
+                        'itemtype' => 'NetworkPort']]) as $networkNameID) {
                     $ipAddress = new IPAddress();
                     $ipAddress->deleteByCriteria(['items_id' => $networkNameID['id'],
-                                             'itemtype' => 'NetworkName'], 1);
+                        'itemtype' => 'NetworkName'], 1);
                 }
 
                 $nn = new NetworkName();
                 $nn->deleteByCriteria(['items_id' => $networkPortID['id'],
-                                   'itemtype' => 'NetworkPort'], 1);
+                    'itemtype' => 'NetworkPort'], 1);
             }
             $np = new NetworkPort();
             $np->deleteByCriteria(['items_id' => $id_item,
-                                'itemtype' => $itemtype], 1);
+                'itemtype' => $itemtype], 1);
 
-           //Add network port
+            //Add network port
             $ip  = $ocsSnmp['META']['IPADDR'];
             $mac = $ocsSnmp['META']['MACADDR'];
 
@@ -1804,20 +1817,20 @@ JAVASCRIPT;
             $data = $np->find(['mac' => $mac, 'items_id' => $id_item, 'itemtype' => $itemtype]);
             if (count($data) < 1) {
                 $item   = new $itemtype();
-                $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
+                $entity = ($_SESSION['glpiactive_entity'] ?? 0);
                 if ($item->getFromDB($id_item)) {
                     $entity = $item->fields['entities_id'];
                 }
                 $port_input = ['name'                     => $ocsSnmp['META']['NAME'],
-                           'mac'                      => $mac,
-                           'items_id'                 => $id_item,
-                           'itemtype'                 => $itemtype,
-                           'instantiation_type'       => "NetworkPortEthernet",
-                           "entities_id"              => $entity,
-                           "NetworkName__ipaddresses" => ["-100" => $ip],
-                           '_create_children'         => 1,
-                           //'is_dynamic'         => 1,
-                           'is_deleted'               => 0];
+                    'mac'                      => $mac,
+                    'items_id'                 => $id_item,
+                    'itemtype'                 => $itemtype,
+                    'instantiation_type'       => "NetworkPortEthernet",
+                    "entities_id"              => $entity,
+                    "NetworkName__ipaddresses" => ["-100" => $ip],
+                    '_create_children'         => 1,
+                    //'is_dynamic'         => 1,
+                    'is_deleted'               => 0];
 
                 $np->add($port_input, [], $cfg_ocs['history_network']);
             }
@@ -1844,7 +1857,7 @@ JAVASCRIPT;
                 $disk['filesystems_id'] = Dropdown::importExternal('Filesystem', $ocsComputerDisks["FILESYSTEM"]);
                 $disk['is_dynamic']     = 1;
 
-               // Ok import disk
+                // Ok import disk
                 if (isset($disk['name']) && !empty($disk["name"])) {
                     $disk['totalsize'] = $ocsComputerDisks['TOTAL'];
                     $disk['freesize']  = $ocsComputerDisks['FREE'];
@@ -1862,14 +1875,14 @@ JAVASCRIPT;
                     }
 
                     if (!$id) {
-                         $computerDisk->reset();
-                         $disk['is_dynamic']  = 1;
-                         $id_disk             = $computerDisk->add($disk, [], $cfg_ocs['history_drives']);
-                         $already_processed[] = $id_disk;
+                        $computerDisk->reset();
+                        $disk['is_dynamic']  = 1;
+                        $id_disk             = $computerDisk->add($disk, [], $cfg_ocs['history_drives']);
+                        $already_processed[] = $id_disk;
                     } else {
-                    // Only update if needed
+                        // Only update if needed
                         if ($computerDisk->getFromDB($id)) {
-                               // Update on type, total size change or variation of 5%
+                            // Update on type, total size change or variation of 5%
                             if ($computerDisk->fields['totalsize'] != $disk['totalsize']
                             || ($computerDisk->fields['filesystems_id'] != $disk['filesystems_id'])
                             || ((abs($disk['freesize'] - $computerDisk->fields['freesize']) / $disk['totalsize']) > 0.05)) {
@@ -1886,8 +1899,8 @@ JAVASCRIPT;
             }
         }
 
-       // Delete Unexisting Items not found in OCS
-       //Look for all ununsed disks
+        // Delete Unexisting Items not found in OCS
+        //Look for all ununsed disks
         $criteria = [
             'SELECT' => 'id',
             'FROM' => 'glpi_items_disks',
@@ -1902,11 +1915,11 @@ JAVASCRIPT;
         }
         $iterator = $DB->request($criteria);
         foreach ($iterator as $data) {
-           //Delete all connexions
+            //Delete all connexions
             $computerDisk->delete(
                 ['id'             => $data['id'],
-                                '_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                                '_no_history'    => !$cfg_ocs['history_drives']],
+                    '_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                    '_no_history'    => !$cfg_ocs['history_drives']],
                 true,
                 $cfg_ocs['history_drives']
             );
@@ -1915,26 +1928,26 @@ JAVASCRIPT;
         return $id_item;
     }
 
-   /**
-    * @param      $itemtype
-    * @param int  $ID
-    * @param      $ocsSnmp
-    * @param      $loc_id
-    * @param      $action
-    * @param bool $linked
-    *
-    * @param      $cfg_ocs
-    * @return int
-    */
-    static function addOrUpdateOther($itemtype, $ID, $ocsSnmp, $loc_id, $action, $linked, $cfg_ocs)
+    /**
+     * @param      $itemtype
+     * @param int  $ID
+     * @param      $ocsSnmp
+     * @param      $loc_id
+     * @param      $action
+     * @param bool $linked
+     *
+     * @param      $cfg_ocs
+     * @return int
+     */
+    public static function addOrUpdateOther($itemtype, $ID, $ocsSnmp, $loc_id, $action, $linked, $cfg_ocs)
     {
         global $DB;
 
         $snmpDevice = new $itemtype();
 
         $input = [
-         "is_dynamic"  => 1,
-         "entities_id" => (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0)
+            "is_dynamic"  => 1,
+            "entities_id" => ($_SESSION['glpiactive_entity'] ?? 0),
         ];
 
         if (($cfg_ocs['importsnmp_name'] && $action == "add")
@@ -1972,7 +1985,7 @@ JAVASCRIPT;
             }
 
             $snmpDevice->update($input, $cfg_ocs['history_hardware'], ['unicity_error_message' => false,
-                                                                    '_no_history'           => !$cfg_ocs['history_hardware']]);
+                '_no_history'           => !$cfg_ocs['history_hardware']]);
         }
 
         if ($id_item > 0
@@ -1980,33 +1993,32 @@ JAVASCRIPT;
               || ($cfg_ocs['linksnmp_createport'] && $linked)
               || ($action == "update" && $cfg_ocs['importsnmp_createport'] && !$linked)
               || ($action == "update" && $cfg_ocs['linksnmp_createport'] && $linked))) {
-           //Delete Existing network config
-            $query = "SELECT `id`
-                FROM `glpi_networkports`
-                WHERE `items_id` = '" . $id_item . "'
-                AND `itemtype` = '" . $itemtype . "'";
+            //Delete Existing network config
+            foreach ($DB->request([
+                'SELECT' => 'id',
+                'FROM' => 'glpi_networkports',
+                'WHERE' => ['items_id' => $id_item,
+                    'itemtype' => $itemtype]]) as $networkPortID) {
 
-            foreach ($DB->request($query) as $networkPortID) {
-                $queryPort = "SELECT `id`
-             FROM `glpi_networknames`
-             WHERE `items_id` = '" . $networkPortID['id'] . "'
-               AND `itemtype` = 'NetworkPort'";
-
-                foreach ($DB->request($queryPort) as $networkNameID) {
+                foreach ($DB->request([
+                    'SELECT' => 'id',
+                    'FROM' => 'glpi_networkports',
+                    'WHERE' => ['items_id' => $networkPortID['id'],
+                        'itemtype' => 'NetworkPort']]) as $networkNameID) {
                     $ipAddress = new IPAddress();
                     $ipAddress->deleteByCriteria(['items_id' => $networkNameID['id'],
-                                             'itemtype' => 'NetworkName'], 1);
+                        'itemtype' => 'NetworkName'], 1);
                 }
 
                 $nn = new NetworkName();
                 $nn->deleteByCriteria(['items_id' => $networkPortID['id'],
-                                   'itemtype' => 'NetworkPort'], 1);
+                    'itemtype' => 'NetworkPort'], 1);
             }
             $np = new NetworkPort();
             $np->deleteByCriteria(['items_id' => $id_item,
-                                'itemtype' => $itemtype], 1);
+                'itemtype' => $itemtype], 1);
 
-           //Add network port
+            //Add network port
             $ip  = $ocsSnmp['META']['IPADDR'];
             $mac = $ocsSnmp['META']['MACADDR'];
 
@@ -2014,20 +2026,20 @@ JAVASCRIPT;
             $data = $np->find(['mac' => $mac, 'items_id' => $id_item, 'itemtype' => $itemtype]);
             if (count($data) < 1) {
                 $item   = new $itemtype();
-                $entity = (isset($_SESSION['glpiactive_entity']) ? $_SESSION['glpiactive_entity'] : 0);
+                $entity = ($_SESSION['glpiactive_entity'] ?? 0);
                 if ($item->getFromDB($id_item)) {
                     $entity = $item->fields['entities_id'];
                 }
                 $port_input = ['name'                     => $ocsSnmp['META']['NAME'],
-                           'mac'                      => $mac,
-                           'items_id'                 => $id_item,
-                           'itemtype'                 => $itemtype,
-                           'instantiation_type'       => "NetworkPortEthernet",
-                           "entities_id"              => $entity,
-                           "NetworkName__ipaddresses" => ["-100" => $ip],
-                           '_create_children'         => 1,
-                           //'is_dynamic'         => 1,
-                           'is_deleted'               => 0];
+                    'mac'                      => $mac,
+                    'items_id'                 => $id_item,
+                    'itemtype'                 => $itemtype,
+                    'instantiation_type'       => "NetworkPortEthernet",
+                    "entities_id"              => $entity,
+                    "NetworkName__ipaddresses" => ["-100" => $ip],
+                    '_create_children'         => 1,
+                    //'is_dynamic'         => 1,
+                    'is_deleted'               => 0];
 
                 $np->add($port_input, [], $cfg_ocs['history_network']);
             }
@@ -2036,13 +2048,13 @@ JAVASCRIPT;
         return $id_item;
     }
 
-   /**
-    * @param $ID
-    * @param $plugin_ocsinventoryng_ocsservers_id
-    *
-    * @return array
-    */
-    static function updateSnmp($ID, $plugin_ocsinventoryng_ocsservers_id)
+    /**
+     * @param $ID
+     * @param $plugin_ocsinventoryng_ocsservers_id
+     *
+     * @return array
+     */
+    public static function updateSnmp($ID, $plugin_ocsinventoryng_ocsservers_id)
     {
         global $DB;
 
@@ -2092,7 +2104,7 @@ JAVASCRIPT;
             $DB->doQuery($sql);
 
             return ['status' => PluginOcsinventoryngOcsProcess::SNMP_SYNCHRONIZED,
-                 //'entities_id'  => $data['entities_id'],
+                //'entities_id'  => $data['entities_id'],
             ];
         } elseif ($itemtype == "NetworkEquipment") {
             self::addOrUpdateNetworkEquipment(
@@ -2112,7 +2124,7 @@ JAVASCRIPT;
             $DB->doQuery($sql);
 
             return ['status' => PluginOcsinventoryngOcsProcess::SNMP_SYNCHRONIZED,
-                 //'entities_id'  => $data['entities_id'],
+                //'entities_id'  => $data['entities_id'],
             ];
         } elseif ($itemtype == "Computer") {
             self::addOrUpdateComputer(
@@ -2133,7 +2145,7 @@ JAVASCRIPT;
             $DB->doQuery($sql);
 
             return ['status' => PluginOcsinventoryngOcsProcess::SNMP_SYNCHRONIZED,
-                 //'entities_id'  => $data['entities_id'],
+                //'entities_id'  => $data['entities_id'],
             ];
         } elseif ($itemtype == "Peripheral"
                  || $itemtype == "Phone"
@@ -2147,29 +2159,29 @@ JAVASCRIPT;
             $DB->doQuery($sql);
 
             return ['status' => PluginOcsinventoryngOcsProcess::SNMP_SYNCHRONIZED,
-                 //'entities_id'  => $data['entities_id'],
+                //'entities_id'  => $data['entities_id'],
             ];
         }
 
         return ['status' => PluginOcsinventoryngOcsProcess::SNMP_NOTUPDATED,
-              //'entities_id'  => $data['entities_id'],
+            //'entities_id'  => $data['entities_id'],
         ];
     }
 
-   /**
-    * Prints search form
-    *
-    * @param $params
-    *
-    * @return void
-    * @internal param the $manufacturer supplier choice
-    * @internal param the $type device type
-    */
-    static function searchForm($params)
+    /**
+     * Prints search form
+     *
+     * @param $params
+     *
+     * @return void
+     * @internal param the $manufacturer supplier choice
+     * @internal param the $type device type
+     */
+    public static function searchForm($params)
     {
         global $CFG_GLPI;
 
-       // Default values of parameters
+        // Default values of parameters
         $p['itemtype'] = '';
         $p['ip']       = '';
         $p['tolinked'] = 0;
@@ -2196,7 +2208,7 @@ JAVASCRIPT;
         echo __('By IP', 'ocsinventoryng');
         echo "</td><td class='center'>";
         echo Html::input('ip', ['type'  => 'text',
-                              'value' => $p['ip']]);
+            'value' => $p['ip']]);
         echo "</td>";
 
         echo "<td>";
@@ -2204,8 +2216,8 @@ JAVASCRIPT;
         echo "<a class='fas fa-undo reset-search' href='"
            . $target
            . (strpos($target, '?') ? '&amp;' : '?')
-           . "reset=reset' title=\"".__s('Blank')."\"
-                  ><span class='sr-only'>" . __s('Blank')  ."</span></a>";
+           . "reset=reset' title=\"" . __s('Blank') . "\"
+                  ><span class='sr-only'>" . __s('Blank') . "</span></a>";
         echo "</td>";
         echo "</tr>";
 
@@ -2214,16 +2226,16 @@ JAVASCRIPT;
         Html::closeForm();
     }
 
-   // Show snmp devices to add :)
+    // Show snmp devices to add :)
 
-   /**
-    * @param $params
-    */
-    static function showSnmpDeviceToAdd($params)
+    /**
+     * @param $params
+     */
+    public static function showSnmpDeviceToAdd($params)
     {
         global $DB, $CFG_GLPI;
 
-       // Default values of parameters
+        // Default values of parameters
         $p['link']                                = [];
         $p['field']                               = [];
         $p['contains']                            = [];
@@ -2264,7 +2276,7 @@ JAVASCRIPT;
             $start = 0;
         }
 
-       // Get all links between glpi and OCS
+        // Get all links between glpi and OCS
         $query_glpi     = "SELECT ocs_id
                      FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
                      WHERE `plugin_ocsinventoryng_ocsservers_id` = " . $plugin_ocsinventoryng_ocsservers_id;
@@ -2277,29 +2289,29 @@ JAVASCRIPT;
         }
 
         $snmpOptions = [
-         'ORDER'   => 'LASTDATE',
-         'FILTER'  => [
-            'EXCLUDE_IDS' => $already_linked
-         ],
-         'DISPLAY' => [
-            'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
-         ],
-         'ORDER'   => 'NAME'
+            'ORDER'   => 'LASTDATE',
+            'FILTER'  => [
+                'EXCLUDE_IDS' => $already_linked,
+            ],
+            'DISPLAY' => [
+                'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_BIOS,
+            ],
+            'ORDER'   => 'NAME',
         ];
 
-       //if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
-       //   $snmpOptions['FILTER']['TAGS'] = $tag_limit;
-       //}
+        //if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
+        //   $snmpOptions['FILTER']['TAGS'] = $tag_limit;
+        //}
 
-       //if ($cfg_ocs["tag_exclude"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
-       //   $snmpOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
-       //}
+        //if ($cfg_ocs["tag_exclude"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
+        //   $snmpOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
+        //}
         $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
         $ocsResult = $ocsClient->getSnmp($snmpOptions);
 
         if (isset($ocsResult['SNMP'])) {
             if (count($ocsResult['SNMP'])) {
-               // Get all hardware from OCS DB
+                // Get all hardware from OCS DB
                 $hardware = [];
                 $snmp     = array_slice($ocsResult['SNMP'], $start, $_SESSION['glpilist_limit']);
                 foreach ($snmp as $data) {
@@ -2337,12 +2349,12 @@ JAVASCRIPT;
                 $parameters = "itemtype=" . $p['itemtype'] .
                           "&amp;ip=" . $p['ip'];
 
-               // Define begin and end var for loop
-               // Search case
+                // Define begin and end var for loop
+                // Search case
                 $begin_display = $start;
                 $end_display   = $start + $_SESSION["glpilist_limit"];
                 $numrows       = $ocsResult['TOTAL_COUNT'];
-               // Export All case
+                // Export All case
                 if (isset($_GET['export_all'])) {
                     $begin_display = 0;
                     $end_display   = $numrows;
@@ -2360,20 +2372,20 @@ JAVASCRIPT;
                     $parameters = "";
                     Html::printPager($start, $numrows, $target, $parameters);
 
-                   //Show preview form only in import even in multi-entity mode because computer import
-                   //can be refused by a rule
-                   /*if (!$tolinked) {
-                    echo "<div class='firstbloc'>";
-                    echo "<form method='post' name='ocsng_import_mode' id='ocsng_import_mode'
-                         action='$target'>\n";
-                    echo "<table class='tab_cadre_fixe'>";
-                    echo "<tr><th>" . __('Manual import mode', 'ocsinventoryng') . "</th></tr>\n";
-                    echo "<tr class='tab_bg_1'><td class='center'>";
-                    echo "</td></tr>";
-                    echo "</table>";
-                    Html::closeForm();
-                    echo "</div>";
-                   }*/
+                    //Show preview form only in import even in multi-entity mode because computer import
+                    //can be refused by a rule
+                    /*if (!$tolinked) {
+                     echo "<div class='firstbloc'>";
+                     echo "<form method='post' name='ocsng_import_mode' id='ocsng_import_mode'
+                          action='$target'>\n";
+                     echo "<table class='tab_cadre_fixe'>";
+                     echo "<tr><th>" . __('Manual import mode', 'ocsinventoryng') . "</th></tr>\n";
+                     echo "<tr class='tab_bg_1'><td class='center'>";
+                     echo "</td></tr>";
+                     echo "</table>";
+                     Html::closeForm();
+                     echo "</div>";
+                    }*/
                     if ($output_type == Search::HTML_OUTPUT) {
                         echo "<form method='post' name='ocsng_form' id='ocsng_form' action='$target'>";
                     }
@@ -2414,7 +2426,7 @@ JAVASCRIPT;
                     } else {
                         echo Search::showHeaderItem($output_type, __('Item to link', 'ocsinventoryng'), $header_num, "", 0, "", 'width=15%');
                     }
-                   // End Line for column headers
+                    // End Line for column headers
                     echo Search::showEndLine($output_type);
 
                     $row_num = 1;
@@ -2448,56 +2460,56 @@ JAVASCRIPT;
                             Dropdown::showItemTypes($type, self::$snmptypes, ['value' => $value]);
                             echo "</td>\n";
                         }
-                       /* if ($p['change_import_mode'] && !$tolinked){
-                       if (!isset ($data['entities_id']) || $data['entities_id'] == -1){
-                       echo "<td class='center'><img src=\"".$CFG_GLPI['root_doc']. "/pics/redbutton.png\"></td>\n";
-                       $data['entities_id'] = -1;
-                       } else{
-                       echo "<td class='center'>";
-                       $tmprule = new RuleImportEntity();
-                       if ($tmprule->can($data['_ruleid'],READ)){
-                       echo "<a href='". $tmprule->getLinkURL()."'>".$tmprule->getName()."</a>";
-                       }  else{
-                       echo $tmprule->getName();
-                       }
-                       echo "</td>\n";
-                       }
-                       echo "<td width='30%'>";
-                       $ent = "toimport_entities[".$tab["id"]."]";
-                       Entity::dropdown(array('name'     => $ent,
-                       'value'    => $data['entities_id'],
-                       'comments' => 0));
-                       echo "</td>\n";
-                       } */
+                        /* if ($p['change_import_mode'] && !$tolinked){
+                        if (!isset ($data['entities_id']) || $data['entities_id'] == -1){
+                        echo "<td class='center'><img src=\"".$CFG_GLPI['root_doc']. "/pics/redbutton.png\"></td>\n";
+                        $data['entities_id'] = -1;
+                        } else{
+                        echo "<td class='center'>";
+                        $tmprule = new RuleImportEntity();
+                        if ($tmprule->can($data['_ruleid'],READ)){
+                        echo "<a href='". $tmprule->getLinkURL()."'>".$tmprule->getName()."</a>";
+                        }  else{
+                        echo $tmprule->getName();
+                        }
+                        echo "</td>\n";
+                        }
+                        echo "<td width='30%'>";
+                        $ent = "toimport_entities[".$tab["id"]."]";
+                        Entity::dropdown(array('name'     => $ent,
+                        'value'    => $data['entities_id'],
+                        'comments' => 0));
+                        echo "</td>\n";
+                        } */
                         echo "<td width='10'>";
                         if (!$tolinked) {
                             echo "<input type='checkbox' name='toimport[" . $tab["id"] . "]' " .
                             ($p['check'] == "all" ? "checked" : "") . ">";
                         } else {
-                           /* $tab['entities_id'] = $p['glpiactiveentities'];
-                            $rulelink         = new RuleImportAssetCollection();
-                            $rulelink_results = array();
-                            $params           = array('entities_id' => $p['glpiactiveentities'],
-                            'plugin_ocsinventoryng_ocsservers_id'
-                            => $plugin_ocsinventoryng_ocsservers_id);
-                            $rulelink_results = $rulelink->processAllRules($tab,
-                            array(), $params);
+                            /* $tab['entities_id'] = $p['glpiactiveentities'];
+                             $rulelink         = new RuleImportAssetCollection();
+                             $rulelink_results = array();
+                             $params           = array('entities_id' => $p['glpiactiveentities'],
+                             'plugin_ocsinventoryng_ocsservers_id'
+                             => $plugin_ocsinventoryng_ocsservers_id);
+                             $rulelink_results = $rulelink->processAllRules($tab,
+                             array(), $params);
 
-                            //Look for the computer using automatic link criterias as defined in OCSNG configuration
-                            $options       = array('name' => "tolink[".$tab["id"]."]");
-                            $show_dropdown = true;
-                            //If the computer is not explicitly refused by a rule
-                            if (!isset($rulelink_results['action'])
-                            || $rulelink_results['action'] != PluginOcsinventoryngOcsProcess::LINK_RESULT_NO_IMPORT){
+                             //Look for the computer using automatic link criterias as defined in OCSNG configuration
+                             $options       = array('name' => "tolink[".$tab["id"]."]");
+                             $show_dropdown = true;
+                             //If the computer is not explicitly refused by a rule
+                             if (!isset($rulelink_results['action'])
+                             || $rulelink_results['action'] != PluginOcsinventoryngOcsProcess::LINK_RESULT_NO_IMPORT){
 
-                            if (!empty($rulelink_results['found_inventories'])){
-                            $options['value']  = $rulelink_results['found_inventories'][0];
-                            $options['entity'] = $p['glpiactiveentities'];
-                            } */
+                             if (!empty($rulelink_results['found_inventories'])){
+                             $options['value']  = $rulelink_results['found_inventories'][0];
+                             $options['entity'] = $p['glpiactiveentities'];
+                             } */
 
-                           /* } else{
-                            echo "<img src='".$CFG_GLPI['root_doc']. "/pics/redbutton.png'>";
-                            } */
+                            /* } else{
+                             echo "<img src='".$CFG_GLPI['root_doc']. "/pics/redbutton.png'>";
+                             } */
 
                             $value = false;
                             $dbu = new DbUtils();
@@ -2505,10 +2517,10 @@ JAVASCRIPT;
                                 $type            = $tab["type"];
                                 $options['name'] = "tolink_items[" . $tab["id"] . "]";
                                 $used            = [];
-                                $self            = new self;
+                                $self            = new self();
 
                                 if ($item = $self->getFromDBbyName($tab["type"], $tab["name"])) {
-                                     $ido = (isset($item->fields['id'])) ? $item->fields['id'] : 0;
+                                    $ido = (isset($item->fields['id'])) ? $item->fields['id'] : 0;
 
                                     if ($ido > 0) {
                                         $query = "SELECT *
@@ -2539,11 +2551,11 @@ JAVASCRIPT;
                                 $rand = Dropdown::showItemTypes($mynamei, self::$snmptypes, ['rand' => $mtrand]);
 
                                 $p = ['itemtype' => '__VALUE__',
-                                //'entity_restrict' => $entity_restrict,
-                                'id'       => $tab["id"],
-                                'rand'     => $rand,
-                                'myname'   => $myname];
-                               //print_r($p);
+                                    //'entity_restrict' => $entity_restrict,
+                                    'id'       => $tab["id"],
+                                    'rand'     => $rand,
+                                    'myname'   => $myname];
+                                //print_r($p);
                                 Ajax::updateItemOnSelectEvent("dropdown_$mynamei$rand", "results_$mynamei$rand", PLUGIN_OCS_WEBDIR . "/ajax/dropdownitems.php", $p);
                                 echo "<span id='results_$mynamei$rand'>\n";
                                 echo "</span>\n";
@@ -2567,9 +2579,9 @@ JAVASCRIPT;
                     Html::closeForm();
 
                     if (!$tolinked) {
-                          echo "<div class='center'>";
-                          PluginOcsinventoryngOcsServer::checkBox($target);
-                          echo "</div>";
+                        echo "<div class='center'>";
+                        PluginOcsinventoryngOcsServer::checkBox($target);
+                        echo "</div>";
                     }
 
                     Html::printPager($start, $numrows, $target, $parameters);
@@ -2602,13 +2614,13 @@ JAVASCRIPT;
         }
     }
 
-   /**
-    * @param $itemtype
-    * @param $name
-    *
-    * @return itemtype
-    */
-    function getFromDBbyName($itemtype, $name)
+    /**
+     * @param $itemtype
+     * @param $name
+     *
+     * @return itemtype
+     */
+    public function getFromDBbyName($itemtype, $name)
     {
         $dbu = new DbUtils();
         $item  = $dbu->getItemForItemtype($itemtype);
@@ -2617,14 +2629,14 @@ JAVASCRIPT;
         return $item;
     }
 
-   /**
-    * @param $plugin_ocsinventoryng_ocsservers_id
-    * @param $check
-    * @param $start
-    *
-    * @return bool|void
-    */
-    static function showSnmpDeviceToUpdate($plugin_ocsinventoryng_ocsservers_id, $check, $start)
+    /**
+     * @param $plugin_ocsinventoryng_ocsservers_id
+     * @param $check
+     * @param $start
+     *
+     * @return bool|void
+     */
+    public static function showSnmpDeviceToUpdate($plugin_ocsinventoryng_ocsservers_id, $check, $start)
     {
         global $DB, $CFG_GLPI;
 
@@ -2635,7 +2647,7 @@ JAVASCRIPT;
             return false;
         }
 
-       // Get linked computer ids in GLPI
+        // Get linked computer ids in GLPI
         $already_linked_query  = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`ocs_id` AS ocsid
                                FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
                                WHERE `glpi_plugin_ocsinventoryng_snmpocslinks`.`plugin_ocsinventoryng_ocsservers_id`
@@ -2652,14 +2664,14 @@ JAVASCRIPT;
             $already_linked_ids [] = $data['ocsid'];
         }
 
-       // Fetch linked items from ocs
+        // Fetch linked items from ocs
         $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
         $ocsResult = $ocsClient->getSnmp([
-                                          'ORDER'  => 'LASTDATE',
-                                          'FILTER' => [
-                                             'IDS' => $already_linked_ids,
-                                          ]
-                                       ]);
+            'ORDER'  => 'LASTDATE',
+            'FILTER' => [
+                'IDS' => $already_linked_ids,
+            ],
+        ]);
 
         if (isset($ocsResult['SNMP'])) {
             if (count($ocsResult['SNMP']) > 0) {
@@ -2695,12 +2707,12 @@ JAVASCRIPT;
                 if ($DB->numrows($result) > 0) {
                     while ($data = $DB->fetchAssoc($result)) {
                         $format = 'Y-m-d H:i:s';
-                      //                  $last_glpi_update = DateTime::createFromFormat($format, $data['last_update']);
-                      //                  $last_ocs_inventory = DateTime::createFromFormat($format, $ocs_snmp_inv[$data['ocs_id']]);
-                      //TODOSNMP comment for test
-                      //if ($last_ocs_inventory > $last_glpi_update) {
+                        //                  $last_glpi_update = DateTime::createFromFormat($format, $data['last_update']);
+                        //                  $last_ocs_inventory = DateTime::createFromFormat($format, $ocs_snmp_inv[$data['ocs_id']]);
+                        //TODOSNMP comment for test
+                        //if ($last_ocs_inventory > $last_glpi_update) {
                         $already_linked[$data['id']] = $data;
-                      //}
+                        //}
                     }
                 }
                 echo "<div class='center'>";
@@ -2768,21 +2780,21 @@ JAVASCRIPT;
         }
     }
 
-   /**
-    * Make the item link between glpi and ocs.
-    *
-    * This make the database link between ocs and glpi databases
-    *
-    * @param $ocsid integer : ocs item unique id.
-    * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
-    * @param $items_id
-    * @param $itemtype
-    * return int : link id.
-    *
-    * @internal param int $glpi_computers_id : glpi computer id
-    * @return bool|item
-    */
-    static function ocsSnmpLink($ocsid, $plugin_ocsinventoryng_ocsservers_id, $items_id, $itemtype)
+    /**
+     * Make the item link between glpi and ocs.
+     *
+     * This make the database link between ocs and glpi databases
+     *
+     * @param $ocsid integer : ocs item unique id.
+     * @param $plugin_ocsinventoryng_ocsservers_id integer : ocs server id
+     * @param $items_id
+     * @param $itemtype
+     * return int : link id.
+     *
+     * @internal param int $glpi_computers_id : glpi computer id
+     * @return bool|item
+     */
+    public static function ocsSnmpLink($ocsid, $plugin_ocsinventoryng_ocsservers_id, $items_id, $itemtype)
     {
         global $DB;
 
@@ -2808,23 +2820,23 @@ JAVASCRIPT;
         return false;
     }
 
-   /**
-    * @param $ocsid
-    * @param $plugin_ocsinventoryng_ocsservers_id
-    * @param $params
-    *
-    * @return array|bool
-    * @internal param $computers_id
-    *
-    */
-    static function linkSnmpDevice($ocsid, $plugin_ocsinventoryng_ocsservers_id, $params)
+    /**
+     * @param $ocsid
+     * @param $plugin_ocsinventoryng_ocsservers_id
+     * @param $params
+     *
+     * @return array|bool
+     * @internal param $computers_id
+     *
+     */
+    public static function linkSnmpDevice($ocsid, $plugin_ocsinventoryng_ocsservers_id, $params)
     {
-       //TODO enlever pour en conserver 1 seul
+        //TODO enlever pour en conserver 1 seul
         if (!PluginOcsinventoryngOcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
             return false;
         }
         $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-       //TODOSNMP entites_id ?
+        //TODOSNMP entites_id ?
 
         $p['itemtype'] = -1;
         $p['items_id'] = -1;
@@ -2835,119 +2847,119 @@ JAVASCRIPT;
         $ocs_id_change = true;
 
         if (//$ocs_id_change
-         //||
-         $p['itemtype'] != -1 && $p['items_id'] > 0 &&
-         ($idlink = self::ocsSnmpLink(
-             $ocsid,
-             $plugin_ocsinventoryng_ocsservers_id,
-             $p['items_id'],
-             $p['itemtype']
-         ))) {
-           /*
-            // automatic transfer computer
-            if (($CFG_GLPI['transfers_id_auto'] > 0)
-            && Session::isMultiEntitiesMode()) {
+            //||
+            $p['itemtype'] != -1 && $p['items_id'] > 0 &&
+            ($idlink = self::ocsSnmpLink(
+                $ocsid,
+                $plugin_ocsinventoryng_ocsservers_id,
+                $p['items_id'],
+                $p['itemtype']
+            ))) {
+            /*
+             // automatic transfer computer
+             if (($CFG_GLPI['transfers_id_auto'] > 0)
+             && Session::isMultiEntitiesMode()) {
 
-            // Retrieve data from glpi_plugin_ocsinventoryng_ocslinks
-            $ocsLink = new PluginOcsinventoryngOcslink();
-            $ocsLink->getFromDB($idlink);
+             // Retrieve data from glpi_plugin_ocsinventoryng_ocslinks
+             $ocsLink = new PluginOcsinventoryngOcslink();
+             $ocsLink->getFromDB($idlink);
 
-            if (count($ocsLink->fields)) {
-            // Retrieve datas from OCS database
-            $ocsComputer = $ocsClient->getComputer($ocsLink->fields['ocsid']);
+             if (count($ocsLink->fields)) {
+             // Retrieve datas from OCS database
+             $ocsComputer = $ocsClient->getComputer($ocsLink->fields['ocsid']);
 
-            if (!is_null($ocsComputer)) {
-            PluginOcsinventoryngOcsServer::transferComputer($ocsLink->fields, $ocsComputer);
-            }
-            }
-            }
-            $comp = new Computer();
-            $comp->getFromDB($computers_id);
-            $input["id"]            = $computers_id;
-            $input["entities_id"]   = $comp->fields['entities_id'];
-            $input["is_dynamic"]    = 1;
-            $input["_nolock"]       = true;
+             if (!is_null($ocsComputer)) {
+             PluginOcsinventoryngOcsServer::transferComputer($ocsLink->fields, $ocsComputer);
+             }
+             }
+             }
+             $comp = new Computer();
+             $comp->getFromDB($computers_id);
+             $input["id"]            = $computers_id;
+             $input["entities_id"]   = $comp->fields['entities_id'];
+             $input["is_dynamic"]    = 1;
+             $input["_nolock"]       = true;
 
-            //for rule asset
-            $input['_auto']      = 1;
-            $comp->update($input);
-            // Auto restore if deleted
-            if ($comp->fields['is_deleted']) {
-            $comp->restore(array('id' => $computers_id));
-            }
+             //for rule asset
+             $input['_auto']      = 1;
+             $comp->update($input);
+             // Auto restore if deleted
+             if ($comp->fields['is_deleted']) {
+             $comp->restore(array('id' => $computers_id));
+             }
 
-            // Reset only if not in ocs id change case
-            if (!$ocs_id_change) {
-            if ($ocsConfig["import_general_os"]) {
-            PluginOcsinventoryngOcsServer::resetDropdown($computers_id, "operatingsystems_id", "glpi_operatingsystems");
-            }
-            if ($ocsConfig["import_device_processor"]) {
-            PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceProcessor');
-            }
-            if ($ocsConfig["import_device_iface"]) {
-            PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceNetworkCard');
-            }
-            if ($ocsConfig["import_device_memory"]) {
-            PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceMemory');
-            }
-            if ($ocsConfig["import_device_hdd"]) {
-            PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceHardDrive');
-            }
-            if ($ocsConfig["import_device_sound"]) {
-            PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceSoundCard');
-            }
-            if ($ocsConfig["import_device_gfxcard"]) {
-            PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceGraphicCard');
-            }
-            if ($ocsConfig["import_device_drive"]) {
-            PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceDrive');
-            }
-            if ($ocsConfig["import_device_modem"] || $ocsConfig["import_device_port"]) {
-            PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DevicePci');
-            }
-            if ($ocsConfig["import_device_bios"]) {
-            PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'PluginOcsinventoryngDeviceBiosdata');
-            }
-            if ($ocsConfig["import_device_motherboard"]) {
-            PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceMotherboard');
-            }
-            if ($ocsConfig["import_software"]) {
-            PluginOcsinventoryngOcsServer::resetSoftwares($computers_id);
-            }
-            if ($ocsConfig["import_disk"]) {
-            PluginOcsinventoryngOcsServer::resetDisks($computers_id);
-            }
-            if ($ocsConfig["import_periph"]) {
-            PluginOcsinventoryngOcsServer::resetPeripherals($computers_id);
-            }
-            if ($ocsConfig["import_monitor"]==1) { // Only reset monitor as global in unit management
-            PluginOcsinventoryngOcsServer::resetMonitors($computers_id);    // try to link monitor with existing
-            }
-            if ($ocsConfig["import_printer"]) {
-            PluginOcsinventoryngOcsServer::resetPrinters($computers_id);
-            }
-            if ($ocsConfig["import_registry"]) {
-            PluginOcsinventoryngOcsServer::resetRegistry($computers_id);
-            }
-            $changes[0] = '0';
-            $changes[1] = "";
-            $changes[2] = $ocsid;
-            PluginOcsinventoryngOcslink::history($computers_id, $changes,
-            PluginOcsinventoryngOcslink::HISTORY_OCS_LINK);
-            }
-            */
+             // Reset only if not in ocs id change case
+             if (!$ocs_id_change) {
+             if ($ocsConfig["import_general_os"]) {
+             PluginOcsinventoryngOcsServer::resetDropdown($computers_id, "operatingsystems_id", "glpi_operatingsystems");
+             }
+             if ($ocsConfig["import_device_processor"]) {
+             PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceProcessor');
+             }
+             if ($ocsConfig["import_device_iface"]) {
+             PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceNetworkCard');
+             }
+             if ($ocsConfig["import_device_memory"]) {
+             PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceMemory');
+             }
+             if ($ocsConfig["import_device_hdd"]) {
+             PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceHardDrive');
+             }
+             if ($ocsConfig["import_device_sound"]) {
+             PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceSoundCard');
+             }
+             if ($ocsConfig["import_device_gfxcard"]) {
+             PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceGraphicCard');
+             }
+             if ($ocsConfig["import_device_drive"]) {
+             PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceDrive');
+             }
+             if ($ocsConfig["import_device_modem"] || $ocsConfig["import_device_port"]) {
+             PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DevicePci');
+             }
+             if ($ocsConfig["import_device_bios"]) {
+             PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'PluginOcsinventoryngDeviceBiosdata');
+             }
+             if ($ocsConfig["import_device_motherboard"]) {
+             PluginOcsinventoryngOcsServer::resetDevices($computers_id, 'DeviceMotherboard');
+             }
+             if ($ocsConfig["import_software"]) {
+             PluginOcsinventoryngOcsServer::resetSoftwares($computers_id);
+             }
+             if ($ocsConfig["import_disk"]) {
+             PluginOcsinventoryngOcsServer::resetDisks($computers_id);
+             }
+             if ($ocsConfig["import_periph"]) {
+             PluginOcsinventoryngOcsServer::resetPeripherals($computers_id);
+             }
+             if ($ocsConfig["import_monitor"]==1) { // Only reset monitor as global in unit management
+             PluginOcsinventoryngOcsServer::resetMonitors($computers_id);    // try to link monitor with existing
+             }
+             if ($ocsConfig["import_printer"]) {
+             PluginOcsinventoryngOcsServer::resetPrinters($computers_id);
+             }
+             if ($ocsConfig["import_registry"]) {
+             PluginOcsinventoryngOcsServer::resetRegistry($computers_id);
+             }
+             $changes[0] = '0';
+             $changes[1] = "";
+             $changes[2] = $ocsid;
+             PluginOcsinventoryngOcslink::history($computers_id, $changes,
+             PluginOcsinventoryngOcslink::HISTORY_OCS_LINK);
+             }
+             */
             self::updateSnmp($idlink, $plugin_ocsinventoryng_ocsservers_id);
             return ['status' => PluginOcsinventoryngOcsProcess::SNMP_LINKED,
-                 //'entities_id'  => $data['entities_id'],
+                //'entities_id'  => $data['entities_id'],
             ];
         }
-       /*
-        } else {
-        //TRANS: %s is the OCS id
-        Session::addMessageAfterRedirect(sprintf(__('Unable to import, GLPI computer is already related to an element of OCSNG (%d)',
-        'ocsinventoryng'), $ocsid),
-        false, ERROR);
-        } */
+        /*
+         } else {
+         //TRANS: %s is the OCS id
+         Session::addMessageAfterRedirect(sprintf(__('Unable to import, GLPI computer is already related to an element of OCSNG (%d)',
+         'ocsinventoryng'), $ocsid),
+         false, ERROR);
+         } */
         return false;
     }
 }
