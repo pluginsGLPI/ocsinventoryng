@@ -304,7 +304,7 @@ class PluginOcsinventoryngThread extends CommonDBTM
 
         echo "<div class='center'>";
         echo "<form name='processes' id='processes' action='$target' method='post'>";
-        echo "<table class='tab_cadrehov'>";
+        echo "<table class='tab_cadre_fixe'>";
         $colspan = '15';
         $log = PluginOcsinventoryngConfig::logProcessedComputers();
         if ($log) {
@@ -634,7 +634,7 @@ class PluginOcsinventoryngThread extends CommonDBTM
 
         switch ($status) {
             case PLUGIN_OCSINVENTORYNG_STATE_FINISHED:
-                echo "<i style='color:darkgreen' class='fas fa-check-circle' 
+                echo "<i style='color:darkgreen' class='fas fa-check-circle'
             title=\"" . __('Finished state') . "\"></i>";
                 break;
 

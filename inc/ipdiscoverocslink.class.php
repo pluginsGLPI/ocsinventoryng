@@ -101,8 +101,8 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
         $ocsClient = new PluginOcsinventoryngOcsServer();
         $DBOCS     = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"])->getDB();
         $query     = "SELECT `config`.`TVALUE`
-                    FROM `config` 
-                    WHERE `config`.`NAME` 
+                    FROM `config`
+                    WHERE `config`.`NAME`
                     LIKE 'ID_IPDISCOVER_%'";
         $result    = $DBOCS->doQuery($query);
         while ($subNetId = $DBOCS->fetchAssoc($result)) {
@@ -184,8 +184,8 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
         $ocsClient = new PluginOcsinventoryngOcsServer();
         $DBOCS     = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"])->getDB();
         $query     = "SELECT MAX(`config`.`IVALUE`) as MAX
-                 FROM `config` 
-                 WHERE `config`.`NAME` 
+                 FROM `config`
+                 WHERE `config`.`NAME`
                  LIKE 'ID_IPDISCOVER_%'";
         $result    = $DBOCS->doQuery($query);
         $subNetId  = $DBOCS->fetchAssoc($result);
@@ -229,8 +229,8 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
         $knownIP   = [];
         //$IP        = array();
         $query     = "SELECT DISTINCT `networks`.`IPSUBNET`,`subnet`.`NAME`,`subnet`.`ID`
-                     FROM `networks` 
-                     LEFT JOIN `subnet` 
+                     FROM `networks`
+                     LEFT JOIN `subnet`
                      ON (`networks`.`IPSUBNET` = `subnet`.`NETID`) ,`accountinfo`
                      WHERE `networks`.`HARDWARE_ID`=`accountinfo`.`HARDWARE_ID`
                      AND `networks`.`STATUS`='Up'";
@@ -309,10 +309,10 @@ class PluginOcsinventoryngIpdiscoverOcslink extends CommonDBTM
             return [];
         } else {
             $macAdresses  = self::parseArrayToString($knownMacAdresses);
-            $percentQuery = " SELECT * from (select inv.RSX as IP, inv.c as 'INVENTORIED', non_ident.c as 'NON_INVENTORIED', ipdiscover.c as 'IPDISCOVER', ident.c as 'IDENTIFIED', inv.name as 'NAME', CASE WHEN ident.c IS NULL and ipdiscover.c IS NULL THEN 100 WHEN non_ident.c IS NULL and ipdiscover.c IS NOT NULL THEN 100 WHEN ident.c IS NULL THEN round(inv.c * 100 / (non_ident.c + inv.c),1) ELSE round((inv.c + ident.c) * 100 / (non_ident.c + inv.c),1) END as 'PERCENT' 
+            $percentQuery = " SELECT * from (select inv.RSX as IP, inv.c as 'INVENTORIED', non_ident.c as 'NON_INVENTORIED', ipdiscover.c as 'IPDISCOVER', ident.c as 'IDENTIFIED', inv.name as 'NAME', CASE WHEN ident.c IS NULL and ipdiscover.c IS NULL THEN 100 WHEN non_ident.c IS NULL and ipdiscover.c IS NOT NULL THEN 100 WHEN ident.c IS NULL THEN round(inv.c * 100 / (non_ident.c + inv.c),1) ELSE round((inv.c + ident.c) * 100 / (non_ident.c + inv.c),1) END as 'PERCENT'
 from (SELECT COUNT(DISTINCT hardware_id) as c, 'IPDISCOVER' as TYPE, tvalue as RSX FROM devices WHERE name = 'IPDISCOVER' and tvalue in (" . $Nets . ")
-GROUP BY tvalue) ipdiscover 
-right join 
+GROUP BY tvalue) ipdiscover
+right join
 (SELECT count(distinct(hardware_id)) as c, 'INVENTORIED' as TYPE, ipsubnet as RSX, subnet.name as name FROM networks left join subnet on networks.ipsubnet = subnet.netid WHERE ipsubnet in (" . $Nets . ")
 and status = 'Up' GROUP BY ipsubnet) inv on ipdiscover.RSX = inv.RSX left join (SELECT COUNT(DISTINCT mac) as c, 'IDENTIFIED' as TYPE, netid as RSX FROM netmap WHERE mac IN (SELECT DISTINCT(macaddr) FROM network_devices ) and netid in (" . $Nets . ")
 GROUP BY netid) ident on ipdiscover.RSX = ident.RSX left join (SELECT COUNT(DISTINCT mac) as c, 'NON IDENTIFIED' as TYPE, netid as RSX FROM netmap n LEFT JOIN networks ns ON ns.macaddr = n.mac WHERE n.mac NOT IN (SELECT DISTINCT(macaddr) FROM network_devices) and (ns.macaddr IS NULL OR ns.IPSUBNET <> n.netid) and n.netid in (" . $Nets . ")
@@ -322,8 +322,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
 
             $query = " SELECT * from (select inv.RSX as IP, inv.c as 'INVENTORIED', non_ident.c as 'NON_INVENTORIED', ipdiscover.c as 'IPDISCOVER', ident.c as 'IDENTIFIED', inv.name as 'NAME'
 from (SELECT COUNT(DISTINCT hardware_id) as c, 'IPDISCOVER' as TYPE, tvalue as RSX FROM devices WHERE name = 'IPDISCOVER' and tvalue in (" . $Nets . ")
-GROUP BY tvalue) ipdiscover 
-right join 
+GROUP BY tvalue) ipdiscover
+right join
 (SELECT count(distinct(hardware_id)) as c, 'INVENTORIED' as TYPE, ipsubnet as RSX, subnet.name as name FROM networks left join subnet on networks.ipsubnet = subnet.netid WHERE ipsubnet in (" . $Nets . ")
 and status = 'Up' GROUP BY ipsubnet) inv on ipdiscover.RSX = inv.RSX left join (SELECT COUNT(DISTINCT mac) as c, 'IDENTIFIED' as TYPE, netid as RSX FROM netmap WHERE mac IN (SELECT DISTINCT(macaddr) FROM network_devices WHERE `network_devices`.`MACADDR` NOT IN($macAdresses)) and netid in (" . $Nets . ")
 GROUP BY netid) ident on ipdiscover.RSX = ident.RSX left join (SELECT COUNT(DISTINCT mac) as c, 'NON IDENTIFIED' as TYPE, netid as RSX FROM netmap n LEFT JOIN networks ns ON ns.macaddr = n.mac WHERE n.mac NOT IN (SELECT DISTINCT(macaddr) FROM network_devices) and (ns.macaddr IS NULL OR ns.IPSUBNET <> n.netid) and n.netid in (" . $Nets . ")
@@ -595,26 +595,26 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
         $query     = "";
 
         if ($status == "inventoried") {
-            $query = " SELECT `hardware`.`lastdate`, `hardware`.`name`, `hardware`.`userid`, `hardware`.`osname`, `hardware`.`workgroup`, `hardware`.`osversion`, `hardware`.`ipaddr`, `hardware`.`userdomain` 
-         FROM `hardware` 
-         LEFT JOIN `networks` ON `networks`.`hardware_id`=`hardware`.`id` 
-         WHERE `networks`.`ipsubnet`='$ipAdress' 
-         AND status='Up' 
+            $query = " SELECT `hardware`.`lastdate`, `hardware`.`name`, `hardware`.`userid`, `hardware`.`osname`, `hardware`.`workgroup`, `hardware`.`osversion`, `hardware`.`ipaddr`, `hardware`.`userdomain`
+         FROM `hardware`
+         LEFT JOIN `networks` ON `networks`.`hardware_id`=`hardware`.`id`
+         WHERE `networks`.`ipsubnet`='$ipAdress'
+         AND status='Up'
          GROUP BY `hardware`.`id`,`hardware`.`lastdate`, `hardware`.`name`, `hardware`.`userid`, `hardware`.`osname`, `hardware`.`workgroup`, `hardware`.`osversion`, `hardware`.`ipaddr`, `hardware`.`userdomain`
          ORDER BY `hardware`.`lastdate`";
         } elseif ($status == "imported") {
             $query = " SELECT *
-         FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks` 
+         FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
          WHERE `subnet` = '$ipAdress'
          ORDER BY `last_update`";
         } elseif ($status == "noninventoried") {
             $query = " SELECT `netmap`.`ip`, `netmap`.`mac`, `netmap`.`mask`, `netmap`.`date`, `netmap`.`name` as DNS
-              FROM `netmap` 
-              LEFT JOIN `networks` 
-              ON `netmap`.`mac` =`networks`.`macaddr` 
-              WHERE `netmap`.`netid`='$ipAdress' 
-              AND (`networks`.`macaddr` IS NULL OR `networks`.`ipsubnet` <> `netmap`.`netid`) 
-              AND `netmap`.`mac` NOT IN ( SELECT DISTINCT(`network_devices`.`macaddr`) 
+              FROM `netmap`
+              LEFT JOIN `networks`
+              ON `netmap`.`mac` =`networks`.`macaddr`
+              WHERE `netmap`.`netid`='$ipAdress'
+              AND (`networks`.`macaddr` IS NULL OR `networks`.`ipsubnet` <> `netmap`.`netid`)
+              AND `netmap`.`mac` NOT IN ( SELECT DISTINCT(`network_devices`.`macaddr`)
               FROM `network_devices`)
               GROUP BY `netmap`.`mac`,`netmap`.`ip`,`netmap`.`mask`, `netmap`.`date`, `netmap`.`name`
               ORDER BY `netmap`.`date` DESC";
@@ -623,8 +623,8 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             $macAdresses = self::parseArrayToString($knownMacAdresses);
             $query       = "SELECT `network_devices`.`id`,`network_devices`.`type`,`network_devices`.`description`,`network_devices`.`user`,`netmap`.`ip`,`netmap`.`mac`,`netmap`.`mask`,`netmap`.`netid`,`netmap`.`name`,`netmap`.`date`
               FROM `network_devices`
-              LEFT JOIN `netmap` 
-              ON `network_devices`.`macaddr`=`netmap`.`mac` 
+              LEFT JOIN `netmap`
+              ON `network_devices`.`macaddr`=`netmap`.`mac`
               WHERE `netmap`.`netid`='$ipAdress'
               AND `network_devices`.`MACADDR` NOT IN($macAdresses)
               GROUP BY `network_devices`.`macaddr`,`network_devices`.`id`,`network_devices`.`type`,`network_devices`.`description`,`network_devices`.`user`,`netmap`.`ip`,`netmap`.`mac`,`netmap`.`mask`,`netmap`.`netid`,`netmap`.`name`,`netmap`.`date`
@@ -701,7 +701,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
         echo Html::printPager($start, count($subnets), $link, $choice);
         echo Search::showNewLine($output_type, true);
         $header_num = 1;
-        echo "<table width='100%'class='tab_cadrehov'>\n";
+        echo "<table width='100%'class='tab_cadre_fixe'>\n";
         echo Search::showHeaderItem($output_type, __('Description'), $header_num);
         echo Search::showHeaderItem($output_type, __('Subnet'), $header_num);
         echo Search::showHeaderItem($output_type, __('Non Inventoried', 'ocsinventoryng'), $header_num);
@@ -798,11 +798,11 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             $mask = $values["subnetMask"];
             if (isset($_POST["Add"])) {
                 $addQuery = "INSERT INTO `subnet`
-              (`netid`,`name`,`id`,`mask`) 
+              (`netid`,`name`,`id`,`mask`)
               VALUES ('$ipAdress','$name', '$id','$mask')";
             } elseif (isset($_POST["Modify"])) {
                 $addQuery = "UPDATE `subnet`
-              SET `name`='$name', `id`= '$id', `mask`='$mask' 
+              SET `name`='$name', `id`= '$id', `mask`='$mask'
               WHERE `netid`= '$ipAdress'";
             }
             $res = $OCSDB->doQuery($addQuery);
@@ -912,7 +912,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
         $query = "SELECT *
                 FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
                 WHERE `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`.`macaddress`
-                LIKE '$mac' 
+                LIKE '$mac'
                 AND `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`.`plugin_ocsinventoryng_ocsservers_id` =$plugin_ocsinventoryng_ocsservers_id";
 
         $result = $DB->doQuery($query);
@@ -1157,7 +1157,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
 
             if ($result) {
                 //delete ipdiscoverocslink
-                $glpiQuery = "DELETE FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks` 
+                $glpiQuery = "DELETE FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
                           WHERE `macaddress` = '$mac'";
                 $DB->doQuery($glpiQuery);
                 //add new ipdiscover object
@@ -1321,7 +1321,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             $header_num = 1;
             switch ($status) {
                 case "inventoried":
-                    echo "<table width='100%'class='tab_cadrehov'>\n";
+                    echo "<table width='100%'class='tab_cadre_fixe'>\n";
                     echo Search::showHeaderItem($output_type, __('User'), $header_num);
                     echo Search::showHeaderItem($output_type, __('Name'), $header_num);
                     echo Search::showHeaderItem($output_type, __('System'), $header_num);
@@ -1356,7 +1356,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                     echo "<div class='center' style=\"width=100%\">";
                     echo Html::submit(_sx('button', 'Delete link', 'ocsinventoryng'), ['name' => 'deletelink', 'class' => 'btn btn-primary']);
                     echo "</div>";
-                    echo "<table width='100%'class='tab_cadrehov'>\n";
+                    echo "<table width='100%'class='tab_cadre_fixe'>\n";
                     echo Search::showHeaderItem($output_type, __('Item'), $header_num);
                     echo Search::showHeaderItem($output_type, __('Item type'), $header_num);
                     echo Search::showHeaderItem($output_type, __('MAC address'), $header_num);
@@ -1435,7 +1435,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                     }
                     echo Html::submit(_sx('button', 'Delete from OCSNG', 'ocsinventoryng'), ['name' => 'delete', 'class' => 'btn btn-primary']);
                     echo "</div>";
-                    echo "<table width='100%'class='tab_cadrehov'>\n";
+                    echo "<table width='100%'class='tab_cadre_fixe'>\n";
                     echo Search::showHeaderItem($output_type, __('Date'), $header_num);
                     echo Search::showHeaderItem($output_type, __('MAC address'), $header_num);
                     echo Search::showHeaderItem($output_type, __('IP address'), $header_num);
@@ -1567,7 +1567,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                         echo "&nbsp;";
                     }
                     echo Html::submit(_sx('button', 'Delete from OCSNG', 'ocsinventoryng'), ['name' => 'delete', 'class' => 'btn btn-primary']);
-                    echo "<table width='100%'class='tab_cadrehov'>";
+                    echo "<table width='100%'class='tab_cadre_fixe'>";
                     echo Search::showHeaderItem($output_type, __('Date'), $header_num);
                     echo Search::showHeaderItem($output_type, __('Description'), $header_num);
                     echo Search::showHeaderItem($output_type, __('OCS Type', 'ocsinventoryng'), $header_num);

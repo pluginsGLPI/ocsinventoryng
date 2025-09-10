@@ -356,7 +356,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
             if ($isactive) {
                 echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                   <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsserver.form.php?id=$plugin_ocsinventoryng_ocsservers_id'>
-                    <i style='color:steelblue' class='fas fa-cogs fa-2x' 
+                    <i style='color:steelblue' class='fas fa-cogs fa-2x'
                         title=\"" . __s('Configuration of OCSNG server', 'ocsinventoryng') . "\"></i>
                    <br><br>" . sprintf(__('Configuration of OCSNG server %s', 'ocsinventoryng'), $name) . "
                   </a></td>";
@@ -365,7 +365,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                     //config massimport
                     echo "<td class='center b' colspan='2'>
                      <a href='" . PLUGIN_OCS_WEBDIR . "/front/config.form.php'>
-                      <i style='color:steelblue' class='fas fa-sync-alt fa-2x' 
+                      <i style='color:steelblue' class='fas fa-sync-alt fa-2x'
                         title=\"" . __s('Automatic synchronization\'s configuration', 'ocsinventoryng') . "\"></i>
                         <br><br>" . __("Automatic synchronization's configuration", 'ocsinventoryng') . "
                      </a></td>";
@@ -382,7 +382,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
 
         echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
             <a href='" . $CFG_GLPI["root_doc"] . "/front/ruleimportentity.php'>
-            <i style='color:firebrick' class='fas fa-book fa-2x' 
+            <i style='color:firebrick' class='fas fa-book fa-2x'
                         title=\"" . __s('Rules for assigning an item to an entity') . "\"></i><br><br>" . __('Rules for assigning an item to an entity') . "</a>";
         echo "<br><span style='color:firebrick'>";
         echo __('Setup rules for choose entity on items import', 'ocsinventoryng');
@@ -390,7 +390,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
 
         echo "<td class='center b' colspan='2'>
             <a href='" . $CFG_GLPI["root_doc"] . "/front/ruleimportasset.php'>
-         <i style='color:firebrick' class='fas fa-book fa-2x' 
+         <i style='color:firebrick' class='fas fa-book fa-2x'
                         title=\"" . __s('Rules for import and link equipments') . "\"></i><br><br>" . __('Rules for import and link equipments') . "</a>";
         echo "<br><span style='color:firebrick'>";
         echo __('Setup rules for select criteria for items link', 'ocsinventoryng');
@@ -527,7 +527,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                     if (Session::haveRight("plugin_ocsinventoryng_import", READ)) {
                         echo "<td class='center b' colspan='2'>
                   <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.import.php'>";
-                        echo "<i style='color:steelblue' class='fas fa-plus fa-2x' 
+                        echo "<i style='color:steelblue' class='fas fa-plus fa-2x'
                            title=\"" . __s('Import or link new computers', 'ocsinventoryng') . "\"></i>";
                         echo "<br>" . __('Import or link new computers', 'ocsinventoryng') . "
                   </a></td>";
@@ -538,7 +538,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                         //threads
                         echo "<td class='center b' colspan='2'>
                      <a href='" . PLUGIN_OCS_WEBDIR . "/front/thread.php?plugin_ocsinventoryng_ocsservers_id=" . $plugin_ocsinventoryng_ocsservers_id . "'>
-                      <i style='color:steelblue' class='fas fa-play fa-2x' 
+                      <i style='color:steelblue' class='fas fa-play fa-2x'
                            title=\"" . __s('Scripts execution of automatic actions', 'ocsinventoryng') . "\"></i>
                         <br>" . __('Scripts execution of automatic actions', 'ocsinventoryng') . "
                      </a></td>";
@@ -553,7 +553,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                     if (Session::haveRight("plugin_ocsinventoryng_sync", READ) && $isactive) {
                         echo "<td class='center b' colspan='2'>
                   <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.sync.php'>
-                  <i style='color:steelblue' class='fas fa-sync-alt fa-2x' 
+                  <i style='color:steelblue' class='fas fa-sync-alt fa-2x'
                            title=\"" . __s('Synchronize computers already imported', 'ocsinventoryng') . "\"></i>
                      <br>" . __('Synchronize computers already imported', 'ocsinventoryng') . "
                   </a></td>";
@@ -565,7 +565,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                         //host imported by thread
                         echo "<td class='center b' colspan='2'>
                      <a href='" . PLUGIN_OCS_WEBDIR . "/front/detail.php'>
-                     <i style='color:green' class='fas fa-check fa-2x' 
+                     <i style='color:green' class='fas fa-check fa-2x'
                            title=\"" . __s('Computers imported by automatic actions', 'ocsinventoryng') . "\"></i>
                         <br>" . __('Computers imported by automatic actions', 'ocsinventoryng') . "
                      </a></td>";
@@ -584,7 +584,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                         //host not imported by thread
                         echo "<td class='center b' colspan='2'>
                      <a href='" . PLUGIN_OCS_WEBDIR . "/front/notimportedcomputer.php'>
-                     <i style='color:firebrick' class='fas fa-times fa-2x' 
+                     <i style='color:firebrick' class='fas fa-times fa-2x'
                            title=\"" . __s('Computers not imported by automatic actions', 'ocsinventoryng') . "\"></i>
                         <br>" . __('Computers not imported by automatic actions', 'ocsinventoryng') . "
                      </a></td>";
@@ -608,7 +608,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
                 echo "<td class='center b' colspan='2'>";
 
                 echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/deleted_equiv.php'>
-            <i style='color:steelblue' class='fas fa-trash fa-2x' 
+            <i style='color:steelblue' class='fas fa-trash fa-2x'
                            title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Clean OCSNG deleted computers', 'ocsinventoryng') . "
                </a>";
@@ -626,7 +626,7 @@ class PluginOcsinventoryngOcsServer extends CommonDBTM
             }
             echo "<td class='center b' colspan='2'>
                <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsng.clean.php'>
-               <i style='color:steelblue' class='fas fa-broom fa-2x' 
+               <i style='color:steelblue' class='fas fa-broom fa-2x'
                            title=\"" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Clean links between GLPI and OCSNG', 'ocsinventoryng') . "
                </a>";
@@ -691,8 +691,8 @@ JAVASCRIPT;
 
         echo "<tr class='tab_bg_2'>\n";
         echo "<td class='top'>\n";
-        echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/jquery-ui/jquery-ui.min.css");
-        echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/jquery-ui/jquery-ui.min.js");
+        echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/jquery-ui/jquery-ui.min.css");
+        echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/jquery-ui/jquery-ui.min.js");
         echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
          function accordion(id, openall) {
@@ -2328,23 +2328,23 @@ JAVASCRIPT;
      */
     public static function showComputersToSynchronize($show_params)
     {
-        echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/datatables.min.css");
-        //      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css");
-        echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/ColReorder-1.5.2/css/colReorder.dataTables.min.css");
-        echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Responsive-2.2.3/css/responsive.dataTables.min.css");
-        echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Select-1.3.1/css/select.dataTables.min.css");
+        echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/datatables.min.css");
+        //      echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css");
+        echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/ColReorder-1.5.2/css/colReorder.dataTables.min.css");
+        echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Responsive-2.2.3/css/responsive.dataTables.min.css");
+        echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Select-1.3.1/css/select.dataTables.min.css");
 
-        echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/datatables.min.js");
-        echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Responsive-2.2.3/js/dataTables.responsive.min.js");
-        echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Select-1.3.1/js/dataTables.select.min.js");
-        //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/dataTables.buttons.min.js");
-        //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.html5.min.js");
-        //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.print.min.js");
-        //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.colVis.min.js");
-        echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/ColReorder-1.5.2/js/dataTables.colReorder.min.js");
-        //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/JSZip-2.5.0/jszip.min.js");
-        //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/pdfmake-0.1.36/pdfmake.min.js");
-        //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/pdfmake-0.1.36/vfs_fonts.js");
+        echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/datatables.min.js");
+        echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Responsive-2.2.3/js/dataTables.responsive.min.js");
+        echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Select-1.3.1/js/dataTables.select.min.js");
+        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/dataTables.buttons.min.js");
+        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.html5.min.js");
+        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.print.min.js");
+        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.colVis.min.js");
+        echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/ColReorder-1.5.2/js/dataTables.colReorder.min.js");
+        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/JSZip-2.5.0/jszip.min.js");
+        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/pdfmake-0.1.36/pdfmake.min.js");
+        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/pdfmake-0.1.36/vfs_fonts.js");
 
 
         $plugin_ocsinventoryng_ocsservers_id = $show_params["plugin_ocsinventoryng_ocsservers_id"];
@@ -2429,13 +2429,13 @@ JAVASCRIPT;
                        $('th.select-checkbox').addClass('selected');
                    }
                   });
-                  // Handle form submission event 
+                  // Handle form submission event
                   $('#ocsng_form').on('submit', function(e){
                      var form = this;
                      var rows_selected = table.rows('.selected').data();
                      // Iterate over all selected checkboxes
                      rows_selected.each( function ( value, index ) {
-                        // Create a hidden element 
+                        // Create a hidden element
                         $(form).append(
                             $('<input>')
                                .attr('type', 'hidden')
@@ -2498,23 +2498,23 @@ JAVASCRIPT;
      */
     public static function showComputersToAdd($show_params)
     {
-        echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/datatables.min.css");
-        //      echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css");
-        echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/ColReorder-1.5.2/css/colReorder.dataTables.min.css");
-        echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Responsive-2.2.3/css/responsive.dataTables.min.css");
-        echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Select-1.3.1/css/select.dataTables.min.css");
+        echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/datatables.min.css");
+        //      echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css");
+        echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/ColReorder-1.5.2/css/colReorder.dataTables.min.css");
+        echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Responsive-2.2.3/css/responsive.dataTables.min.css");
+        echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Select-1.3.1/css/select.dataTables.min.css");
 
-        echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/datatables.min.js");
-        echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Responsive-2.2.3/js/dataTables.responsive.min.js");
-        echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Select-1.3.1/js/dataTables.select.min.js");
-        //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/dataTables.buttons.min.js");
-        //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.html5.min.js");
-        //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.print.min.js");
-        //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.colVis.min.js");
-        echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/ColReorder-1.5.2/js/dataTables.colReorder.min.js");
-        //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/JSZip-2.5.0/jszip.min.js");
-        //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/pdfmake-0.1.36/pdfmake.min.js");
-        //      echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/DataTables/pdfmake-0.1.36/vfs_fonts.js");
+        echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/datatables.min.js");
+        echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Responsive-2.2.3/js/dataTables.responsive.min.js");
+        echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Select-1.3.1/js/dataTables.select.min.js");
+        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/dataTables.buttons.min.js");
+        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.html5.min.js");
+        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.print.min.js");
+        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.colVis.min.js");
+        echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/ColReorder-1.5.2/js/dataTables.colReorder.min.js");
+        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/JSZip-2.5.0/jszip.min.js");
+        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/pdfmake-0.1.36/pdfmake.min.js");
+        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/pdfmake-0.1.36/vfs_fonts.js");
 
         $plugin_ocsinventoryng_ocsservers_id = $show_params["plugin_ocsinventoryng_ocsservers_id"];
         $advancedimport                      = $show_params["import_mode"] ?? 0;
@@ -2625,13 +2625,13 @@ JAVASCRIPT;
                        $('th.select-checkbox').addClass('selected');
                    }
                   });
-                  // Handle form submission event 
+                  // Handle form submission event
                   $('#ocsng_form').on('submit', function(e){
                      var form = this;
                      var rows_selected = table.rows('.selected').data();
                      // Iterate over all selected checkboxes
                      rows_selected.each( function ( value, index ) {
-                        // Create a hidden element 
+                        // Create a hidden element
                         $(form).append(
                             $('<input>')
                                .attr('type', 'hidden')
@@ -2910,10 +2910,10 @@ JAVASCRIPT;
                 $delay = $config['delay_restorationcron'];
 
                 $query = "SELECT `glpi_computers`.`id`
-                     FROM `glpi_computers` 
-                     INNER JOIN `glpi_plugin_ocsinventoryng_ocslinks` AS ocslink 
+                     FROM `glpi_computers`
+                     INNER JOIN `glpi_plugin_ocsinventoryng_ocslinks` AS ocslink
                         ON ocslink.`computers_id` = `glpi_computers`.`id`
-                     WHERE `glpi_computers`.`is_deleted` = 1 
+                     WHERE `glpi_computers`.`is_deleted` = 1
                      AND ( unix_timestamp(ocslink.`last_ocs_update`) >= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY))";
 
                 $result = $DB->doQuery($query);

@@ -143,8 +143,8 @@ JAVASCRIPT;
 
         echo "<tr class='tab_bg_2'>\n";
         echo "<td class='top'>\n";
-        echo Html::css(PLUGIN_OCS_NOTFULL_DIR . "/lib/jquery-ui/jquery-ui.min.css");
-        echo Html::script(PLUGIN_OCS_NOTFULL_DIR . "/lib/jquery-ui/jquery-ui.min.js");
+        echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/jquery-ui/jquery-ui.min.css");
+        echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/jquery-ui/jquery-ui.min.js");
         echo $JS = <<<JAVASCRIPT
          <script type='text/javascript'>
          function accordions(id, openall) {
@@ -456,14 +456,14 @@ JAVASCRIPT;
             // SNMP device link feature
             echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
                   <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsngsnmp.link.php'>
-                   <i style='color:firebrick' class='fas fa-arrow-alt-circle-down fa-2x' 
+                   <i style='color:firebrick' class='fas fa-arrow-alt-circle-down fa-2x'
                            title=\"" . __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "\"></i>
                      <br>" . __('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "
                   </a></td>";
 
             echo "<td class='center b' colspan='2'>
                <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsngsnmp.sync.php'>
-                  <i style='color:cornflowerblue' class='fas fa-sync-alt fa-2x' 
+                  <i style='color:cornflowerblue' class='fas fa-sync-alt fa-2x'
                      title=\"" . __s('Synchronize snmp devices already imported', 'ocsinventoryng') . "\"></i>
                   <br>" . __('Synchronize snmp devices already imported', 'ocsinventoryng') . "
                </a></td>";
@@ -472,7 +472,7 @@ JAVASCRIPT;
             //SNMP device import feature
             echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
              <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsngsnmp.import.php'>
-              <i style='color:cornflowerblue' class='fas fa-plus fa-2x' 
+              <i style='color:cornflowerblue' class='fas fa-plus fa-2x'
                            title=\"" . __s('Import new SNMP devices', 'ocsinventoryng') . "\"></i>
                 <br>" . __('Import new SNMP devices', 'ocsinventoryng') . "
              </a></td>";
@@ -1051,7 +1051,7 @@ JAVASCRIPT;
                     $table = $dbu->getTableForItemType("Item_DeviceMemory");
                     $query = "DELETE
                             FROM `$table`
-                            WHERE `items_id` = $id_printer 
+                            WHERE `items_id` = $id_printer
                             AND `itemtype` = '" . $itemtype . "'";
                     $DB->doQuery($query);
                 }
@@ -2058,8 +2058,8 @@ JAVASCRIPT;
     {
         global $DB;
 
-        $query = "SELECT * FROM `glpi_plugin_ocsinventoryng_snmpocslinks` 
-               WHERE `id` = " . $ID . " 
+        $query = "SELECT * FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
+               WHERE `id` = " . $ID . "
                AND `plugin_ocsinventoryng_ocsservers_id` = " . $plugin_ocsinventoryng_ocsservers_id;
         $rep   = $DB->doQuery($query);
         while ($data = $DB->fetchArray($rep)) {
@@ -2099,7 +2099,7 @@ JAVASCRIPT;
             );
 
             $now = date("Y-m-d H:i:s");
-            $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks` 
+            $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks`
                 SET `last_update` = '" . $now . "' WHERE `id` = " . $ID . ";";
             $DB->doQuery($sql);
 
@@ -2118,8 +2118,8 @@ JAVASCRIPT;
             );
 
             $now = date("Y-m-d H:i:s");
-            $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks` 
-                SET `last_update` = '" . $now . "' 
+            $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks`
+                SET `last_update` = '" . $now . "'
                 WHERE `id` = " . $ID . ";";
             $DB->doQuery($sql);
 
@@ -2139,8 +2139,8 @@ JAVASCRIPT;
             );
 
             $now = date("Y-m-d H:i:s");
-            $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks` 
-                SET `last_update` = '" . $now . "' 
+            $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks`
+                SET `last_update` = '" . $now . "'
                 WHERE `id` = " . $ID . ";";
             $DB->doQuery($sql);
 
@@ -2153,8 +2153,8 @@ JAVASCRIPT;
             self::addOrUpdateOther($itemtype, $items_id, $ocsSnmp, $loc_id, "update", $linked, $cfg_ocs);
 
             $now = date("Y-m-d H:i:s");
-            $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks` 
-                  SET `last_update` = '" . $now . "' 
+            $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks`
+                  SET `last_update` = '" . $now . "'
                   WHERE `id` = " . $ID . ";";
             $DB->doQuery($sql);
 
@@ -2396,7 +2396,7 @@ JAVASCRIPT;
                     }
 
                     if ($output_type == Search::HTML_OUTPUT) {
-                        echo "<table class='tab_cadrehov'>";
+                        echo "<table class='tab_cadre_fixe'>";
 
                         echo "<tr class='tab_bg_1'><td colspan='10' class='center'>";
                         if (!$tolinked) {
@@ -2525,7 +2525,7 @@ JAVASCRIPT;
                                     if ($ido > 0) {
                                         $query = "SELECT *
                                         FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
-                                        WHERE `itemtype` = '" . $tab["type"] . "' 
+                                        WHERE `itemtype` = '" . $tab["type"] . "'
                                         AND `items_id` = '" . $ido . "' ";
 
                                         $result = $DB->doQuery($query);

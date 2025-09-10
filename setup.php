@@ -41,7 +41,7 @@ define('PLUGIN_OCS_VERSION', '2.0.5');
 
 if (!defined("PLUGIN_OCS_DIR")) {
     define("PLUGIN_OCS_DIR", Plugin::getPhpDir("ocsinventoryng"));
-    define("PLUGIN_OCS_NOTFULL_DIR", Plugin::getPhpDir("ocsinventoryng", false));
+//    define("PLUGIN_OCS_WEBDIR", Plugin::getPhpDir("ocsinventoryng", false));
     $root = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng';
     define("PLUGIN_OCS_WEBDIR", $root);
 }
@@ -225,7 +225,7 @@ function plugin_init_ocsinventoryng()
             || Session::haveRight("config", UPDATE)) {
             $PLUGIN_HOOKS['use_massive_action']['ocsinventoryng'] = 1;
             //$PLUGIN_HOOKS['redirect_page']['ocsinventoryng']      = "front/ocsng.php";
-            $PLUGIN_HOOKS['redirect_page']['ocsinventoryng'] = PLUGIN_OCS_NOTFULL_DIR . "/front/notimportedcomputer.form.php";
+            $PLUGIN_HOOKS['redirect_page']['ocsinventoryng'] = PLUGIN_OCS_WEBDIR . "/front/notimportedcomputer.form.php";
 
             //TODO Change for menu
             $PLUGIN_HOOKS['config_page']['ocsinventoryng'] = 'front/config.php';

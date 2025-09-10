@@ -675,7 +675,7 @@ class PluginOcsinventoryngNetworkPort extends NetworkPortInstantiation
             'FROM' => 'glpi_plugin_ocsinventoryng_networkports',
         ];
         $iterator = $DB->request($criteria);
-        echo "<br>\n<div class ='center'><table class='tab_cadrehov'>";
+        echo "<br>\n<div class ='center'><table class='tab_cadre_fixe'>";
         if (count($iterator) > 0) {
             echo "<tr class='tab_bg_2'><th colspan='4'>" . self::getTypeName(2) . "</th></tr>";
             foreach ($iterator as $type) {

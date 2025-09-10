@@ -30,15 +30,17 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 
 class PluginOcsinventoryngAutoloader
 {
+
     public function autoload($classname)
     {
-        $dir      = PLUGIN_OCS_DIR . "/inc/";
-        foreach (glob(dirname(__FILE__) . '/components/*.class.php') as $class_file) {
-            $matches = null;
-            preg_match("#components/(.+)\.class.php$#", $class_file, $matches);
-            $filename = $dir . $matches[0];
-            if (is_readable($filename) && is_file($filename)) {
-                include_once($filename);
+        $dir = PLUGIN_OCS_DIR . "/inc/components/";
+
+        if (preg_match('/^PluginOcsinventoryng(.+)$/', $classname, $matches)) {
+            $filename = strtolower($matches[1]) . ".class.php";
+            $file = $dir . $filename;
+
+            if (is_readable($file)) {
+                include_once($file);
             }
         }
     }
