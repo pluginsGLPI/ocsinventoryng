@@ -170,7 +170,7 @@ function plugin_ocsinventoryng_install()
         //Update 1.0.3
         if ($DB->tableExists("glpi_plugin_ocsinventoryng_networkports")
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_networkports', 'speed')) {
-            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_networkports` 
+            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_networkports`
                ADD `speed` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT '10mb/s';";
             $DB->doQuery($query, "1.0.3 update table glpi_plugin_ocsinventoryng_networkports");
         }
@@ -178,7 +178,7 @@ function plugin_ocsinventoryng_install()
         // Update 1.0.4
         if ($DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'conn_type')) {
-            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers`
                ADD `conn_type` TINYINT(1) NOT NULL DEFAULT '0';";
             $DB->doQuery($query, "1.0.4 update table glpi_plugin_ocsinventoryng_ocsservers");
         }
@@ -201,21 +201,21 @@ function plugin_ocsinventoryng_install()
 
         if ($DB->tableExists("glpi_plugin_ocsinventoryng_ocslinks")
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocslinks', 'last_ocs_conn')) {
-            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocslinks` 
+            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocslinks`
                ADD `last_ocs_conn` DATETIME DEFAULT NULL;";
             $DB->doQuery($query, "1.1.0 update table glpi_plugin_ocsinventoryng_ocslinks");
         }
 
         if ($DB->tableExists("glpi_plugin_ocsinventoryng_ocslinks")
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocslinks', 'ip_src')) {
-            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocslinks` 
+            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocslinks`
                ADD `ip_src` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL;";
             $DB->doQuery($query, "1.1.0 update table glpi_plugin_ocsinventoryng_ocslinks");
         }
 
         if ($DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_device_bios')) {
-            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers`
                      ADD `import_device_bios` TINYINT(1) NOT NULL DEFAULT '1';";
             $DB->doQuery($query, "1.1.0 update table glpi_plugin_ocsinventoryng_ocsservers");
         }
@@ -283,7 +283,7 @@ function plugin_ocsinventoryng_install()
         //Update 1.2.2
         if ($DB->tableExists("glpi_plugin_ocsinventoryng_ocsservers")
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'import_device_motherboard')) {
-            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers`
                ADD `import_device_motherboard` TINYINT(1) NOT NULL DEFAULT '0';";
             $DB->doQuery($query, "1.2.2 update table glpi_plugin_ocsinventoryng_ocsservers");
         }
@@ -330,7 +330,7 @@ function plugin_ocsinventoryng_install()
         /******************* Migration 1.2.2 *******************/
         if ($DB->tableExists('glpi_plugin_ocsinventoryng_ocsservers')
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'use_cleancron')) {
-            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers`
                ADD `use_cleancron` TINYINT(1) NOT NULL DEFAULT '0',
                ADD `importsnmp_name` TINYINT(1) NOT NULL DEFAULT '0',
                ADD `importsnmp_serial` TINYINT(1) NOT NULL DEFAULT '0',
@@ -363,7 +363,7 @@ function plugin_ocsinventoryng_install()
         /******************* Migration 1.2.3 *******************/
         if ($DB->tableExists('glpi_plugin_ocsinventoryng_ocsservers')
           && !$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'dohistory')) {
-            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers`
                ADD `dohistory` TINYINT(1) NOT NULL DEFAULT '0',
                ADD `history_hardware` TINYINT(1) NOT NULL DEFAULT '0',
                ADD `history_bios` TINYINT(1) NOT NULL DEFAULT '0',
@@ -461,21 +461,21 @@ function plugin_ocsinventoryng_install()
         /******************* Migration 1.5.0 *******************/
 
         if (!$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'history_plugins')) {
-            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers`
                ADD `history_plugins` TINYINT(1) NOT NULL DEFAULT '0';";
             $DB->doQuery($query, "1.5.0 add history_plugins in glpi_plugin_ocsinventoryng_ocsservers");
         }/*1.5.0*/
 
         /******************* Migration 1.5.1 *******************/
         if (!$DB->fieldExists('glpi_plugin_ocsinventoryng_configs', 'log_imported_computers')) {
-            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_configs` 
+            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_configs`
                ADD `log_imported_computers` TINYINT(1) NOT NULL DEFAULT '0';";
             $DB->doQuery($query, "1.5.1 add log_imported_computers in glpi_plugin_ocsinventoryng_configs");
         }/*1.5.1*/
 
         /******************* Migration 1.5.2 *******************/
         if (!$DB->fieldExists('glpi_plugin_ocsinventoryng_ocsservers', 'history_os')) {
-            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers` 
+            $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_ocsservers`
                ADD `history_os` tinyint(1) NOT NULL DEFAULT '1';";
             $DB->doQuery($query, "1.5.2 add history_os in glpi_plugin_ocsinventoryng_ocsservers");
         }/*1.5.2*/
@@ -656,7 +656,7 @@ function plugin_ocsinventoryng_uninstall()
         "glpi_plugin_ocsinventoryng_ocsalerts"];
 
     foreach ($tables as $table) {
-        $DB->dropTable($table);
+        $DB->dropTable($table, true);
     }
 
     $old_tables = ["glpi_plugin_ocsinventoryng_profiles",
@@ -664,7 +664,7 @@ function plugin_ocsinventoryng_uninstall()
         "glpi_plugin_ocsinventoryng_items_devicebiosdatas"];
 
     foreach ($old_tables as $table) {
-        $DB->dropTable($table);
+        $DB->dropTable($table, true);
     }
 
     $tables_glpi = ["glpi_savedsearches", "glpi_displaypreferences", "glpi_logs"];
@@ -1129,7 +1129,7 @@ function plugin_ocsinventoryng_addSelect($type, $ID, $num)
         case 'PluginOcsinventoryngDetail':
             $out = "`$table`.`$field`  AS `ITEM_$num`,
            `glpi_plugin_ocsinventoryng_details`.`ocsid` AS ocsid,
-           `glpi_plugin_ocsinventoryng_details`.`plugin_ocsinventoryng_ocsservers_id` AS plugin_ocsinventoryng_ocsservers_id, 
+           `glpi_plugin_ocsinventoryng_details`.`plugin_ocsinventoryng_ocsservers_id` AS plugin_ocsinventoryng_ocsservers_id,
            `glpi_plugin_ocsinventoryng_details`.`plugin_ocsinventoryng_threads_id`,
                   `glpi_plugin_ocsinventoryng_details`.`threadid`, ";
             return $out;
@@ -2391,7 +2391,7 @@ function addNotifications()
         $result = $DB->doQuery($query_id) or die($DB->error());
         $notification = $DB->result($result, 0, 'id');
 
-        $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+        $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
         $DB->doQuery($query);
     }
@@ -2455,7 +2455,7 @@ function addNotifications()
         $result = $DB->doQuery($query_id) or die($DB->error());
         $notification = $DB->result($result, 0, 'id');
 
-        $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+        $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
         $DB->doQuery($query);
     }
@@ -2950,7 +2950,7 @@ function plugin_ocsinventoryng_upgrademassocsimport14to15()
         $result = $DB->doQuery($query_id) or die($DB->error());
         $notification = $DB->result($result, 0, 'id');
 
-        $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+        $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
         $DB->doQuery($query);
     }
@@ -2961,7 +2961,7 @@ function plugin_ocsinventoryng_migration_additionnalalerts()
 {
     global $DB;
 
-    $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_configs` 
+    $query = "ALTER TABLE `glpi_plugin_ocsinventoryng_configs`
             ADD `delay_ocs` int(11) NOT NULL default '-1',
             ADD `use_newocs_alert` TINYINT( 1 ) NOT NULL DEFAULT '-1';";
     $DB->doQuery($query);
@@ -2984,8 +2984,8 @@ function plugin_ocsinventoryng_migration_additionnalalerts()
 
     //if plugin additionalalerts
     if ($DB->tableExists('glpi_plugin_additionalalerts_ocsalerts')) {
-        $query = "UPDATE `glpi_plugin_ocsinventoryng_configs` 
-                INNER JOIN `glpi_plugin_additionalalerts_configs` 
+        $query = "UPDATE `glpi_plugin_ocsinventoryng_configs`
+                INNER JOIN `glpi_plugin_additionalalerts_configs`
                 ON `glpi_plugin_additionalalerts_configs`.`id` = `glpi_plugin_ocsinventoryng_configs`.`id`
                 SET `glpi_plugin_ocsinventoryng_configs`.`delay_ocs` = `glpi_plugin_additionalalerts_configs`.`delay_ocs`,
                 `glpi_plugin_ocsinventoryng_configs`.`use_newocs_alert` = `glpi_plugin_additionalalerts_configs`.`use_newocs_alert`";
@@ -3001,8 +3001,8 @@ function plugin_ocsinventoryng_migration_additionnalalerts()
 
         //disabled cron
         $query = "INSERT INTO `glpi_crontasks`
-                SELECT NULL, 'PluginOcsinventoryngOcsAlert', 'AlertNewComputers', `frequency`, `param`, 
-                `state`, `mode`, `allowmode`, `hourmin`, `hourmax`, `logs_lifetime`, `lastrun`, `lastcode`, 
+                SELECT NULL, 'PluginOcsinventoryngOcsAlert', 'AlertNewComputers', `frequency`, `param`,
+                `state`, `mode`, `allowmode`, `hourmin`, `hourmax`, `logs_lifetime`, `lastrun`, `lastcode`,
                 `comment`, `date_mod`, `date_creation`
                  FROM `glpi_crontasks`
                 WHERE `name` LIKE 'AdditionalalertsNewOcs'";
@@ -3013,8 +3013,8 @@ function plugin_ocsinventoryng_migration_additionnalalerts()
         $DB->doQuery($query);
 
         $query = "INSERT INTO `glpi_crontasks`
-                SELECT NULL, 'PluginOcsinventoryngOcsAlert', 'SynchroAlert', `frequency`, `param`, `state`, 
-                `mode`, `allowmode`, `hourmin`, `hourmax`, `logs_lifetime`, `lastrun`, `lastcode`, 
+                SELECT NULL, 'PluginOcsinventoryngOcsAlert', 'SynchroAlert', `frequency`, `param`, `state`,
+                `mode`, `allowmode`, `hourmin`, `hourmax`, `logs_lifetime`, `lastrun`, `lastcode`,
                 `comment`, `date_mod`, `date_creation`
                  FROM `glpi_crontasks`
                 WHERE `name` LIKE 'AdditionalalertsOcs'";
@@ -3026,12 +3026,12 @@ function plugin_ocsinventoryng_migration_additionnalalerts()
 
 
         //migration notif
-        $query = "UPDATE `glpi_notifications` SET `itemtype` = 'PluginOcsinventoryngOcsAlert' 
+        $query = "UPDATE `glpi_notifications` SET `itemtype` = 'PluginOcsinventoryngOcsAlert'
                 WHERE `itemtype` LIKE 'PluginAdditionalalertsOcsAlert'";
         $DB->doQuery($query);
 
         //notification_template
-        $query = "UPDATE `glpi_notificationtemplates` SET `itemtype` = 'PluginOcsinventoryngOcsAlert' 
+        $query = "UPDATE `glpi_notificationtemplates` SET `itemtype` = 'PluginOcsinventoryngOcsAlert'
                 WHERE `itemtype` LIKE 'PluginAdditionalalertsOcsAlert'";
         $DB->doQuery($query);
     }
@@ -3042,8 +3042,8 @@ function plugin_ocsinventoryng_add_notifications_alerts()
     global $DB;
 
     //add alert synchro & new computer AlertNewComputers & SynchroAlert
-    $query_id = "SELECT `id` 
-                FROM `glpi_notificationtemplates` 
+    $query_id = "SELECT `id`
+                FROM `glpi_notificationtemplates`
                 WHERE `itemtype`='PluginOcsinventoryngOcsAlert'";
     $result   = $DB->doQuery($query_id);
 
@@ -3096,7 +3096,7 @@ function plugin_ocsinventoryng_add_notifications_alerts()
    &lt;/table&gt;');";
         $DB->doQuery($query);
 
-        $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`, `is_active`) 
+        $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`, `is_active`)
                 VALUES ('Alert new machines ocs', 0, 'PluginOcsinventoryngOcsAlert', 'newocs', 1, 1);";
         $DB->doQuery($query);
 
@@ -3106,11 +3106,11 @@ function plugin_ocsinventoryng_add_notifications_alerts()
         $result = $DB->doQuery($query_id) or die($DB->error());
         $notification = $DB->result($result, 0, 'id');
 
-        $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+        $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
         $DB->doQuery($query);
 
-        $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`, `is_active`) 
+        $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`, `is_active`)
                   VALUES ('Alert ocs synchronization', 0, 'PluginOcsinventoryngOcsAlert', 'ocs', 1, 1);";
         $DB->doQuery($query);
 
@@ -3120,7 +3120,7 @@ function plugin_ocsinventoryng_add_notifications_alerts()
         $result = $DB->doQuery($query_id) or die($DB->error());
         $notification = $DB->result($result, 0, 'id');
 
-        $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+        $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`)
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
         $DB->doQuery($query);
     }
