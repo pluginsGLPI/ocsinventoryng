@@ -544,18 +544,18 @@ INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginOcsinventoryngOcsServe
 INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginOcsinventoryngOcsServer','19','2','0');
 INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginOcsinventoryngOcsServer','6','3','0');
 INSERT INTO `glpi_displaypreferences` (`itemtype`, `num`, `rank`, `users_id`)
-                VALUES ('PluginOcsinventoryngNotimportedcomputer', 2, 1, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 3, 2, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 4, 3, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 5, 4, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 6, 5, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 7, 6, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 8, 7, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 9, 8, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 10, 9, 0, 'central'),
-                       ('PluginOcsinventoryngDetail', 5, 1, 0, 'central'),
-                       ('PluginOcsinventoryngDetail', 2, 2, 0, 'central'),
-                       ('PluginOcsinventoryngDetail', 3, 3, 0, 'central'),
-                       ('PluginOcsinventoryngDetail', 4, 4, 0, 'central'),
-                       ('PluginOcsinventoryngDetail', 6, 5, 0, 'central'),
-                       ('PluginOcsinventoryngDetail', 80, 6, 0, 'central');
+                VALUES ('PluginOcsinventoryngNotimportedcomputer', 2, 1, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 3, 2, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 4, 3, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 5, 4, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 6, 5, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 7, 6, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 8, 7, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 9, 8, 0),
+                       ('PluginOcsinventoryngNotimportedcomputer', 10, 9, 0),
+                       ('PluginOcsinventoryngDetail', 5, 1, 0),
+                       ('PluginOcsinventoryngDetail', 2, 2, 0),
+                       ('PluginOcsinventoryngDetail', 3, 3, 0),
+                       ('PluginOcsinventoryngDetail', 4, 4, 0),
+                       ('PluginOcsinventoryngDetail', 6, 5, 0),
+                       ('PluginOcsinventoryngDetail', 80, 6, 0);

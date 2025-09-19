@@ -27,13 +27,14 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\Thread;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-Html::header(_n('Log', 'Logs', 2), '', "tools", "pluginocsinventoryngmenu", "ocsinventoryng");
+Html::header(_n('Log', 'Logs', 2), '', "tools", Menu::class, "ocsinventoryng");
 
-$thread = new PluginOcsinventoryngThread();
+$thread = new Thread();
 $thread->showErrorLog();
 
 Html::footer();

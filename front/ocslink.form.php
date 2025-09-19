@@ -27,7 +27,10 @@
  --------------------------------------------------------------------------
  */
 
-
+use Glpi\Exception\Http\BadRequestHttpException;
+use GlpiPlugin\Ocsinventoryng\Ocslink;
+use GlpiPlugin\Ocsinventoryng\OcsProcess;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 Session::checkRight("computer", READ);
 
@@ -36,31 +39,31 @@ if (isset($_POST["launch_ocs_resynch"])) {
    $computer->check($_POST['id'], UPDATE);
 
    //Get the ocs server id associated with the machine
-   $ocsservers_id = PluginOcsinventoryngOcsServer::getServerByComputerID($_POST["id"]);
+   $ocsservers_id = OcsServer::getServerByComputerID($_POST["id"]);
    //Update the computer
-   $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
+   $cfg_ocs = OcsServer::getConfig($ocsservers_id);
    $sync_params = ['ID' => $_POST["resynch_id"],
                    'plugin_ocsinventoryng_ocsservers_id' => $ocsservers_id,
                    'cfg_ocs' => $cfg_ocs,
                   'force' => 0];
-   PluginOcsinventoryngOcsProcess::synchronizeComputer($sync_params);
+    OcsProcess::synchronizeComputer($sync_params);
    Html::back();
 } else if (isset($_POST["force_ocs_resynch"])) {
    $computer = new Computer();
    $computer->check($_POST['id'], UPDATE);
 
    //Get the ocs server id associated with the machine
-   $ocsservers_id = PluginOcsinventoryngOcsServer::getServerByComputerID($_POST["id"]);
+   $ocsservers_id = OcsServer::getServerByComputerID($_POST["id"]);
    //Update the computer
-   $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
+   $cfg_ocs = OcsServer::getConfig($ocsservers_id);
    $sync_params = ['ID' => $_POST["resynch_id"],
                    'plugin_ocsinventoryng_ocsservers_id' => $ocsservers_id,
                    'cfg_ocs' => $cfg_ocs,
                    'force' => 1];
-   PluginOcsinventoryngOcsProcess::synchronizeComputer($sync_params);
+   OcsProcess::synchronizeComputer($sync_params);
    Html::back();
 } else if (isset ($_POST["update"])) {
-   $link = new PluginOcsinventoryngOcslink();
+   $link = new Ocslink();
    $values["id"] = $_POST["link_id"];
    $values["use_auto_update"] = $_POST["use_auto_update"];
    $link->update($values);
@@ -68,11 +71,12 @@ if (isset($_POST["launch_ocs_resynch"])) {
 
 } else if (isset ($_POST["delete_link"])) {
    $comp = new Computer();
-   $link = new PluginOcsinventoryngOcslink();
+   $link = new Ocslink();
    if ($comp->getFromDB($_POST["items_id"])) {
       $link->purgeComputer($comp);
       Html::back();
    }
 } else {
-   Html::displayErrorAndDie("lost");
+    throw new BadRequestHttpException();
+
 }

@@ -28,8 +28,11 @@
  */
 
 
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\Ocslink;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "clean");
+Html::header('OCS Inventory NG', '', "tools", Menu::class, "clean");
 
 if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
     && $_SESSION["plugin_ocsinventoryng_ocsservers_id"] > -1) {
@@ -43,12 +46,12 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
         if (!isset($_GET['start'])) {
             $_GET['start'] = 0;
         }
-        $ocsClient   = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+        $ocsClient   = OcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
         $deleted_pcs = $ocsClient->getTotalDeletedComputers();
         if ($deleted_pcs > 0) {
             echo "<div class='center'>";
             echo "<span style='color:firebrick'>";
-            echo "<i class='fas fa-exclamation-triangle fa-5x'></i><br><br>";
+            echo "<i class='ti ti-alert-triangle fa-5x'></i><br><br>";
             echo __('You have', 'ocsinventoryng') . " " . $deleted_pcs . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng');
             echo "<br>";
             echo __('Please clean them before import or synchronize computers', 'ocsinventoryng');
@@ -57,12 +60,12 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
         $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                         'check'                               => $_GET['check'],
                         'start'                               => $_GET['start']];
-        PluginOcsinventoryngOcsServer::showComputersToClean($show_params);
+        OcsServer::showComputersToClean($show_params);
 
     } else {
         Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);
         if (count($_POST['toclean']) > 0) {
-            PluginOcsinventoryngOcslink::cleanLinksFromList($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+            Ocslink::cleanLinksFromList($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                                                             $_POST['toclean']);
             echo "<div class='center b'>" . __('Clean links between GLPI and OCSNG', 'ocsinventoryng') .
                  "<br>" . __('Operation successful') . "<br>";
@@ -71,8 +74,8 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
         }
     }
 } else {
-    echo "<div align='center'>";
-    echo "<i class='fas fa-exclamation-triangle fa-4x' style='color:orange'></i>";
+    echo "<div class='center'>";
+    echo "<i class='ti ti-alert-triangle fa-4x' style='color:orange'></i>";
     echo "<br>";
     echo "<div class='red b'>";
     echo __('No OCSNG server defined', 'ocsinventoryng');

@@ -27,21 +27,22 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\NotFoundHttpException;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkLoginUser();
 
-global $CFG_GLPI;
+global $CFG_GLPI, $DB;
 
 if (!isset($_POST) || empty($_POST)) {
    $_POST = $_GET;
 }
-use Glpi\Exception\Http\NotFoundHttpException;
 
 // Security
 if (!$DB->tableExists($_POST['table'])) {
-    throw new \Glpi\Exception\Http\NotFoundHttpException();
+    throw new NotFoundHttpException();
 }
 
 $itemtypeisplugin = isPluginItemType($_POST['itemtype']);

@@ -27,6 +27,13 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Ocsinventoryng\Config;
+use GlpiPlugin\Ocsinventoryng\Notimportedcomputer;
+use GlpiPlugin\Ocsinventoryng\OcsProcess;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
+use GlpiPlugin\Ocsinventoryng\Server;
+use GlpiPlugin\Ocsinventoryng\Thread;
+
 set_time_limit(0);
 ini_set('mysql.connect_timeout', '0');
 ini_set("memory_limit", "-1");
@@ -78,8 +85,8 @@ $ocsservers_id = -1;
 $fields        = array();
 
 //Get script configuration
-$config    = new PluginOcsinventoryngConfig();
-$notimport = new PluginOcsinventoryngNotimportedcomputer();
+$config    = new Config();
+$notimport = new Notimportedcomputer();
 $config->getFromDB(1);
 
 if (!isset($_GET["ocs_server_id"]) || ($_GET["ocs_server_id"] == '')) {
@@ -137,7 +144,7 @@ if (isset($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
     if (isset($_GET["process_id"])) {
         $fields["processid"] = $_GET["process_id"];
     }
-    $thread = new PluginOcsinventoryngThread();
+    $thread = new Thread();
 
     $plugin_ocsinventoryng_ocsservers_id = $ocsservers_id;
     if ($ocsservers_id == -1) {
@@ -207,8 +214,8 @@ function FirstPass($ocsservers_id)
 {
     global $DB;
 
-    if (PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id)) {
-        $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
+    if (OcsServer::checkOCSconnection($ocsservers_id)) {
+        $ocsClient = OcsServer::getDBocs($ocsservers_id);
 
         // Compute lastest new computer
         $ocsResult = $ocsClient->getComputers(array(
@@ -241,7 +248,7 @@ function FirstPass($ocsservers_id)
         }
 
         // Store result for second pass (multi-thread)
-        $server                                        = new PluginOcsinventoryngServer();
+        $server                                        = new Server();
         $fields["max_ocsid"]                           = $max_id;
         $fields["max_glpidate"]                        = $max_date;
         $fields["plugin_ocsinventoryng_ocsservers_id"] = $ocsservers_id;
@@ -254,9 +261,9 @@ function FirstPass($ocsservers_id)
         }
 
         // Handle ID changed or PC deleted in OCS.
-        $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
+        $cfg_ocs = OcsServer::getConfig($ocsservers_id);
         echo "\tManage delete items in OCS server #$ocsservers_id: \"" . $cfg_ocs["name"] . "\"\n";
-        PluginOcsinventoryngOcsProcess::manageDeleted($ocsservers_id, false);
+        OcsProcess::manageDeleted($ocsservers_id, false);
     } else {
         echo "*** Can't connect to OCS server #$ocsservers_id ***";
     }
@@ -275,10 +282,10 @@ function FirstPass($ocsservers_id)
  */
 function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields, $config)
 {
-    $server    = new PluginOcsinventoryngServer();
-    $ocsserver = new PluginOcsinventoryngOcsServer();
+    $server    = new Server();
+    $ocsserver = new OcsServer();
 
-    if (!PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id)) {
+    if (!OcsServer::checkOCSconnection($ocsservers_id)) {
         echo "\tThread #" . $threadid . ": cannot contact server\n\n";
         return false;
     }
@@ -293,7 +300,7 @@ function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields
         return false;
     }
 
-    $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
+    $cfg_ocs = OcsServer::getConfig($ocsservers_id);
 
     return plugin_ocsinventoryng_importFromOcsServer(
         $threads_id,
@@ -337,7 +344,7 @@ function plugin_ocsinventoryng_importFromOcsServer(
     }
 
     $ocsServerId  = $cfg_ocs['id'];
-    $ocsClient    = PluginOcsinventoryngOcsServer::getDBocs($ocsServerId);
+    $ocsClient    = OcsServer::getDBocs($ocsServerId);
     $ocsComputers = array();
 
     // Build common options
@@ -438,8 +445,8 @@ function plugin_ocsinventoryng_importFromOcsServer(
 
     $fields["total_number_machines"] += $nb;
 
-    $thread    = new PluginOcsinventoryngThread();
-    $notimport = new PluginOcsinventoryngNotimportedcomputer();
+    $thread    = new Thread();
+    $notimport = new Notimportedcomputer();
 
     $i = 0;
     foreach ($ocsComputers as $ID => $ocsComputer) {
@@ -458,22 +465,22 @@ function plugin_ocsinventoryng_importFromOcsServer(
                            'lock'                                => 1,
                            'force'                               => 1];
 
-        $action = PluginOcsinventoryngOcsProcess::processComputer($process_params);
-        PluginOcsinventoryngOcsProcess::manageImportStatistics($fields, $action['status']);
+        $action = OcsProcess::processComputer($process_params);
+        OcsProcess::manageImportStatistics($fields, $action['status']);
 
         switch ($action['status']) {
-            case PluginOcsinventoryngOcsProcess::COMPUTER_NOT_UNIQUE:
-            case PluginOcsinventoryngOcsProcess::COMPUTER_FAILED_IMPORT:
-            case PluginOcsinventoryngOcsProcess::COMPUTER_LINK_REFUSED:
+            case OcsProcess::COMPUTER_NOT_UNIQUE:
+            case OcsProcess::COMPUTER_FAILED_IMPORT:
+            case OcsProcess::COMPUTER_LINK_REFUSED:
                 $notimport->logNotImported($ocsServerId, $ID, $action);
                 break;
 
             default:
                 $notimport->cleanNotImported($ocsServerId, $ID);
-                $log = PluginOcsinventoryngConfig::logProcessedComputers();
+                $log = Config::logProcessedComputers();
                 if ($log) {
                     //Log detail
-                    $detail = new PluginOcsinventoryngDetail();
+                    $detail = new Detail();
                     $detail->logProcessedComputer($ID, $ocsServerId, $action, $threadid, $threads_id);
                 }
                 break;
@@ -493,7 +500,7 @@ function plugin_ocsinventoryng_importFromOcsServer(
     }
 
     // Store for next synchro
-    $server = new PluginOcsinventoryngServer();
+    $server = new Server();
 
     if ($server->getFromDBbyOcsServer($ocsServerId)) {
         $update["id"] = $server->fields["id"];

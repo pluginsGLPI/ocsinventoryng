@@ -26,11 +26,12 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\NotificationState;
+use GlpiPlugin\Ocsinventoryng\OcsAlert;
 
 if (Plugin::isPluginActive("ocsinventoryng")) {
-   $state    = new PluginOcsinventoryngNotificationState();
-   $ocsalert = new PluginOcsinventoryngOcsAlert();
+   $state    = new NotificationState();
+   $ocsalert = new OcsAlert();
 
    if (isset($_POST["add"])) {
 

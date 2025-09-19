@@ -27,11 +27,14 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\Ocslink;
+use GlpiPlugin\Ocsinventoryng\OcsProcess;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 Session::checkRight("plugin_ocsinventoryng_link", READ);
 
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "link");
+Html::header('OCS Inventory NG', '', "tools", Menu::class, "link");
 
 if (isset($_POST["id"]) && is_array($_POST["id"])) {
     foreach ($_POST['id'] as $key => $id) {
@@ -78,7 +81,7 @@ if (isset($_POST["change_link_mode"])) {
 }
 
 if (isset($_POST["delete_link"])) {
-    $link = new PluginOcsinventoryngOcslink();
+    $link = new Ocslink();
     if (isset($_POST["toimport"]) && (count($_POST['toimport']) > 0)) {
         foreach ($_POST['toimport'] as $key => $val) {
             if ($val == "on") {
@@ -92,7 +95,7 @@ if (isset($_POST["delete_link"])) {
 if (isset($_SESSION["ocs_link"])) {
     if ($count = count($_SESSION["ocs_link"])) {
         if ((isset($_SESSION["ocs_link_data"]["connection"]) && $_SESSION["ocs_link_data"]["connection"] == false) || !isset($_SESSION["ocs_link_data"]["connection"])) {
-            if (!PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
+            if (!OcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
                 $_SESSION["ocs_link"] = [];
 
                 Html::redirect($_SERVER['PHP_SELF']);
@@ -111,7 +114,7 @@ if (isset($_SESSION["ocs_link"])) {
         $link_params = ['ocsid'                               => $key["ocsid"],
                         'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                         'computers_id'                        => $key["computers_id"]];
-        PluginOcsinventoryngOcsProcess::linkComputer($link_params);
+        OcsProcess::linkComputer($link_params);
         Html::redirect($_SERVER['PHP_SELF']);
     } else {
         Html::getProgressBar(100);
@@ -134,12 +137,12 @@ if (!isset($_POST["import_ok"])) {
     }
 
     if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
-        $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+        $ocsClient = OcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
         $deleted_pcs   = $ocsClient->getTotalDeletedComputers();
         if ($deleted_pcs > 0) {
             echo "<div class='center'>";
             echo "<span style='color:firebrick'>";
-            echo "<i class='fas fa-exclamation-triangle fa-5x'></i><br><br>";
+            echo "<i class='ti ti-alert-triangle fa-5x'></i><br><br>";
             echo __('You have', 'ocsinventoryng')." ". $deleted_pcs . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng');
             echo "<br>";
             echo __('Please clean them before import or synchronize computers', 'ocsinventoryng');
@@ -150,7 +153,7 @@ if (!isset($_POST["import_ok"])) {
                         'import_mode'                         => $_SESSION["change_import_mode"],
                         'link_mode'                         => $_SESSION["change_link_mode"],
                         'entities_id'                         => $_SESSION['glpiactiveentities']];
-        PluginOcsinventoryngOcsServer::showComputersToAdd($show_params);
+        OcsServer::showComputersToAdd($show_params);
     }
 } else {
     if (isset($_POST["toimport"]) && (count($_POST['toimport']) > 0)) {

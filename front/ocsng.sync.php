@@ -27,11 +27,13 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsProcess;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 Session::checkRight("plugin_ocsinventoryng_sync", READ);
 
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "sync");
+Html::header('OCS Inventory NG', '', "tools", Menu::class, "sync");
 
 $display_list = true;
 
@@ -47,14 +49,14 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
 
 
         $key         = array_pop($_SESSION["ocs_update"]['computers']);
-        $cfg_ocs     = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+        $cfg_ocs     = OcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
         $sync_params = ['ID'                                  => $key,
                         'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                         'cfg_ocs'                             => $cfg_ocs,
                         'force'                               => 1];
-        $action      = PluginOcsinventoryngOcsProcess::synchronizeComputer($sync_params);
+        $action      = OcsProcess::synchronizeComputer($sync_params);
 
-        PluginOcsinventoryngOcsProcess::manageImportStatistics(
+        OcsProcess::manageImportStatistics(
             $_SESSION["ocs_update"]['statistics'],
             $action['status']
         );
@@ -67,12 +69,12 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
 if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
     && $_SESSION["plugin_ocsinventoryng_ocsservers_id"] > -1) {
     if (!isset($_POST["update_ok"])) {
-        $ocsClient   = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+        $ocsClient   = OcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
         $deleted_pcs = $ocsClient->getTotalDeletedComputers();
         if ($deleted_pcs > 0) {
             echo "<div class='center'>";
             echo "<span style='color:firebrick'>";
-            echo "<i class='fas fa-exclamation-triangle fa-5x'></i><br><br>";
+            echo "<i class='ti ti-alert-triangle fa-5x'></i><br><br>";
             echo __('You have', 'ocsinventoryng') . " " . $deleted_pcs . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng');
             echo "<br>";
             echo __('Please clean them before import or synchronize computers', 'ocsinventoryng');
@@ -80,7 +82,7 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
         }
         if ($display_list) {
             $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"]];
-            PluginOcsinventoryngOcsServer::showComputersToSynchronize($show_params);
+            OcsServer::showComputersToSynchronize($show_params);
         }
     } else {
         if (isset($_POST['toupdate']) && count($_POST['toupdate']) > 0) {
@@ -95,7 +97,7 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
     }
 } else {
     echo "<div align='center'>";
-    echo "<i class='fas fa-exclamation-triangle fa-4x' style='color:orange'></i>";
+    echo "<i class='ti ti-alert-triangle fa-4x' style='color:orange'></i>";
     echo "<br>";
     echo "<div class='red b'>";
     echo __('No OCSNG server defined', 'ocsinventoryng');

@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -28,19 +28,21 @@
  */
 
 
+use GlpiPlugin\Ocsinventoryng\OcsDbClient;
+
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
 Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "import");
 
-//$soapclient = new PluginOcsinventoryngOcsSoapClient('http://localhost', 'admin', 'factorfx');
-$dbclient = new PluginOcsinventoryngOcsDbClient(1, 'ocstest', 'ocsuser', 'ocspass', 'ocsweb');
+//$soapclient = new OcsSoapClient('http://localhost', 'admin', 'factorfx');
+$dbclient = new OcsDbClient(1, 'ocstest', 'ocsuser', 'ocspass', 'ocsweb');
 
 var_dump($dbclient->getAccountInfoColumns());
 
 
 /*
-$temps = microtime();   
-$temps = explode(' ', $temps);   
+$temps = microtime();
+$temps = explode(' ', $temps);
 $debut = $temps[1] + $temps[0];
 
 
@@ -60,7 +62,7 @@ var_dump($computers);
 $temps = microtime();
 $temps = explode(' ', $temps);
 $fin = $temps[1] + $temps[0];
- 
+
 // On affiche la différence entre des deux valeurs
 echo 'Page exécutée en '.round(($fin - $debut),6).' secondes.';
 
@@ -163,6 +165,6 @@ print_r($delete);
 ####################################################</br>
 #######          DChecksum(37)           ##########</br>
 ####################################################</br>
-<?php 
+<?php
 $checksum = $dbclient->getChecksum(37);
 var_dump($checksum);*/

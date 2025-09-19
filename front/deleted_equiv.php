@@ -29,10 +29,14 @@
  */
 
 
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsProcess;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
+use GlpiPlugin\Ocsinventoryng\OcsSoapClient;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-Html::header('OCSInventory NG', '', "tools", "pluginocsinventoryngmenu", "deleted_equiv");
+Html::header('OCSInventory NG', '', "tools", Menu::class, "deleted_equiv");
 
 global $CFG_GLPI;
 
@@ -40,7 +44,7 @@ global $CFG_GLPI;
 if (!isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
     || $_SESSION["plugin_ocsinventoryng_ocsservers_id"] == -1) {
     echo "<div align='center'>";
-    echo "<i class='fas fa-exclamation-triangle fa-4x' style='color:orange'></i>";
+    echo "<i class='ti ti-alert-triangle fa-4x' style='color:orange'></i>";
     echo "<br>";
     echo "<div class='red b'>";
     echo __('No OCSNG server defined', 'ocsinventoryng');
@@ -52,9 +56,9 @@ if (!isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
     echo "</div></div>";
 } else {
     echo "<div class='center'>";
-    $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-    if ($ocsClient->getConnectionType() == "PluginOcsinventoryngOcsSoapClient") {
-        PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+    $ocsClient = OcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+    if ($ocsClient->getConnectionType() == OcsSoapClient::class) {
+        OcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
         if ($_SESSION["ocs_deleted_equiv"]['computers_to_del']) {
             echo "<div class='center b'>" . $_SESSION["ocs_deleted_equiv"]['computers_deleted'] . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng');
             Html::redirect($_SERVER['PHP_SELF']);
@@ -75,7 +79,7 @@ if (!isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
         }
     } else {
         if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
-            PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+            OcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
         }
 
         if ($_SESSION["ocs_deleted_equiv"]["total"] != $_SESSION["ocs_deleted_equiv"]["deleted"]
@@ -95,7 +99,7 @@ if (!isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
             }
 
 
-            PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+            OcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
         } else {
             if ($_SESSION["ocs_deleted_equiv"]["total"] === 0) {
                 echo "<div class='center b'>" . __('No new computers to delete', 'ocsinventoryng') . ".</div>";

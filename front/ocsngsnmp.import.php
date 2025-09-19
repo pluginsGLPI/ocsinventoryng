@@ -27,11 +27,14 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsProcess;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
+use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "importsnmp");
+Html::header('OCS Inventory NG', '', "tools", Menu::class, "importsnmp");
 
 $display_list = true;
 //First time this screen is displayed : set the import mode to 'basic'
@@ -51,8 +54,8 @@ if (isset($_POST["change_import_mode"])) {
 if (isset($_SESSION["ocs_importsnmp"]["id"])) {
    if ($count = count($_SESSION["ocs_importsnmp"]["id"])) {
       if((isset($_SESSION["ocs_importsnmp"]["connection"]) && $_SESSION["ocs_importsnmp"]["connection"] == false ) || !isset($_SESSION["ocs_importsnmp"]["connection"]) ){
-         if(!PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])){
-            PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_importsnmp"]['statistics']);
+         if(!OcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])){
+            OcsProcess::showStatistics($_SESSION["ocs_importsnmp"]['statistics']);
             $_SESSION["ocs_importsnmp"]["id"] = [];
 
             Html::redirect($_SERVER['PHP_SELF']);
@@ -78,18 +81,18 @@ if (isset($_SESSION["ocs_importsnmp"]["id"])) {
          $params['itemtype'] = -1;
       }
 
-      $conf = PluginOcsinventoryngOcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-      $action = PluginOcsinventoryngSnmpOcslink::processSnmp($key,
+      $conf = OcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+      $action = SnmpOcslink::processSnmp($key,
          $_SESSION["plugin_ocsinventoryng_ocsservers_id"], $params);
-      PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_importsnmp"]['statistics'],
+       OcsProcess::manageImportStatistics($_SESSION["ocs_importsnmp"]['statistics'],
          $action['status'], true);
-      PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_importsnmp"]['statistics'], false, true);
+       OcsProcess::showStatistics($_SESSION["ocs_importsnmp"]['statistics'], false, true);
       Html::displayProgressBar(400, $percent);
       Html::redirect($_SERVER['PHP_SELF']);
    } else {
       //Html::getProgressBar($percent);
       if (isset($_SESSION["ocs_importsnmp"]['statistics'])) {
-         PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_importsnmp"]['statistics'], false, true);
+         OcsProcess::showStatistics($_SESSION["ocs_importsnmp"]['statistics'], false, true);
       } else {
          echo "<div class='center b red'>";
          echo __('No import: the plugin will not import these elements', 'ocsinventoryng');
@@ -113,7 +116,7 @@ if (!isset($_POST["import_ok"])) {
    if (isset($_SESSION["ocs_importsnmp"])) {
       unset($_SESSION["ocs_importsnmp"]);
    }
-   //PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+   //OcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($display_list) {
       $values = $_GET;
       if (isset($_POST["search"])) {
@@ -123,8 +126,8 @@ if (!isset($_POST["import_ok"])) {
       //$values['change_import_mode'] = $_SESSION["change_import_mode"];
       //$values['glpiactiveentities'] = $_SESSION["glpiactiveentities"];
       $values['tolinked'] = 0;
-      PluginOcsinventoryngSnmpOcslink::searchForm($values);
-      PluginOcsinventoryngSnmpOcslink::showSnmpDeviceToAdd($values);
+      SnmpOcslink::searchForm($values);
+       SnmpOcslink::showSnmpDeviceToAdd($values);
    }
 
 } else {

@@ -28,6 +28,10 @@
  */
 
 
+use GlpiPlugin\Ocsinventoryng\OcsServer;
+use GlpiPlugin\Ocsinventoryng\Config;
+use GlpiPlugin\Ocsinventoryng\Server;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -41,14 +45,14 @@ global $DB;
 
 if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
-   $server = new PluginOcsinventoryngServer();
+   $server = new Server();
    $server->getFromDBbyOcsServer($plugin_ocsinventoryng_ocsservers_id);
 
-   $config    = new PluginOcsinventoryngConfig();
+   $config    = new Config();
    $config->getFromDB(1);
-   $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+   $cfg_ocs = OcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
    // Fetch linked computers from ocs
-   $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+   $ocsClient = OcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
    $computerOptions = array(
       'COMPLETE' => '0',

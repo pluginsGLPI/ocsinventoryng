@@ -27,12 +27,13 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\Detail;
+use GlpiPlugin\Ocsinventoryng\Menu;
 
 Session::checkRight("plugin_ocsinventoryng_import", READ);
 
-Html::header(__('Computers imported by automatic actions', 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "detail");
+Html::header(__('Computers imported by automatic actions', 'ocsinventoryng'), '', "tools", Menu::class, "detail");
 
-Search::show('PluginOcsinventoryngDetail');
+Search::show(Detail::class);
 
 Html::footer();

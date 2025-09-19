@@ -29,12 +29,14 @@
  */
 
 
+use GlpiPlugin\Ocsinventoryng\IpdiscoverOcslink;
+use GlpiPlugin\Ocsinventoryng\Menu;
 
 Session::checkRight("plugin_ocsinventoryng", READ);
 
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "importipdiscover");
+Html::header('OCS Inventory NG', '', "tools", Menu::class, "importipdiscover");
 
-$ip = new PluginOcsinventoryngIpdiscoverOcslink();
+$ip = new IpdiscoverOcslink();
 if (empty($_POST)) {
    $_POST = $_GET;
 }
@@ -76,7 +78,7 @@ if (isset($_POST["subnetsChoice"])
    }
    $lim = count($networksDetail["subnets"]);
    $start = isset($_POST['start']) ? $_POST['start'] : 0;
-   PluginOcsinventoryngIpdiscoverOcslink::showSubnetSearchForm($_GET["action"]);
+   IpdiscoverOcslink::showSubnetSearchForm($_GET["action"]);
    if ($lim > $_SESSION["glpilist_limit"]) {
       $ip->showSubnetsDetails($networksDetail, $_SESSION["glpilist_limit"], $start, $_GET["action"]);
    } else {

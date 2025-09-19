@@ -27,11 +27,12 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "synclink");
+Html::header('OCS Inventory NG', '', "tools", Menu::class, "synclink");
 
 //First time this screen is displayed : set the import mode to 'basic'
 if (!isset($_SESSION["change_import_mode"])) {
@@ -68,7 +69,7 @@ if (isset($_SESSION["ocs_linksnmp"]["id"])) {
          $params['itemtype'] = -1;
       }
 
-      PluginOcsinventoryngSnmpOcslink::linkSnmpDevice($key,
+      SnmpOcslink::linkSnmpDevice($key,
          $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
          $params);
       Html::redirect($_SERVER['PHP_SELF']);
@@ -100,8 +101,8 @@ if (!isset($_POST["import_ok"])) {
    //$values['change_import_mode'] = $_SESSION["change_import_mode"];
    //$values['glpiactiveentities'] = $_SESSION["glpiactiveentities"];
    $values['tolinked'] = 1;
-   PluginOcsinventoryngSnmpOcslink::searchForm($values);
-   PluginOcsinventoryngSnmpOcslink::showSnmpDeviceToAdd($values);
+    SnmpOcslink::searchForm($values);
+    SnmpOcslink::showSnmpDeviceToAdd($values);
 
 
 } else {

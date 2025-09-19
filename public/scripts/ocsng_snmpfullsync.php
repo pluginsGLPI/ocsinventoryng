@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -26,6 +26,13 @@
  along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
+
+use GlpiPlugin\Ocsinventoryng\Config;
+use GlpiPlugin\Ocsinventoryng\OcsProcess;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
+use GlpiPlugin\Ocsinventoryng\Server;
+use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
+use GlpiPlugin\Ocsinventoryng\Thread;
 
 ini_set("memory_limit", "-1");
 ini_set("max_execution_time", "0");
@@ -76,8 +83,8 @@ $ocsservers_id = -1;
 $fields = array();
 
 //Get script configuration
-$config = new PluginOcsinventoryngConfig();
-//$notimport = new PluginOcsinventoryngNotimportedcomputer();
+$config = new Config();
+//$notimport = new Notimportedcomputer();
 $config->getFromDB(1);
 
 if (!isset ($_GET["ocs_server_id"]) || ($_GET["ocs_server_id"] == '')) {
@@ -109,7 +116,7 @@ if (isset($_GET["thread_nbr"]) || isset ($_GET["thread_id"])) {
 if (isset ($_GET["process_id"])) {
    $fields["processid"] = $_GET["process_id"];
 }
-$thread = new PluginOcsinventoryngThread();
+$thread = new Thread();
 
 //Prepare datas to log in db
 $fields["start_time"] = date("Y-m-d H:i:s");
@@ -172,10 +179,10 @@ echo "=====================================================\n";
 function launchSync($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields, $config)
 {
 
-   $server = new PluginOcsinventoryngServer();
-   $ocsserver = new PluginOcsinventoryngOcsServer();
+   $server = new Server();
+   $ocsserver = new OcsServer();
 
-   if (!PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id)) {
+   if (!OcsServer::checkOCSconnection($ocsservers_id)) {
       echo "\tThread #" . $threadid . ": cannot contact server\n\n";
       return false;
    }
@@ -190,7 +197,7 @@ function launchSync($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields
       return false;
    }
 
-   $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($ocsservers_id);
+   $cfg_ocs = OcsServer::getConfig($ocsservers_id);
 
    return importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
       $threadid, $fields, $config);
@@ -221,7 +228,7 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
    }
 
    $ocsServerId = $cfg_ocs['id'];
-   $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($ocsServerId);
+   $ocsClient = OcsServer::getDBocs($ocsServerId);
 
    $already_linked_query = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`ocs_id`,`glpi_plugin_ocsinventoryng_snmpocslinks`.`id`
                                FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
@@ -247,8 +254,8 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
 
    //Unset SNMP objects not updated by OCS
    foreach ($ocsResult['SNMP'] as $ID => $snmpids) {
-      
-      
+
+
       $last_update = date('Y-m-d H:i:s');
       //Compute lastest synchronization date
       $query = "SELECT `last_update`
@@ -262,7 +269,7 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
             }
          }
       }
-   
+
       if ($snmpids['META']['LASTDATE'] < $last_update) {
          if (($key = array_search($ID, $already_linked_ocs_ids)) !== false) {
             unset($already_linked_ocs_ids[$key]);
@@ -291,8 +298,8 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
 
    $fields["total_number_machines"] += $nb;
 
-//   $thread = new PluginOcsinventoryngThread();
-//   $notimport = new PluginOcsinventoryngNotimportedcomputer();
+//   $thread = new Thread();
+//   $notimport = new Notimportedcomputer();
 
 //   $i = 0;
 
@@ -308,19 +315,19 @@ function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
       }*/
 
       echo ".";
-      $action = PluginOcsinventoryngSnmpOcslink::updateSnmp($ID, $ocsServerId);
-      PluginOcsinventoryngOcsProcess::manageImportStatistics($fields, $action['status']);
+      $action = SnmpOcslink::updateSnmp($ID, $ocsServerId);
+      OcsProcess::manageImportStatistics($fields, $action['status']);
 
       /* TODO log it ?
       /*switch ($action['status']) {
-         case PluginOcsinventoryngOcsProcess::SNMP_FAILED_IMPORT:
+         case OcsProcess::SNMP_FAILED_IMPORT:
             $notimport->logNotImported($ocsServerId, $ID, $action);
             break;
 
          default:
             $notimport->cleanNotImported($ocsServerId, $ID);
             //Log detail
-            $detail = new PluginOcsinventoryngDetail();
+            $detail = new Detail();
             $detail->logProcessedComputer($ID, $ocsServerId, $action, $threadid, $threads_id);
             break;
       }*/

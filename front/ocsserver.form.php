@@ -28,17 +28,18 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 Session::checkRight("plugin_ocsinventoryng", READ);
 
-$ocs = new PluginOcsinventoryngOcsServer();
+$ocs = new OcsServer();
 
 if (!isset($_GET["id"]) || $_GET["id"] == -1) {
     $_GET["id"] = "";
 }
 
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsserver");
+Html::header('OCS Inventory NG', '', "tools", Menu::class, "ocsserver");
 
 //Delete template or server
 if (isset($_POST["purge"])) {

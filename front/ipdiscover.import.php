@@ -29,14 +29,16 @@
  */
 
 
-
+use GlpiPlugin\Ocsinventoryng\IpdiscoverOcslink;
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsProcess;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "importipdiscover");
+Html::header('OCS Inventory NG', '', "tools", Menu::class, "importipdiscover");
 
 if (Plugin::isPluginActive("ocsinventoryng")) {
-   $ip = new PluginOcsinventoryngIpdiscoverOcslink();
+   $ip = new IpdiscoverOcslink();
 
    if (!isset($_GET['action'])) {
       $_GET['action'] = "import";
@@ -55,7 +57,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
          $ipAdress = $_POST["ip"];
       }
 
-      $subnet           = PluginOcsinventoryngIpdiscoverOcslink::getSubnetIDbyIP($ipAdress);
+      $subnet           = IpdiscoverOcslink::getSubnetIDbyIP($ipAdress);
       $hardware         = [];
       $knownMacAdresses = $ip->getKnownMacAdresseFromGlpi();
       if (isset($status)) {
@@ -101,8 +103,8 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $percent = min(100, round(100 * (sizeof($macAdresses) - sizeof($ipObjects)) / sizeof($macAdresses), 0));
 
             $action = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"], $_POST["subnet"]);
-            PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
-            PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
+            OcsProcess::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
+             OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
              Html::getProgressBar($percent);
             $_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"]   = $ipObjects;
             $_SESSION["ocs_importipdiscover"]["datas"]["b"]           = $_GET["b"];
@@ -116,12 +118,12 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
          while ($ipObject = array_pop($_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"])) {
             $percent = min(100, round(100 * (sizeof($_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"]) - sizeof($_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"])) / sizeof($_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"]), 0));
             $action  = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"], $_POST["subnet"]);
-            PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
-            PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
+             OcsProcess::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
+             OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
              Html::getProgressBar($percent);
             Html::redirect($_SERVER['PHP_SELF']);
          }
-         PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
+          OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
          if (isset($_GET["b"])) {
             $b        = $_GET["b"];
             $ipAdress = $b[0];
@@ -179,8 +181,8 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $percent = min(100, round(100 * (sizeof($macAdresses) - sizeof($ipObjects)) / sizeof($macAdresses), 0));
 
             $action = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"], $_POST["subnet"]);
-            PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
-            PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
+             OcsProcess::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
+             OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
              Html::getProgressBar($percent);
             $_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"]   = $ipObjects;
             $_SESSION["ocs_importipdiscover"]["datas"]["b"]           = $_GET["b"];
@@ -194,12 +196,12 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
          while ($ipObject = array_pop($_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"])) {
             $percent = min(100, round(100 * (sizeof($_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"]) - sizeof($_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"])) / sizeof($_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"]), 0));
             $action  = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"], $_POST["subnet"]);
-            PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
-            PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
+             OcsProcess::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
+             OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
              Html::getProgressBar($percent);
             Html::redirect($_SERVER['PHP_SELF']);
          }
-         PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
+          OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
          if (isset($_GET["b"])) {
             $b        = $_GET["b"];
             $ipAdress = $b[0];

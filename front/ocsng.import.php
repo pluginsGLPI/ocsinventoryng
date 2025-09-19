@@ -28,9 +28,13 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsProcess;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
+
 Session::checkRight("plugin_ocsinventoryng_import", READ);
 
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "import");
+Html::header('OCS Inventory NG', '', "tools", Menu::class, "import");
 
 //First time this screen is displayed : set the import mode to 'basic'
 if (!isset($_SESSION["change_import_mode"])) {
@@ -59,8 +63,8 @@ if (isset($_SESSION["ocs_import"]['computers'])) {
     if ((isset($_SESSION["ocs_import"]["connection"])
          && $_SESSION["ocs_import"]["connection"] == false)
         || !isset($_SESSION["ocs_import"]["connection"])) {
-        if (!PluginOcsinventoryngOcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
-            PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_import_statistics"]);
+        if (!OcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
+            OcsProcess::showStatistics($_SESSION["ocs_import_statistics"]);
             $_SESSION["ocs_import"]["id"] = [];
 
             Html::redirect($_SERVER['PHP_SELF']);
@@ -112,9 +116,9 @@ if (isset($_SESSION["ocs_import"]['computers'])) {
             'disable_unicity_check'               => $disable_unicity_check,
             'computers_id'                        => $computers_id];
 
-        $action = PluginOcsinventoryngOcsProcess::processComputer($process_params);
+        $action = OcsProcess::processComputer($process_params);
 
-        PluginOcsinventoryngOcsProcess::manageImportStatistics(
+        OcsProcess::manageImportStatistics(
             $_SESSION["ocs_import"]['statistics'],
             $action['status']
         );
@@ -127,7 +131,7 @@ if (isset($_SESSION["ocs_import"]['computers'])) {
 if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
     && $_SESSION["plugin_ocsinventoryng_ocsservers_id"] > -1) {
     if (!isset($_POST["import_ok"])) {
-        $ocsClient   = PluginOcsinventoryngOcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+        $ocsClient   = OcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
         $deleted_pcs = $ocsClient->getTotalDeletedComputers();
         if ($deleted_pcs > 0) {
             echo "<div class='alert alert-important alert-warning d-flex'>";
@@ -141,7 +145,7 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
             'import_mode'                         => $_SESSION["change_import_mode"],
             'link_mode'                           => $_SESSION["change_link_mode"],
             'entities_id'                         => $_SESSION['glpiactiveentities']];
-        PluginOcsinventoryngOcsServer::showComputersToAdd($show_params);
+        OcsServer::showComputersToAdd($show_params);
     } else {
         if (isset($_POST['toadd']) && count($_POST['toadd']) > 0) {
             $_SESSION["ocs_import_count"] = 0;
@@ -174,8 +178,8 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
         Html::redirect(PLUGIN_OCS_WEBDIR . '/front/ocsng.import.php');
     }
 } else {
-    echo "<div align='center'>";
-    echo "<i class='fas fa-exclamation-triangle fa-4x' style='color:orange'></i>";
+    echo "<div class='center'>";
+    echo "<i class='ti ti-alert-triangle fa-4x' style='color:orange'></i>";
     echo "<br>";
     echo "<div class='red b'>";
     echo __('No OCSNG server defined', 'ocsinventoryng');
@@ -186,4 +190,4 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
     echo "</a>";
     echo "</div></div>";
 }
-Html::footer();//5Z4H25J
+Html::footer();

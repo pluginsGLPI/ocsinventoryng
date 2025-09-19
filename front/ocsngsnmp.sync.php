@@ -27,11 +27,13 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsProcess;
+use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "syncsnmp");
+Html::header('OCS Inventory NG', '', "tools", Menu::class, "syncsnmp");
 
 
 $display_list = true;
@@ -43,7 +45,7 @@ if (isset($_POST["delete"])
 
       foreach ($_POST['toupdate'] as $key => $val) {
          if ($val == "on") {
-            $link = new PluginOcsinventoryngSnmpOcslink();
+            $link = new SnmpOcslink();
             $link->delete(['id' => $key], 1);
          }
       }
@@ -61,11 +63,11 @@ if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
 
 
       $key = array_pop($_SESSION["ocs_updatesnmp"]['id']);
-      $action = PluginOcsinventoryngSnmpOcslink::updateSnmp($key,
+      $action = SnmpOcslink::updateSnmp($key,
          $_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-      PluginOcsinventoryngOcsProcess::manageImportStatistics($_SESSION["ocs_updatesnmp"]['statistics'],
+      OcsProcess::manageImportStatistics($_SESSION["ocs_updatesnmp"]['statistics'],
          $action['status'], true);
-      PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false, true);
+       OcsProcess::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false, true);
        Html::getProgressBar($percent);
 
       Html::redirect($_SERVER['PHP_SELF']);
@@ -73,7 +75,7 @@ if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
    } else {
 
       if (isset($_SESSION["ocs_updatesnmp"]['statistics'])) {
-         PluginOcsinventoryngOcsProcess::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false, true);
+          OcsProcess::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false, true);
       } else {
          echo "<div class='center b red'>";
          echo __('No synchronization: the plugin will not synchronize these elements', 'ocsinventoryng');
@@ -93,9 +95,9 @@ if (!isset($_POST["update_ok"])) {
    if (!isset($_GET['start'])) {
       $_GET['start'] = 0;
    }
-   //PluginOcsinventoryngOcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+   //OcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
    if ($display_list) {
-      PluginOcsinventoryngSnmpOcslink::showSnmpDeviceToUpdate($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+      SnmpOcslink::showSnmpDeviceToUpdate($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
          $_GET['check'], $_GET['start']);
    }
 

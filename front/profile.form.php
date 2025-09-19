@@ -27,12 +27,14 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\OcsServer;
+use GlpiPlugin\Ocsinventoryng\Ocsserver_Profile;
+use GlpiPlugin\Ocsinventoryng\Profile;
 
 Session::checkRight("profile", READ);
 
-$profservers = new PluginOcsinventoryngOcsserver_Profile();
-$prof        = new PluginOcsinventoryngProfile();
+$profservers = new Ocsserver_Profile();
+$prof        = new Profile();
 
 if (isset($_POST["addocsserver"]) && ($_POST['plugin_ocsinventoryng_ocsservers_id'] > 0)) {
    $input['profiles_id']                         = $_POST['profile'];
@@ -47,7 +49,7 @@ if (isset($_POST["addocsserver"]) && ($_POST['plugin_ocsinventoryng_ocsservers_i
 }
 
 // stock selected servers in session
-$_SESSION["plugin_ocsinventoryng_ocsservers_id"] = PluginOcsinventoryngOcsServer::getFirstServer();
+$_SESSION["plugin_ocsinventoryng_ocsservers_id"] = OcsServer::getFirstServer();
 
 if (isset ($_POST['delete'])) {
    $input = [];

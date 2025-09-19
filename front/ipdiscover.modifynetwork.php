@@ -29,12 +29,14 @@
  */
 
 
+use GlpiPlugin\Ocsinventoryng\IpdiscoverOcslink;
+use GlpiPlugin\Ocsinventoryng\Menu;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "modifysubnet");
+Html::header('OCS Inventory NG', '', "tools", Menu::class, "modifysubnet");
 
-$ip = new PluginOcsinventoryngIpdiscoverOcslink();
+$ip = new IpdiscoverOcslink();
 
 if (isset($_GET["ip"])) {
    $_POST["ip"] = $_GET["ip"];

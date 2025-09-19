@@ -28,6 +28,9 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Ocsinventoryng\OcsClient;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -55,16 +58,16 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
         }
     }
 
-    $cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+    $cfg_ocs = OcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
     $computerOptions = ['COMPLETE' => '0',
         'FILTER'   => [
             'EXCLUDE_IDS' => $already_linked,
         ],
         'DISPLAY'  => [
-            'CHECKSUM' => PluginOcsinventoryngOcsClient::CHECKSUM_HARDWARE
-                          | PluginOcsinventoryngOcsClient::CHECKSUM_BIOS
-                          | PluginOcsinventoryngOcsClient::CHECKSUM_NETWORK_ADAPTERS,
+            'CHECKSUM' => OcsClient::CHECKSUM_HARDWARE
+                          | OcsClient::CHECKSUM_BIOS
+                          | OcsClient::CHECKSUM_NETWORK_ADAPTERS,
         ],
     ];
 
@@ -76,7 +79,7 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
         $computerOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
     }
 
-    $ocsClient = PluginOcsinventoryngOcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+    $ocsClient = OcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
     //      $numrows   = $ocsClient->countComputers($computerOptions);
 
     //      if ($start != 0) {

@@ -27,12 +27,13 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 Session::checkRight("plugin_ocsinventoryng", READ);
 
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsserver");
+Html::header('OCS Inventory NG', '', "tools", Menu::class, "ocsserver");
 
-Search::show('PluginOcsinventoryngOcsServer');
+Search::show(OcsServer::class);
 
 Html::footer();

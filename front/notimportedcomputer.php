@@ -27,12 +27,13 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\Notimportedcomputer;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-Html::header(__('Computers not imported by automatic actions', 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "notimported");
+Html::header(__('Computers not imported by automatic actions', 'ocsinventoryng'), '', "tools", Menu::class, "notimported");
 
-Search::show('PluginOcsinventoryngNotimportedcomputer');
+Search::show(Notimportedcomputer::class);
 
 Html::footer();

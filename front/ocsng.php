@@ -27,12 +27,14 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\IpdiscoverOcslink;
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 Session::checkSeveralRightsOr(["plugin_ocsinventoryng" => READ,
    "plugin_ocsinventoryng_clean" => READ]);
 
-Html::header('OCS Inventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsinventoryng");
+Html::header('OCS Inventory NG', '', "tools", Menu::class, "ocsinventoryng");
 
 if (isset ($_SESSION["ocs_import"])) {
    unset ($_SESSION["ocs_import"]);
@@ -47,20 +49,20 @@ if (isset ($_SESSION["ocs_update"])) {
 if (isset($_POST["plugin_ocsinventoryng_ocsservers_id"])) {
    $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = $_POST["plugin_ocsinventoryng_ocsservers_id"];
 } else {
-   $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = PluginOcsinventoryngOcsServer::getFirstServer();
+   $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = OcsServer::getFirstServer();
 }
 
-//PluginOcsinventoryngOcsServer::newOcsMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-echo "<div align='center'><img src='".PLUGIN_OCS_WEBDIR . "/pics/ocsinventoryng.png'></div>";
-$menu = new PluginOcsinventoryngMenu();
+//OcsServer::newOcsMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+echo "<div class='center'><img src='".PLUGIN_OCS_WEBDIR . "/pics/ocsinventoryng.png'></div>";
+$menu = new Menu();
 $menu->display();
 //load mac constructors in sessionMemory
 $_SESSION["OCS"]["count"] = 0;
 if (!isset($_SESSION["OCS"]["IpdiscoverMacConstructors"])) {
-   $ip = new PluginOcsinventoryngIpdiscoverOcslink();
+   $ip = new IpdiscoverOcslink();
    $ip->loadMacConstructor();
    $_SESSION["OCS"]["count"] = $_SESSION["OCS"]["count"] + 1;
 }
-//PluginOcsinventoryngOcsServer::ocsMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+//OcsServer::ocsMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
 
 Html::footer();

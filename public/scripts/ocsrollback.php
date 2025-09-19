@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -31,6 +31,9 @@
  * @brief Rollback OCS events (after a resto)
  */
 
+
+use GlpiPlugin\Ocsinventoryng\DBocs;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 ini_set("memory_limit", "-1");
 ini_set("max_execution_time", "0");
@@ -66,7 +69,7 @@ if (!isset($_GET["server"])) {
 $DBocs = new DBocs($_GET["server"]);
 echo "Connecting to " . $DBocs->dbhost . "\n";
 
-if (!PluginOcsinventoryngOcsServer::checkOCSconnection($_GET["server"])) {
+if (!OcsServer::checkOCSconnection($_GET["server"])) {
    die("Failed connexion to OCS\n");
 }
 $run = (isset($_GET["run"]) && $_GET["run"] > 0);
@@ -112,7 +115,7 @@ $nb = $nbupd = 0;
 while ($event = $DB->fetchArray($res)) {
 
    if ($event["new_value"] > $maxid
-      && PluginOcsinventoryngOcsServer::getServerByComputerID($event["items_id"]) == $_GET["server"]
+      && OcsServer::getServerByComputerID($event["items_id"]) == $_GET["server"]
       && $comp->getFromDB($event["items_id"])
    ) {
 

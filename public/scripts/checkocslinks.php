@@ -28,6 +28,9 @@
  */
 
 // Ensure current directory when run from crontab
+use GlpiPlugin\Ocsinventoryng\OcsProcess;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
+
 chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
 
 ini_set('display_errors', 1);
@@ -65,14 +68,14 @@ foreach ($DB->request([
     $ocsservers_id = $serv ['id'];
     echo "\nServeur: " . $serv['name'] . "\n";
 
-    if (!PluginOcsinventoryngOcsServer::checkOCSconnection($ocsservers_id)) {
+    if (!OcsServer::checkOCSconnection($ocsservers_id)) {
         echo "** no connexion\n";
         continue;
     }
 
     if (isset($_GET['clean'])) {
         echo "+ Handle ID changes\n";
-        PluginOcsinventoryngOcsProcess::manageDeleted($ocsservers_id);
+        OcsProcess::manageDeleted($ocsservers_id);
     }
 
     if (isset($_GET['glpi'])) {
@@ -105,7 +108,7 @@ foreach ($DB->request([
     }
 
     if (isset($_GET['ocs'])) {
-        $DBocs = PluginOcsinventoryngOcsServer::getDBocs($ocsservers_id);
+        $DBocs = OcsServer::getDBocs($ocsservers_id);
         $res[] = $DBocs->getOCSComputers();
 
         $hardware = array();

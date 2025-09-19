@@ -27,12 +27,13 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\Components\NetworkPort;
 
 Session::checkRight('networking', READ);
 
-Html::header(_n('Unknown imported network port type', 'Unknown imported network ports types', 2, 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", 'networkport');
+Html::header(_n('Unknown imported network port type', 'Unknown imported network ports types', 2, 'ocsinventoryng'), '', "tools", Menu::class, 'networkport');
 
-PluginOcsinventoryngNetworkPort::displayInvalidList();
+NetworkPort::displayInvalidList();
 
 Html::footer();

@@ -27,7 +27,8 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\Thread;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
@@ -35,10 +36,10 @@ if (!isset($_GET["plugin_ocsinventoryng_ocsservers_id"])) {
    $_GET["plugin_ocsinventoryng_ocsservers_id"] = "0";
 }
 
-$thread = new PluginOcsinventoryngThread();
+$thread = new Thread();
 
 
-Html::header(__('Processes execution of automatic actions', 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "thread");
+Html::header(__('Processes execution of automatic actions', 'ocsinventoryng'), '', "tools", Menu::class, "thread");
 
 if (isset ($_POST["delete_processes"])) {
 

@@ -27,20 +27,21 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\Config;
+use GlpiPlugin\Ocsinventoryng\Menu;
 
 global $CFG_GLPI;
 
 if (Plugin::isPluginActive("ocsinventoryng")
    && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
 
-   Html::header('OCSInventory NG', '', "tools", "pluginocsinventoryngmenu", "ocsinventoryng");
+   Html::header('OCSInventory NG', '', "tools", Menu::class, "ocsinventoryng");
 
    // choose config server or config synchro
-   PluginOcsinventoryngConfig::showMenu();
+   Config::showMenu();
 
 } else {
-   Html::header(__('Setup'), '', "tools", "pluginocsinventoryngmenu", "config");
+   Html::header(__('Setup'), '', "tools", Menu::class, "config");
    echo "<div class='alert alert-important alert-warning d-flex'>";
    echo "<b>" . __('Please activate the plugin', 'ocsinventoryng') . "</b></div>";
 }

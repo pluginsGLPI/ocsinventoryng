@@ -27,12 +27,13 @@
  --------------------------------------------------------------------------
  */
 
-
+use GlpiPlugin\Ocsinventoryng\Config;
+use GlpiPlugin\Ocsinventoryng\Menu;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
 if (Plugin::isPluginActive("ocsinventoryng")) {
-   $config = new PluginOcsinventoryngConfig();
+   $config = new Config();
 
    global $CFG_GLPI;
 
@@ -47,11 +48,11 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
       $config->removeScriptLock();
    }
 
-   Html::header(__("Automatic synchronization's configuration", 'ocsinventoryng'), '', "tools", "pluginocsinventoryngmenu", "config");
+   Html::header(__("Automatic synchronization's configuration", 'ocsinventoryng'), '', "tools", Menu::class, "config");
 
    $config->display(['id' => 1]);
 } else {
-   Html::header(__('Setup'), '', "tools", "pluginocsinventoryngmenu", "config");
+   Html::header(__('Setup'), '', "tools", Menu::class, "config");
    echo "<div class='alert alert-important alert-warning d-flex'>";
    echo "<b>" . __('Please activate the plugin', 'ocsinventoryng') . "</b></div>";
 }

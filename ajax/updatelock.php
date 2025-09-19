@@ -27,6 +27,8 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Ocsinventoryng\Ocslink;
+
 Session::checkLoginUser();
 if (isset($_POST['update_lock'])) {
 
@@ -35,5 +37,5 @@ if (isset($_POST['update_lock'])) {
    $ocsid = $_POST['ocsid'];
    $field = $_POST['field'];
 
-   PluginOcsinventoryngOcslink::updateLock($plugin_ocsinventoryng_ocsservers_id, $computers_id, $ocsid, $field);
+   Ocslink::updateLock($plugin_ocsinventoryng_ocsservers_id, $computers_id, $ocsid, $field);
 }

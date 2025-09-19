@@ -27,9 +27,9 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Ocsinventoryng\Notimportedcomputer;
 
-
-$dropdown = new PluginOcsinventoryngNotimportedcomputer();
+$dropdown = new Notimportedcomputer();
 
 if (isset($_POST['action'])) {
    switch ($_POST['action']) {
@@ -37,10 +37,10 @@ if (isset($_POST['action'])) {
          $_POST['force'] = true;
 
       case 'plugin_ocsinventoryng_replayrules' :
-         if (PluginOcsinventoryngNotimportedcomputer::computerImport($_POST)) {
+         if (Notimportedcomputer::computerImport($_POST)) {
             $dropdown->redirectToList();
          } else {
-            Html::redirect(Html::getItemTypeFormURL('PluginOcsinventoryngNotimportedcomputer') .
+            Html::redirect(Html::getItemTypeFormURL(Notimportedcomputer::class) .
                '?id=' . $_POST['id']);
          }
          break;

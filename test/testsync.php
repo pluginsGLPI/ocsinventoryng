@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -28,6 +28,10 @@
  */
 
 // Ensure current directory when run from crontab
+use GlpiPlugin\Ocsinventoryng\Ocslink;
+use GlpiPlugin\Ocsinventoryng\OcsProcess;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
+
 chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
 
 
@@ -39,7 +43,7 @@ if (!isset($_SERVER['argv'][1])) {
    die("usage testsync.php <computerid>\n");
 }
 
-$link = new PluginOcsinventoryngOcslink();
+$link = new Ocslink();
 if (!$link->getFromDBforComputer($_SERVER['argv'][1])) {
    die("unknow computer\n");
 }
@@ -48,12 +52,12 @@ $timer = new Timer();
 $timer->start();
 
 $prof = new XHProf("OCS sync");
-$cfg_ocs = PluginOcsinventoryngOcsServer::getConfig($link->getField('plugin_ocsinventoryng_ocsservers_id'));
+$cfg_ocs = OcsServer::getConfig($link->getField('plugin_ocsinventoryng_ocsservers_id'));
 $sync_params = ['ID' => $link->getID(),
                 'plugin_ocsinventoryng_ocsservers_id' => $link->getField('plugin_ocsinventoryng_ocsservers_id'),
                 'cfg_ocs' => $cfg_ocs,
                 'force' => 1];
-PluginOcsinventoryngOcsProcess::synchronizeComputer($sync_params);
+OcsProcess::synchronizeComputer($sync_params);
 unset($prof);
 
 printf("Done in %s\n", $timer->getTime());
