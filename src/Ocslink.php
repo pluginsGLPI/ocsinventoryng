@@ -34,6 +34,7 @@ use CommonGLPI;
 use Computer;
 use DbUtils;
 use Dropdown;
+use Glpi\Asset\Asset_PeripheralAsset;
 use GlpiPlugin\Ocsinventoryng\Components\Bios;
 use GlpiPlugin\Ocsinventoryng\Components\Bitlockerstatus;
 use GlpiPlugin\Ocsinventoryng\Components\Customapp;
@@ -659,12 +660,12 @@ class Ocslink extends CommonDBTM
     /**
      * Update linked items of an item
      *
-     * @param $item                     CommonDBTM object
+     * @param $item                     Asset_PeripheralAsset object
      *
      * @internal param int|string $withtemplate integer  withtemplate param (default '')
      * @return bool
      */
-    public static function addComputer_Item(CommonDBTM $item)
+    public static function addComputer_Item(Asset_PeripheralAsset $item)
     {
         global $DB;
 
@@ -790,12 +791,25 @@ class Ocslink extends CommonDBTM
 
 
     /**
-     * if Computer_Item deleted
+     * if Asset_PeripheralAsset deleted
      *
-     * @param $comp   Computer_Item object
+     * @param $comp   Asset_PeripheralAsset object
      **/
-    public static function purgeComputer_Item(Computer_Item $comp)
+    public static function purgeComputer_Item(Asset_PeripheralAsset $comp)
     {
+
+//        Asset_PeripheralAsset::getTable() => [
+//        'FKEY' => [
+//            Asset_PeripheralAsset::getTable() . '.items_id_asset',
+//            Computer::getTable() . '.id',
+//            [
+//                'AND' => [
+//                    Asset_PeripheralAsset::getTable() . '.itemtype_asset' => 'Computer',
+//                ],
+//            ],
+//        ],
+//    ],
+
         global $DB;
         $dbu = new DbUtils();
         if ($device = $dbu->getItemForItemtype($comp->fields['itemtype'])) {

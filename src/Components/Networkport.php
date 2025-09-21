@@ -37,6 +37,7 @@ use DeviceNetworkCard;
 use Glpi\DBAL\QueryExpression;
 use GlpiPlugin\Ocsinventoryng\NetworkPortType;
 use GlpiPlugin\Ocsinventoryng\OcsProcess;
+use Html;
 use HTMLTableCell;
 use HTMLTableGroup;
 use HTMLTableHeader;

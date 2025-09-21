@@ -680,13 +680,31 @@ function plugin_ocsinventoryng_uninstall()
         $DB->dropTable($table, true);
     }
 
-    $tables_glpi = ["glpi_savedsearches", "glpi_displaypreferences", "glpi_logs"];
+    $itemtypes = ['Alert',
+        'DisplayPreference',
+        'Document_Item',
+        'ImpactItem',
+        'Item_Ticket',
+        'Link_Itemtype',
+        'Notepad',
+        'SavedSearch',
+        'DropdownTranslation',
+        'NotificationTemplate',
+        'Notification'];
+    foreach ($itemtypes as $itemtype) {
+        $item = new $itemtype;
+        $item->deleteByCriteria(['itemtype' => Notimportedcomputer::class]);
 
-    foreach ($tables_glpi as $table_glpi) {
-        $DB->delete($table_glpi, ['itemtype' => ['LIKE' => 'PluginMassocsimport%']]);
+        $item = new $itemtype;
+        $item->deleteByCriteria(['itemtype' => OcsServer::class]);
 
-        $DB->delete($table_glpi, ['itemtype' => ['LIKE' => 'GlpiPlugin\Ocsinventoryng%']]);
+        $item = new $itemtype;
+        $item->deleteByCriteria(['itemtype' => Detail::class]);
+
+        $item = new $itemtype;
+        $item->deleteByCriteria(['itemtype' => RuleImportEntity::class]);
     }
+
 
     $tables_ocs = ["ocs_glpi_crontasks", "ocs_glpi_displaypreferences",
         "ocs_glpi_ocsadmininfoslinks", "ocs_glpi_ocslinks",
@@ -704,13 +722,6 @@ function plugin_ocsinventoryng_uninstall()
     foreach ($tables_mass as $table_mass) {
         $DB->doQuery("DROP TABLE IF EXISTS `$table_mass`;");
     }
-
-    $query = "DELETE
-             FROM `glpi_alerts`
-             WHERE `itemtype` IN ('PluginMassocsimportNotimported',
-                                  'GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer',
-                                  'GlpiPlugin\\Ocsinventoryng\\RuleImportEntity')";
-    $DB->doQuery($query, $DB->error());
 
     // clean rules
     //   $rule = new RuleImportEntity();
@@ -837,7 +848,7 @@ function plugin_ocsinventoryng_postinit()
     $PLUGIN_HOOKS['item_update']['ocsinventoryng']  = [];
 
     $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng']
-      = ['Computer_Item' => [Ocslink::class, 'addComputer_Item']];
+      = ['Asset_PeripheralAsset' => [Ocslink::class, 'addComputer_Item']];
 
     $PLUGIN_HOOKS['pre_item_update']['ocsinventoryng'] = [
         'Infocom' => 'plugin_ocsinventoryng_pre_item_update',
@@ -851,7 +862,7 @@ function plugin_ocsinventoryng_postinit()
 
     $PLUGIN_HOOKS['pre_item_purge']['ocsinventoryng']
       = ['Computer'      => [Ocslink::class, 'purgeComputer'],
-          'Computer_Item' => [Ocslink::class, 'purgeComputer_Item']];
+          'Asset_PeripheralAsset' => [Ocslink::class, 'purgeComputer_Item']];
 
     $PLUGIN_HOOKS['item_purge']['ocsinventoryng']
       = ['Printer'          => [SnmpOcslink::class, 'purgePrinter'],
@@ -1916,7 +1927,7 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration)
     foreach ($import as $field => $itemtype) {
         foreach ($DB->request([
             'FROM' => 'ocs_glpi_ocslinks',
-            'WHERE' => ['FIELDS' => ['computers_id', $field]],
+            'WHERE' => ['SELECT' => ['computers_id', $field]],
         ]) as $data) {
             if ($DB->fieldExists('ocs_glpi_ocslinks', $field)) {
                 $dbu          = new DbUtils();
@@ -1944,7 +1955,7 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration)
         if ($DB->fieldExists('ocs_glpi_ocslinks', $field)) {
             foreach ($DB->request([
                 'FROM' => 'ocs_glpi_ocslinks',
-                'WHERE' => ['FIELDS' => ['computers_id', $field]],
+                'WHERE' => ['SELECT' => ['computers_id', $field]],
             ]) as $data) {
                 $dbu          = new DbUtils();
                 $import_field = $dbu->importArrayFromDB($data[$field]);
@@ -1984,7 +1995,7 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration)
     if ($DB->fieldExists('ocs_glpi_ocslinks', 'import_device')) {
         foreach ($DB->request([
             'FROM' => 'ocs_glpi_ocslinks',
-            'WHERE' => ['FIELDS' => ['computers_id', 'import_device']]]) as $data) {
+            'WHERE' => ['SELECT' => ['computers_id', 'import_device']]]) as $data) {
             $dbu           = new DbUtils();
             $import_device = $dbu->importArrayFromDB($data['import_device']);
             if (!in_array('_version_078_', $import_device)) {

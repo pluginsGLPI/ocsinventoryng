@@ -34,6 +34,7 @@ use Computer;
 use CronTask;
 use Dropdown;
 use NotificationEvent;
+use Rule;
 use RuleAssetCollection;
 use RuleImportEntityCollection;
 use Session;

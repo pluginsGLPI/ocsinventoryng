@@ -28,6 +28,7 @@
  */
 
 
+use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 
 if (isset($_POST["force_ocssnmp_resynch"])) {

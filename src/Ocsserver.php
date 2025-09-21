@@ -39,6 +39,7 @@ use Dropdown;
 use Exception;
 use GLPIKey;
 use Html;
+use Log;
 use Rule;
 use Search;
 use Session;

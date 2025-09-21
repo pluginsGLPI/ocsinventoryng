@@ -540,22 +540,22 @@ INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Etherne
 INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Wifi port', 'Wifi', '*', 'NetworkPortWifi', NULL, NULL, 'a', NULL);
 INSERT INTO `glpi_plugin_ocsinventoryng_networkporttypes` VALUES (NULL, 'Loopback port', 'Local', '*', 'NetworkPortLocal', NULL, NULL, NULL, NULL);
 
-INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginOcsinventoryngOcsServer','3','1','0', 'central');
-INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginOcsinventoryngOcsServer','19','2','0', 'central');
-INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginOcsinventoryngOcsServer','6','3','0', 'central');
-INSERT INTO `glpi_displaypreferences` (`itemtype`, `num`, `rank`, `users_id`)
-                VALUES ('PluginOcsinventoryngNotimportedcomputer', 2, 1, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 3, 2, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 4, 3, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 5, 4, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 6, 5, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 7, 6, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 8, 7, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 9, 8, 0, 'central'),
-                       ('PluginOcsinventoryngNotimportedcomputer', 10, 9, 0, 'central'),
-                       ('PluginOcsinventoryngDetail', 5, 1, 0, 'central'),
-                       ('PluginOcsinventoryngDetail', 2, 2, 0, 'central'),
-                       ('PluginOcsinventoryngDetail', 3, 3, 0, 'central'),
-                       ('PluginOcsinventoryngDetail', 4, 4, 0, 'central'),
-                       ('PluginOcsinventoryngDetail', 6, 5, 0, 'central'),
-                       ('PluginOcsinventoryngDetail', 80, 6, 0, 'central');
+INSERT INTO `glpi_displaypreferences` VALUES (NULL,'GlpiPlugin\\Ocsinventoryng\\OcsServer','3','1','0', 'central');
+INSERT INTO `glpi_displaypreferences` VALUES (NULL,'GlpiPlugin\\Ocsinventoryng\\OcsServer','19','2','0', 'central');
+INSERT INTO `glpi_displaypreferences` VALUES (NULL,'GlpiPlugin\\Ocsinventoryng\\OcsServer','6','3','0', 'central');
+INSERT INTO `glpi_displaypreferences` (`itemtype`, `num`, `rank`, `users_id` , `interface`)
+                VALUES ('GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer', 2, 1, 0, 'central'),
+                       ('GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer', 3, 2, 0, 'central'),
+                       ('GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer', 4, 3, 0, 'central'),
+                       ('GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer', 5, 4, 0, 'central'),
+                       ('GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer', 6, 5, 0, 'central'),
+                       ('GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer', 7, 6, 0, 'central'),
+                       ('GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer', 8, 7, 0, 'central'),
+                       ('GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer', 9, 8, 0, 'central'),
+                       ('GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer', 10, 9, 0, 'central'),
+                       ('GlpiPlugin\\Ocsinventoryng\\Detail', 5, 1, 0, 'central'),
+                       ('GlpiPlugin\\Ocsinventoryng\\Detail', 2, 2, 0, 'central'),
+                       ('GlpiPlugin\\Ocsinventoryng\\Detail', 3, 3, 0, 'central'),
+                       ('GlpiPlugin\\Ocsinventoryng\\Detail', 4, 4, 0, 'central'),
+                       ('GlpiPlugin\\Ocsinventoryng\\Detail', 6, 5, 0, 'central'),
+                       ('GlpiPlugin\\Ocsinventoryng\\Detail', 80, 6, 0, 'central');

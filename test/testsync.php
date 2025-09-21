@@ -31,10 +31,9 @@
 use GlpiPlugin\Ocsinventoryng\Ocslink;
 use GlpiPlugin\Ocsinventoryng\OcsProcess;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
+use GlpiPlugin\Ocsinventoryng\Timer;
 
 chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
-
-
 
 ini_set('display_errors', 1);
 restore_error_handler();

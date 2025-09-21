@@ -40,7 +40,7 @@ if (isset($_POST['action'])) {
          if (Notimportedcomputer::computerImport($_POST)) {
             $dropdown->redirectToList();
          } else {
-            Html::redirect(Html::getItemTypeFormURL(Notimportedcomputer::class) .
+            Html::redirect(Toolbox::getItemTypeFormURL(Notimportedcomputer::class) .
                '?id=' . $_POST['id']);
          }
          break;

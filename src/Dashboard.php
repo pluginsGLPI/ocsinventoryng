@@ -90,7 +90,7 @@ class Dashboard extends MydashboardHtml
     /**
      * @param $widgetId
      *
-     * @return Datatable|HBarChart|dHtml|LineChart|PieChart|VBarChart
+     * @return Datatable|HBarChart|Html|LineChart|PieChart|VBarChart
      */
     public function getWidgetContentForItem($widgetId, $opt = [])
     {

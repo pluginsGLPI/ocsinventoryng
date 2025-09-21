@@ -33,6 +33,7 @@ use GlpiPlugin\Ocsinventoryng\Components\Bitlockerstatus;
 use GlpiPlugin\Ocsinventoryng\Components\Customapp;
 use GlpiPlugin\Ocsinventoryng\Components\Networkshare;
 use GlpiPlugin\Ocsinventoryng\Components\NetworkPort;
+use GlpiPlugin\Ocsinventoryng\Components\Osinstall;
 use GlpiPlugin\Ocsinventoryng\Components\Proxysetting;
 use GlpiPlugin\Ocsinventoryng\Components\RegistryKey;
 use GlpiPlugin\Ocsinventoryng\Components\Runningprocess;

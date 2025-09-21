@@ -36,6 +36,7 @@ use Computer;
 use CronTask;
 use DbUtils;
 use Dropdown;
+use Entity;
 use Html;
 use Item_OperatingSystem;
 use NotificationEvent;
