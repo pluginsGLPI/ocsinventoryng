@@ -30,6 +30,7 @@
 
 namespace GlpiPlugin\Ocsinventoryng;
 
+use AllowDynamicProperties;
 use GlpiPlugin\Mydashboard\Chart;
 use GlpiPlugin\Mydashboard\Charts\BarChart;
 use GlpiPlugin\Mydashboard\Charts\PieChart;
@@ -44,6 +45,7 @@ use Toolbox;
 /**
  * Class Dashboard
  */
+#[AllowDynamicProperties]
 class Dashboard extends MydashboardHtml
 {
     public $widgets = [];

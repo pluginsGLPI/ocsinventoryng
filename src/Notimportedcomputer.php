@@ -67,70 +67,6 @@ class Notimportedcomputer extends CommonDBTM
 
 
     /**
-     * @return array
-     */
-//    public function getAdditionalFields()
-//    {
-//        return [['name'  => 'reason',
-//            'label' => __('Reason of rejection'),
-//            'type'  => 'reason'],
-//            ['name'  => 'rules_id',
-//                'label' => __('Verified rules', 'ocsinventoryng'),
-//                'type'  => 'echo_rule'],
-//            ['name'  => 'ocsid',
-//                'label' => __('OCSNG ID', 'ocsinventoryng'),
-//                'type'  => 'text'],
-//            ['name'  => 'plugin_ocsinventoryng_ocsservers_id',
-//                'label' => __('Server'),
-//                'type'  => 'echo_dropdown',
-//                'table' => 'glpi_plugin_ocsinventoryng_ocsservers'],
-//            ['name'  => 'ocs_deviceid',
-//                'label' => __('Device ID', 'ocsinventoryng'),
-//                'type'  => 'text'],
-//            ['name'  => 'serial',
-//                'label' => __('Serial number'),
-//                'type'  => 'text'],
-//            ['name'  => 'tag',
-//                'label' => __('OCSNG TAG', 'ocsinventoryng'),
-//                'type'  => 'text'],
-//            ['name'  => 'useragent',
-//                'label' => __('Inventory agent', 'ocsinventoryng'),
-//                'type'  => 'text'],
-//            ['name'  => 'ipaddr',
-//                'label' => __('IP'),
-//                'type'  => 'text'],
-//            ['name'  => 'domain',
-//                'label' => __('Domain'),
-//                'type'  => 'text'],
-//            ['name'  => 'last_inventory',
-//                'label' => __('Last OCSNG inventory date', 'ocsinventoryng'),
-//                'type'  => 'echo_datetime']];
-//    }
-
-
-    /**
-     * Add more tabs to display
-     * @return array
-     * @internal param array $options
-     *
-     */
-    public function defineMoreTabs()
-    {
-        $ong = [];
-        if (OcsServer::getComputerLinkToOcsConsole(
-            $this->fields['plugin_ocsinventoryng_ocsservers_id'],
-            $this->fields['ocsid'],
-            '',
-            true
-        ) != '') {
-            $ong[3] = __('OCSNG console');
-        }
-        $ong[12] = _n('Log', 'Logs', 2);
-        return $ong;
-    }
-
-
-    /**
      * Display fields that are specific to this itemtype
      *
      * @param the   $ID
@@ -194,50 +130,6 @@ class Notimportedcomputer extends CommonDBTM
             return implode(' => ', $message);
         }
         return '';
-    }
-
-
-    public function displayOcsConsole()
-    {
-        $url = OcsServer::getComputerLinkToOcsConsole(
-            $this->fields['plugin_ocsinventoryng_ocsservers_id'],
-            $this->fields['ocsid'],
-            '',
-            true
-        );
-        echo "<div class='center'>";
-        if ($url != '') {
-            echo "<iframe src='$url' width='80%' height='60%'>";
-        }
-        echo "</div>";
-    }
-
-
-    /**
-     * Display more tabs
-     *
-     * @param $tab
-     **/
-    public function displayMoreTabs($tab)
-    {
-        switch ($tab) {
-            case 1:
-                self::showActions($this);
-                break;
-
-            case 3:
-                $this->displayOcsConsole();
-                break;
-
-            case 12:
-                Log::showForItem($this);
-                break;
-
-            case -1:
-                self::showActions($this);
-                Log::showForItem($this);
-                break;
-        }
     }
 
 
@@ -540,32 +432,6 @@ class Notimportedcomputer extends CommonDBTM
         }
     }
 
-
-    /**
-     * @param $notimported  Notimportedcomputer object
-     **/
-    public static function showActions(Notimportedcomputer $notimported)
-    {
-        echo "<div class='spaced'>";
-        echo "<form name='actions' id='actions' method='post' value='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr class='tab_bg_2'>";
-        echo "<th class='center'>" . __('Actions to be made on the computer', 'ocsinventoryng') .
-             "</th></tr>";
-
-        echo "<tr class='tab_bg_2'><td class='center'>";
-        echo Html::hidden('id', ['value' => $notimported->fields['id']]);
-        echo Html::hidden('action', ['value' => 'massive']);
-        Dropdown::showForMassiveAction(
-            Notimportedcomputer::class,
-            0,
-            ['action' => 'massive']
-        );
-        echo "</td></tr>";
-        echo "</table>";
-        Html::closeForm();
-        echo "</div>";
-    }
 
 
     /**

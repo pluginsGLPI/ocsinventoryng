@@ -497,18 +497,6 @@ class Config extends \CommonDBTM
         return $config->fields['log_imported_computers'];
     }
 
-    /**
-     * Display debug information for current object
-     **/
-    public function showDebug()
-    {
-
-        NotificationEvent::debugEvent(
-            new Notimportedcomputer(),
-            ['entities_id' => 0,
-                'notimported' => []]
-        );
-    }
 
     //----------------- Getters and setters -------------------//
 
