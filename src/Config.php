@@ -214,7 +214,7 @@ class Config extends \CommonDBTM
         $config = self::getConfig();
 
         $ocsalert = new OcsAlert();
-        $ocsalert->getFromDBbyEntity($_SESSION["glpiactive_entity"]);
+        $ocsalert->getFromDBByCrit(['entities_id' => $_SESSION["glpiactive_entity"]]);
         if (isset($ocsalert->fields["use_newocs_alert"])
           && $ocsalert->fields["use_newocs_alert"] > 0) {
             $use_newocs_alert = $ocsalert->fields["use_newocs_alert"];

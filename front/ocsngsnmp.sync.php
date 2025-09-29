@@ -59,7 +59,7 @@ if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
    if ($count = count($_SESSION["ocs_updatesnmp"]['id'])) {
       $percent = min(100,
          round(100 * ($_SESSION["ocs_updatesnmp_count"] - $count) / $_SESSION["ocs_updatesnmp_count"],
-            0));
+            0, PHP_ROUND_HALF_UP));
 
 
       $key = array_pop($_SESSION["ocs_updatesnmp"]['id']);

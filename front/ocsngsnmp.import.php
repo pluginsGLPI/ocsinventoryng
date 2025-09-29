@@ -65,7 +65,7 @@ if (isset($_SESSION["ocs_importsnmp"]["id"])) {
       }
       $percent = min(100,
          round(100 * ($_SESSION["ocs_importsnmp_count"] - $count) / $_SESSION["ocs_importsnmp_count"],
-            0));
+            0, PHP_ROUND_HALF_UP));
 
       $key = array_pop($_SESSION["ocs_importsnmp"]["id"]);
 

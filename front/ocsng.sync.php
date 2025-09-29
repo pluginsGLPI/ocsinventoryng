@@ -43,7 +43,7 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
             100,
             round(
                 100 * ($_SESSION["ocs_update_count"] - $count) / $_SESSION["ocs_update_count"],
-                0
+                0, PHP_ROUND_HALF_UP
             )
         );
 

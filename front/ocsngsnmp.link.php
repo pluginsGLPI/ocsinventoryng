@@ -51,7 +51,7 @@ if (isset($_POST["change_import_mode"])) {
 if (isset($_SESSION["ocs_linksnmp"]["id"])) {
    if ($count = count($_SESSION["ocs_linksnmp"]["id"])) {
       $percent = min(100,
-         round(100 * ($_SESSION["ocs_linksnmp_count"] - $count) / $_SESSION["ocs_linksnmp_count"], 0));
+         round(100 * ($_SESSION["ocs_linksnmp_count"] - $count) / $_SESSION["ocs_linksnmp_count"], 0, PHP_ROUND_HALF_UP));
 
        Html::getProgressBar($percent);
 

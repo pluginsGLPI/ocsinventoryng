@@ -78,7 +78,7 @@ if (isset($_SESSION["ocs_import"]['computers'])) {
             100,
             round(
                 100 * ($_SESSION["ocs_import_count"] - $count) / $_SESSION["ocs_import_count"],
-                0
+                0, PHP_ROUND_HALF_UP
             )
         );
 

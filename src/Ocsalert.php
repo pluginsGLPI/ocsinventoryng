@@ -623,31 +623,6 @@ class OcsAlert extends CommonDBTM
         $state->configState();
     }
 
-    /**
-     * @param $entities_id
-     *
-     * @return bool
-     */
-    public function getFromDBbyEntity($entities_id)
-    {
-        global $DB;
-
-        $query = "SELECT *
-                FROM `" . $this->getTable() . "`
-                WHERE `entities_id` = '$entities_id'";
-
-        if ($result = $DB->doQuery($query)) {
-            if ($DB->numrows($result) != 1) {
-                return false;
-            }
-            $this->fields = $DB->fetchAssoc($result);
-            if (is_array($this->fields) && count($this->fields)) {
-                return true;
-            }
-            return false;
-        }
-        return false;
-    }
 
     /**
      * @param Entity $entity
@@ -669,7 +644,7 @@ class OcsAlert extends CommonDBTM
 
         // Get data
         $entitynotification = new OcsAlert();
-        if (!$entitynotification->getFromDBbyEntity($ID)) {
+        if (!$entitynotification->getFromDBByCrit(['entities_id' => $ID])) {
             $entitynotification->getEmpty();
         }
 

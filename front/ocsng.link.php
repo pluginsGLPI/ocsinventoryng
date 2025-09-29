@@ -105,7 +105,7 @@ if (isset($_SESSION["ocs_link"])) {
         }
         $percent = min(
             100,
-            round(100 * ($_SESSION["ocs_link_count"] - $count) / $_SESSION["ocs_link_count"], 0)
+            round(100 * ($_SESSION["ocs_link_count"] - $count) / $_SESSION["ocs_link_count"], 0, PHP_ROUND_HALF_UP)
         );
 
         Html::getProgressBar($percent);

@@ -212,4 +212,4 @@ if (isset($_GET['clean'])) {
 } else {
     printf("Corrupt links : %d\n", $nbtodo);
 }
-printf("Done in %s\n", Html::timestampToString(round($tps, 0), true));
+printf("Done in %s\n", Html::timestampToString(round($tps, 0, PHP_ROUND_HALF_UP), true));

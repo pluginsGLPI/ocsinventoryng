@@ -254,7 +254,7 @@ class Networkshare extends \CommonDBTM
                     $total = str_replace(",", ".", $data['size']);
                     $free = str_replace(",", ".", $data['freespace']);
                     if ($total > 0) {
-                        $percent = round(100 * $free / $total);
+                        $percent = round(100 * $free / $total, 0, PHP_ROUND_HALF_UP);
                     }
                     Html::getProgressBar($percent);
                     echo "</td>";

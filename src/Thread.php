@@ -514,35 +514,35 @@ class Thread extends CommonDBTM
          "<br />" . __('Total') . "</td>";
         echo "<td class='center'>" . $imported->GetMinimum() .
          "<br />" . $imported->GetMaximum() .
-         "<br />" . round($imported->GetAverage(), 2) .
+         "<br />" . round($imported->GetAverage(), 2, PHP_ROUND_HALF_UP) .
          "<br />" . $imported->GetTotal() . "</td>";
         echo "<td class='center'>" . $synchronized->GetMinimum() .
          "<br />" . $synchronized->GetMaximum() .
-         "<br />" . round($synchronized->GetAverage(), 2) .
+         "<br />" . round($synchronized->GetAverage(), 2, PHP_ROUND_HALF_UP) .
          "<br />" . $synchronized->GetTotal() . "</td>";
         echo "<td class='center'>" . $linked->GetMinimum() .
          "<br />" . $linked->GetMaximum() .
-         "<br />" . round($linked->GetAverage(), 2) .
+         "<br />" . round($linked->GetAverage(), 2, PHP_ROUND_HALF_UP) .
          "<br />" . $linked->GetTotal() . "</td>";
         echo "<td class='center'>" . $failed->GetMinimum() .
          "<br />" . $failed->GetMaximum() .
-         "<br />" . round($failed->GetAverage(), 2) .
+         "<br />" . round($failed->GetAverage(), 2, PHP_ROUND_HALF_UP) .
          "<br />&nbsp;</td>";
         echo "<td class='center'>" . $notupdated->GetMinimum() .
          "<br />" . $notupdated->GetMaximum() .
-         "<br />" . round($notupdated->GetAverage(), 2) .
+         "<br />" . round($notupdated->GetAverage(), 2, PHP_ROUND_HALF_UP) .
          "<br />&nbsp;</td>";
         echo "<td class='center'>" . $notunique->GetMinimum() .
          "<br />" . $notunique->GetMaximum() .
-         "<br />" . round($notunique->GetAverage(), 2) .
+         "<br />" . round($notunique->GetAverage(), 2, PHP_ROUND_HALF_UP) .
          "<br />&nbsp;</td>";
         echo "<td class='center'>" . $linkedrefused->GetMinimum() .
          "<br />" . $linkedrefused->GetMaximum() .
-         "<br />" . round($linkedrefused->GetAverage(), 2) .
+         "<br />" . round($linkedrefused->GetAverage(), 2, PHP_ROUND_HALF_UP) .
          "<br />&nbsp;</td>";
         echo "<td class='center'>" . $this->timestampToStringShort($time->GetMinimum()) .
          "<br />" . $this->timestampToStringShort($time->GetMaximum()) . "<br />" .
-         $this->timestampToStringShort(round($time->GetAverage())) .
+         $this->timestampToStringShort(round($time->GetAverage(),0, PHP_ROUND_HALF_UP)) .
          "<br />" . $this->timestampToStringShort($time->GetTotal()) . "</td>";
         if ($time->GetTotal() > 0) {
             echo "<td class='center' colspan='2'>" . __('Speed') . "<br />" .
@@ -551,7 +551,7 @@ class Thread extends CommonDBTM
                 round(($imported->GetTotal() + $synchronized->GetTotal()
                      + $linked->GetTotal() + $failed->GetTotal()
                      + $notunique->getTotal())
-                  / $time->GetTotal(), 2),
+                  / $time->GetTotal(), 2, PHP_ROUND_HALF_UP),
                 //TRANS: means computers by second
                 __('pc/s', 'ocsinventoryng')
             ) . "</td>";
