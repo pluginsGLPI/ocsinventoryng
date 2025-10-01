@@ -103,7 +103,6 @@ function plugin_init_ocsinventoryng()
             'addtabon'          => 'Computer']
     );
 
-    //plugins
     Plugin::registerClass(
         RegistryKey::class,
         ['addtabon' => 'Computer']
