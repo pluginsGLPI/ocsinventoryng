@@ -43,7 +43,7 @@ global $CFG_GLPI;
 
 if (!isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
     || $_SESSION["plugin_ocsinventoryng_ocsservers_id"] == -1) {
-    echo "<div align='center'>";
+    echo "<div class='center'>";
     echo "<i class='ti ti-alert-triangle fa-4x' style='color:orange'></i>";
     echo "<br>";
     echo "<div class='red b'>";
@@ -92,7 +92,7 @@ if (!isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
                     100,
                     round(
                         100 * ($count) / $_SESSION["ocs_deleted_equiv"]["total"],
-                        0
+                        0, PHP_ROUND_HALF_UP
                     )
                 );
                 Html::getProgressBar($percent, "%");

@@ -2223,7 +2223,7 @@ class SnmpOcslink extends CommonDBTM
         }
 
         echo "<form name='form' method='post' action='" . $target . "'>";
-        echo "<div align='center'><table class='tab_cadre_fixe' cellpadding='5'>";
+        echo "<div class='center'><table class='tab_cadre_fixe' cellpadding='5'>";
         echo "<tr><th colspan='6'>" . __('Filter SNMP Objects list', 'ocsinventoryng') . "</th></tr>";
         echo "<tr class='tab_bg_2'>";
         echo "<td class='center'>";

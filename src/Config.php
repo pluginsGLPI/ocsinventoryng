@@ -243,7 +243,7 @@ class Config extends \CommonDBTM
 
         if ($synchro_ocs == 0
           && $new_ocs == 0) {
-            echo "<div align='center'><b>" . __('No used alerts, please activate the automatic actions', 'ocsinventoryng') . "</b></div>";
+            echo "<div class='center'><b>" . __('No used alerts, please activate the automatic actions', 'ocsinventoryng') . "</b></div>";
         }
 
         if ($new_ocs != 0) {
@@ -264,7 +264,7 @@ class Config extends \CommonDBTM
                         $nbcol = 8;
                     }
 
-                    echo "<div align='center'><table class='tab_cadre' cellspacing='2' cellpadding='3'>";
+                    echo "<div class='center'><table class='tab_cadre' cellspacing='2' cellpadding='3'>";
                     echo "<tr><th colspan='$nbcol'>";
                     echo __('New imported computers from OCS-NG', 'ocsinventoryng') . " - " . $delay_ocs . " " . _n('Day', 'Days', 2) . "</th></tr>";
                     echo "<tr><th>" . __('Name') . "</th>";
@@ -284,7 +284,7 @@ class Config extends \CommonDBTM
                     }
                     echo "</table></div>";
                 } else {
-                    echo "<br><div align='center'><b>" . __('No new imported computer from OCS-NG', 'ocsinventoryng') . "</b></div>";
+                    echo "<br><div class='center'><b>" . __('No new imported computer from OCS-NG', 'ocsinventoryng') . "</b></div>";
                 }
             }
             echo "<br>";
@@ -307,7 +307,7 @@ class Config extends \CommonDBTM
                     } else {
                         $nbcol = 8;
                     }
-                    echo "<div align='center'><table class='tab_cadre' cellspacing='2' cellpadding='3'>";
+                    echo "<div class='center'><table class='tab_cadre' cellspacing='2' cellpadding='3'>";
                     echo "<tr><th colspan='$nbcol'>";
                     echo __('Computers not synchronized with OCS-NG since more', 'ocsinventoryng') . " " . $delay_ocs . " " . _n('Day', 'Days', 2) . "</th></tr>";
                     echo "<tr><th>" . __('Name') . "</th>";

@@ -59,7 +59,7 @@ class NotificationState extends CommonDBTM {
          $number = $DB->numrows($result);
          if ($number != 0) {
 
-            echo "<div align='center'>";
+            echo "<div class='center'>";
 
             Html::openMassiveActionsForm('mass' . $this->getType() . $rand);
             $massiveactionparams = ['item'      => $this->getType(),

@@ -198,7 +198,7 @@ class Menu extends CommonGLPI
                     }
                 } else {
                     $ong = [];
-                    echo "<div align='center'>";
+                    echo "<div class='center'>";
                     echo "<i class='ti ti-alert-triangle fa-4x' style='color:orange'></i>";
                     echo "<br>";
                     echo "<div class='red b'>";

@@ -598,7 +598,7 @@ class OcsAlert extends CommonDBTM
             $used[] = $data['states_id'];
         }
 
-        echo "<div align='center'>";
+        echo "<div class='center'>";
         echo "<form method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
         echo "<table class='tab_cadre_fixe' cellpadding='5'>";
 
