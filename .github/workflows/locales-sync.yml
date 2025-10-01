@@ -11,4 +11,4 @@ jobs:
     uses: "glpi-project/plugin-translation-workflows/.github/workflows/transifex-sync.yml@v1"
     secrets:
       github-token: "${{ secrets.LOCALES_SYNC_TOKEN }}"
-      transifex-token: "${{ secrets.TRANSIFEX_TOKEN }}"
+      transifex-token: "${{ secrets.TSMR_TRANSIFEX_TOKEN }}"

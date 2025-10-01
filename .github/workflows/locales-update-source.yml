@@ -10,4 +10,4 @@ jobs:
     name: "Push locales sources"
     uses: "glpi-project/plugin-translation-workflows/.github/workflows/transifex-push-sources.yml@v1"
     secrets:
-      transifex-token: "${{ secrets.TRANSIFEX_TOKEN }}"
+      transifex-token: "${{ secrets.TSMR_TRANSIFEX_TOKEN }}"
