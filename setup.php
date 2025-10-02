@@ -54,12 +54,13 @@ use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 
 global $CFG_GLPI;
 
+define('PLUGIN_OCS_VERSION', '2.1.1');
+
 define("PLUGIN_OCSINVENTORYNG_STATE_STARTED", 1);
 define("PLUGIN_OCSINVENTORYNG_STATE_RUNNING", 2);
 define("PLUGIN_OCSINVENTORYNG_STATE_FINISHED", 3);
 
 define("PLUGIN_OCSINVENTORYNG_LOCKFILE", GLPI_LOCK_DIR . "/ocsinventoryng.lock");
-define('PLUGIN_OCS_VERSION', '2.1.0');
 
 if (!defined("PLUGIN_OCS_DIR")) {
     define("PLUGIN_OCS_DIR", Plugin::getPhpDir("ocsinventoryng"));
