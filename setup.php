@@ -54,7 +54,7 @@ use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 
 global $CFG_GLPI;
 
-define('PLUGIN_OCS_VERSION', '2.1.1');
+define('PLUGIN_OCSINVENTORYNG_VERSION', '2.1.1');
 
 define("PLUGIN_OCSINVENTORYNG_STATE_STARTED", 1);
 define("PLUGIN_OCSINVENTORYNG_STATE_RUNNING", 2);
@@ -280,7 +280,7 @@ function plugin_init_ocsinventoryng()
 function plugin_version_ocsinventoryng()
 {
     return ['name'         => "OCS Inventory NG",
-        'version'      => PLUGIN_OCS_VERSION,
+        'version'      => PLUGIN_OCSINVENTORYNG_VERSION,
         'author'       => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
         'license'      => 'GPLv2+',
         'homepage'     => 'https://github.com/pluginsGLPI/ocsinventoryng',
