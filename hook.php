@@ -826,9 +826,11 @@ function plugin_ocsinventoryng_getDatabaseRelations()
                 "glpi_plugin_ocsinventoryng_notimportedcomputers" => "entities_id"],
 
             "glpi_computers"
-            => ["glpi_plugin_ocsinventoryng_ocslinks"     => "computers_id",
-                "glpi_plugin_ocsinventoryng_registrykeys" => "computers_id",
-                "glpi_plugin_ocsinventoryng_details"      => "computers_id"],
+            => [
+                "glpi_plugin_ocsinventoryng_ocslinks"     => "computers_id",
+//                "glpi_plugin_ocsinventoryng_registrykeys" => "computers_id",
+                "glpi_plugin_ocsinventoryng_details"      => "computers_id"
+            ],
 
             //"glpi_networkports"
             //=> ["glpi_plugin_ocsinventoryng_networkports" => "networkports_id"],
