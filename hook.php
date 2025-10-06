@@ -797,9 +797,11 @@ function plugin_ocsinventoryng_uninstall()
 function plugin_ocsinventoryng_getDropdown()
 {
     // Table => Name
-    return [NetworkPortType::class     => NetworkPortType::getTypeName(2),
-        NetworkPort::class        => NetworkPort::getTypeName(2),
-        Notimportedcomputer::class => __('Computers not imported by automatic actions', 'ocsinventoryng')];
+    return [
+        NetworkPortType::class     => NetworkPortType::getTypeName(2),
+//        NetworkPort::class        => NetworkPort::getTypeName(2),
+//        Notimportedcomputer::class => __('Computers not imported by automatic actions', 'ocsinventoryng')
+    ];
 }
 
 /**
