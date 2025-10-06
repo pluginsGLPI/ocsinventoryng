@@ -60,6 +60,11 @@ class NetworkPortType extends CommonDropdown
     }
 
 
+    public static function getIcon()
+    {
+        return "ti ti-network";
+    }
+
     /**
      * @return bool
      */

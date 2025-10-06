@@ -9,7 +9,7 @@
  -------------------------------------------------------------------------
 
  LICENSE
-      
+
  This file is part of ocsinventoryng.
 
  ocsinventoryng is free software; you can redistribute it and/or modify
@@ -127,7 +127,7 @@ ini_set("memory_limit", "-1");
 ini_set("max_execution_time", "0");
 
 chdir(dirname($_SERVER["argv"][0]));
-define("GLPI_ROOT", realpath(dirname($_SERVER["argv"][0]) . "/../../.."));
+define("GLPI_ROOT", realpath(dirname($_SERVER["argv"][0]) . "/../../../.."));
 require GLPI_ROOT . "/inc/based_config.php";
 
 $processid = date("zHi");
