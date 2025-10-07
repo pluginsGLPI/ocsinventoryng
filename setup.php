@@ -31,8 +31,8 @@ along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
 use Glpi\Plugin\Hooks;
 use GlpiPlugin\Ocsinventoryng\Components\Bitlockerstatus;
 use GlpiPlugin\Ocsinventoryng\Components\Customapp;
-use GlpiPlugin\Ocsinventoryng\Components\Networkshare;
 use GlpiPlugin\Ocsinventoryng\Components\NetworkPort;
+use GlpiPlugin\Ocsinventoryng\Components\Networkshare;
 use GlpiPlugin\Ocsinventoryng\Components\Osinstall;
 use GlpiPlugin\Ocsinventoryng\Components\Proxysetting;
 use GlpiPlugin\Ocsinventoryng\Components\RegistryKey;
@@ -54,7 +54,7 @@ use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 
 global $CFG_GLPI;
 
-define('PLUGIN_OCSINVENTORYNG_VERSION', '2.1.1');
+define('PLUGIN_OCSINVENTORYNG_VERSION', '2.1.2');
 
 define("PLUGIN_OCSINVENTORYNG_STATE_STARTED", 1);
 define("PLUGIN_OCSINVENTORYNG_STATE_RUNNING", 2);
@@ -64,7 +64,6 @@ define("PLUGIN_OCSINVENTORYNG_LOCKFILE", GLPI_LOCK_DIR . "/ocsinventoryng.lock")
 
 if (!defined("PLUGIN_OCS_DIR")) {
     define("PLUGIN_OCS_DIR", Plugin::getPhpDir("ocsinventoryng"));
-//    define("PLUGIN_OCS_WEBDIR", Plugin::getPhpDir("ocsinventoryng", false));
     $root = $CFG_GLPI['root_doc'] . '/plugins/ocsinventoryng';
     define("PLUGIN_OCS_WEBDIR", $root);
 }

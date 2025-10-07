@@ -1,8 +1,8 @@
 @echo off
 echo Chemins php et du script a lancer
 
-SET path_php="C:\wamp\bin\php\php5.6.16"
-SET plugin_glpi="C:\wamp\www\glpi\plugins\ocsinventoryng\scripts"
+SET path_php="C:\wamp\bin\php\php8.3.24"
+SET plugin_glpi="C:\wamp\www\glpi11\marketplace\ocsinventoryng\public\scripts"
 
 echo Definition du path
 

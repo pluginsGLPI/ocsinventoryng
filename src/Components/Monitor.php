@@ -128,7 +128,7 @@ class Monitor
                 //to this computer
                 //15012021 : Unactivated because block link for good computer
                 //            $query = "SELECT `m`.`id`, `gci`.`is_deleted`
-                //                      FROM `glpi_monitors` as `m`, `glpi_computers_items` as `gci`
+                //                      FROM `glpi_monitors` as `m`, `glpi_assets_assets_peripheralassets` as `gci`
                 //                      WHERE `m`.`id` = `gci`.`items_id`
                 //                         AND `gci`.`is_dynamic` = 1
                 //                         AND `computers_id`= $computers_id
