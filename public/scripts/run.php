@@ -128,9 +128,10 @@ ini_set("max_execution_time", "0");
 
 chdir(dirname($_SERVER["argv"][0]));
 
-define("GLPI_ROOT", realpath(dirname($_SERVER["argv"][0]) . "/../../../.."));
+define("GLPI_DIR_ROOT", realpath(dirname($_SERVER["argv"][0]) . "/../../../.."));
+require_once GLPI_DIR_ROOT . '/vendor/autoload.php';
+$kernel = new \Glpi\Kernel\Kernel($options['env'] ?? null);
 
-require GLPI_ROOT . "/stubs/glpi_constants.php";
 
 $processid = date("zHi");
 $server_id = "";
