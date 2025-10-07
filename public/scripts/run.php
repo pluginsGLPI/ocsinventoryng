@@ -127,8 +127,10 @@ ini_set("memory_limit", "-1");
 ini_set("max_execution_time", "0");
 
 chdir(dirname($_SERVER["argv"][0]));
+
 define("GLPI_ROOT", realpath(dirname($_SERVER["argv"][0]) . "/../../../.."));
-require GLPI_ROOT . "/inc/based_config.php";
+
+require GLPI_ROOT . "/stubs/glpi_constants.php";
 
 $processid = date("zHi");
 $server_id = "";
@@ -166,6 +168,7 @@ fwrite($log, date("r") . " " . $_SERVER["argv"][0] . " started\n");
 $cmd = PHP_BINARY." -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --managedeleted=1";
 $out = array();
 $ret = 0;
+echo $cmd;
 exec($cmd, $out, $ret);
 foreach ($out as $line) {
    fwrite($log, $line . "\n");
