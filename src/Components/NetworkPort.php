@@ -185,15 +185,16 @@ class NetworkPort extends NetworkPortInstantiation
                     }
                     if ($network_port->fields['instantiation_type'] == $instantiation_type) {
                         $instantiation = $network_port->getInstantiation();
-                        $inst_input['id'] = $instantiation->getID();
-                        $inst_input['speed'] = NetworkPortEthernet::transformPortSpeed($speed, false);
-                        $inst_input['networkports_id'] = $network_port->getID();
-                        if ($instantiation->getID() > 0) {
-                            $instantiation->update($inst_input, $install_network_history);
-                        } else {
-                            $instantiation->add($inst_input, [], $install_network_history);
+                        if ($instantiation->getID() !== false) {
+                            $inst_input['id'] = $instantiation->getID();
+                            $inst_input['speed'] = NetworkPortEthernet::transformPortSpeed($speed, false);
+                            $inst_input['networkports_id'] = $network_port->getID();
+                            if ($instantiation->getID() > 0) {
+                                $instantiation->update($inst_input, $install_network_history);
+                            } else {
+                                $instantiation->add($inst_input, [], $install_network_history);
+                            }
                         }
-
                         unset($instantiation);
                     }
                 }
