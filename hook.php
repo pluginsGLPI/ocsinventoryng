@@ -711,7 +711,7 @@ function plugin_ocsinventoryng_uninstall()
         "ocs_glpi_ocsservers", "ocs_glpi_registrykeys", "ocs_glpi_profiles"];
 
     foreach ($tables_ocs as $table_ocs) {
-        $DB->doQuery("DROP TABLE IF EXISTS `$table_ocs`;");
+        $DB->dropTable($table_ocs, true);
     }
     $tables_mass = ["backup_glpi_plugin_massocsimport_configs",
         "backup_glpi_plugin_massocsimport_details",
@@ -720,7 +720,7 @@ function plugin_ocsinventoryng_uninstall()
         "backup_glpi_plugin_massocsimport_threads"];
 
     foreach ($tables_mass as $table_mass) {
-        $DB->doQuery("DROP TABLE IF EXISTS `$table_mass`;");
+        $DB->dropTable($table_mass, true);
     }
 
     // clean rules
@@ -734,7 +734,7 @@ function plugin_ocsinventoryng_uninstall()
     //   }
 
     $notification = new Notification();
-    $itemtypes    = ['PluginMassocsimportNotimported',
+    $itemtypes    = ['GlpiPlugin\Massocsimport\Notimported',
         Notimportedcomputer::class,
         RuleImportEntity::class,
         OcsAlert::class];

@@ -185,7 +185,7 @@ class NetworkPort extends NetworkPortInstantiation
                     }
                     if ($network_port->fields['instantiation_type'] == $instantiation_type) {
                         $instantiation = $network_port->getInstantiation();
-                        if ($instantiation->getID() !== false) {
+                        if ($instantiation !== false) {
                             $inst_input['id'] = $instantiation->getID();
                             $inst_input['speed'] = NetworkPortEthernet::transformPortSpeed($speed, false);
                             $inst_input['networkports_id'] = $network_port->getID();
