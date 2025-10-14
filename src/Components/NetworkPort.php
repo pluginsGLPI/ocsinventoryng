@@ -157,10 +157,11 @@ class NetworkPort extends NetworkPortInstantiation
             }
 
             $inst_input['networkports_id'] = $networkports_id;
-            $instantiation                 = $network_port->getInstantiation();
-            $inst_input['speed']           = NetworkPortEthernet::transformPortSpeed($speed, false);
-            $instantiation->update($inst_input, $install_network_history);
-            unset($instantiation);
+            if ($instantiation                 = $network_port->getInstantiation()) {
+                $inst_input['speed']           = NetworkPortEthernet::transformPortSpeed($speed, false);
+                $instantiation->update($inst_input, $install_network_history);
+                unset($instantiation);
+            }
         } else {
             foreach ($iterator as $line) {
                 $networkports_id = $line['id'] ?? 0;
@@ -381,6 +382,7 @@ class NetworkPort extends NetworkPortInstantiation
             if (!isset($network_ports[$typen])) {
                 $network_ports[$typen] = ['virtual' => []];
             }
+
             $name = OcsProcess::encodeOcsDataInUtf8(
                 $cfg_ocs["ocs_db_utf8"],
                 $line['DESCRIPTION']

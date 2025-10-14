@@ -555,14 +555,20 @@ class Software
         global $DB;
 
         if (!empty($softwareversions_id) && $softwareversions_id > 0) {
-            $query_exists = "SELECT `id`
-                          FROM `glpi_items_softwareversions`
-                          WHERE (`items_id` = $computers_id
-                           AND `itemtype` = 'Computer'
-                           AND `softwareversions_id` = $softwareversions_id)";
-            $result       = $DB->doQuery($query_exists);
 
-            if ($DB->numrows($result) == 0) {
+            $iterator = $DB->request([
+                'SELECT'    => [
+                    'id',
+                ],
+                'FROM'      => 'glpi_items_softwareversions',
+                'WHERE'     => [
+                    'items_id'  => $computers_id,
+                    'itemtype'  => 'Computer',
+                    'softwareversions_id'  => $softwareversions_id
+                ]
+            ]);
+
+            if (count($iterator) == 0) {
                 $tmp = new Item_SoftwareVersion();
                 $tmp->add(['items_id'        => $computers_id,
                        'itemtype' => 'Computer',

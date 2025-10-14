@@ -642,17 +642,17 @@ class Thread extends CommonDBTM
 
         switch ($status) {
             case PLUGIN_OCSINVENTORYNG_STATE_FINISHED:
-                echo "<i style='color:darkgreen' class='fas fa-check-circle'
+                echo "<i style='color:darkgreen' class='ti ti-circle-check'
             title=\"" . __('Finished state') . "\"></i>";
                 break;
 
             case PLUGIN_OCSINVENTORYNG_STATE_RUNNING:
-                echo "<i style='color:grey' class='fas fa-hourglass-half'
+                echo "<i style='color:grey' class='ti ti-hourglass'
                title=\"" . __('Running') . "\"></i>";
                 break;
 
             case PLUGIN_OCSINVENTORYNG_STATE_STARTED:
-                echo "<i style='color:grey' class='fas fa-hourglass-start'
+                echo "<i style='color:grey' class='ti ti-hourglass-high'
             title=\"" . __('Scheduled') . "\"></i>";
                 break;
         }

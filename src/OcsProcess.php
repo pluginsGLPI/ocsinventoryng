@@ -36,6 +36,7 @@ use Computer;
 use DbUtils;
 use Dropdown;
 use Entity;
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Ocsinventoryng\Components\Antivirus;
 use GlpiPlugin\Ocsinventoryng\Components\Bios;
 use GlpiPlugin\Ocsinventoryng\Components\Customapp;
@@ -59,13 +60,11 @@ use GlpiPlugin\Ocsinventoryng\Components\Virtualmachine;
 use GlpiPlugin\Ocsinventoryng\Components\Winupdate;
 use GlpiPlugin\Ocsinventoryng\Components\Winuser;
 use Html;
-use Log;
 use MassiveAction;
 use RuleImportAssetCollection;
 use RuleImportEntityCollection;
 use Session;
 use Toolbox;
-use Glpi\Exception\Http\AccessDeniedHttpException;
 use Transfer;
 use User;
 
@@ -148,7 +147,7 @@ class OcsProcess extends CommonDBTM
      */
     public static function encodeOcsDataInUtf8($is_ocsdb_utf8, $value)
     {
-        if (!$is_ocsdb_utf8 && !!mb_check_encoding($value, "UTF-8")) {
+        if ($value && !mb_check_encoding($value, "UTF-8")) {
             return Toolbox::encodeInUtf8($value);
         } else {
             return $value;
@@ -495,7 +494,8 @@ class OcsProcess extends CommonDBTM
         $disable_unicity_check               = (isset($process_params["disable_unicity_check"])) ? $process_params["disable_unicity_check"] : false;
         $computers_id                        = (isset($process_params["computers_id"])) ? $process_params["computers_id"] : false;
         $cfg_ocs                             = OcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
-        $force                             = $process_params["force"] ?? 0;
+        $force                               = $process_params["force"] ?? 0;
+        $cron                                = $process_params["cron"] ?? 0;
         //Check it machine is already present AND was imported by OCS AND still present in GLPI
         $query  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`id`,
                         `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`,
@@ -515,7 +515,8 @@ class OcsProcess extends CommonDBTM
             $sync_params = ['ID'                                  => $datas["id"],
                 'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                 'cfg_ocs'                             => $cfg_ocs,
-                'force'                               => $force];
+                'force'                               => $force,
+                'cron'                               => $cron];
             return self::synchronizeComputer($sync_params);
         } else {
             $import_params = ['ocsid'                               => $ocsid,
@@ -525,7 +526,8 @@ class OcsProcess extends CommonDBTM
                 'defaultrecursive'                    => $defaultrecursive,
                 'cfg_ocs'                             => $cfg_ocs,
                 'disable_unicity_check'               => $disable_unicity_check,
-                'computers_id'                        => $computers_id];
+                'computers_id'                        => $computers_id,
+                'cron'                               => $cron];
 
             return self::importComputer($import_params);
         }
@@ -548,6 +550,7 @@ class OcsProcess extends CommonDBTM
         $cfg_ocs                             = $import_params["cfg_ocs"];
         $disable_unicity_check               = $import_params["disable_unicity_check"];
         $computers_id                        = $import_params["computers_id"];
+        $cron                                = $import_params["cron"] ?? 0;
         //      OcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
         $cfg_ocs = OcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
         $comp    = new Computer();
@@ -659,7 +662,8 @@ class OcsProcess extends CommonDBTM
                         $computers_id = $rulelink_results['found_inventories'][0];
                         $link_params  = ['ocsid'                               => $ocsid,
                             'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                            'computers_id'                        => $computers_id];
+                            'computers_id'                        => $computers_id,
+                            'cron'                                => $cron];
                         if (self::linkComputer($link_params)) {
                             return ['status'       => self::COMPUTER_LINKED,
                                 'entities_id'  => $data['entities_id'],
@@ -688,7 +692,8 @@ class OcsProcess extends CommonDBTM
 
                     $link_params = ['ocsid'                               => $computer['META']['ID'],
                         'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-                        'computers_id'                        => $computers_id];
+                        'computers_id'                        => $computers_id,
+                        'cron'                                => $cron];
 
                     if ($idlink = Ocslink::ocsLink($link_params)) {
                         $sync_params = ['ID'                                  => $idlink,
@@ -733,7 +738,7 @@ class OcsProcess extends CommonDBTM
         $ocsid                               = $link_params["ocsid"];
         $plugin_ocsinventoryng_ocsservers_id = $link_params["plugin_ocsinventoryng_ocsservers_id"];
         $computers_id                        = $link_params["computers_id"];
-
+        $cron                                = $link_params["cron"] ?? 0;
         //      OcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
         $ocsClient = OcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
         $cfg_ocs   = OcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
@@ -859,7 +864,9 @@ class OcsProcess extends CommonDBTM
             }
         } else {
             //TRANS: %s is the OCS id
-            Session::addMessageAfterRedirect(sprintf(__('Unable to import, GLPI computer is already related to an element of OCSNG (%d)', 'ocsinventoryng'), $ocsid), false, ERROR);
+            if ($cron == 0) {
+                Session::addMessageAfterRedirect(sprintf(__('Unable to import, GLPI computer is already related to an element of OCSNG (%d)', 'ocsinventoryng'), $ocsid), false, ERROR);
+            }
         }
         return false;
     }
@@ -887,8 +894,8 @@ class OcsProcess extends CommonDBTM
         $rule = new RuleImportEntityCollection();
 
         $data = $rule->processAllRules(
-            $values +
-                                       ['ocsservers_id' => $line_links["plugin_ocsinventoryng_ocsservers_id"],
+            $values
+                                       + ['ocsservers_id' => $line_links["plugin_ocsinventoryng_ocsservers_id"],
                                            '_source'       => 'ocsinventoryng'],
             $values,
             ['ocsid' => $line_links["ocsid"]]
@@ -929,6 +936,7 @@ class OcsProcess extends CommonDBTM
         $plugin_ocsinventoryng_ocsservers_id = $sync_params["plugin_ocsinventoryng_ocsservers_id"];
         $force                               = $sync_params["force"];
         $cfg_ocs                             = $sync_params["cfg_ocs"];
+        $cron                                = $sync_params["cron"] ?? 0;
 
         $query  = "SELECT `ocsid`,
                         `computers_id`,
@@ -998,8 +1006,8 @@ class OcsProcess extends CommonDBTM
                     $rule = new RuleImportEntityCollection();
 
                     $data = $rule->processAllRules(
-                        $values +
-                                                   ['ocsservers_id' => $line["plugin_ocsinventoryng_ocsservers_id"],
+                        $values
+                                                   + ['ocsservers_id' => $line["plugin_ocsinventoryng_ocsservers_id"],
                                                        '_source'       => 'ocsinventoryng'],
                         $values,
                         ['ocsid' => $line["ocsid"]]
@@ -1854,16 +1862,16 @@ class OcsProcess extends CommonDBTM
         switch ($ma->getAction()) {
             case 'plugin_ocsinventoryng_launch_ocsng_update':
             case 'plugin_ocsinventoryng_force_ocsng_update':
-                echo "&nbsp;" .
-                     Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
+                echo "&nbsp;"
+                     . Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
                 return true;
             case 'plugin_ocsinventoryng_unlock_ocsng_field':
             case 'plugin_ocsinventoryng_lock_ocsng_field':
                 $fields['all'] = __('All');
                 $fields        += Ocslink::getLockableFields();
                 Dropdown::showFromArray("field", $fields);
-                echo "&nbsp;" .
-                     Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
+                echo "&nbsp;"
+                     . Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
                 return true;
         }
         return parent::showMassiveActionsSubForm($ma);

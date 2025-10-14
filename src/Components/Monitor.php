@@ -155,45 +155,66 @@ class Monitor
                     if ($cfg_ocs["import_monitor"] == 1) {
                         //Config says : manage monitors as global
                         //check if monitors already exists in GLPI
-                        $mon["is_global"] = 1;
-                        $query            = "SELECT `id`
-                               FROM `glpi_monitors`
-                               WHERE `name` = '" . $mon["name"] . "'
-                                  AND `is_global` = 1 ";
-                        if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
-                            $query .= " AND `entities_id` = $entity";
-                        }
-                        $result_search = $DB->doQuery($query);
+                        $mon["is_global"] = MANAGEMENT_GLOBAL;
 
-                        if ($DB->numrows($result_search) > 0) {
+                        $criteria = [
+                            'SELECT' => 'id',
+                            'FROM' => 'glpi_monitors',
+                            'WHERE' => [
+                                'name' => $mon["name"],
+                                'is_global' => MANAGEMENT_GLOBAL,
+                            ]
+                        ];
+
+                        if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
+                            $criteria['WHERE'] = $criteria['WHERE'] + ['entities_id' => $entity];
+                        }
+                        $iterator = $DB->request($criteria);
+
+                        if (count($iterator) > 0) {
                             //Periph is already in GLPI
                             //Do not import anything just get periph ID for link
-                            $id_monitor = $DB->result($result_search, 0, "id");
+                            foreach ($iterator as $data) {
+                                $id_monitor = $data['id'];
+                            }
                         } else {
                             $input = $mon;
                             //for rule asset
                             $input['_auto']      = 1;
+                            $input["is_dynamic"]  = 1;
                             $input["entities_id"] = $entity;
                             $id_monitor           = $m->add($input, [], $install_history);
                         }
                     } elseif ($cfg_ocs["import_monitor"] >= 2) {
                         //Config says : manage monitors as single units
                         //Import all monitors as non global.
-                        $mon["is_global"] = 0;
+                        $mon["is_global"] = MANAGEMENT_UNITARY;
 
                         // Try to find a monitor with the same serial.
                         if (!empty($mon["serial"])) {
-                            $query = "SELECT `id`
-                               FROM `glpi_monitors`
-                               WHERE `serial` LIKE '%" . $mon["serial"] . "%'
-                                  AND `is_global` = 0 ";
+
+                            $criteria = [
+                                'SELECT' => 'id',
+                                'FROM' => 'glpi_monitors',
+                                'WHERE' => [
+                                    'serial'   => ['LIKE', '%' . $mon["serial"] . '%'],
+                                    'is_global' => MANAGEMENT_UNITARY,
+                                ]
+                            ];
+
                             if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
-                                $query .= " AND `entities_id` = $entity";
+                                $criteria['WHERE'] = $criteria['WHERE'] + ['entities_id' => $entity];
                             }
-                            $result_search = $DB->doQuery($query);
-                            if ($DB->numrows($result_search) == 1) {
-                                //Monitor founded
-                                $id_monitor = $DB->result($result_search, 0, "id");
+
+                            $iterator = $DB->request($criteria);
+
+                            if (count($iterator) == 1) {
+                                //Periph is already in GLPI
+                                //Do not import anything just get periph ID for link
+                                foreach ($iterator as $data) {
+                                    //Monitor founded
+                                    $id_monitor = $data['id'];
+                                }
                             }
                         }
 
@@ -202,23 +223,41 @@ class Monitor
                         && !$id_monitor) {
                             //Try to find a monitor with no serial, the same name and not already connected.
                             if (!empty($mon["name"])) {
-                                $query = "SELECT `glpi_monitors`.`id`
-                                  FROM `glpi_monitors`
-                                  LEFT JOIN `glpi_assets_assets_peripheralassets`
-                                       ON (`glpi_assets_assets_peripheralassets`.`itemtype_peripheral`='Monitor'
-                                           AND `glpi_assets_assets_peripheralassets`.`items_id_peripheral`
-                                                   =`glpi_monitors`.`id`)
-                                  WHERE `serial` = ''
-                                        AND `name` = '" . $mon["name"] . "'
-                                              AND `is_global` = 0
-                                              AND `glpi_assets_assets_peripheralassets`.`itemtype_asset` = 'Computer'
-                                              AND `glpi_assets_assets_peripheralassets`.`items_id_asset` IS NULL";
+
+                                $criteria = [
+                                    'SELECT' => [
+                                        'glpi_monitors.id'
+                                    ],
+                                    'FROM' => 'glpi_monitors',
+                                    'LEFT JOIN'       => [
+                                        'glpi_assets_assets_peripheralassets' => [
+                                            'ON' => [
+                                                'glpi_peripherals'   => 'id',
+                                                'glpi_assets_assets_peripheralassets'                  => 'items_id_peripheral', [
+                                                    'AND' => [
+                                                        'glpi_assets_assets_peripheralassets.itemtype_peripheral' => 'Monitor',
+                                                    ],
+                                                ],
+                                            ]
+                                        ],
+                                    ],
+                                    'WHERE' => [
+                                        'glpi_peripherals.name' => $mon["name"],
+                                        'glpi_assets_assets_peripheralassets.is_global' => 0,
+                                        'glpi_assets_assets_peripheralassets.items_id_asset' => null,
+                                        'glpi_assets_assets_peripheralassets.itemtype_asset' => 'Computer',
+                                    ]
+                                ];
+
                                 if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
-                                    $query .= " AND `entities_id` = '$entity'";
+                                    $criteria['WHERE'] = $criteria['WHERE'] + ['entities_id' => $entity];
                                 }
-                                $result_search = $DB->doQuery($query);
-                                if ($DB->numrows($result_search) == 1) {
-                                    $id_monitor = $DB->result($result_search, 0, "id");
+
+                                $iterator = $DB->request($criteria);
+                                if (count($iterator) == 1) {
+                                    foreach ($iterator as $values) {
+                                        $id_monitor = $values['id'];
+                                    }
                                 }
                             }
                         }
@@ -300,20 +339,32 @@ class Monitor
                     // 1 : the management mode IS NOT global
                     // 2 : a deconnection's status have been defined
                     // 3 : unique with serial
-                    if (($mode >= 2) && isset($decoConf) && (strlen($decoConf) > 0)) {
+                    if ($mode >= 2 && $decoConf != null && (strlen($decoConf) > 0)) {
                         //Delete periph from glpi
                         if ($decoConf == "delete") {
-                            $query  = "DELETE
-                         FROM `glpi_assets_assets_peripheralassets`
-                         WHERE `id`= " . $data['id'];
+
+                            $query = $DB->buildDelete(
+                                'glpi_assets_assets_peripheralassets',
+                                [
+                                    'id' =>  $data['id'],
+                                ]
+                            );
                             $DB->doQuery($query);
+
                             //Put periph in dustbin
                         } elseif ($decoConf == "trash") {
-                            $query = "UPDATE
-                         `glpi_assets_assets_peripheralassets`
-                        SET `is_deleted` = 1
-                         WHERE `id`= " . $data['id'];
+
+                            $query = $DB->buildUpdate(
+                                'glpi_assets_assets_peripheralassets',
+                                [
+                                    'is_deleted' => 1,
+                                ],
+                                [
+                                    'id' =>  $data['id'],
+                                ]
+                            );
                             $DB->doQuery($query);
+
                         }
                     }
                 }
@@ -334,30 +385,38 @@ class Monitor
     {
         global $DB;
 
-        $query  = "SELECT *
-                FROM `glpi_assets_assets_peripheralassets`
-                WHERE `items_id_asset` = $glpi_computers_id
-                  AND `itemtype_asset` = 'Computer'
-                      AND `itemtype_peripheral` = 'Monitor'
-                      AND `is_dynamic` = 1";
-        $result = $DB->doQuery($query);
+        $criteria = [
+            'SELECT' => ['*'],
+            'FROM' => 'glpi_assets_assets_peripheralassets',
+            'WHERE' => [
+                'itemtype_peripheral' => 'Monitor',
+                'items_id_asset' => $glpi_computers_id,
+                'itemtype_asset' => 'Computer',
+                'is_dynamic' => 1,
+            ],
+        ];
+        $iterator = $DB->request($criteria);
 
-        //        $mon = new \Monitor();
-        if ($DB->numrows($result) > 0) {
+        if (count($iterator) > 0) {
             $conn = new Asset_PeripheralAsset();
 
-            while ($data = $DB->fetchAssoc($result)) {
+            foreach ($iterator as $data) {
                 $conn->delete(['id' => $data['id'], '_no_history' => !$uninstall_history], true, $uninstall_history);
-                //Really used ???
-                //            $query2  = "SELECT COUNT(*)
-                //                       FROM `glpi_assets_assets_peripheralassets`
-                //                       WHERE `items_id` = " . $data['items_id'] . "
-                //                             AND `itemtype` = 'Monitor'";
-                //            $result2 = $DB->doQuery($query2);
-                //
-                //            if ($DB->result($result2, 0, 0) == 1) {
-                //               $mon->delete(['id' => $data['items_id'], '_no_history' => !$uninstall_history], true, $uninstall_history);
-                //            }
+
+                $criteria = [
+                    'COUNT' => 'cpt',
+                    'FROM' => 'glpi_assets_assets_peripheralassets',
+                    'WHERE' => [
+                        'itemtype_peripheral' => 'Monitor',
+                        'items_id_peripheral' => $data['items_id_asset'],
+                    ],
+                ];
+                $iterator = $DB->request($criteria);
+
+                $mon = new \Monitor();
+                if (count($iterator) == 1) {
+                    $mon->delete(['id' => $data['items_id_asset'], '_no_history' => !$uninstall_history], true, $uninstall_history);
+                }
             }
         }
     }

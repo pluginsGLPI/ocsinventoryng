@@ -528,7 +528,7 @@ function plugin_ocsinventoryng_install()
         $ocsserver = new OcsServer();
         $dbu       = new DbUtils();
         foreach ($dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_ocsservers') as $ocs) {
-            if (($b64_decoded = base64_decode($ocs["ocs_db_passwd"], true)) !== false
+            if ($ocs["ocs_db_passwd"] != null && ($b64_decoded = base64_decode($ocs["ocs_db_passwd"], true)) !== false
              && json_decode($b64_decoded, true) !== null) {
                 $ocsserver->update(['id'            => $ocs['id'],
                     'ocs_db_passwd' => rawurlencode(stripslashes((new GLPIKey())->encrypt($ocs["ocs_db_passwd"])))]);
@@ -847,9 +847,6 @@ function plugin_ocsinventoryng_getDatabaseRelations()
 function plugin_ocsinventoryng_postinit()
 {
     global $PLUGIN_HOOKS;
-
-    $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng'] = [];
-    $PLUGIN_HOOKS['item_update']['ocsinventoryng']  = [];
 
     $PLUGIN_HOOKS['pre_item_add']['ocsinventoryng']
       = ['Asset_PeripheralAsset' => [Ocslink::class, 'addComputer_Item']];
@@ -1196,7 +1193,7 @@ function plugin_ocsinventoryng_addWhere($link, $nott, $type, $ID, $val)
  * @param $data
  * @param $num
  *
- * @return string|translated
+ * @return string
  */
 function plugin_ocsinventoryng_giveItem($type, $id, $data, $num)
 {

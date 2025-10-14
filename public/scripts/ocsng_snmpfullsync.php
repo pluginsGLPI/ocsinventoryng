@@ -140,6 +140,8 @@ $fields["error_msg"] = '';
 //$fields["id"] = $tid;
 $tid = $threadid;
 
+global $DB;
+
 if ($ocsservers_id != -1) {
    $result = launchSync($tid, $ocsservers_id, $thread_nbr, $threadid, $fields, $config);
    if ($result) {

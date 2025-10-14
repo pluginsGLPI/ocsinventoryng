@@ -94,18 +94,40 @@ class Peripheral
                 $periph["name"] = OcsProcess::encodeOcsDataInUtf8($cfg_ocs["ocs_db_utf8"], $peripheral["CAPTION"]);
                 //Look for a monitor with the same name (and serial if possible) already connected
                 //to this computer
-                $query   = "SELECT `p`.`id`, `gci`.`is_deleted`
-                        FROM `glpi_printers` as `p`, `glpi_assets_assets_peripheralassets` as `gci`
-                        WHERE `p`.`id` = `gci`.`items_id_peripheral`
-                        AND `gci`.`is_dynamic` = 1
-                        AND `items_id_asset`= $computers_id
-                        AND `itemtype_peripheral`= 'Peripheral'
-                        AND `p`.`name`= '" . $periph["name"] . "'";
-                $results = $DB->doQuery($query);
+                $criteria = [
+                    'SELECT' => [
+                        'glpi_peripherals.id'
+                    ],
+                    'FROM' => 'glpi_peripherals',
+                    'LEFT JOIN'       => [
+                        'glpi_assets_assets_peripheralassets' => [
+                            'ON' => [
+                                'glpi_peripherals'   => 'id',
+                                'glpi_assets_assets_peripheralassets'                  => 'items_id_peripheral', [
+                                    'AND' => [
+                                        'glpi_assets_assets_peripheralassets.itemtype_peripheral' => 'Peripheral',
+                                    ],
+                                ],
+                            ]
+                        ],
+                    ],
+                    'WHERE' => [
+                        'glpi_peripherals.name' => $periph["name"],
+                        'glpi_assets_assets_peripheralassets.is_dynamic' => 1,
+                        'glpi_assets_assets_peripheralassets.items_id_asset' => $computers_id,
+                        'glpi_assets_assets_peripheralassets.itemtype_asset' => 'Computer',
+                    ]
+                ];
+
+                $iterator = $DB->request($criteria);
+
                 $id      = false;
-                if ($DB->numrows($results) > 0) {
-                    $id = $DB->result($results, 0, 'id');
+                if (count($iterator) > 0) {
+                    foreach ($iterator as $values) {
+                        $id = $values['id'];
+                    }
                 }
+
                 if (!$id) {
                     // Clean peripheral object
                     $p->reset();
@@ -129,19 +151,28 @@ class Peripheral
                     if ($cfg_ocs["import_periph"] == 1) {
                         //Config says : manage peripherals as global
                         //check if peripherals already exists in GLPI
-                        $periph["is_global"] = 1;
-                        $query               = "SELECT `id`
-                                           FROM `glpi_peripherals`
-                                           WHERE `name` = '" . $periph["name"] . "'
-                                           AND `is_global` = 1 ";
+                        $periph["is_global"] = MANAGEMENT_GLOBAL;
+
+                        $criteria = [
+                            'SELECT' => 'id',
+                            'FROM' => 'glpi_peripherals',
+                            'WHERE' => [
+                                'name' => $periph["name"],
+                                'is_global' => MANAGEMENT_GLOBAL,
+                            ]
+                        ];
+
                         if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
-                            $query .= " AND `entities_id` = '$entity'";
+                            $criteria['WHERE'] = $criteria['WHERE'] + ['entities_id' => $entity];
                         }
-                        $result_search = $DB->doQuery($query);
-                        if ($DB->numrows($result_search) > 0) {
+                        $iterator = $DB->request($criteria);
+
+                        if (count($iterator) > 0) {
                             //Periph is already in GLPI
                             //Do not import anything just get periph ID for link
-                            $id_periph = $DB->result($result_search, 0, "id");
+                            foreach ($iterator as $data) {
+                                $id_periph = $data['id'];
+                            }
                         } else {
                             $input = $periph;
                             //for rule asset
@@ -154,7 +185,7 @@ class Peripheral
                         //Config says : manage peripherals as single units
                         //Import all peripherals as non global.
                         $input              = $periph;
-                        $input["is_global"] = 0;
+                        $input["is_global"] = MANAGEMENT_UNITARY;
                         //for rule asset
                         $input['_auto'] = 1;
                         $input["is_dynamic"]  = 1;
@@ -215,19 +246,32 @@ class Peripheral
             // 1 : the management mode IS NOT global
             // 2 : a deconnection's status have been defined
             // 3 : unique with serial
-            if (($mode >= 2) && (strlen($decoConf) > 0)) {
+            if ($mode >= 2 && $decoConf != null && (strlen($decoConf) > 0)) {
                 //Delete periph from glpi
                 if ($decoConf == "delete") {
-                    $query = "DELETE
-                         FROM `glpi_assets_assets_peripheralassets`
-                         WHERE `id`= " . $data['id'];
+
+                    $query = $DB->buildDelete(
+                        'glpi_assets_assets_peripheralassets',
+                        [
+                            'id' =>  $data['id'],
+                        ]
+                    );
                     $DB->doQuery($query);
+
                     //Put periph in dustbin
                 } elseif ($decoConf == "trash") {
-                    $query = "UPDATE `glpi_assets_assets_peripheralassets`
-                         SET `is_deleted` = 1
-                         WHERE `id`=" . $data['id'];
+
+                    $query = $DB->buildUpdate(
+                        'glpi_assets_assets_peripheralassets',
+                        [
+                            'is_deleted' => 1,
+                        ],
+                        [
+                            'id' =>  $data['id'],
+                        ]
+                    );
                     $DB->doQuery($query);
+
                 }
             }
         }
@@ -246,34 +290,38 @@ class Peripheral
     {
         global $DB;
 
-        $query  = "SELECT *
-                FROM `glpi_assets_assets_peripheralassets`
-                WHERE `items_id_asset` = $glpi_computers_id
-                  AND `itemtype_asset` = 'Computer'
-                      AND `itemtype_peripheral` = 'Peripheral'
-                      AND `is_dynamic` = 1";
-        $result = $DB->doQuery($query);
+        $criteria = [
+            'SELECT' => ['*'],
+            'FROM' => 'glpi_assets_assets_peripheralassets',
+            'WHERE' => [
+                'itemtype_peripheral' => 'Peripheral',
+                'items_id_asset' => $glpi_computers_id,
+                'itemtype_asset' => 'Computer',
+                'is_dynamic' => 1,
+            ],
+        ];
+        $iterator = $DB->request($criteria);
 
-        $per = new \Peripheral();
-        if ($DB->numrows($result) > 0) {
+        if (count($iterator) > 0) {
+
             $conn = new Asset_PeripheralAsset();
-            while ($data = $DB->fetchAssoc($result)) {
 
+            foreach ($iterator as $data) {
                 $conn->delete(['id' => $data['id'], '_no_history' => !$uninstall_history], true, $uninstall_history);
 
-                $query2  = "SELECT COUNT(*)
-                       FROM `glpi_assets_assets_peripheralassets`
-                       WHERE `items_id_peripheral` = " . $data['items_id'] . "
-                             AND `itemtype_peripheral` = 'Peripheral'";
-                $result2 = $DB->doQuery($query2);
+                $criteria = [
+                    'COUNT' => 'cpt',
+                    'FROM' => 'glpi_assets_assets_peripheralassets',
+                    'WHERE' => [
+                        'itemtype_peripheral' => 'Peripheral',
+                        'items_id_peripheral' => $data['items_id_asset'],
+                    ],
+                ];
+                $iterator = $DB->request($criteria);
 
-                if ($DB->result($result2, 0, 0) == 1) {
-                    $per->delete(
-                        ['id'          => $data['items_id'],
-                            '_no_history' => !$uninstall_history],
-                        true,
-                        $uninstall_history
-                    );
+                $periph = new \Peripheral();
+                if (count($iterator) == 1) {
+                    $periph->delete(['id' => $data['items_id_asset'], '_no_history' => !$uninstall_history], true, $uninstall_history);
                 }
             }
         }

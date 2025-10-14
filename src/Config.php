@@ -379,6 +379,12 @@ class Config extends \CommonDBTM
         echo "&nbsp;" . _n('second', 'seconds', 2, 'ocsinventoryng') . "</td>";
         echo "</tr>";
 
+        echo "<tr class='tab_bg_1'>";
+        echo "<td> " . __('Limit each massive import to this number of objects', 'ocsinventoryng') . " </td><td>";
+        echo Html::input('import_limit', ['value' => $this->fields['import_limit'], 'size' => 5]);
+        echo "</td>";
+        echo "</tr>";
+
         $this->showFormButtons(['canedit' => $canedit,
             'candel'  => false]);
 

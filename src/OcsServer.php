@@ -2011,7 +2011,7 @@ class OcsServer extends CommonDBTM
     /**
      * Get a connection to the OCS server
      *
-     * @param $serverId the ocs server id
+     * @param $serverId
      *
      * @return OcsClient the ocs client (database or soap)
      */
@@ -2019,13 +2019,18 @@ class OcsServer extends CommonDBTM
     {
         if ($serverId) {
             $config = self::getConfig($serverId);
+
+            $key = (new GLPIKey())->decrypt($config['ocs_db_passwd']);
+            if ($key != null) {
+                $key = rawurldecode(stripslashes($key));
+            }
             if (isset($config['conn_type'])) {
                 if ($config['conn_type'] == self::CONN_TYPE_DB) {
                     return new OcsDbClient(
                         $serverId,
                         $config['ocs_db_host'],
                         $config['ocs_db_user'],
-                        rawurldecode(stripslashes((new GLPIKey())->decrypt($config['ocs_db_passwd']))),
+                        $key,
                         $config['ocs_db_name']
                     );
                 } else {
@@ -2033,7 +2038,8 @@ class OcsServer extends CommonDBTM
                         $serverId,
                         $config['ocs_db_host'],
                         $config['ocs_db_user'],
-                        rawurldecode(stripslashes((new GLPIKey())->decrypt($config['ocs_db_passwd'])))
+                        $key,
+                        $config['ocs_db_name']
                     );
                 }
             }
@@ -3000,16 +3006,28 @@ class OcsServer extends CommonDBTM
                 //               $max_date = $DB->result($result, 0, 0);
 
                 // Get linked computer ids in GLPI
-                $already_linked_query  =
-                    "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid " .
-                    "FROM `glpi_plugin_ocsinventoryng_ocslinks` " .
-                    "INNER JOIN `glpi_computers` on `glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` " .
-                    "WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
-                $already_linked_result = $DB->doQuery($already_linked_query);
+
+                $already_linked_query = $DB->request([
+                    'SELECT'    => [
+                        'glpi_plugin_ocsinventoryng_ocslinks.ocsid AS ocsid',
+                    ],
+                    'FROM'      => 'glpi_plugin_ocsinventoryng_ocslinks',
+                    'INNER JOIN'       => [
+                        'glpi_computers' => [
+                            'ON' => [
+                                'glpi_computers' => 'id',
+                                'glpi_plugin_ocsinventoryng_ocslinks'          => 'computers_id'
+                            ]
+                        ]
+                    ],
+                    'WHERE'     => [
+                        'glpi_plugin_ocsinventoryng_ocslinks.plugin_ocsinventoryng_ocsservers_id'  => $plugin_ocsinventoryng_ocsservers_id
+                    ]
+                ]);
 
                 $already_linked_ids = [];
-                if ($DB->numrows($already_linked_result) > 0) {
-                    while ($data = $DB->fetchAssoc($already_linked_result)) {
+                if (count($already_linked_query) > 0) {
+                    foreach ($already_linked_query as $data) {
                         $already_linked_ids [] = $data['ocsid'];
                     }
                 }
@@ -3039,14 +3057,22 @@ class OcsServer extends CommonDBTM
                     foreach ($res as $k => $data) {
                         if (count($data) > 0) {
                             // Fetch all linked computers from GLPI that were returned from OCS
-                            $query_glpi  = "SELECT `id`, `ocs_deviceid`
-                                    FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                                    WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
-                                                = $plugin_ocsinventoryng_ocsservers_id
-                                          AND `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` = '" . $data["ID"] . "'";
-                            $result_glpi = $DB->doQuery($query_glpi);
-                            if ($DB->numrows($result_glpi) > 0) {
-                                while ($values = $DB->fetchAssoc($result_glpi)) {
+
+                            $criteria = [
+                                'SELECT'    => [
+                                    'id', 'ocs_deviceid'
+                                ],
+                                'FROM'      => 'glpi_plugin_ocsinventoryng_ocslinks',
+                                'WHERE'     => [
+                                    'plugin_ocsinventoryng_ocsservers_id'  => $plugin_ocsinventoryng_ocsservers_id,
+                                    'ocsid'  => $data["ID"]
+                                ]
+                            ];
+
+                            $iterator = $DB->request($criteria);
+
+                            if (count($iterator) > 0) {
+                                foreach ($iterator as $values) {
                                     $task->addVolume(1);
                                     $task->log(sprintf(
                                         __('%1$s: %2$s'),

@@ -29,6 +29,7 @@
  */
 
 use GlpiPlugin\Ocsinventoryng\Config;
+use GlpiPlugin\Ocsinventoryng\Detail;
 use GlpiPlugin\Ocsinventoryng\Notimportedcomputer;
 use GlpiPlugin\Ocsinventoryng\OcsProcess;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
@@ -66,8 +67,8 @@ if ($argv) {
 
 $_SESSION["glpicronuserrunning"] = $_SESSION["glpiname"] = 'ocsinventoryng';
 // Check PHP Version - sometime (debian) cli version != module version
-if (phpversion() < "5") {
-    die("PHP version:" . phpversion() . " - " . "You must install at least PHP5.\n\n");
+if (phpversion() < "8") {
+    die("PHP version:" . phpversion() . " - " . "You must install at least PHP 8.\n\n");
 }
 // Chech Memory_limit - sometine cli limit (php-cli.ini) != module limit (php.ini)
 $mem = Toolbox::getMemoryLimit();
@@ -110,14 +111,19 @@ if (isset($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
         echo "=====================================================\n";
 
         //Import from all the OCS servers
-        $query  = "SELECT `id`, `name`
-                FROM `glpi_plugin_ocsinventoryng_ocsservers`
-                WHERE `is_active`
-                  AND `use_massimport`";
-        $result = $DB->doQuery($query);
+        $criteria = [
+            'SELECT' => ['id', 'name'],
+            'FROM' => 'glpi_plugin_ocsinventoryng_ocsservers',
+            'WHERE' => [
+                'is_active' => 1,
+                'use_massimport' => 1,
+            ]
+        ];
+
+        $iterator = $DB->request($criteria);
 
         echo "=====================================================\n";
-        while ($ocsservers = $DB->fetchArray($result)) {
+        foreach ($iterator as $ocsservers) {
             FirstPass($ocsservers["id"]);
         }
         echo "=====================================================\n";
@@ -178,13 +184,18 @@ if (isset($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
         }
     } else {
         //Import from all the OCS servers
-        $query = "SELECT `id`, `name`
-                FROM `glpi_plugin_ocsinventoryng_ocsservers`
-                WHERE `is_active`
-                  AND `use_massimport`";
-        $res   = $DB->doQuery($query);
+        $criteria = [
+            'SELECT' => ['id', 'name'],
+            'FROM' => 'glpi_plugin_ocsinventoryng_ocsservers',
+            'WHERE' => [
+                'is_active' => 1,
+                'use_massimport' => 1,
+            ]
+        ];
 
-        while ($ocsservers = $DB->fetchArray($res)) {
+        $iterator = $DB->request($criteria);
+
+        foreach ($iterator as $ocsservers) {
             $result = SecondPass($tid, $ocsservers["id"], $thread_nbr, $threadid, $fields, $config);
             if ($result) {
                 $fields = $result;
@@ -236,15 +247,20 @@ function FirstPass($ocsservers_id)
         } else {
             $max_id = 0;
             // Compute lastest synchronization date
-            $query    = "SELECT MAX(`last_ocs_update`)
-                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                WHERE `plugin_ocsinventoryng_ocsservers_id` = '$ocsservers_id'";
+            $iterator = $DB->request([
+                'SELECT'    => [
+                    'MAX' => 'last_ocs_update AS max_last_ocs_update'
+                ],
+                'FROM'      => 'glpi_plugin_ocsinventoryng_ocslinks',
+                'WHERE'     => [
+                    'plugin_ocsinventoryng_ocsservers_id'  => $ocsservers_id
+                ]
+            ]);
+
             $max_date = "0000-00-00 00:00:00";
-            if ($result = $DB->doQuery($query)) {
-                if ($DB->numrows($result) > 0) {
-                    if ($DB->result($result, 0, 0) != '') {
-                        $max_date = $DB->result($result, 0, 0);
-                    }
+            if (count($iterator) > 0) {
+                foreach ($iterator as $data) {
+                    $max_date = $data['max_last_ocs_update'];
                 }
             }
         }
@@ -408,25 +424,37 @@ function plugin_ocsinventoryng_importFromOcsServer(
     // Maybe add this to SOAP ?
     if (isset($ocsResult['COMPUTERS'])) {
         foreach ($ocsResult['COMPUTERS'] as $ID => $computer) {
-            $query_glpi  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` AS last_update,
-                                    `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update` AS last_ocs_update,
-                                  `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` AS computers_id,
-                                  `glpi_computers`.`serial` AS serial,
-                                  `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid,
-                                  `glpi_computers`.`name` AS name,
-                                  `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update`,
-                                  `glpi_plugin_ocsinventoryng_ocslinks`.`id`
-                           FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                           LEFT JOIN `glpi_computers` ON (`glpi_computers`.`id`= `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`)
-                           WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
-                                       = $ocsServerId
-                                  AND `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` = $ID
-                           ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` DESC,
-                                    `last_update`,
-                                    `name`";
-            $result_glpi = $DB->doQuery($query_glpi);
-            if ($DB->numrows($result_glpi) > 0) {
-                while ($data = $DB->fetchAssoc($result_glpi)) {
+
+            $query_glpi = [
+                'SELECT' => ['glpi_plugin_ocsinventoryng_ocslinks.last_update AS last_update',
+                            'glpi_plugin_ocsinventoryng_ocslinks.last_ocs_update AS last_ocs_update',
+                    'glpi_plugin_ocsinventoryng_ocslinks.computers_id AS computers_id',
+                    'glpi_computers.serial AS serial',
+                    'glpi_plugin_ocsinventoryng_ocslinks.ocsid AS ocsid',
+                    'glpi_computers.name AS name',
+                    'glpi_plugin_ocsinventoryng_ocslinks.use_auto_update',
+                    'glpi_plugin_ocsinventoryng_ocslinks.id'
+                ],
+                'FROM' => 'glpi_plugin_ocsinventoryng_ocslinks',
+                'LEFT JOIN'       => [
+                    'glpi_computers' => [
+                        'ON' => [
+                            'glpi_computers' => 'id',
+                            'glpi_plugin_ocsinventoryng_ocslinks'          => 'computers_id'
+                        ]
+                    ]
+                ],
+                'WHERE' => [
+                    'glpi_plugin_ocsinventoryng_ocslinks.plugin_ocsinventoryng_ocsservers_id' => $ocsServerId,
+                    'glpi_plugin_ocsinventoryng_ocslinks.ocsid' => $ID,
+                ],
+                'ORDERBY' => ['glpi_plugin_ocsinventoryng_ocslinks.use_auto_update ASC', 'last_update', 'name']
+            ];
+
+            $iterator = $DB->request($query_glpi);
+
+            if (count($iterator) > 0) {
+                foreach ($iterator as $data) {
                     if (strtotime($computer['META']["LASTDATE"]) > strtotime($data["last_update"])) {
                         if ($ID <= intval($server->fields["max_ocsid"]) and (!$multiThread or ($ID % $thread_nbr) == ($threadid - 1))) {
                             $ocsComputers[$ID] = $computer;
@@ -442,6 +470,7 @@ function plugin_ocsinventoryng_importFromOcsServer(
             $ocsComputers = array_splice($ocsComputers, $config->fields["import_limit"]);
         }
     }
+
     $nb = count($ocsComputers);
     echo "\tThread #$threadid: $nb computer(s)\n";
 
@@ -465,7 +494,8 @@ function plugin_ocsinventoryng_importFromOcsServer(
         $process_params = ['ocsid'                               => $ID,
             'plugin_ocsinventoryng_ocsservers_id' => $ocsServerId,
             'lock'                                => 1,
-            'force'                               => 1];
+            'force'                               => 1,
+            'cron' => 1];
 
         $action = OcsProcess::processComputer($process_params);
         OcsProcess::manageImportStatistics($fields, $action['status']);
@@ -489,17 +519,23 @@ function plugin_ocsinventoryng_importFromOcsServer(
         }
     }
 
-    $query    = "SELECT MAX(`last_ocs_update`)
-                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                WHERE `plugin_ocsinventoryng_ocsservers_id` = '$ocsServerId'";
+    $iterator = $DB->request([
+        'SELECT'    => [
+            'MAX' => 'last_ocs_update AS max_last_ocs_update'
+        ],
+        'FROM'      => 'glpi_plugin_ocsinventoryng_ocslinks',
+        'WHERE'     => [
+            'plugin_ocsinventoryng_ocsservers_id'  => $ocsServerId
+        ]
+    ]);
+
     $max_date = "0000-00-00 00:00:00";
-    if ($result = $DB->doQuery($query)) {
-        if ($DB->numrows($result) > 0) {
-            if ($DB->result($result, 0, 0) != '') {
-                $max_date = $DB->result($result, 0, 0);
-            }
+    if (count($iterator) > 0) {
+        foreach ($iterator as $data) {
+            $max_date = $data['max_last_ocs_update'];
         }
     }
+
 
     // Store for next synchro
     $server = new Server();

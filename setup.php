@@ -54,7 +54,7 @@ use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 
 global $CFG_GLPI;
 
-define('PLUGIN_OCSINVENTORYNG_VERSION', '2.1.2');
+define('PLUGIN_OCSINVENTORYNG_VERSION', '2.1.3');
 
 define("PLUGIN_OCSINVENTORYNG_STATE_STARTED", 1);
 define("PLUGIN_OCSINVENTORYNG_STATE_RUNNING", 2);

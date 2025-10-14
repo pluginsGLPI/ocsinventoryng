@@ -111,7 +111,7 @@ class Printer
 
                 if (!isset($res_rule["_ignore_import"]) || !$res_rule["_ignore_import"]) {
                     foreach ($res_rule as $key => $value) {
-                        if ($value != '' && $value[0] != '_') {
+                        if ($value != '' && $value != true && $value[0] != '_') {
                             $print[$key] = $value;
                         }
                     }
@@ -126,17 +126,38 @@ class Printer
 
                     //Look for a printer with the same name (and serial if possible) already connected
                     //to this computer
-                    $query   = "SELECT `p`.`id`, `gci`.`is_deleted`
-                            FROM `glpi_printers` as `p`, `glpi_assets_assets_peripheralassets` as `gci`
-                            WHERE `p`.`id` = `gci`.`items_id_peripheral`
-                               AND `gci`.`is_dynamic` = 1
-                               AND `items_id_asset`= $computers_id
-                               AND `itemtype`= 'Printer'
-                               AND `p`.`itemtype_peripheral`= '" . $print["name"] . "'";
-                    $results = $DB->doQuery($query);
+                    $criteria = [
+                        'SELECT' => [
+                            'glpi_printers.id'
+                        ],
+                        'FROM' => 'glpi_printers',
+                        'LEFT JOIN'       => [
+                            'glpi_assets_assets_peripheralassets' => [
+                                'ON' => [
+                                    'glpi_printers'   => 'id',
+                                    'glpi_assets_assets_peripheralassets'                  => 'items_id_peripheral', [
+                                        'AND' => [
+                                            'glpi_assets_assets_peripheralassets.itemtype_peripheral' => 'Printer',
+                                        ],
+                                    ],
+                                ]
+                            ],
+                        ],
+                        'WHERE' => [
+                            'glpi_printers.name' => $print["name"],
+                            'glpi_assets_assets_peripheralassets.is_dynamic' => 1,
+                            'glpi_assets_assets_peripheralassets.items_id_asset' => $computers_id,
+                            'glpi_assets_assets_peripheralassets.itemtype_asset' => 'Computer',
+                        ]
+                    ];
+
+                    $iterator = $DB->request($criteria);
+
                     $id      = false;
-                    if ($DB->numrows($results) > 0) {
-                        $id = $DB->result($results, 0, 'id');
+                    if (count($iterator) > 0) {
+                        foreach ($iterator as $values) {
+                            $id = $values['id'];
+                        }
                     }
 
                     if (!$id) {
@@ -150,27 +171,35 @@ class Printer
                             //Config says : manage printers as global
                             //check if printers already exists in GLPI
                             $print["is_global"] = MANAGEMENT_GLOBAL;
-                            $query              = "SELECT `id`
-                                         FROM `glpi_printers`
-                                         WHERE `name` = '" . $print["name"] . "'
-                                            AND `is_global` = 1 ";
-                            if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
-                                $query .= " AND `entities_id` = '$entity'";
-                            }
-                            $result_search = $DB->doQuery($query);
 
-                            if ($DB->numrows($result_search) > 0) {
+                            $criteria = [
+                                'SELECT' => 'id',
+                                'FROM' => 'glpi_printers',
+                                'WHERE' => [
+                                    'name' => $print["name"],
+                                    'is_global' => MANAGEMENT_GLOBAL,
+                                ]
+                            ];
+
+                            if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
+                                $criteria['WHERE'] = $criteria['WHERE'] + ['entities_id' => $entity];
+                            }
+                            $iterator = $DB->request($criteria);
+
+                            if (count($iterator) > 0) {
                                 //Periph is already in GLPI
                                 //Do not import anything just get periph ID for link
-                                $id_printer          = $DB->result($result_search, 0, "id");
+                                foreach ($iterator as $data) {
+                                    $id_printer = $data['id'];
+                                }
                                 $already_processed[] = $id_printer;
                             } else {
                                 $input = $print;
 
                                 //for rule asset
                                 $input['_auto']       = 1;
+                                $input["is_dynamic"]  = 1;
                                 $input["entities_id"] = $entity;
-
                                 $id_printer           = $p->add($input, [], $install_history);
                             }
                         } elseif ($management_process == 2) {
@@ -216,7 +245,7 @@ class Printer
             'SELECT' => 'id',
             'FROM' => 'glpi_assets_assets_peripheralassets',
             'WHERE' => [
-                'itemtype_peripheral' => 'PRinter',
+                'itemtype_peripheral' => 'Printer',
                 'items_id_asset' => $computers_id,
                 'itemtype_asset' => 'Computer',
                 'is_dynamic' => 1,
@@ -240,20 +269,32 @@ class Printer
             // 1 : the management mode IS NOT global
             // 2 : a deconnection's status have been defined
             // 3 : unique with serial
-            if (($mode >= 2) && (strlen($decoConf) > 0)) {
+            if ($mode >= 2 && $decoConf != null && (strlen($decoConf) > 0)) {
                 //Delete periph from glpi
                 if ($decoConf == "delete") {
-                    $query = "DELETE
-                FROM `glpi_assets_assets_peripheralassets`
-                WHERE `id`= " . $data['id'];
+
+                    $query = $DB->buildDelete(
+                        'glpi_assets_assets_peripheralassets',
+                        [
+                            'id' =>  $data['id'],
+                        ]
+                    );
                     $DB->doQuery($query);
+
                     //Put periph in dustbin
                 } elseif ($decoConf == "trash") {
-                    $query = "UPDATE
-                `glpi_assets_assets_peripheralassets`
-                SET `is_deleted` = 1
-                WHERE `id`= " . $data['id'];
+
+                    $query = $DB->buildUpdate(
+                        'glpi_assets_assets_peripheralassets',
+                        [
+                            'is_deleted' => 1,
+                        ],
+                        [
+                            'id' =>  $data['id'],
+                        ]
+                    );
                     $DB->doQuery($query);
+
                 }
             }
         }
@@ -289,29 +330,37 @@ class Printer
     {
         global $DB;
 
-        $query  = "SELECT *
-                FROM `glpi_assets_assets_peripheralassets`
-                WHERE `items_id_asset` = $glpi_computers_id
-                  AND `itemtype_asset` = 'Computer'
-                      AND `itemtype_peripheral` = 'Printer'
-                      AND `is_dynamic` = 1";
-        $result = $DB->doQuery($query);
+        $criteria = [
+            'SELECT' => ['*'],
+            'FROM' => 'glpi_assets_assets_peripheralassets',
+            'WHERE' => [
+                'itemtype_peripheral' => 'Printer',
+                'items_id_asset' => $glpi_computers_id,
+                'itemtype_asset' => 'Computer',
+                'is_dynamic' => 1,
+            ],
+        ];
+        $iterator = $DB->request($criteria);
 
-        if ($DB->numrows($result) > 0) {
+        if (count($iterator) > 0) {
             $conn = new Asset_PeripheralAsset();
 
-            while ($data = $DB->fetchAssoc($result)) {
+            foreach ($iterator as $data) {
                 $conn->delete(['id' => $data['id'], '_no_history' => !$uninstall_history], true, $uninstall_history);
 
-                $query2  = "SELECT COUNT(*)
-                       FROM `glpi_assets_assets_peripheralassets`
-                       WHERE `items_id_peripheral` = " . $data['items_id'] . "
-                             AND `itemtype_peripheral` = 'Printer'";
-                $result2 = $DB->doQuery($query2);
+                $criteria = [
+                    'COUNT' => 'cpt',
+                    'FROM' => 'glpi_assets_assets_peripheralassets',
+                    'WHERE' => [
+                        'itemtype_peripheral' => 'Printer',
+                        'items_id_peripheral' => $data['items_id_asset'],
+                    ],
+                ];
+                $iterator = $DB->request($criteria);
 
                 $printer = new \Printer();
-                if ($DB->result($result2, 0, 0) == 1) {
-                    $printer->delete(['id' => $data['items_id'], '_no_history' => !$uninstall_history], true, $uninstall_history);
+                if (count($iterator) == 1) {
+                    $printer->delete(['id' => $data['items_id_asset'], '_no_history' => !$uninstall_history], true, $uninstall_history);
                 }
             }
         }
