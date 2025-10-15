@@ -90,11 +90,11 @@ class Winupdate extends \CommonDBTM
             $wupdate                      = $ocsComputer;
             $input                        = [];
             $input["computers_id"]        = $computers_id;
-            $input["auoptions"]           = $wupdate["AUOPTIONS"];
+            $input["auoptions"]           = $wupdate["AUOPTIONS"] ?? "";
             $input["scheduleinstalldate"] = (empty($wupdate["SCHEDULEDINSTALLDATE"]) ? 'NULL' : $wupdate["SCHEDULEDINSTALLDATE"]);
-            $input["lastsuccesstime"]     = $wupdate["LASTSUCCESSTIME"];
-            $input["detectsuccesstime"]   = $wupdate["DETECTSUCCESSTIME"];
-            $input["downloadsuccesstime"] = $wupdate["DOWNLOADSUCCESSTIME"];
+            $input["lastsuccesstime"]     = $wupdate["LASTSUCCESSTIME"] ?? "";
+            $input["detectsuccesstime"]   = $wupdate["DETECTSUCCESSTIME"] ?? "";
+            $input["downloadsuccesstime"] = $wupdate["DOWNLOADSUCCESSTIME"] ?? "";
 
             $CompWupdate = new self();
             $CompWupdate->add($input, ['disable_unicity_check' => true], $install_history);
