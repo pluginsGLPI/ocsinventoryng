@@ -93,7 +93,7 @@ class Bitlockerstatus extends CommonDBTM
                     'EncryptionPaused'     => 2,
                     'DecryptionPaused'     => 2
                     ];
-                    $input["encryption_status"]    = $status[$statusText];
+                    $input["encryption_status"]    = isset($status[$statusText]) ?? "";
                     $input["encryption_tool"]      = 'bitlocker';
                     $input["encryption_algorithm"] = isset($bitlocker["ENCRYPMETHOD"]) ? $bitlocker["ENCRYPMETHOD"] : '';
                     //               $input["encryption_type"] =

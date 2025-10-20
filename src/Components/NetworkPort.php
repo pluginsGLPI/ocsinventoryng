@@ -306,6 +306,7 @@ class NetworkPort extends NetworkPortInstantiation
                     //               'gateway'     => $gateway,
                     'addressable' => 1,
                     'entities_id' => $entities_id,
+                    '_no_message' => 1
                 ];
 
                 if ($gateway != '0.0.0.0') {
