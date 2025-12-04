@@ -66,6 +66,11 @@ class OcsAlert extends CommonDBTM
         return __('OCS-NG Synchronization alerts', 'ocsinventoryng');
     }
 
+    static function getIcon()
+    {
+        return "ti ti-devices";
+    }
+
     /**
      * @param CommonGLPI $item
      * @param int        $withtemplate
@@ -78,7 +83,7 @@ class OcsAlert extends CommonDBTM
         if ($item->getType() == 'CronTask' && $item->getField('name') == "SynchroAlert") {
             return self::createTabEntry(__('Plugin setup', 'ocsinventoryng'));
         } elseif ($item->getType() == 'Entity') {
-            return self::getTypeName(2);
+            return self::createTabEntry(self::getTypeName(2));
         }
         return '';
     }

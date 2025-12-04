@@ -45,6 +45,19 @@ class Menu extends CommonGLPI
     */
     static $rightname = 'plugin_ocsinventoryng';
 
+    /**
+     * @return string
+     */
+    public static function getTypeName($nb = 0)
+    {
+        return 'OCS Inventory NG';
+    }
+
+    static function getIcon()
+    {
+        return "ti ti-devices";
+    }
+
    /**
     * @return string
     */
@@ -131,10 +144,6 @@ class Menu extends CommonGLPI
         return $menu;
     }
 
-    static function getIcon()
-    {
-        return "ti ti-download";
-    }
 
    /**
     *

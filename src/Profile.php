@@ -49,6 +49,15 @@ class Profile extends \Profile
     public static $rightname = "profile";
 
     /**
+     * @param int $nb
+     *
+     * @return string
+     */
+    public static function getTypeName($nb = 0)
+    {
+        return Menu::getTypeName($nb);
+    }
+    /**
      * @see inc/CommonGLPI::getTabNameForItem()
      *
      * @param CommonGLPI $item
