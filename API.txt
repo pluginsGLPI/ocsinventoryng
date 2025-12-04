@@ -1,8 +1,0 @@
-Cannot check Server Config table (ocs_version (GUI_VERSION), TRACE_DELETED)
-Cannot test connection
-cannot get table information : getAccountInfoColumns
-cannot set infos : setChecksum
-cannot use params : AND accountinfo.TAG IN () / AND accountinfo.TAG NOT IN () / ORDER / AND (`hardware`.`LASTDATE` > X)
-/ AND (UNIX_TIMESTAMP(`hardware`.`LASTDATE`) < (UNIX_TIMESTAMP(" . $before . ")-180 / OR `hardware`.`LASTDATE` > '$since'
-
-Mail damien.belliard@factorfx.com pour recap

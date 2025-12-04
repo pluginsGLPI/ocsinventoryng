@@ -542,13 +542,15 @@ function plugin_ocsinventoryng_install()
         }
 
         $DB->runFile(PLUGIN_OCS_DIR . "/install/mysql/2.1.0-update.sql");
+
+        $DB->runFile(PLUGIN_OCS_DIR . "/install/mysql/2.1.5-update.sql");
     }
 
 
     $cron = new CronTask();
-    if (!$cron->getFromDBbyName(Thread::class, 'CleanOldThreads')) {
+    if (!$cron->getFromDBbyName('GlpiPlugin\Ocsinventoryng\Thread', 'CleanOldThreads')) {
         CronTask::Register(
-            Thread::class,
+            'GlpiPlugin\Ocsinventoryng\Thread',
             'CleanOldThreads',
             HOUR_TIMESTAMP,
             ['param' => 24]
