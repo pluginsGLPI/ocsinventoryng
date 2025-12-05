@@ -546,6 +546,79 @@ function plugin_ocsinventoryng_install()
         $DB->runFile(PLUGIN_OCS_DIR . "/install/mysql/2.1.5-update.sql");
     }
 
+    //DisplayPreferences Migration
+    $classes = ['PluginOcsinventoryngOcsServer' => OcsServer::class,
+        'PluginOcsinventoryngNotimportedcomputer' => Notimportedcomputer::class,
+        'PluginOcsinventoryngDetail' => Detail::class];
+
+    foreach ($classes as $old => $new) {
+        $displayusers = $DB->request([
+            'SELECT' => [
+                'users_id'
+            ],
+            'DISTINCT' => true,
+            'FROM' => 'glpi_displaypreferences',
+            'WHERE' => [
+                'itemtype' => $old,
+            ],
+        ]);
+
+        if (count($displayusers) > 0) {
+            foreach ($displayusers as $displayuser) {
+                $iterator = $DB->request([
+                    'SELECT' => [
+                        'num',
+                        'id'
+                    ],
+                    'FROM' => 'glpi_displaypreferences',
+                    'WHERE' => [
+                        'itemtype' => $old,
+                        'users_id' => $displayuser['users_id'],
+                        'interface' => 'central'
+                    ],
+                ]);
+
+                if (count($iterator) > 0) {
+                    foreach ($iterator as $data) {
+                        $iterator2 = $DB->request([
+                            'SELECT' => [
+                                'id'
+                            ],
+                            'FROM' => 'glpi_displaypreferences',
+                            'WHERE' => [
+                                'itemtype' => $new,
+                                'users_id' => $displayuser['users_id'],
+                                'num' => $data['num'],
+                                'interface' => 'central'
+                            ],
+                        ]);
+                        if (count($iterator2) > 0) {
+                            foreach ($iterator2 as $dataid) {
+                                $query = $DB->buildDelete(
+                                    'glpi_displaypreferences',
+                                    [
+                                        'id' => $dataid['id'],
+                                    ]
+                                );
+                                $DB->doQuery($query);
+                            }
+                        } else {
+                            $query = $DB->buildUpdate(
+                                'glpi_displaypreferences',
+                                [
+                                    'itemtype' => $new,
+                                ],
+                                [
+                                    'id' => $data['id'],
+                                ]
+                            );
+                            $DB->doQuery($query);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     $cron = new CronTask();
     if (!$cron->getFromDBbyName('GlpiPlugin\Ocsinventoryng\Thread', 'CleanOldThreads')) {
