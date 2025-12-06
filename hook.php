@@ -543,7 +543,29 @@ function plugin_ocsinventoryng_install()
 
         $DB->runFile(PLUGIN_OCS_DIR . "/install/mysql/2.1.0-update.sql");
 
-        $DB->runFile(PLUGIN_OCS_DIR . "/install/mysql/2.1.5-update.sql");
+//        $DB->runFile(PLUGIN_OCS_DIR . "/install/mysql/2.1.5-update.sql");
+    }
+
+    //crontasks Migration
+    $iterator = $DB->request([
+        'SELECT' => [
+            'id'
+        ],
+        'FROM' => 'glpi_crontasks',
+        'WHERE' => [
+            'itemtype' => 'PluginOcsinventoryngThread'
+        ],
+    ]);
+    if (count($iterator) > 0) {
+        foreach ($iterator as $data) {
+            $query = $DB->buildDelete(
+                'glpi_crontasks',
+                [
+                    'id' => $data['id'],
+                ]
+            );
+            $DB->doQuery($query);
+        }
     }
 
     //DisplayPreferences Migration
