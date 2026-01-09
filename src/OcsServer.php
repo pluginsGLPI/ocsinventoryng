@@ -3194,24 +3194,25 @@ class OcsServer extends CommonDBTM
     /**
      * @internal param $width
      */
-    public function showSystemInformations()
+    public function getSystemInformation()
     {
         $dbu        = new DbUtils();
         $ocsServers = $dbu->getAllDataFromTable('glpi_plugin_ocsinventoryng_ocsservers', ["is_active" => 1]);
         if (!empty($ocsServers)) {
-            echo "\n<tr class='tab_bg_2'><th>".__('OCS Inventory NG', 'ocsinventoryng')."</th></tr>\n";
 
-            $msg = '';
+            $content = '';
             foreach ($ocsServers as $ocsServer) {
                 echo "<tr class='tab_bg_1'><td>";
-                $msg = __('Host', 'ocsinventoryng') . ": " . $ocsServer['ocs_db_host'] . "";
-                $msg .= "<br>" . __('Connection') . ": " . (self::checkOCSconnection($ocsServer['id']) ? "Ok" : "KO");
-                $msg .= "<br>" . __('Use the OCSNG software dictionary', 'ocsinventoryng') . ": " .
+                $content = __('Host', 'ocsinventoryng') . ": " . $ocsServer['ocs_db_host'] . "";
+                $content .= "<br>" . __('Connection') . ": " . (self::checkOCSconnection($ocsServer['id']) ? "Ok" : "KO");
+                $content .= "<br>" . __('Use the OCSNG software dictionary', 'ocsinventoryng') . ": " .
                         ($ocsServer['use_soft_dict'] ? 'Yes' : 'No');
-                echo $msg;
-                echo "</td></tr>";
             }
         }
+        return [
+            'label' => __('OCS Inventory NG', 'ocsinventoryng'),
+            'content' => $content,
+        ];
     }
 
     /**
