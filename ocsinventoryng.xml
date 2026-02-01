@@ -29,6 +29,11 @@
     </authors>
     <versions>
         <version>
+            <num>2.1.8</num>
+            <compatibility>~11.0</compatibility>
+            <download_url>https://github.com/pluginsGLPI/ocsinventoryng/releases/download/2.1.8/glpi-ocsinventoryng-2.1.8.tar.bz2</download_url>
+        </version>
+        <version>
             <num>2.1.7</num>
             <compatibility>~11.0</compatibility>
             <download_url>https://github.com/pluginsGLPI/ocsinventoryng/releases/download/2.1.7/glpi-ocsinventoryng-2.1.7.tar.bz2</download_url>
