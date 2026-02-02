@@ -1755,7 +1755,7 @@ class SnmpOcslink extends CommonDBTM
                 //$vm['virtualmachinesystems_id'] = Dropdown::importExternal('VirtualMachineType', $ocsVirtualmachine['SUBSYSTEM']);
 
                 $query = "SELECT `id`
-                         FROM `glpi_computervirtualmachines`
+                         FROM `glpi_itemvirtualmachines`
                          WHERE `computers_id`= $id_item
                             AND `is_dynamic` = 1";
                 if ($ocsVirtualmachine['UUID']) {
@@ -1788,7 +1788,7 @@ class SnmpOcslink extends CommonDBTM
                 //Look for all ununsed virtual machines
                 $criteria = [
                     'SELECT' => 'id',
-                    'FROM' => 'glpi_computervirtualmachines',
+                    'FROM' => 'glpi_itemvirtualmachines',
                     'WHERE' => [
                         'computers_id' => $id_item,
                         'is_dynamic' => 1,

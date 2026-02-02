@@ -2045,7 +2045,7 @@ function plugin_ocsinventoryng_migrateComputerLocks(Migration $migration)
     }
     //Migration disks and vms
     $import = ['import_disk'     => 'glpi_computerdisks',
-        'import_vm'       => 'glpi_computervirtualmachines',
+        'import_vm'       => 'glpi_itemvirtualmachines',
         'import_software' => 'glpi_items_softwareversions',
         'import_ip'       => 'glpi_networkports'];
 

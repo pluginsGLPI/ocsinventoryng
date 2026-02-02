@@ -105,7 +105,7 @@ class Virtualmachine
                 );
 
                 $query = "SELECT `id`
-                         FROM `glpi_computervirtualmachines`
+                         FROM `glpi_itemvirtualmachines`
                          WHERE `items_id`= $computers_id
                            AND `itemtype` = 'Computer'
                             AND `is_dynamic` = 1";
@@ -141,7 +141,7 @@ class Virtualmachine
         //Look for all ununsed virtual machines
         $criteria = [
             'SELECT' => 'id',
-            'FROM' => 'glpi_computervirtualmachines',
+            'FROM' => 'glpi_itemvirtualmachines',
             'WHERE' => [
                 'items_id' => $computers_id,
                 'itemtype' => 'Computer',
