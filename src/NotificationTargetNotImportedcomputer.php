@@ -37,9 +37,9 @@ if (!defined('GLPI_ROOT')) {
 }
 
 /**
- * Class NotificationTargetNotImportedcomputer
+ * Class NotificationTargetNotimportedcomputer
  */
-class NotificationTargetNotImportedcomputer extends NotificationTarget {
+class NotificationTargetNotimportedcomputer extends NotificationTarget {
 
    /**
     * @return array

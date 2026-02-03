@@ -556,26 +556,19 @@ class Software
 
         if (!empty($softwareversions_id) && $softwareversions_id > 0) {
 
-            $iterator = $DB->request([
-                'SELECT'    => [
-                    'id',
-                ],
-                'FROM'      => 'glpi_items_softwareversions',
-                'WHERE'     => [
-                    'items_id'  => $computers_id,
-                    'itemtype'  => 'Computer',
-                    'softwareversions_id'  => $softwareversions_id
-                ]
-            ]);
+            $tmp = new Item_SoftwareVersion();
 
-            if (count($iterator) == 0) {
-                $tmp = new Item_SoftwareVersion();
+            $tab    = $tmp->find(['items_id'        => $computers_id,
+                'itemtype' => 'Computer',
+                'softwareversions_id' => $softwareversions_id]);
+            if (count($tab) == 0) {
                 $tmp->add(['items_id'        => $computers_id,
-                       'itemtype' => 'Computer',
-                       'softwareversions_id' => $softwareversions_id,
-                       'date_install'        => $installdate,
-                       'is_dynamic'          => 1,
-                       'is_deleted'          => 0], [], $dohistory);
+                    'itemtype' => 'Computer',
+                    'softwareversions_id' => $softwareversions_id,
+                    'date_install'        => $installdate,
+                    'is_dynamic'          => 1,
+                    'is_deleted'          => 0], [], $dohistory);
+
             }
         }
     }
