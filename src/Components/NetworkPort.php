@@ -197,7 +197,9 @@ class NetworkPort extends NetworkPortInstantiation
                             $inst_input['speed'] = NetworkPortEthernet::transformPortSpeed($speed, false);
                             $inst_input['networkports_id'] = $network_port->getID();
                             if ($instantiation->getID() > 0) {
-                                $instantiation->update($inst_input, $install_network_history);
+                                if ($inst_input["items_devicenetworkcards_id"] > 0) {
+                                    $instantiation->update($inst_input, $install_network_history);
+                                }
                             } else {
                                 $instantiation->add($inst_input, [], $install_network_history);
                             }

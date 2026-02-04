@@ -297,11 +297,11 @@ class Config extends \CommonDBTM
                     'is_active' => '1',
                 ],
             ]) as $config) {
-                $query  = OcsAlert::query($delay_ocs, $config, $_SESSION["glpiactive_entity"]);
+                $criteria  = OcsAlert::query($delay_ocs, $config, $_SESSION["glpiactive_entity"]);
 
-                $result = $DB->doQuery($query);
+                $iterator = $DB->request($criteria);
 
-                if ($DB->numrows($result) > 0) {
+                if (count($iterator) > 0) {
                     if (Session::isMultiEntitiesMode()) {
                         $nbcol = 9;
                     } else {
@@ -322,7 +322,7 @@ class Config extends \CommonDBTM
                     echo "<th>" . __('Import date in GLPI', 'ocsinventoryng') . "</th>";
                     echo "<th>" . __('OCSNG server', 'ocsinventoryng') . "</th></tr>";
 
-                    while ($data = $DB->fetchArray($result)) {
+                    foreach ($iterator as $data) {
                         echo OcsAlert::displayBody($data);
                     }
                     echo "</table></div>";

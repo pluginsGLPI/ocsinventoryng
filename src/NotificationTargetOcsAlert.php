@@ -30,6 +30,8 @@ namespace GlpiPlugin\Ocsinventoryng;
 
 use DbUtils;
 use Dropdown;
+use Group;
+use Group_Item;
 use Html;
 use NotificationTarget;
 
@@ -101,12 +103,16 @@ class NotificationTargetOcsAlert extends NotificationTarget {
          $tmp['##ocsmachine.urluser##'] = urldecode($CFG_GLPI["url_base"] . "/index.php?redirect=user_" .
                                                     $ocsmachine['users_id']);
 
-         $tmp['##ocsmachine.urlgroup##'] = urldecode($CFG_GLPI["url_base"] . "/index.php?redirect=group_" .
-                                                     $ocsmachine['groups_id']);
-         $dbu = new DbUtils();
-         $tmp['##ocsmachine.user##']    = $dbu->getUserName($ocsmachine['users_id']);
-         $tmp['##ocsmachine.group##']   = Dropdown::getDropdownName("glpi_groups",
-                                                                    $ocsmachine['groups_id']);
+         $tmp['##ocsmachine.user##']    = getUserName($ocsmachine['users_id']);
+
+          $tmp['##ocsmachine.group##'] = "";
+          $groupsitem = new Group_Item();
+          foreach ($groupsitem->find(['itemtype' => 'Computer',
+              'items_id' => $ocsmachine['id'],
+              'type' => Group_Item::GROUP_TYPE_NORMAL]) as $group) {
+              $tmp['##ocsmachine.group##'] .= Group::getFriendlyNameById($group['groups_id'])." ";
+          }
+
          $tmp['##ocsmachine.contact##'] = $ocsmachine['contact'];
 
          $tmp['##ocsmachine.lastocsupdate##'] = Html::convDateTime($ocsmachine['last_ocs_update']);

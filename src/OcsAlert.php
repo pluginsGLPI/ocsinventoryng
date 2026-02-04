@@ -37,6 +37,8 @@ use CronTask;
 use DbUtils;
 use Dropdown;
 use Entity;
+use Group;
+use Group_Item;
 use Html;
 use Item_OperatingSystem;
 use NotificationEvent;
@@ -203,7 +205,7 @@ class OcsAlert extends CommonDBTM
      * @param $config
      * @param $entity
      *
-     * @return string
+     * @return array
      */
     public static function query($delay_ocs, $config, $entity)
     {
@@ -330,22 +332,16 @@ class OcsAlert extends CommonDBTM
                   $dbu->getUserName($computer->fields["users_id"]) . "</a>";
         }
 
-        if (!empty($computer->fields["groups_id"])) {
-            $body .= " - <a href=\"" . $CFG_GLPI["root_doc"] . "/front/group.form.php?id=" . $computer->fields["groups_id"] . "\">";
+        $groupsitem = new Group_Item();
+        foreach ($groupsitem->find(['itemtype' => 'Computer', 'items_id' => $computer->fields["id"], 'type' => Group_Item::GROUP_TYPE_NORMAL]) as $group) {
+            $body .= " - ".Group::getFriendlyNameById($group['groups_id']);
         }
-
-        $body .= Dropdown::getDropdownName("glpi_groups", $computer->fields["groups_id"]);
-        if ($_SESSION["glpiis_ids_visible"] == 1) {
-            $body .= " (";
-            $body .= $computer->fields["groups_id"] . ")";
-        }
-        $body .= "</a>";
 
         if (!empty($computer->fields["contact"])) {
             $body .= " - " . $computer->fields["contact"];
         }
 
-        $body .= " - </td>";
+        $body .= "</td>";
         $body .= "<td>" . Html::convdatetime($data["last_ocs_update"]) . "</td>";
         $body .= "<td>" . Html::convdatetime($data["last_update"]) . "</td>";
         $body .= "<td>" . Dropdown::getDropdownName(
