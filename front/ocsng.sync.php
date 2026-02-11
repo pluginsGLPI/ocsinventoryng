@@ -62,7 +62,7 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
         );
         Html::getProgressBar($percent);
 
-        Html::redirect($_SERVER['PHP_SELF']);
+        Html::redirect(PLUGIN_OCS_WEBDIR . '/front/ocsng.sync.php');
     }
 }
 
@@ -93,7 +93,7 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
                 $_SESSION["ocs_update_count"]++;
             }
         }
-        Html::redirect($_SERVER['PHP_SELF']);
+        Html::redirect(PLUGIN_OCS_WEBDIR . '/front/ocsng.sync.php');
     }
 } else {
     echo "<div class='center'>";

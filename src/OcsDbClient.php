@@ -31,6 +31,7 @@
 namespace GlpiPlugin\Ocsinventoryng;
 
 use AllowDynamicProperties;
+use DBmysql;
 
 /**
  * Class OcsDbClient
@@ -40,7 +41,7 @@ class OcsDbClient extends OcsClient
 {
 
    /**
-    * @var DBmysql
+    * @var DBocs
     */
     private $db;
 
@@ -56,8 +57,18 @@ class OcsDbClient extends OcsClient
     public function __construct($id, $dbhost, $dbuser, $dbpassword, $dbdefault)
     {
         parent::__construct($id);
-        $this->db = new DBocs($dbhost, $dbuser, $dbpassword, $dbdefault);
+
         $this->dbname = $dbdefault;
+
+        try {
+            $this->db = new DBocs($dbhost, $dbuser, $dbpassword, $dbdefault);
+        } catch (\Exception $e) {
+            throw new \RuntimeException(
+                sprintf('Failed to connect to OCS database on host "%s": %s', $dbhost, $e->getMessage()),
+                0,
+                $e
+            );
+        }
     }
 
    /**
@@ -66,6 +77,16 @@ class OcsDbClient extends OcsClient
     public function getDB()
     {
         return $this->db;
+    }
+
+    /**
+     * Check if database connection is established
+     *
+     * @return bool
+     */
+    public function isConnected()
+    {
+        return $this->db && $this->db->connected;
     }
 
     public function getSchema()
@@ -82,11 +103,15 @@ class OcsDbClient extends OcsClient
     */
     public function getComputerRule($id, $tables = [])
     {
+        if (!$this->isConnected()) {
+            throw new \RuntimeException('OCS database connection is not established');
+        }
+
         $computers = [];
 
         $version = $this->getConfig("GUI_VERSION");
         $archive = "";
-        if ($version['TVALUE'] >= OcsServer::OCS2_8_VERSION_LIMIT) {
+        if ($version != false && $version['TVALUE'] >= OcsServer::OCS2_8_VERSION_LIMIT) {
             $archive = "AND `hardware`.`ARCHIVE` IS NULL";
         }
 
@@ -302,9 +327,9 @@ class OcsDbClient extends OcsClient
                                 }
                             }
                             $accountinfomap = $this->getAccountInfoColumns();
-                            foreach ($accountinfo as $key => $value) {
+                            foreach ($accountinfo as $key => $value2) {
                                 unset($accountinfo[$key]);
-                                $accountinfo[$accountinfomap[$key]] = $value;
+                                $accountinfo[$accountinfomap[$key]] = $value2;
                             }
                             if ($multi) {
                                 $computers[$accountinfo['HARDWARE_ID']][strtoupper($table)][] = $accountinfo;
@@ -315,7 +340,7 @@ class OcsDbClient extends OcsClient
                     }
                     break;
                 case "softwares":
-                    if ($version['TVALUE'] > OcsServer::OCS2_8_VERSION_LIMIT) {
+                    if ($version != false && $version['TVALUE'] > OcsServer::OCS2_8_VERSION_LIMIT) {
                         if (($check & $checksum) || $complete > 0) {
                             if (self::WANTED_DICO_SOFT & $wanted) {
                                 $query = "SELECT
@@ -379,7 +404,7 @@ class OcsDbClient extends OcsClient
                                         `softwares`.`FILESIZE`,
                                         `softwares`.`SOURCE`,
                                         `softwares`.`HARDWARE_ID`";
-                                if ($version['TVALUE'] > OcsServer::OCS2_VERSION_LIMIT) {
+                                if ($version != false && $version['TVALUE'] > OcsServer::OCS2_VERSION_LIMIT) {
                                     $query .= ",`softwares`.`GUID`,
                                         `softwares`.`LANGUAGE`,
                                         `softwares`.`INSTALLDATE`,
@@ -399,7 +424,7 @@ class OcsDbClient extends OcsClient
                                         `softwares`.`FILESIZE`,
                                         `softwares`.`SOURCE`,
                                         `softwares`.`HARDWARE_ID`";
-                                if ($version['TVALUE'] > OcsServer::OCS2_VERSION_LIMIT) {
+                                if ($version != false && $version['TVALUE'] > OcsServer::OCS2_VERSION_LIMIT) {
                                     $query .= ",`softwares`.`GUID`,
                                   `softwares`.`LANGUAGE`,
                                   `softwares`.`INSTALLDATE`,
@@ -469,7 +494,7 @@ class OcsDbClient extends OcsClient
                     break;
                 case "hardware":
                     $archive = "";
-                    if ($version['TVALUE'] >= OcsServer::OCS2_8_VERSION_LIMIT) {
+                    if ($version != false && $version['TVALUE'] >= OcsServer::OCS2_8_VERSION_LIMIT) {
                         $archive = "AND `hardware`.`ARCHIVE` IS NULL";
                     }
                     $query   = "SELECT `hardware`.*,`accountinfo`.`TAG`
@@ -682,9 +707,9 @@ class OcsDbClient extends OcsClient
    /**
     * @see OcsClient::checkConnection()
     */
-    public function checkConnection()
+    public function checkConnection(): bool
     {
-        return $this->db->connected;
+        return isset($this->db) && $this->db->connected === true;
     }
 
    /**
@@ -737,6 +762,9 @@ class OcsDbClient extends OcsClient
     */
     public function updateBios($ssn, $id)
     {
+        if (!$this->isConnected()) {
+            throw new \RuntimeException('OCS database connection is not established');
+        }
         $this->db->doQuery("UPDATE `bios` SET `SSN` = '" . $ssn . "'" . " WHERE `HARDWARE_ID` = $id");
     }
 
@@ -749,6 +777,9 @@ class OcsDbClient extends OcsClient
     */
     public function updateTag($tag, $id)
     {
+        if (!$this->isConnected()) {
+            throw new \RuntimeException('OCS database connection is not established');
+        }
         $this->db->doQuery("UPDATE `accountinfo` SET `TAG` = '" . $tag . "' WHERE `HARDWARE_ID` = $id");
     }
 
@@ -761,6 +792,9 @@ class OcsDbClient extends OcsClient
     */
     public function countComputers($options)
     {
+        if (!$this->isConnected()) {
+            throw new \RuntimeException('OCS database connection is not established');
+        }
 
         if (isset($options['OFFSET'])) {
             $offset = "OFFSET  " . $options['OFFSET'];
@@ -869,7 +903,7 @@ class OcsDbClient extends OcsClient
 
         $version = $this->getConfig("GUI_VERSION");
         $archive = "";
-        if ($version['TVALUE'] >= OcsServer::OCS2_8_VERSION_LIMIT) {
+        if ($version != false && $version['TVALUE'] >= OcsServer::OCS2_8_VERSION_LIMIT) {
             $archive = "AND `hardware`.`ARCHIVE` IS NULL";
         }
         $query =
@@ -900,6 +934,9 @@ class OcsDbClient extends OcsClient
     */
     public function getComputers($options, $id = 0)
     {
+        if (!$this->isConnected()) {
+            throw new \RuntimeException('OCS database connection is not established');
+        }
 
         if (isset($options['OFFSET'])) {
             $offset = "OFFSET  " . $options['OFFSET'];
@@ -1014,7 +1051,7 @@ class OcsDbClient extends OcsClient
         }
         $version = $this->getConfig("GUI_VERSION");
         $archive = "";
-        if ($version['TVALUE'] >= OcsServer::OCS2_8_VERSION_LIMIT) {
+        if ($version != false && $version['TVALUE'] >= OcsServer::OCS2_8_VERSION_LIMIT) {
             $archive = "AND `hardware`.`ARCHIVE` IS NULL";
         }
 
@@ -1097,12 +1134,17 @@ class OcsDbClient extends OcsClient
     */
     public function getConfig($key)
     {
-        $res    = false;
-        $query  = "SELECT `IVALUE`, `TVALUE` FROM `config` WHERE `NAME` = '" . $this->db->escape($key) . "'";
-        $config = $this->db->doQuery($query);
-        if ($config->num_rows > 0) {
-            while ($conf = $this->db->fetchAssoc($config)) {
-                $res = $conf;
+        $res = false;
+        if (!empty($key)) {
+            if (!$this->db || !$this->db->connected) {
+                return $res;
+            }
+            $query  = "SELECT `IVALUE`, `TVALUE` FROM `config` WHERE `NAME` = '" . $this->db->escape($key) . "'";
+            $config = $this->db->doQuery($query);
+            if ($config && $config->num_rows > 0) {
+                while ($conf = $this->db->fetchAssoc($config)) {
+                    $res = $conf;
+                }
             }
         }
         return $res;
@@ -1165,7 +1207,7 @@ class OcsDbClient extends OcsClient
 
         $version = $this->getConfig("GUI_VERSION");
         $archive = "";
-        if ($version['TVALUE'] >= OcsServer::OCS2_8_VERSION_LIMIT) {
+        if ($version != false && $version['TVALUE'] >= OcsServer::OCS2_8_VERSION_LIMIT) {
             $archive = "AND `hardware`.`ARCHIVE` IS NULL";
         }
 

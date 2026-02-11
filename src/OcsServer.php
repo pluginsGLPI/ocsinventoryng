@@ -2044,6 +2044,7 @@ class OcsServer extends CommonDBTM
                 }
             }
         }
+        return false;
     }
 
     /**

@@ -544,10 +544,10 @@ class Software
    /**
     * Install a software on a computer - check if not already installed
     *
-    * @param        $computers_id ID of the computer where to install a software
-    * @param        $softwareversions_id ID of the version to install
+    * @param        $computers_id //ID of the computer where to install a software
+    * @param        $softwareversions_id //ID of the version to install
     * @param        $installdate
-    * @param Do|int $dohistory Do history?
+    * @param int $dohistory //Do history?
     *
     */
     static function installSoftwareVersion($computers_id, $softwareversions_id, $installdate, $dohistory = 1)

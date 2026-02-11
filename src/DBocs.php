@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -44,42 +45,54 @@ if (!defined('GLPI_ROOT')) {
 #[AllowDynamicProperties]
 class DBocs extends DBmysql
 {
-   /**
-    * Constructor
-    *
-    * @param int|null $dbhost
-    * @param $dbuser
-    * @param $dbpassword
-    * @param $dbdefault
-    * @internal param ID $ID of the ocs server ID
-    */
-    function __construct($dbhost, $dbuser, $dbpassword, $dbdefault)
+    /**
+     * Constructor
+     *
+     * @param int|null $dbhost
+     * @param $dbuser
+     * @param $dbpassword
+     * @param $dbdefault
+     * @internal param ID $ID of the ocs server ID
+     */
+    public function __construct($dbhost, $dbuser, $dbpassword, $dbdefault)
     {
-
         $this->dbhost = $dbhost;
         $this->dbuser = $dbuser;
         $this->dbpassword = $dbpassword;
         $this->dbdefault = $dbdefault;
         $this->connect();
+
+        if (!$this->connected) {
+            $error_msg = !empty($this->dbh->connect_error) ? $this->dbh->connect_error : 'Unknown connection error';
+            throw new \RuntimeException(
+                sprintf('Failed to connect to OCS database host "%s": %s', $dbhost, $error_msg)
+            );
+        }
     }
 
-   /**
-    * Connect using current database settings
-    * Use dbhost, dbuser, dbpassword and dbdefault
-    *
-    * @param integer $choice host number (default NULL)
-    *
-    * @return void
-    */
+    /**
+     * Connect using current database settings
+     * Use dbhost, dbuser, dbpassword and dbdefault
+     *
+     * @param int $choice host number (default NULL)
+     *
+     * @return void
+     */
     public function connect($choice = null)
     {
         $this->connected = false;
 
-       // Do not trigger errors nor throw exceptions at PHP level
-       // as we already extract error and log while fetching result.
+        // Do not trigger errors nor throw exceptions at PHP level
+        // as we already extract error and log while fetching result.
         mysqli_report(MYSQLI_REPORT_OFF);
 
         $this->dbh = @new mysqli();
+
+        if (!$this->dbh) {
+            $this->error = 1;
+            return;
+        }
+
         if ($this->dbssl) {
             $this->dbh->ssl_set(
                 $this->dbsslkey,
@@ -90,28 +103,28 @@ class DBocs extends DBmysql
             );
         }
 
+        $this->dbh->options(MYSQLI_OPT_CONNECT_TIMEOUT, 10);
+
         if (is_array($this->dbhost)) {
-           // Round robin choice
-            $i    = (isset($choice) ? $choice : mt_rand(0, count($this->dbhost) - 1));
+            // Round robin choice
+            $i    = ($choice ?? mt_rand(0, count($this->dbhost) - 1));
             $host = $this->dbhost[$i];
         } else {
             $host = $this->dbhost;
         }
 
         $hostport = explode(":", $host);
-        $password = (isset($password))?rawurldecode($this->dbpassword):$this->dbpassword;
+        $password = (isset($password)) ? rawurldecode($this->dbpassword) : $this->dbpassword;
         if (count($hostport) < 2) {
-           // Host
+            // Host
             $this->dbh->real_connect($host, $this->dbuser, $password, $this->dbdefault);
         } elseif (intval($hostport[1]) > 0) {
-           // Host:port
+            // Host:port
             $this->dbh->real_connect($hostport[0], $this->dbuser, $password, $this->dbdefault, $hostport[1]);
         } else {
-           // :Socket
+            // :Socket
             $this->dbh->real_connect($hostport[0], $this->dbuser, $password, $this->dbdefault, ini_get('mysqli.default_port'), $hostport[1]);
         }
-       //Add for OCS
-        $this->dbh->options(MYSQLI_OPT_CONNECT_TIMEOUT, 10);
 
         if ($this->dbh->connect_error) {
             $this->connected = false;
@@ -122,7 +135,7 @@ class DBocs extends DBmysql
         } else {
             $this->setConnectionCharset();
 
-           // force mysqlnd to return int and float types correctly (not as strings)
+            // force mysqlnd to return int and float types correctly (not as strings)
             $this->dbh->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, true);
 
             $this->dbh->query("SET SESSION sql_mode = (SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''))");
@@ -131,5 +144,20 @@ class DBocs extends DBmysql
 
             $this->setTimezone($this->guessTimezone());
         }
+    }
+
+    /**
+     * Escapes special characters in a string for use in an SQL statement
+     *
+     * @param string $string String to escape
+     *
+     * @return string escaped string
+     */
+    public function escape($string)
+    {
+        if (!$this->connected || !$this->dbh) {
+            throw new \RuntimeException('Cannot escape string: database connection is not established');
+        }
+        return parent::escape($string);
     }
 }

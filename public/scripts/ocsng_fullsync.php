@@ -496,26 +496,27 @@ function plugin_ocsinventoryng_importFromOcsServer(
             'lock'                                => 1,
             'force'                               => 1,
             'cron' => 1];
+        if ($ocsClient = OcsServer::getDBocs($ocsServerId)) {
+            $action = OcsProcess::processComputer($process_params);
+            OcsProcess::manageImportStatistics($fields, $action['status']);
 
-        $action = OcsProcess::processComputer($process_params);
-        OcsProcess::manageImportStatistics($fields, $action['status']);
+            switch ($action['status']) {
+                case OcsProcess::COMPUTER_NOT_UNIQUE:
+                case OcsProcess::COMPUTER_FAILED_IMPORT:
+                case OcsProcess::COMPUTER_LINK_REFUSED:
+                    $notimport->logNotImported($ocsServerId, $ID, $action);
+                    break;
 
-        switch ($action['status']) {
-            case OcsProcess::COMPUTER_NOT_UNIQUE:
-            case OcsProcess::COMPUTER_FAILED_IMPORT:
-            case OcsProcess::COMPUTER_LINK_REFUSED:
-                $notimport->logNotImported($ocsServerId, $ID, $action);
-                break;
-
-            default:
-                $notimport->cleanNotImported($ocsServerId, $ID);
-                $log = Config::logProcessedComputers();
-                if ($log) {
-                    //Log detail
-                    $detail = new Detail();
-                    $detail->logProcessedComputer($ID, $ocsServerId, $action, $threadid, $threads_id);
-                }
-                break;
+                default:
+                    $notimport->cleanNotImported($ocsServerId, $ID);
+                    $log = Config::logProcessedComputers();
+                    if ($log) {
+                        //Log detail
+                        $detail = new Detail();
+                        $detail->logProcessedComputer($ID, $ocsServerId, $action, $threadid, $threads_id);
+                    }
+                    break;
+            }
         }
     }
 
