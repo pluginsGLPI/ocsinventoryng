@@ -228,14 +228,15 @@ function FirstPass($ocsservers_id)
     global $DB;
 
     if (OcsServer::checkOCSconnection($ocsservers_id)) {
-        $ocsClient = OcsServer::getDBocs($ocsservers_id);
+        try {
+            $ocsClient = OcsServer::getDBocs($ocsservers_id);
 
-        // Compute lastest new computer
-        $ocsResult = $ocsClient->getComputers([
-            'COMPLETE'    => '0',
-            'MAX_RECORDS' => 1,
-            'ORDER'       => 'ID DESC',
-        ]);
+            // Compute lastest new computer
+            $ocsResult = $ocsClient->getComputers([
+                'COMPLETE'    => '0',
+                'MAX_RECORDS' => 1,
+                'ORDER'       => 'ID DESC',
+            ]);
 
         if (count($ocsResult['COMPUTERS'])) {
             $max_id = key($ocsResult['COMPUTERS']);
@@ -282,6 +283,9 @@ function FirstPass($ocsservers_id)
         $cfg_ocs = OcsServer::getConfig($ocsservers_id);
         echo "\tManage delete items in OCS server #$ocsservers_id: \"" . $cfg_ocs["name"] . "\"\n";
         OcsProcess::manageDeleted($ocsservers_id, false);
+        } catch (\RuntimeException $e) {
+            echo "*** Error connecting to OCS server #$ocsservers_id: " . htmlspecialchars($e->getMessage()) . " ***\n";
+        }
     } else {
         echo "*** Can't connect to OCS server #$ocsservers_id ***";
     }
@@ -362,7 +366,21 @@ function plugin_ocsinventoryng_importFromOcsServer(
     }
 
     $ocsServerId  = $cfg_ocs['id'];
-    $ocsClient    = OcsServer::getDBocs($ocsServerId);
+
+    try {
+        $ocsClient = OcsServer::getDBocs($ocsServerId);
+        if (!$ocsClient->isConnected()) {
+            throw new \RuntimeException('OCS database connection is not established');
+        }
+    } catch (\RuntimeException $e) {
+        echo "\n\tThread #$threadid: Error connecting to OCS server: " . htmlspecialchars($e->getMessage()) . "\n";
+        $fields["error_msg"] = $e->getMessage();
+        $fields["status"] = PLUGIN_OCSINVENTORYNG_STATE_FAILED;
+        $thread = new Thread();
+        $thread->update($fields);
+        return $fields;
+    }
+
     $ocsComputers = [];
 
     // Build common options
@@ -496,7 +514,7 @@ function plugin_ocsinventoryng_importFromOcsServer(
             'lock'                                => 1,
             'force'                               => 1,
             'cron' => 1];
-        if ($ocsClient = OcsServer::getDBocs($ocsServerId)) {
+        if ($ocsClient) {
             $action = OcsProcess::processComputer($process_params);
             OcsProcess::manageImportStatistics($fields, $action['status']);
 

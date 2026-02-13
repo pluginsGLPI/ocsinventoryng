@@ -2983,7 +2983,7 @@ class OcsServer extends CommonDBTM
         $_SESSION["glpiname"] = 'ocsinventoryng';
 
         try {
-            //Get a randon server id
+            //Get a random server id
             $plugin_ocsinventoryng_ocsservers_id = self::getRandomServerID();
 
             if ($plugin_ocsinventoryng_ocsservers_id > 0) {
@@ -3074,6 +3074,7 @@ class OcsServer extends CommonDBTM
 
                             if (count($iterator) > 0) {
                                 foreach ($iterator as $values) {
+
                                     $task->addVolume(1);
                                     $task->log(sprintf(
                                         __('%1$s: %2$s'),
@@ -3085,7 +3086,9 @@ class OcsServer extends CommonDBTM
                                         'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                                         'cfg_ocs'                             => $cfg_ocs,
                                         'force'                               => 0];
+
                                     OcsProcess::synchronizeComputer($sync_params);
+
                                 }
                             }
                         }

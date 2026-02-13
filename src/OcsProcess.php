@@ -953,6 +953,7 @@ class OcsProcess extends CommonDBTM
         if ($DB->numrows($result) == 1) {
             $line = $DB->fetchAssoc($result);
 
+
             $comp = new Computer();
             $comp->getFromDB($line["computers_id"]);
 
@@ -967,6 +968,7 @@ class OcsProcess extends CommonDBTM
 
             if (is_array($computer_ocs)
                 && count($computer_ocs) > 0) {
+
                 $locks  = Ocslink::getLocksForComputer($line['computers_id']);
                 $params = ['computers_id'      => $line["computers_id"],
                     'cfg_ocs'           => $cfg_ocs,
@@ -1578,7 +1580,8 @@ class OcsProcess extends CommonDBTM
                     'rule_matched' => [],
                     'computers_id' => $line['computers_id']];
             }
-
+            $newchecksum = 0;
+            $ocsClient->setChecksum($newchecksum, $line['ocsid']);
             // ELSE Return code to indicate only last inventory date changed
             return ['status'       => self::COMPUTER_NOTUPDATED,
                 'entities_id'  => $comp->fields["entities_id"],

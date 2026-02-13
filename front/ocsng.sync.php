@@ -47,42 +47,63 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
             )
         );
 
+        try {
+            $key         = array_pop($_SESSION["ocs_update"]['computers']);
+            $cfg_ocs     = OcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+            $sync_params = ['ID'                                  => $key,
+                            'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                            'cfg_ocs'                             => $cfg_ocs,
+                            'force'                               => 1];
+            $action      = OcsProcess::synchronizeComputer($sync_params);
 
-        $key         = array_pop($_SESSION["ocs_update"]['computers']);
-        $cfg_ocs     = OcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-        $sync_params = ['ID'                                  => $key,
-                        'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                        'cfg_ocs'                             => $cfg_ocs,
-                        'force'                               => 1];
-        $action      = OcsProcess::synchronizeComputer($sync_params);
+            OcsProcess::manageImportStatistics(
+                $_SESSION["ocs_update"]['statistics'],
+                $action['status']
+            );
+            Html::getProgressBar($percent);
 
-        OcsProcess::manageImportStatistics(
-            $_SESSION["ocs_update"]['statistics'],
-            $action['status']
-        );
-        Html::getProgressBar($percent);
-
-        Html::redirect(PLUGIN_OCS_WEBDIR . '/front/ocsng.sync.php');
+            Html::redirect(PLUGIN_OCS_WEBDIR . '/front/ocsng.sync.php');
+        } catch (\RuntimeException $e) {
+            $_SESSION["ocs_update"]['computers'] = [];
+            Html::displayErrorMessage(__('Synchronization interrupted', 'ocsinventoryng') . ': ' . htmlspecialchars($e->getMessage()));
+            Html::redirect(PLUGIN_OCS_WEBDIR . '/front/ocsng.sync.php');
+        }
     }
 }
 
 if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
     && $_SESSION["plugin_ocsinventoryng_ocsservers_id"] > -1) {
     if (!isset($_POST["update_ok"])) {
-        $ocsClient   = OcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-        $deleted_pcs = $ocsClient->getTotalDeletedComputers();
-        if ($deleted_pcs > 0) {
+        try {
+            $ocsClient   = OcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+            $deleted_pcs = $ocsClient->getTotalDeletedComputers();
+            if ($deleted_pcs > 0) {
+                echo "<div class='center'>";
+                echo "<span style='color:firebrick'>";
+                echo "<i class='ti ti-alert-triangle fa-5x'></i><br><br>";
+                echo __('You have', 'ocsinventoryng') . " " . $deleted_pcs . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng');
+                echo "<br>";
+                echo __('Please clean them before import or synchronize computers', 'ocsinventoryng');
+                echo "</span></div><br>";
+            }
+            if ($display_list) {
+                $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"]];
+                OcsServer::showComputersToSynchronize($show_params);
+            }
+        } catch (\RuntimeException $e) {
             echo "<div class='center'>";
             echo "<span style='color:firebrick'>";
             echo "<i class='ti ti-alert-triangle fa-5x'></i><br><br>";
-            echo __('You have', 'ocsinventoryng') . " " . $deleted_pcs . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng');
+            echo __('Unable to connect to OCS Inventory NG server', 'ocsinventoryng');
             echo "<br>";
-            echo __('Please clean them before import or synchronize computers', 'ocsinventoryng');
-            echo "</span></div><br>";
-        }
-        if ($display_list) {
-            $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"]];
-            OcsServer::showComputersToSynchronize($show_params);
+            echo __('Error', 'ocsinventoryng') . ": " . htmlspecialchars($e->getMessage());
+            echo "<br>";
+            echo __('Please check the OCS server configuration and network connectivity', 'ocsinventoryng');
+            echo "<br>";
+            echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsserver.form.php'>";
+            echo __('View OCSNG server configuration', 'ocsinventoryng');
+            echo "</a>";
+            echo "</span></div>";
         }
     } else {
         if (isset($_POST['toupdate']) && count($_POST['toupdate']) > 0) {

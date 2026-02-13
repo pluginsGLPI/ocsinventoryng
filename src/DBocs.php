@@ -64,9 +64,15 @@ class DBocs extends DBmysql
 
         if (!$this->connected) {
             $error_msg = !empty($this->dbh->connect_error) ? $this->dbh->connect_error : 'Unknown connection error';
-            throw new \RuntimeException(
-                sprintf('Failed to connect to OCS database host "%s": %s', $dbhost, $error_msg)
+            $diagnostic = sprintf(
+                'Failed to connect to OCS database host "%s" (user: "%s", database: "%s"): %s. '
+                . 'Please verify: 1) host is reachable, 2) credentials are correct, 3) network firewall allows access',
+                $dbhost,
+                $dbuser,
+                $dbdefault,
+                $error_msg
             );
+            throw new \RuntimeException($diagnostic);
         }
     }
 
@@ -103,7 +109,7 @@ class DBocs extends DBmysql
             );
         }
 
-        $this->dbh->options(MYSQLI_OPT_CONNECT_TIMEOUT, 10);
+        $this->dbh->options(MYSQLI_OPT_CONNECT_TIMEOUT, 30);
 
         if (is_array($this->dbhost)) {
             // Round robin choice
