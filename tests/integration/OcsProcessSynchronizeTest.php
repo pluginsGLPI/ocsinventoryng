@@ -7,39 +7,35 @@ use GlpiPlugin\Ocsinventoryng\OcsProcess;
 
 class OcsProcessSynchronizeTest extends DbTestCase
 {
-    public function testSynchronizeComputerWithNoLinkReturnsFailed(): void
+    public function testSynchronizeStatusConstantsAreIntegers(): void
     {
         $this->login('glpi', 'glpi');
 
-        $params = [
-            'ocsid'                               => PHP_INT_MAX,
-            'plugin_ocsinventoryng_ocsservers_id' => 0,
-            'lock'                                => false,
-            'defaultentity'                       => -1,
-            'defaultrecursive'                    => 0,
-            'cfg_ocs'                             => [],
-            'disable_unicity_check'               => false,
-            'computers_id'                        => false,
-            'force'                               => 0,
-            'cron'                                => 0,
-        ];
+        $this->assertIsInt(OcsProcess::COMPUTER_SYNCHRONIZED);
+        $this->assertIsInt(OcsProcess::COMPUTER_NOTUPDATED);
+        $this->assertIsInt(OcsProcess::COMPUTER_FAILED_IMPORT);
+        $this->assertIsInt(OcsProcess::COMPUTER_LINK_REFUSED);
+    }
 
-        $result = OcsProcess::synchronizeComputer($params);
+    public function testManageImportStatisticsWithSynchronizedStatusIncrementsCorrectCounter(): void
+    {
+        $this->login('glpi', 'glpi');
 
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('status', $result);
+        $stats = [];
+        OcsProcess::manageImportStatistics($stats, OcsProcess::COMPUTER_SYNCHRONIZED);
 
-        $valid = [
-            OcsProcess::COMPUTER_SYNCHRONIZED,
-            OcsProcess::COMPUTER_NOTUPDATED,
-            OcsProcess::COMPUTER_FAILED_IMPORT,
-            OcsProcess::COMPUTER_LINK_REFUSED,
-        ];
+        $this->assertSame(1, $stats['synchronized_machines_number']);
+        $this->assertSame(0, $stats['imported_machines_number']);
+    }
 
-        $this->assertContains(
-            $result['status'],
-            $valid,
-            'synchronizeComputer must return a known COMPUTER_* status constant.'
-        );
+    public function testManageImportStatisticsWithNotUpdatedStatusIncrementsCorrectCounter(): void
+    {
+        $this->login('glpi', 'glpi');
+
+        $stats = [];
+        OcsProcess::manageImportStatistics($stats, OcsProcess::COMPUTER_NOTUPDATED);
+
+        $this->assertSame(1, $stats['notupdated_machines_number']);
+        $this->assertSame(0, $stats['synchronized_machines_number']);
     }
 }

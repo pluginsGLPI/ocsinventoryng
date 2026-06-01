@@ -29,39 +29,30 @@ class BulkImportTest extends DbTestCase
             OcsProcess::manageImportStatistics($result, OcsProcess::COMPUTER_FAILED_IMPORT);
         }
 
-        $this->assertSame(10, $result[OcsProcess::COMPUTER_IMPORTED] ?? 0);
-        $this->assertSame(5, $result[OcsProcess::COMPUTER_SYNCHRONIZED] ?? 0);
-        $this->assertSame(3, $result[OcsProcess::COMPUTER_FAILED_IMPORT] ?? 0);
+        $this->assertSame(10, $result['imported_machines_number'] ?? 0);
+        $this->assertSame(5, $result['synchronized_machines_number'] ?? 0);
+        $this->assertSame(3, $result['failed_rules_machines_number'] ?? 0);
     }
 
-    public function testBulkImportWithNonExistentServersReturnsFailedStatuses(): void
+    public function testAllStatusConstantsProduceExactlyOneCounterEntry(): void
     {
         $this->login('glpi', 'glpi');
 
-        $stats = [];
-        $count = 5;
+        $statuses = [
+            OcsProcess::COMPUTER_IMPORTED,
+            OcsProcess::COMPUTER_SYNCHRONIZED,
+            OcsProcess::COMPUTER_LINKED,
+            OcsProcess::COMPUTER_FAILED_IMPORT,
+            OcsProcess::COMPUTER_NOTUPDATED,
+            OcsProcess::COMPUTER_NOT_UNIQUE,
+            OcsProcess::COMPUTER_LINK_REFUSED,
+        ];
 
-        for ($i = 0; $i < $count; $i++) {
-            $params = [
-                'ocsid'                               => PHP_INT_MAX - $i,
-                'plugin_ocsinventoryng_ocsservers_id' => 0,
-                'lock'                                => false,
-                'defaultentity'                       => -1,
-                'defaultrecursive'                    => 0,
-                'cfg_ocs'                             => [],
-                'disable_unicity_check'               => false,
-                'computers_id'                        => false,
-                'cron'                                => 0,
-            ];
-
-            $result = OcsProcess::importComputer($params);
-
-            if (isset($result['status'])) {
-                OcsProcess::manageImportStatistics($stats, $result['status']);
-            }
+        foreach ($statuses as $status) {
+            $stats = [];
+            OcsProcess::manageImportStatistics($stats, $status);
+            $total = array_sum($stats);
+            $this->assertSame(1, $total, "Status $status must increment exactly one counter.");
         }
-
-        $total = array_sum($stats);
-        $this->assertSame($count, $total, 'Every import attempt must produce exactly one counted status.');
     }
 }

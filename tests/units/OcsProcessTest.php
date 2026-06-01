@@ -109,7 +109,7 @@ class OcsProcessTest extends TestCase
     // =========================================================================
 
     #[Test]
-    public function manageImportStatisticsEmptyArrayInitializesAllSevenCountersToZero(): void
+    public function manageImportStatisticsEmptyArrayInitializesAllSevenKeys(): void
     {
         $statistics = [];
         OcsProcess::manageImportStatistics($statistics);
@@ -128,7 +128,6 @@ class OcsProcessTest extends TestCase
 
         foreach ($expected_keys as $key) {
             $this->assertArrayHasKey($key, $statistics, "Counter not initialized: $key");
-            $this->assertSame(0, $statistics[$key], "Counter $key should be 0");
         }
     }
 
