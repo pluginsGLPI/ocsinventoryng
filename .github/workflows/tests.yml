@@ -1,141 +1,161 @@
-name: Tests
+name: PHPUnit
 
 on:
   push:
-    branches:
-      - main
-      - master
   pull_request:
-    branches:
-      - main
-      - master
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
 
 jobs:
-  # Lint job: validate composer.json and run parallel-lint on src/ and tests/
-  lint:
-    name: Lint (PHP ${{ matrix.php-version }})
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php-version: ["8.2", "8.3"]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          extensions: mbstring, intl, mysqli, zip
-
-      - name: Validate composer.json
-        run: composer validate --no-check-publish
-
-      - name: Install Composer dependencies
-        run: composer install --no-progress --prefer-dist --no-scripts
-
-      - name: Run parallel-lint
-        run: vendor/bin/parallel-lint --no-progress src/ tests/ --blame
-
-  # PHPStan static analysis — allowed to fail (informational)
-  phpstan:
-    name: PHPStan (PHP 8.2)
-    runs-on: ubuntu-latest
-    needs: lint
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.2"
-          extensions: mbstring, intl, mysqli, zip
-
-      - name: Install Composer dependencies
-        run: composer install --no-progress --prefer-dist --no-scripts
-
-      - name: Run PHPStan
-        continue-on-error: true
-        run: vendor/bin/phpstan analyse --no-progress --error-format=github src/
-
-  # Unit tests — run without GLPI, on both supported PHP versions
+  # ── Job 1 : unit tests (no database) ──────────────────────────────────────
   unit-tests:
-    name: Unit Tests (PHP ${{ matrix.php-version }})
+    name: "Unit tests (PHP ${{ matrix.php-version }})"
     runs-on: ubuntu-latest
-    needs: lint
     strategy:
+      fail-fast: false
       matrix:
         php-version: ["8.2", "8.3"]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
-      - name: Setup PHP
+    steps:
+      - name: Checkout GLPI core (shallow)
+        uses: actions/checkout@v4
+        with:
+          repository: glpi-project/glpi
+          ref: 11.0/bugfixes
+          path: glpi
+
+      - name: Checkout plugin
+        uses: actions/checkout@v4
+        with:
+          path: glpi/plugins/ocsinventoryng
+
+      - name: Setup PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: mbstring, intl, mysqli, zip
+          extensions: mbstring, intl, mysqli, zip, soap
           coverage: none
 
-      - name: Install Composer dependencies
-        run: composer install --no-progress --prefer-dist --no-scripts
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/composer
+          key: composer-${{ matrix.php-version }}-${{ hashFiles('glpi/composer.lock') }}
+          restore-keys: composer-${{ matrix.php-version }}-
+
+      - name: Install GLPI Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+        working-directory: glpi
+
+      - name: Install plugin Composer dependencies
+        run: composer install --no-dev --no-interaction --prefer-dist --no-progress
+        working-directory: glpi/plugins/ocsinventoryng
 
       - name: Run unit tests
-        run: vendor/bin/phpunit --testsuite units --no-coverage
+        run: >
+          php vendor/bin/phpunit
+          --configuration plugins/ocsinventoryng/phpunit.xml
+          --testsuite Unit
+        working-directory: glpi
 
-  # Integration tests — requires a running GLPI instance and MySQL
+  # ── Job 2 : integration tests (with GLPI database) ────────────────────────
   integration-tests:
-    name: Integration Tests (PHP 8.2)
+    name: "Integration tests (PHP ${{ matrix.php-version }} / ${{ matrix.db-image }})"
     runs-on: ubuntu-latest
-    needs: unit-tests
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php-version: "8.2"
+            db-image: "mysql:8.0"
+          - php-version: "8.2"
+            db-image: "mariadb:10.11"
+
     services:
-      mysql:
-        image: mysql:8.0
+      db:
+        image: ${{ matrix.db-image }}
         env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: glpi
+          MYSQL_ROOT_PASSWORD: ""
+          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+          MYSQL_DATABASE: glpi_test
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping"
+          --health-cmd="mysqladmin ping -uroot"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=5
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+          --health-retries=10
 
-      - name: Setup PHP
+    steps:
+      - name: Checkout GLPI core
+        uses: actions/checkout@v4
+        with:
+          repository: glpi-project/glpi
+          ref: 11.0/bugfixes
+          path: glpi
+
+      - name: Checkout plugin
+        uses: actions/checkout@v4
+        with:
+          path: glpi/plugins/ocsinventoryng
+
+      - name: Setup PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
-          extensions: mbstring, intl, mysqli, zip
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, intl, mysqli, zip, soap, pdo_mysql
           coverage: none
 
-      - name: Clone GLPI 11.0
-        run: git clone --depth 1 --branch 11.0/bugfixes https://github.com/glpi-project/glpi.git /tmp/glpi
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/composer
+          key: composer-${{ matrix.php-version }}-${{ hashFiles('glpi/composer.lock') }}
+          restore-keys: composer-${{ matrix.php-version }}-
 
       - name: Install GLPI Composer dependencies
-        run: cd /tmp/glpi && composer install --no-progress --prefer-dist --no-scripts
+        run: composer install --no-interaction --prefer-dist --no-progress
+        working-directory: glpi
 
-      - name: Generate GLPI dependencies hash
-        run: php /tmp/glpi/bin/console dependencies install
+      - name: Build GLPI frontend dependencies
+        run: |
+          npm install --no-save
+          npm run-script build
+        working-directory: glpi
 
-      - name: Install GLPI database
-        run: >-
-          php /tmp/glpi/bin/console db:install
-          --db-name=glpi
+      - name: Compile GLPI locales
+        run: |
+          sudo apt-get install -y gettext
+          php bin/console tools:locales:compile --allow-superuser
+        working-directory: glpi
+
+      - name: Install GLPI test database
+        run: >
+          php bin/console database:install
+          --no-interaction --force
+          --env=testing
           --db-host=127.0.0.1
+          --db-name=glpi_test
           --db-user=root
-          --db-password=root
-          --no-interaction
+          --db-password=""
+        working-directory: glpi
 
       - name: Install plugin Composer dependencies
-        run: composer install --no-progress --prefer-dist --no-scripts
+        run: composer install --no-dev --no-interaction --prefer-dist --no-progress
+        working-directory: glpi/plugins/ocsinventoryng
+
+      - name: Install ocsinventoryng plugin
+        run: |
+          php bin/console glpi:plugin:install  --no-interaction --env=testing ocsinventoryng
+          php bin/console glpi:plugin:activate --no-interaction --env=testing ocsinventoryng
+        working-directory: glpi
 
       - name: Run integration tests
-        continue-on-error: true
-        env:
-          GLPI_ROOT: /tmp/glpi
-        run: vendor/bin/phpunit --testsuite integration --no-coverage --group integration
+        run: >
+          php vendor/bin/phpunit
+          --configuration plugins/ocsinventoryng/phpunit.integration.xml
+          --testsuite Integration
+        working-directory: glpi
