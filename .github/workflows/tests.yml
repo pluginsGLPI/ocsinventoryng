@@ -119,6 +119,9 @@ jobs:
       - name: Install GLPI Composer dependencies
         run: cd /tmp/glpi && composer install --no-progress --prefer-dist --no-scripts
 
+      - name: Generate GLPI dependencies hash
+        run: php /tmp/glpi/bin/console dependencies install
+
       - name: Install GLPI database
         run: >-
           php /tmp/glpi/bin/console db:install
