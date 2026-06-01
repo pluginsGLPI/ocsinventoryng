@@ -558,6 +558,10 @@ class OcsProcess extends CommonDBTM
         $rules_matched = [];
         $ocsClient     = OcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
+        if (!$ocsClient) {
+            return ['status' => self::COMPUTER_FAILED_IMPORT];
+        }
+
         $ocsComputer = $ocsClient->getComputer($ocsid, [
             'DISPLAY' => [
                 'CHECKSUM' => OcsClient::CHECKSUM_HARDWARE | OcsClient::CHECKSUM_BIOS  | OcsClient::CHECKSUM_NETWORK_ADAPTERS,
@@ -958,6 +962,11 @@ class OcsProcess extends CommonDBTM
             $comp->getFromDB($line["computers_id"]);
 
             $ocsClient    = OcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
+
+            if (!$ocsClient) {
+                return ['status' => self::COMPUTER_FAILED_IMPORT];
+            }
+
             $options      = [
                 "DISPLAY" => [
                     "CHECKSUM" => OcsClient::CHECKSUM_HARDWARE  | OcsClient::CHECKSUM_NETWORK_ADAPTERS,
@@ -1588,6 +1597,8 @@ class OcsProcess extends CommonDBTM
                 'rule_matched' => [],
                 'computers_id' => $line['computers_id']];
         }
+
+        return ['status' => self::COMPUTER_FAILED_IMPORT];
     }
 
 

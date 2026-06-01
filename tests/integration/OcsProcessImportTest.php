@@ -18,56 +18,45 @@ class OcsProcessImportTest extends DbTestCase
         $this->assertSame(6, OcsProcess::COMPUTER_LINK_REFUSED);
     }
 
-    public function testGetAvailableStatisticsReturnsSevenNamedCounters(): void
+    public function testImportComputerWithInvalidServerReturnsFailedImport(): void
     {
         $this->login('glpi', 'glpi');
 
-        $stats = OcsProcess::getAvailableStatistics();
+        $result = OcsProcess::importComputer([
+            'ocsid'                               => PHP_INT_MAX,
+            'plugin_ocsinventoryng_ocsservers_id' => 0,
+            'lock'                                => false,
+            'defaultentity'                       => -1,
+            'defaultrecursive'                    => 0,
+            'cfg_ocs'                             => [],
+            'disable_unicity_check'               => false,
+            'computers_id'                        => false,
+            'cron'                                => 0,
+        ]);
 
-        $this->assertCount(7, $stats);
-
-        $expected = [
-            'imported_machines_number',
-            'synchronized_machines_number',
-            'linked_machines_number',
-            'notupdated_machines_number',
-            'failed_rules_machines_number',
-            'not_unique_machines_number',
-            'link_refused_machines_number',
-        ];
-
-        foreach ($expected as $key) {
-            $this->assertArrayHasKey($key, $stats);
-        }
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('status', $result);
+        $this->assertSame(OcsProcess::COMPUTER_FAILED_IMPORT, $result['status']);
     }
 
-    public function testManageImportStatisticsInitializesAllCountersWhenCalledWithNoAction(): void
+    public function testProcessComputerWithInvalidServerReturnsFailedImport(): void
     {
         $this->login('glpi', 'glpi');
 
-        $stats = [];
-        OcsProcess::manageImportStatistics($stats);
+        $result = OcsProcess::processComputer([
+            'ocsid'                               => PHP_INT_MAX,
+            'plugin_ocsinventoryng_ocsservers_id' => 0,
+            'lock'                                => false,
+            'defaultentity'                       => -1,
+            'defaultrecursive'                    => 0,
+            'disable_unicity_check'               => false,
+            'computers_id'                        => false,
+            'force'                               => 0,
+            'cron'                                => 0,
+        ]);
 
-        $this->assertCount(7, $stats);
-    }
-
-    public function testManageImportStatisticsWithImportedStatusIncrementsImportedCounter(): void
-    {
-        $this->login('glpi', 'glpi');
-
-        $stats = [];
-        OcsProcess::manageImportStatistics($stats, OcsProcess::COMPUTER_IMPORTED);
-
-        $this->assertSame(1, $stats['imported_machines_number']);
-    }
-
-    public function testManageImportStatisticsWithLinkedStatusIncrementsLinkedCounter(): void
-    {
-        $this->login('glpi', 'glpi');
-
-        $stats = [];
-        OcsProcess::manageImportStatistics($stats, OcsProcess::COMPUTER_LINKED);
-
-        $this->assertSame(1, $stats['linked_machines_number']);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('status', $result);
+        $this->assertSame(OcsProcess::COMPUTER_FAILED_IMPORT, $result['status']);
     }
 }

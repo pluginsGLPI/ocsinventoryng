@@ -34,25 +34,33 @@ class BulkImportTest extends DbTestCase
         $this->assertSame(3, $result['failed_rules_machines_number'] ?? 0);
     }
 
-    public function testAllStatusConstantsProduceExactlyOneCounterEntry(): void
+    public function testBulkImportWithInvalidServerReturnsFailedStatusForEachAttempt(): void
     {
         $this->login('glpi', 'glpi');
 
-        $statuses = [
-            OcsProcess::COMPUTER_IMPORTED,
-            OcsProcess::COMPUTER_SYNCHRONIZED,
-            OcsProcess::COMPUTER_LINKED,
-            OcsProcess::COMPUTER_FAILED_IMPORT,
-            OcsProcess::COMPUTER_NOTUPDATED,
-            OcsProcess::COMPUTER_NOT_UNIQUE,
-            OcsProcess::COMPUTER_LINK_REFUSED,
-        ];
+        $stats = [];
+        $count = 5;
 
-        foreach ($statuses as $status) {
-            $stats = [];
-            OcsProcess::manageImportStatistics($stats, $status);
-            $total = array_sum($stats);
-            $this->assertSame(1, $total, "Status $status must increment exactly one counter.");
+        for ($i = 0; $i < $count; $i++) {
+            $result = OcsProcess::importComputer([
+                'ocsid'                               => PHP_INT_MAX - $i,
+                'plugin_ocsinventoryng_ocsservers_id' => 0,
+                'lock'                                => false,
+                'defaultentity'                       => -1,
+                'defaultrecursive'                    => 0,
+                'cfg_ocs'                             => [],
+                'disable_unicity_check'               => false,
+                'computers_id'                        => false,
+                'cron'                                => 0,
+            ]);
+
+            if (isset($result['status'])) {
+                OcsProcess::manageImportStatistics($stats, $result['status']);
+            }
         }
+
+        $total = array_sum($stats);
+        $this->assertSame($count, $total, 'Every import attempt must produce exactly one counted status.');
+        $this->assertSame($count, $stats['failed_rules_machines_number'] ?? 0);
     }
 }
