@@ -31,15 +31,13 @@
 namespace GlpiPlugin\Ocsinventoryng;
 
 use AllowDynamicProperties;
-use GlpiPlugin\Mydashboard\Chart;
 use GlpiPlugin\Mydashboard\Charts\BarChart;
 use GlpiPlugin\Mydashboard\Charts\PieChart;
-use GlpiPlugin\Mydashboard\Datatable;
+use GlpiPlugin\Mydashboard\Criteria;
 use GlpiPlugin\Mydashboard\Helper;
 use GlpiPlugin\Mydashboard\Html as MydashboardHtml;
 use GlpiPlugin\Mydashboard\Menu;
 use GlpiPlugin\Mydashboard\Widget;
-use Plugin;
 use Toolbox;
 
 /**
@@ -92,7 +90,7 @@ class Dashboard extends MydashboardHtml
     /**
      * @param $widgetId
      *
-     * @return Datatable|HBarChart|Html|LineChart|PieChart|VBarChart
+     * @return MydashboardHtml
      */
     public function getWidgetContentForItem($widgetId, $opt = [])
     {
@@ -110,10 +108,9 @@ class Dashboard extends MydashboardHtml
                 $params  = ["preferences" => [],
                             "criterias"   => $criterias,
                             "opt"         => $opt];
-                $options = Helper::manageCriterias($params);
 
-                $opt  = $options['opt'];
-                $crit = $options['crit'];
+                $default = Helper::manageCriterias($params);
+
 
                 $query = "SELECT DISTINCT
                            DATE_FORMAT(`glpi_plugin_ocsinventoryng_ocslinks`.`last_update`, '%b %Y') AS periodsync_name,
@@ -171,6 +168,7 @@ class Dashboard extends MydashboardHtml
                            "name"      => $name,
                            "onsubmit"  => false,
                            "opt"       => $opt,
+                            "default" => $default,
                            "criterias" => $criterias,
                            "export"    => true,
                            "canvas"    => true,
@@ -191,10 +189,9 @@ class Dashboard extends MydashboardHtml
                 $params  = ["preferences" => [],
                             "criterias"   => $criterias,
                             "opt"         => $opt];
-                $options = Helper::manageCriterias($params);
 
-                $opt  = $options['opt'];
-                $crit = $options['crit'];
+                $default = Helper::manageCriterias($params);
+
 
                 $counts     = [];
                 $name_agent = [];
@@ -313,6 +310,7 @@ class Dashboard extends MydashboardHtml
                            "name"      => $name,
                            "onsubmit"  => false,
                            "opt"       => [],
+                           "default" => $default,
                            "criterias" => [],
                            "export"    => true,
                            "canvas"    => true,
@@ -338,7 +336,7 @@ class Dashboard extends MydashboardHtml
 
         $options['reset'][] = 'reset';
 
-        $options = Chart::addCriteria(10002, 'contains', $params["params"]["dateinv"], 'AND');
+        $options = Criteria::addUrlCriteria(Criteria::OCSINVENTORYNG_IMPORTDATE, 'contains', $params["params"]["dateinv"], 'AND');
 
         return  $CFG_GLPI["root_doc"] . '/front/computer.php?is_deleted=0&' .
                 Toolbox::append_params($options, "&");

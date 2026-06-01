@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         stopOnFailure="false"
+         executionOrder="random"
+         failOnWarning="true"
+         failOnRisky="true">
+    <testsuites>
+        <testsuite name="units">
+            <directory>tests/units</directory>
+        </testsuite>
+        <testsuite name="integration">
+            <directory>tests/integration</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
+</phpunit>

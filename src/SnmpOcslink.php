@@ -742,26 +742,26 @@ class SnmpOcslink extends CommonDBTM
 
                         $linked_ids [] = $data['ocs_id'];
                         $ocsClient     = OcsServer::getDBocs($data['plugin_ocsinventoryng_ocsservers_id']);
-                        $ocsResult     = $ocsClient->getSnmp([
-                            'MAX_RECORDS' => 1,
-                            'FILTER'      => [
-                                'IDS' => $linked_ids,
-                            ],
-                        ]);
-                        if (isset($ocsResult['SNMP'])) {
-                            if (count($ocsResult['SNMP']) > 0) {
-                                foreach ($ocsResult['SNMP'] as $snmp) {
-                                    $LASTDATE = $snmp['META']['LASTDATE'];
-                                    $UPTIME   = $snmp['META']['UPTIME'];
-
-                                    echo "<tr class='tab_bg_1'><td>" . __('Last OCSNG SNMP inventory date', 'ocsinventoryng');
-                                    echo "</td><td>" . Html::convDateTime($LASTDATE) . "</td>";
-
-                                    echo "<td>" . __('Uptime', 'ocsinventoryng');
-                                    echo "</td><td>" . $UPTIME . "</td></tr>";
-                                }
-                            }
-                        }
+//                        $ocsResult     = $ocsClient->getSnmp([
+//                            'MAX_RECORDS' => 1,
+//                            'FILTER'      => [
+//                                'IDS' => $linked_ids,
+//                            ],
+//                        ]);
+//                        if (isset($ocsResult['SNMP'])) {
+//                            if (count($ocsResult['SNMP']) > 0) {
+//                                foreach ($ocsResult['SNMP'] as $snmp) {
+//                                    $LASTDATE = $snmp['META']['LASTDATE'];
+//                                    $UPTIME   = $snmp['META']['UPTIME'];
+//
+//                                    echo "<tr class='tab_bg_1'><td>" . __('Last OCSNG SNMP inventory date', 'ocsinventoryng');
+//                                    echo "</td><td>" . Html::convDateTime($LASTDATE) . "</td>";
+//
+//                                    echo "<td>" . __('Uptime', 'ocsinventoryng');
+//                                    echo "</td><td>" . $UPTIME . "</td></tr>";
+//                                }
+//                            }
+//                        }
                         if ($item->getType() == 'Printer') {
                             $cartridges = [];
                             $trays      = [];

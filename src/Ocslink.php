@@ -1479,7 +1479,7 @@ class Ocslink extends CommonDBTM
                 'computers_updates'                   => $locks,
                 'ocs_id'                              => $ocsid,
                 'entities_id'                         => $comp->fields['entities_id'],
-                'HARDWARE'                            => $ocsComputer['HARDWARE'],
+                'HARDWARE'                            => $ocsComputer['HARDWARE'] ?? [],
                 'BIOS'                                => $ocsComputer['BIOS'],
                 'force'                               => 0,
             ];

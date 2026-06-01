@@ -6,7 +6,8 @@
         "friendsofphp/php-cs-fixer": "^3.86",
         "glpi-project/tools": "^0.8.0",
         "php-parallel-lint/php-parallel-lint": "^1.4",
-        "phpstan/phpstan": "^2.1"
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^10.5"
     },
     "config": {
         "optimize-autoloader": true,
@@ -14,5 +15,10 @@
             "php": "8.2.0"
         },
         "sort-packages": true
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "GlpiPlugin\\Ocsinventoryng\\Tests\\": "tests/"
+        }
     }
 }
