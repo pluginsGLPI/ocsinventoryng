@@ -114,7 +114,7 @@ jobs:
           coverage: none
 
       - name: Clone GLPI 11.0
-        run: git clone --depth 1 --branch 11.0 https://github.com/glpi-project/glpi.git /tmp/glpi
+        run: git clone --depth 1 --branch 11.0/bugfixes https://github.com/glpi-project/glpi.git /tmp/glpi
 
       - name: Install GLPI Composer dependencies
         run: cd /tmp/glpi && composer install --no-progress --prefer-dist --no-scripts
