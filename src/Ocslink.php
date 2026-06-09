@@ -1006,26 +1006,34 @@ class Ocslink extends CommonDBTM
      *
      * @return int
      */
-    public static function getOCSServerForItem(CommonGLPI $item)
-    {
-        global $DB;
-        $dbu = new DbUtils();
-        $query = "SELECT *
-                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                WHERE `computers_id` = " . $item->getID() . " " .
-                 $dbu->getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
+	public static function getOCSServerForItem(CommonGLPI $item)
+	{
+		global $DB;
 
-        $result = $DB->doQuery($query);
-        if ($DB->numrows($result) > 0) {
-            $data = $DB->fetchAssoc($result);
+		// Evita errores con objetos virtuales del plugin PDF
+		if (!method_exists($item, 'getID')) {
+			return 0;
+		}
 
-            if (count($data)) {
-                return $data['plugin_ocsinventoryng_ocsservers_id'];
-            }
+		$dbu = new DbUtils();
 
-            return false;
-        }
-    }
+		$query = "SELECT *
+				FROM `glpi_plugin_ocsinventoryng_ocslinks`
+				WHERE `computers_id` = " . $item->getID() . " " .
+				 $dbu->getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
+
+		$result = $DB->doQuery($query);
+
+		if ($DB->numrows($result) > 0) {
+			$data = $DB->fetchAssoc($result);
+
+			if (count($data)) {
+				return $data['plugin_ocsinventoryng_ocsservers_id'];
+			}
+		}
+
+		return 0;
+	}
 
     /**
      * Make the item link between glpi and ocs.
