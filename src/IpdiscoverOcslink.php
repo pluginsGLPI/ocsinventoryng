@@ -1574,7 +1574,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                                 if (isset($macs[mb_strtoupper(substr($hardware[$i]["mac"], 0, 8))])) {
                                     $macConstructor = $macs[mb_strtoupper(substr($hardware[$i]["mac"], 0, 8))];
                                 } else {
-                                    $macConstructor = __("unknow");
+                                    $macConstructor = __('Unknown');
                                 }
                             }
 
@@ -1704,7 +1704,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                                 if (isset($macs[mb_strtoupper(substr($hardware[$i]["mac"], 0, 8))])) {
                                     $macConstructor = $macs[mb_strtoupper(substr($hardware[$i]["mac"], 0, 8))];
                                 } else {
-                                    $macConstructor = __("unknow");
+                                    $macConstructor = __('Unknown');
                                 }
                             }
 

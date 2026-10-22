@@ -31,8 +31,14 @@
 
 use GlpiPlugin\Ocsinventoryng\IpdiscoverOcslink;
 use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
+
+// The OCS server of the session, chosen on front/ocsng.php: still allowed for the active profile
+if (OcsServer::checkSessionServer() <= 0) {
+    throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+}
 
 Html::header(Menu::getTypeName(), '', "tools", Menu::class, "modifysubnet");
 

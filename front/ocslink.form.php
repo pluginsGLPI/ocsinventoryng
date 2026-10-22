@@ -48,6 +48,8 @@ $check_link = static function ($links_id): Ocslink {
    }
    $computer = new Computer();
    $computer->check((int) $link->fields['computers_id'], UPDATE);
+   // The OCS server of the link: allowed for the active profile
+   OcsServer::checkAllowedServer($link->fields['plugin_ocsinventoryng_ocsservers_id']);
 
    return $link;
 };

@@ -32,29 +32,24 @@ use GlpiPlugin\Ocsinventoryng\Menu;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-if (Plugin::isPluginActive("ocsinventoryng")) {
-   $config = new Config();
+// The router of GLPI refuses the pages of an inactive plugin
+$config = new Config();
 
-   global $CFG_GLPI;
+global $CFG_GLPI;
 
-   if (isset($_POST["update"])) {
-      $config->update($_POST);
-      Html::back();
-   }
-   if (isset($_POST["soft_lock"])) {
-      $config->setScriptLock();
-   }
-   if (isset($_POST["soft_unlock"])) {
-      $config->removeScriptLock();
-   }
-
-   Html::header(__("Automatic synchronization's configuration", 'ocsinventoryng'), '', "tools", Menu::class, "config");
-
-   $config->display(['id' => 1]);
-} else {
-   Html::header(__('Setup'), '', "tools", Menu::class, "config");
-   echo "<div class='alert alert-important alert-warning d-flex'>";
-   echo "<b>" . __('Please activate the plugin', 'ocsinventoryng') . "</b></div>";
+if (isset($_POST["update"])) {
+   $config->update($_POST);
+   Html::back();
 }
+if (isset($_POST["soft_lock"])) {
+   $config->setScriptLock();
+}
+if (isset($_POST["soft_unlock"])) {
+   $config->removeScriptLock();
+}
+
+Html::header(__("Automatic synchronization's configuration", 'ocsinventoryng'), '', "tools", Menu::class, "config");
+
+$config->display(['id' => 1]);
 
 Html::footer();

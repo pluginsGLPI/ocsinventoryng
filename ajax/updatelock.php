@@ -28,10 +28,13 @@
  */
 
 use GlpiPlugin\Ocsinventoryng\Ocslink;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 if (isset($_POST['update_lock'])) {
 
-   $plugin_ocsinventoryng_ocsservers_id = (int) ($_POST['plugin_ocsinventoryng_ocsservers_id'] ?? 0);
+   // A synchronization of the computer: the right of the plugin, on a server allowed for the profile
+   Session::checkRight('plugin_ocsinventoryng_sync', UPDATE);
+   $plugin_ocsinventoryng_ocsservers_id = OcsServer::checkAllowedServer($_POST['plugin_ocsinventoryng_ocsservers_id'] ?? 0);
    $computers_id = (int) ($_POST['computers_id'] ?? 0);
    $ocsid = (int) ($_POST['ocsid'] ?? 0);
    $field = (string) ($_POST['field'] ?? '');

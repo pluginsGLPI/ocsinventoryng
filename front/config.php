@@ -30,20 +30,12 @@
 use GlpiPlugin\Ocsinventoryng\Config;
 use GlpiPlugin\Ocsinventoryng\Menu;
 
-global $CFG_GLPI;
+// The router of GLPI refuses the pages of an inactive plugin
+Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-if (Plugin::isPluginActive("ocsinventoryng")
-   && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+Html::header(Menu::getTypeName(), '', "tools", Menu::class, "ocsinventoryng");
 
-   Html::header(Menu::getTypeName(), '', "tools", Menu::class, "ocsinventoryng");
-
-   // choose config server or config synchro
-   Config::showMenu();
-
-} else {
-   Html::header(__('Setup'), '', "tools", Menu::class, "config");
-   echo "<div class='alert alert-important alert-warning d-flex'>";
-   echo "<b>" . __('Please activate the plugin', 'ocsinventoryng') . "</b></div>";
-}
+// choose config server or config synchro
+Config::showMenu();
 
 Html::footer();

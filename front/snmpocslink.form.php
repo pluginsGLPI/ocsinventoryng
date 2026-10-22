@@ -29,6 +29,7 @@
 
 
 use Glpi\Exception\Http\BadRequestHttpException;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 
 /**
@@ -47,6 +48,8 @@ $check_link = static function (): SnmpOcslink {
       throw new BadRequestHttpException();
    }
    $item->check((int) $link->fields['items_id'], UPDATE);
+   // The OCS server of the link: allowed for the active profile
+   OcsServer::checkAllowedServer($link->fields['plugin_ocsinventoryng_ocsservers_id']);
 
    return $link;
 };
