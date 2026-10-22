@@ -242,8 +242,8 @@ class Networkshare extends \CommonDBTM
 
                 foreach ($result as $data) {
                     echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . $data['drive'] . "</td>";
-                    echo "<td>" . $data['path'] . "</td>";
+                    echo "<td>" . htmlescape((string) $data['drive']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['path']) . "</td>";
                     $tmp = Toolbox::getSize(str_replace(",", ".", $data['size']) * 1024 * 1024 * 1024 * 1024);
                     echo "<td>" . $tmp . "</td>";
                     $tmp = Toolbox::getSize(str_replace(",", ".", $data['freespace']) * 1024 * 1024 * 1024 * 1024);
@@ -258,7 +258,7 @@ class Networkshare extends \CommonDBTM
                     }
                     Html::getProgressBar($percent);
                     echo "</td>";
-                    echo "<td>" . $data['quota'] . "</td>";
+                    echo "<td>" . htmlescape((string) $data['quota']) . "</td>";
                     echo "</tr>";
                     Session::addToNavigateListItems(__CLASS__, $data['id']);
                 }

@@ -27,6 +27,12 @@
  --------------------------------------------------------------------------
  */
 
+// Command line scripts: GLPI serves the public directory over HTTP, never run them from there
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit(1);
+}
+
 use GlpiPlugin\Ocsinventoryng\Config;
 use GlpiPlugin\Ocsinventoryng\OcsProcess;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
@@ -98,7 +104,7 @@ $config->getFromDB(1);
 if (!isset ($_GET["ocs_server_id"]) || ($_GET["ocs_server_id"] == '')) {
    $ocsservers_id = -1;
 } else {
-   $ocsservers_id = $_GET["ocs_server_id"];
+   $ocsservers_id = (int) $_GET["ocs_server_id"];
 }
 
 if (isset($_GET["thread_nbr"]) || isset ($_GET["thread_id"])) {

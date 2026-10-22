@@ -244,14 +244,16 @@ class NetworkPortType extends CommonDropdown
     public static function getLinkToCreateFromTypeAndTypeMIB(array $fields = [])
     {
 
-        $link = PLUGIN_OCS_WEBDIR . '/front/networkporttype.form.php?TYPE=' . $fields['TYPE'] . '&TYPEMIB=' . $fields['TYPEMIB'];
+        // TYPE and TYPEMIB are sent by the OCS agent: encoded in the URL
+        $params = ['TYPE' => (string) $fields['TYPE'], 'TYPEMIB' => (string) $fields['TYPEMIB']];
         if (!empty($fields['speed'])) {
             $speed = NetworkPortEthernet::transformPortSpeed($fields['speed'], false);
             if (!empty($speed)) {
-                $link .= '&SPEED=' . $speed;
+                $params['SPEED'] = $speed;
             }
         }
-        $link .= '&rand=1'; // To reload main window
+        $params['rand'] = 1; // To reload main window
+        $link = PLUGIN_OCS_WEBDIR . '/front/networkporttype.form.php?' . http_build_query($params);
         echo Ajax::createIframeModalWindow(
             'create_network',
             $link,
@@ -259,7 +261,7 @@ class NetworkPortType extends CommonDropdown
         );
 
 
-        return "<a href='#' data-bs-toggle='modal' data-bs-target='#create_network' class='submit btn btn-primary' title='" . __('Create') . "' >" . __('Create') . "</a>";
+        return "<a href='#' data-bs-toggle='modal' data-bs-target='#create_network' class='submit btn btn-primary' title='" . htmlescape(__('Create')) . "' >" . htmlescape(__('Create')) . "</a>";
     }
 
 

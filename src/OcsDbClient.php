@@ -765,7 +765,7 @@ class OcsDbClient extends OcsClient
         if (!$this->isConnected()) {
             throw new \RuntimeException('OCS database connection is not established');
         }
-        $this->db->doQuery("UPDATE `bios` SET `SSN` = '" . $ssn . "'" . " WHERE `HARDWARE_ID` = $id");
+        $this->db->update('bios', ['SSN' => (string) $ssn], ['HARDWARE_ID' => (int) $id]);
     }
 
    /**
@@ -780,7 +780,7 @@ class OcsDbClient extends OcsClient
         if (!$this->isConnected()) {
             throw new \RuntimeException('OCS database connection is not established');
         }
-        $this->db->doQuery("UPDATE `accountinfo` SET `TAG` = '" . $tag . "' WHERE `HARDWARE_ID` = $id");
+        $this->db->update('accountinfo', ['TAG' => (string) $tag], ['HARDWARE_ID' => (int) $id]);
     }
 
    /**
@@ -812,7 +812,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['IDS']) and $filters['IDS']) {
                 $ids       = $filters['IDS'];
                 $where_ids = " AND hardware.ID IN (";
-                $where_ids .= join(',', $ids);
+                $where_ids .= join(',', array_map('intval', (array) $ids));
                 $where_ids .= ") ";
             } else {
                 $where_ids = "";
@@ -821,7 +821,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['EXCLUDE_IDS']) and $filters['EXCLUDE_IDS']) {
                 $exclude_ids       = $filters['EXCLUDE_IDS'];
                 $where_exclude_ids = " AND hardware.ID NOT IN (";
-                $where_exclude_ids .= join(',', $exclude_ids);
+                $where_exclude_ids .= join(',', array_map('intval', (array) $exclude_ids));
                 $where_exclude_ids .= ") ";
             } else {
                 $where_exclude_ids = "";
@@ -838,7 +838,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['EXCLUDE_DEVICEIDS']) and $filters['EXCLUDE_DEVICEIDS']) {
                 $exclude_deviceids       = $filters['EXCLUDE_DEVICEIDS'];
                 $where_exclude_deviceids = " AND hardware.DEVICEID NOT IN (";
-                $where_exclude_deviceids .= join(',', $exclude_deviceids);
+                $where_exclude_deviceids .= join(',', array_map([DBmysql::class, 'quoteValue'], array_map('strval', (array) $exclude_deviceids)));
                 $where_exclude_deviceids .= ") ";
             } else {
                 $where_exclude_deviceids = "";
@@ -959,7 +959,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['IDS']) and $filters['IDS']) {
                 $ids       = $filters['IDS'];
                 $where_ids = " AND hardware.ID IN (";
-                $where_ids .= join(',', $ids);
+                $where_ids .= join(',', array_map('intval', (array) $ids));
                 $where_ids .= ") ";
             } else {
                 $where_ids = "";
@@ -968,7 +968,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['EXCLUDE_IDS']) and $filters['EXCLUDE_IDS']) {
                 $exclude_ids       = $filters['EXCLUDE_IDS'];
                 $where_exclude_ids = " AND hardware.ID NOT IN (";
-                $where_exclude_ids .= join(',', $exclude_ids);
+                $where_exclude_ids .= join(',', array_map('intval', (array) $exclude_ids));
                 $where_exclude_ids .= ") ";
             } else {
                 $where_exclude_ids = "";
@@ -985,7 +985,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['EXCLUDE_DEVICEIDS']) and $filters['EXCLUDE_DEVICEIDS']) {
                 $exclude_deviceids       = $filters['EXCLUDE_DEVICEIDS'];
                 $where_exclude_deviceids = " AND hardware.DEVICEID NOT IN (";
-                $where_exclude_deviceids .= join(',', $exclude_deviceids);
+                $where_exclude_deviceids .= join(',', array_map([DBmysql::class, 'quoteValue'], array_map('strval', (array) $exclude_deviceids)));
                 $where_exclude_deviceids .= ") ";
             } else {
                 $where_exclude_deviceids = "";
@@ -1521,7 +1521,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['IDS']) and $filters['IDS']) {
                 $ids       = $filters['IDS'];
                 $where_ids = " AND `snmp`.`ID` IN (";
-                $where_ids .= join(',', $ids);
+                $where_ids .= join(',', array_map('intval', (array) $ids));
                 $where_ids .= ") ";
             } else {
                 $where_ids = "";
@@ -1530,7 +1530,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['EXCLUDE_IDS']) and $filters['EXCLUDE_IDS']) {
                 $exclude_ids       = $filters['EXCLUDE_IDS'];
                 $where_exclude_ids = " AND `snmp`.`ID` NOT IN (";
-                $where_exclude_ids .= join(',', $exclude_ids);
+                $where_exclude_ids .= join(',', array_map('intval', (array) $exclude_ids));
                 $where_exclude_ids .= ") ";
             } else {
                 $where_exclude_ids = "";
@@ -1547,7 +1547,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['EXCLUDE_DEVICEIDS']) and $filters['EXCLUDE_DEVICEIDS']) {
                 $exclude_deviceids       = $filters['EXCLUDE_DEVICEIDS'];
                 $where_exclude_deviceids = " AND `snmp`.`SNMPDEVICEID` NOT IN (";
-                $where_exclude_deviceids .= join(',', $exclude_deviceids);
+                $where_exclude_deviceids .= join(',', array_map([DBmysql::class, 'quoteValue'], array_map('strval', (array) $exclude_deviceids)));
                 $where_exclude_deviceids .= ") ";
             } else {
                 $where_exclude_deviceids = "";

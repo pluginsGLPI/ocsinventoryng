@@ -929,30 +929,22 @@ function plugin_ocsinventoryng_uninstall()
         $template->delete($data);
     }
 
-    $cron = new CronTask();
-    if ($cron->getFromDBbyName(Thread::class, 'CleanOldThreads')) {
-        CronTask::Unregister('OcsinventoryngThread');
-    }
-    if ($cron->getFromDBbyName(OcsServer::class, 'ocsng')) {
-        CronTask::Unregister('OcsinventoryngOcsServer');
-    }
-    if ($cron->getFromDBbyName(Notimportedcomputer::class, 'SendAlerts')) {
-        CronTask::Unregister('OcsinventoryngNotimportedcomputer');
-    }
-    if ($cron->getFromDBbyName(OcsServer::class, 'CleanOldAgents')) {
-        CronTask::Unregister('OcsinventoryngOcsServer');
-    }
-    if ($cron->getFromDBbyName(OcsServer::class, 'RestoreOldAgents')) {
-        CronTask::Unregister('OcsinventoryngOcsServer');
-    }
-    if ($cron->getFromDBbyName(RuleImportEntity::class, 'CheckRuleImportEntity')) {
-        CronTask::Unregister('OcsinventoryngRuleImportEntity');
-    }
-    if (!$cron->getFromDBbyName(OcsAlert::class, 'SynchroAlert')) {
-        CronTask::Unregister('OcsinventoryngOcsAlert');
-    }
-    if (!$cron->getFromDBbyName(OcsAlert::class, 'AlertNewComputers')) {
-        CronTask::Unregister('OcsinventoryngOcsAlert');
+    // CronTask::Unregister() does not match namespaced classes: the tasks and their logs by itemtype
+    $cron_itemtypes = [
+        Thread::class,
+        OcsServer::class,
+        Notimportedcomputer::class,
+        RuleImportEntity::class,
+        OcsAlert::class,
+    ];
+    $crontasks_ids = array_column(iterator_to_array($DB->request([
+        'SELECT' => 'id',
+        'FROM'   => 'glpi_crontasks',
+        'WHERE'  => ['itemtype' => $cron_itemtypes],
+    ])), 'id');
+    if (!empty($crontasks_ids)) {
+        $DB->delete('glpi_crontasklogs', ['crontasks_id' => $crontasks_ids]);
+        $DB->delete('glpi_crontasks', ['id' => $crontasks_ids]);
     }
 
     //Delete rights associated with the plugin
@@ -1081,6 +1073,10 @@ function plugin_ocsinventoryng_MassiveActions($type)
     switch ($type) {
         case Notimportedcomputer::class:
             $actions = [];
+            // Checked again by Notimportedcomputer::processMassiveActionsForOneItemtype()
+            if (!Session::haveRight('plugin_ocsinventoryng_import', UPDATE)) {
+                return $actions;
+            }
             $actions['GlpiPlugin\Ocsinventoryng\Notimportedcomputer' . MassiveAction::CLASS_ACTION_SEPARATOR
             . "plugin_ocsinventoryng_replayrules"] = __("Restart import", 'ocsinventoryng');
             $actions['GlpiPlugin\Ocsinventoryng\Notimportedcomputer' . MassiveAction::CLASS_ACTION_SEPARATOR
@@ -1392,14 +1388,18 @@ function plugin_ocsinventoryng_addSelect($type, $ID, $num)
  */
 function plugin_ocsinventoryng_addWhere($link, $nott, $type, $ID, $val)
 {
+    global $DB;
+
     $searchopt = Search::getOptions($type);
     $table = $searchopt[$ID]["table"];
     $field = $searchopt[$ID]["field"];
 
-    Search::makeTextSearch($val, $nott);
     switch ($table . "." . $field) {
         case "glpi_plugin_ocsinventoryng_details.action":
-            return $link . " `$table`.`$field` = '$val' ";
+            // The id of an action: the searched value is cast, never put in the SQL as is.
+            // The core runs the returned string verbatim.
+            return $link . " " . $DB->quoteName("$table.$field")
+                . ($nott ? " <> " : " = ") . (int) $val . " ";
     }
     return "";
 }
@@ -1421,20 +1421,22 @@ function plugin_ocsinventoryng_giveItem($type, $id, $data, $num)
 
     switch ("$table.$field") {
         case "glpi_plugin_ocsinventoryng_details.action":
+            // The core outputs the HTML returned here as is: every value is escaped
             $detail = new Detail();
-            return $detail->giveActionNameByActionID($data[$num][0]['name']);
+            return htmlescape((string) $detail->giveActionNameByActionID($data[$num][0]['name']));
 
         case "glpi_plugin_ocsinventoryng_details.computers_id":
+            // The name of the computer may come from the OCS agent
             $comp = new Computer();
-            $comp->getFromDB($data[$num][0]['name']);
-            return "<a href='" . Toolbox::getItemTypeFormURL('Computer') . "?id=" . $data[$num][0]['name'] . "'>"
-                . $comp->getName() . "</a>";
+            $comp->getFromDB((int) $data[$num][0]['name']);
+            return "<a href='" . Toolbox::getItemTypeFormURL('Computer') . "?id=" . (int) $data[$num][0]['name'] . "'>"
+                . htmlescape((string) $comp->getName()) . "</a>";
 
         case "glpi_plugin_ocsinventoryng_details.plugin_ocsinventoryng_ocsservers_id":
             $ocs = new OcsServer();
-            $ocs->getFromDB($data[$num][0]['name']);
+            $ocs->getFromDB((int) $data[$num][0]['name']);
             return "<a href='" . Toolbox::getItemTypeFormURL(OcsServer::class) . "?id="
-                . $data[$num][0]['name'] . "'>" . $ocs->getName() . "</a>";
+                . (int) $data[$num][0]['name'] . "'>" . htmlescape((string) $ocs->getName()) . "</a>";
 
         case "glpi_plugin_ocsinventoryng_details.rules_id":
             $detail = new Detail();
@@ -1442,7 +1444,7 @@ function plugin_ocsinventoryng_giveItem($type, $id, $data, $num)
             return Notimportedcomputer::getRuleMatchedMessage($detail->fields['rules_id']);
 
         case "glpi_plugin_ocsinventoryng_notimportedcomputers.reason":
-            return Notimportedcomputer::getReason($data[$num][0]['name']);
+            return htmlescape(Notimportedcomputer::getReason($data[$num][0]['name']));
 
         case "glpi_plugin_ocsinventoryng_ocslinks.computer_update":
             $locks = Ocslink::getLocksForComputer($data['id'], 0);
@@ -1450,7 +1452,7 @@ function plugin_ocsinventoryng_giveItem($type, $id, $data, $num)
             $listlocks = " ";
             if (is_array($locks) && count($locks)) {
                 foreach ($locks as $key => $val) {
-                    $listlocks .= $lockable_fields[$val] . "<br>";
+                    $listlocks .= htmlescape((string) ($lockable_fields[$val] ?? $val)) . "<br>";
                 }
             }
             return $listlocks;
@@ -2097,7 +2099,7 @@ function plugin_ocsinventoryng_unlockFields($params = [])
     $computer->check($_POST['id'], UPDATE);
     if (isset($_POST["lockfield"]) && count($_POST["lockfield"])) {
         foreach ($_POST["lockfield"] as $key => $val) {
-            Ocslink::deleteInOcsArray($_POST["id"], $key, true);
+            Ocslink::deleteInOcsArray((int) $_POST["id"], $key, true);
         }
     }
 }

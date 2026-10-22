@@ -34,6 +34,11 @@ use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 Session::checkRight("plugin_ocsinventoryng_import", READ);
 
+// The OCS server of the session, chosen on front/ocsng.php: still allowed for the active
+// profile, otherwise "no server"
+OcsServer::checkSessionServer();
+
+
 Html::header('OCS Inventory NG', '', "tools", Menu::class, "import");
 
 //First time this screen is displayed : set the import mode to 'basic'
@@ -57,6 +62,11 @@ if (isset($_POST["change_import_mode"])) {
 
 if (isset($_POST["change_link_mode"])) {
     $_SESSION["change_link_mode"] = 1;
+}
+
+// Queuing and processing imports writes computers: the update right of the import
+if (isset($_POST["import_ok"]) || isset($_SESSION["ocs_import"]['computers'])) {
+    Session::checkRight("plugin_ocsinventoryng_import", UPDATE);
 }
 
 if (isset($_SESSION["ocs_import"]['computers'])) {
@@ -150,28 +160,39 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
         if (isset($_POST['toadd']) && count($_POST['toadd']) > 0) {
             $_SESSION["ocs_import_count"] = 0;
 
+            // Queued for the processing above: OCS ids, entities of the user and computers the
+            // user may update only
             foreach ($_POST['toadd'] as $key => $val) {
-                $_SESSION["ocs_import"]['computers'][] = $val;
+                $_SESSION["ocs_import"]['computers'][] = (int) $val;
                 $_SESSION["ocs_import_count"]++;
             }
             if (isset($_POST['disable_unicity_check'])) {
                 foreach ($_POST['disable_unicity_check'] as $key => $val) {
-                    $_SESSION["ocs_import"]['disable_unicity_check'][$key] = $val;
+                    $_SESSION["ocs_import"]['disable_unicity_check'][(int) $key] = (int) $val;
                 }
             }
             if (isset($_POST['toimport_entities'])) {
                 foreach ($_POST['toimport_entities'] as $key => $val) {
-                    $_SESSION["ocs_import"]['entities_id'][$key] = $val;
+                    $val = (int) $val;
+                    if ($val >= 0 && !Session::haveAccessToEntity($val)) {
+                        throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+                    }
+                    $_SESSION["ocs_import"]['entities_id'][(int) $key] = $val;
                 }
             }
             if (isset($_POST['toimport_recursive'])) {
                 foreach ($_POST['toimport_recursive'] as $key => $val) {
-                    $_SESSION["ocs_import"]['is_recursive'][$key] = $val;
+                    $_SESSION["ocs_import"]['is_recursive'][(int) $key] = (int) $val;
                 }
             }
             if (isset($_POST['tolink'])) {
+                $computer = new Computer();
                 foreach ($_POST['tolink'] as $key => $val) {
-                    $_SESSION["ocs_import"]['tolink'][$key] = $val;
+                    $val = (int) $val;
+                    if ($val > 0) {
+                        $computer->check($val, UPDATE);
+                    }
+                    $_SESSION["ocs_import"]['tolink'][(int) $key] = $val;
                 }
             }
         }

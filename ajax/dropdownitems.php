@@ -28,41 +28,36 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Ocsinventoryng\IpdiscoverOcslink;
+use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
+
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkLoginUser();
 
-global $CFG_GLPI;
+// Make a select box, for the types offered by the link forms only
+$itemtype = (string) ($_POST["itemtype"] ?? '');
+$allowed  = array_unique(array_merge(IpdiscoverOcslink::$hardwareItemTypes, SnmpOcslink::$snmptypes));
+if (in_array($itemtype, $allowed, true)) {
+    $rand = (int) ($_POST["rand"] ?? mt_rand());
+    $id   = (int) ($_POST["id"] ?? 0);
+    // The name of the field is the one of the line of the link form
+    $myname = "tolink_items[" . $id . "]";
 
-// Make a select box
-if (isset($_POST["itemtype"])
-) {
-    $dbu = new DbUtils();
-    $table = $dbu->getTableForItemType($_POST["itemtype"]);
-
-    $rand = mt_rand();
-    if (isset($_POST["rand"])) {
-        $rand = $_POST["rand"];
-    }
-    echo Html::hidden("tolink_itemtype[" . $_POST["id"] . "]", ['value' => $_POST["itemtype"]]);
+    echo Html::hidden("tolink_itemtype[" . $id . "]", ['value' => $itemtype]);
     echo "<br>";
-    $field_id = Html::cleanId("dropdown_" . $_POST['myname'] . $rand);
-    $p = ['itemtype' => $_POST["itemtype"],
-        //'entity_restrict'     => $_POST['entity_restrict'],
-        'table' => $table,
-        //'multiple'            => $_POST["multiple"],
-        'myname' => $_POST["myname"],
-        'rand' => $_POST["rand"]];
+    $field_id = Html::cleanId("dropdown_" . $myname . $rand);
+    $p = ['itemtype' => $itemtype,
+        'myname' => $myname,
+        'rand' => $rand];
 
-    if (isset($_POST["used"]) && !empty($_POST["used"])) {
-        if (isset($_POST["used"][$_POST["itemtype"]])) {
-            $p["used"] = $_POST["used"][$_POST["itemtype"]];
-        }
+    if (!empty($_POST["used"][$itemtype])) {
+        $p["used"] = array_map('intval', (array) $_POST["used"][$itemtype]);
     }
 
     echo Html::jsAjaxDropdown(
-        $_POST['myname'],
+        $myname,
         $field_id,
         PLUGIN_OCS_WEBDIR . "/ajax/getDropdownFindItem.php",
         $p

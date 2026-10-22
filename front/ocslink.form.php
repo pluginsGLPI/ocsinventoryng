@@ -34,48 +34,52 @@ use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 Session::checkRight("computer", READ);
 
-if (isset($_POST["launch_ocs_resynch"])) {
+/**
+ * The link named by the request, once the user is allowed to update its computer
+ *
+ * @param mixed $links_id
+ *
+ * @return Ocslink
+ */
+$check_link = static function ($links_id): Ocslink {
+   $link = new Ocslink();
+   if (!$link->getFromDB((int) $links_id)) {
+      throw new BadRequestHttpException();
+   }
    $computer = new Computer();
-   $computer->check($_POST['id'], UPDATE);
+   $computer->check((int) $link->fields['computers_id'], UPDATE);
 
-   //Get the ocs server id associated with the machine
-   $ocsservers_id = OcsServer::getServerByComputerID($_POST["id"]);
-   //Update the computer
-   $cfg_ocs = OcsServer::getConfig($ocsservers_id);
-   $sync_params = ['ID' => $_POST["resynch_id"],
-                   'plugin_ocsinventoryng_ocsservers_id' => $ocsservers_id,
-                   'cfg_ocs' => $cfg_ocs,
-                  'force' => 0];
-    OcsProcess::synchronizeComputer($sync_params);
-   Html::back();
-} else if (isset($_POST["force_ocs_resynch"])) {
-   $computer = new Computer();
-   $computer->check($_POST['id'], UPDATE);
+   return $link;
+};
 
-   //Get the ocs server id associated with the machine
-   $ocsservers_id = OcsServer::getServerByComputerID($_POST["id"]);
+if (isset($_POST["launch_ocs_resynch"]) || isset($_POST["force_ocs_resynch"])) {
+   // The computer checked is the one of the link synchronised, not another posted id
+   $link = $check_link($_POST["resynch_id"] ?? 0);
+
    //Update the computer
-   $cfg_ocs = OcsServer::getConfig($ocsservers_id);
-   $sync_params = ['ID' => $_POST["resynch_id"],
+   $ocsservers_id = (int) $link->fields['plugin_ocsinventoryng_ocsservers_id'];
+   $sync_params = ['ID' => (int) $link->getID(),
                    'plugin_ocsinventoryng_ocsservers_id' => $ocsservers_id,
-                   'cfg_ocs' => $cfg_ocs,
-                   'force' => 1];
+                   'cfg_ocs' => OcsServer::getConfig($ocsservers_id),
+                   'force' => isset($_POST["force_ocs_resynch"]) ? 1 : 0];
    OcsProcess::synchronizeComputer($sync_params);
    Html::back();
 } else if (isset ($_POST["update"])) {
-   $link = new Ocslink();
-   $values["id"] = $_POST["link_id"];
-   $values["use_auto_update"] = $_POST["use_auto_update"];
-   $link->update($values);
+   $link = $check_link($_POST["link_id"] ?? 0);
+   $link->update([
+      'id'              => $link->getID(),
+      'use_auto_update' => (int) ($_POST["use_auto_update"] ?? 0),
+   ]);
    Html::back();
 
 } else if (isset ($_POST["delete_link"])) {
+   // Removes the link and the inventory rows of the plugin, and possibly the machine in OCS
+   Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);
    $comp = new Computer();
+   $comp->check((int) ($_POST["items_id"] ?? 0), UPDATE);
    $link = new Ocslink();
-   if ($comp->getFromDB($_POST["items_id"])) {
-      $link->purgeComputer($comp);
-      Html::back();
-   }
+   $link->purgeComputer($comp);
+   Html::back();
 } else {
     throw new BadRequestHttpException();
 

@@ -34,6 +34,7 @@ use CommonDBTM;
 use CommonGLPI;
 use Computer;
 use CronTask;
+use DBmysql;
 use DbUtils;
 use Dropdown;
 use Exception;
@@ -60,6 +61,17 @@ class OcsServer extends CommonDBTM
     public static $rightname = "plugin_ocsinventoryng";
     // From CommonDBTM
     public $dohistory = true;
+    // The password of the OCS database, even encrypted, never goes to the history
+    public $history_blacklist = ['ocs_db_passwd'];
+
+    /**
+     * The password of the OCS database is never sent by the API nor the exports
+     */
+    public static function unsetUndisclosedFields(&$fields)
+    {
+        parent::unsetUndisclosedFields($fields);
+        unset($fields['ocs_db_passwd']);
+    }
 
     // Connection types
     public const CONN_TYPE_DB           = 0;
@@ -1770,12 +1782,8 @@ class OcsServer extends CommonDBTM
     {
         global $DB;
 
-        // Check if server config does not exists
-        $query  = "SELECT *
-                FROM `" . $this->getTable() . "`
-                WHERE `name` = '" . $input['name'] . "';";
-        $result = $DB->doQuery($query);
-        if ($DB->numrows($result) > 0) {
+        // Check if server config does not exists (the posted name bound by the query builder)
+        if (countElementsInTable($this->getTable(), ['name' => (string) ($input['name'] ?? '')]) > 0) {
             Session::addMessageAfterRedirect(__('Unable to add. The OCSNG server already exists.', 'ocsinventoryng'), false, ERROR);
             return false;
         }
@@ -1800,9 +1808,10 @@ class OcsServer extends CommonDBTM
     {
         global $DB;
 
-        $query = "INSERT INTO  `glpi_plugin_ocsinventoryng_ocsservers_profiles` (`id` ,`plugin_ocsinventoryng_ocsservers_id` , `profiles_id`)
-                 VALUES (NULL ,  '" . $this->fields['id'] . "',  '" . $_SESSION["glpiactiveprofile"]['id'] . "');";
-        $DB->doQuery($query);
+        $DB->insert('glpi_plugin_ocsinventoryng_ocsservers_profiles', [
+            'plugin_ocsinventoryng_ocsservers_id' => (int) $this->fields['id'],
+            'profiles_id'                         => (int) $_SESSION["glpiactiveprofile"]['id'],
+        ]);
     }
 
     /**
@@ -1858,15 +1867,14 @@ class OcsServer extends CommonDBTM
     {
         global $DB;
 
-        $sql    = "SELECT `plugin_ocsinventoryng_ocsservers_id`
-              FROM `glpi_plugin_ocsinventoryng_ocslinks`
-              WHERE `computers_id` = $ID";
-        $result = $DB->doQuery($sql);
-        if ($DB->numrows($result) > 0) {
-            $datas = $DB->fetchArray($result);
-            return $datas["plugin_ocsinventoryng_ocsservers_id"];
-        }
-        return -1;
+        $datas = $DB->request([
+            'SELECT' => 'plugin_ocsinventoryng_ocsservers_id',
+            'FROM'   => 'glpi_plugin_ocsinventoryng_ocslinks',
+            'WHERE'  => ['computers_id' => (int) $ID],
+            'LIMIT'  => 1,
+        ])->current();
+
+        return $datas ? $datas["plugin_ocsinventoryng_ocsservers_id"] : -1;
     }
 
     /**
@@ -1922,23 +1930,38 @@ class OcsServer extends CommonDBTM
     }
 
     /**
-     * @return int|Value
+     * First active OCS server allowed for the active profile, -1 when there is none
+     *
+     * @return int
      */
     public static function getFirstServer()
     {
         global $DB;
 
-        $query   = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`
-                FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
-                LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
-                ON `glpi_plugin_ocsinventoryng_ocsservers`.`id` = `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id`
-                WHERE `glpi_plugin_ocsinventoryng_ocsservers`.`is_active`= 1
-                ORDER BY `glpi_plugin_ocsinventoryng_ocsservers`.`id` ASC LIMIT 1 ";
-        $results = $DB->doQuery($query);
-        if ($DB->numrows($results) > 0) {
-            return $DB->result($results, 0, 'id');
+        if (!isset($_SESSION['glpiactiveprofile']['id'])) {
+            return -1;
         }
-        return -1;
+
+        $server = $DB->request([
+            'SELECT'     => ['glpi_plugin_ocsinventoryng_ocsservers.id'],
+            'FROM'       => 'glpi_plugin_ocsinventoryng_ocsservers',
+            'INNER JOIN' => [
+                'glpi_plugin_ocsinventoryng_ocsservers_profiles' => [
+                    'ON' => [
+                        'glpi_plugin_ocsinventoryng_ocsservers_profiles' => 'plugin_ocsinventoryng_ocsservers_id',
+                        'glpi_plugin_ocsinventoryng_ocsservers'          => 'id',
+                    ],
+                ],
+            ],
+            'WHERE'      => [
+                'glpi_plugin_ocsinventoryng_ocsservers.is_active'            => 1,
+                'glpi_plugin_ocsinventoryng_ocsservers_profiles.profiles_id' => (int) $_SESSION['glpiactiveprofile']['id'],
+            ],
+            'ORDER'      => 'glpi_plugin_ocsinventoryng_ocsservers.id ASC',
+            'LIMIT'      => 1,
+        ])->current();
+
+        return $server ? (int) $server['id'] : -1;
     }
 
     /**
@@ -1958,17 +1981,84 @@ class OcsServer extends CommonDBTM
         $data = 0;
 
         if (!empty($id)) {
-            $query  = "SELECT *
-                FROM `glpi_plugin_ocsinventoryng_ocsservers`
-                WHERE `id` = $id";
-            $result = $DB->doQuery($query);
-
-            if ($result) {
-                $data = $DB->fetchAssoc($result);
-            }
+            $data = $DB->request([
+                'FROM'  => 'glpi_plugin_ocsinventoryng_ocsservers',
+                'WHERE' => ['id' => (int) $id],
+                'LIMIT' => 1,
+            ])->current() ?? 0;
         }
 
         return $data;
+    }
+
+    /**
+     * Whether the OCS server is active and allowed for the active profile
+     * (glpi_plugin_ocsinventoryng_ocsservers_profiles)
+     *
+     * @param int $ocsservers_id
+     *
+     * @return bool
+     */
+    public static function isAllowedServer(int $ocsservers_id): bool
+    {
+        global $DB;
+
+        if ($ocsservers_id <= 0 || !isset($_SESSION['glpiactiveprofile']['id'])) {
+            return false;
+        }
+
+        return count($DB->request([
+            'SELECT'     => ['glpi_plugin_ocsinventoryng_ocsservers.id'],
+            'FROM'       => 'glpi_plugin_ocsinventoryng_ocsservers',
+            'INNER JOIN' => [
+                'glpi_plugin_ocsinventoryng_ocsservers_profiles' => [
+                    'ON' => [
+                        'glpi_plugin_ocsinventoryng_ocsservers_profiles' => 'plugin_ocsinventoryng_ocsservers_id',
+                        'glpi_plugin_ocsinventoryng_ocsservers'          => 'id',
+                    ],
+                ],
+            ],
+            'WHERE'      => [
+                'glpi_plugin_ocsinventoryng_ocsservers.id'                   => $ocsservers_id,
+                'glpi_plugin_ocsinventoryng_ocsservers.is_active'            => 1,
+                'glpi_plugin_ocsinventoryng_ocsservers_profiles.profiles_id' => (int) $_SESSION['glpiactiveprofile']['id'],
+            ],
+        ])) > 0;
+    }
+
+    /**
+     * The OCS server posted to a page or an endpoint: an integer, allowed for the active profile
+     *
+     * @param mixed $ocsservers_id
+     *
+     * @return int
+     */
+    public static function checkAllowedServer($ocsservers_id): int
+    {
+        $ocsservers_id = (int) $ocsservers_id;
+        if (!self::isAllowedServer($ocsservers_id)) {
+            throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+        }
+
+        return $ocsservers_id;
+    }
+
+    /**
+     * The OCS server kept in session for the pages of the plugin, checked again for the active
+     * profile (the profile may have changed since it was chosen): reset to -1, "no server", when
+     * it is no longer allowed
+     *
+     * @return int
+     */
+    public static function checkSessionServer(): int
+    {
+        $ocsservers_id = (int) ($_SESSION["plugin_ocsinventoryng_ocsservers_id"] ?? -1);
+        if ($ocsservers_id > 0 && !self::isAllowedServer($ocsservers_id)) {
+            $ocsservers_id = -1;
+        }
+        $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = $ocsservers_id;
+
+        return $ocsservers_id;
     }
 
 
@@ -2075,9 +2165,9 @@ class OcsServer extends CommonDBTM
         if (!empty($cfg_ocs["tag_limit"])) {
             $splitter = explode("$", trim($cfg_ocs["tag_limit"]));
             if (count($splitter)) {
-                $WHERE = " `accountinfo`.`TAG` = '" . $splitter[0] . "' ";
+                $WHERE = " `accountinfo`.`TAG` = " . DBmysql::quoteValue((string) $splitter[0]) . " ";
                 for ($i = 1; $i < count($splitter); $i++) {
-                    $WHERE .= " OR `accountinfo`.`TAG` = '" . $splitter[$i] . "' ";
+                    $WHERE .= " OR `accountinfo`.`TAG` = " . DBmysql::quoteValue((string) $splitter[$i]) . " ";
                 }
             }
         }
@@ -2088,9 +2178,9 @@ class OcsServer extends CommonDBTM
                 if (!empty($WHERE)) {
                     $WHERE .= " AND ";
                 }
-                $WHERE .= " `accountinfo`.`TAG` <> '" . $splitter[0] . "' ";
+                $WHERE .= " `accountinfo`.`TAG` <> " . DBmysql::quoteValue((string) $splitter[0]) . " ";
                 for ($i = 1; $i < count($splitter); $i++) {
-                    $WHERE .= " AND `accountinfo`.`TAG` <> '" . $splitter[$i] . "' ";
+                    $WHERE .= " AND `accountinfo`.`TAG` <> " . DBmysql::quoteValue((string) $splitter[$i]) . " ";
                 }
             }
         }
@@ -2305,15 +2395,15 @@ class OcsServer extends CommonDBTM
 
             foreach ($already_linked as $ID => $tab) {
                 echo "<tr class='tab_bg_2 center'>";
-                echo "<td>" . $tab["ocs_deviceid"] . "</td>\n";
+                echo "<td>" . htmlescape((string) $tab["ocs_deviceid"]) . "</td>\n";
                 echo "<td>" . Html::convDateTime($tab["date"]) . "</td>\n";
                 echo "<td>" . Dropdown::getYesNo($tab["in_glpi"]) . "</td>\n";
                 echo "<td>" . Dropdown::getYesNo($tab["in_ocs"]) . "</td>\n";
                 if (Session::isMultiEntitiesMode()) {
-                    echo "<td>" . Dropdown::getDropdownName('glpi_entities', $tab['entities_id']) . "</td>\n";
+                    echo "<td>" . htmlescape((string) Dropdown::getDropdownName('glpi_entities', $tab['entities_id'])) . "</td>\n";
                 }
                 if ($canedit) {
-                    echo "<td><input type='checkbox' name='toclean[" . $tab["id"] . "]' " .
+                    echo "<td><input type='checkbox' name='toclean[" . (int) $tab["id"] . "]' " .
                          (($check == "all") ? "checked" : "") . "></td>";
                 }
                 echo "</tr>\n";
@@ -2347,7 +2437,6 @@ class OcsServer extends CommonDBTM
     public static function showComputersToSynchronize($show_params)
     {
         echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/datatables.min.css");
-        //      echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css");
         echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/ColReorder-1.5.2/css/colReorder.dataTables.min.css");
         echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Responsive-2.2.3/css/responsive.dataTables.min.css");
         echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Select-1.3.1/css/select.dataTables.min.css");
@@ -2355,14 +2444,7 @@ class OcsServer extends CommonDBTM
         echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/datatables.min.js");
         echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Responsive-2.2.3/js/dataTables.responsive.min.js");
         echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Select-1.3.1/js/dataTables.select.min.js");
-        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/dataTables.buttons.min.js");
-        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.html5.min.js");
-        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.print.min.js");
-        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.colVis.min.js");
         echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/ColReorder-1.5.2/js/dataTables.colReorder.min.js");
-        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/JSZip-2.5.0/jszip.min.js");
-        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/pdfmake-0.1.36/pdfmake.min.js");
-        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/pdfmake-0.1.36/vfs_fonts.js");
 
 
         $plugin_ocsinventoryng_ocsservers_id = $show_params["plugin_ocsinventoryng_ocsservers_id"];
@@ -2408,7 +2490,7 @@ class OcsServer extends CommonDBTM
                       ajax: {
                           url: '../ajax/loadcomputerstosynchronize.php',
                           type:'POST',
-                          data: {plugin_ocsinventoryng_ocsservers_id: $plugin_ocsinventoryng_ocsservers_id
+                          data: {plugin_ocsinventoryng_ocsservers_id: " . (int) $plugin_ocsinventoryng_ocsservers_id . "
                                 },
                           datatype: 'json'
                       },
@@ -2517,7 +2599,6 @@ class OcsServer extends CommonDBTM
     public static function showComputersToAdd($show_params)
     {
         echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/datatables.min.css");
-        //      echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css");
         echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/ColReorder-1.5.2/css/colReorder.dataTables.min.css");
         echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Responsive-2.2.3/css/responsive.dataTables.min.css");
         echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Select-1.3.1/css/select.dataTables.min.css");
@@ -2525,14 +2606,7 @@ class OcsServer extends CommonDBTM
         echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/datatables.min.js");
         echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Responsive-2.2.3/js/dataTables.responsive.min.js");
         echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Select-1.3.1/js/dataTables.select.min.js");
-        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/dataTables.buttons.min.js");
-        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.html5.min.js");
-        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.print.min.js");
-        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/Buttons-1.6.1/js/buttons.colVis.min.js");
         echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/ColReorder-1.5.2/js/dataTables.colReorder.min.js");
-        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/JSZip-2.5.0/jszip.min.js");
-        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/pdfmake-0.1.36/pdfmake.min.js");
-        //      echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/DataTables/pdfmake-0.1.36/vfs_fonts.js");
 
         $plugin_ocsinventoryng_ocsservers_id = $show_params["plugin_ocsinventoryng_ocsservers_id"];
         $advancedimport                      = $show_params["import_mode"] ?? 0;
@@ -2599,10 +2673,10 @@ class OcsServer extends CommonDBTM
                       ajax: {
                           url: '../ajax/loadcomputerstoimport.php',
                           type:'POST',
-                          data: {plugin_ocsinventoryng_ocsservers_id: $plugin_ocsinventoryng_ocsservers_id,
+                          data: {plugin_ocsinventoryng_ocsservers_id: " . (int) $plugin_ocsinventoryng_ocsservers_id . ",
                                  entities_id: $entities,
-                                 importmode: $advancedimport,
-                                 linkmode: $advancedlink
+                                 importmode: " . (int) $advancedimport . ",
+                                 linkmode: " . (int) $advancedlink . "
                                 },
                           datatype: 'json'
                       },

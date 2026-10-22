@@ -153,10 +153,11 @@ class OcsAdminInfosLink extends CommonDBTM {
          if ($cfg_ocs["use_locks"]) {
             $computer_updates[] = "use_date";
             $dbu                = new DbUtils();
-            $query              = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                         SET `computer_update` = '" . addslashes($dbu->exportArrayToDB($computer_updates)) . "'
-                         WHERE `computers_id` = $computers_id";
-            $DB->doQuery($query);
+            $DB->update(
+                'glpi_plugin_ocsinventoryng_ocslinks',
+                ['computer_update' => $dbu->exportArrayToDB($computer_updates)],
+                ['computers_id' => (int) $computers_id]
+            );
          }
       }
       return $computer_updates;
@@ -286,7 +287,7 @@ class OcsAdminInfosLink extends CommonDBTM {
       //check link between ocs and glpi column
       $queryListUpdate = "SELECT `ocs_column`, `glpi_column`
                           FROM `glpi_plugin_ocsinventoryng_ocsadmininfoslinks`
-                          WHERE `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
+                          WHERE `plugin_ocsinventoryng_ocsservers_id` = " . (int) $plugin_ocsinventoryng_ocsservers_id;
       $result          = $DB->doQuery($queryListUpdate);
 
       if ($DB->numrows($result) > 0) {
@@ -308,7 +309,7 @@ class OcsAdminInfosLink extends CommonDBTM {
                       && !in_array($glpi_column, $computer_updates)) {
 
                      if (isset($accountinfo[$ocs_column])) {
-                        $var = addslashes($accountinfo[$ocs_column]);
+                        $var = (string) $accountinfo[$ocs_column];
                      } else {
                         $var = "";
                      }
@@ -380,22 +381,21 @@ class OcsAdminInfosLink extends CommonDBTM {
          return 0;
       }
 
-      $query = "SELECT `id`
-                 FROM `glpi_groups`
-                 WHERE `name` = '$value' ";
-      $dbu   = new DbUtils();
-      $query .= $dbu->getEntitiesRestrictRequest(' AND ', 'glpi_groups', '',
-                                                 $entities_id, true);
+      // The group name is reported by the agent: bound by the query builder
+      $line = $DB->request([
+         'SELECT' => 'id',
+         'FROM'   => 'glpi_groups',
+         'WHERE'  => ['name' => (string) $value]
+            + getEntitiesRestrictCriteria('glpi_groups', '', $entities_id, true),
+         'LIMIT'  => 1,
+      ])->current();
 
-      $result = $DB->doQuery($query);
-
-      if ($DB->numrows($result) == 0) {
+      if (!$line) {
          $group                = new Group();
          $input["name"]        = $value;
          $input["entities_id"] = $entities_id;
          return $group->add($input);
       }
-      $line = $DB->fetchArray($result);
       return $line["id"];
    }
 
@@ -432,7 +432,7 @@ class OcsAdminInfosLink extends CommonDBTM {
              && array_key_exists($ocs_column, $ocsComputer)
              && !in_array('use_date', $computer_updates)) {
             if (isset($ocsComputer[$ocs_column])) {
-               $var = addslashes($ocsComputer[$ocs_column]);
+               $var = (string) $ocsComputer[$ocs_column];
             } else {
                $var = "";
             }

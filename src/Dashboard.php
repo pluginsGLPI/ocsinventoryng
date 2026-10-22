@@ -38,6 +38,7 @@ use GlpiPlugin\Mydashboard\Helper;
 use GlpiPlugin\Mydashboard\Html as MydashboardHtml;
 use GlpiPlugin\Mydashboard\Menu;
 use GlpiPlugin\Mydashboard\Widget;
+use Session;
 use Toolbox;
 
 /**
@@ -71,6 +72,10 @@ class Dashboard extends MydashboardHtml
       */
     public static function getWidgetsForItem()
     {
+        // Statistics of the OCS inventory: for the users of the plugin only
+        if (!Session::haveRight('plugin_ocsinventoryng', READ)) {
+            return [];
+        }
         $widgets = [
             Menu::$INVENTORY => [
                 self::getType() . "1" => ["id" => 1,
@@ -95,6 +100,11 @@ class Dashboard extends MydashboardHtml
     public function getWidgetContentForItem($widgetId, $opt = [])
     {
         global $DB;
+
+        // A widget kept on a dashboard after the right was removed shows nothing
+        if (!Session::haveRight('plugin_ocsinventoryng', READ)) {
+            return null;
+        }
 
         if (empty($this->form)) {
             $this->init();

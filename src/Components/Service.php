@@ -227,15 +227,15 @@ class Service extends \CommonDBTM
 
                 foreach ($result as $data) {
                     echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . $data['svcname'] . "</td>";
-                    echo "<td>" . $data['svcdn'] . "</td>";
-                    echo "<td>" . $data['svcstate'] . "</td>";
-                    echo "<td>" . $data['svcdesc'] . "</td>";
-                    echo "<td>" . $data['svcstartmode'] . "</td>";
-                    echo "<td>" . $data['svcpath'] . "</td>";
-                    echo "<td>" . $data['svcstartname'] . "</td>";
-                    echo "<td>" . $data['svcexitcode'] . "</td>";
-                    echo "<td>" . $data['svcspecexitcode'] . "</td>";
+                    echo "<td>" . htmlescape((string) $data['svcname']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['svcdn']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['svcstate']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['svcdesc']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['svcstartmode']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['svcpath']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['svcstartname']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['svcexitcode']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['svcspecexitcode']) . "</td>";
                     echo "</tr>";
                     Session::addToNavigateListItems(__CLASS__, $data['id']);
                 }

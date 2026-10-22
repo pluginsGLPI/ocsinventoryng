@@ -36,6 +36,6 @@ Html::header(__('Information about the script', 'ocsinventoryng'), '', "tools", 
 
 $thread = new Thread();
 $thread->title();
-$thread->showThreadForm($_GET["pid"]);
+$thread->showThreadForm((int) ($_GET["pid"] ?? 0));
 
 Html::footer();

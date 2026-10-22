@@ -235,11 +235,11 @@ class Winuser extends \CommonDBTM
 
                 foreach ($result as $data) {
                     echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . $data['name'] . "</td>";
-                    echo "<td>" . $data['type'] . "</td>";
-                    echo "<td>" . $data['description'] . "</td>";
-                    echo "<td>" . $data['disabled'] . "</td>";
-                    echo "<td>" . $data['sid'] . "</td>";
+                    echo "<td>" . htmlescape((string) $data['name']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['type']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['description']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['disabled']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['sid']) . "</td>";
                     echo "</tr>";
                     Session::addToNavigateListItems(__CLASS__, $data['id']);
                 }

@@ -28,10 +28,21 @@
  */
 
 use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\Ocslink;
 use GlpiPlugin\Ocsinventoryng\OcsProcess;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 Session::checkRight("plugin_ocsinventoryng_sync", READ);
+
+// The OCS server of the session, chosen on front/ocsng.php: still allowed for the active
+// profile, otherwise "no server"
+OcsServer::checkSessionServer();
+
+
+// Forcing and processing synchronisations write computers: the update right
+if (isset($_POST["update_ok"]) || !empty($_SESSION["ocs_update"]['computers'])) {
+    Session::checkRight("plugin_ocsinventoryng_sync", UPDATE);
+}
 
 Html::header('OCS Inventory NG', '', "tools", Menu::class, "sync");
 
@@ -106,11 +117,21 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
             echo "</span></div>";
         }
     } else {
-        if (isset($_POST['toupdate']) && count($_POST['toupdate']) > 0) {
+        if (is_array($_POST['toupdate'] ?? null) && count($_POST['toupdate']) > 0) {
             $_SESSION["ocs_update_count"] = 0;
 
+            // Only the links of the current server whose computer the user may update: the
+            // list shown is restricted to the active entities, the posted ids are not
+            $link     = new Ocslink();
+            $computer = new Computer();
             foreach ($_POST['toupdate'] as $key => $val) {
-                $_SESSION["ocs_update"]['computers'][] = $val;
+                if (!$link->getFromDB((int) $val)
+                    || (int) $link->fields['plugin_ocsinventoryng_ocsservers_id']
+                        !== (int) $_SESSION["plugin_ocsinventoryng_ocsservers_id"]
+                    || !$computer->can((int) $link->fields['computers_id'], UPDATE)) {
+                    continue;
+                }
+                $_SESSION["ocs_update"]['computers'][] = (int) $val;
                 $_SESSION["ocs_update_count"]++;
             }
         }

@@ -474,14 +474,15 @@ class Software
     {
         global $DB;
 
-        $query  = "SELECT `id`
-                FROM `glpi_softwareversions`
-                WHERE `softwares_id` = $software
-                AND `name` = '$version'";
-        $result = $DB->doQuery($query);
+        // The version is reported by the agent: bound by the query builder
+        $data = $DB->request([
+            'SELECT' => 'id',
+            'FROM'   => 'glpi_softwareversions',
+            'WHERE'  => ['softwares_id' => (int) $software, 'name' => (string) $version],
+            'LIMIT'  => 1,
+        ])->current();
 
-        if ($DB->numrows($result) > 0) {
-            $data             = $DB->fetchArray($result);
+        if ($data) {
             $input["id"]      = $data["id"];
             $input["comment"] = $comments;
             $vers             = new SoftwareVersion();
@@ -515,14 +516,14 @@ class Software
         }
 
         $isNewVers = 0;
-        $query     = "SELECT `id`
-                FROM `glpi_softwareversions`
-                WHERE `softwares_id` = $software
-                      AND `name` = '$version'";
-        $result    = $DB->doQuery($query);
+        $data      = $DB->request([
+            'SELECT' => 'id',
+            'FROM'   => 'glpi_softwareversions',
+            'WHERE'  => ['softwares_id' => (int) $software, 'name' => (string) $version],
+            'LIMIT'  => 1,
+        ])->current();
 
-        if ($DB->numrows($result) > 0) {
-            $data      = $DB->fetchArray($result);
+        if ($data) {
             $isNewVers = $data["id"];
         }
 

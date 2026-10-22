@@ -876,15 +876,21 @@ class SnmpOcslink extends CommonDBTM
 
 
 
-        //Check it machine is already present AND was imported by OCS AND still present in GLPI
-        $query                                      = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`id`
-             FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
-             WHERE `ocs_id` = '$ocsid'
-                   AND `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
-        $result_glpi_plugin_ocsinventoryng_ocslinks = $DB->doQuery($query);
+        $ocsid                               = (int) $ocsid;
+        $plugin_ocsinventoryng_ocsservers_id = (int) $plugin_ocsinventoryng_ocsservers_id;
 
-        if ($DB->numrows($result_glpi_plugin_ocsinventoryng_ocslinks)) {
-            $datas = $DB->fetchArray($result_glpi_plugin_ocsinventoryng_ocslinks);
+        //Check it machine is already present AND was imported by OCS AND still present in GLPI
+        $datas = $DB->request([
+            'SELECT' => 'id',
+            'FROM'   => 'glpi_plugin_ocsinventoryng_snmpocslinks',
+            'WHERE'  => [
+                'ocs_id'                              => $ocsid,
+                'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+            ],
+            'LIMIT'  => 1,
+        ])->current();
+
+        if ($datas) {
             //Return code to indicates that the machine was synchronized
             //or only last inventory date changed
             return self::updateSnmp($datas["id"], $plugin_ocsinventoryng_ocsservers_id);
@@ -907,6 +913,12 @@ class SnmpOcslink extends CommonDBTM
         $p['itemtype'] = -1;
         foreach ($params as $key => $val) {
             $p[$key] = $val;
+        }
+        $ocsid                               = (int) $ocsid;
+        $plugin_ocsinventoryng_ocsservers_id = (int) $plugin_ocsinventoryng_ocsservers_id;
+        // The type is queued from the request: one of the SNMP types only
+        if (!in_array($p['itemtype'], self::$snmptypes, true)) {
+            $p['itemtype'] = -1;
         }
 
 
@@ -939,14 +951,13 @@ class SnmpOcslink extends CommonDBTM
                 $date = date("Y-m-d H:i:s");
                 //Add to snmp link
 
-                $query = "INSERT INTO `glpi_plugin_ocsinventoryng_snmpocslinks`
-                       SET `items_id` = $id,
-                            `ocs_id` = '" . $ocsid . "',
-                            `itemtype` = '" . $itemtype . "',
-                            `last_update` = '" . $date . "',
-                           `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
-
-                $DB->doQuery($query);
+                $DB->insert('glpi_plugin_ocsinventoryng_snmpocslinks', [
+                    'items_id'                            => (int) $id,
+                    'ocs_id'                              => $ocsid,
+                    'itemtype'                            => $itemtype,
+                    'last_update'                         => $date,
+                    'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+                ]);
 
                 return ['status' => OcsProcess::SNMP_IMPORTED,
                     //'entities_id'  => $data['entities_id'],
@@ -2086,16 +2097,22 @@ class SnmpOcslink extends CommonDBTM
     {
         global $DB;
 
-        $query = "SELECT * FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
-               WHERE `id` = " . $ID . "
-               AND `plugin_ocsinventoryng_ocsservers_id` = " . $plugin_ocsinventoryng_ocsservers_id;
-        $rep   = $DB->doQuery($query);
-        while ($data = $DB->fetchArray($rep)) {
-            $ocsid    = $data['ocs_id'];
-            $itemtype = $data['itemtype'];
-            $items_id = $data['items_id'];
-            $linked   = $data['linked'];
+        $plugin_ocsinventoryng_ocsservers_id = (int) $plugin_ocsinventoryng_ocsservers_id;
+        $data = $DB->request([
+            'FROM'  => 'glpi_plugin_ocsinventoryng_snmpocslinks',
+            'WHERE' => [
+                'id'                                  => (int) $ID,
+                'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+            ],
+            'LIMIT' => 1,
+        ])->current();
+        if (!$data) {
+            return false;
         }
+        $ocsid    = $data['ocs_id'];
+        $itemtype = $data['itemtype'];
+        $items_id = $data['items_id'];
+        $linked   = $data['linked'];
 
         $ocsClient = OcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
         $ocsSnmp   = $ocsClient->getSnmpDevice($ocsid);
@@ -2365,17 +2382,21 @@ class SnmpOcslink extends CommonDBTM
                     && $field['type'] != $p['itemtype']) {
                         unset($hardware[$id]);
                     }
+                    // A text searched in the address, never a regular expression from the request
                     if (!empty($p['ip'])
-                    && !preg_match("/" . $p['ip'] . "/", $field['ipaddr'])) {
+                    && !str_contains((string) $field['ipaddr'], (string) $p['ip'])) {
                         unset($hardware[$id]);
                     }
                 }
                 $output_type = Search::HTML_OUTPUT;
                 if (isset($_GET["display_type"])) {
-                    $output_type = $_GET["display_type"];
+                    $output_type = (int) $_GET["display_type"];
                 }
-                $parameters = "itemtype=" . $p['itemtype'] .
-                          "&amp;ip=" . $p['ip'];
+                // Encoded here, escaped by Html::printPager()
+                $parameters = http_build_query([
+                    'itemtype' => (string) $p['itemtype'],
+                    'ip'       => (string) $p['ip'],
+                ]);
 
                 // Define begin and end var for loop
                 // Search case
@@ -2467,14 +2488,14 @@ class SnmpOcslink extends CommonDBTM
                         }
 
                         echo Search::showNewLine($output_type, $row_num % 2);
-                        echo Search::showItem($output_type, $tab["name"], $item_num, $row_num);
-                        echo Search::showItem($output_type, $tab["description"], $item_num, $row_num, 'width=15%');
-                        echo Search::showItem($output_type, $tab["ipaddr"], $item_num, $row_num, 'width=5%');
-                        echo Search::showItem($output_type, $tab["mac"], $item_num, $row_num, 'width=5%');
+                        echo Search::showItem($output_type, htmlescape((string) $tab["name"]), $item_num, $row_num);
+                        echo Search::showItem($output_type, htmlescape((string) $tab["description"]), $item_num, $row_num, 'width=15%');
+                        echo Search::showItem($output_type, htmlescape((string) $tab["ipaddr"]), $item_num, $row_num, 'width=5%');
+                        echo Search::showItem($output_type, htmlescape((string) $tab["mac"]), $item_num, $row_num, 'width=5%');
                         echo Search::showItem($output_type, Html::convDateTime($tab["date"]), $item_num, $row_num, 'width=15%');
-                        echo Search::showItem($output_type, $tab["contact"], $item_num, $row_num, 'width=5%');
-                        echo Search::showItem($output_type, $tab["location"], $item_num, $row_num, 'width=15%');
-                        echo Search::showItem($output_type, $tab["type"], $item_num, $row_num);
+                        echo Search::showItem($output_type, htmlescape((string) $tab["contact"]), $item_num, $row_num, 'width=5%');
+                        echo Search::showItem($output_type, htmlescape((string) $tab["location"]), $item_num, $row_num, 'width=15%');
+                        echo Search::showItem($output_type, htmlescape((string) $tab["type"]), $item_num, $row_num);
 
                         if (!$tolinked) {
                             echo "<td width='15%'>";
@@ -2773,8 +2794,8 @@ class SnmpOcslink extends CommonDBTM
                         $item = new $tab["itemtype"]();
                         $item->getFromDB($tab["items_id"]);
                         echo "<td>" . $item->getLink() . "</td>\n";
-                        echo "<td>" . $item->getTypeName() . "</td>\n";
-                        echo "<td>" . $ocs_snmp_name[$tab["ocs_id"]] . "</td>\n";
+                        echo "<td>" . htmlescape($item->getTypeName()) . "</td>\n";
+                        echo "<td>" . htmlescape((string) ($ocs_snmp_name[$tab["ocs_id"]] ?? '')) . "</td>\n";
                         echo "<td>" . Html::convDateTime($tab["last_update"]) . "</td>\n";
                         echo "<td>" . Html::convDateTime($ocs_snmp_inv[$tab["ocs_id"]]) . "</td>\n";
                         echo "<td><input type='checkbox' name='toupdate[" . $tab["id"] . "]' " .
@@ -2826,6 +2847,17 @@ class SnmpOcslink extends CommonDBTM
     {
         global $DB;
 
+        $ocsid                               = (int) $ocsid;
+        $plugin_ocsinventoryng_ocsservers_id = (int) $plugin_ocsinventoryng_ocsservers_id;
+        $items_id                            = (int) $items_id;
+
+        // One of the SNMP types, an item the user may update: the synchronisation overwrites it
+        if (!in_array($itemtype, self::$snmptypes, true)
+            || !($item = getItemForItemtype($itemtype))
+            || !$item->can($items_id, UPDATE)) {
+            return false;
+        }
+
         $ocsClient = OcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
 
         $ocsSnmp = $ocsClient->getSnmpDevice($ocsid);
@@ -2834,12 +2866,14 @@ class SnmpOcslink extends CommonDBTM
             return false;
         }
 
-        $query  = "INSERT INTO `glpi_plugin_ocsinventoryng_snmpocslinks`
-                       (`items_id`, `ocs_id`, `itemtype`,
-                        `last_update`, `plugin_ocsinventoryng_ocsservers_id`, `linked`)
-                VALUES ('$items_id', '$ocsid', '" . $itemtype . "',
-                        '" . $_SESSION["glpi_currenttime"] . "', $plugin_ocsinventoryng_ocsservers_id, 1)";
-        $result = $DB->doQuery($query);
+        $result = $DB->insert('glpi_plugin_ocsinventoryng_snmpocslinks', [
+            'items_id'                            => $items_id,
+            'ocs_id'                              => $ocsid,
+            'itemtype'                            => $itemtype,
+            'last_update'                         => $_SESSION["glpi_currenttime"],
+            'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+            'linked'                              => 1,
+        ]);
 
         if ($result) {
             return ($DB->insertId());

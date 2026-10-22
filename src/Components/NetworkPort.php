@@ -639,8 +639,9 @@ class NetworkPort extends NetworkPortInstantiation
 
         DeviceNetworkCard::getHTMLTableCellsForItem($row, $this, null, $options);
 
-        $row->addCell($row->getHeaderByName('Instantiation', 'TYPE'), $this->fields['TYPE']);
-        $row->addCell($row->getHeaderByName('Instantiation', 'TYPEMIB'), $this->fields['TYPEMIB']);
+        // TYPE and TYPEMIB are sent by the OCS agent; the cells are output as HTML
+        $row->addCell($row->getHeaderByName('Instantiation', 'TYPE'), htmlescape((string) $this->fields['TYPE']));
+        $row->addCell($row->getHeaderByName('Instantiation', 'TYPEMIB'), htmlescape((string) $this->fields['TYPEMIB']));
         $link  = NetworkPortType::getFormURL(true) . '?' . $this->getForeignKeyField() . '=' . $this->getID();
         $value = NetworkPortType::getLinkToCreateFromTypeAndTypeMIB($this->fields);
         $row->addCell($row->getHeaderByName('Instantiation', 'Generate'), $value);
@@ -693,9 +694,10 @@ class NetworkPort extends NetworkPortInstantiation
     private static function getTextualType($type)
     {
         if (empty($type)) {
-            return '<i>' . __('empty', 'ocsinventoryng') . '</i>';
+            return '<i>' . htmlescape(__('empty', 'ocsinventoryng')) . '</i>';
         }
-        return $type;
+        // TYPE and TYPEMIB are sent by the OCS agent: escaped
+        return htmlescape((string) $type);
     }
 
     public static function displayInvalidList()
@@ -759,7 +761,7 @@ class NetworkPort extends NetworkPortInstantiation
                         $printable_speeds[] = NetworkPortEthernet::transformPortSpeed($speed, true);
                     }
                     $typemib['speed'] = implode(', ', $printable_speeds);
-                    echo "<td>" . $typemib['speed'] . "</td>";
+                    echo "<td>" . htmlescape((string) $typemib['speed']) . "</td>";
 
                     echo "<td>" . NetworkPortType::getLinkToCreateFromTypeAndTypeMIB($typemib) . "</td>";
 

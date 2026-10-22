@@ -86,6 +86,9 @@ class Thread extends CommonDBTM
     {
         global $DB;
 
+        // A process id from the request: an integer, never in the SQL or the page as posted
+        $pid = (int) $pid;
+
         $config = new Config();
         $config->getFromDB(1);
 
@@ -102,14 +105,14 @@ class Thread extends CommonDBTM
                      `not_unique_machines_number` AS not_unique_machines_number,
                      `link_refused_machines_number` AS link_refused_machines_number
               FROM `" . $this->getTable() . "`
-              WHERE `processid` = '$pid'
+              WHERE `processid` = " . (int) $pid . "
               ORDER BY `threadid` ASC";
         $result = $DB->doQuery($sql);
 
         echo "<div class='center' id='tabsbody'>";
         echo "<form name=cas action='' method='post'>";
         echo "<table class='tab_cadre' cellpadding='11'>";
-        echo "<tr><th colspan='14'>" . sprintf(__('%1$s: %2$s'), __('Process information', 'ocsinventoryng'), $pid) .
+        echo "<tr><th colspan='14'>" . sprintf(__s('%1$s: %2$s'), __s('Process information', 'ocsinventoryng'), (int) $pid) .
          "</th></tr>";
         echo "<tr>";
         echo "<th>" . __('Thread', 'ocsinventoryng') . "</th>";
@@ -210,9 +213,11 @@ class Thread extends CommonDBTM
     {
         global $DB;
 
+        $pid = (int) $pid;
+
         $sql = "SELECT `status`
               FROM `" . $this->getTable() . "`
-              WHERE `processid` = '$pid'";
+              WHERE `processid` = " . (int) $pid . "";
         $result = $DB->doQuery($sql);
         $status = 0;
         $thread_number = 0;
@@ -239,6 +244,8 @@ class Thread extends CommonDBTM
     {
         global $DB;
 
+        $delete_frequency = (int) $delete_frequency;
+
         $nbdel = 0;
 
         if ($delete_frequency > 0) {
@@ -263,6 +270,10 @@ class Thread extends CommonDBTM
     public function showProcesses($target, $plugin_ocsinventoryng_ocsservers_id = 0)
     {
         global $DB, $CFG_GLPI;
+
+        // The server comes from the request: an integer
+        $plugin_ocsinventoryng_ocsservers_id = (int) $plugin_ocsinventoryng_ocsservers_id;
+        $target = htmlescape((string) $target);
 
         $canedit = Session::haveRight("plugin_ocsinventoryng", UPDATE);
 
@@ -589,11 +600,7 @@ class Thread extends CommonDBTM
         array_pop($events);
         $number = count($events);
 
-        if (isset($_REQUEST["start"])) {
-            $start = $_REQUEST["start"];
-        } else {
-            $start = 0;
-        }
+        $start = max(0, (int) ($_REQUEST["start"] ?? 0));
 
         if ($number < 1) {
             return $this->lognothing();
@@ -611,7 +618,8 @@ class Thread extends CommonDBTM
 
         for ($i = $start; $i < ($start + $_SESSION['glpilist_limit']) && $i < count($events); $i++) {
             $lines = explode("\n", $events[$i]);
-            echo "<tr class='tab_bg_2 top'><td>" . $lines[0] . "</td>";
+            // The log holds names reported by the agents: plain text
+            echo "<tr class='tab_bg_2 top'><td>" . htmlescape($lines[0]) . "</td>";
             echo "</tr>";
         }
         echo "</table></div>";

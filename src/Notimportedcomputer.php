@@ -123,7 +123,7 @@ class Notimportedcomputer extends CommonDBTM
                     $rule = new $key();
                     if ($rule->can($value, READ)) {
                         $url       = $rule->getLinkURL();
-                        $message[] = "<a href='$url'>" . $rule->getName() . "</a>";
+                        $message[] = "<a href='" . htmlescape($url) . "'>" . htmlescape((string) $rule->getName()) . "</a>";
                     }
                 }
             }
@@ -288,12 +288,17 @@ class Notimportedcomputer extends CommonDBTM
             }
             $input["rules_id"] = json_encode($reason['rule_matched']);
 
-            $query  = "SELECT `id` FROM `glpi_plugin_ocsinventoryng_notimportedcomputers`
-                    WHERE `ocsid`='" . $ocsid . "'
-                    AND `plugin_ocsinventoryng_ocsservers_id`= '" . $ocsservers_id . "'";
-            $result = $DB->doQuery($query);
-            if ($DB->numrows($result) > 0) {
-                $input['id'] = $DB->result($result, 0, 'id');
+            $result = $DB->request([
+                'SELECT' => ['id'],
+                'FROM'   => 'glpi_plugin_ocsinventoryng_notimportedcomputers',
+                'WHERE'  => [
+                    'ocsid'                               => (int) $ocsid,
+                    'plugin_ocsinventoryng_ocsservers_id' => (int) $ocsservers_id,
+                ],
+                'LIMIT'  => 1,
+            ]);
+            if (count($result) > 0) {
+                $input['id'] = $result->current()['id'];
                 $this->update($input);
             } else {
                 $this->add($input);
@@ -313,24 +318,19 @@ class Notimportedcomputer extends CommonDBTM
     {
         global $DB;
 
-        $first = true;
-
-        $sql = "DELETE
-              FROM `" . $this->getTable() . "`";
-
+        $where = [];
         if ($ocsservers_id != -1) {
-            $sql   .= " WHERE `plugin_ocsinventoryng_ocsservers_id` = $ocsservers_id";
-            $first = false;
+            $where['plugin_ocsinventoryng_ocsservers_id'] = (int) $ocsservers_id;
         }
         if ($ocsid != -1) {
-            $sql   .= ($first ? " WHERE" : " AND") . " `ocsid` = '$ocsid'";
-            $first = false;
+            $where['ocsid'] = (int) $ocsid;
         }
-        if ($first) {
+        if (empty($where)) {
             // Use truncate to reset id
-            $sql = "TRUNCATE `" . $this->getTable() . "`";
+            $result = $DB->doQuery("TRUNCATE " . $DB->quoteName($this->getTable()));
+            return ($result ? $DB->affectedRows() : -1);
         }
-        $result = $DB->doQuery($sql);
+        $result = $DB->delete($this->getTable(), $where);
 
         return ($result ? $DB->affectedRows() : -1);
     }
@@ -346,15 +346,21 @@ class Notimportedcomputer extends CommonDBTM
      */
     public function deleteNotImportedComputer($not_imported_id)
     {
-        $can_update = Config::canUpdateOCS();
-        if ($this->getFromDB($not_imported_id) && $can_update) {
+        // Writing to the OCS database must be enabled, and the machine of a server allowed to the
+        // profile of a user who may manage the computers not imported
+        $can_update = Config::canUpdateOCS()
+            && Session::haveRight('plugin_ocsinventoryng_import', UPDATE);
+        if ($can_update
+            && $this->getFromDB($not_imported_id)
+            && OcsServer::isAllowedServer((int) $this->fields["plugin_ocsinventoryng_ocsservers_id"])) {
             self::deleteComputerInOCS(
                 $this->fields["ocsid"],
                 $this->fields["plugin_ocsinventoryng_ocsservers_id"]
             );
             $fields["id"] = $not_imported_id;
-            $this->delete($fields);
+            return $this->delete($fields);
         }
+        return false;
     }
 
     /**
@@ -366,6 +372,8 @@ class Notimportedcomputer extends CommonDBTM
     public static function deleteComputerInOCS($ocs_id, $ocs_server_id)
     {
         $DBocs = OcsServer::getDBocs($ocs_server_id)->getDB();
+        // Id of the OCS computer: an integer, put in the queries below
+        $ocs_id = (int) $ocs_id;
 
         //First try to remove all the network ports
         $query = "DELETE
@@ -567,7 +575,7 @@ class Notimportedcomputer extends CommonDBTM
             }
             $ocs_tag = $computer["META"]["TAG"];
             if ($ocs_tag != $params['tag']) {
-                $ocsClient->updateBios($params['tag'], $params['ocsid']);
+                $ocsClient->updateTag($params['tag'], $params['ocsid']);
                 $changes[] = 'tag';
             }
         }
@@ -650,11 +658,10 @@ class Notimportedcomputer extends CommonDBTM
     {
         global $DB;
 
-        $query = "DELETE
-                FROM `glpi_alerts`
-                WHERE `itemtype` = 'GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer'
-                      AND `items_id` = " . $this->fields['id'];
-        $DB->doQuery($query);
+        $DB->delete('glpi_alerts', [
+            'itemtype' => self::class,
+            'items_id' => (int) $this->fields['id'],
+        ]);
     }
 
 
@@ -759,37 +766,44 @@ class Notimportedcomputer extends CommonDBTM
 
         switch ($ma->getAction()) {
             case "plugin_ocsinventoryng_import":
-                $input = $ma->getInput();
-
-                foreach ($ids as $id) {
-                    if (Notimportedcomputer::computerImport(['id'     => $id,
-                        'force'  => true,
-                        'entity' => $input['entity']])) {
-                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
-                    } else {
-                        $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
-                    }
-                }
-
-                return;
-
             case "plugin_ocsinventoryng_replayrules":
-                foreach ($ids as $id) {
-                    if (Notimportedcomputer::computerImport(['id' => $id])) {
-                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
-                    } else {
-                        $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
-                    }
-                }
-                return;
-
             case "plugin_ocsinventoryng_delete":
-                foreach ($ids as $id) {
-                    if ($notimport->deleteNotImportedComputer($id)) {
-                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
-                    } else {
-                        $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+                // The guards of front/notimportedcomputer.form.php: the import right and, for an
+                // import into a chosen entity, an entity of the user (the posted value, not only
+                // the choices of the dropdown)
+                $params = [];
+                if ($ma->getAction() === "plugin_ocsinventoryng_import") {
+                    $input  = $ma->getInput();
+                    $entity = (int) ($input['entity'] ?? -1);
+                    if ($entity < 0 || !Session::haveAccessToEntity($entity)) {
+                        $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_NORIGHT);
+                        return;
                     }
+                    $params = ['force' => true, 'entity' => $entity];
+                }
+                if (!Session::haveRight('plugin_ocsinventoryng_import', UPDATE)) {
+                    $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_NORIGHT);
+                    return;
+                }
+
+                foreach ($ids as $id) {
+                    // A machine of an entity of the user, from an OCS server allowed to the
+                    // profile only
+                    if (!$notimport->can((int) $id, READ)
+                        || !OcsServer::isAllowedServer((int) $notimport->fields['plugin_ocsinventoryng_ocsservers_id'])) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_NORIGHT);
+                        continue;
+                    }
+                    if ($ma->getAction() === "plugin_ocsinventoryng_delete") {
+                        $done = $notimport->deleteNotImportedComputer((int) $id);
+                    } else {
+                        $done = Notimportedcomputer::computerImport(['id' => (int) $id] + $params);
+                    }
+                    $ma->itemDone(
+                        $item->getType(),
+                        $id,
+                        $done ? MassiveAction::ACTION_OK : MassiveAction::ACTION_KO
+                    );
                 }
                 return;
         }

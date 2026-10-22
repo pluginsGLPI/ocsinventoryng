@@ -184,13 +184,14 @@ class OcsProcess extends CommonDBTM
                         if (isset($res['COMPUTERS']) && count($res['COMPUTERS'])) {
                             if (isset($res['COMPUTERS']['META']) && is_array(isset($res['COMPUTERS']['META']))) {
                                 $data  = end($res['COMPUTERS']['META']);
-                                $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                                        SET `ocsid` = '" . $data["ID"] . "',
-                                            `ocs_deviceid` = '" . $data["DEVICEID"] . "'
-                                        WHERE `ocs_deviceid` = '$del'
-                                              AND `plugin_ocsinventoryng_ocsservers_id`
-                                                      = $plugin_ocsinventoryng_ocsservers_id";
-                                $DB->doQuery($query);
+                                // Values read from the OCS database (sent by the agent): bound
+                                $DB->update('glpi_plugin_ocsinventoryng_ocslinks', [
+                                    'ocsid'        => (int) $data['ID'],
+                                    'ocs_deviceid' => (string) $data['DEVICEID'],
+                                ], [
+                                    'ocs_deviceid'                        => (string) $del,
+                                    'plugin_ocsinventoryng_ocsservers_id' => (int) $plugin_ocsinventoryng_ocsservers_id,
+                                ]);
                                 $ocsClient->setChecksum($data['CHECKSUM'] | OcsClient::CHECKSUM_HARDWARE, $data['ID']);
                             }
                             // } else {
@@ -201,22 +202,23 @@ class OcsProcess extends CommonDBTM
                         $res = $ocsClient->searchComputers('ID', $equiv);
                         if (isset($res['COMPUTERS']) && count($res['COMPUTERS'])) {
                             $data  = $res['COMPUTERS'][$equiv]['META'];
-                            $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                                     SET `ocsid` = '" . $data["ID"] . "',
-                                         `ocs_deviceid` = '" . $data["DEVICEID"] . "'
-                                     WHERE `ocsid` = '$del'
-                                           AND `plugin_ocsinventoryng_ocsservers_id`
-                                                   = $plugin_ocsinventoryng_ocsservers_id";
-                            $DB->doQuery($query);
+                            $DB->update('glpi_plugin_ocsinventoryng_ocslinks', [
+                                'ocsid'        => (int) $data['ID'],
+                                'ocs_deviceid' => (string) $data['DEVICEID'],
+                            ], [
+                                'ocsid'                               => (int) $del,
+                                'plugin_ocsinventoryng_ocsservers_id' => (int) $plugin_ocsinventoryng_ocsservers_id,
+                            ]);
                             $ocsClient->setChecksum($data['CHECKSUM'] | OcsClient::CHECKSUM_HARDWARE, $data['ID']);
                         } else {
                             // Not found, probably because ID change twice since previous sync
                             // No way to found new DEVICEID
-                            $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                                     SET `ocsid` = '$equiv'
-                                     WHERE `ocsid` = '$del'
-                                           AND `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
-                            $DB->doQuery($query);
+                            $DB->update('glpi_plugin_ocsinventoryng_ocslinks', [
+                                'ocsid' => (int) $equiv,
+                            ], [
+                                'ocsid'                               => (int) $del,
+                                'plugin_ocsinventoryng_ocsservers_id' => (int) $plugin_ocsinventoryng_ocsservers_id,
+                            ]);
                             // for history, see below
                             $data = ['ID' => $equiv];
                         }
@@ -230,25 +232,27 @@ class OcsProcess extends CommonDBTM
                     //TODO
                     //http://www.karlrixon.co.uk/writing/update-multiple-rows-with-different-values-and-a-single-sql-query/
                     if (isset($data)) {
-                        $sql_id = "SELECT `computers_id`
-                             FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                             WHERE `ocsid` = " . $data["ID"] . "
-                                   AND `plugin_ocsinventoryng_ocsservers_id`
-                                          = $plugin_ocsinventoryng_ocsservers_id";
-                        if ($res_id = $DB->doQuery($sql_id)) {
-                            if ($DB->numrows($res_id) > 0) {
-                                //Add history to indicates that the ocsid changed
-                                $changes[0] = '0';
-                                //Old ocsid
-                                $changes[1] = $del;
-                                //New ocsid
-                                $changes[2] = $data["ID"];
-                                Ocslink::history(
-                                    $DB->result($res_id, 0, "computers_id"),
-                                    $changes,
-                                    Ocslink::HISTORY_OCS_IDCHANGED
-                                );
-                            }
+                        $links = $DB->request([
+                            'SELECT' => ['computers_id'],
+                            'FROM'   => 'glpi_plugin_ocsinventoryng_ocslinks',
+                            'WHERE'  => [
+                                'ocsid'                               => (int) $data['ID'],
+                                'plugin_ocsinventoryng_ocsservers_id' => (int) $plugin_ocsinventoryng_ocsservers_id,
+                            ],
+                            'LIMIT'  => 1,
+                        ]);
+                        if ($link_data = $links->current()) {
+                            //Add history to indicates that the ocsid changed
+                            $changes[0] = '0';
+                            //Old ocsid
+                            $changes[1] = $del;
+                            //New ocsid
+                            $changes[2] = $data["ID"];
+                            Ocslink::history(
+                                $link_data['computers_id'],
+                                $changes,
+                                Ocslink::HISTORY_OCS_IDCHANGED
+                            );
                         }
                     }
                 } else { // Deleted
@@ -258,17 +262,17 @@ class OcsProcess extends CommonDBTM
                     } else {
                         $link = "ocsid";
                     }
-                    $query = "SELECT *
-                               FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                               WHERE `" . $link . "` = '$del'
-                                     AND `plugin_ocsinventoryng_ocsservers_id`
-                                                = $plugin_ocsinventoryng_ocsservers_id";
-
-                    if ($result = $DB->doQuery($query)) {
-                        if ($DB->numrows($result) > 0) {
-                            $data                          = $DB->fetchArray($result);
-                            $ocslinks_toclean[$data['id']] = $data['id'];
-                        }
+                    $links = $DB->request([
+                        'SELECT' => ['id'],
+                        'FROM'   => 'glpi_plugin_ocsinventoryng_ocslinks',
+                        'WHERE'  => [
+                            $link                                 => $link === 'ocsid' ? (int) $del : (string) $del,
+                            'plugin_ocsinventoryng_ocsservers_id' => (int) $plugin_ocsinventoryng_ocsservers_id,
+                        ],
+                        'LIMIT'  => 1,
+                    ]);
+                    foreach ($links as $data) {
+                        $ocslinks_toclean[$data['id']] = $data['id'];
                     }
                     Ocslink::cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_toclean);
                 }
@@ -497,19 +501,30 @@ class OcsProcess extends CommonDBTM
         $force                               = $process_params["force"] ?? 0;
         $cron                                = $process_params["cron"] ?? 0;
         //Check it machine is already present AND was imported by OCS AND still present in GLPI
-        $query  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`id`,
-                        `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`,
-                        `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid`
-                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                LEFT JOIN `glpi_computers`
-                     ON `glpi_computers`.`id`=`glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`
-                WHERE `glpi_computers`.`id` IS NOT NULL
-                      AND `ocsid` = '$ocsid'
-                      AND `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
-        $result = $DB->doQuery($query);
+        $result = $DB->request([
+            'SELECT'    => [
+                'glpi_plugin_ocsinventoryng_ocslinks.id',
+                'glpi_plugin_ocsinventoryng_ocslinks.computers_id',
+                'glpi_plugin_ocsinventoryng_ocslinks.ocsid',
+            ],
+            'FROM'      => 'glpi_plugin_ocsinventoryng_ocslinks',
+            'LEFT JOIN' => [
+                'glpi_computers' => [
+                    'ON' => [
+                        'glpi_computers'                      => 'id',
+                        'glpi_plugin_ocsinventoryng_ocslinks' => 'computers_id',
+                    ],
+                ],
+            ],
+            'WHERE'     => [
+                'NOT'                                 => ['glpi_computers.id' => null],
+                'ocsid'                               => (int) $ocsid,
+                'plugin_ocsinventoryng_ocsservers_id' => (int) $plugin_ocsinventoryng_ocsservers_id,
+            ],
+        ]);
 
-        if ($DB->numrows($result)) {
-            $datas = $DB->fetchArray($result);
+        if (count($result)) {
+            $datas = $result->current();
             //Return code to indicates that the machine was synchronized
             //or only last inventory date changed
             $sync_params = ['ID'                                  => $datas["id"],
@@ -739,22 +754,25 @@ class OcsProcess extends CommonDBTM
     {
         global $DB;
 
-        $ocsid                               = $link_params["ocsid"];
-        $plugin_ocsinventoryng_ocsservers_id = $link_params["plugin_ocsinventoryng_ocsservers_id"];
-        $computers_id                        = $link_params["computers_id"];
+        // Ids from the request or the session queue: integers
+        $ocsid                               = (int) $link_params["ocsid"];
+        $plugin_ocsinventoryng_ocsservers_id = (int) $link_params["plugin_ocsinventoryng_ocsservers_id"];
+        $computers_id                        = (int) $link_params["computers_id"];
+        $link_params["ocsid"]                = $ocsid;
+        $link_params["computers_id"]         = $computers_id;
+        $link_params["plugin_ocsinventoryng_ocsservers_id"] = $plugin_ocsinventoryng_ocsservers_id;
         $cron                                = $link_params["cron"] ?? 0;
         //      OcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
         $ocsClient = OcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
         $cfg_ocs   = OcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
 
-        $query = "SELECT *
-                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                WHERE `computers_id` = $computers_id";
-
-        $result          = $DB->doQuery($query);
+        $link_iterator   = $DB->request([
+            'FROM'  => 'glpi_plugin_ocsinventoryng_ocslinks',
+            'WHERE' => ['computers_id' => $computers_id],
+        ]);
         $ocs_id_change   = false;
         $ocs_link_exists = false;
-        $numrows         = $DB->numrows($result);
+        $numrows         = count($link_iterator);
 
         $options     = [
             "DISPLAY" => [
@@ -780,16 +798,17 @@ class OcsProcess extends CommonDBTM
         // Already link - check if the OCS computer already exists
         if ($numrows > 0) {
             $ocs_link_exists = true;
-            $data            = $DB->fetchAssoc($result);
+            $data            = $link_iterator->current();
 
             // Not found
             if (!$ocsClient->getIfOCSComputersExists($data['ocsid'])) {
                 $idlink = $data["id"];
-                $query  = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                       SET `ocsid` = $ocsid
-                       WHERE `id` = " . $data["id"];
 
-                if ($DB->doQuery($query)) {
+                if ($DB->update(
+                    'glpi_plugin_ocsinventoryng_ocslinks',
+                    ['ocsid' => $ocsid],
+                    ['id' => (int) $data["id"]]
+                )) {
                     if ($cfg_ocs['dohistory'] == 1) {
                         $ocs_id_change = true;
                         //Add history to indicates that the ocsid changed
@@ -942,20 +961,25 @@ class OcsProcess extends CommonDBTM
         $cfg_ocs                             = $sync_params["cfg_ocs"];
         $cron                                = $sync_params["cron"] ?? 0;
 
-        $query  = "SELECT `ocsid`,
-                        `computers_id`,
-                         `plugin_ocsinventoryng_ocsservers_id`,
-                         `entities_id`,
-                         `computer_update`,
-                         `tag`,
-                         `last_update`
-                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                WHERE `id` = $ID
-                AND `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
-        $result = $DB->doQuery($query);
+        $result = $DB->request([
+            'SELECT' => [
+                'ocsid',
+                'computers_id',
+                'plugin_ocsinventoryng_ocsservers_id',
+                'entities_id',
+                'computer_update',
+                'tag',
+                'last_update',
+            ],
+            'FROM'   => 'glpi_plugin_ocsinventoryng_ocslinks',
+            'WHERE'  => [
+                'id'                                  => (int) $ID,
+                'plugin_ocsinventoryng_ocsservers_id' => (int) $plugin_ocsinventoryng_ocsservers_id,
+            ],
+        ]);
 
-        if ($DB->numrows($result) == 1) {
-            $line = $DB->fetchAssoc($result);
+        if (count($result) == 1) {
+            $line = $result->current();
 
 
             $comp = new Computer();
@@ -1027,15 +1051,15 @@ class OcsProcess extends CommonDBTM
                 }
 
                 // update last_update and and last_ocs_update
-                $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                             SET `last_update` = '" . $_SESSION["glpi_currenttime"] . "',
-                             `last_ocs_update` = '" . $computer_ocs["META"]["LASTDATE"] . "',
-                             `ocs_agent_version` = '" . $computer_ocs["HARDWARE"]["USERAGENT"] . "',
-                             `last_ocs_conn` = '" . $computer_ocs["HARDWARE"]["LASTCOME"] . "',
-                             `ip_src` = '" . $computer_ocs["HARDWARE"]["IPSRC"] . "',
-                             `ocs_deviceid` = '" . $computer_ocs["HARDWARE"]["DEVICEID"] . "'
-                             WHERE `id` = $ID";
-                $DB->doQuery($query);
+                // Values sent by the agent (user agent, device id, ...): bound, never concatenated
+                $DB->update('glpi_plugin_ocsinventoryng_ocslinks', [
+                    'last_update'       => $_SESSION["glpi_currenttime"],
+                    'last_ocs_update'   => $computer_ocs["META"]["LASTDATE"],
+                    'ocs_agent_version' => $computer_ocs["HARDWARE"]["USERAGENT"],
+                    'last_ocs_conn'     => $computer_ocs["HARDWARE"]["LASTCOME"],
+                    'ip_src'            => $computer_ocs["HARDWARE"]["IPSRC"],
+                    'ocs_deviceid'      => $computer_ocs["HARDWARE"]["DEVICEID"],
+                ], ['id' => (int) $ID]);
                 //Add  || $data_ocs["META"]["CHECKSUM"] > self::MAX_CHECKSUM for bug of checksum 18446744073689088230
                 //            Toolbox::logWarning(intval($cfg_ocs["checksum"]));
 
@@ -1912,12 +1936,13 @@ class OcsProcess extends CommonDBTM
                 $input = $ma->getInput();
 
                 foreach ($ids as $id) {
-                    $query  = "SELECT `plugin_ocsinventoryng_ocsservers_id`, `id`
-                               FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                               WHERE `computers_id` = $id";
-                    $result = $DB->doQuery($query);
-                    if ($DB->numrows($result) == 1) {
-                        $data        = $DB->fetchAssoc($result);
+                    $result = $DB->request([
+                        'SELECT' => ['plugin_ocsinventoryng_ocsservers_id', 'id'],
+                        'FROM'   => 'glpi_plugin_ocsinventoryng_ocslinks',
+                        'WHERE'  => ['computers_id' => (int) $id],
+                    ]);
+                    if (count($result) == 1) {
+                        $data        = $result->current();
                         $cfg_ocs     = OcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
                         $sync_params = ['ID'                                  => $data['id'],
                             'plugin_ocsinventoryng_ocsservers_id' => $data['plugin_ocsinventoryng_ocsservers_id'],
@@ -1939,12 +1964,13 @@ class OcsProcess extends CommonDBTM
                 $input = $ma->getInput();
 
                 foreach ($ids as $id) {
-                    $query  = "SELECT `plugin_ocsinventoryng_ocsservers_id`, `id`
-                               FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                               WHERE `computers_id` = $id";
-                    $result = $DB->doQuery($query);
-                    if ($DB->numrows($result) == 1) {
-                        $data        = $DB->fetchAssoc($result);
+                    $result = $DB->request([
+                        'SELECT' => ['plugin_ocsinventoryng_ocsservers_id', 'id'],
+                        'FROM'   => 'glpi_plugin_ocsinventoryng_ocslinks',
+                        'WHERE'  => ['computers_id' => (int) $id],
+                    ]);
+                    if (count($result) == 1) {
+                        $data        = $result->current();
                         $cfg_ocs     = OcsServer::getConfig($data['plugin_ocsinventoryng_ocsservers_id']);
                         $sync_params = ['ID'                                  => $data['id'],
                             'plugin_ocsinventoryng_ocsservers_id' => $data['plugin_ocsinventoryng_ocsservers_id'],

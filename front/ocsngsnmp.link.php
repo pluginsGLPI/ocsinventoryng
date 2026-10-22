@@ -28,9 +28,16 @@
  */
 
 use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
+
+// The OCS server of the session, chosen on front/ocsng.php: still allowed for the active profile
+if (OcsServer::checkSessionServer() <= 0) {
+    throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+}
+
 
 Html::header('OCS Inventory NG', '', "tools", Menu::class, "synclink");
 
@@ -111,19 +118,23 @@ if (!isset($_POST["import_ok"])) {
    if (isset($_POST['tolink_items']) && count($_POST['tolink_items']) > 0) {
       $_SESSION["ocs_linksnmp_count"] = 0;
 
+      // Queued for the processing above: an OCS id, a SNMP type and an item the user may
+      // update, as the synchronisation overwrites it
       foreach ($_POST['tolink_items'] as $key => $val) {
-
-         if ($val) {
-            $_SESSION["ocs_linksnmp"]["id"][] = $key;
-            $_SESSION["ocs_linksnmp"]["items"][$key] = $_POST['tolink_items'][$key];
+         $key      = (int) $key;
+         $val      = (int) $val;
+         $itemtype = (string) ($_POST['tolink_itemtype'][$key] ?? '');
+         if ($key > 0 && $val > 0) {
+            if (!in_array($itemtype, SnmpOcslink::$snmptypes, true)
+                || !($item = getItemForItemtype($itemtype))) {
+               throw new \Glpi\Exception\Http\BadRequestHttpException();
+            }
+            $item->check($val, UPDATE);
+            $_SESSION["ocs_linksnmp"]["id"][]           = $key;
+            $_SESSION["ocs_linksnmp"]["items"][$key]    = $val;
+            $_SESSION["ocs_linksnmp"]["itemtype"][$key] = $itemtype;
          }
          $_SESSION["ocs_linksnmp_count"]++;
-      }
-      foreach ($_POST['tolink_itemtype'] as $key => $val) {
-
-         if ($val) {
-            $_SESSION["ocs_linksnmp"]["itemtype"][$key] = $_POST['tolink_itemtype'][$key];
-         }
       }
    }
    Html::redirect($_SERVER['PHP_SELF']);

@@ -231,7 +231,7 @@ class Winupdate extends \CommonDBTM
 
                 foreach ($result as $data) {
                     echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . self::getAuoptionsName($data['auoptions']) . "</td>";
+                    echo "<td>" . htmlescape((string) self::getAuoptionsName($data['auoptions'])) . "</td>";
 
                     if (DateTime::createFromFormat('Y-m-d H:i:s', $data['scheduleinstalldate']) !== false
                      && $data['scheduleinstalldate'] != "0000-00-00 00:00:00") {

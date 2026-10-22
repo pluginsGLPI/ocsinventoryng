@@ -171,28 +171,28 @@ class Osinstall extends \CommonDBTM
                             foreach ($result as $data) {
                                 echo "<tr class='tab_bg_1'>";
                                 echo "<td>" . __('Build version', 'ocsinventoryng') . "</td>";
-                                echo "<td>" . $data['build_version'] . "</td>";
+                                echo "<td>" . htmlescape((string) $data['build_version']) . "</td>";
                                 echo "<td>" . __('Installation date') . "</td>";
-                                echo "<td>" . $data['install_date'] . "</td>";
+                                echo "<td>" . htmlescape((string) $data['install_date']) . "</td>";
                                 echo "</tr>";
 
                                 echo "<tr class='tab_bg_1'>";
                                 echo "<td>" . __('Codeset', 'ocsinventoryng') . "</td>";
-                                echo "<td>" . $data['codeset'] . "</td>";
+                                echo "<td>" . htmlescape((string) $data['codeset']) . "</td>";
                                 echo "<td>" . __('Country code', 'ocsinventoryng') . "</td>";
-                                echo "<td>" . $data['countrycode'] . "</td>";
+                                echo "<td>" . htmlescape((string) $data['countrycode']) . "</td>";
                                 echo "</tr>";
 
                                 echo "<tr class='tab_bg_1'>";
                                 echo "<td>" . __('OS Language', 'ocsinventoryng') . "</td>";
-                                echo "<td>" . $data['oslanguage'] . "</td>";
+                                echo "<td>" . htmlescape((string) $data['oslanguage']) . "</td>";
                                 echo "<td>" . __('Current Timezone', 'ocsinventoryng') . "</td>";
-                                echo "<td>" . $data['curtimezone'] . "</td>";
+                                echo "<td>" . htmlescape((string) $data['curtimezone']) . "</td>";
                                 echo "</tr>";
 
                                 echo "<tr class='tab_bg_1'>";
                                 echo "<td>" . __('Locale', 'ocsinventoryng') . "</td>";
-                                echo "<td>" . $data['locale'] . "</td>";
+                                echo "<td>" . htmlescape((string) $data['locale']) . "</td>";
                                 echo "<td colspan='2'></td></tr>";
                             }
                         } else {

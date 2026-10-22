@@ -34,6 +34,12 @@ use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
+// The OCS server of the session, chosen on front/ocsng.php: still allowed for the active profile
+if (OcsServer::checkSessionServer() <= 0) {
+    throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+}
+
+
 Html::header('OCS Inventory NG', '', "tools", Menu::class, "importsnmp");
 
 $display_list = true;
@@ -134,16 +140,27 @@ if (!isset($_POST["import_ok"])) {
    if (isset($_POST["toimport"]) && (count($_POST['toimport']) > 0)) {
       $_SESSION["ocs_importsnmp_count"] = 0;
 
+      // Queued for the processing above: an OCS id, an entity of the user and a SNMP type
       foreach ($_POST['toimport'] as $key => $val) {
          if ($val == "on") {
+            $key = (int) $key;
             $_SESSION["ocs_importsnmp"]["id"][] = $key;
 
-            if (isset($_POST['toimport_entities'])) {
-               $_SESSION["ocs_importsnmp"]["entities_id"][$key] = $_POST['toimport_entities'][$key];
+            if (isset($_POST['toimport_entities'][$key])) {
+               $entity = (int) $_POST['toimport_entities'][$key];
+               if ($entity >= 0 && !Session::haveAccessToEntity($entity)) {
+                  throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+               }
+               $_SESSION["ocs_importsnmp"]["entities_id"][$key] = $entity;
             }
 
-            if (isset($_POST['toimport_itemtype'])) {
-               $_SESSION["ocs_importsnmp"]["itemtype"][$key] = $_POST['toimport_itemtype'][$key];
+            if (isset($_POST['toimport_itemtype'][$key])) {
+               $itemtype = (string) $_POST['toimport_itemtype'][$key];
+               if ($itemtype !== '' && $itemtype !== '0'
+                   && !in_array($itemtype, SnmpOcslink::$snmptypes, true)) {
+                  throw new \Glpi\Exception\Http\BadRequestHttpException();
+               }
+               $_SESSION["ocs_importsnmp"]["itemtype"][$key] = $itemtype;
             }
             $_SESSION["ocs_importsnmp_count"]++;
          }

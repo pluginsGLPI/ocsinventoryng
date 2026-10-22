@@ -227,8 +227,8 @@ class Customapp extends CommonDBTM
 
                 foreach ($result as $data) {
                     echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . $data['path'] . "</td>";
-                    echo "<td>" . $data['text'] . "</td>";
+                    echo "<td>" . htmlescape((string) $data['path']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['text']) . "</td>";
 
                     echo "</tr>";
                     Session::addToNavigateListItems(__CLASS__, $data['id']);

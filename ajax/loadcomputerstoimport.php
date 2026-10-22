@@ -34,12 +34,21 @@ use GlpiPlugin\Ocsinventoryng\OcsServer;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
+// Same rights as the page of the list (OcsServer::showComputersToAdd())
 Session::checkLoginUser();
+if (!Session::haveRight("plugin_ocsinventoryng_import", READ)
+    && !Session::haveRight("plugin_ocsinventoryng_link", READ)) {
+    throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+}
 
-$plugin_ocsinventoryng_ocsservers_id = $_POST["plugin_ocsinventoryng_ocsservers_id"];
-$entities_id                         = $_POST["entities_id"];
-$advancedimport                      = $_POST["importmode"];
-$advancedlink                        = $_POST["linkmode"];
+// A server allowed for the active profile, the entities of the user
+$plugin_ocsinventoryng_ocsservers_id = OcsServer::checkAllowedServer($_POST["plugin_ocsinventoryng_ocsservers_id"] ?? 0);
+$entities_id                         = array_values(array_intersect(
+    array_map('intval', (array) ($_POST["entities_id"] ?? [])),
+    array_map('intval', $_SESSION['glpiactiveentities'] ?? [])
+)) ?: array_map('intval', $_SESSION['glpiactiveentities'] ?? []);
+$advancedimport                      = (int) ($_POST["importmode"] ?? 0);
+$advancedlink                        = (int) ($_POST["linkmode"] ?? 0);
 
 $hardware["data"] = [];
 
@@ -47,15 +56,13 @@ global $DB;
 
 if ($plugin_ocsinventoryng_ocsservers_id > 0) {
     // Get all links between glpi and OCS
-    $query_glpi     = "SELECT ocsid
-                     FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                     WHERE `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id";
-    $result_glpi    = $DB->doQuery($query_glpi);
     $already_linked = [];
-    if ($DB->numrows($result_glpi) > 0) {
-        while ($data = $DB->fetchArray($result_glpi)) {
-            $already_linked [] = $data["ocsid"];
-        }
+    foreach ($DB->request([
+        'SELECT' => 'ocsid',
+        'FROM'   => 'glpi_plugin_ocsinventoryng_ocslinks',
+        'WHERE'  => ['plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id],
+    ]) as $data) {
+        $already_linked[] = $data["ocsid"];
     }
 
     $cfg_ocs = OcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
@@ -122,10 +129,10 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                 $ok           = 1;
                 $msg          = "";
                 if (!in_array($serial, $ssnblacklist)) {
-                    $msg = sprintf(__('%1$s : %2$s'), __('Serial number'), $serial);
+                    $msg = sprintf(__s('%1$s : %2$s'), __s('Serial number'), htmlescape((string) $serial));
                 } else {
                     $msg = "<span class='red'>";
-                    $msg .= sprintf(__('%1$s : %2$s'), __('Blacklisted serial number', 'ocsinventoryng'), $serial);
+                    $msg .= sprintf(__s('%1$s : %2$s'), __s('Blacklisted serial number', 'ocsinventoryng'), htmlescape((string) $serial));
                     $msg .= "</span>";
                     $ok  = 0;
                 }
@@ -133,11 +140,11 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
                 if (!in_array($data['META']['UUID'], $uuidblacklist)) {
                     $msg .= "<br>";
-                    $msg .= sprintf(__('%1$s : %2$s'), __('UUID'), $data['META']["UUID"]);
+                    $msg .= sprintf(__s('%1$s : %2$s'), __s('UUID'), htmlescape((string) $data['META']["UUID"]));
                 } else {
                     $msg .= "<br>";
                     $msg .= "<span class='red'>";
-                    $msg .= sprintf(__('%1$s : %2$s'), __('Blacklisted UUID', 'ocsinventoryng'), $data['META']["UUID"]);
+                    $msg .= sprintf(__s('%1$s : %2$s'), __s('Blacklisted UUID', 'ocsinventoryng'), htmlescape((string) $data['META']["UUID"]));
                     $msg .= "</span>";
                     $ok  = 0;
                 }
@@ -151,21 +158,21 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                         if (isset($opt['MACADDR'])) {
                             if (!in_array($opt['MACADDR'], $macblacklist)) {
                                 $msg .= "<br>";
-                                $msg .= sprintf(__('%1$s : %2$s'), __('MAC'), $opt['MACADDR']);
+                                $msg .= sprintf(__s('%1$s : %2$s'), __s('MAC'), htmlescape((string) $opt['MACADDR']));
                             } else {
                                 $msg .= "<br>";
                                 $msg .= "<span class='red'>";
-                                $msg .= sprintf(__('%1$s : %2$s'), __('Blacklisted MAC', 'ocsinventoryng'), $opt['MACADDR']);
+                                $msg .= sprintf(__s('%1$s : %2$s'), __s('Blacklisted MAC', 'ocsinventoryng'), htmlescape((string) $opt['MACADDR']));
                                 $msg .= "</span>";
                                 //$ok = 0;
                             }
                             if (!in_array($opt['IPADDRESS'], $ipblacklist)) {
                                 $msg .= " - ";
-                                $msg .= sprintf(__('%1$s : %2$s'), __('IP'), $opt['IPADDRESS']);
+                                $msg .= sprintf(__s('%1$s : %2$s'), __s('IP'), htmlescape((string) $opt['IPADDRESS']));
                             } else {
                                 $msg .= " - ";
                                 $msg .= "<span class='red'>";
-                                $msg .= sprintf(__('%1$s : %2$s'), __('Blacklisted IP', 'ocsinventoryng'), $opt['IPADDRESS']);
+                                $msg .= sprintf(__s('%1$s : %2$s'), __s('Blacklisted IP', 'ocsinventoryng'), htmlescape((string) $opt['IPADDRESS']));
                                 $msg .= "</span>";
                                 //$ok = 0;
                             }
@@ -226,9 +233,9 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                     } else {
                         $tmprule = new RuleImportEntity();
                         if ($tmprule->can($datar['_ruleid'], READ)) {
-                            $rule_matched = "<a href='" . $tmprule->getLinkURL() . "'>" . $tmprule->getName() . "</a>";
+                            $rule_matched = "<a href='" . htmlescape($tmprule->getLinkURL()) . "'>" . htmlescape($tmprule->getName()) . "</a>";
                         } else {
-                            $rule_matched = $tmprule->getName();
+                            $rule_matched = htmlescape($tmprule->getName());
                         }
                     }
                     $ent               = "toimport_entities[" . $id . "]";
@@ -277,15 +284,16 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                     $computers_id_founded = Computer::dropdown($options);
                     //                    }
                 }
+                // DataTables writes the cells as HTML: the values reported by the agents are escaped
                 $hardware["data"][] = [
                     'checked'                        => "",
-                    'id'                             => $data['META']["ID"],
-                    'name'                           => $data['META']["NAME"],
-                    'date'                           => $data['META']["LASTDATE"],
-                    'TAG'                            => $data['META']["TAG"],
-                    'serial'                         => $serial,
-                    'model'                          => $model,
-                    'manufacturer'                   => $manufacturer,
+                    'id'                             => (int) $data['META']["ID"],
+                    'name'                           => htmlescape((string) $data['META']["NAME"]),
+                    'date'                           => htmlescape((string) $data['META']["LASTDATE"]),
+                    'TAG'                            => htmlescape((string) $data['META']["TAG"]),
+                    'serial'                         => htmlescape((string) $serial),
+                    'model'                          => htmlescape((string) $model),
+                    'manufacturer'                   => htmlescape((string) $manufacturer),
                     'infos'                          => $valTip,
                     'toimport_disable_unicity_check' => $toimport_disable_unicity_check,
                     'rule_matched'                   => $rule_matched,

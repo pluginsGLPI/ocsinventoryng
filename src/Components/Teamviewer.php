@@ -225,8 +225,8 @@ class Teamviewer extends \CommonDBTM
 
                 foreach ($result as $data) {
                     echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . $data['twid'] . "</td>";
-                    echo "<td>" . $data['version'] . "</td>";
+                    echo "<td>" . htmlescape((string) $data['twid']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['version']) . "</td>";
                     echo "</tr>";
                     Session::addToNavigateListItems(__CLASS__, $data['id']);
 

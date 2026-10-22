@@ -36,15 +36,21 @@ Session::checkRight("profile", READ);
 $profservers = new Ocsserver_Profile();
 $prof        = new Profile();
 
-if (isset($_POST["addocsserver"]) && ($_POST['plugin_ocsinventoryng_ocsservers_id'] > 0)) {
-   $input['profiles_id']                         = $_POST['profile'];
-   $input['plugin_ocsinventoryng_ocsservers_id'] = $_POST['plugin_ocsinventoryng_ocsservers_id'];
+// Granting or revoking the servers of a profile changes the profile: its update right
+if (isset($_POST["addocsserver"]) || isset($_POST['delete'])) {
+   Session::checkRight("profile", UPDATE);
+}
+
+$ocsservers_id = (int) ($_POST['plugin_ocsinventoryng_ocsservers_id'] ?? 0);
+if (isset($_POST["addocsserver"]) && $ocsservers_id > 0) {
+   $input['profiles_id']                         = (int) $_POST['profile'];
+   $input['plugin_ocsinventoryng_ocsservers_id'] = $ocsservers_id;
 
    $newID = $profservers->add($input);
    Html::back();
 
-} else if (isset($_POST["addocsserver"]) && $_POST["plugin_ocsinventoryng_ocsservers_id"] == -1) {
-   $prof::addAllServers($_POST['profile']);
+} else if (isset($_POST["addocsserver"]) && $ocsservers_id == -1) {
+   $prof::addAllServers((int) $_POST['profile']);
    Html::back();
 }
 
@@ -52,10 +58,8 @@ if (isset($_POST["addocsserver"]) && ($_POST['plugin_ocsinventoryng_ocsservers_i
 $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = OcsServer::getFirstServer();
 
 if (isset ($_POST['delete'])) {
-   $input = [];
-   foreach ($_POST['item'] as $id => $val) {
-      $input['id'] = $id;
-      $profservers->delete($input);
+   foreach ((array) ($_POST['item'] ?? []) as $id => $val) {
+      $profservers->delete(['id' => (int) $id]);
    }
    Html::back();
 }

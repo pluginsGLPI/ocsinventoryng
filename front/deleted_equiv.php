@@ -36,6 +36,11 @@ use GlpiPlugin\Ocsinventoryng\OcsSoapClient;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
+// The OCS server of the session, chosen on front/ocsng.php: still allowed for the active
+// profile, otherwise "no server"
+OcsServer::checkSessionServer();
+
+
 Html::header('OCSInventory NG', '', "tools", Menu::class, "deleted_equiv");
 
 global $CFG_GLPI;

@@ -448,13 +448,15 @@ class Hardware
         $contact = (isset($ocsComputer['META']["USERID"])) ? $ocsComputer['META']["USERID"] : "";
 
         if (!empty($contact) && $cfg_ocs["link_with_user"] > 0) {
-            $query = "SELECT `id`
-                   FROM `glpi_users`
-                   WHERE `name` = '" . $contact . "';";
-            $result = $DB->doQuery($query);
+            // The user id is reported by the agent: a value bound by the query builder
+            $users = $DB->request([
+                'SELECT' => 'id',
+                'FROM'   => 'glpi_users',
+                'WHERE'  => ['name' => (string) $contact],
+            ]);
 
-            if ($DB->numrows($result) == 1) {
-                $user_id = $DB->result($result, 0, 0);
+            if (count($users) == 1) {
+                $user_id = $users->current()['id'];
                 $user = new User();
                 $user->getFromDB($user_id);
 

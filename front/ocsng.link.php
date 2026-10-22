@@ -34,13 +34,31 @@ use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 Session::checkRight("plugin_ocsinventoryng_link", READ);
 
+// The OCS server of the session, chosen on front/ocsng.php: still allowed for the active profile
+if (OcsServer::checkSessionServer() <= 0) {
+    throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+}
+
+
+// Linking, unlinking and processing the queued links write computers: the update right
+if ((isset($_POST["id"]) && is_array($_POST["id"]))
+    || isset($_POST["delete_link"])
+    || !empty($_SESSION["ocs_link"])) {
+    Session::checkRight("plugin_ocsinventoryng_link", UPDATE);
+}
+
 Html::header('OCS Inventory NG', '', "tools", Menu::class, "link");
 
 if (isset($_POST["id"]) && is_array($_POST["id"])) {
+    // The OCS machine overwrites the data of the computer: one the user may update
+    $computer = new Computer();
     foreach ($_POST['id'] as $key => $id) {
+        $id = (int) $id;
         $_SESSION["ocs_link"][$id]["ocsid"] = $id;
-        foreach ($_POST['item_to_link'] as $k => $item_to_link) {
+        foreach ((array) ($_POST['item_to_link'] ?? []) as $k => $item_to_link) {
             if ($k == $key) {
+                $item_to_link = (int) $item_to_link;
+                $computer->check($item_to_link, UPDATE);
                 $_SESSION["ocs_link"][$id]["computers_id"] = $item_to_link;
             }
         }
@@ -81,11 +99,20 @@ if (isset($_POST["change_link_mode"])) {
 }
 
 if (isset($_POST["delete_link"])) {
-    $link = new Ocslink();
+    $link     = new Ocslink();
+    $computer = new Computer();
     if (isset($_POST["toimport"]) && (count($_POST['toimport']) > 0)) {
         foreach ($_POST['toimport'] as $key => $val) {
             if ($val == "on") {
-                $link->deleteByCriteria(['ocsid' => $key]);
+                // The links of the current server, to computers the user may update
+                foreach ($link->find([
+                    'ocsid'                               => (int) $key,
+                    'plugin_ocsinventoryng_ocsservers_id' => (int) $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                ]) as $data) {
+                    if ($computer->can((int) $data['computers_id'], UPDATE)) {
+                        $link->delete(['id' => $data['id']], true);
+                    }
+                }
             }
         }
     }

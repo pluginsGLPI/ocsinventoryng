@@ -135,15 +135,19 @@ class Disk
                         $disk['totalsize'] = $logical_drive['TOTAL'];
                         $disk['freesize']  = $logical_drive['FREE'];
 
-                        $query   = "SELECT `id`
-                            FROM `glpi_items_disks`
-                            WHERE `items_id`= $computers_id
-                              AND `itemtype`= 'Computer'
-                               AND `name`='" . $disk['name'] . "'
-                               AND `is_dynamic` = 1";
-                        $results = $DB->doQuery($query);
-                        if ($DB->numrows($results) == 1) {
-                            $id = $DB->result($results, 0, 'id');
+                        // The name of the disk is reported by the agent: bound by the query builder
+                        $results = $DB->request([
+                            'SELECT' => 'id',
+                            'FROM'   => 'glpi_items_disks',
+                            'WHERE'  => [
+                                'items_id'   => (int) $computers_id,
+                                'itemtype'   => 'Computer',
+                                'name'       => (string) $disk['name'],
+                                'is_dynamic' => 1,
+                            ],
+                        ]);
+                        if (count($results) == 1) {
+                            $id = $results->current()['id'];
                         } else {
                             $id = false;
                         }

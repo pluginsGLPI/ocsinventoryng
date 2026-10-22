@@ -27,126 +27,105 @@
  --------------------------------------------------------------------------
  */
 
-use Glpi\Exception\Http\NotFoundHttpException;
+use Glpi\Exception\Http\BadRequestHttpException;
+use GlpiPlugin\Ocsinventoryng\IpdiscoverOcslink;
+use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 
-header("Content-Type: text/html; charset=UTF-8");
+header("Content-Type: application/json; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkLoginUser();
 
 global $CFG_GLPI, $DB;
 
-if (!isset($_POST) || empty($_POST)) {
-   $_POST = $_GET;
+// Types offered by the link forms (IP discover and SNMP): the table is the one of the type,
+// never taken from the request
+$itemtype = (string) ($_POST['itemtype'] ?? '');
+$allowed  = array_unique(array_merge(IpdiscoverOcslink::$hardwareItemTypes, SnmpOcslink::$snmptypes));
+if (!in_array($itemtype, $allowed, true) || !($item = getItemForItemtype($itemtype))) {
+    throw new BadRequestHttpException();
 }
-
-// Security
-if (!$DB->tableExists($_POST['table'])) {
-    throw new NotFoundHttpException();
+// Only the items the user may see
+if (!$item::canView()) {
+    throw new \Glpi\Exception\Http\AccessDeniedHttpException();
 }
+$table = $item::getTable();
 
-$itemtypeisplugin = isPluginItemType($_POST['itemtype']);
-$dbu = new DbUtils();
-if (!$item = $dbu->getItemForItemtype($_POST['itemtype'])) {
-    throw new \Glpi\Exception\Http\NotFoundHttpException();
-}
-
+$where = [];
 if ($item->isEntityAssign()) {
-   if (isset($_POST["entity_restrict"]) && ($_POST["entity_restrict"] >= 0)) {
-      $entity = $_POST["entity_restrict"];
-   } else {
-      $entity = '';
-   }
-
-   // allow opening ticket on recursive object (printer, software, ...)
-   $recursive = $item->maybeRecursive();
-   $where = $dbu->getEntitiesRestrictRequest("WHERE", $_POST['table'], '', $entity, $recursive);
-
-} else {
-   $where = "WHERE 1";
+    // The entities of the request, limited to the active ones of the user
+    $entity = '';
+    if (isset($_POST['entity_restrict']) && $_POST['entity_restrict'] !== '' && $_POST['entity_restrict'] >= 0) {
+        $entity = array_map('intval', (array) $_POST['entity_restrict']);
+    }
+    $where += getEntitiesRestrictCriteria($table, '', $entity, $item->maybeRecursive());
 }
 
-if (isset($_POST['used']) && !empty($_POST['used'])) {
-   $where .= " AND `id` NOT IN ('" . implode("','", $_POST['used']) . "') ";
+$used = array_filter(array_map('intval', (array) ($_POST['used'] ?? [])));
+if (!empty($used)) {
+    $where[] = ['NOT' => [$table . '.id' => $used]];
 }
-
 if ($item->maybeDeleted()) {
-   $where .= " AND `is_deleted` = 0 ";
+    $where[$table . '.is_deleted'] = 0;
 }
-
 if ($item->maybeTemplate()) {
-   $where .= " AND `is_template` = 0 ";
+    $where[$table . '.is_template'] = 0;
 }
 
-if (isset($_POST['searchText']) && (strlen($_POST['searchText']) > 0)) {
-   $search = Search::makeTextSearch($_POST['searchText']);
-
-   $where .= " AND (`name` " . $search . "
-                    OR `id` = '" . $_POST['searchText'] . "'";
-
-   if ($DB->fieldExists($_POST['table'], "contact")) {
-      $where .= " OR `contact` " . $search;
-   }
-   if ($DB->fieldExists($_POST['table'], "serial")) {
-      $where .= " OR `serial` " . $search;
-   }
-   if ($DB->fieldExists($_POST['table'], "otherserial")) {
-      $where .= " OR `otherserial` " . $search;
-   }
-   $where .= ")";
+$search_text = (string) ($_POST['searchText'] ?? '');
+if ($search_text !== '') {
+    $like   = ['LIKE', '%' . $search_text . '%'];
+    $search = [$table . '.name' => $like];
+    if (ctype_digit($search_text)) {
+        $search[$table . '.id'] = (int) $search_text;
+    }
+    foreach (['contact', 'serial', 'otherserial'] as $field) {
+        if ($DB->fieldExists($table, $field)) {
+            $search[$table . '.' . $field] = $like;
+        }
+    }
+    $where[] = ['OR' => $search];
 }
 
+$page       = max(1, (int) ($_POST['page'] ?? 1));
+$page_limit = (int) ($_POST['page_limit'] ?? $CFG_GLPI['dropdown_max']);
+$page_limit = $page_limit > 0 ? min($page_limit, 1000) : (int) $CFG_GLPI['dropdown_max'];
 
-if (!isset($_POST['page'])) {
-   $_POST['page'] = 1;
-   $_POST['page_limit'] = $CFG_GLPI['dropdown_max'];
-}
-
-$start = ($_POST['page'] - 1) * $_POST['page_limit'];
-$limit = $_POST['page_limit'];
-$LIMIT = "LIMIT $start,$limit";
-
-$query = "SELECT *
-          FROM `" . $_POST['table'] . "`
-          $where
-          ORDER BY `name`
-          $LIMIT";
-$result = $DB->doQuery($query);
+$iterator = $DB->request([
+    'FROM'   => $table,
+    'WHERE'  => $where,
+    'ORDER'  => $table . '.name',
+    'START'  => ($page - 1) * $page_limit,
+    'LIMIT'  => $page_limit,
+]);
 
 $datas = [];
 
 // Display first if no search
-if ($_POST['page'] == 1 && empty($_POST['searchText'])) {
-   array_push($datas, ['id' => 0,
-      'text' => Dropdown::EMPTY_VALUE]);
+if ($page == 1 && $search_text === '') {
+    $datas[] = ['id' => 0, 'text' => Dropdown::EMPTY_VALUE];
 }
 $count = 0;
-if ($DB->numrows($result)) {
-   while ($data = $DB->fetchAssoc($result)) {
-      $output = $data['name'];
+foreach ($iterator as $data) {
+    $output = $data['name'];
 
-      if (isset($data['contact']) && !empty($data['contact'])) {
-         $output = sprintf(__('%1$s - %2$s'), $output, $data['contact']);
-      }
-      if (isset($data['serial']) && !empty($data['serial'])) {
-         $output = sprintf(__('%1$s - %2$s'), $output, $data['serial']);
-      }
-      if (isset($data['otherserial']) && !empty($data['otherserial'])) {
-         $output = sprintf(__('%1$s - %2$s'), $output, $data['otherserial']);
-      }
+    if (!empty($data['contact'])) {
+        $output = sprintf(__('%1$s - %2$s'), $output, $data['contact']);
+    }
+    if (!empty($data['serial'])) {
+        $output = sprintf(__('%1$s - %2$s'), $output, $data['serial']);
+    }
+    if (!empty($data['otherserial'])) {
+        $output = sprintf(__('%1$s - %2$s'), $output, $data['otherserial']);
+    }
 
-      if (empty($output)
-         || $_SESSION['glpiis_ids_visible']
-      ) {
-         $output = sprintf(__('%1$s (%2$s)'), $output, $data['id']);
-      }
+    if (empty($output) || $_SESSION['glpiis_ids_visible']) {
+        $output = sprintf(__('%1$s (%2$s)'), $output, $data['id']);
+    }
 
-      array_push($datas, ['id' => $data['id'],
-         'text' => $output]);
-      $count++;
-   }
+    // select2 shows the text as text
+    $datas[] = ['id' => (int) $data['id'], 'text' => $output];
+    $count++;
 }
 
-$ret['count'] = $count;
-$ret['results'] = $datas;
-echo json_encode($ret);
+echo json_encode(['count' => $count, 'results' => $datas]);

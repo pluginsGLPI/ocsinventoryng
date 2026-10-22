@@ -195,7 +195,7 @@ class Runningprocess extends \CommonDBTM
         echo "<div class='spaced center'>";
 
         if ($result = $DB->request([
-            'FROM' => 'glpi_plugin_ocsinventoryng_osinstalls',
+            'FROM' => self::getTable(),
             'WHERE' => ['computers_id' => $ID],
             'ORDER' => 'processname',
         ])) {
@@ -227,13 +227,13 @@ class Runningprocess extends \CommonDBTM
 
                 foreach ($result as $data) {
                     echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . $data['processname'] . "</td>";
-                    echo "<td>" . $data['processid'] . "</td>";
-                    echo "<td>" . $data['username'] . "</td>";
-                    echo "<td>" . $data['processmemory'] . "</td>";
-                    echo "<td>" . $data['commandline'] . "</td>";
-                    echo "<td>" . $data['description'] . "</td>";
-                    echo "<td>" . $data['company'] . "</td>";
+                    echo "<td>" . htmlescape((string) $data['processname']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['processid']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['username']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['processmemory']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['commandline']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['description']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['company']) . "</td>";
                     echo "</tr>";
                     Session::addToNavigateListItems(__CLASS__, $data['id']);
                 }

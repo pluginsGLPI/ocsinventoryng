@@ -32,10 +32,23 @@ use GlpiPlugin\Ocsinventoryng\Ocslink;
 Session::checkLoginUser();
 if (isset($_POST['update_lock'])) {
 
-   $plugin_ocsinventoryng_ocsservers_id = $_POST['plugin_ocsinventoryng_ocsservers_id'];
-   $computers_id = $_POST['computers_id'];
-   $ocsid = $_POST['ocsid'];
-   $field = $_POST['field'];
+   $plugin_ocsinventoryng_ocsservers_id = (int) ($_POST['plugin_ocsinventoryng_ocsservers_id'] ?? 0);
+   $computers_id = (int) ($_POST['computers_id'] ?? 0);
+   $ocsid = (int) ($_POST['ocsid'] ?? 0);
+   $field = (string) ($_POST['field'] ?? '');
+
+   // The user must be allowed to update the computer, and the OCS machine must be the one
+   // linked to it on that server
+   $computer = new Computer();
+   $computer->check($computers_id, UPDATE);
+   $link = new Ocslink();
+   if (!$link->getFromDBByCrit([
+      'computers_id'                        => $computers_id,
+      'ocsid'                               => $ocsid,
+      'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+   ])) {
+      throw new \Glpi\Exception\Http\BadRequestHttpException();
+   }
 
    Ocslink::updateLock($plugin_ocsinventoryng_ocsservers_id, $computers_id, $ocsid, $field);
 }

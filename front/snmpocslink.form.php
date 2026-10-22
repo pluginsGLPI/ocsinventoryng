@@ -31,16 +31,34 @@
 use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 
-if (isset($_POST["force_ocssnmp_resynch"])) {
-   $item = new $_POST['itemtype']();
-   $item->check($_POST['items_id'], UPDATE);
+/**
+ * The SNMP link named by the request, once the user is allowed to update its item (one of the
+ * SNMP types only) and has the right of the plugin
+ *
+ * @return SnmpOcslink
+ */
+$check_link = static function (): SnmpOcslink {
+   Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-   SnmpOcslink::updateSnmp($_POST["id"], $_POST["plugin_ocsinventoryng_ocsservers_id"]);
+   $link = new SnmpOcslink();
+   if (!$link->getFromDB((int) ($_POST["id"] ?? 0))
+       || !in_array($link->fields['itemtype'], SnmpOcslink::$snmptypes, true)
+       || !($item = getItemForItemtype($link->fields['itemtype']))) {
+      throw new BadRequestHttpException();
+   }
+   $item->check((int) $link->fields['items_id'], UPDATE);
+
+   return $link;
+};
+
+if (isset($_POST["force_ocssnmp_resynch"])) {
+   $link = $check_link();
+   SnmpOcslink::updateSnmp($link->getID(), $link->fields["plugin_ocsinventoryng_ocsservers_id"]);
    Html::back();
 
 } else if (isset($_POST["delete_link"])) {
-   $link = new SnmpOcslink();
-   $link->delete(['id' => $_POST["id"]], 1);
+   $link = $check_link();
+   $link->delete(['id' => $link->getID()], 1);
    Html::back();
 
 } else {

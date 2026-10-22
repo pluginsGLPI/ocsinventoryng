@@ -28,12 +28,15 @@
  */
 
 use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 use GlpiPlugin\Ocsinventoryng\Thread;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-if (!isset($_GET["plugin_ocsinventoryng_ocsservers_id"])) {
-   $_GET["plugin_ocsinventoryng_ocsservers_id"] = "0";
+// 0 lists the processes of every server, else a server allowed for the active profile
+$ocsservers_id = (int) ($_GET["plugin_ocsinventoryng_ocsservers_id"] ?? 0);
+if ($ocsservers_id > 0) {
+   $ocsservers_id = OcsServer::checkAllowedServer($ocsservers_id);
 }
 
 $thread = new Thread();
@@ -43,15 +46,13 @@ Html::header(__('Processes execution of automatic actions', 'ocsinventoryng'), '
 
 if (isset ($_POST["delete_processes"])) {
 
-   if (count($_POST["item"])) {
-      foreach ($_POST["item"] as $key => $val) {
-         $thread->deleteThreadsByProcessId($key);
-      }
+   foreach ((array) ($_POST["item"] ?? []) as $key => $val) {
+      $thread->deleteThreadsByProcessId((int) $key);
    }
    Html::back();
 
 } else {
-   $thread->showProcesses($_SERVER["PHP_SELF"], $_GET["plugin_ocsinventoryng_ocsservers_id"]);
+   $thread->showProcesses($_SERVER["PHP_SELF"], $ocsservers_id);
 }
 
 Html::footer();

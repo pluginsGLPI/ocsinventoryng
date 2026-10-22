@@ -31,18 +31,60 @@
 
 use GlpiPlugin\Ocsinventoryng\IpdiscoverOcslink;
 use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 use GlpiPlugin\Ocsinventoryng\OcsProcess;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
+
+// The OCS server of the session, chosen on front/ocsng.php: still allowed for the active profile
+if (OcsServer::checkSessionServer() <= 0) {
+    throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+}
+
+
+// Every value of the request reaches queries, links or the page: checked once here.
+// The subnet and the IP addresses, the status and the action of the lists
+$_GET['action'] = IpdiscoverOcslink::checkAction($_GET['action'] ?? 'import');
+if (isset($_GET["ip"])) {
+   $_GET["ip"] = IpdiscoverOcslink::checkIp($_GET["ip"]);
+}
+if (isset($_POST["ip"])) {
+   $_POST["ip"] = IpdiscoverOcslink::checkIp($_POST["ip"]);
+}
+if (isset($_GET["status"])) {
+   $_GET["status"] = IpdiscoverOcslink::checkStatus($_GET["status"]);
+}
+if (isset($_POST["subnet"])) {
+   $_POST["subnet"] = is_string($_POST["subnet"]) && filter_var($_POST["subnet"], FILTER_VALIDATE_IP) !== false
+      ? $_POST["subnet"] : '';
+}
+// The lists of the forms, keyed by MAC address: arrays of scalars, entities and items as
+// integers (types, entities and MAC addresses are checked again by the import and link code)
+foreach (['mactoimport', 'glpiitemstype', 'itemsname', 'itemsdescription', 'itemsip', 'ocsitemstype',
+          'entities', 'tolink_itemtype', 'tolink_items'] as $list) {
+   if (isset($_POST[$list])) {
+      $_POST[$list] = is_array($_POST[$list])
+         ? array_map(static fn($value) => is_scalar($value) ? (string) $value : '', $_POST[$list])
+         : [];
+   }
+}
+foreach (['entities', 'tolink_items'] as $list) {
+   if (isset($_POST[$list])) {
+      $_POST[$list] = array_map('intval', $_POST[$list]);
+   }
+}
+// The "back" values: an IP address and a status
+if (isset($_GET["b"])) {
+   $_GET["b"] = [
+      IpdiscoverOcslink::checkIp($_GET["b"][0] ?? ''),
+      IpdiscoverOcslink::checkStatus($_GET["b"][1] ?? ''),
+   ];
+}
 
 Html::header('OCS Inventory NG', '', "tools", Menu::class, "importipdiscover");
 
 if (Plugin::isPluginActive("ocsinventoryng")) {
    $ip = new IpdiscoverOcslink();
-
-   if (!isset($_GET['action'])) {
-      $_GET['action'] = "import";
-   }
 
    if (isset($_GET["ip"])
        || isset($_POST["ip"])
@@ -129,14 +171,17 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $ipAdress = $b[0];
             $status   = $b[1];
             echo "<div class='center b'><br>";
-            echo "<a href='" . $_SERVER['PHP_SELF'] . "?ip=$ipAdress&status=$status'>" . __('Back') . "</a></div>";
+            echo "<a href='" . htmlescape($_SERVER['PHP_SELF'] . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status])) . "'>" . __s('Back') . "</a></div>";
          }
          if (isset($_SESSION["ocs_importipdiscover"]["datas"]["b"])) {
-            $b        = $_SESSION["ocs_importipdiscover"]["datas"]["b"];
+            $b        = [
+               IpdiscoverOcslink::checkIp($_SESSION["ocs_importipdiscover"]["datas"]["b"][0] ?? ''),
+               IpdiscoverOcslink::checkStatus($_SESSION["ocs_importipdiscover"]["datas"]["b"][1] ?? ''),
+            ];
             $ipAdress = $b[0];
             $status   = $b[1];
             echo "<div class='center b'><br>";
-            echo "<a href='" . $_SERVER['PHP_SELF'] . "?ip=$ipAdress&status=$status'>" . __('Back') . "</a></div>";
+            echo "<a href='" . htmlescape($_SERVER['PHP_SELF'] . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status])) . "'>" . __s('Back') . "</a></div>";
          }
 
          if (isset($_SESSION["ocs_importipdiscover"]["datas"])) {
@@ -152,7 +197,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $ipAdress = $b[0];
             $status   = $b[1];
 
-            Html::redirect($_SERVER['PHP_SELF'] . "?ip=$ipAdress&status=$status");
+            Html::redirect($_SERVER['PHP_SELF'] . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status]));
          }
       }
    } else if (isset($_POST["IdentifyAndImport"])
@@ -207,14 +252,17 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $ipAdress = $b[0];
             $status   = $b[1];
             echo "<div class='center b'><br>";
-            echo "<a href='" . $_SERVER['PHP_SELF'] . "?ip=$ipAdress&status=$status'>" . __('Back') . "</a></div>";
+            echo "<a href='" . htmlescape($_SERVER['PHP_SELF'] . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status])) . "'>" . __s('Back') . "</a></div>";
          }
          if (isset($_SESSION["ocs_importipdiscover"]["datas"]["b"])) {
-            $b        = $_SESSION["ocs_importipdiscover"]["datas"]["b"];
+            $b        = [
+               IpdiscoverOcslink::checkIp($_SESSION["ocs_importipdiscover"]["datas"]["b"][0] ?? ''),
+               IpdiscoverOcslink::checkStatus($_SESSION["ocs_importipdiscover"]["datas"]["b"][1] ?? ''),
+            ];
             $ipAdress = $b[0];
             $status   = $b[1];
             echo "<div class='center b'><br>";
-            echo "<a href='" . $_SERVER['PHP_SELF'] . "?ip=$ipAdress&status=$status'>" . __('Back') . "</a></div>";
+            echo "<a href='" . htmlescape($_SERVER['PHP_SELF'] . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status])) . "'>" . __s('Back') . "</a></div>";
          }
 
          if (isset($_SESSION["ocs_importipdiscover"]["datas"])) {
@@ -230,7 +278,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $ipAdress = $b[0];
             $status   = $b[1];
 
-            Html::redirect($_SERVER['PHP_SELF'] . "?ip=$ipAdress&status=$status");
+            Html::redirect($_SERVER['PHP_SELF'] . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status]));
          }
       }
    } else if (isset($_POST["Link"])) {
@@ -269,11 +317,12 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
 
    } else if (isset($_POST["delete"])) {
 
-      if (isset($_POST["mactoimport"])
+      if (is_array($_POST["mactoimport"] ?? null)
           && sizeof($_POST["mactoimport"]) > 0
       ) {
          $macAdresses = $_POST["mactoimport"];
-         $ip->deleteMACFromOCS($_SESSION["plugin_ocsinventoryng_ocsservers_id"], $macAdresses);
+         // The subnet of the list (validated above): no MAC address of another subnet
+         $ip->deleteMACFromOCS($_SESSION["plugin_ocsinventoryng_ocsservers_id"], $macAdresses, (string) ($_POST["subnet"] ?? ''));
       }
       Html::back();
 

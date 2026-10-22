@@ -53,11 +53,12 @@ class Uptime
 
         if ($id) {
             if (isset($ocsComputer["DURATION"])) {
-                $query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                      SET `uptime` = '" . $ocsComputer["DURATION"] . "'
-                      WHERE `id` = $id";
-
-                $DB->doQuery($query);
+                // Reported by the agent: bound by the query builder
+                $DB->update(
+                    'glpi_plugin_ocsinventoryng_ocslinks',
+                    ['uptime' => (string) $ocsComputer["DURATION"]],
+                    ['id' => (int) $id]
+                );
             }
         }
     }

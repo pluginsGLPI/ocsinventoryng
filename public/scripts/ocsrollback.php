@@ -27,6 +27,12 @@
  --------------------------------------------------------------------------
  */
 
+// Command line scripts: GLPI serves the public directory over HTTP, never run them from there
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit(1);
+}
+
 /** @file
  * @brief Rollback OCS events (after a resto)
  */

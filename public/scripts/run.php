@@ -27,6 +27,12 @@
  --------------------------------------------------------------------------
  */
 
+// Command line scripts: GLPI serves the public directory over HTTP, never run them from there
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit(1);
+}
+
 // ----------------------------------------------------------------------
 // Original Author of file: Remi Collet
 // Purpose of file: Run fullsync as planified task
@@ -51,11 +57,12 @@ function readargs()
         $it = explode("=", $_SERVER["argv"][$i]);
         switch ($it[0]) {
             case '--server_id':
-                $server_id = $it[1];
+                // Integers only: they end up in the command lines of exec()
+                $server_id = ($it[1] ?? "") === "" ? "" : (int) $it[1];
                 break;
 
             case '--thread_nbr':
-                $thread_nbr = $it[1];
+                $thread_nbr = max(1, (int) ($it[1] ?? 1));
                 break;
 
             case '--nolog':
@@ -171,7 +178,7 @@ file_put_contents($pidfile, getmypid());
 
 fwrite($log, date("r") . " " . $_SERVER["argv"][0] . " started\n");
 
-$cmd = PHP_BINARY." -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --managedeleted=1";
+$cmd = PHP_BINARY." -q -d -f ocsng_fullsync.php --ocs_server_id=" . escapeshellarg((string) $server_id) . " --managedeleted=1";
 $out = array();
 $ret = 0;
 echo $cmd;
@@ -191,8 +198,8 @@ if (function_exists("pcntl_fork")) {
             fwrite($log, "$pid Started\n");
             $pids[$pid] = 1;
         } else {
-            $cmd = PHP_BINARY." -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --thread_nbr=$thread_nbr " .
-            " --thread_id=$i --process_id=$processid";
+            $cmd = PHP_BINARY." -q -d -f ocsng_fullsync.php --ocs_server_id=" . escapeshellarg((string) $server_id) . " --thread_nbr=" . (int) $thread_nbr . " " .
+            " --thread_id=" . (int) $i . " --process_id=" . escapeshellarg($processid);
             $out = array();
             exec($cmd, $out, $ret);
             foreach ($out as $line) {
@@ -214,8 +221,8 @@ if (function_exists("pcntl_fork")) {
     }
 } else {
    # Windows - No fork, so Only one process :(
-    $cmd = PHP_BINARY." -q -d -f ocsng_fullsync.php --ocs_server_id=$server_id --thread_nbr=1 --thread_id=1 " .
-      "--process_id=$processid";
+    $cmd = PHP_BINARY." -q -d -f ocsng_fullsync.php --ocs_server_id=" . escapeshellarg((string) $server_id) . " --thread_nbr=1 --thread_id=1 " .
+      "--process_id=" . escapeshellarg($processid);
     $out = array();
     exec($cmd, $out, $ret);
     foreach ($out as $line) {

@@ -31,8 +31,15 @@
 
 use GlpiPlugin\Ocsinventoryng\IpdiscoverOcslink;
 use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 Session::checkRight("plugin_ocsinventoryng", READ);
+
+// The OCS server of the session, chosen on front/ocsng.php: still allowed for the active profile
+if (OcsServer::checkSessionServer() <= 0) {
+    throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+}
+
 
 Html::header('OCS Inventory NG', '', "tools", Menu::class, "importipdiscover");
 
@@ -40,13 +47,21 @@ $ip = new IpdiscoverOcslink();
 if (empty($_POST)) {
    $_POST = $_GET;
 }
-if (!isset($_GET['action'])) {
-   $_GET['action'] = "import";
-}
+// The action of the list, and the subnet chosen: an id of the list of the page
+$_GET['action'] = IpdiscoverOcslink::checkAction($_GET['action'] ?? 'import');
 
 if (isset($_GET['subnetsChoice'])) {
    $_POST["subnetsChoice"] = $_GET['subnetsChoice'];
 }
+foreach (['subnetsChoice', 'ident', 'nonident'] as $key) {
+   foreach ([&$_POST, &$_GET] as &$source) {
+      if (isset($source[$key]) && !array_key_exists((string) $source[$key], $_SESSION["subnets"] ?? [])) {
+         unset($source[$key]);
+      }
+   }
+   unset($source);
+}
+$_POST['start'] = max(0, (int) ($_POST['start'] ?? 0));
 
 if (isset($_POST["subnetsChoice"])
    && isset($_SESSION["subnets"])

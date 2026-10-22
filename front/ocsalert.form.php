@@ -33,35 +33,43 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
    $state    = new NotificationState();
    $ocsalert = new OcsAlert();
 
-   if (isset($_POST["add"])) {
-
-      if ($ocsalert->canUpdate()) {
-         $newID = $ocsalert->add($_POST);
+   // Every write needs the right of the plugin; a refusal is an error, not a silent no-op
+   if (isset($_POST["add"]) || isset($_POST["update"]) || isset($_POST["add_state"]) || isset($_POST["delete_state"])) {
+      if (!$ocsalert->canUpdate()) {
+         throw new \Glpi\Exception\Http\AccessDeniedHttpException();
       }
-      Html::back();
+   }
 
-   } else if (isset($_POST["update"])) {
-
-      if ($ocsalert->canUpdate()) {
-         $ocsalert->update($_POST);
+   if (isset($_POST["add"]) || isset($_POST["update"])) {
+      // The alert settings of an entity of the user: on update, the entity of the stored row
+      $input = $_POST;
+      if (isset($_POST["update"])) {
+         if (!$ocsalert->getFromDB((int) ($_POST["id"] ?? 0))) {
+            throw new \Glpi\Exception\Http\BadRequestHttpException();
+         }
+         $input['entities_id'] = $ocsalert->fields['entities_id'];
+      }
+      if (!Session::haveAccessToEntity((int) ($input['entities_id'] ?? -1))) {
+         throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+      }
+      if (isset($_POST["add"])) {
+         unset($input['id']);
+         $ocsalert->add($input);
+      } else {
+         $ocsalert->update($input);
       }
       Html::back();
 
    } else if (isset($_POST["add_state"])) {
 
-      if ($ocsalert->canUpdate()) {
-         $newID = $state->add($_POST);
-      }
+      $state->add(['states_id' => (int) ($_POST['states_id'] ?? 0)]);
       Html::back();
 
    } else if (isset($_POST["delete_state"])) {
 
-      if ($ocsalert->canUpdate()) {
-         $state->getFromDB($_POST["id"]);
-         foreach ($_POST["item"] as $key => $val) {
-            if ($val == 1) {
-               $state->delete(['id' => $key]);
-            }
+      foreach ((array) ($_POST["item"] ?? []) as $key => $val) {
+         if ($val == 1) {
+            $state->delete(['id' => (int) $key]);
          }
       }
       Html::back();

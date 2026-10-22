@@ -28,10 +28,17 @@
  */
 
 use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 use GlpiPlugin\Ocsinventoryng\OcsProcess;
 use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
+
+// The OCS server of the session, chosen on front/ocsng.php: still allowed for the active profile
+if (OcsServer::checkSessionServer() <= 0) {
+    throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+}
+
 
 Html::header('OCS Inventory NG', '', "tools", Menu::class, "syncsnmp");
 
@@ -45,8 +52,16 @@ if (isset($_POST["delete"])
 
       foreach ($_POST['toupdate'] as $key => $val) {
          if ($val == "on") {
+            // A link of the current server, whose item (a SNMP type) the user may update
             $link = new SnmpOcslink();
-            $link->delete(['id' => $key], 1);
+            if (!$link->getFromDB((int) $key)
+                || (int) $link->fields['plugin_ocsinventoryng_ocsservers_id'] !== (int) ($_SESSION["plugin_ocsinventoryng_ocsservers_id"] ?? 0)
+                || !in_array($link->fields['itemtype'], SnmpOcslink::$snmptypes, true)
+                || !($item = getItemForItemtype($link->fields['itemtype']))
+                || !$item->can((int) $link->fields['items_id'], UPDATE)) {
+               continue;
+            }
+            $link->delete(['id' => $link->getID()], 1);
          }
       }
       Html::redirect($_SERVER['PHP_SELF']);

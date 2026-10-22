@@ -162,14 +162,14 @@ class RegistryKey extends \CommonDBTM
                 echo "<th>" . __('Key/Value', 'ocsinventoryng') . "</th></tr>\n";
                 while ($data = $DB->fetchAssoc($result)) {
                     echo "<tr class='tab_bg_1'>";
-                    echo "<td>" . $data["ocs_name"] . "</td>";
+                    echo "<td>" . htmlescape((string) $data["ocs_name"]) . "</td>";
                     if (isset($REGISTRY_HIVE[$data["hive"]])) {
-                        echo "<td>" . $REGISTRY_HIVE[$data["hive"]] . "</td>";
+                        echo "<td>" . htmlescape((string) $REGISTRY_HIVE[$data["hive"]]) . "</td>";
                     } else {
-                        echo "<td>(" . $data["hive"] . ")</td>";
+                        echo "<td>(" . htmlescape((string) $data["hive"]) . ")</td>";
                     }
-                    echo "<td>" . $data["path"] . "</td>";
-                    echo "<td>" . $data["value"] . "</td>";
+                    echo "<td>" . htmlescape((string) $data["path"]) . "</td>";
+                    echo "<td>" . htmlescape((string) $data["value"]) . "</td>";
                     echo "</tr>";
                 }
                 echo "</table></div>\n\n";

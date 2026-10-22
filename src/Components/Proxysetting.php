@@ -204,7 +204,7 @@ class Proxysetting extends \CommonDBTM
         echo "<div class='spaced center'>";
 
         if ($result = $DB->request([
-            'FROM' => 'glpi_plugin_ocsinventoryng_osinstalls',
+            'FROM' => self::getTable(),
             'WHERE' => ['computers_id' => $ID],
             'ORDER' => 'user',
         ])) {
@@ -235,11 +235,11 @@ class Proxysetting extends \CommonDBTM
 
                 foreach ($result as $data) {
                     echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . $data['user'] . "</td>";
+                    echo "<td>" . htmlescape((string) $data['user']) . "</td>";
                     echo "<td class='center'>" . Dropdown::getYesNo($data['enabled']) . "</td>";
-                    echo "<td>" . $data['autoconfigurl'] . "</td>";
-                    echo "<td>" . $data['address'] . "</td>";
-                    echo "<td>" . $data['override'] . "</td>";
+                    echo "<td>" . htmlescape((string) $data['autoconfigurl']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['address']) . "</td>";
+                    echo "<td>" . htmlescape((string) $data['override']) . "</td>";
                     echo "</tr>";
                     Session::addToNavigateListItems(__CLASS__, $data['id']);
                 }

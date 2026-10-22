@@ -32,6 +32,10 @@ use GlpiPlugin\Ocsinventoryng\Menu;
 use GlpiPlugin\Ocsinventoryng\Ocslink;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
 
+// The OCS server of the session, chosen on front/ocsng.php: still allowed for the active
+// profile, otherwise "no server"
+OcsServer::checkSessionServer();
+
 Html::header('OCS Inventory NG', '', "tools", Menu::class, "clean");
 
 if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
@@ -64,9 +68,10 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
 
     } else {
         Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);
-        if (count($_POST['toclean']) > 0) {
+        if (is_array($_POST['toclean'] ?? null) && count($_POST['toclean']) > 0) {
+            // Posted ids: only the computers the user may delete or update are cleaned
             Ocslink::cleanLinksFromList($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                                                            $_POST['toclean']);
+                                                            $_POST['toclean'], true);
             echo "<div class='center b'>" . __('Clean links between GLPI and OCSNG', 'ocsinventoryng') .
                  "<br>" . __('Operation successful') . "<br>";
             Html::displayBackLink();

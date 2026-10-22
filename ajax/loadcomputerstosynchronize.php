@@ -35,9 +35,12 @@ use GlpiPlugin\Ocsinventoryng\Server;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
+// Same right as the page of the list (front/ocsng.sync.php)
 Session::checkLoginUser();
+Session::checkRight("plugin_ocsinventoryng_sync", READ);
 
-$plugin_ocsinventoryng_ocsservers_id = $_POST["plugin_ocsinventoryng_ocsservers_id"];
+// A server allowed for the active profile
+$plugin_ocsinventoryng_ocsservers_id = OcsServer::checkAllowedServer($_POST["plugin_ocsinventoryng_ocsservers_id"] ?? 0);
 
 $hardware["data"] = [];
 
@@ -75,9 +78,6 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
    // Get newly inventoried computers
    $firstQueryOptions = $computerOptions;
-//   if ($server->fields["max_glpidate"] != '0000-00-00 00:00:00') {
-//      $firstQueryOptions['FILTER']['INVENTORIED_BEFORE'] = $server->fields["max_glpidate"];
-//   }
 
    $firstQueryOptions['FILTER']['CHECKSUM'] = intval($cfg_ocs["checksum"]);
 
@@ -86,69 +86,71 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
    $computers = (isset($ocsResult['COMPUTERS']) ? $ocsResult['COMPUTERS'] : []);
 
-   if (isset($computers)) {
-      if (count($computers)) {
-         // Get all hardware from OCS DB
-
-         foreach ($computers as $computer) {
-            $ID          = $computer['META']['ID'];
-            $query_glpi  = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` AS last_update,
-                                    `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update` AS last_ocs_update,
-                                  `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` AS computers_id,
-                                  `glpi_computers`.`serial` AS serial,
-                                  `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid,
-                                  `glpi_computers`.`name` AS name,
-                                  `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update`,
-                                  `glpi_plugin_ocsinventoryng_ocslinks`.`id`
-                           FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                           LEFT JOIN `glpi_computers` ON (`glpi_computers`.`id`= `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`)
-                           WHERE `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
-                                       = $plugin_ocsinventoryng_ocsservers_id
-                                  AND `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` = $ID
-                           ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` DESC,
-                                    `last_update`,
-                                    `name`";
-            $result_glpi = $DB->doQuery($query_glpi);
-            if ($DB->numrows($result_glpi) > 0) {
-               while ($data = $DB->fetchAssoc($result_glpi)) {
-                  if (strtotime($computer['META']["LASTDATE"]) > strtotime($data["last_update"])) {
-                     $checksum_debug = "";
-                     if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
-                        $checksum_server = intval($cfg_ocs["checksum"]);
-                        $checksum_client = intval($computer['META']["CHECKSUM"]);
-                        if ($checksum_server > 0
-                            && $checksum_client > 0
-                        ) {
-                           $result         = $checksum_server & $checksum_client;
-                           $checksum_debug = intval($result);
-                        }
-                     } else {
-                        $checksum_debug = $computer['META']["CHECKSUM"];
-                     }
-
-                     $hardware["data"][] = [
-                        'checked'        => "",
-                        'id'             => $data["id"],
-                        'ocsid'          => $data["ocsid"],
-                        'name'           => addslashes($computer['META']["NAME"]),
-                        'date'           => $computer['META']["LASTDATE"],
-                        'TAG'            => $computer['META']["TAG"],
-                        'computers_id'   => $data["computers_id"],
-                        'serial'         => $data["serial"],
-                        'last_update'    => $data["last_update"],
-                        'checksum_debug' => $checksum_debug,
-                     ];
+   if (count($computers)) {
+      foreach ($computers as $computer) {
+         // Links of the computers of the active entities only
+         $iterator = $DB->request([
+            'SELECT'    => [
+               'glpi_plugin_ocsinventoryng_ocslinks.last_update AS last_update',
+               'glpi_plugin_ocsinventoryng_ocslinks.last_ocs_update AS last_ocs_update',
+               'glpi_plugin_ocsinventoryng_ocslinks.computers_id AS computers_id',
+               'glpi_computers.serial AS serial',
+               'glpi_plugin_ocsinventoryng_ocslinks.ocsid AS ocsid',
+               'glpi_computers.name AS name',
+               'glpi_plugin_ocsinventoryng_ocslinks.use_auto_update',
+               'glpi_plugin_ocsinventoryng_ocslinks.id',
+            ],
+            'FROM'      => 'glpi_plugin_ocsinventoryng_ocslinks',
+            'LEFT JOIN' => [
+               'glpi_computers' => [
+                  'ON' => [
+                     'glpi_computers'                      => 'id',
+                     'glpi_plugin_ocsinventoryng_ocslinks' => 'computers_id',
+                  ],
+               ],
+            ],
+            'WHERE'     => [
+               'glpi_plugin_ocsinventoryng_ocslinks.plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+               'glpi_plugin_ocsinventoryng_ocslinks.ocsid'                               => (int) $computer['META']['ID'],
+            ] + getEntitiesRestrictCriteria('glpi_computers'),
+            'ORDER'     => [
+               'glpi_plugin_ocsinventoryng_ocslinks.use_auto_update DESC',
+               'last_update',
+               'name',
+            ],
+         ]);
+         foreach ($iterator as $data) {
+            if (strtotime($computer['META']["LASTDATE"]) > strtotime($data["last_update"])) {
+               $checksum_debug = "";
+               if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
+                  $checksum_server = intval($cfg_ocs["checksum"]);
+                  $checksum_client = intval($computer['META']["CHECKSUM"]);
+                  if ($checksum_server > 0
+                      && $checksum_client > 0
+                  ) {
+                     $checksum_debug = intval($checksum_server & $checksum_client);
                   }
-
+               } else {
+                  $checksum_debug = $computer['META']["CHECKSUM"];
                }
+
+               // DataTables writes the cells as HTML: the values reported by the agents are escaped
+               $hardware["data"][] = [
+                  'checked'        => "",
+                  'id'             => (int) $data["id"],
+                  'ocsid'          => (int) $data["ocsid"],
+                  'name'           => htmlescape((string) $computer['META']["NAME"]),
+                  'date'           => htmlescape((string) $computer['META']["LASTDATE"]),
+                  'TAG'            => htmlescape((string) $computer['META']["TAG"]),
+                  'computers_id'   => (int) $data["computers_id"],
+                  'serial'         => htmlescape((string) $data["serial"]),
+                  'last_update'    => htmlescape((string) $data["last_update"]),
+                  'checksum_debug' => htmlescape((string) $checksum_debug),
+               ];
             }
          }
       }
    }
 }
 
-$json = json_encode($hardware);
-
-echo $json;
-
-
+echo json_encode($hardware);
