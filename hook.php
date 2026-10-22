@@ -193,10 +193,7 @@ function plugin_ocsinventoryng_install()
 
                 $DB->doQuery($query, "1.0.0 insert crontasks for plugin ocsinventoryng");
 
-                $query = "UPDATE `glpi_crontasks`
-                   SET `itemtype` = 'GlpiPlugin\\Ocsinventoryng\\OcsServer'
-                   WHERE `itemtype` = 'OcsServer'";
-                $DB->doQuery($query, "1.0.0 update ocsinventoryng crontask");
+                $DB->update('glpi_crontasks', ['itemtype' => 'GlpiPlugin\\Ocsinventoryng\\OcsServer'], ['itemtype' => 'OcsServer']);
             }
 
             if ($DB->tableExists("ocs_glpi_displaypreferences")) {
@@ -207,10 +204,7 @@ function plugin_ocsinventoryng_install()
 
                 $DB->doQuery($query, "1.0.0 insert displaypreferences for plugin ocsinventoryng");
 
-                $query = "UPDATE `glpi_displaypreferences`
-                   SET `itemtype` = 'GlpiPlugin\\Ocsinventoryng\\OcsServer'
-                   WHERE `itemtype` = 'OcsServer'";
-                $DB->doQuery($query, "1.0.0 update ocsinventoryng displaypreferences");
+                $DB->update('glpi_displaypreferences', ['itemtype' => 'GlpiPlugin\\Ocsinventoryng\\OcsServer'], ['itemtype' => 'OcsServer']);
             }
             plugin_ocsinventoryng_migrateComputerLocks($migration);
         }
@@ -768,7 +762,7 @@ function plugin_ocsinventoryng_install()
     ];
 
     foreach ($tables_ocs as $table_ocs) {
-        $DB->doQuery("DROP TABLE IF EXISTS `$table_ocs`;");
+        $DB->dropTable($table_ocs, true);
     }
     $tables_mass = [
         "backup_glpi_plugin_massocsimport_configs",
@@ -779,7 +773,7 @@ function plugin_ocsinventoryng_install()
     ];
 
     foreach ($tables_mass as $table_mass) {
-        $DB->doQuery("DROP TABLE IF EXISTS `$table_mass`;");
+        $DB->dropTable($table_mass, true);
     }
 
     Profile::initProfile();
@@ -3021,17 +3015,9 @@ function plugin_ocsinventoryng_updatemassocsimport(&$migration)
         'integer'
     );
 
-    $query = "UPDATE `glpi_displaypreferences`
-                SET `itemtype` = 'GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer'
-                WHERE `itemtype` = 'PluginMassocsimportNotimported'";
+    $DB->update('glpi_displaypreferences', ['itemtype' => 'GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer'], ['itemtype' => 'PluginMassocsimportNotimported']);
 
-    $DB->doQuery($query, $DB->error());
-
-    $query = "UPDATE `glpi_displaypreferences`
-                SET `itemtype` = 'GlpiPlugin\\Ocsinventoryng\\Detail'
-                WHERE `itemtype` = 'PluginMassocsimportDetail';";
-
-    $DB->doQuery($query, $DB->error());
+    $DB->update('glpi_displaypreferences', ['itemtype' => 'GlpiPlugin\\Ocsinventoryng\\Detail'], ['itemtype' => 'PluginMassocsimportDetail']);
 
     $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_ocsinventoryng_notimportedcomputers` (
                   `id` INT( 11 ) NOT NULL  AUTO_INCREMENT,
@@ -3114,28 +3100,13 @@ function plugin_ocsinventoryng_updatemassocsimport(&$migration)
         'integer'
     );
 
-    $query = "UPDATE `glpi_notificationtemplates`
-                SET `itemtype` = 'GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer'
-                WHERE `itemtype` = 'PluginMassocsimportNotimported'";
+    $DB->update('glpi_notificationtemplates', ['itemtype' => 'GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer'], ['itemtype' => 'PluginMassocsimportNotimported']);
 
-    $DB->doQuery($query, $DB->error());
+    $DB->update('glpi_notifications', ['itemtype' => 'GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer'], ['itemtype' => 'PluginMassocsimportNotimported']);
 
-    $query = "UPDATE `glpi_notifications`
-                SET `itemtype` = 'GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer'
-                WHERE `itemtype` = 'PluginMassocsimportNotimported'";
+    $DB->update('glpi_crontasks', ['itemtype' => 'GlpiPlugin\\Ocsinventoryng\\Thread'], ['itemtype' => 'PluginMassocsimportThread']);
 
-    $DB->doQuery($query, $DB->error());
-
-    $query = "UPDATE `glpi_crontasks`
-                SET `itemtype` = 'GlpiPlugin\\Ocsinventoryng\\Thread'
-                WHERE `itemtype` = 'PluginMassocsimportThread';";
-    $DB->doQuery($query, $DB->error());
-
-    $query = "UPDATE `glpi_alerts`
-                SET `itemtype` = 'GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer'
-                WHERE `itemtype` IN ('PluginMassocsimportNotimported')";
-
-    $DB->doQuery($query, $DB->error());
+    $DB->update('glpi_alerts', ['itemtype' => 'GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer'], ['itemtype' => 'PluginMassocsimportNotimported']);
 }
 
 function plugin_ocsinventoryng_upgrademassocsimport14to15()
@@ -3284,9 +3255,7 @@ function plugin_ocsinventoryng_migration_additionnalalerts()
                 WHERE `name` LIKE 'AdditionalalertsNewOcs'";
         $DB->doQuery($query);
 
-        $query = "UPDATE `glpi_crontasks` SET `state` = 0
-                WHERE `name` LIKE 'AdditionalalertsNewOcs'";
-        $DB->doQuery($query);
+        $DB->update('glpi_crontasks', ['state' => 0], ['name' => 'AdditionalalertsNewOcs']);
 
         $query = "INSERT INTO `glpi_crontasks`
                 SELECT NULL, 'GlpiPlugin\\Ocsinventoryng\\OcsAlert', 'SynchroAlert', `frequency`, `param`, `state`,
@@ -3296,20 +3265,14 @@ function plugin_ocsinventoryng_migration_additionnalalerts()
                 WHERE `name` LIKE 'AdditionalalertsOcs'";
         $DB->doQuery($query);
 
-        $query = "UPDATE `glpi_crontasks` SET `state` = 0
-                WHERE `name` LIKE 'AdditionalalertsOcs'";
-        $DB->doQuery($query);
+        $DB->update('glpi_crontasks', ['state' => 0], ['name' => 'AdditionalalertsOcs']);
 
 
         //migration notif
-        $query = "UPDATE `glpi_notifications` SET `itemtype` = 'GlpiPlugin\\Ocsinventoryng\\OcsAlert'
-                WHERE `itemtype` LIKE 'PluginAdditionalalertsOcsAlert'";
-        $DB->doQuery($query);
+        $DB->update('glpi_notifications', ['itemtype' => 'GlpiPlugin\\Ocsinventoryng\\OcsAlert'], ['itemtype' => 'PluginAdditionalalertsOcsAlert']);
 
         //notification_template
-        $query = "UPDATE `glpi_notificationtemplates` SET `itemtype` = 'GlpiPlugin\\Ocsinventoryng\\OcsAlert'
-                WHERE `itemtype` LIKE 'PluginAdditionalalertsOcsAlert'";
-        $DB->doQuery($query);
+        $DB->update('glpi_notificationtemplates', ['itemtype' => 'GlpiPlugin\\Ocsinventoryng\\OcsAlert'], ['itemtype' => 'PluginAdditionalalertsOcsAlert']);
     }
 }
 

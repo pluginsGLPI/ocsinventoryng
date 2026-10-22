@@ -31,6 +31,7 @@
 namespace GlpiPlugin\Ocsinventoryng;
 
 use AllowDynamicProperties;
+use Glpi\DBAL\QueryExpression;
 use GlpiPlugin\Mydashboard\Charts\BarChart;
 use GlpiPlugin\Mydashboard\Charts\PieChart;
 use GlpiPlugin\Mydashboard\Criteria;
@@ -122,20 +123,31 @@ class Dashboard extends MydashboardHtml
                 $default = Helper::manageCriterias($params);
 
 
-                $query = "SELECT DISTINCT
-                           DATE_FORMAT(`glpi_plugin_ocsinventoryng_ocslinks`.`last_update`, '%b %Y') AS periodsync_name,
-                           COUNT(`glpi_plugin_ocsinventoryng_ocslinks`.`id`) AS nb,
-                           DATE_FORMAT(`glpi_plugin_ocsinventoryng_ocslinks`.`last_update`, '%Y-%m') AS periodsync
-                        FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                        LEFT JOIN `glpi_computers`
-                           ON `glpi_computers`.`id`=`glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`
-                        WHERE `glpi_computers`.`is_deleted` = 0
-                        AND `glpi_computers`.`entities_id` = " . $_SESSION["glpiactive_entity"];
-
-                //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-                $query        .= " GROUP BY periodsync_name ORDER BY periodsync ASC";
-                $result       = $DB->doQuery($query);
-                $nb           = $DB->numrows($result);
+                // The computers of the active entity, as the other widgets of the plugin
+                $last_update = $DB->quoteName('glpi_plugin_ocsinventoryng_ocslinks.last_update');
+                $result      = $DB->request([
+                    'SELECT'    => [
+                        new QueryExpression("DATE_FORMAT($last_update, '%b %Y') AS " . $DB->quoteName('periodsync_name')),
+                        new QueryExpression("DATE_FORMAT($last_update, '%Y-%m') AS " . $DB->quoteName('periodsync')),
+                    ],
+                    'COUNT'     => 'nb',
+                    'FROM'      => 'glpi_plugin_ocsinventoryng_ocslinks',
+                    'LEFT JOIN' => [
+                        'glpi_computers' => [
+                            'ON' => [
+                                'glpi_computers'                      => 'id',
+                                'glpi_plugin_ocsinventoryng_ocslinks' => 'computers_id',
+                            ],
+                        ],
+                    ],
+                    'WHERE'     => [
+                        'glpi_computers.is_deleted'  => 0,
+                        'glpi_computers.entities_id' => (int) $_SESSION["glpiactive_entity"],
+                    ],
+                    'GROUPBY'   => ['periodsync_name', 'periodsync'],
+                    'ORDER'     => 'periodsync ASC',
+                ]);
+                $nb          = count($result);
 
                 $nbcomputers     = __('Computers number', 'ocsinventoryng');
 
@@ -143,7 +155,7 @@ class Dashboard extends MydashboardHtml
                 $tabnames     = [];
                 $tabsyncdates = [];
                 if ($nb) {
-                    while ($data = $DB->fetchAssoc($result)) {
+                    foreach ($result as $data) {
                         $tabdata['data'][] = $data['nb'];
                         $tabdata['type']   = 'bar';
                         $tabdata['name']   = $nbcomputers;
@@ -206,22 +218,28 @@ class Dashboard extends MydashboardHtml
                 $counts     = [];
                 $name_agent = [];
 
-                $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
-                              FROM `glpi_computers`
-                              LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks`
-                              ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` )
-                              WHERE `glpi_computers`.`is_deleted` = 0
-                              AND `glpi_computers`.`is_template` = 0
-                              AND `glpi_computers`.`entities_id` = " . $_SESSION["glpiactive_entity"];
-
-                //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-                $query .= " AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`use_auto_update` = 1) )";
-
-                $result = $DB->doQuery($query);
-                $nb     = $DB->numrows($result);
+                $result = $DB->request([
+                    'COUNT'     => 'nb',
+                    'FROM'      => 'glpi_computers',
+                    'LEFT JOIN' => [
+                        'glpi_plugin_ocsinventoryng_ocslinks' => [
+                            'ON' => [
+                                'glpi_computers'                      => 'id',
+                                'glpi_plugin_ocsinventoryng_ocslinks' => 'computers_id',
+                            ],
+                        ],
+                    ],
+                    'WHERE'     => [
+                        'glpi_computers.is_deleted'                           => 0,
+                        'glpi_computers.is_template'                          => 0,
+                        'glpi_computers.entities_id'                          => (int) $_SESSION["glpiactive_entity"],
+                        'glpi_plugin_ocsinventoryng_ocslinks.use_auto_update' => 1,
+                    ],
+                ]);
+                $nb     = count($result);
 
                 if ($nb) {
-                    while ($data = $DB->fetchAssoc($result)) {
+                    foreach ($result as $data) {
 //                  $counts[]     = $data["nb"];
                         $counts[] = ['value' => $data['nb'],
                                      'name' =>  __('OCS Inventory NG', 'ocsinventoryng')];
@@ -267,23 +285,32 @@ class Dashboard extends MydashboardHtml
 //                    //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
 //                    $query .= " AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`last_update` LIKE '' OR `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` IS NULL) AND (`glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` LIKE '' OR `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` IS NULL) )";
 //                } else {
-                    $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
-                              FROM `glpi_computers`
-                              LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks`
-                              ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` )
-                              WHERE `glpi_computers`.`is_deleted` = 0
-                              AND `glpi_computers`.`is_template` = 0
-                              AND `glpi_computers`.`entities_id` = " . $_SESSION["glpiactive_entity"];
-
-                    //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-                    $query .= " AND (`glpi_plugin_ocsinventoryng_ocslinks`.`last_update` LIKE ''
-               OR `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` IS NULL) ";
+                    $result = $DB->request([
+                        'COUNT'     => 'nb',
+                        'FROM'      => 'glpi_computers',
+                        'LEFT JOIN' => [
+                            'glpi_plugin_ocsinventoryng_ocslinks' => [
+                                'ON' => [
+                                    'glpi_computers'                      => 'id',
+                                    'glpi_plugin_ocsinventoryng_ocslinks' => 'computers_id',
+                                ],
+                            ],
+                        ],
+                        'WHERE'     => [
+                            'glpi_computers.is_deleted'  => 0,
+                            'glpi_computers.is_template' => 0,
+                            'glpi_computers.entities_id' => (int) $_SESSION["glpiactive_entity"],
+                            'OR'                         => [
+                                ['glpi_plugin_ocsinventoryng_ocslinks.last_update' => ['LIKE', '']],
+                                ['glpi_plugin_ocsinventoryng_ocslinks.last_update' => null],
+                            ],
+                        ],
+                    ]);
 //                }
-                $result = $DB->doQuery($query);
-                $nb     = $DB->numrows($result);
+                $nb     = count($result);
 
                 if ($nb) {
-                    while ($data = $DB->fetchAssoc($result)) {
+                    foreach ($result as $data) {
 //                  $counts[]     = $data["nb"];
                         $name_agent[] = __('Without agent', 'ocsinventoryng');
                         $counts[] = ['value' => $data['nb'],

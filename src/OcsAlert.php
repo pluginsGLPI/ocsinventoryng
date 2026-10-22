@@ -303,51 +303,54 @@ class OcsAlert extends CommonDBTM
     {
         global $CFG_GLPI;
 
+        // Every value is escaped: the name and the contact of a computer come from the OCS agent,
+        // the names of the dropdowns from any user who may create them
         $computer = new Computer();
         $computer->getFromDB($data["id"]);
+        $computers_id = (int) $computer->fields["id"];
 
-        $body = "<tr class='tab_bg_2'><td><a href=\"" . $CFG_GLPI["root_doc"] . "/front/computer.form.php?id=" . $computer->fields["id"] . "\">" . $computer->fields["name"];
+        $body = "<tr class='tab_bg_2'><td><a href=\"" . htmlescape($CFG_GLPI["root_doc"] . "/front/computer.form.php?id=" . $computers_id) . "\">"
+            . htmlescape((string) $computer->fields["name"]);
 
         if ($_SESSION["glpiis_ids_visible"] == 1 || empty($computer->fields["name"])) {
-            $body .= " (";
-            $body .= $computer->fields["id"] . ")";
+            $body .= " (" . $computers_id . ")";
         }
         $body .= "</a></td>";
         if (Session::isMultiEntitiesMode()) {
-            $body .= "<td class='center'>" . Dropdown::getDropdownName("glpi_entities", $data["entities_id"]) . "</td>";
+            $body .= "<td class='center'>" . htmlescape((string) Dropdown::getDropdownName("glpi_entities", $data["entities_id"])) . "</td>";
         }
         $item_operatingsystems = new Item_OperatingSystem();
         $item_operatingsystems->getFromDBByCrit(['itemtype' => 'Computer',
             'items_id' => $computer->getID()]);
-        $body .= "<td>" . Dropdown::getDropdownName(
+        $body .= "<td>" . htmlescape((string) Dropdown::getDropdownName(
             "glpi_operatingsystems",
             $item_operatingsystems->getField("operatingsystems_id")
-        ) . "</td>";
-        $body .= "<td>" . Dropdown::getDropdownName("glpi_states", $computer->fields["states_id"]) . "</td>";
-        $body .= "<td>" . Dropdown::getDropdownName("glpi_locations", $computer->fields["locations_id"]) . "</td>";
+        )) . "</td>";
+        $body .= "<td>" . htmlescape((string) Dropdown::getDropdownName("glpi_states", $computer->fields["states_id"])) . "</td>";
+        $body .= "<td>" . htmlescape((string) Dropdown::getDropdownName("glpi_locations", $computer->fields["locations_id"])) . "</td>";
         $body .= "<td>";
         if (!empty($computer->fields["users_id"])) {
             $dbu  = new DbUtils();
-            $body .= "<a href=\"" . $CFG_GLPI["root_doc"] . "/front/user.form.php?id=" . $computer->fields["users_id"] . "\">" .
-                  $dbu->getUserName($computer->fields["users_id"]) . "</a>";
+            $body .= "<a href=\"" . htmlescape($CFG_GLPI["root_doc"] . "/front/user.form.php?id=" . (int) $computer->fields["users_id"]) . "\">"
+                  . htmlescape((string) $dbu->getUserName($computer->fields["users_id"])) . "</a>";
         }
 
         $groupsitem = new Group_Item();
-        foreach ($groupsitem->find(['itemtype' => 'Computer', 'items_id' => $computer->fields["id"], 'type' => Group_Item::GROUP_TYPE_NORMAL]) as $group) {
-            $body .= " - ".Group::getFriendlyNameById($group['groups_id']);
+        foreach ($groupsitem->find(['itemtype' => 'Computer', 'items_id' => $computers_id, 'type' => Group_Item::GROUP_TYPE_NORMAL]) as $group) {
+            $body .= " - " . htmlescape((string) Group::getFriendlyNameById($group['groups_id']));
         }
 
         if (!empty($computer->fields["contact"])) {
-            $body .= " - " . $computer->fields["contact"];
+            $body .= " - " . htmlescape((string) $computer->fields["contact"]);
         }
 
         $body .= "</td>";
-        $body .= "<td>" . Html::convdatetime($data["last_ocs_update"]) . "</td>";
-        $body .= "<td>" . Html::convdatetime($data["last_update"]) . "</td>";
-        $body .= "<td>" . Dropdown::getDropdownName(
+        $body .= "<td>" . htmlescape((string) Html::convDateTime($data["last_ocs_update"])) . "</td>";
+        $body .= "<td>" . htmlescape((string) Html::convDateTime($data["last_update"])) . "</td>";
+        $body .= "<td>" . htmlescape((string) Dropdown::getDropdownName(
             "glpi_plugin_ocsinventoryng_ocsservers",
             $data["plugin_ocsinventoryng_ocsservers_id"]
-        ) . "</td>";
+        )) . "</td>";
 
         $body .= "</tr>";
 

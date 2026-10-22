@@ -849,14 +849,17 @@ class NetworkPort extends NetworkPortInstantiation
             case "plugin_ocsinventoryng_update_networkport_type":
                 $networkport = new NetworkPort();
                 foreach ($ids as $id) {
-                    if ($networkport->getFromDBByCrit(['networkports_id' => $id])) {
-                        if ($networkport->transformAccordingTypes()) {
-                            $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
-                        } else {
-                            $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
-                        }
+                    // A port the user may update: the core does not check the items of the
+                    // specific actions of a plugin
+                    if (!$item->can((int) $id, UPDATE)) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_NORIGHT);
+                        continue;
+                    }
+                    if ($networkport->getFromDBByCrit(['networkports_id' => (int) $id])
+                        && $networkport->transformAccordingTypes()) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                     } else {
-                        $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
                     }
                 }
 

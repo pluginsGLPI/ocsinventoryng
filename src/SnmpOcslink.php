@@ -532,13 +532,13 @@ class SnmpOcslink extends CommonDBTM
             if (!empty($items_id)
              && $item->fields["is_dynamic"]
              && Session::haveRight("plugin_ocsinventoryng_view", READ)) {
-                $query = "SELECT *
-                      FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
-                      WHERE `items_id` = $items_id AND `itemtype` = '" . $item->getType() . "'";
-
-                $result = $DB->doQuery($query);
-                if ($DB->numrows($result) > 0) {
-                    $data = $DB->fetchAssoc($result);
+                $result = $DB->request([
+                    'FROM'  => 'glpi_plugin_ocsinventoryng_snmpocslinks',
+                    'WHERE' => ['items_id' => (int) $items_id, 'itemtype' => $item->getType()],
+                    'LIMIT' => 1,
+                ]);
+                if (count($result) > 0) {
+                    $data = $result->current();
 
                     if (count($data)) {
                         echo "<table class='tab_cadre_fixe'>";
@@ -705,13 +705,13 @@ class SnmpOcslink extends CommonDBTM
             if (!empty($items_id)
              && $item->fields["is_dynamic"]
              && Session::haveRight("plugin_ocsinventoryng_view", READ)) {
-                $query = "SELECT *
-                      FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
-                      WHERE `items_id` = $items_id AND  `itemtype` = '" . $item->getType() . "'";
-
-                $result = $DB->doQuery($query);
-                if ($DB->numrows($result) > 0) {
-                    $data = $DB->fetchAssoc($result);
+                $result = $DB->request([
+                    'FROM'  => 'glpi_plugin_ocsinventoryng_snmpocslinks',
+                    'WHERE' => ['items_id' => (int) $items_id, 'itemtype' => $item->getType()],
+                    'LIMIT' => 1,
+                ]);
+                if (count($result) > 0) {
+                    $data = $result->current();
 
                     if (count($data)) {
                         echo "<table class='tab_cadre_fixe'>";
@@ -839,13 +839,13 @@ class SnmpOcslink extends CommonDBTM
             if (!empty($items_id)
              //&& $item->fields["is_dynamic"]
              && Session::haveRight("plugin_ocsinventoryng_view", READ)) {
-                $query = "SELECT *
-                      FROM `glpi_plugin_ocsinventoryng_ipdiscoverocslinks`
-                      WHERE `items_id` = $items_id AND  `itemtype` = '" . $item->getType() . "'";
-
-                $result = $DB->doQuery($query);
-                if ($DB->numrows($result) > 0) {
-                    $data = $DB->fetchAssoc($result);
+                $result = $DB->request([
+                    'FROM'  => 'glpi_plugin_ocsinventoryng_ipdiscoverocslinks',
+                    'WHERE' => ['items_id' => (int) $items_id, 'itemtype' => $item->getType()],
+                    'LIMIT' => 1,
+                ]);
+                if (count($result) > 0) {
+                    $data = $result->current();
 
                     if (count($data)) {
                         echo "<table class='tab_cadre_fixe'>";
@@ -1088,11 +1088,7 @@ class SnmpOcslink extends CommonDBTM
                 if ($cfg_ocs['history_devices']) {
                     $dbu = new DbUtils();
                     $table = $dbu->getTableForItemType("Item_DeviceMemory");
-                    $query = "DELETE
-                            FROM `$table`
-                            WHERE `items_id` = $id_printer
-                            AND `itemtype` = '" . $itemtype . "'";
-                    $DB->doQuery($query);
+                    $DB->delete($table, ['items_id' => (int) $id_printer, 'itemtype' => $itemtype]);
                 }
                 //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
                 //            $CompDevice->deleteByCriteria(array('items_id' => $id_printer,
@@ -1320,11 +1316,7 @@ class SnmpOcslink extends CommonDBTM
 
                     if ($cfg_ocs['history_devices']) {
                         $table = $dbu->getTableForItemType("Item_DevicePowerSupply");
-                        $query = "DELETE
-                            FROM `" . $table . "`
-                            WHERE `items_id` = $id_network
-                            AND `itemtype` = '" . $itemtype . "'";
-                        $DB->doQuery($query);
+                        $DB->delete($table, ['items_id' => (int) $id_network, 'itemtype' => $itemtype]);
                     }
                     //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
                     //               $CompDevice->deleteByCriteria(array('items_id' => $id_network,
@@ -1365,11 +1357,7 @@ class SnmpOcslink extends CommonDBTM
                     if ($cfg_ocs['history_devices']) {
                         $dbu = new DbUtils();
                         $table = $dbu->getTableForItemType("Item_DevicePci");
-                        $query = "DELETE
-                            FROM `" . $table . "`
-                            WHERE `items_id` = $id_network
-                            AND `itemtype` = '" . $itemtype . "'";
-                        $DB->doQuery($query);
+                        $DB->delete($table, ['items_id' => (int) $id_network, 'itemtype' => $itemtype]);
                     }
                     //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
                     //               $CompDevice->deleteByCriteria(array('items_id' => $id_network,
@@ -1596,11 +1584,7 @@ class SnmpOcslink extends CommonDBTM
                 $CompDevice = new Item_DeviceMemory();
                 if ($cfg_ocs['history_devices']) {
                     $table = $dbu->getTableForItemType("Item_DeviceMemory");
-                    $query = "DELETE
-                            FROM `" . $table . "`
-                            WHERE `items_id` = '" . $id_item . "'
-                            AND `itemtype` = '" . $itemtype . "'";
-                    $DB->doQuery($query);
+                    $DB->delete($table, ['items_id' => (int) $id_item, 'itemtype' => $itemtype]);
                 }
                 //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
                 //            $CompDevice->deleteByCriteria(array('items_id' => $id_item,
@@ -1624,11 +1608,7 @@ class SnmpOcslink extends CommonDBTM
             $CompDevice = new Item_DeviceNetworkCard();
             if ($cfg_ocs['history_devices']) {
                 $table = $dbu->getTableForItemType("Item_DeviceNetworkCard");
-                $query = "DELETE
-                      FROM `" . $table . "`
-                      WHERE `items_id` = '" . $id_item . "'
-                      AND `itemtype` = '" . $itemtype . "'";
-                $DB->doQuery($query);
+                $DB->delete($table, ['items_id' => (int) $id_item, 'itemtype' => $itemtype]);
             }
             //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
             //         $CompDevice->deleteByCriteria(array('items_id' => $id_item,
@@ -1692,11 +1672,7 @@ class SnmpOcslink extends CommonDBTM
             $CompDevice = new Item_DeviceProcessor();
             if ($cfg_ocs['history_devices']) {
                 $table = $dbu->getTableForItemType("Item_DeviceProcessor");
-                $query = "DELETE
-                            FROM `" . $table . "`
-                            WHERE `items_id` = '" . $id_item . "'
-                            AND `itemtype` = '" . $itemtype . "'";
-                $DB->doQuery($query);
+                $DB->delete($table, ['items_id' => (int) $id_item, 'itemtype' => $itemtype]);
             }
             //            CANNOT USE BEFORE 9.1.2 - for _no_history problem
             //         $CompDevice->deleteByCriteria(array('items_id' => $id_item,
@@ -1758,30 +1734,29 @@ class SnmpOcslink extends CommonDBTM
                 $vm['vcpu']         = $ocsVirtualmachine['CPU'];
                 $vm['ram']          = $ocsVirtualmachine['MEMORY'];
                 $vm['uuid']         = $ocsVirtualmachine['UUID'];
-                $vm['computers_id'] = $id_item;
+                $vm['itemtype']     = Computer::class;
+                $vm['items_id']     = $id_item;
                 $vm['is_dynamic']   = 1;
 
                 $vm['virtualmachinestates_id'] = Dropdown::importExternal('VirtualMachineState', $ocsVirtualmachine['POWER']);
                 //$vm['virtualmachinetypes_id'] = Dropdown::importExternal('VirtualMachineType', $ocsVirtualmachine['VMTYPE']);
                 //$vm['virtualmachinesystems_id'] = Dropdown::importExternal('VirtualMachineType', $ocsVirtualmachine['SUBSYSTEM']);
 
-                $query = "SELECT `id`
-                         FROM `glpi_itemvirtualmachines`
-                         WHERE `computers_id`= $id_item
-                            AND `is_dynamic` = 1";
-                if ($ocsVirtualmachine['UUID']) {
-                    $query .= " AND `uuid`='" . $ocsVirtualmachine['UUID'] . "'";
-                } else {
-                    // Failback on name
-                    $query .= " AND `name`='" . $ocsVirtualmachine['NAME'] . "'";
-                }
-
-                $results = $DB->doQuery($query);
-                if ($DB->numrows($results) > 0) {
-                    $id = $DB->result($results, 0, 'id');
-                } else {
-                    $id = 0;
-                }
+                // UUID and name are sent by the OCS agent: bound, never concatenated
+                $existing = $DB->request([
+                    'SELECT' => 'id',
+                    'FROM'   => 'glpi_itemvirtualmachines',
+                    'WHERE'  => [
+                        'items_id'   => (int) $id_item,
+                        'itemtype'   => Computer::class,
+                        'is_dynamic' => 1,
+                    ] + ($ocsVirtualmachine['UUID']
+                        ? ['uuid' => (string) $ocsVirtualmachine['UUID']]
+                        // Failback on name
+                        : ['name' => (string) $ocsVirtualmachine['NAME']]),
+                    'LIMIT'  => 1,
+                ])->current();
+                $id = $existing ? (int) $existing['id'] : 0;
                 if (!$id) {
                     $virtualmachine->reset();
                     $id_vm = $virtualmachine->add($vm, [], $cfg_ocs['history_vm']);
@@ -1801,7 +1776,8 @@ class SnmpOcslink extends CommonDBTM
                     'SELECT' => 'id',
                     'FROM' => 'glpi_itemvirtualmachines',
                     'WHERE' => [
-                        'computers_id' => $id_item,
+                        'items_id'   => (int) $id_item,
+                        'itemtype'   => Computer::class,
                         'is_dynamic' => 1,
                     ],
                 ];
@@ -1887,7 +1863,8 @@ class SnmpOcslink extends CommonDBTM
 
             foreach ($ocsSnmp['COMPUTERDISKS'] as $k => $ocsComputerDisks) {
                 $disk                   = [];
-                $disk['computers_id']   = $id_item;
+                $disk['itemtype']       = Computer::class;
+                $disk['items_id']       = $id_item;
                 $disk['name']           = $ocsComputerDisks['FILESYSTEM'];
                 $disk['mountpoint']     = $ocsComputerDisks['VOLUMN'];
                 $disk['device']         = $ocsComputerDisks['TYPE'];
@@ -1901,17 +1878,18 @@ class SnmpOcslink extends CommonDBTM
                     $disk['totalsize'] = $ocsComputerDisks['TOTAL'];
                     $disk['freesize']  = $ocsComputerDisks['FREE'];
 
-                    $query   = "SELECT `id`
-                            FROM `glpi_computerdisks`
-                            WHERE `computers_id`= $id_item
-                               AND `name`='" . $disk['name'] . "'
-                               AND `is_dynamic` = 1";
-                    $results = $DB->doQuery($query);
-                    if ($DB->numrows($results) == 1) {
-                        $id = $DB->result($results, 0, 'id');
-                    } else {
-                        $id = false;
-                    }
+                    // The name of the file system is sent by the OCS agent: bound
+                    $existing = $DB->request([
+                        'SELECT' => 'id',
+                        'FROM'   => 'glpi_items_disks',
+                        'WHERE'  => [
+                            'items_id'   => (int) $id_item,
+                            'itemtype'   => Computer::class,
+                            'name'       => (string) $disk['name'],
+                            'is_dynamic' => 1,
+                        ],
+                    ]);
+                    $id = count($existing) == 1 ? (int) $existing->current()['id'] : false;
 
                     if (!$id) {
                         $computerDisk->reset();
@@ -2144,9 +2122,7 @@ class SnmpOcslink extends CommonDBTM
             );
 
             $now = date("Y-m-d H:i:s");
-            $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks`
-                SET `last_update` = '" . $now . "' WHERE `id` = " . $ID . ";";
-            $DB->doQuery($sql);
+            $DB->update('glpi_plugin_ocsinventoryng_snmpocslinks', ['last_update' => $now], ['id' => (int) $ID]);
 
             return ['status' => OcsProcess::SNMP_SYNCHRONIZED,
                 //'entities_id'  => $data['entities_id'],
@@ -2163,10 +2139,7 @@ class SnmpOcslink extends CommonDBTM
             );
 
             $now = date("Y-m-d H:i:s");
-            $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks`
-                SET `last_update` = '" . $now . "'
-                WHERE `id` = " . $ID . ";";
-            $DB->doQuery($sql);
+            $DB->update('glpi_plugin_ocsinventoryng_snmpocslinks', ['last_update' => $now], ['id' => (int) $ID]);
 
             return ['status' => OcsProcess::SNMP_SYNCHRONIZED,
                 //'entities_id'  => $data['entities_id'],
@@ -2184,10 +2157,7 @@ class SnmpOcslink extends CommonDBTM
             );
 
             $now = date("Y-m-d H:i:s");
-            $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks`
-                SET `last_update` = '" . $now . "'
-                WHERE `id` = " . $ID . ";";
-            $DB->doQuery($sql);
+            $DB->update('glpi_plugin_ocsinventoryng_snmpocslinks', ['last_update' => $now], ['id' => (int) $ID]);
 
             return ['status' => OcsProcess::SNMP_SYNCHRONIZED,
                 //'entities_id'  => $data['entities_id'],
@@ -2198,10 +2168,7 @@ class SnmpOcslink extends CommonDBTM
             self::addOrUpdateOther($itemtype, $items_id, $ocsSnmp, $loc_id, "update", $linked, $cfg_ocs);
 
             $now = date("Y-m-d H:i:s");
-            $sql = "UPDATE `glpi_plugin_ocsinventoryng_snmpocslinks`
-                  SET `last_update` = '" . $now . "'
-                  WHERE `id` = " . $ID . ";";
-            $DB->doQuery($sql);
+            $DB->update('glpi_plugin_ocsinventoryng_snmpocslinks', ['last_update' => $now], ['id' => (int) $ID]);
 
             return ['status' => OcsProcess::SNMP_SYNCHRONIZED,
                 //'entities_id'  => $data['entities_id'],
@@ -2322,15 +2289,13 @@ class SnmpOcslink extends CommonDBTM
         }
 
         // Get all links between glpi and OCS
-        $query_glpi     = "SELECT ocs_id
-                     FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
-                     WHERE `plugin_ocsinventoryng_ocsservers_id` = " . $plugin_ocsinventoryng_ocsservers_id;
-        $result_glpi    = $DB->doQuery($query_glpi);
         $already_linked = [];
-        if ($DB->numrows($result_glpi) > 0) {
-            while ($data = $DB->fetchArray($result_glpi)) {
-                $already_linked [] = $data["ocs_id"];
-            }
+        foreach ($DB->request([
+            'SELECT' => 'ocs_id',
+            'FROM'   => 'glpi_plugin_ocsinventoryng_snmpocslinks',
+            'WHERE'  => ['plugin_ocsinventoryng_ocsservers_id' => (int) $plugin_ocsinventoryng_ocsservers_id],
+        ]) as $data) {
+            $already_linked [] = $data["ocs_id"];
         }
 
         $snmpOptions = [
@@ -2572,13 +2537,16 @@ class SnmpOcslink extends CommonDBTM
                                     $ido = (isset($item->fields['id'])) ? $item->fields['id'] : 0;
 
                                     if ($ido > 0) {
-                                        $query = "SELECT *
-                                        FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
-                                        WHERE `itemtype` = '" . $tab["type"] . "'
-                                        AND `items_id` = '" . $ido . "' ";
-
-                                        $result = $DB->doQuery($query);
-                                        if ($DB->numrows($result) > 0) {
+                                        // The type comes from the OCS data: bound
+                                        $result = $DB->request([
+                                            'FROM'  => 'glpi_plugin_ocsinventoryng_snmpocslinks',
+                                            'WHERE' => [
+                                                'itemtype' => (string) $tab["type"],
+                                                'items_id' => (int) $ido,
+                                            ],
+                                            'LIMIT' => 1,
+                                        ]);
+                                        if (count($result) > 0) {
                                             $used[] = $ido;
                                         } else {
                                             $options['value'] = $ido;
@@ -2697,19 +2665,19 @@ class SnmpOcslink extends CommonDBTM
         }
 
         // Get linked computer ids in GLPI
-        $already_linked_query  = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`ocs_id` AS ocsid
-                               FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
-                               WHERE `glpi_plugin_ocsinventoryng_snmpocslinks`.`plugin_ocsinventoryng_ocsservers_id`
-                                            = $plugin_ocsinventoryng_ocsservers_id";
-        $already_linked_result = $DB->doQuery($already_linked_query);
+        $already_linked_result = $DB->request([
+            'SELECT' => 'ocs_id AS ocsid',
+            'FROM'   => 'glpi_plugin_ocsinventoryng_snmpocslinks',
+            'WHERE'  => ['plugin_ocsinventoryng_ocsservers_id' => (int) $plugin_ocsinventoryng_ocsservers_id],
+        ]);
 
-        if ($DB->numrows($already_linked_result) == 0) {
+        if (count($already_linked_result) == 0) {
             echo "<div class='center b'>" . __('No new SNMP device to be updated', 'ocsinventoryng') . "</div>";
             return;
         }
 
         $already_linked_ids = [];
-        while ($data = $DB->fetchAssoc($already_linked_result)) {
+        foreach ($already_linked_result as $data) {
             $already_linked_ids [] = $data['ocsid'];
         }
 
@@ -2746,15 +2714,16 @@ class SnmpOcslink extends CommonDBTM
                 }
 
                 // query snmp links
-                $query  = "SELECT * FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
-                WHERE `glpi_plugin_ocsinventoryng_snmpocslinks`.`ocs_id` IN (" . implode(',', $ocs_snmp_ids) . ")
-                ORDER BY last_update DESC";
-                $result = $DB->doQuery($query);
+                $result = $DB->request([
+                    'FROM'  => 'glpi_plugin_ocsinventoryng_snmpocslinks',
+                    'WHERE' => ['ocs_id' => array_map('intval', $ocs_snmp_ids)],
+                    'ORDER' => 'last_update DESC',
+                ]);
 
                 // Get all links between glpi and OCS
                 $already_linked = [];
-                if ($DB->numrows($result) > 0) {
-                    while ($data = $DB->fetchAssoc($result)) {
+                if (count($result) > 0) {
+                    foreach ($result as $data) {
                         $format = 'Y-m-d H:i:s';
                         //                  $last_glpi_update = DateTime::createFromFormat($format, $data['last_update']);
                         //                  $last_ocs_inventory = DateTime::createFromFormat($format, $ocs_snmp_inv[$data['ocs_id']]);

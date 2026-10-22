@@ -427,8 +427,8 @@ class Thread extends CommonDBTM
                     if ($thread["plugin_ocsinventoryng_ocsservers_id"] != -1) {
                         $ocsConfig = OcsServer::getConfig($thread["plugin_ocsinventoryng_ocsservers_id"]);
                         if (isset($ocsConfig["id"])) {
-                            echo "<a href=\"ocsserver.form.php?id=" . $ocsConfig["id"] . "\">" .
-                            $ocsConfig["name"] . "</a>";
+                            echo "<a href=\"ocsserver.form.php?id=" . (int) $ocsConfig["id"] . "\">" .
+                            htmlescape((string) $ocsConfig["name"]) . "</a>";
                         }
                     } else {
                         echo __('All servers', 'ocsinventoryng');

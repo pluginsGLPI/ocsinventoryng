@@ -38,6 +38,7 @@ use DBmysql;
 use DbUtils;
 use Dropdown;
 use Exception;
+use Glpi\DBAL\QueryExpression;
 use GLPIKey;
 use Html;
 use Log;
@@ -1893,15 +1894,17 @@ class OcsServer extends CommonDBTM
     {
         global $DB;
 
-        $sql    = "SELECT `ocsid`
-              FROM `glpi_plugin_ocsinventoryng_ocslinks`
-              WHERE `computers_id` = '" . $ID . "' AND `plugin_ocsinventoryng_ocsservers_id` = $ocsservers_id";
-        $result = $DB->doQuery($sql);
-        if ($DB->numrows($result) > 0) {
-            $datas = $DB->fetchArray($result);
-            return $datas["ocsid"];
-        }
-        return -1;
+        $datas = $DB->request([
+            'SELECT' => 'ocsid',
+            'FROM'   => 'glpi_plugin_ocsinventoryng_ocslinks',
+            'WHERE'  => [
+                'computers_id'                        => (int) $ID,
+                'plugin_ocsinventoryng_ocsservers_id' => (int) $ocsservers_id,
+            ],
+            'LIMIT'  => 1,
+        ])->current();
+
+        return $datas ? $datas["ocsid"] : -1;
     }
 
     /**
@@ -1914,19 +1917,15 @@ class OcsServer extends CommonDBTM
     {
         global $DB;
 
-        $sql    = "SELECT `id`
-              FROM `glpi_plugin_ocsinventoryng_ocsservers`
-              WHERE `is_active` = 1
-                AND `use_massimport` = 0
-              ORDER BY RAND()
-              LIMIT 1";
-        $result = $DB->doQuery($sql);
+        $datas = $DB->request([
+            'SELECT' => 'id',
+            'FROM'   => 'glpi_plugin_ocsinventoryng_ocsservers',
+            'WHERE'  => ['is_active' => 1, 'use_massimport' => 0],
+            'ORDER'  => new QueryExpression('RAND()'),
+            'LIMIT'  => 1,
+        ])->current();
 
-        if ($DB->numrows($result) > 0) {
-            $datas = $DB->fetchArray($result);
-            return $datas["id"];
-        }
-        return -1;
+        return $datas ? $datas["id"] : -1;
     }
 
     /**
@@ -2255,17 +2254,14 @@ class OcsServer extends CommonDBTM
         $canedit = Session::haveRight("plugin_ocsinventoryng_clean", UPDATE);
 
         // ocslinks ocsid
-        $query  =
-            "SELECT `ocsid` " .
-            "FROM `glpi_plugin_ocsinventoryng_ocslinks` " .
-            "WHERE `plugin_ocsinventoryng_ocsservers_id` = $plugin_ocsinventoryng_ocsservers_id" .
-            (new DbUtils())->getEntitiesRestrictRequest(" AND", "glpi_plugin_ocsinventoryng_ocslinks");
-        $result = $DB->doQuery($query);
         $ocsids = [];
-        if ($DB->numrows($result) > 0) {
-            while ($data = $DB->fetchAssoc($result)) {
-                $ocsids[] = $data['ocsid'];
-            }
+        foreach ($DB->request([
+            'SELECT' => 'ocsid',
+            'FROM'   => 'glpi_plugin_ocsinventoryng_ocslinks',
+            'WHERE'  => ['plugin_ocsinventoryng_ocsservers_id' => (int) $plugin_ocsinventoryng_ocsservers_id]
+                + getEntitiesRestrictCriteria('glpi_plugin_ocsinventoryng_ocslinks'),
+        ]) as $data) {
+            $ocsids[] = $data['ocsid'];
         }
 
         // Select unexisting OCS hardware
@@ -2311,31 +2307,42 @@ class OcsServer extends CommonDBTM
 
 
         //Select unexisting computers
-        $query_glpi = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`entities_id` AS entities_id,
-                            `glpi_plugin_ocsinventoryng_ocslinks`.`ocs_deviceid` AS ocs_deviceid,
-                            `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` AS last_update,
-                            `glpi_plugin_ocsinventoryng_ocslinks`.`ocsid` AS ocsid,
-                            `glpi_plugin_ocsinventoryng_ocslinks`.`id`,
-                            `glpi_computers`.`name` AS name
-                     FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                     LEFT JOIN `glpi_computers`
-                           ON `glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`
-                     WHERE ((`glpi_computers`.`id` IS NULL
-                             AND `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`
-                                    = $plugin_ocsinventoryng_ocsservers_id)";
-
+        // Links whose computer is gone, or whose OCS machine is missing
+        $missing = [
+            'glpi_computers.id'                                         => null,
+            'glpi_plugin_ocsinventoryng_ocslinks.plugin_ocsinventoryng_ocsservers_id' => (int) $plugin_ocsinventoryng_ocsservers_id,
+        ];
         if (count($ocs_missing)) {
-            $query_glpi .= " OR `ocsid` IN ('" . implode("','", $ocs_missing) . "')";
+            $missing = ['OR' => [
+                $missing,
+                ['glpi_plugin_ocsinventoryng_ocslinks.ocsid' => array_map('intval', $ocs_missing)],
+            ]];
         }
-        $dbu        = new DbUtils();
-        $query_glpi .= ") " . $dbu->getEntitiesRestrictRequest(" AND", "glpi_plugin_ocsinventoryng_ocslinks");
-
-        $result_glpi = $DB->doQuery($query_glpi);
+        $result_glpi = $DB->request([
+            'SELECT'    => [
+                'glpi_plugin_ocsinventoryng_ocslinks.entities_id',
+                'glpi_plugin_ocsinventoryng_ocslinks.ocs_deviceid',
+                'glpi_plugin_ocsinventoryng_ocslinks.last_update',
+                'glpi_plugin_ocsinventoryng_ocslinks.ocsid',
+                'glpi_plugin_ocsinventoryng_ocslinks.id',
+                'glpi_computers.name AS name',
+            ],
+            'FROM'      => 'glpi_plugin_ocsinventoryng_ocslinks',
+            'LEFT JOIN' => [
+                'glpi_computers' => [
+                    'ON' => [
+                        'glpi_computers'                      => 'id',
+                        'glpi_plugin_ocsinventoryng_ocslinks' => 'computers_id',
+                    ],
+                ],
+            ],
+            'WHERE'     => [$missing] + getEntitiesRestrictCriteria('glpi_plugin_ocsinventoryng_ocslinks'),
+        ]);
 
         // fetch all links missing between glpi and OCS
         $already_linked = [];
-        if ($DB->numrows($result_glpi) > 0) {
-            while ($data = $DB->fetchAssoc($result_glpi)) {
+        if (count($result_glpi) > 0) {
+            foreach ($result_glpi as $data) {
 
                 $already_linked[$data["ocsid"]]["entities_id"]  = $data["entities_id"];
                 $already_linked[$data["ocsid"]]["ocs_deviceid"] = $data["ocs_deviceid"];
@@ -3001,17 +3008,24 @@ class OcsServer extends CommonDBTM
             if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                 $delay = $config['delay_restorationcron'];
 
-                $query = "SELECT `glpi_computers`.`id`
-                     FROM `glpi_computers`
-                     INNER JOIN `glpi_plugin_ocsinventoryng_ocslinks` AS ocslink
-                        ON ocslink.`computers_id` = `glpi_computers`.`id`
-                     WHERE `glpi_computers`.`is_deleted` = 1
-                     AND ( unix_timestamp(ocslink.`last_ocs_update`) >= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY))";
-
-                $result = $DB->doQuery($query);
-                if ($DB->numrows($result) > 0) {
+                $result = $DB->request([
+                    'SELECT'     => 'glpi_computers.id',
+                    'FROM'       => 'glpi_computers',
+                    'INNER JOIN' => [
+                        'glpi_plugin_ocsinventoryng_ocslinks AS ocslink' => [
+                            'ON' => ['ocslink' => 'computers_id', 'glpi_computers' => 'id'],
+                        ],
+                    ],
+                    'WHERE'      => [
+                        'glpi_computers.is_deleted' => 1,
+                        'ocslink.last_ocs_update'   => ['>=', new QueryExpression(
+                            'NOW() - INTERVAL ' . (int) $delay . ' DAY'
+                        )],
+                    ],
+                ]);
+                if (count($result) > 0) {
                     $computer = new Computer();
-                    while ($data = $DB->fetchAssoc($result)) {
+                    foreach ($result as $data) {
                         $computer->fields['id']         = $data['id'];
                         $computer->fields['is_deleted'] = 0;
                         $computer->fields['date_mod']   = $_SESSION['glpi_currenttime'];

@@ -1927,6 +1927,34 @@ class OcsProcess extends CommonDBTM
      * @since version 0.85
      *
      */
+    /**
+     * Whether a massive action of the plugin may process a computer: one the user may update,
+     * whose OCS links (if any) are on servers allowed to the active profile
+     *
+     * @param CommonDBTM $item
+     * @param int        $id
+     *
+     * @return bool
+     */
+    private static function canProcessComputer(CommonDBTM $item, int $id): bool
+    {
+        global $DB;
+
+        if (!$item->can($id, UPDATE)) {
+            return false;
+        }
+        foreach ($DB->request([
+            'SELECT' => 'plugin_ocsinventoryng_ocsservers_id',
+            'FROM'   => 'glpi_plugin_ocsinventoryng_ocslinks',
+            'WHERE'  => ['computers_id' => $id],
+        ]) as $link) {
+            if (!OcsServer::isAllowedServer((int) $link['plugin_ocsinventoryng_ocsservers_id'])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
     public static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item, array $ids)
     {
         global $DB;
@@ -1936,6 +1964,12 @@ class OcsProcess extends CommonDBTM
                 $input = $ma->getInput();
 
                 foreach ($ids as $id) {
+                    // A computer the user may update, linked to an OCS server allowed to the profile:
+                    // the core does not check the items of the specific actions of a plugin
+                    if (!self::canProcessComputer($item, (int) $id)) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_NORIGHT);
+                        continue;
+                    }
                     $result = $DB->request([
                         'SELECT' => ['plugin_ocsinventoryng_ocsservers_id', 'id'],
                         'FROM'   => 'glpi_plugin_ocsinventoryng_ocslinks',
@@ -1964,6 +1998,12 @@ class OcsProcess extends CommonDBTM
                 $input = $ma->getInput();
 
                 foreach ($ids as $id) {
+                    // A computer the user may update, linked to an OCS server allowed to the profile:
+                    // the core does not check the items of the specific actions of a plugin
+                    if (!self::canProcessComputer($item, (int) $id)) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_NORIGHT);
+                        continue;
+                    }
                     $result = $DB->request([
                         'SELECT' => ['plugin_ocsinventoryng_ocsservers_id', 'id'],
                         'FROM'   => 'glpi_plugin_ocsinventoryng_ocslinks',
@@ -1994,6 +2034,12 @@ class OcsProcess extends CommonDBTM
 
                 if ($input['field'] == 'all' || isset($fields[$input['field']])) {
                     foreach ($ids as $id) {
+                        // A computer the user may update, linked to an OCS server allowed to the profile:
+                        // the core does not check the items of the specific actions of a plugin
+                        if (!self::canProcessComputer($item, (int) $id)) {
+                            $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_NORIGHT);
+                            continue;
+                        }
                         if ($input['field'] == 'all') {
                             if (Ocslink::addToOcsArray($id, array_flip($fields), "computer_update")) {
                                 $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
@@ -2017,6 +2063,12 @@ class OcsProcess extends CommonDBTM
                 $fields = Ocslink::getLockableFields();
                 if ($input['field'] == 'all' || isset($fields[$input['field']])) {
                     foreach ($ids as $id) {
+                        // A computer the user may update, linked to an OCS server allowed to the profile:
+                        // the core does not check the items of the specific actions of a plugin
+                        if (!self::canProcessComputer($item, (int) $id)) {
+                            $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_NORIGHT);
+                            continue;
+                        }
                         if ($input['field'] == 'all') {
                             if (Ocslink::replaceOcsArray($id, [])) {
                                 $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);

@@ -41,6 +41,24 @@ class OcsDbClient extends OcsClient
 {
 
    /**
+    * A date filter (INVENTORIED_SINCE / INVENTORIED_BEFORE) put in the SQL of the OCS database:
+    * a date "Y-m-d" or "Y-m-d H:i:s" only, the epoch otherwise
+    *
+    * @param mixed $date
+    *
+    * @return string
+    */
+    private static function checkFilterDate($date): string
+    {
+        $date = is_scalar($date) ? trim((string) $date) : '';
+        if (preg_match('/^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}:\d{2})?$/', $date)) {
+            return $date;
+        }
+
+        return '1970-01-01 00:00:00';
+    }
+
+   /**
     * @var DBocs
     */
     private $db;
@@ -103,6 +121,8 @@ class OcsDbClient extends OcsClient
     */
     public function getComputerRule($id, $tables = [])
     {
+        // Put in the SQL of the OCS database: integers only
+        $id = (int) $id;
         if (!$this->isConnected()) {
             throw new \RuntimeException('OCS database connection is not established');
         }
@@ -847,7 +867,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['TAGS']) and $filters['TAGS']) {
                 $tags       = $filters['TAGS'];
                 $where_tags = " AND accountinfo.TAG IN (";
-                $where_tags .= "'" . join('\',\'', $tags) . "'";
+                $where_tags .= join(',', array_map([DBmysql::class, 'quoteValue'], array_map('strval', (array) $tags)));
                 $where_tags .= ") ";
             } else {
                 $where_tags = "";
@@ -856,7 +876,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['EXCLUDE_TAGS']) and $filters['EXCLUDE_TAGS']) {
                 $exclude_tags       = $filters['EXCLUDE_TAGS'];
                 $where_exclude_tags = " AND accountinfo.TAG NOT IN (";
-                $where_exclude_tags .= "'" . join('\',\'', $exclude_tags) . "'";
+                $where_exclude_tags .= join(',', array_map([DBmysql::class, 'quoteValue'], array_map('strval', (array) $exclude_tags)));
                 $where_exclude_tags .= ") ";
             } else {
                 $where_exclude_tags = "";
@@ -864,9 +884,9 @@ class OcsDbClient extends OcsClient
 
             if (isset($filters['INVENTORIED_SINCE']) and $filters['INVENTORIED_SINCE']) {
                 if (!isset($filters['CHECKSUM'])) {
-                    $since       = $filters['INVENTORIED_SINCE'];
+                    $since       = self::checkFilterDate($filters['INVENTORIED_SINCE']);
                     $where_since = " AND (`hardware`.`LASTDATE` > ";
-                    $where_since .= "'" . $since . "'";
+                    $where_since .= DBmysql::quoteValue($since);
                     $where_since .= ") ";
                 } else {
                     $where_since = "";
@@ -876,7 +896,7 @@ class OcsDbClient extends OcsClient
             }
 
             if (isset($filters['INVENTORIED_BEFORE']) and $filters['INVENTORIED_BEFORE']) {
-                $before       = $filters['INVENTORIED_BEFORE'];
+                $before       = DBmysql::quoteValue(self::checkFilterDate($filters['INVENTORIED_BEFORE']));
                 $where_before = " AND (UNIX_TIMESTAMP(`hardware`.`LASTDATE`) < (UNIX_TIMESTAMP(" . $before . ")-180";
                // $where_before .= "'" .$before. "'";
                 $where_before .= ")) ";
@@ -885,12 +905,12 @@ class OcsDbClient extends OcsClient
             }
 
             if (isset($filters['CHECKSUM']) and $filters['CHECKSUM']) {
-                $checksum = $filters['CHECKSUM'];
+                $checksum = (int) $filters['CHECKSUM'];
 
-                $where_checksum = " AND (('" . $checksum . "' & `hardware`.`CHECKSUM`) > 1";
+                $where_checksum = " AND ((" . $checksum . " & `hardware`.`CHECKSUM`) > 1";
                 if (isset($filters['INVENTORIED_SINCE']) and $filters['INVENTORIED_SINCE']) {
-                    $since          = $filters['INVENTORIED_SINCE'];
-                    $where_checksum .= " OR `hardware`.`LASTDATE` > '$since'";
+                    $since          = self::checkFilterDate($filters['INVENTORIED_SINCE']);
+                    $where_checksum .= " OR `hardware`.`LASTDATE` > " . DBmysql::quoteValue($since);
                 }
                 $where_checksum .= ")";
             } else {
@@ -934,6 +954,8 @@ class OcsDbClient extends OcsClient
     */
     public function getComputers($options, $id = 0)
     {
+        // Put in the SQL of the OCS database: integers only
+        $id = (int) $id;
         if (!$this->isConnected()) {
             throw new \RuntimeException('OCS database connection is not established');
         }
@@ -994,7 +1016,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['TAGS']) and $filters['TAGS']) {
                 $tags       = $filters['TAGS'];
                 $where_tags = " AND accountinfo.TAG IN (";
-                $where_tags .= "'" . join('\',\'', $tags) . "'";
+                $where_tags .= join(',', array_map([DBmysql::class, 'quoteValue'], array_map('strval', (array) $tags)));
                 $where_tags .= ") ";
             } else {
                 $where_tags = "";
@@ -1003,7 +1025,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['EXCLUDE_TAGS']) and $filters['EXCLUDE_TAGS']) {
                 $exclude_tags       = $filters['EXCLUDE_TAGS'];
                 $where_exclude_tags = " AND accountinfo.TAG NOT IN (";
-                $where_exclude_tags .= "'" . join('\',\'', $exclude_tags) . "'";
+                $where_exclude_tags .= join(',', array_map([DBmysql::class, 'quoteValue'], array_map('strval', (array) $exclude_tags)));
                 $where_exclude_tags .= ") ";
             } else {
                 $where_exclude_tags = "";
@@ -1011,9 +1033,8 @@ class OcsDbClient extends OcsClient
 
             if (isset($filters['INVENTORIED_SINCE']) and $filters['INVENTORIED_SINCE']) {
                 if (!isset($filters['CHECKSUM'])) {
-                    $since       = $filters['INVENTORIED_SINCE'];
-                    $where_since = " AND (`hardware`.`LASTDATE` > '$since'";
-   //               $where_since .= "'" . $since . "'";
+                    $since       = self::checkFilterDate($filters['INVENTORIED_SINCE']);
+                    $where_since = " AND (`hardware`.`LASTDATE` > " . DBmysql::quoteValue($since);
                     $where_since .= ") ";
                 } else {
                     $where_since = "";
@@ -1023,7 +1044,7 @@ class OcsDbClient extends OcsClient
             }
 
             if (isset($filters['INVENTORIED_BEFORE']) and $filters['INVENTORIED_BEFORE']) {
-                $before       = $filters['INVENTORIED_BEFORE'];
+                $before       = DBmysql::quoteValue(self::checkFilterDate($filters['INVENTORIED_BEFORE']));
                 $where_before = " AND (`hardware`.`LASTDATE` < '$before'";
   //             $where_before .= "'" .$before. "'";
                 $where_before .= ") ";
@@ -1032,12 +1053,12 @@ class OcsDbClient extends OcsClient
             }
 
             if (isset($filters['CHECKSUM']) and $filters['CHECKSUM']) {
-                $checksum = $filters['CHECKSUM'];
+                $checksum = (int) $filters['CHECKSUM'];
 
-                $where_checksum = " AND (('" . $checksum . "' & `hardware`.`CHECKSUM`) > 1";
+                $where_checksum = " AND ((" . $checksum . " & `hardware`.`CHECKSUM`) > 1";
                 if (isset($filters['INVENTORIED_SINCE']) and $filters['INVENTORIED_SINCE']) {
-                    $since          = $filters['INVENTORIED_SINCE'];
-                    $where_checksum .= " AND `hardware`.`LASTDATE` > '$since'";
+                    $since          = self::checkFilterDate($filters['INVENTORIED_SINCE']);
+                    $where_checksum .= " AND `hardware`.`LASTDATE` > " . DBmysql::quoteValue($since);
                 }
                 $where_checksum .= ")";
             } else {
@@ -1175,6 +1196,9 @@ class OcsDbClient extends OcsClient
     */
     public function setChecksum($checksum, $id)
     {
+        // Put in the SQL of the OCS database: integers only
+        $checksum = (int) $checksum;
+        $id = (int) $id;
         $query = "UPDATE `hardware` SET `CHECKSUM` = $checksum WHERE `ID` = $id";
         $this->db->doQuery($query);
     }
@@ -1188,6 +1212,8 @@ class OcsDbClient extends OcsClient
     */
     public function getChecksum($id)
     {
+        // Put in the SQL of the OCS database: integers only
+        $id = (int) $id;
         $query    = "SELECT `CHECKSUM` FROM `hardware` WHERE `ID` = $id";
         $checksum = $this->db->doQuery($query);
         $res      = $this->db->fetchAssoc($checksum);
@@ -1265,6 +1291,8 @@ class OcsDbClient extends OcsClient
     */
     public function getIfOCSComputersExists($id)
     {
+        // Put in the SQL of the OCS database: integers only
+        $id = (int) $id;
         $query = "SELECT `ID`
                     FROM `hardware`
                     WHERE `ID` = $id";
@@ -1554,16 +1582,16 @@ class OcsDbClient extends OcsClient
             }
 
             if (isset($filters['INVENTORIED_SINCE']) and $filters['INVENTORIED_SINCE']) {
-                $since       = $filters['INVENTORIED_SINCE'];
+                $since       = self::checkFilterDate($filters['INVENTORIED_SINCE']);
                 $where_since = " AND (`snmp`.`LASTDATE` > ";
-                $where_since .= "'" . $since . "'";
+                $where_since .= DBmysql::quoteValue($since);
                 $where_since .= ") ";
             } else {
                 $where_since = "";
             }
 
             if (isset($filters['INVENTORIED_BEFORE']) and $filters['INVENTORIED_BEFORE']) {
-                $before       = $filters['INVENTORIED_BEFORE'];
+                $before       = DBmysql::quoteValue(self::checkFilterDate($filters['INVENTORIED_BEFORE']));
                 $where_before = " AND (UNIX_TIMESTAMP(`snmp`.`LASTDATE`) < (UNIX_TIMESTAMP(" . $before . ")-180";
                // $where_before .= "'" .$before. "'";
                 $where_before .= ")) ";
@@ -1572,8 +1600,8 @@ class OcsDbClient extends OcsClient
             }
 
             if (isset($filters['CHECKSUM']) and $filters['CHECKSUM']) {
-                $checksum       = $filters['CHECKSUM'];
-                $where_checksum = " AND ('" . $checksum . "' & `snmp`.`CHECKSUM`) ";
+                $checksum       = (int) $filters['CHECKSUM'];
+                $where_checksum = " AND (" . $checksum . " & `snmp`.`CHECKSUM`) ";
             } else {
                 $where_checksum = "";
             }

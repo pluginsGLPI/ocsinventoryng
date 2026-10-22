@@ -229,15 +229,24 @@ class Profile extends \Profile
             ["profiles_id" => $profiles_id]
         );
 
-        $query  = "SELECT `glpi_plugin_ocsinventoryng_ocsservers`.`id`,
-                       `glpi_plugin_ocsinventoryng_ocsservers`.`name`
-                FROM `glpi_plugin_ocsinventoryng_ocsservers_profiles`
-                LEFT JOIN `glpi_plugin_ocsinventoryng_ocsservers`
-                   ON `glpi_plugin_ocsinventoryng_ocsservers_profiles`.`plugin_ocsinventoryng_ocsservers_id` = `glpi_plugin_ocsinventoryng_ocsservers`.`id`
-                WHERE `profiles_id`= " . $_SESSION["glpiactiveprofile"]['id'] . "
-                ORDER BY `name` ASC";
-        $result = $DB->doQuery($query);
-        if ($data = $DB->fetchAssoc($result)) {
+        $result = $DB->request([
+            'SELECT'    => [
+                'glpi_plugin_ocsinventoryng_ocsservers.id',
+                'glpi_plugin_ocsinventoryng_ocsservers.name',
+            ],
+            'FROM'      => 'glpi_plugin_ocsinventoryng_ocsservers_profiles',
+            'LEFT JOIN' => [
+                'glpi_plugin_ocsinventoryng_ocsservers' => [
+                    'ON' => [
+                        'glpi_plugin_ocsinventoryng_ocsservers_profiles' => 'plugin_ocsinventoryng_ocsservers_id',
+                        'glpi_plugin_ocsinventoryng_ocsservers'          => 'id',
+                    ],
+                ],
+            ],
+            'WHERE'     => ['profiles_id' => (int) $_SESSION["glpiactiveprofile"]['id']],
+            'ORDER'     => 'name ASC',
+        ]);
+        if ($data = $result->current()) {
             $ocsserver = new OcsServer();
             foreach ($used as $id) {
                 if ($ocsserver->getFromDB($id)) {

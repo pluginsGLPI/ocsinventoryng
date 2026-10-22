@@ -142,14 +142,14 @@ class Osinstall extends \CommonDBTM
                 // Manage locks pictures
                 $dbu = new DbUtils();
                 $items_id = $item->getField('items_id');
-                $query = "SELECT *
-                      FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                      WHERE `computers_id` = $items_id "
-                     . $dbu->getEntitiesRestrictRequest("AND", "glpi_plugin_ocsinventoryng_ocslinks");
-
-                $result = $DB->doQuery($query);
-                $data['ocsid'] = $DB->result($result, 0, "ocsid");
-                $data['id'] = $DB->result($result, 0, "id");
+                $link = $DB->request([
+                    'FROM'  => 'glpi_plugin_ocsinventoryng_ocslinks',
+                    'WHERE' => ['computers_id' => (int) $items_id]
+                        + getEntitiesRestrictCriteria('glpi_plugin_ocsinventoryng_ocslinks'),
+                    'LIMIT' => 1,
+                ])->current();
+                $data['ocsid'] = $link['ocsid'] ?? null;
+                $data['id'] = $link['id'] ?? null;
                 $data['plugin_ocsinventoryng_ocsservers_id'] = $plugin_ocsinventoryng_ocsservers_id;
                 Ocslink::showLockIcon($items_id, $data);
                 // can exists for template

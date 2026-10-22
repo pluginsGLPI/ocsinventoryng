@@ -104,24 +104,21 @@ class Virtualmachine
                     $ocsVirtualmachine['SUBSYSTEM']
                 );
 
-                $query = "SELECT `id`
-                         FROM `glpi_itemvirtualmachines`
-                         WHERE `items_id`= $computers_id
-                           AND `itemtype` = 'Computer'
-                            AND `is_dynamic` = 1";
-                if ($ocsVirtualmachine['UUID']) {
-                    $query .= " AND `uuid`='" . $ocsVirtualmachine['UUID'] . "'";
-                } else {
-                    // Failback on name
-                    $query .= " AND `name`='" . $ocsVirtualmachine['NAME'] . "'";
-                }
-
-                $results = $DB->doQuery($query);
-                if ($DB->numrows($results) > 0) {
-                    $id = $DB->result($results, 0, 'id');
-                } else {
-                    $id = 0;
-                }
+                // UUID and name are sent by the OCS agent: bound, never concatenated
+                $existing = $DB->request([
+                    'SELECT' => 'id',
+                    'FROM'   => 'glpi_itemvirtualmachines',
+                    'WHERE'  => [
+                        'items_id'   => (int) $computers_id,
+                        'itemtype'   => 'Computer',
+                        'is_dynamic' => 1,
+                    ] + ($ocsVirtualmachine['UUID']
+                        ? ['uuid' => (string) $ocsVirtualmachine['UUID']]
+                        // Failback on name
+                        : ['name' => (string) $ocsVirtualmachine['NAME']]),
+                    'LIMIT'  => 1,
+                ])->current();
+                $id = $existing ? (int) $existing['id'] : 0;
                 if (!$id) {
                     $virtualmachine->reset();
                     $id_vm = $virtualmachine->add($vm, [], $install_history);

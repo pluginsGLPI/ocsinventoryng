@@ -165,30 +165,31 @@ class Officepack
     {
         global $DB;
 
-        $query = "SELECT *
-                FROM `glpi_items_softwarelicenses`
-                WHERE `items_id` = $glpi_computers_id
-                AND `itemtype` = 'Computer'
-                AND`is_dynamic` = 1";
+        $result = $DB->request([
+            'FROM'  => 'glpi_items_softwarelicenses',
+            'WHERE' => [
+                'items_id'   => (int) $glpi_computers_id,
+                'itemtype'   => 'Computer',
+                'is_dynamic' => 1,
+            ],
+        ]);
 
-        $result = $DB->doQuery($query);
+        if (count($result) > 0) {
+            foreach ($result as $data) {
+                $nb_items = countElementsInTable(
+                    'glpi_items_softwarelicenses',
+                    ['softwarelicenses_id' => (int) $data['softwarelicenses_id']]
+                );
 
-        if ($DB->numrows($result) > 0) {
-            while ($data = $DB->fetchAssoc($result)) {
-                $query2  = "SELECT COUNT(*)
-                       FROM `glpi_items_softwarelicenses`
-                       WHERE `softwarelicenses_id` = " . $data['softwarelicenses_id'];
-                $result2 = $DB->doQuery($query2);
-
-                if ($DB->result($result2, 0, 0) == 1) {
+                if ($nb_items == 1) {
                     $license = new SoftwareLicense();
                     $license->getFromDB($data['softwarelicenses_id']);
-                    $query3  = "SELECT COUNT(*)
-                          FROM `glpi_softwarelicenses`
-                          WHERE `softwares_id`=" . $license->fields['softwares_id'];
-                    $result3 = $DB->doQuery($query3);
+                    $nb_licenses = countElementsInTable(
+                        'glpi_softwarelicenses',
+                        ['softwares_id' => (int) $license->fields['softwares_id']]
+                    );
 
-                    if ($DB->result($result3, 0, 0) == 1) {
+                    if ($nb_licenses == 1) {
                         $soft = new Software();
                         $soft->delete(['id' => $license->fields['softwares_id']], 1, $uninstall_plugins_history);
                     }

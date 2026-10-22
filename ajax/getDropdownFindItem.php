@@ -54,9 +54,14 @@ $table = $item::getTable();
 $where = [];
 if ($item->isEntityAssign()) {
     // The entities of the request, limited to the active ones of the user
+    // (getEntitiesRestrictCriteria() takes a given list as is): the posted ones the user may
+    // reach, the active ones when none is left
     $entity = '';
     if (isset($_POST['entity_restrict']) && $_POST['entity_restrict'] !== '' && $_POST['entity_restrict'] >= 0) {
-        $entity = array_map('intval', (array) $_POST['entity_restrict']);
+        $entity = array_values(array_intersect(
+            array_map('intval', (array) $_POST['entity_restrict']),
+            array_map('intval', $_SESSION['glpiactiveentities'] ?? [])
+        )) ?: '';
     }
     $where += getEntitiesRestrictCriteria($table, '', $entity, $item->maybeRecursive());
 }
