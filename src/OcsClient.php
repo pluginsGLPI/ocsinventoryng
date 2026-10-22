@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -34,47 +35,47 @@ namespace GlpiPlugin\Ocsinventoryng;
  */
 abstract class OcsClient
 {
-    const CHECKSUM_NONE                = 0x00000;
-    const CHECKSUM_HARDWARE            = 0x00001;
-    const CHECKSUM_BIOS                = 0x00002;
-    const CHECKSUM_MEMORY_SLOTS        = 0x00004;
-    const CHECKSUM_SYSTEM_SLOTS        = 0x00008;
-    const CHECKSUM_REGISTRY            = 0x00010;
-    const CHECKSUM_SYSTEM_CONTROLLERS  = 0x00020;
-    const CHECKSUM_MONITORS            = 0x00040;
-    const CHECKSUM_SYSTEM_PORTS        = 0x00080;
-    const CHECKSUM_STORAGE_PERIPHERALS = 0x00100;
-    const CHECKSUM_LOGICAL_DRIVES      = 0x00200;
-    const CHECKSUM_INPUT_DEVICES       = 0x00400;
-    const CHECKSUM_MODEMS              = 0x00800;
-    const CHECKSUM_NETWORK_ADAPTERS    = 0x01000;
-    const CHECKSUM_PRINTERS            = 0x02000;
-    const CHECKSUM_SOUND_ADAPTERS      = 0x04000;
-    const CHECKSUM_VIDEO_ADAPTERS      = 0x08000;
-    const CHECKSUM_SOFTWARE            = 0x10000;
-    const CHECKSUM_VIRTUAL_MACHINES    = 0x20000;
-    const CHECKSUM_CPUS                = 0x40000;
-    const CHECKSUM_SIM                 = 0x80000;
-    const CHECKSUM_ALL                 = 0xFFFFF;
-    const WANTED_NONE                  = 0x00000;
-    const WANTED_ACCOUNTINFO           = 0x00001;
-    const WANTED_DICO_SOFT             = 0x00002;
-    const WANTED_ALL                   = 0x00003;
-    const PLUGINS_NONE                 = 0x00000;
-    const PLUGINS_SECURITY             = 0x00001;
-    const PLUGINS_UPTIME               = 0x00002;
-    const PLUGINS_OFFICE               = 0x00003;
-    const PLUGINS_WUPDATE              = 0x00004;
-    const PLUGINS_TEAMVIEWER           = 0x00005;
-    const PLUGINS_PROXYSETTING         = 0x00006;
-    const PLUGINS_WINUSERS             = 0x00007;
-    const PLUGINS_OSINSTALL            = 0x00008;
-    const PLUGINS_NETWORKSHARE         = 0x00009;
-    const PLUGINS_SERVICE              = 0x00010;
-    const PLUGINS_RUNNINGPROCESS       = 0x00011;
-    const PLUGINS_ALL                  = 0x00012;
-    const PLUGINS_CUSTOMAPP            = 0x00013;
-    const PLUGINS_BITLOCKER            = 0x00014;
+    public const CHECKSUM_NONE                = 0x00000;
+    public const CHECKSUM_HARDWARE            = 0x00001;
+    public const CHECKSUM_BIOS                = 0x00002;
+    public const CHECKSUM_MEMORY_SLOTS        = 0x00004;
+    public const CHECKSUM_SYSTEM_SLOTS        = 0x00008;
+    public const CHECKSUM_REGISTRY            = 0x00010;
+    public const CHECKSUM_SYSTEM_CONTROLLERS  = 0x00020;
+    public const CHECKSUM_MONITORS            = 0x00040;
+    public const CHECKSUM_SYSTEM_PORTS        = 0x00080;
+    public const CHECKSUM_STORAGE_PERIPHERALS = 0x00100;
+    public const CHECKSUM_LOGICAL_DRIVES      = 0x00200;
+    public const CHECKSUM_INPUT_DEVICES       = 0x00400;
+    public const CHECKSUM_MODEMS              = 0x00800;
+    public const CHECKSUM_NETWORK_ADAPTERS    = 0x01000;
+    public const CHECKSUM_PRINTERS            = 0x02000;
+    public const CHECKSUM_SOUND_ADAPTERS      = 0x04000;
+    public const CHECKSUM_VIDEO_ADAPTERS      = 0x08000;
+    public const CHECKSUM_SOFTWARE            = 0x10000;
+    public const CHECKSUM_VIRTUAL_MACHINES    = 0x20000;
+    public const CHECKSUM_CPUS                = 0x40000;
+    public const CHECKSUM_SIM                 = 0x80000;
+    public const CHECKSUM_ALL                 = 0xFFFFF;
+    public const WANTED_NONE                  = 0x00000;
+    public const WANTED_ACCOUNTINFO           = 0x00001;
+    public const WANTED_DICO_SOFT             = 0x00002;
+    public const WANTED_ALL                   = 0x00003;
+    public const PLUGINS_NONE                 = 0x00000;
+    public const PLUGINS_SECURITY             = 0x00001;
+    public const PLUGINS_UPTIME               = 0x00002;
+    public const PLUGINS_OFFICE               = 0x00003;
+    public const PLUGINS_WUPDATE              = 0x00004;
+    public const PLUGINS_TEAMVIEWER           = 0x00005;
+    public const PLUGINS_PROXYSETTING         = 0x00006;
+    public const PLUGINS_WINUSERS             = 0x00007;
+    public const PLUGINS_OSINSTALL            = 0x00008;
+    public const PLUGINS_NETWORKSHARE         = 0x00009;
+    public const PLUGINS_SERVICE              = 0x00010;
+    public const PLUGINS_RUNNINGPROCESS       = 0x00011;
+    public const PLUGINS_ALL                  = 0x00012;
+    public const PLUGINS_CUSTOMAPP            = 0x00013;
+    public const PLUGINS_BITLOCKER            = 0x00014;
 
     private $id;
 
@@ -443,146 +444,146 @@ abstract class OcsClient
     public function getOcsMap()
     {
         $DATA_MAP = [
-           'hardware'              => [
-              'checksum' => self::CHECKSUM_HARDWARE,
-              'multi'    => 0,
-           ],
-           'bios'                  => [
-              'checksum' => self::CHECKSUM_BIOS,
-              'multi'    => 0,
-           ],
-           'memories'              => [
-              'checksum' => self::CHECKSUM_MEMORY_SLOTS,
-              'multi'    => 1,
-           ],
-           'slots'                 => [
-              'checksum' => self::CHECKSUM_SYSTEM_SLOTS,
-              'multi'    => 1,
-           ],
-           'registry'              => [
-              'checksum' => self::CHECKSUM_REGISTRY,
-              'multi'    => 1,
-           ],
-           'securitycenter'        => [
-              'plugins' => self::PLUGINS_SECURITY,
-              'multi'   => 1,
-           ],
-           'uptime'                => [
-              'plugins' => self::PLUGINS_UPTIME,
-              'multi'   => 0,
-           ],
-           'winupdatestate'        => [
-              'plugins' => self::PLUGINS_WUPDATE,
-              'multi'   => 0,
-           ],
-           'osinstall'             => [
-              'plugins' => self::PLUGINS_OSINSTALL,
-              'multi'   => 0,
-           ],
-           'networkshare'          => [
-              'plugins' => self::PLUGINS_NETWORKSHARE,
-              'multi'   => 1,
-           ],
-           'runningprocess'        => [
-              'plugins' => self::PLUGINS_RUNNINGPROCESS,
-              'multi'   => 1,
-           ],
-           'service'               => [
-              'plugins' => self::PLUGINS_SERVICE,
-              'multi'   => 1,
-           ],
-           'navigatorproxysetting' => [
-              'plugins' => self::PLUGINS_PROXYSETTING,
-              'multi'   => 1,
-           ],
-           'winusers'              => [
-              'plugins' => self::PLUGINS_WINUSERS,
-              'multi'   => 1,
-           ],
-           'teamviewer'            => [
-              'plugins' => self::PLUGINS_TEAMVIEWER,
-              'multi'   => 0,
-           ],
-           'customapp'             => [
-              'plugins' => self::PLUGINS_CUSTOMAPP,
-              'multi'   => 1,
-           ],
-           'officepack'            => [
-              'plugins' => self::PLUGINS_OFFICE,
-              'multi'   => 1,
-           ],
-           'bitlockerstatus'             => [
-              'plugins' => self::PLUGINS_BITLOCKER,
-              'multi'  => 1,
-           ],
-           'controllers'           => [
-              'checksum' => self::CHECKSUM_SYSTEM_CONTROLLERS,
-              'multi'    => 1,
-           ],
-           'monitors'              => [
-              'checksum' => self::CHECKSUM_MONITORS,
-              'multi'    => 1,
-           ],
-           'ports'                 => [
-              'checksum' => self::CHECKSUM_SYSTEM_PORTS,
-              'multi'    => 1,
-           ],
-           'storages'              => [
-              'checksum' => self::CHECKSUM_STORAGE_PERIPHERALS,
-              'multi'    => 1,
-           ],
-           'drives'                => [
-              'checksum' => self::CHECKSUM_LOGICAL_DRIVES,
-              'multi'    => 1,
-           ],
-           'inputs'                => [
-              'checksum' => self::CHECKSUM_INPUT_DEVICES,
-              'multi'    => 1,
-           ],
-           'modems'                => [
-              'checksum' => self::CHECKSUM_MODEMS,
-              'multi'    => 1,
-           ],
-           'networks'              => [
-              'checksum' => self::CHECKSUM_NETWORK_ADAPTERS,
-              'multi'    => 1,
-           ],
-           'printers'              => [
-              'checksum' => self::CHECKSUM_PRINTERS,
-              'multi'    => 1,
-           ],
-           'sounds'                => [
-              'checksum' => self::CHECKSUM_SOUND_ADAPTERS,
-              'multi'    => 1,
-           ],
-           'videos'                => [
-              'checksum' => self::CHECKSUM_VIDEO_ADAPTERS,
-              'multi'    => 1,
-           ],
-           'softwares'             => [
-              'checksum' => self::CHECKSUM_SOFTWARE,
-              'multi'    => 1,
-           ],
-           'virtualmachines'       => [
-              'checksum' => self::CHECKSUM_VIRTUAL_MACHINES,
-              'multi'    => 1,
-           ],
-           'cpus'                  => [
-              'checksum' => self::CHECKSUM_CPUS,
-              'multi'    => 1,
-           ],
-           'sim'                   => [
-              'checksum' => self::CHECKSUM_SIM,
-              'multi'    => 1,
-           ],
-           'accountinfo'           => [
-              'wanted' => self::WANTED_ACCOUNTINFO,
-              'multi'  => 1,
-           ],
-           'dico_soft'             => [
-              'wanted' => self::WANTED_DICO_SOFT,
-              'multi'  => 0,
-           ],
+            'hardware'              => [
+                'checksum' => self::CHECKSUM_HARDWARE,
+                'multi'    => 0,
+            ],
+            'bios'                  => [
+                'checksum' => self::CHECKSUM_BIOS,
+                'multi'    => 0,
+            ],
+            'memories'              => [
+                'checksum' => self::CHECKSUM_MEMORY_SLOTS,
+                'multi'    => 1,
+            ],
+            'slots'                 => [
+                'checksum' => self::CHECKSUM_SYSTEM_SLOTS,
+                'multi'    => 1,
+            ],
+            'registry'              => [
+                'checksum' => self::CHECKSUM_REGISTRY,
+                'multi'    => 1,
+            ],
+            'securitycenter'        => [
+                'plugins' => self::PLUGINS_SECURITY,
+                'multi'   => 1,
+            ],
+            'uptime'                => [
+                'plugins' => self::PLUGINS_UPTIME,
+                'multi'   => 0,
+            ],
+            'winupdatestate'        => [
+                'plugins' => self::PLUGINS_WUPDATE,
+                'multi'   => 0,
+            ],
+            'osinstall'             => [
+                'plugins' => self::PLUGINS_OSINSTALL,
+                'multi'   => 0,
+            ],
+            'networkshare'          => [
+                'plugins' => self::PLUGINS_NETWORKSHARE,
+                'multi'   => 1,
+            ],
+            'runningprocess'        => [
+                'plugins' => self::PLUGINS_RUNNINGPROCESS,
+                'multi'   => 1,
+            ],
+            'service'               => [
+                'plugins' => self::PLUGINS_SERVICE,
+                'multi'   => 1,
+            ],
+            'navigatorproxysetting' => [
+                'plugins' => self::PLUGINS_PROXYSETTING,
+                'multi'   => 1,
+            ],
+            'winusers'              => [
+                'plugins' => self::PLUGINS_WINUSERS,
+                'multi'   => 1,
+            ],
+            'teamviewer'            => [
+                'plugins' => self::PLUGINS_TEAMVIEWER,
+                'multi'   => 0,
+            ],
+            'customapp'             => [
+                'plugins' => self::PLUGINS_CUSTOMAPP,
+                'multi'   => 1,
+            ],
+            'officepack'            => [
+                'plugins' => self::PLUGINS_OFFICE,
+                'multi'   => 1,
+            ],
+            'bitlockerstatus'             => [
+                'plugins' => self::PLUGINS_BITLOCKER,
+                'multi'  => 1,
+            ],
+            'controllers'           => [
+                'checksum' => self::CHECKSUM_SYSTEM_CONTROLLERS,
+                'multi'    => 1,
+            ],
+            'monitors'              => [
+                'checksum' => self::CHECKSUM_MONITORS,
+                'multi'    => 1,
+            ],
+            'ports'                 => [
+                'checksum' => self::CHECKSUM_SYSTEM_PORTS,
+                'multi'    => 1,
+            ],
+            'storages'              => [
+                'checksum' => self::CHECKSUM_STORAGE_PERIPHERALS,
+                'multi'    => 1,
+            ],
+            'drives'                => [
+                'checksum' => self::CHECKSUM_LOGICAL_DRIVES,
+                'multi'    => 1,
+            ],
+            'inputs'                => [
+                'checksum' => self::CHECKSUM_INPUT_DEVICES,
+                'multi'    => 1,
+            ],
+            'modems'                => [
+                'checksum' => self::CHECKSUM_MODEMS,
+                'multi'    => 1,
+            ],
+            'networks'              => [
+                'checksum' => self::CHECKSUM_NETWORK_ADAPTERS,
+                'multi'    => 1,
+            ],
+            'printers'              => [
+                'checksum' => self::CHECKSUM_PRINTERS,
+                'multi'    => 1,
+            ],
+            'sounds'                => [
+                'checksum' => self::CHECKSUM_SOUND_ADAPTERS,
+                'multi'    => 1,
+            ],
+            'videos'                => [
+                'checksum' => self::CHECKSUM_VIDEO_ADAPTERS,
+                'multi'    => 1,
+            ],
+            'softwares'             => [
+                'checksum' => self::CHECKSUM_SOFTWARE,
+                'multi'    => 1,
+            ],
+            'virtualmachines'       => [
+                'checksum' => self::CHECKSUM_VIRTUAL_MACHINES,
+                'multi'    => 1,
+            ],
+            'cpus'                  => [
+                'checksum' => self::CHECKSUM_CPUS,
+                'multi'    => 1,
+            ],
+            'sim'                   => [
+                'checksum' => self::CHECKSUM_SIM,
+                'multi'    => 1,
+            ],
+            'accountinfo'           => [
+                'wanted' => self::WANTED_ACCOUNTINFO,
+                'multi'  => 1,
+            ],
+            'dico_soft'             => [
+                'wanted' => self::WANTED_DICO_SOFT,
+                'multi'  => 0,
+            ],
         ];
 
         return $DATA_MAP;

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -36,19 +37,19 @@ Session::checkRight("plugin_ocsinventoryng", UPDATE);
 // 0 lists the processes of every server, else a server allowed for the active profile
 $ocsservers_id = (int) ($_GET["plugin_ocsinventoryng_ocsservers_id"] ?? 0);
 if ($ocsservers_id > 0) {
-   $ocsservers_id = OcsServer::checkAllowedServer($ocsservers_id);
+    $ocsservers_id = OcsServer::checkAllowedServer($ocsservers_id);
 }
 
 $thread = new Thread();
 // The list itself (PHP_SELF is the GLPI 11 entry point)
 $target = PLUGIN_OCS_WEBDIR . "/front/thread.php?plugin_ocsinventoryng_ocsservers_id=" . $ocsservers_id;
 
-if (isset ($_POST["delete_processes"])) {
+if (isset($_POST["delete_processes"])) {
 
-   foreach ((array) ($_POST["item"] ?? []) as $key => $val) {
-      $thread->deleteThreadsByProcessId((int) $key);
-   }
-   Html::redirect($target);
+    foreach ((array) ($_POST["item"] ?? []) as $key => $val) {
+        $thread->deleteThreadsByProcessId((int) $key);
+    }
+    Html::redirect($target);
 
 }
 

@@ -35,76 +35,75 @@ namespace GlpiPlugin\Ocsinventoryng;
  */
 class MiniStat
 {
-
-   /**
-    * @var int
-    */
+    /**
+     * @var int
+     */
     public $Min = 0;
-   /**
-    * @var int
-    */
+    /**
+     * @var int
+     */
     public $Max = 0;
-   /**
-    * @var int
-    */
+    /**
+     * @var int
+     */
     public $Tot = 0;
-   /**
-    * @var int
-    */
+    /**
+     * @var int
+     */
     public $Nb = 0;
 
-   /**
-    *
-    */
-    function Reset()
+    /**
+     *
+     */
+    public function Reset()
     {
         $this->Min = $this->Max = $this->Tot = $this->Nb = 0;
     }
 
-   /**
-    * @return int
-    */
-    function GetMinimum()
+    /**
+     * @return int
+     */
+    public function GetMinimum()
     {
         return $this->Min;
     }
 
-   /**
-    * @return int
-    */
-    function GetMaximum()
+    /**
+     * @return int
+     */
+    public function GetMaximum()
     {
         return $this->Max;
     }
 
-   /**
-    * @return int
-    */
-    function GetTotal()
+    /**
+     * @return int
+     */
+    public function GetTotal()
     {
         return $this->Tot;
     }
 
-   /**
-    * @return int
-    */
-    function GetCount()
+    /**
+     * @return int
+     */
+    public function GetCount()
     {
         return $this->Nb;
     }
 
-   /**
-    * @return float|int
-    */
-    function GetAverage()
+    /**
+     * @return float|int
+     */
+    public function GetAverage()
     {
         return $this->Nb > 0 ? $this->Tot / $this->Nb : 0;
     }
 
-   /**
-    * @param $Value
-    */
-    function AddValue($Value)
+    /**
+     * @param $Value
+     */
+    public function AddValue($Value)
     {
 
         if ($this->Nb > 0) {

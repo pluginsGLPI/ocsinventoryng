@@ -46,7 +46,6 @@ if (!defined('GLPI_ROOT')) {
  */
 class Winuser extends \CommonDBTM
 {
-
     public static $rightname = "plugin_ocsinventoryng";
 
     /**
@@ -144,7 +143,7 @@ class Winuser extends \CommonDBTM
                     $dbu = new DbUtils();
                     $nb = $dbu->countElementsInTable(
                         'glpi_plugin_ocsinventoryng_winusers',
-                        ["computers_id" => $item->getID()]
+                        ["computers_id" => $item->getID()],
                     );
                 }
                 return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
@@ -154,7 +153,7 @@ class Winuser extends \CommonDBTM
         return '';
     }
 
-    static function getIcon()
+    public static function getIcon()
     {
         return "ti ti-users";
     }

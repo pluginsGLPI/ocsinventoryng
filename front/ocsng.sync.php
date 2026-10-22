@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -54,22 +55,23 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
             100,
             round(
                 100 * ($_SESSION["ocs_update_count"] - $count) / $_SESSION["ocs_update_count"],
-                0, PHP_ROUND_HALF_UP
-            )
+                0,
+                PHP_ROUND_HALF_UP,
+            ),
         );
 
         try {
             $key         = array_pop($_SESSION["ocs_update"]['computers']);
             $cfg_ocs     = OcsServer::getConfig($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
             $sync_params = ['ID'                                  => $key,
-                            'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                            'cfg_ocs'                             => $cfg_ocs,
-                            'force'                               => 1];
+                'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                'cfg_ocs'                             => $cfg_ocs,
+                'force'                               => 1];
             $action      = OcsProcess::synchronizeComputer($sync_params);
 
             OcsProcess::manageImportStatistics(
                 $_SESSION["ocs_update"]['statistics'],
-                $action['status']
+                $action['status'],
             );
             echo Html::getProgressBar($percent);
 

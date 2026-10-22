@@ -87,7 +87,7 @@ if ($servers_id == -1) {
             sprintf(
                 __('%1$s %2$s'),
                 (int) OcsServer::getDBocs($servers_id)->getTotalDeletedComputers(),
-                __('deleted computers into OCS Inventory NG', 'ocsinventoryng')
+                __('deleted computers into OCS Inventory NG', 'ocsinventoryng'),
             ),
             __('Update ID of deleted computers of OCSNG', 'ocsinventoryng'),
         ],

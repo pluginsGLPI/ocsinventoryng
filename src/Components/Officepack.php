@@ -178,7 +178,7 @@ class Officepack
             foreach ($result as $data) {
                 $nb_items = countElementsInTable(
                     'glpi_items_softwarelicenses',
-                    ['softwarelicenses_id' => (int) $data['softwarelicenses_id']]
+                    ['softwarelicenses_id' => (int) $data['softwarelicenses_id']],
                 );
 
                 if ($nb_items == 1) {
@@ -186,7 +186,7 @@ class Officepack
                     $license->getFromDB($data['softwarelicenses_id']);
                     $nb_licenses = countElementsInTable(
                         'glpi_softwarelicenses',
-                        ['softwares_id' => (int) $license->fields['softwares_id']]
+                        ['softwares_id' => (int) $license->fields['softwares_id']],
                     );
 
                     if ($nb_licenses == 1) {
@@ -202,7 +202,7 @@ class Officepack
                 ['items_id' => $glpi_computers_id,
                     'itemtype' => 'Computer'],
                 0,
-                $uninstall_plugins_history
+                $uninstall_plugins_history,
             );
         }
     }

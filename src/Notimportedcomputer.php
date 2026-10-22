@@ -32,12 +32,9 @@ namespace GlpiPlugin\Ocsinventoryng;
 
 use Alert;
 use CommonDBTM;
-use CommonDropdown;
-use DbUtils;
 use Dropdown;
 use Entity;
 use Html;
-use Log;
 use MassiveAction;
 use NotificationEvent;
 use Session;
@@ -67,73 +64,6 @@ class Notimportedcomputer extends CommonDBTM
 
 
     /**
-     * Display fields that are specific to this itemtype
-     *
-     * @param the   $ID
-     * @param array $field
-     *
-     * @return void
-     * @internal param the $ID item's ID
-     * @internal param array $field the item's fields
-     */
-    public function displaySpecificTypeField($ID, $field = [], array $options = [])
-    {
-        switch ($field['type']) {
-            case 'echo':
-                echo $this->fields[$field['name']];
-                break;
-
-            case 'reason':
-                echo self::getReason($this->fields[$field['name']]);
-                break;
-
-            case 'echo_datetime':
-                echo Html::convDateTime($this->fields[$field['name']]);
-                break;
-
-            case 'echo_dropdown':
-                $result = Dropdown::getDropdownName($field['table'], $this->fields[$field['name']]);
-                if ($result == '') {
-                    echo Dropdown::EMPTY_VALUE;
-                } else {
-                    echo $result;
-                }
-                break;
-
-            case 'echo_rule':
-                echo self::getRuleMatchedMessage($this->fields[$field['name']]);
-                break;
-        }
-    }
-
-
-    /**
-     * @param $rule_list
-     *
-     * @return string
-     * @return string
-     */
-    public static function getRuleMatchedMessage($rule_list)
-    {
-        $message = [];
-        if ($rule_list != '') {
-            foreach (json_decode($rule_list, true) as $key => $value) {
-                $dbu = new DbUtils();
-                if ($rule = $dbu->getItemForItemtype($key)) {
-                    $rule = new $key();
-                    if ($rule->can($value, READ)) {
-                        $url       = $rule->getLinkURL();
-                        $message[] = "<a href='" . htmlescape($url) . "'>" . htmlescape((string) $rule->getName()) . "</a>";
-                    }
-                }
-            }
-            return implode(' => ', $message);
-        }
-        return '';
-    }
-
-
-    /**
      * @return array
      */
     public function rawSearchOptions()
@@ -146,7 +76,7 @@ class Notimportedcomputer extends CommonDBTM
                 'Computer not imported',
                 'Computers not imported',
                 2,
-                'ocsinventoryng'
+                'ocsinventoryng',
             ),
         ];
 
@@ -155,7 +85,7 @@ class Notimportedcomputer extends CommonDBTM
             'table'    => $this->getTable(),
             'field'    => 'ocsid',
             'name'     => __('OCSNG ID', 'ocsinventoryng'),
-//            'datatype' => 'integer',
+            //            'datatype' => 'integer',
         ];
 
         $tab[] = [
@@ -345,7 +275,7 @@ class Notimportedcomputer extends CommonDBTM
             && OcsServer::isAllowedServer((int) $this->fields["plugin_ocsinventoryng_ocsservers_id"])) {
             self::deleteComputerInOCS(
                 $this->fields["ocsid"],
-                $this->fields["plugin_ocsinventoryng_ocsservers_id"]
+                $this->fields["plugin_ocsinventoryng_ocsservers_id"],
             );
             $fields["id"] = $not_imported_id;
             return $this->delete($fields);
@@ -448,7 +378,7 @@ class Notimportedcomputer extends CommonDBTM
                 Session::addMessageAfterRedirect(
                     __("Error to contact ocs server", 'ocsinventoryng'),
                     false,
-                    ERROR
+                    ERROR,
                 );
                 return false;
             }
@@ -471,7 +401,7 @@ class Notimportedcomputer extends CommonDBTM
                 $result['status'],
                 [OcsProcess::COMPUTER_IMPORTED,
                     OcsProcess::COMPUTER_LINKED,
-                    OcsProcess::COMPUTER_SYNCHRONIZED]
+                    OcsProcess::COMPUTER_SYNCHRONIZED],
             )) {
                 $notimported->delete(['id' => $params['id']]);
 
@@ -479,7 +409,7 @@ class Notimportedcomputer extends CommonDBTM
                 if (in_array('serial', $changes)) {
                     Ocslink::mergeOcsArray(
                         $result['computers_id'],
-                        ['serial']
+                        ['serial'],
                     );
                 }
 
@@ -488,7 +418,7 @@ class Notimportedcomputer extends CommonDBTM
                 Session::addMessageAfterRedirect(
                     self::getReason($result['status']),
                     false,
-                    ERROR
+                    ERROR,
                 );
                 return false;
             }
@@ -523,7 +453,7 @@ class Notimportedcomputer extends CommonDBTM
                 Session::addMessageAfterRedirect(
                     __("Error to contact ocs server", 'ocsinventoryng'),
                     false,
-                    ERROR
+                    ERROR,
                 );
                 return false;
             }
@@ -619,7 +549,7 @@ class Notimportedcomputer extends CommonDBTM
                 'not_imported',
                 new Notimportedcomputer(),
                 ['entities_id' => $entity,
-                    'notimported' => $items]
+                    'notimported' => $items],
             )
             ) {
                 $alert             = new Alert();
@@ -634,7 +564,7 @@ class Notimportedcomputer extends CommonDBTM
                 Toolbox::logDebug(
                     __('%1$s: %2$s') . "\n",
                     Dropdown::getDropdownName("glpi_entities", $entity),
-                    __('Send OCSNG not imported computers alert failed', 'ocsinventoryng')
+                    __('Send OCSNG not imported computers alert failed', 'ocsinventoryng'),
                 );
             }
         }
@@ -792,7 +722,7 @@ class Notimportedcomputer extends CommonDBTM
                     $ma->itemDone(
                         $item->getType(),
                         $id,
-                        $done ? MassiveAction::ACTION_OK : MassiveAction::ACTION_KO
+                        $done ? MassiveAction::ACTION_OK : MassiveAction::ACTION_KO,
                     );
                 }
                 return;

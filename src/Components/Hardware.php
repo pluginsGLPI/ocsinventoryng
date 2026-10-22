@@ -52,7 +52,6 @@ if (!defined('GLPI_ROOT')) {
  */
 class Hardware
 {
-
     public static $rightname = "plugin_ocsinventoryng";
 
 
@@ -79,8 +78,8 @@ class Hardware
                         $field,
                         Ocslink::getLockableFields(
                             $ocslink->fields["plugin_ocsinventoryng_ocsservers_id"],
-                            $ocslink->fields["ocsid"]
-                        )
+                            $ocslink->fields["ocsid"],
+                        ),
                     )) {
                         $updates[] = $field;
                     }
@@ -159,7 +158,7 @@ class Hardware
                     'groups_id' => $groups_id],
                 ['locations_id' => $locations_id,
                     'groups_id' => $groups_id],
-                ['ocsid' => $ocsid]
+                ['ocsid' => $ocsid],
             );
 
             if (intval($cfg_ocs["import_user_group"]) > 0 || intval($cfg_ocs["import_user_group_default"])) {
@@ -416,7 +415,7 @@ class Hardware
             'glpi_groups',
             '',
             $entity,
-            true
+            true,
         );
         $criteria['WHERE'] = $criteria['WHERE'] + ['glpi_groups.is_itemgroup' => 1];
 
@@ -570,7 +569,7 @@ class Hardware
                 'itemtype' => 'Computer',
             ],
             1,
-            $uninstall_history
+            $uninstall_history,
         );
     }
 }

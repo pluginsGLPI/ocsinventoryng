@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -33,80 +34,93 @@ use Dropdown;
 use NotificationTarget;
 
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
 /**
  * Class NotificationTargetNotimportedcomputer
  */
-class NotificationTargetNotimportedcomputer extends NotificationTarget {
+class NotificationTargetNotimportedcomputer extends NotificationTarget
+{
+    /**
+     * @return array
+     */
+    public function getEvents()
+    {
+        return ['not_imported' => __(
+            'Computers not imported by automatic actions',
+            'ocsinventoryng',
+        )];
+    }
 
-   /**
-    * @return array
-    */
-   function getEvents() {
-      return ['not_imported' => __('Computers not imported by automatic actions',
-                                   'ocsinventoryng')];
-   }
 
+    /**
+     * @param       $event
+     * @param array $options
+     */
+    public function addDataForTemplate($event, $options = [])
+    {
+        global $CFG_GLPI;
 
-   /**
-    * @param       $event
-    * @param array $options
-    */
-   function addDataForTemplate($event, $options = []) {
-      global $CFG_GLPI;
+        $this->data['##notimported.entity##'] = Dropdown::getDropdownName(
+            'glpi_entities',
+            $options['entities_id'],
+        );
 
-      $this->data['##notimported.entity##'] = Dropdown::getDropdownName('glpi_entities',
-                                                                         $options['entities_id']);
+        foreach ($options['notimported'] as $id => $item) {
+            $tmp = [];
 
-      foreach ($options['notimported'] as $id => $item) {
-         $tmp = [];
+            $tmp['##notimported.name##']      = $item['name'];
+            $tmp['##notimported.serial##']    = $item['serial'];
+            $tmp['##notimported.entity##']    = Dropdown::getDropdownName(
+                'glpi_entities',
+                $options['entities_id'],
+            );
+            $tmp['##notimported.ocsid##']     = $item['ocsid'];
+            $tmp['##notimported.deviceid##']  = $item['ocs_deviceid'];
+            $tmp['##notimported.tag##']       = $item['tag'];
+            $tmp['##notimported.ocsserver##'] = Dropdown::getDropdownName(
+                'glpi_plugin_ocsinventoryng_ocsservers',
+                $item['ocsid'],
+            );
+            $tmp['##notimported.reason##']    = Notimportedcomputer::getReason($item['reason']);
 
-         $tmp['##notimported.name##']      = $item['name'];
-         $tmp['##notimported.serial##']    = $item['serial'];
-         $tmp['##notimported.entity##']    = Dropdown::getDropdownName('glpi_entities',
-                                                                       $options['entities_id']);
-         $tmp['##notimported.ocsid##']     = $item['ocsid'];
-         $tmp['##notimported.deviceid##']  = $item['ocs_deviceid'];
-         $tmp['##notimported.tag##']       = $item['tag'];
-         $tmp['##notimported.ocsserver##'] = Dropdown::getDropdownName('glpi_plugin_ocsinventoryng_ocsservers',
-                                                                       $item['ocsid']);
-         $tmp['##notimported.reason##']    = Notimportedcomputer::getReason($item['reason']);
+            $url                        = $CFG_GLPI["url_base"] . "/index.php?redirect=plugin_ocsinventoryng_" . $item['id'];
+            $tmp['##notimported.url##'] = urldecode($url);
 
-         $url                        = $CFG_GLPI["url_base"] . "/index.php?redirect=plugin_ocsinventoryng_" . $item['id'];
-         $tmp['##notimported.url##'] = urldecode($url);
+            $this->data['notimported'][] = $tmp;
+        }
+        $this->getTags();
+        foreach ($this->tag_descriptions[NotificationTarget::TAG_LANGUAGE] as $tag => $values) {
+            if (!isset($this->data[$tag])) {
+                $this->data[$tag] = $values['label'];
+            }
+        }
+    }
 
-         $this->data['notimported'][] = $tmp;
-      }
-      $this->getTags();
-      foreach ($this->tag_descriptions[NotificationTarget::TAG_LANGUAGE] as $tag => $values) {
-         if (!isset($this->data[$tag])) {
-            $this->data[$tag] = $values['label'];
-         }
-      }
-   }
+    /**
+     *
+     */
+    public function getTags()
+    {
 
-   /**
-    *
-    */
-   function getTags() {
+        $tags = ['notimported.id'       => __('ID'),
+            'notimported.url'      => __('Web link'),
+            'notimported.tag'      => __('OCSNG TAG', 'ocsinventoryng'),
+            'notimported.name'     => __('Name'),
+            'notimported.action'   => __(
+                'Computers not imported by automatic actions',
+                'ocsinventoryng',
+            ),
+            'notimported.ocsid'    => __('OCSNG ID', 'ocsinventoryng'),
+            'notimported.deviceid' => __('Device ID', 'ocsinventoryng'),
+            'notimported.reason'   => __('Reason of rejection'),
+            'notimported.serial'   => __('Serial number')];
 
-      $tags = ['notimported.id'       => __('ID'),
-               'notimported.url'      => __('Web link'),
-               'notimported.tag'      => __('OCSNG TAG', 'ocsinventoryng'),
-               'notimported.name'     => __('Name'),
-               'notimported.action'   => __('Computers not imported by automatic actions',
-                                            'ocsinventoryng'),
-               'notimported.ocsid'    => __('OCSNG ID', 'ocsinventoryng'),
-               'notimported.deviceid' => __('Device ID', 'ocsinventoryng'),
-               'notimported.reason'   => __('Reason of rejection'),
-               'notimported.serial'   => __('Serial number')];
-
-      foreach ($tags as $tag => $label) {
-         $this->addTagToList(['tag'   => $tag, 'label' => $label,
-                              'value' => true]);
-      }
-      asort($this->tag_descriptions);
-   }
+        foreach ($tags as $tag => $label) {
+            $this->addTagToList(['tag'   => $tag, 'label' => $label,
+                'value' => true]);
+        }
+        asort($this->tag_descriptions);
+    }
 }

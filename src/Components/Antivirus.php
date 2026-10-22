@@ -83,8 +83,8 @@ class Antivirus
                     'Manufacturer',
                     OcsProcess::encodeOcsDataInUtf8(
                         $cfg_ocs['ocs_db_utf8'],
-                        $antivirus["COMPANY"]
-                    )
+                        $antivirus["COMPANY"],
+                    ),
                 );
                 $input["antivirus_version"] = $antivirus["VERSION"];
                 $input["is_active"]         = $antivirus["ENABLED"];

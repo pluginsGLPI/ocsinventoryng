@@ -33,7 +33,6 @@ namespace GlpiPlugin\Ocsinventoryng;
 use CommonGLPI;
 use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
-use Html;
 use ProfileRight;
 use Session;
 
@@ -74,7 +73,7 @@ class Profile extends \Profile
         return '';
     }
 
-    static function getIcon()
+    public static function getIcon()
     {
         return "ti ti-devices";
     }
@@ -104,7 +103,7 @@ class Profile extends \Profile
                     'plugin_ocsinventoryng_link'   => 0,
                     'plugin_ocsinventoryng_clean'  => 0,
                     'plugin_ocsinventoryng_rule'   => 0,
-                ]
+                ],
             );
             $prof->showForm($ID);
         }
@@ -127,7 +126,7 @@ class Profile extends \Profile
                 'plugin_ocsinventoryng_link'   => READ + UPDATE,
                 'plugin_ocsinventoryng_clean'  => READ + UPDATE,
                 'plugin_ocsinventoryng_rule'   => READ + UPDATE],
-            true
+            true,
         );
     }
 
@@ -149,7 +148,7 @@ class Profile extends \Profile
             }
             if (!$dbu->countElementsInTable(
                 'glpi_profilerights',
-                ["profiles_id" => $profiles_id, "name" => $right]
+                ["profiles_id" => $profiles_id, "name" => $right],
             )) {
                 $myright['profiles_id'] = $profiles_id;
                 $myright['name']        = $right;
@@ -219,23 +218,22 @@ class Profile extends \Profile
             'can_update_profile' => Session::haveRight("profile", UPDATE),
         ]);
 
-        // The rights of the plugin
+        // The rights of the plugin: the matrix of the core, which prints itself
         $canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]);
-        if ($canedit && $openform) {
-            echo "<form method='post' action='" . htmlescape($profile->getFormURL()) . "'>";
-        }
-
+        ob_start();
         $profile->displayRightsChoiceMatrix($this->getAllRights(), ['canedit'       => $canedit,
             'default_class' => 'tab_bg_2',
             'title'         => __('General')]);
+        $matrix = ob_get_clean();
 
-        if ($canedit && $closeform) {
-            echo "<div class='text-center my-2'>";
-            echo Html::hidden('id', ['value' => $profiles_id]);
-            echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
-            echo "</div>";
-            Html::closeForm();
-        }
+        TemplateRenderer::getInstance()->display('@ocsinventoryng/profile_rights.html.twig', [
+            'form_url'    => $profile->getFormURL(),
+            'profiles_id' => (int) $profiles_id,
+            'canedit'     => $canedit,
+            'openform'    => $openform,
+            'closeform'   => $closeform,
+            'matrix'      => $matrix,
+        ]);
     }
 
     /**
@@ -354,7 +352,7 @@ class Profile extends \Profile
         foreach ($profile->getAllRights() as $data) {
             if ($dbu->countElementsInTable(
                 "glpi_profilerights",
-                ["name" => $data['field']]
+                ["name" => $data['field']],
             ) == 0) {
                 ProfileRight::addProfileRights([$data['field']]);
             }
@@ -410,12 +408,12 @@ class Profile extends \Profile
                 'glpi_plugin_ocsinventoryng_ocsservers_profiles' => [
                     'ON' => [
                         'glpi_plugin_ocsinventoryng_ocsservers_profiles'   => 'plugin_ocsinventoryng_ocsservers_id',
-                       'glpi_plugin_ocsinventoryng_ocsservers'                  => 'id', [
+                        'glpi_plugin_ocsinventoryng_ocsservers'                  => 'id', [
                             'AND' => [
                                 'glpi_plugin_ocsinventoryng_ocsservers_profiles.profiles_id' => $profile,
                             ],
                         ],
-                    ]
+                    ],
                 ],
             ],
             'WHERE'     => [

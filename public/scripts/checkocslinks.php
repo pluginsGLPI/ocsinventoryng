@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -42,7 +43,7 @@ chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
 ini_set('display_errors', 1);
 restore_error_handler();
 
-$_GET = array();
+$_GET = [];
 if (isset($_SERVER['argv'])) {
     for ($i = 1; $i < $_SERVER['argc']; $i++) {
         $it = explode("=", $_SERVER['argv'][$i], 2);
@@ -117,7 +118,7 @@ foreach ($DB->request([
         $DBocs = OcsServer::getDBocs($ocsservers_id);
         $res[] = $DBocs->getOCSComputers();
 
-        $hardware = array();
+        $hardware = [];
         $nb = 0;
         $i = 0;
         if (count($res) > 0) {
@@ -170,7 +171,7 @@ if (isset($_GET['dup'])) {
     foreach ($DB->request([
         'SELECT'    => [
             'computers_id',
-            'COUNT' => '* AS cpt'
+            'COUNT' => '* AS cpt',
         ],
         'FROM' => 'glpi_plugin_ocsinventoryng_ocslinks',
         'GROUPBY'   => 'computers_id',
@@ -181,7 +182,7 @@ if (isset($_GET['dup'])) {
         foreach ($DB->request([
             'FROM' => 'glpi_plugin_ocsinventoryng_ocslinks',
             'WHERE'     => [
-                'computers_id'  => $data['computers_id']
+                'computers_id'  => $data['computers_id'],
             ],
             'ORDERBY'    => 'last_update']) as $data2) {
             $del = ($i < $data['cpt']); // Keep the more recent
@@ -192,7 +193,7 @@ if (isset($_GET['dup'])) {
                 $data2['plugin_ocsinventoryng_ocsservers_id'],
                 $data2['ocsid'],
                 $data2['last_update'],
-                ($del ? 'delete' : 'keep')
+                ($del ? 'delete' : 'keep'),
             );
             if ($del) {
                 if (isset($_GET['clean'])) {

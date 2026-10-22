@@ -854,7 +854,7 @@ class SnmpOcslink extends CommonDBTM
              || ($action == "update" && $cfg_ocs['linksnmp_manufacturer'] && $linked)) {
                 $man_id                    = Dropdown::importExternal(
                     'Manufacturer',
-                    OcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['SWITCH'][0]['MANUFACTURER'])
+                    OcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['SWITCH'][0]['MANUFACTURER']),
                 );
                 $input['manufacturers_id'] = $man_id;
             }
@@ -865,7 +865,7 @@ class SnmpOcslink extends CommonDBTM
              || ($action == "update" && $cfg_ocs['linksnmp_firmware'] && $linked)) {
                 $firm_id                               = Dropdown::importExternal(
                     'NetworkEquipmentFirmware',
-                    OcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['SWITCH'][0]['FIRMVERSION'])
+                    OcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['SWITCH'][0]['FIRMVERSION']),
                 );
                 $input['networkequipmentfirmwares_id'] = $firm_id;
             }
@@ -911,7 +911,7 @@ class SnmpOcslink extends CommonDBTM
              && count($ocsSnmp['POWERSUPPLIES']) > 0) {
                 $man_id = Dropdown::importExternal(
                     'Manufacturer',
-                    OcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['POWERSUPPLIES'][0]['MANUFACTURER'])
+                    OcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'], $ocsSnmp['POWERSUPPLIES'][0]['MANUFACTURER']),
                 );
 
                 $pow['manufacturers_id'] = $man_id;
@@ -1174,7 +1174,7 @@ class SnmpOcslink extends CommonDBTM
                 $input,
                 $cfg_ocs['history_hardware'],
                 ['unicity_error_message' => false,
-                    '_no_history'           => !$cfg_ocs['history_hardware']]
+                    '_no_history'           => !$cfg_ocs['history_hardware']],
             );
         }
 
@@ -1302,8 +1302,8 @@ class SnmpOcslink extends CommonDBTM
                     'Manufacturer',
                     OcsProcess::encodeOcsDataInUtf8(
                         $cfg_ocs['ocs_db_utf8'],
-                        $processor['MANUFACTURER']
-                    )
+                        $processor['MANUFACTURER'],
+                    ),
                 );
                 $speed                   = 0;
                 if (strstr($processor['SPEED'], "GHz")) {
@@ -1556,7 +1556,7 @@ class SnmpOcslink extends CommonDBTM
                     '_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                     '_no_history'    => !$cfg_ocs['history_drives']],
                 true,
-                $cfg_ocs['history_drives']
+                $cfg_ocs['history_drives'],
             );
         }
 
@@ -1723,8 +1723,8 @@ class SnmpOcslink extends CommonDBTM
                 'Location',
                 OcsProcess::encodeOcsDataInUtf8(
                     $cfg_ocs['ocs_db_utf8'],
-                    $ocsSnmp['META']['LOCATION']
-                )
+                    $ocsSnmp['META']['LOCATION'],
+                ),
             );
         }
 
@@ -1736,7 +1736,7 @@ class SnmpOcslink extends CommonDBTM
                 $loc_id,
                 "update",
                 $linked,
-                $cfg_ocs
+                $cfg_ocs,
             );
 
             $now = date("Y-m-d H:i:s");
@@ -1753,7 +1753,7 @@ class SnmpOcslink extends CommonDBTM
                 $loc_id,
                 "update",
                 $linked,
-                $cfg_ocs
+                $cfg_ocs,
             );
 
             $now = date("Y-m-d H:i:s");
@@ -1771,7 +1771,7 @@ class SnmpOcslink extends CommonDBTM
                 $loc_id,
                 "update",
                 $linked,
-                $cfg_ocs
+                $cfg_ocs,
             );
 
             $now = date("Y-m-d H:i:s");
@@ -1900,7 +1900,7 @@ class SnmpOcslink extends CommonDBTM
                 Dropdown::showItemTypes(
                     "toimport_itemtype[" . (int) $meta["ID"] . "]",
                     self::$snmptypes,
-                    ['value' => getItemForItemtype($type) ? $type : false]
+                    ['value' => getItemForItemtype($type) ? $type : false],
                 );
             } else {
                 self::showLinkDropdown((int) $meta["ID"], (string) $type, (string) $meta["NAME"]);
@@ -1995,7 +1995,7 @@ class SnmpOcslink extends CommonDBTM
             "dropdown_$mynamei$rand",
             "results_$mynamei$rand",
             PLUGIN_OCS_WEBDIR . "/ajax/dropdownitems.php",
-            ['itemtype' => '__VALUE__', 'id' => $ocs_id, 'rand' => $rand, 'myname' => "tolink_items[" . $ocs_id . "]"]
+            ['itemtype' => '__VALUE__', 'id' => $ocs_id, 'rand' => $rand, 'myname' => "tolink_items[" . $ocs_id . "]"],
         );
         echo "<span id='results_$mynamei$rand'></span>";
     }
@@ -2215,7 +2215,7 @@ class SnmpOcslink extends CommonDBTM
                 $ocsid,
                 $plugin_ocsinventoryng_ocsservers_id,
                 $p['items_id'],
-                $p['itemtype']
+                $p['itemtype'],
             ))) {
             /*
              // automatic transfer computer

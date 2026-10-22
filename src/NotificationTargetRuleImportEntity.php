@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -34,119 +35,133 @@ use Html;
 use NotificationTarget;
 
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
 /**
  * Class NotificationTargetRuleImportEntity
  */
-class NotificationTargetRuleImportEntity extends NotificationTarget {
+class NotificationTargetRuleImportEntity extends NotificationTarget
+{
+    /**
+     * @param int $nb
+     * @return string
+     */
+    public static function getTypeName($nb = 0)
+    {
+        return __('Elements not match with the rule', 'ocsinventoryng');
+    }
 
-   /**
-    * @param int $nb
-    * @return string
-    */
-   static function getTypeName($nb = 0) {
-      return __('Elements not match with the rule', 'ocsinventoryng');
-   }
-
-   /**
-    * @see NotificationTarget::getEvents()
-    */
-   function getEvents() {
-      return ['checkruleimportentity' => __('Elements not match with the rule by automatic actions', 'ocsinventoryng')];
-   }
+    /**
+     * @see NotificationTarget::getEvents()
+     */
+    public function getEvents()
+    {
+        return ['checkruleimportentity' => __('Elements not match with the rule by automatic actions', 'ocsinventoryng')];
+    }
 
 
-   /**
-    * @see NotificationTarget::addDataForTemplate()
-    *
-    * @param       $event
-    * @param array $options
-    */
-   function addDataForTemplate($event, $options = []) {
-      global $CFG_GLPI;
+    /**
+     * @see NotificationTarget::addDataForTemplate()
+     *
+     * @param       $event
+     * @param array $options
+     */
+    public function addDataForTemplate($event, $options = [])
+    {
+        global $CFG_GLPI;
 
-      $this->data['##checkruleimportentity.date##']   = Html::convDateTime(date('Y-m-d H:i:s'));
-      $this->data['##checkruleimportentity.title##']  = __('Verification of assignment rules for entities and locations', 'ocsinventoryng');
-      $this->data['##checkruleimportentity.entity##'] = Dropdown::getDropdownName('glpi_entities',
-                                                                                  $options['entities_id']);
+        $this->data['##checkruleimportentity.date##']   = Html::convDateTime(date('Y-m-d H:i:s'));
+        $this->data['##checkruleimportentity.title##']  = __('Verification of assignment rules for entities and locations', 'ocsinventoryng');
+        $this->data['##checkruleimportentity.entity##'] = Dropdown::getDropdownName(
+            'glpi_entities',
+            $options['entities_id'],
+        );
 
-      foreach ($options['items'] as $id => $item) {
-         if (!empty($item)) {
-            $tmp = [];
-            $tmp['##checkruleimportentity.entity##']   = Dropdown::getDropdownName('glpi_entities',
-                                                                                   $item['entities_id']);
-            $tmp['##checkruleimportentity.computer##'] = $item['name'];
-            $url                                       = $CFG_GLPI["url_base"] . "/index.php?redirect=Computer_" . $item['id'];
-            $tmp['##checkruleimportentity.url##']      = urldecode($url);
-            $tmp['##checkruleimportentity.location##'] = Dropdown::getDropdownName('glpi_locations',
-                                                                                   $item['locations_id']);
+        foreach ($options['items'] as $id => $item) {
+            if (!empty($item)) {
+                $tmp = [];
+                $tmp['##checkruleimportentity.entity##']   = Dropdown::getDropdownName(
+                    'glpi_entities',
+                    $item['entities_id'],
+                );
+                $tmp['##checkruleimportentity.computer##'] = $item['name'];
+                $url                                       = $CFG_GLPI["url_base"] . "/index.php?redirect=Computer_" . $item['id'];
+                $tmp['##checkruleimportentity.url##']      = urldecode($url);
+                $tmp['##checkruleimportentity.location##'] = Dropdown::getDropdownName(
+                    'glpi_locations',
+                    $item['locations_id'],
+                );
 
-            $tmp['##checkruleimportentity.error##']     = "";
-            $tmp['##checkruleimportentity.dataerror##'] = "";
-            $tmp['##checkruleimportentity.url_rule##']  = "";
-            $tmp['##checkruleimportentity.name_rule##'] = "";
+                $tmp['##checkruleimportentity.error##']     = "";
+                $tmp['##checkruleimportentity.dataerror##'] = "";
+                $tmp['##checkruleimportentity.url_rule##']  = "";
+                $tmp['##checkruleimportentity.name_rule##'] = "";
 
-            foreach ($item['error'] as $key => $data) {
+                foreach ($item['error'] as $key => $data) {
 
-               if ($data === RuleImportEntity::NO_RULE) {
-                  $tmp['##checkruleimportentity.error##'] .= __('No rules match', 'ocsinventoryng');
-               } else {
-                  $tmp['##checkruleimportentity.error##'] .= __($data) . "\n";
-                  if ('Entity' == $data) {
-                     $tmp['##checkruleimportentity.dataerror##'] .= Dropdown::getDropdownName('glpi_entities',
-                                                                                              $item['dataerror'][$key]) . "\n";
-                  } else {
-                     $tmp['##checkruleimportentity.dataerror##'] .= Dropdown::getDropdownName('glpi_locations',
-                                                                                              $item['dataerror'][$key]) . "\n";
-                  }
+                    if ($data === RuleImportEntity::NO_RULE) {
+                        $tmp['##checkruleimportentity.error##'] .= __('No rules match', 'ocsinventoryng');
+                    } else {
+                        $tmp['##checkruleimportentity.error##'] .= __($data) . "\n";
+                        if ('Entity' == $data) {
+                            $tmp['##checkruleimportentity.dataerror##'] .= Dropdown::getDropdownName(
+                                'glpi_entities',
+                                $item['dataerror'][$key],
+                            ) . "\n";
+                        } else {
+                            $tmp['##checkruleimportentity.dataerror##'] .= Dropdown::getDropdownName(
+                                'glpi_locations',
+                                $item['dataerror'][$key],
+                            ) . "\n";
+                        }
 
-                  if (isset($item['ruleid'])) {
-                     $url_rule                                   = $CFG_GLPI["url_base"] . "/index.php?redirect=RuleImportEntity_" . $item['ruleid'];
-                     $tmp['##checkruleimportentity.url_rule##']  = $url_rule;
-                     $tmp['##checkruleimportentity.name_rule##'] = $item['rule_name'];
-                  }
-               }
+                        if (isset($item['ruleid'])) {
+                            $url_rule                                   = $CFG_GLPI["url_base"] . "/index.php?redirect=RuleImportEntity_" . $item['ruleid'];
+                            $tmp['##checkruleimportentity.url_rule##']  = $url_rule;
+                            $tmp['##checkruleimportentity.name_rule##'] = $item['rule_name'];
+                        }
+                    }
+                }
+
+                $this->data['checkruleimportentityitems'][] = $tmp;
             }
+        }
 
-            $this->data['checkruleimportentityitems'][] = $tmp;
-         }
-      }
+        $this->getTags();
+        foreach ($this->tag_descriptions[NotificationTarget::TAG_LANGUAGE] as $tag => $values) {
+            if (!isset($this->data[$tag])) {
+                $this->data[$tag] = $values['label'];
+            }
+        }
+    }
 
-      $this->getTags();
-      foreach ($this->tag_descriptions[NotificationTarget::TAG_LANGUAGE] as $tag => $values) {
-         if (!isset($this->data[$tag])) {
-            $this->data[$tag] = $values['label'];
-         }
-      }
-   }
+    /**
+     * @see NotificationTarget::getTags()
+     */
+    public function getTags()
+    {
 
-   /**
-    * @see NotificationTarget::getTags()
-    */
-   function getTags() {
+        $tags = ['checkruleimportentity.date'           => __('Date'),
+            'checkruleimportentity.url'            => __('Link', 'ocsinventoryng'),
+            'checkruleimportentity.entity'         => __('Entity'),
+            'checkruleimportentity.computer'       => __('Computer'),
+            'checkruleimportentity.location'       => __('Location'),
+            'checkruleimportentity.error'          => __('Error'),
+            'checkruleimportentity.name_rule'      => __('Rule'),
+            'checkruleimportentity.dataerror'      => __('Data error', 'ocsinventoryng')];
 
-      $tags = ['checkruleimportentity.date'           => __('Date'),
-               'checkruleimportentity.url'            => __('Link', 'ocsinventoryng'),
-               'checkruleimportentity.entity'         => __('Entity'),
-               'checkruleimportentity.computer'       => __('Computer'),
-               'checkruleimportentity.location'       => __('Location'),
-               'checkruleimportentity.error'          => __('Error'),
-               'checkruleimportentity.name_rule'      => __('Rule'),
-               'checkruleimportentity.dataerror'      => __('Data error', 'ocsinventoryng')];
+        foreach ($tags as $tag => $label) {
+            $this->addTagToList(['tag'   => $tag,
+                'label' => $label,
+                'value' => true]);
+        }
 
-      foreach ($tags as $tag => $label) {
-         $this->addTagToList(['tag'   => $tag,
-                                   'label' => $label,
-                                   'value' => true]);
-      }
-
-      $this->addTagToList(['tag'     => 'checkruleimportentityitems',
-                                'label'   => _n('Item', 'Items', 2),
-                                'value'   => false,
-                                'foreach' => true,
-                                'events'  => ['checkruleimportentity']]);
-      asort($this->tag_descriptions);
-   }
+        $this->addTagToList(['tag'     => 'checkruleimportentityitems',
+            'label'   => _n('Item', 'Items', 2),
+            'value'   => false,
+            'foreach' => true,
+            'events'  => ['checkruleimportentity']]);
+        asort($this->tag_descriptions);
+    }
 }

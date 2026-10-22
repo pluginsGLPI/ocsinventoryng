@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -135,23 +136,26 @@ if (isset($_SESSION["ocs_link"])) {
         }
         $percent = min(
             100,
-            round(100 * ($_SESSION["ocs_link_count"] - $count) / $_SESSION["ocs_link_count"], 0, PHP_ROUND_HALF_UP)
+            round(100 * ($_SESSION["ocs_link_count"] - $count) / $_SESSION["ocs_link_count"], 0, PHP_ROUND_HALF_UP),
         );
 
         echo Html::getProgressBar($percent);
 
         $key         = array_pop($_SESSION["ocs_link"]);
         $link_params = ['ocsid'                               => $key["ocsid"],
-                        'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                        'computers_id'                        => $key["computers_id"]];
+            'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+            'computers_id'                        => $key["computers_id"]];
         OcsProcess::linkComputer($link_params);
         Html::redirect($self_url);
     } else {
-        echo Html::getProgressBar(100);
-
         unset($_SESSION["ocs_link"]);
-        echo "<div class='center b'>" . __('Successful link', 'ocsinventoryng') . "<br>";
-        echo "<a href='" . $self_url . "'>" . __('Back') . "</a></div>";
+        OcsServer::showMessage([
+            'title'    => __('Successful link', 'ocsinventoryng'),
+            'icon'     => 'ti-circle-check',
+            'color'    => 'bg-green-lt',
+            'progress' => 100,
+            'links'    => [['title' => __('Back'), 'url' => $self_url, 'icon' => 'ti-arrow-left']],
+        ]);
     }
 }
 
@@ -173,16 +177,16 @@ if (!isset($_POST["import_ok"])) {
             echo "<div class='center'>";
             echo "<span style='color:firebrick'>";
             echo "<i class='ti ti-alert-triangle fa-5x'></i><br><br>";
-            echo __('You have', 'ocsinventoryng')." ". $deleted_pcs . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng');
+            echo __('You have', 'ocsinventoryng') . " " . $deleted_pcs . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng');
             echo "<br>";
             echo __('Please clean them before import or synchronize computers', 'ocsinventoryng');
             echo "</span></div><br>";
         }
 
         $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                        'import_mode'                         => $_SESSION["change_import_mode"],
-                        'link_mode'                         => $_SESSION["change_link_mode"],
-                        'entities_id'                         => $_SESSION['glpiactiveentities']];
+            'import_mode'                         => $_SESSION["change_import_mode"],
+            'link_mode'                         => $_SESSION["change_link_mode"],
+            'entities_id'                         => $_SESSION['glpiactiveentities']];
         OcsServer::showComputersToAdd($show_params);
     }
 } else {
@@ -195,7 +199,7 @@ if (!isset($_POST["import_ok"])) {
                     foreach ($_POST['tolink'] as $ocsid => $computers_id) {
                         if ($computers_id > 0 && $key == $ocsid) {
                             $_SESSION["ocs_link"][] = ['ocsid'        => $ocsid,
-                                                       'computers_id' => $computers_id];
+                                'computers_id' => $computers_id];
                         }
                     }
                 }

@@ -27,6 +27,7 @@
   along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
   --------------------------------------------------------------------------
  */
+
 namespace GlpiPlugin\Ocsinventoryng;
 
 use Ajax;
@@ -149,7 +150,7 @@ class IpdiscoverOcslink extends CommonDBTM
 
         return implode(',', array_map(
             static fn($value) => \DBmysql::quoteValue((string) $value),
-            array_values($array)
+            array_values($array),
         ));
     }
 
@@ -435,7 +436,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
     {
         TemplateRenderer::getInstance()->display(
             '@ocsinventoryng/ipdiscover_subnet_choice.html.twig',
-            self::getSubnetChoice($action)
+            self::getSubnetChoice($action),
         );
     }
 
@@ -730,7 +731,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             $rows[]  = [
                 'name'           => $cell(
                     PLUGIN_OCS_WEBDIR . "/front/ipdiscover.modifynetwork.php?" . http_build_query(['ip' => $ip]),
-                    $subnet["NAME"] != "" ? $subnet["NAME"] : __('Unknown')
+                    $subnet["NAME"] != "" ? $subnet["NAME"] : __('Unknown'),
                 ),
                 'ip'             => htmlescape($ip),
                 'noninventoried' => $cell($status('noninventoried'), $subnet["NON_INVENTORIED"]),
@@ -986,7 +987,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                 $plugin_ocsinventoryng_ocsservers_id,
                 $ipDiscoveryObject["itemDescription"],
                 $ipDiscoveryObject["ocsItemType"],
-                $mac
+                $mac,
             );
         }
 
@@ -1060,7 +1061,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                     $plugin_ocsinventoryng_ocsservers_id,
                     $tab["description"],
                     $tab["ocsType"],
-                    $tab["mac"]
+                    $tab["mac"],
                 );
             }
         }
@@ -1115,7 +1116,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             $DB->update(
                 self::getTable(),
                 ['last_update' => date("Y-m-d H:i:s")],
-                ['id' => (int) $datas["id"]]
+                ['id' => (int) $datas["id"]],
             );
         } //not same type
         //delete old object and create a new one
@@ -1240,7 +1241,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
             __('Subnet'),
             (string) self::getSubnetNamebyIP($ipAdress),
             $ipAdress,
-            $status_names[$status] ?? __('Identified', 'ocsinventoryng')
+            $status_names[$status] ?? __('Identified', 'ocsinventoryng'),
         );
 
         // The checkbox of a line: mactoimport[<line>][<MAC address or id>], read by front/ipdiscover.import.php

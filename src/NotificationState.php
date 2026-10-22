@@ -1,4 +1,5 @@
 <?php
+
 /*
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
@@ -35,129 +36,136 @@ use Html;
 use MassiveAction;
 
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
 /**
  * Class NotificationState
  */
-class NotificationState extends CommonDBTM {
+class NotificationState extends CommonDBTM
+{
+    public static $rightname = "plugin_ocsinventoryng";
 
-   static $rightname = "plugin_ocsinventoryng";
+    /**
+     *
+     */
+    public function configState()
+    {
+        global $DB;
 
-   /**
-    *
-    */
-   function configState() {
-      global $DB;
+        $entries = [];
+        foreach ($DB->request([
+            'FROM'  => $this->getTable(),
+            'ORDER' => 'states_id ASC',
+        ]) as $ligne) {
+            $entries[] = [
+                'itemtype' => self::class,
+                'id'       => $ligne['id'],
+                // The name of a status, created by any user with the right on the statuses: escaped by the template
+                'state'    => (string) Dropdown::getDropdownName("glpi_states", $ligne["states_id"]),
+            ];
+        }
+        if (count($entries) == 0) {
+            return;
+        }
 
-      $entries = [];
-      foreach ($DB->request([
-         'FROM'  => $this->getTable(),
-         'ORDER' => 'states_id ASC',
-      ]) as $ligne) {
-         $entries[] = [
-            'itemtype' => self::class,
-            'id'       => $ligne['id'],
-            // The name of a status, created by any user with the right on the statuses: escaped by the template
-            'state'    => (string) Dropdown::getDropdownName("glpi_states", $ligne["states_id"]),
-         ];
-      }
-      if (count($entries) == 0) {
-         return;
-      }
+        TemplateRenderer::getInstance()->display('components/datatable.html.twig', [
+            'nofilter'            => true,
+            'nosort'              => true,
+            'super_header'        => __('Statuses used for alert', 'ocsinventoryng'),
+            'columns'             => ['state' => _n('Status', 'Statuses', 1)],
+            'entries'             => $entries,
+            'total_number'        => count($entries),
+            'filtered_number'     => count($entries),
+            'showmassiveactions'  => true,
+            'massiveactionparams' => [
+                'num_displayed' => count($entries),
+                'container'     => 'mass' . str_replace('\\', '', self::class) . mt_rand(),
+            ],
+        ]);
+    }
 
-      TemplateRenderer::getInstance()->display('components/datatable.html.twig', [
-         'nofilter'            => true,
-         'nosort'              => true,
-         'super_header'        => __('Statuses used for alert', 'ocsinventoryng'),
-         'columns'             => ['state' => _n('Status', 'Statuses', 1)],
-         'entries'             => $entries,
-         'total_number'        => count($entries),
-         'filtered_number'     => count($entries),
-         'showmassiveactions'  => true,
-         'massiveactionparams' => [
-            'num_displayed' => count($entries),
-            'container'     => 'mass' . str_replace('\\', '', self::class) . mt_rand(),
-         ],
-      ]);
-   }
+    /**
+     * Get the standard massive actions which are forbidden
+     *
+     * @since version 0.84
+     *
+     * @return array of massive actions
+     **/
+    public function getForbiddenStandardMassiveAction()
+    {
 
-   /**
-    * Get the standard massive actions which are forbidden
-    *
-    * @since version 0.84
-    *
-    * @return array of massive actions
-    **/
-   public function getForbiddenStandardMassiveAction() {
+        $forbidden = parent::getForbiddenStandardMassiveAction();
+        $forbidden[] = 'update';
+        return $forbidden;
+    }
 
-      $forbidden = parent::getForbiddenStandardMassiveAction();
-      $forbidden[] = 'update';
-      return $forbidden;
-   }
-
-   /**
-    * Get the specific massive actions
-    *
-    * @since version 0.84
-    *
-    * @param $checkitem link item to check right   (default NULL)
-    *
-    * @return an $array of massive actions
-    */
-   public function getSpecificMassiveActions($checkitem = null) {
+    /**
+     * Get the specific massive actions
+     *
+     * @since version 0.84
+     *
+     * @param $checkitem link item to check right   (default NULL)
+     *
+     * @return an $array of massive actions
+     */
+    public function getSpecificMassiveActions($checkitem = null)
+    {
 
 
-      $actions['GlpiPlugin\Ocsinventoryng\NotificationState' . MassiveAction::CLASS_ACTION_SEPARATOR . 'purge'] = __('Delete');
+        $actions['GlpiPlugin\Ocsinventoryng\NotificationState' . MassiveAction::CLASS_ACTION_SEPARATOR . 'purge'] = __('Delete');
 
-      return $actions;
-   }
+        return $actions;
+    }
 
-   /**
-    * @param MassiveAction $ma
-    *
-    * @return bool|false
-    */
-   static function showMassiveActionsSubForm(MassiveAction $ma) {
+    /**
+     * @param MassiveAction $ma
+     *
+     * @return bool|false
+     */
+    public static function showMassiveActionsSubForm(MassiveAction $ma)
+    {
 
-      switch ($ma->getAction()) {
-         case 'purge':
-            echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction', 'class' => 'btn btn-primary']);
-            return true;
-      }
-      return parent::showMassiveActionsSubForm($ma);
-   }
+        switch ($ma->getAction()) {
+            case 'purge':
+                echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction', 'class' => 'btn btn-primary']);
+                return true;
+        }
+        return parent::showMassiveActionsSubForm($ma);
+    }
 
-   /**
-    * @since version 0.85
-    *
-    * @see CommonDBTM::processMassiveActionsForOneItemtype()
-    *
-    * @param MassiveAction $ma
-    * @param CommonDBTM    $item
-    * @param array         $ids
-    *
-    * @return nothing|void
-    */
-   static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
-                                                       array $ids) {
+    /**
+     * @since version 0.85
+     *
+     * @see CommonDBTM::processMassiveActionsForOneItemtype()
+     *
+     * @param MassiveAction $ma
+     * @param CommonDBTM    $item
+     * @param array         $ids
+     *
+     * @return nothing|void
+     */
+    public static function processMassiveActionsForOneItemtype(
+        MassiveAction $ma,
+        CommonDBTM $item,
+        array $ids
+    ) {
 
-      switch ($ma->getAction()) {
-         case "purge":
-            foreach ($ids as $key) {
-               if ($item->can($key, UPDATE)) {
-                  if ($item->delete(['id' => $key])) {
-                     $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
-                  } else {
-                     $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
-                  }
-               } else {
-                  $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_NORIGHT);
-                  $ma->addMessage($item->getErrorMessage(ERROR_RIGHT));
-               }
-            }
-            break;
-      }
-   }
+        switch ($ma->getAction()) {
+            case "purge":
+                foreach ($ids as $key) {
+                    if ($item->can($key, UPDATE)) {
+                        if ($item->delete(['id' => $key])) {
+                            $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
+                        } else {
+                            $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
+                        }
+                    } else {
+                        $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_NORIGHT);
+                        $ma->addMessage($item->getErrorMessage(ERROR_RIGHT));
+                    }
+                }
+                break;
+        }
+    }
 }

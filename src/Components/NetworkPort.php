@@ -199,9 +199,9 @@ class NetworkPort extends NetworkPortInstantiation
                             $inst_input['speed'] = NetworkPortEthernet::transformPortSpeed($speed, false);
                             $inst_input['networkports_id'] = $network_port->getID();
                             if ($instantiation->getID() > 0) {
-//                                if ($inst_input["items_devicenetworkcards_id"] > 0) {
-                                    $instantiation->update($inst_input, $install_network_history);
-//                                }
+                                //                                if ($inst_input["items_devicenetworkcards_id"] > 0) {
+                                $instantiation->update($inst_input, $install_network_history);
+                                //                                }
                             } else {
                                 $instantiation->add($inst_input, [], $install_network_history);
                             }
@@ -310,14 +310,14 @@ class NetworkPort extends NetworkPortInstantiation
                     //               'gateway'     => $gateway,
                     'addressable' => 1,
                     'entities_id' => $entities_id,
-                    '_no_message' => 1
+                    '_no_message' => 1,
                 ];
 
                 if ($gateway != '0.0.0.0') {
                     $input['gateway'] = $gateway;
                 }
 
-//                $IPNetwork->networkUpdate = true;
+                //                $IPNetwork->networkUpdate = true;
                 $IPNetwork->add($input, [], $install_network_history);
             }
         }
@@ -392,7 +392,7 @@ class NetworkPort extends NetworkPortInstantiation
 
             $name = OcsProcess::encodeOcsDataInUtf8(
                 $cfg_ocs["ocs_db_utf8"],
-                $line['DESCRIPTION']
+                $line['DESCRIPTION'],
             );
 
             if (!empty($line['IPADDRESS'])) {
@@ -533,7 +533,7 @@ class NetworkPort extends NetworkPortInstantiation
                         $gateway,
                         $subnet,
                         $entities_id,
-                        $speed
+                        $speed,
                     );
                     //               }
                 }
@@ -570,7 +570,7 @@ class NetworkPort extends NetworkPortInstantiation
                             $gateway,
                             $subnet,
                             $entities_id,
-                            $speed
+                            $speed,
                         );
                         //                  }
                         if ($id > 0) {
@@ -606,7 +606,7 @@ class NetworkPort extends NetworkPortInstantiation
             $group,
             $super,
             null,
-            $options
+            $options,
         );
 
         $group->addHeader('TYPE', __('OCS TYPE', 'ocsinventoryng'), $super);

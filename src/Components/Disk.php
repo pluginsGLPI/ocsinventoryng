@@ -42,7 +42,6 @@ if (!defined('GLPI_ROOT')) {
  */
 class Disk
 {
-
     public static $rightname = "plugin_ocsinventoryng";
 
 
@@ -183,7 +182,7 @@ class Disk
                                 $ocsBitlockerStatus,
                                 $disk,
                                 $cfg_ocs,
-                                $force
+                                $force,
                             );
                         }
                     }
@@ -212,7 +211,7 @@ class Disk
                     '_ocsservers_id' => $ocsservers_id,
                     '_no_history'    => !$uninstall_history],
                 true,
-                $uninstall_history
+                $uninstall_history,
             );
         }
     }

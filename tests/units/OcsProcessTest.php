@@ -31,7 +31,7 @@ class OcsProcessTest extends TestCase
             // All tests in this class will be skipped.
             self::markTestSkipped(
                 'OcsProcess class is not available. '
-                . 'Set GLPI_ROOT to a valid GLPI installation and re-run.'
+                . 'Set GLPI_ROOT to a valid GLPI installation and re-run.',
             );
         }
     }

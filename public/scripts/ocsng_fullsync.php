@@ -123,7 +123,7 @@ if (isset($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
             'WHERE' => [
                 'is_active' => 1,
                 'use_massimport' => 1,
-            ]
+            ],
         ];
 
         $iterator = $DB->request($criteria);
@@ -196,7 +196,7 @@ if (isset($_GET["managedeleted"]) && ($_GET["managedeleted"] == 1)) {
             'WHERE' => [
                 'is_active' => 1,
                 'use_massimport' => 1,
-            ]
+            ],
         ];
 
         $iterator = $DB->request($criteria);
@@ -244,51 +244,51 @@ function FirstPass($ocsservers_id)
                 'ORDER'       => 'ID DESC',
             ]);
 
-        if (count($ocsResult['COMPUTERS'])) {
-            $max_id = key($ocsResult['COMPUTERS']);
-            foreach ($ocsResult['COMPUTERS'] as $id => $meta) {
-                if (isset($meta['META']["LASTDATE"])) {
-                    $max_date = $meta['META']["LASTDATE"];
+            if (count($ocsResult['COMPUTERS'])) {
+                $max_id = key($ocsResult['COMPUTERS']);
+                foreach ($ocsResult['COMPUTERS'] as $id => $meta) {
+                    if (isset($meta['META']["LASTDATE"])) {
+                        $max_date = $meta['META']["LASTDATE"];
+                    }
+                }
+            } else {
+                $max_id = 0;
+                // Compute lastest synchronization date
+                $iterator = $DB->request([
+                    'SELECT'    => [
+                        'MAX' => 'last_ocs_update AS max_last_ocs_update',
+                    ],
+                    'FROM'      => 'glpi_plugin_ocsinventoryng_ocslinks',
+                    'WHERE'     => [
+                        'plugin_ocsinventoryng_ocsservers_id'  => $ocsservers_id,
+                    ],
+                ]);
+
+                $max_date = "0000-00-00 00:00:00";
+                if (count($iterator) > 0) {
+                    foreach ($iterator as $data) {
+                        $max_date = $data['max_last_ocs_update'];
+                    }
                 }
             }
-        } else {
-            $max_id = 0;
-            // Compute lastest synchronization date
-            $iterator = $DB->request([
-                'SELECT'    => [
-                    'MAX' => 'last_ocs_update AS max_last_ocs_update'
-                ],
-                'FROM'      => 'glpi_plugin_ocsinventoryng_ocslinks',
-                'WHERE'     => [
-                    'plugin_ocsinventoryng_ocsservers_id'  => $ocsservers_id
-                ]
-            ]);
 
-            $max_date = "0000-00-00 00:00:00";
-            if (count($iterator) > 0) {
-                foreach ($iterator as $data) {
-                    $max_date = $data['max_last_ocs_update'];
-                }
+            // Store result for second pass (multi-thread)
+            $server                                        = new Server();
+            $fields["max_ocsid"]                           = $max_id;
+            $fields["max_glpidate"]                        = $max_date;
+            $fields["plugin_ocsinventoryng_ocsservers_id"] = $ocsservers_id;
+
+            if ($server->getFromDBbyOcsServer($ocsservers_id)) {
+                $fields["id"] = $server->fields["id"];
+                $server->update($fields);
+            } else {
+                $fields["id"] = $server->add($fields);
             }
-        }
 
-        // Store result for second pass (multi-thread)
-        $server                                        = new Server();
-        $fields["max_ocsid"]                           = $max_id;
-        $fields["max_glpidate"]                        = $max_date;
-        $fields["plugin_ocsinventoryng_ocsservers_id"] = $ocsservers_id;
-
-        if ($server->getFromDBbyOcsServer($ocsservers_id)) {
-            $fields["id"] = $server->fields["id"];
-            $server->update($fields);
-        } else {
-            $fields["id"] = $server->add($fields);
-        }
-
-        // Handle ID changed or PC deleted in OCS.
-        $cfg_ocs = OcsServer::getConfig($ocsservers_id);
-        echo "\tManage delete items in OCS server #$ocsservers_id: \"" . $cfg_ocs["name"] . "\"\n";
-        OcsProcess::manageDeleted($ocsservers_id, false);
+            // Handle ID changed or PC deleted in OCS.
+            $cfg_ocs = OcsServer::getConfig($ocsservers_id);
+            echo "\tManage delete items in OCS server #$ocsservers_id: \"" . $cfg_ocs["name"] . "\"\n";
+            OcsProcess::manageDeleted($ocsservers_id, false);
         } catch (\RuntimeException $e) {
             echo "*** Error connecting to OCS server #$ocsservers_id: " . htmlspecialchars($e->getMessage()) . " ***\n";
         }
@@ -337,7 +337,7 @@ function SecondPass($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields
         $thread_nbr,
         $threadid,
         $fields,
-        $config
+        $config,
     );
 }
 
@@ -451,28 +451,28 @@ function plugin_ocsinventoryng_importFromOcsServer(
 
             $query_glpi = [
                 'SELECT' => ['glpi_plugin_ocsinventoryng_ocslinks.last_update AS last_update',
-                            'glpi_plugin_ocsinventoryng_ocslinks.last_ocs_update AS last_ocs_update',
+                    'glpi_plugin_ocsinventoryng_ocslinks.last_ocs_update AS last_ocs_update',
                     'glpi_plugin_ocsinventoryng_ocslinks.computers_id AS computers_id',
                     'glpi_computers.serial AS serial',
                     'glpi_plugin_ocsinventoryng_ocslinks.ocsid AS ocsid',
                     'glpi_computers.name AS name',
                     'glpi_plugin_ocsinventoryng_ocslinks.use_auto_update',
-                    'glpi_plugin_ocsinventoryng_ocslinks.id'
+                    'glpi_plugin_ocsinventoryng_ocslinks.id',
                 ],
                 'FROM' => 'glpi_plugin_ocsinventoryng_ocslinks',
                 'LEFT JOIN'       => [
                     'glpi_computers' => [
                         'ON' => [
                             'glpi_computers' => 'id',
-                            'glpi_plugin_ocsinventoryng_ocslinks'          => 'computers_id'
-                        ]
-                    ]
+                            'glpi_plugin_ocsinventoryng_ocslinks'          => 'computers_id',
+                        ],
+                    ],
                 ],
                 'WHERE' => [
                     'glpi_plugin_ocsinventoryng_ocslinks.plugin_ocsinventoryng_ocsservers_id' => $ocsServerId,
                     'glpi_plugin_ocsinventoryng_ocslinks.ocsid' => $ID,
                 ],
-                'ORDERBY' => ['glpi_plugin_ocsinventoryng_ocslinks.use_auto_update ASC', 'last_update', 'name']
+                'ORDERBY' => ['glpi_plugin_ocsinventoryng_ocslinks.use_auto_update ASC', 'last_update', 'name'],
             ];
 
             $iterator = $DB->request($query_glpi);
@@ -546,12 +546,12 @@ function plugin_ocsinventoryng_importFromOcsServer(
 
     $iterator = $DB->request([
         'SELECT'    => [
-            'MAX' => 'last_ocs_update AS max_last_ocs_update'
+            'MAX' => 'last_ocs_update AS max_last_ocs_update',
         ],
         'FROM'      => 'glpi_plugin_ocsinventoryng_ocslinks',
         'WHERE'     => [
-            'plugin_ocsinventoryng_ocsservers_id'  => $ocsServerId
-        ]
+            'plugin_ocsinventoryng_ocsservers_id'  => $ocsServerId,
+        ],
     ]);
 
     $max_date = "0000-00-00 00:00:00";

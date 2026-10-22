@@ -61,6 +61,6 @@ if (in_array($itemtype, $allowed, true)) {
         $myname,
         $field_id,
         PLUGIN_OCS_WEBDIR . "/ajax/getDropdownFindItem.php",
-        $p
+        $p,
     );
 }

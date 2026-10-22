@@ -136,7 +136,7 @@ class NetworkPortType extends CommonDropdown
                 Dropdown::showFromArray(
                     $field['name'],
                     NetworkPort::getNetworkPortInstantiationsWithNames(),
-                    ['value' => $this->fields[$field['name']]]
+                    ['value' => $this->fields[$field['name']]],
                 );
                 break;
 
@@ -144,7 +144,7 @@ class NetworkPortType extends CommonDropdown
                 Dropdown::showFromArray(
                     'type',
                     NetworkPortEthernet::getPortTypeName(),
-                    ['value' => $this->fields[$field['name']]]
+                    ['value' => $this->fields[$field['name']]],
                 );
                 break;
             case 'readonly_text':
@@ -172,7 +172,7 @@ class NetworkPortType extends CommonDropdown
                     'speed',
                     $standard_speeds,
                     ['value' => $this->fields['speed'],
-                        'other' => $speed]
+                        'other' => $speed],
                 );
                 break;
 
@@ -180,7 +180,7 @@ class NetworkPortType extends CommonDropdown
                 Dropdown::showFromArray(
                     'version',
                     WifiNetwork::getWifiCardVersion(),
-                    ['value' => $this->fields['version']]
+                    ['value' => $this->fields['version']],
                 );
                 break;
         }
@@ -259,7 +259,7 @@ class NetworkPortType extends CommonDropdown
         $modal    = Ajax::createIframeModalWindow(
             $modal_id,
             $link,
-            ['title'   => self::getTypeName(1), 'display' => false, 'reloadonclose' => true]
+            ['title'   => self::getTypeName(1), 'display' => false, 'reloadonclose' => true],
         );
 
         return $modal . "<a href='#' data-bs-toggle='modal' data-bs-target='#" . $modal_id . "' class='btn btn-sm btn-primary' title='" . htmlescape(__('Create')) . "' >"

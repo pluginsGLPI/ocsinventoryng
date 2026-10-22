@@ -50,7 +50,7 @@
 
     {{ fields.smallTitle(__('Connecting to the database', 'ocsinventoryng'), 'ti ti-database') }}
     {{ fields.textField('ocs_db_host', item.fields['ocs_db_host'], __('Host', 'ocsinventoryng'), field_options|merge({
-        'helper': __('Like http://127.0.0.1 for SOAP method', 'ocsinventoryng'),
+        'helper': __('Like https://127.0.0.1 for SOAP method (https only: the OCS credentials are sent with each request)', 'ocsinventoryng'),
     })) }}
     {{ fields.textField('ocs_db_name', item.fields['ocs_db_name'], __('Database'), field_options) }}
     {{ fields.textField('ocs_db_user', item.fields['ocs_db_user'], _n('User', 'Users', 1), field_options) }}

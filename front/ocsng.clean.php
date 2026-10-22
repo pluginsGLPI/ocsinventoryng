@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -75,16 +76,19 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
             ]);
         }
         $show_params = ['plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                        'check'                               => ($_GET['check'] ?? 'all') === 'none' ? 'none' : 'all',
-                        'start'                               => (int) ($_GET['start'] ?? 0)];
+            'check'                               => ($_GET['check'] ?? 'all') === 'none' ? 'none' : 'all',
+            'start'                               => (int) ($_GET['start'] ?? 0)];
         OcsServer::showComputersToClean($show_params);
 
     } else {
         Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);
         if (is_array($_POST['toclean'] ?? null) && count($_POST['toclean']) > 0) {
             // Posted ids: only the computers the user may delete or update are cleaned
-            Ocslink::cleanLinksFromList($_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                                                            $_POST['toclean'], true);
+            Ocslink::cleanLinksFromList(
+                $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
+                $_POST['toclean'],
+                true,
+            );
             OcsServer::showMessage([
                 'title' => __('Clean links between GLPI and OCSNG', 'ocsinventoryng'),
                 'lines' => [__('Operation successful')],

@@ -47,13 +47,13 @@ $ip = new IpdiscoverOcslink();
 // The subnet to show comes from the link (GET), the changes from the form only (POST)
 $ipAdress = $_POST["ip"] ?? $_GET["ip"] ?? null;
 if ($ipAdress !== null) {
-   $ipAdress = IpdiscoverOcslink::checkIp($ipAdress);
-   $values = [];
-   if ($_SERVER['REQUEST_METHOD'] === 'POST'
-       && isset($_POST["subnetName"]) && isset($_POST["subnetChoice"]) && isset($_POST["SubnetMask"])) {
-      $values = ["subnetName" => (string) $_POST["subnetName"], "subnetChoice" => (string) $_POST["subnetChoice"], "subnetMask" => (string) $_POST["SubnetMask"]];
-   }
-   $ip->modifyNetworkForm($ipAdress, $values);
+    $ipAdress = IpdiscoverOcslink::checkIp($ipAdress);
+    $values = [];
+    if ($_SERVER['REQUEST_METHOD'] === 'POST'
+        && isset($_POST["subnetName"]) && isset($_POST["subnetChoice"]) && isset($_POST["SubnetMask"])) {
+        $values = ["subnetName" => (string) $_POST["subnetName"], "subnetChoice" => (string) $_POST["subnetChoice"], "subnetMask" => (string) $_POST["SubnetMask"]];
+    }
+    $ip->modifyNetworkForm($ipAdress, $values);
 }
 
 Html::footer();

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -35,17 +36,16 @@ Session::checkRight("plugin_ocsinventoryng", UPDATE);
 // The router of GLPI refuses the pages of an inactive plugin
 $config = new Config();
 
-global $CFG_GLPI;
-
 if (isset($_POST["update"])) {
-   $config->update($_POST);
-   Html::back();
+    // A single row of configuration: the posted id is ignored
+    $config->update(['id' => 1] + $_POST);
+    Html::back();
 }
 if (isset($_POST["soft_lock"])) {
-   $config->setScriptLock();
+    $config->setScriptLock();
 }
 if (isset($_POST["soft_unlock"])) {
-   $config->removeScriptLock();
+    $config->removeScriptLock();
 }
 
 Html::header(__("Automatic synchronization's configuration", 'ocsinventoryng'), '', "tools", Menu::class, "config");

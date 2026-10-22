@@ -212,7 +212,7 @@ class RegistryKey extends \CommonDBTM
         $dbu = new DbUtils();
         return $dbu->countElementsInTable(
             'glpi_plugin_ocsinventoryng_registrykeys',
-            ["computers_id" => $item->getID()]
+            ["computers_id" => $item->getID()],
         );
     }
 

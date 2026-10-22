@@ -63,14 +63,12 @@ class Dashboard extends MydashboardHtml
         $this->interfaces = ["central"];
     }
 
-    public function init()
-    {
-    }
+    public function init() {}
 
 
-     /**
-      * @return \array[][]
-      */
+    /**
+     * @return \array[][]
+     */
     public static function getWidgetsForItem()
     {
         // Statistics of the OCS inventory: for the users of the plugin only
@@ -80,13 +78,13 @@ class Dashboard extends MydashboardHtml
         $widgets = [
             Menu::$INVENTORY => [
                 self::getType() . "1" => ["id" => 1,
-                                           "title"   => __("Last synchronization of computers by month", "ocsinventoryng"),
-                                           "type"    => Widget::$BAR,
-                                           "comment" => __("Display synchronization of computers by month", "ocsinventoryng")],
+                    "title"   => __("Last synchronization of computers by month", "ocsinventoryng"),
+                    "type"    => Widget::$BAR,
+                    "comment" => __("Display synchronization of computers by month", "ocsinventoryng")],
                 self::getType() . "2" => ["id" => 2,
-                                           "title"   => __("Detail of imported computers", "ocsinventoryng"),
-                                           "type"    => Widget::$PIE,
-                                           "comment" => __("Number of OCSNG computers, Fusion Inventory computer, without agent computers", "ocsinventoryng")],
+                    "title"   => __("Detail of imported computers", "ocsinventoryng"),
+                    "type"    => Widget::$PIE,
+                    "comment" => __("Number of OCSNG computers, Fusion Inventory computer, without agent computers", "ocsinventoryng")],
             ],
         ];
 
@@ -117,8 +115,8 @@ class Dashboard extends MydashboardHtml
                 $criterias = [];
 
                 $params  = ["preferences" => [],
-                            "criterias"   => $criterias,
-                            "opt"         => $opt];
+                    "criterias"   => $criterias,
+                    "opt"         => $opt];
 
                 $default = Helper::manageCriterias($params);
 
@@ -178,26 +176,26 @@ class Dashboard extends MydashboardHtml
                 $tabsyncset = json_encode($tabsyncdates);
 
                 $graph_datas = ['title'   => $title,
-                                'comment' => $comment,
-                                'name'            => $name,
-                                'ids'             => $tabsyncset,
-                                'data'            => $dataBarset,
-                                'labels'          => $labelsBar];
+                    'comment' => $comment,
+                    'name'            => $name,
+                    'ids'             => $tabsyncset,
+                    'data'            => $dataBarset,
+                    'labels'          => $labelsBar];
 
                 $graph = BarChart::launchGraph($graph_datas, []);
 
                 $params = ["widgetId"  => $widgetId,
-                           "name"      => $name,
-                           "onsubmit"  => false,
-                           "opt"       => $opt,
-                            "default" => $default,
-                           "criterias" => $criterias,
-                           "export"    => true,
-                           "canvas"    => true,
-                           "nb"        => $nb];
+                    "name"      => $name,
+                    "onsubmit"  => false,
+                    "opt"       => $opt,
+                    "default" => $default,
+                    "criterias" => $criterias,
+                    "export"    => true,
+                    "canvas"    => true,
+                    "nb"        => $nb];
                 $widget->setWidgetHeader(Helper::getGraphHeader($params));
                 $widget->setWidgetHtmlContent(
-                    $graph
+                    $graph,
                 );
 
                 return $widget;
@@ -209,8 +207,8 @@ class Dashboard extends MydashboardHtml
                 $criterias = [];
 
                 $params  = ["preferences" => [],
-                            "criterias"   => $criterias,
-                            "opt"         => $opt];
+                    "criterias"   => $criterias,
+                    "opt"         => $opt];
 
                 $default = Helper::manageCriterias($params);
 
@@ -240,43 +238,43 @@ class Dashboard extends MydashboardHtml
 
                 if ($nb) {
                     foreach ($result as $data) {
-//                  $counts[]     = $data["nb"];
+                        //                  $counts[]     = $data["nb"];
                         $counts[] = ['value' => $data['nb'],
-                                     'name' =>  __('OCS Inventory NG', 'ocsinventoryng')];
+                            'name' =>  __('OCS Inventory NG', 'ocsinventoryng')];
                         $name_agent[] = __('OCS Inventory NG', 'ocsinventoryng');
                     }
                 }
 
-                    $result = $DB->request([
-                        'COUNT'     => 'nb',
-                        'FROM'      => 'glpi_computers',
-                        'LEFT JOIN' => [
-                            'glpi_plugin_ocsinventoryng_ocslinks' => [
-                                'ON' => [
-                                    'glpi_computers'                      => 'id',
-                                    'glpi_plugin_ocsinventoryng_ocslinks' => 'computers_id',
-                                ],
+                $result = $DB->request([
+                    'COUNT'     => 'nb',
+                    'FROM'      => 'glpi_computers',
+                    'LEFT JOIN' => [
+                        'glpi_plugin_ocsinventoryng_ocslinks' => [
+                            'ON' => [
+                                'glpi_computers'                      => 'id',
+                                'glpi_plugin_ocsinventoryng_ocslinks' => 'computers_id',
                             ],
                         ],
-                        'WHERE'     => [
-                            'glpi_computers.is_deleted'  => 0,
-                            'glpi_computers.is_template' => 0,
-                            'glpi_computers.entities_id' => (int) $_SESSION["glpiactive_entity"],
-                            'OR'                         => [
-                                ['glpi_plugin_ocsinventoryng_ocslinks.last_update' => ['LIKE', '']],
-                                ['glpi_plugin_ocsinventoryng_ocslinks.last_update' => null],
-                            ],
+                    ],
+                    'WHERE'     => [
+                        'glpi_computers.is_deleted'  => 0,
+                        'glpi_computers.is_template' => 0,
+                        'glpi_computers.entities_id' => (int) $_SESSION["glpiactive_entity"],
+                        'OR'                         => [
+                            ['glpi_plugin_ocsinventoryng_ocslinks.last_update' => ['LIKE', '']],
+                            ['glpi_plugin_ocsinventoryng_ocslinks.last_update' => null],
                         ],
-                    ]);
-//                }
+                    ],
+                ]);
+                //                }
                 $nb     = count($result);
 
                 if ($nb) {
                     foreach ($result as $data) {
-//                  $counts[]     = $data["nb"];
+                        //                  $counts[]     = $data["nb"];
                         $name_agent[] = __('Without agent', 'ocsinventoryng');
                         $counts[] = ['value' => $data['nb'],
-                                     'name' =>  __('Without agent', 'ocsinventoryng')];
+                            'name' =>  __('Without agent', 'ocsinventoryng')];
                     }
                 }
 
@@ -292,31 +290,31 @@ class Dashboard extends MydashboardHtml
                 $labelsPie          = json_encode($name_agent);
 
                 $graph_datas = ['title'   => $title,
-                                'comment' => $comment,
-                                'name'            => $name,
-                                'ids'             => json_encode([]),
-                                'data'            => $dataPieset,
-                                'labels'          => $labelsPie,
-                                'label'           => $title];
+                    'comment' => $comment,
+                    'name'            => $name,
+                    'ids'             => json_encode([]),
+                    'data'            => $dataPieset,
+                    'labels'          => $labelsPie,
+                    'label'           => $title];
 
-            //            if ($onclick == 1) {
+                //            if ($onclick == 1) {
                 $graph_criterias = ['widget' => $widgetId];
-            //            }
+                //            }
 
                 $graph = PieChart::launchPieGraph($graph_datas, $graph_criterias);
 
                 $params = ["widgetId"  => $widgetId,
-                           "name"      => $name,
-                           "onsubmit"  => false,
-                           "opt"       => [],
-                           "default" => $default,
-                           "criterias" => [],
-                           "export"    => true,
-                           "canvas"    => true,
-                           "nb"        => $nb];
+                    "name"      => $name,
+                    "onsubmit"  => false,
+                    "opt"       => [],
+                    "default" => $default,
+                    "criterias" => [],
+                    "export"    => true,
+                    "canvas"    => true,
+                    "nb"        => $nb];
                 $widget->setWidgetHeader(Helper::getGraphHeader($params));
                 $widget->setWidgetHtmlContent(
-                    $graph
+                    $graph,
                 );
 
                 return $widget;

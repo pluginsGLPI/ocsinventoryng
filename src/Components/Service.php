@@ -137,7 +137,7 @@ class Service extends \CommonDBTM
                     $dbu = new DbUtils();
                     $nb = $dbu->countElementsInTable(
                         'glpi_plugin_ocsinventoryng_services',
-                        ["computers_id" => $item->getID()]
+                        ["computers_id" => $item->getID()],
                     );
                 }
                 return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);

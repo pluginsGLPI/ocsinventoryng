@@ -68,7 +68,7 @@ class Timer
     {
         $elapsed = microtime(true) - $this->timer;
         if ($raw === true) {
-            return (string)($elapsed * 1000);
+            return (string) ($elapsed * 1000);
         } else {
             // $decimals will set the number of decimals you want for your milliseconds.
             return number_format($elapsed, $decimals, '.', ' ');

@@ -286,7 +286,7 @@ class Ocslink extends CommonDBTM
             $itemtype,
             //TRANS : %1$s is the itemtype name,
             //        %2$s is the name of the item (used for headings of a list)
-            sprintf(__('%1$s = %2$s'), Computer::getTypeName(1), $comp->getName())
+            sprintf(__('%1$s = %2$s'), Computer::getTypeName(1), $comp->getName()),
         );
         foreach ($rows as $row) {
             Session::addToNavigateListItems($itemtype, $row['id']);
@@ -413,7 +413,7 @@ class Ocslink extends CommonDBTM
                 $checksum_server & $checksum_client,
                 $checksum_server,
                 '&',
-                $checksum_client
+                $checksum_client,
             );
         }
 
@@ -446,7 +446,7 @@ class Ocslink extends CommonDBTM
                 if ($DB->update(
                     'glpi_plugin_ocsinventoryng_ocslinks',
                     ['tag' => (string) $data_ocs["TAG"]],
-                    ['computers_id' => (int) $line["computers_id"]]
+                    ['computers_id' => (int) $line["computers_id"]],
                 )) {
                     $changes[0] = '0';
                     $changes[1] = $line["tag"];
@@ -455,7 +455,7 @@ class Ocslink extends CommonDBTM
                     self::history(
                         $line["computers_id"],
                         $changes,
-                        self::HISTORY_OCS_TAGCHANGED
+                        self::HISTORY_OCS_TAGCHANGED,
                     );
                 }
             }
@@ -532,7 +532,7 @@ class Ocslink extends CommonDBTM
                                 'Computer',
                                 $changes,
                                 0,
-                                Log::HISTORY_DELETE_ITEM
+                                Log::HISTORY_DELETE_ITEM,
                             );
 
                             $nb += 1;
@@ -624,7 +624,7 @@ class Ocslink extends CommonDBTM
                     //Get the management mode for this device
                     $mode     = OcsServer::getDevicesManagementMode(
                         $ocs_config,
-                        $comp->fields['itemtype']
+                        $comp->fields['itemtype'],
                     );
                     $decoConf = $ocs_config["deconnection_behavior"];
 
@@ -645,7 +645,7 @@ class Ocslink extends CommonDBTM
                             $DB->update(
                                 'glpi_assets_assets_peripheralassets',
                                 ['is_deleted' => 1],
-                                ['id' => (int) $comp->getID()]
+                                ['id' => (int) $comp->getID()],
                             );
                         }
                     }
@@ -724,7 +724,7 @@ class Ocslink extends CommonDBTM
             'Computer',
             $changes,
             __CLASS__,
-            Log::HISTORY_PLUGIN + $action
+            Log::HISTORY_PLUGIN + $action,
         );
     }
 
@@ -743,41 +743,41 @@ class Ocslink extends CommonDBTM
                     return sprintf(
                         __('%1$s: %2$s'),
                         __('Imported from OCSNG', 'ocsinventoryng'),
-                        $data['new_value']
+                        $data['new_value'],
                     );
 
                 case self::HISTORY_OCS_DELETE:
                     return sprintf(
                         __('%1$s: %2$s'),
                         __('Deleted in OCSNG', 'ocsinventoryng'),
-                        $data['old_value']
+                        $data['old_value'],
                     );
 
                 case self::HISTORY_OCS_LINK:
                     return sprintf(
                         __('%1$s: %2$s'),
                         __('Linked with an OCSNG computer', 'ocsinventoryng'),
-                        $data['new_value']
+                        $data['new_value'],
                     );
 
                 case self::HISTORY_OCS_IDCHANGED:
                     return sprintf(
                         __(
                             'The OCSNG ID of the computer changed from %1$s to %2$s',
-                            'ocsinventoryng'
+                            'ocsinventoryng',
                         ),
                         $data['old_value'],
-                        $data['new_value']
+                        $data['new_value'],
                     );
 
                 case self::HISTORY_OCS_TAGCHANGED:
                     return sprintf(
                         __(
                             'The OCSNG TAG of the computer changed from %1$s to %2$s',
-                            'ocsinventoryng'
+                            'ocsinventoryng',
                         ),
                         $data['old_value'],
-                        $data['new_value']
+                        $data['new_value'],
                     );
             }
         }
@@ -964,7 +964,7 @@ class Ocslink extends CommonDBTM
         return (bool) $DB->update(
             'glpi_plugin_ocsinventoryng_ocslinks',
             [$field => $dbu->exportArrayToDB($tab)],
-            ['computers_id' => (int) $computers_id]
+            ['computers_id' => (int) $computers_id],
         );
     }
 
@@ -1114,12 +1114,12 @@ class Ocslink extends CommonDBTM
                 if ($withrule) {
                     $lockable_fields = self::getLockableFields(
                         $data["plugin_ocsinventoryng_ocsservers_id"],
-                        $data["ocsid"]
+                        $data["ocsid"],
                     );
                 } else {
                     $lockable_fields = self::getLockableFields(
                         $data["plugin_ocsinventoryng_ocsservers_id"],
-                        0
+                        0,
                     );
                 }
                 $dbu    = new DbUtils();
@@ -1157,7 +1157,7 @@ class Ocslink extends CommonDBTM
             Bios::getBiosLockableFields($plugin_ocsinventoryng_ocsservers_id),
             Hardware::getRuleLockableFields($plugin_ocsinventoryng_ocsservers_id, $ocsid),
             OS::getOSLockableFields($plugin_ocsinventoryng_ocsservers_id),
-            OcsAdminInfosLink::getAdministrativeInfosLockableFields($plugin_ocsinventoryng_ocsservers_id)
+            OcsAdminInfosLink::getAdministrativeInfosLockableFields($plugin_ocsinventoryng_ocsservers_id),
         );
 
         return $locks;
@@ -1270,32 +1270,32 @@ class Ocslink extends CommonDBTM
 
             if (array_key_exists(
                 $field,
-                Hardware::getHardwareLockableFields($plugin_ocsinventoryng_ocsservers_id)
+                Hardware::getHardwareLockableFields($plugin_ocsinventoryng_ocsservers_id),
             )) {
                 Hardware::updateComputerHardware($params);
             }
             if (array_key_exists(
                 $field,
-                Bios::getBiosLockableFields($plugin_ocsinventoryng_ocsservers_id)
+                Bios::getBiosLockableFields($plugin_ocsinventoryng_ocsservers_id),
             )) {
                 Bios::updateComputerBios($params);
             }
             if (array_key_exists(
                 $field,
-                OS::getOSLockableFields($plugin_ocsinventoryng_ocsservers_id)
+                OS::getOSLockableFields($plugin_ocsinventoryng_ocsservers_id),
             )) {
                 $params['check_history'] = true;
                 OS::updateComputerOS($params);
             }
             if (array_key_exists(
                 $field,
-                OcsAdminInfosLink::getAdministrativeInfosLockableFields($plugin_ocsinventoryng_ocsservers_id)
+                OcsAdminInfosLink::getAdministrativeInfosLockableFields($plugin_ocsinventoryng_ocsservers_id),
             )) {
                 OcsAdminInfosLink::updateAdministrativeInfo($params);
             }
             if (array_key_exists(
                 $field,
-               Hardware::getRuleLockableFields($plugin_ocsinventoryng_ocsservers_id, $ocsid)
+                Hardware::getRuleLockableFields($plugin_ocsinventoryng_ocsservers_id, $ocsid),
             )) {
                 //            $values = [];
                 //            Hardware::getFields($ocsComputer, $cfg_ocs, $values);
@@ -1324,7 +1324,7 @@ class Ocslink extends CommonDBTM
                                                ['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                                                    '_source'       => 'ocsinventoryng'],
                     [],
-                    ['ocsid' => $ocsid]
+                    ['ocsid' => $ocsid],
                 );
 
                 Hardware::updateComputerFields($params, $data, $cfg_ocs);

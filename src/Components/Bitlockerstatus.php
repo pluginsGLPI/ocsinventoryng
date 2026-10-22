@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -38,30 +39,29 @@ if (!defined('GLPI_ROOT')) {
  */
 class Bitlockerstatus extends CommonDBTM
 {
+    public static $rightname = "plugin_ocsinventoryng";
 
-    static $rightname = "plugin_ocsinventoryng";
-
-   /**
-    * @param int $nb
-    *
-    * @return string
-    */
-    static function getTypeName($nb = 0)
+    /**
+     * @param int $nb
+     *
+     * @return string
+     */
+    public static function getTypeName($nb = 0)
     {
         return __('Bitlocker', 'ocsinventoryng');
     }
 
-   /**
-    * Update config of the Bitlockers
-    *
-    * This function erase old data and import the new ones about Bitlockers
-    *
-    * @param $computers_id integer : glpi computer id.
-    * @param $ocsComputer
-    * @param $history_plugins boolean
-    * @param $force
-    */
-    static function updateBitlocker($computers_id, $ocsBitlockerStatus, $disk, $cfg_ocs, $force = 0)
+    /**
+     * Update config of the Bitlockers
+     *
+     * This function erase old data and import the new ones about Bitlockers
+     *
+     * @param $computers_id integer : glpi computer id.
+     * @param $ocsComputer
+     * @param $history_plugins boolean
+     * @param $force
+     */
+    public static function updateBitlocker($computers_id, $ocsBitlockerStatus, $disk, $cfg_ocs, $force = 0)
     {
 
         $uninstall_history = 0;
@@ -75,7 +75,7 @@ class Bitlockerstatus extends CommonDBTM
         }
 
         $bitlockers = new self();
-       //update data
+        //update data
         foreach ($ocsBitlockerStatus as $bitlocker) {
             $input                            = [];
             $inputBitlockers                  = [];
@@ -86,14 +86,15 @@ class Bitlockerstatus extends CommonDBTM
                 if ($bitlocker["DRIVE"] == $disk['mountpoint']) {
                     $statusText                    = isset($bitlocker["CONVERSIONSTATUS"]) ? $bitlocker["CONVERSIONSTATUS"] : '';
                     $status                        = [
-                    'FullyDecrypted'       => 0,
-                    'FullyEncrypted'       => 1,
-                    'EncryptionInProgress' => 2,
-                    'DecryptionInProgress' => 2,
-                    'EncryptionPaused'     => 2,
-                    'DecryptionPaused'     => 2
+                        'FullyDecrypted'       => Item_Disk::ENCRYPTION_STATUS_NO,
+                        'FullyEncrypted'       => Item_Disk::ENCRYPTION_STATUS_YES,
+                        'EncryptionInProgress' => Item_Disk::ENCRYPTION_STATUS_PARTIALLY,
+                        'DecryptionInProgress' => Item_Disk::ENCRYPTION_STATUS_PARTIALLY,
+                        'EncryptionPaused'     => Item_Disk::ENCRYPTION_STATUS_PARTIALLY,
+                        'DecryptionPaused'     => Item_Disk::ENCRYPTION_STATUS_PARTIALLY,
                     ];
-                    $input["encryption_status"]    = isset($status[$statusText]) ?? "";
+                    // The status of the agent; not encrypted when OCS reports an unknown one
+                    $input["encryption_status"]    = $status[$statusText] ?? Item_Disk::ENCRYPTION_STATUS_NO;
                     $input["encryption_tool"]      = 'bitlocker';
                     $input["encryption_algorithm"] = isset($bitlocker["ENCRYPMETHOD"]) ? $bitlocker["ENCRYPMETHOD"] : '';
                     //               $input["encryption_type"] =
@@ -106,8 +107,8 @@ class Bitlockerstatus extends CommonDBTM
                         $item_disk->update($input, $install_history, ['disable_unicity_check' => true]);
                     }
                     if ($bitlockers->getFromDBByCrit(["computers_id" => $computers_id])) {
-                          $inputBitlockers['id'] = $bitlockers->getID();
-                          $bitlockers->update($inputBitlockers, $install_history, ['disable_unicity_check' => true]);
+                        $inputBitlockers['id'] = $bitlockers->getID();
+                        $bitlockers->update($inputBitlockers, $install_history, ['disable_unicity_check' => true]);
                     } else {
                         $bitlockers->add($inputBitlockers, ['disable_unicity_check' => true], $install_history);
                     }
@@ -122,48 +123,48 @@ class Bitlockerstatus extends CommonDBTM
         return "glpi_plugin_ocsinventoryng_bitlockerstatuses";
     }
 
-   /**
-    * Delete old Bitlocker entries
-    *
-    * @param $glpi_computers_id integer : glpi computer id.
-    * @param $uninstall_history boolean
-    */
-    static function resetBitlocker($glpi_computers_id, $uninstall_history)
+    /**
+     * Delete old Bitlocker entries
+     *
+     * @param $glpi_computers_id integer : glpi computer id.
+     * @param $uninstall_history boolean
+     */
+    public static function resetBitlocker($glpi_computers_id, $uninstall_history)
     {
 
         $bitlocker = new self();
         $bitlocker->deleteByCriteria(['computers_id' => $glpi_computers_id], 1, $uninstall_history);
     }
 
-   /**
-    * @param \CommonGLPI $item
-    * @param int         $withtemplate
-    *
-    * @return array|string
-    * @throws \GlpitestSQLError
-    * @see CommonGLPI::getTabNameForItem()
-    *
-    */
+    /**
+     * @param \CommonGLPI $item
+     * @param int         $withtemplate
+     *
+     * @return array|string
+     * @throws \GlpitestSQLError
+     * @see CommonGLPI::getTabNameForItem()
+     *
+     */
 
 
-   /**
-    * @param $item            CommonGLPI object
-    * @param $tabnum (default 1)
-    * @param $withtemplate (default 0)
-    *
-    * @return bool|true
-    */
+    /**
+     * @param $item            CommonGLPI object
+     * @param $tabnum (default 1)
+     * @param $withtemplate (default 0)
+     *
+     * @return bool|true
+     */
 
-   /**
-    * Print the computers windows update states
-    *
-    * @param             $comp                  Computer object
-    * @param bool|string $withtemplate boolean  Template or basic item (default '')
-    *
-    * @return bool
-    */
-   // TODO
-    static function showForDisk($item)
+    /**
+     * Print the computers windows update states
+     *
+     * @param             $comp                  Computer object
+     * @param bool|string $withtemplate boolean  Template or basic item (default '')
+     *
+     * @return bool
+     */
+    // TODO
+    public static function showForDisk($item)
     {
         global $DB;
         if (get_class($item['item']) == Item_Disk::class) {
@@ -173,7 +174,7 @@ class Bitlockerstatus extends CommonDBTM
             $item_disks_id = $item['item']->getField('id');
 
             if ($bitlockerstatus->getFromDBByCrit(['computers_id' => $computers_id,
-                                                'item_disks_id' => $item_disks_id])) {
+                'item_disks_id' => $item_disks_id])) {
                 // Values reported by the OCS agent, read only (nothing saves them from the disk
                 // form): escaped by the template
                 Ocslink::displayInventoryInfo([[

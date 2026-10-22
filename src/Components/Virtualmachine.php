@@ -42,7 +42,6 @@ if (!defined('GLPI_ROOT')) {
  */
 class Virtualmachine
 {
-
     public static $rightname = "plugin_ocsinventoryng";
 
     /**
@@ -93,15 +92,15 @@ class Virtualmachine
 
                 $vm['virtualmachinestates_id'] = Dropdown::importExternal(
                     'VirtualMachineState',
-                    $ocsVirtualmachine['STATUS']
+                    $ocsVirtualmachine['STATUS'],
                 );
                 $vm['virtualmachinetypes_id'] = Dropdown::importExternal(
                     'VirtualMachineType',
-                    $ocsVirtualmachine['VMTYPE']
+                    $ocsVirtualmachine['VMTYPE'],
                 );
                 $vm['virtualmachinesystems_id'] = Dropdown::importExternal(
                     'VirtualMachineType',
-                    $ocsVirtualmachine['SUBSYSTEM']
+                    $ocsVirtualmachine['SUBSYSTEM'],
                 );
 
                 // UUID and name are sent by the OCS agent: bound, never concatenated
@@ -158,7 +157,7 @@ class Virtualmachine
                     '_no_history' => !$uninstall_history,
                 ],
                 true,
-                $uninstall_history
+                $uninstall_history,
             );
         }
     }

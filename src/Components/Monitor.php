@@ -106,7 +106,7 @@ class Monitor
                 if (!empty($monitor["CAPTION"])) {
                     $mon["name"]             = OcsProcess::encodeOcsDataInUtf8(
                         $cfg_ocs["ocs_db_utf8"],
-                        $monitor["CAPTION"]
+                        $monitor["CAPTION"],
                     );
                     $mon["monitormodels_id"] = Dropdown::importExternal('MonitorModel', $monitor["CAPTION"]);
                 }
@@ -146,7 +146,7 @@ class Monitor
                             'WHERE' => [
                                 'name' => $mon["name"],
                                 'is_global' => MANAGEMENT_GLOBAL,
-                            ]
+                            ],
                         ];
 
                         if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
@@ -182,7 +182,7 @@ class Monitor
                                 'WHERE' => [
                                     'serial'   => ['LIKE', '%' . $mon["serial"] . '%'],
                                     'is_global' => MANAGEMENT_UNITARY,
-                                ]
+                                ],
                             ];
 
                             if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
@@ -209,7 +209,7 @@ class Monitor
 
                                 $criteria = [
                                     'SELECT' => [
-                                        'glpi_monitors.id'
+                                        'glpi_monitors.id',
                                     ],
                                     'FROM' => 'glpi_monitors',
                                     'LEFT JOIN'       => [
@@ -221,7 +221,7 @@ class Monitor
                                                         'glpi_assets_assets_peripheralassets.itemtype_peripheral' => 'Monitor',
                                                     ],
                                                 ],
-                                            ]
+                                            ],
                                         ],
                                     ],
                                     'WHERE' => [
@@ -229,7 +229,7 @@ class Monitor
                                         'glpi_assets_assets_peripheralassets.is_global' => 0,
                                         'glpi_assets_assets_peripheralassets.items_id_asset' => null,
                                         'glpi_assets_assets_peripheralassets.itemtype_asset' => 'Computer',
-                                    ]
+                                    ],
                                 ];
 
                                 if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
@@ -330,7 +330,7 @@ class Monitor
                                 'glpi_assets_assets_peripheralassets',
                                 [
                                     'id' =>  $data['id'],
-                                ]
+                                ],
                             );
 
                             //Put periph in dustbin
@@ -343,7 +343,7 @@ class Monitor
                                 ],
                                 [
                                     'id' =>  $data['id'],
-                                ]
+                                ],
                             );
 
                         }

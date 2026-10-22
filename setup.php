@@ -100,58 +100,58 @@ function plugin_init_ocsinventoryng()
     Plugin::registerClass(
         Ocslink::class,
         ['forwardentityfrom' => 'Computer',
-            'addtabon'          => 'Computer']
+            'addtabon'          => 'Computer'],
     );
 
     Plugin::registerClass(
         RegistryKey::class,
-        ['addtabon' => 'Computer']
+        ['addtabon' => 'Computer'],
     );
 
     if ($DB->tableExists('glpi_plugin_ocsinventoryng_winupdates')) {
         Plugin::registerClass(
             Winupdate::class,
-            ['addtabon' => 'Computer']
+            ['addtabon' => 'Computer'],
         );
     }
     if ($DB->tableExists('glpi_plugin_ocsinventoryng_proxysettings')) {
         Plugin::registerClass(
             Proxysetting::class,
-            ['addtabon' => 'Computer']
+            ['addtabon' => 'Computer'],
         );
     }
 
     if ($DB->tableExists('glpi_plugin_ocsinventoryng_winusers')) {
         Plugin::registerClass(
             Winuser::class,
-            ['addtabon' => 'Computer']
+            ['addtabon' => 'Computer'],
         );
     }
     if ($DB->tableExists('glpi_plugin_ocsinventoryng_customapps')) {
         Plugin::registerClass(
             Customapp::class,
-            ['addtabon' => 'Computer']
+            ['addtabon' => 'Computer'],
         );
     }
 
     if ($DB->tableExists('glpi_plugin_ocsinventoryng_networkshares')) {
         Plugin::registerClass(
             Networkshare::class,
-            ['addtabon' => 'Computer']
+            ['addtabon' => 'Computer'],
         );
     }
 
     if ($DB->tableExists('glpi_plugin_ocsinventoryng_runningprocesses')) {
         Plugin::registerClass(
             Runningprocess::class,
-            ['addtabon' => 'Computer']
+            ['addtabon' => 'Computer'],
         );
     }
 
     if ($DB->tableExists('glpi_plugin_ocsinventoryng_services')) {
         Plugin::registerClass(
             Service::class,
-            ['addtabon' => 'Computer']
+            ['addtabon' => 'Computer'],
         );
     }
 
@@ -159,7 +159,7 @@ function plugin_init_ocsinventoryng()
         Plugin::registerClass(
             Teamviewer::class,
             ['addtabon'   => 'Computer',
-                'link_types' => true]
+                'link_types' => true],
         );
 
         if (class_exists(Teamviewer::class)) {
@@ -177,12 +177,12 @@ function plugin_init_ocsinventoryng()
         OcsServer::class,
         [
             //                            'massiveaction_noupdate_types' => true,
-            'systeminformations_types'     => true]
+            'systeminformations_types'     => true],
     );
 
     Plugin::registerClass(
         Profile::class,
-        ['addtabon' => 'Profile']
+        ['addtabon' => 'Profile'],
     );
 
     Plugin::registerClass(
@@ -190,7 +190,7 @@ function plugin_init_ocsinventoryng()
         [
             //                            'massiveaction_noupdate_types' => true,
             //                          'massiveaction_nodelete_types' => true,
-            'notificationtemplates_types'  => true]
+            'notificationtemplates_types'  => true],
     );
 
     Plugin::registerClass(
@@ -198,7 +198,7 @@ function plugin_init_ocsinventoryng()
         [
             //                            'massiveaction_noupdate_types' => true,
             //                          'massiveaction_nodelete_types' => true,
-            'notificationtemplates_types'  => true]
+            'notificationtemplates_types'  => true],
     );
 
     Plugin::registerClass(
@@ -209,18 +209,18 @@ function plugin_init_ocsinventoryng()
 
     Plugin::registerClass(
         NetworkPort::class,
-        ['networkport_instantiations' => true]
+        ['networkport_instantiations' => true],
     );
 
     Plugin::registerClass(
         SnmpOcslink::class,
-        ['addtabon' => ['Computer', 'Printer', 'NetworkEquipment', 'Peripheral', 'Phone']]
+        ['addtabon' => ['Computer', 'Printer', 'NetworkEquipment', 'Peripheral', 'Phone']],
     );
 
     Plugin::registerClass(
         OcsAlert::class,
         ['addtabon'                    => ['Entity', 'CronTask'],
-            'notificationtemplates_types' => true]
+            'notificationtemplates_types' => true],
     );
 
     // transfer

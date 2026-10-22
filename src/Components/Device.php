@@ -53,7 +53,6 @@ if (!defined('GLPI_ROOT')) {
  */
 class Device
 {
-
     public static $rightname = "plugin_ocsinventoryng";
 
 
@@ -101,22 +100,22 @@ class Device
                     'Manufacturer',
                     OcsProcess::encodeOcsDataInUtf8(
                         $ocs_db_utf8,
-                        $ocsComputer["SMANUFACTURER"]
-                    )
+                        $ocsComputer["SMANUFACTURER"],
+                    ),
                 );
                 $bios["devicefirmwaremodels_id"] = Dropdown::importExternal(
                     'DeviceFirmwareModel',
                     OcsProcess::encodeOcsDataInUtf8(
                         $ocs_db_utf8,
-                        $ocsComputer["SMODEL"]
-                    )
+                        $ocsComputer["SMODEL"],
+                    ),
                 );
                 $bios["devicefirmwaretypes_id"]  = Dropdown::importExternal(
                     'DeviceFirmwareType',
                     OcsProcess::encodeOcsDataInUtf8(
                         $ocs_db_utf8,
-                        $ocsComputer["TYPE"]
-                    )
+                        $ocsComputer["TYPE"],
+                    ),
                 );
 
                 $DeviceBios = new DeviceFirmware();
@@ -187,7 +186,7 @@ class Device
                         }
                         $ram["devicememorytypes_id"] = Dropdown::importExternal(
                             'DeviceMemoryType',
-                            $line2["TYPE"]
+                            $line2["TYPE"],
                         );
 
                         $DeviceMemory = new DeviceMemory();
@@ -508,7 +507,7 @@ class Device
                     }
                     $processor["manufacturers_id"]  = Dropdown::importExternal(
                         'Manufacturer',
-                        OcsProcess::encodeOcsDataInUtf8($ocs_db_utf8, $line2["MANUFACTURER"])
+                        OcsProcess::encodeOcsDataInUtf8($ocs_db_utf8, $line2["MANUFACTURER"]),
                     );
                     $processor["frequency_default"] = $line2["SPEED"];
                     $processor["nbcores_default"]   = $line2["CORES"];
@@ -558,7 +557,7 @@ class Device
                     $params['cfg_ocs'],
                     $ocsComputer,
                     $computers_id,
-                    $entities_id
+                    $entities_id,
                 );
                 break;
 
@@ -680,7 +679,7 @@ class Device
                 if (OcsProcess::encodeOcsDataInUtf8($ocs_db_utf8, $ocsComputer["MMANUFACTURER"]) != null) {
                     $mb["manufacturers_id"] = Dropdown::importExternal(
                         'Manufacturer',
-                        OcsProcess::encodeOcsDataInUtf8($ocs_db_utf8, $ocsComputer["MMANUFACTURER"])
+                        OcsProcess::encodeOcsDataInUtf8($ocs_db_utf8, $ocsComputer["MMANUFACTURER"]),
                     );
                 }
 
@@ -740,8 +739,8 @@ class Device
                             'Manufacturer',
                             OcsProcess::encodeOcsDataInUtf8(
                                 $ocs_db_utf8,
-                                $line2["MANUFACTURER"]
-                            )
+                                $line2["MANUFACTURER"],
+                            ),
                         );
                         if (!empty($line2["DESCRIPTION"])) {
                             $ctrl["comment"] = $line2["DESCRIPTION"];

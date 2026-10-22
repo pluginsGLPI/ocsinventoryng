@@ -1,4 +1,5 @@
 <?php
+
 /*
   -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
@@ -29,49 +30,47 @@
 use GlpiPlugin\Ocsinventoryng\NotificationState;
 use GlpiPlugin\Ocsinventoryng\OcsAlert;
 
-// The router of GLPI refuses the pages of an inactive plugin
+// The router of GLPI refuses the pages of an inactive plugin.
+// Every action of the page writes: the update right of the plugin (OcsAlert::$rightname)
+Session::checkRight(OcsAlert::$rightname, UPDATE);
+
 $state    = new NotificationState();
 $ocsalert = new OcsAlert();
 
-// Every write needs the right of the plugin; a refusal is an error, not a silent no-op
-if (isset($_POST["add"]) || isset($_POST["update"]) || isset($_POST["add_state"]) || isset($_POST["delete_state"])) {
-   if (!$ocsalert->canUpdate()) {
-      throw new \Glpi\Exception\Http\AccessDeniedHttpException();
-   }
-}
-
 if (isset($_POST["add"]) || isset($_POST["update"])) {
-   // The alert settings of an entity of the user: on update, the entity of the stored row
-   $input = $_POST;
-   if (isset($_POST["update"])) {
-      if (!$ocsalert->getFromDB((int) ($_POST["id"] ?? 0))) {
-         throw new \Glpi\Exception\Http\BadRequestHttpException();
-      }
-      $input['entities_id'] = $ocsalert->fields['entities_id'];
-   }
-   if (!Session::haveAccessToEntity((int) ($input['entities_id'] ?? -1))) {
-      throw new \Glpi\Exception\Http\AccessDeniedHttpException();
-   }
-   if (isset($_POST["add"])) {
-      unset($input['id']);
-      $ocsalert->add($input);
-   } else {
-      $ocsalert->update($input);
-   }
-   Html::back();
+    // The alert settings of an entity of the user: on update, the entity of the stored row
+    $input = $_POST;
+    if (isset($_POST["update"])) {
+        if (!$ocsalert->getFromDB((int) ($_POST["id"] ?? 0))) {
+            throw new \Glpi\Exception\Http\BadRequestHttpException();
+        }
+        $input['entities_id'] = $ocsalert->fields['entities_id'];
+    }
+    if (!Session::haveAccessToEntity((int) ($input['entities_id'] ?? -1))) {
+        throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+    }
+    if (isset($_POST["add"])) {
+        unset($input['id']);
+        $ocsalert->add($input);
+    } else {
+        $ocsalert->update($input);
+    }
+    Html::back();
 
-} else if (isset($_POST["add_state"])) {
+} elseif (isset($_POST["add_state"])) {
 
-   $state->add(['states_id' => (int) ($_POST['states_id'] ?? 0)]);
-   Html::back();
+    $state->add(['states_id' => (int) ($_POST['states_id'] ?? 0)]);
+    Html::back();
 
-} else if (isset($_POST["delete_state"])) {
+} elseif (isset($_POST["delete_state"])) {
 
-   foreach ((array) ($_POST["item"] ?? []) as $key => $val) {
-      if ($val == 1) {
-         $state->delete(['id' => (int) $key]);
-      }
-   }
-   Html::back();
+    foreach ((array) ($_POST["item"] ?? []) as $key => $val) {
+        if ($val == 1) {
+            $state->delete(['id' => (int) $key]);
+        }
+    }
+    Html::back();
 
+} else {
+    throw new \Glpi\Exception\Http\BadRequestHttpException();
 }

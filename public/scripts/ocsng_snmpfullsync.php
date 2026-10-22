@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -52,19 +53,19 @@ ini_set("memory_limit", "-1");
 ini_set("max_execution_time", "0");
 
 # Converts cli parameter to web parameter for compatibility
-if (isset ($_SERVER["argv"]) && !isset ($argv)) {
-   $argv = $_SERVER["argv"];
+if (isset($_SERVER["argv"]) && !isset($argv)) {
+    $argv = $_SERVER["argv"];
 }
 if ($argv) {
-   for ($i = 1; $i < count($argv); $i++) {
-      $it = explode("=", $argv[$i], 2);
-      $it[0] = preg_replace('/^--/', '', $it[0]);
-      if(isset($it[1])) {
-         $_GET[$it[0]] = $it[1];
-      } else {
-         $_GET[$it[0]] = 1;
-      }
-   }
+    for ($i = 1; $i < count($argv); $i++) {
+        $it = explode("=", $argv[$i], 2);
+        $it[0] = preg_replace('/^--/', '', $it[0]);
+        if (isset($it[1])) {
+            $_GET[$it[0]] = $it[1];
+        } else {
+            $_GET[$it[0]] = 1;
+        }
+    }
 }
 
 // Can't run on MySQL replicate
@@ -77,58 +78,58 @@ $DBCONNECTION_REQUIRED = 1;
 $_SESSION["glpicronuserrunning"] = $_SESSION["glpiname"] = 'ocsinventoryng';
 // Check PHP Version - sometime (debian) cli version != module version
 if (phpversion() < "5") {
-   die("PHP version:" . phpversion() . " - " . "You must install at least PHP5.\n\n");
+    die("PHP version:" . phpversion() . " - " . "You must install at least PHP5.\n\n");
 }
 // Chech Memory_limit - sometine cli limit (php-cli.ini) != module limit (php.ini)
 $mem = Toolbox::getMemoryLimit();
 if (($mem > 0) && ($mem < (64 * 1024 * 1024))) {
-   die("PHP memory_limit = " . $mem . " - " . "A minimum of 64Mio is commonly required for GLPI.'\n\n");
+    die("PHP memory_limit = " . $mem . " - " . "A minimum of 64Mio is commonly required for GLPI.'\n\n");
 }
 
 //Check if plugin is installed
 if (!Plugin::isPluginActive("ocsinventoryng")) {
-   echo "Disabled plugin\n";
-   exit (1);
+    echo "Disabled plugin\n";
+    exit(1);
 }
 
 $thread_nbr = '';
 $threadid = '';
 $ocsservers_id = -1;
-$fields = array();
+$fields = [];
 
 //Get script configuration
 $config = new Config();
 //$notimport = new Notimportedcomputer();
 $config->getFromDB(1);
 
-if (!isset ($_GET["ocs_server_id"]) || ($_GET["ocs_server_id"] == '')) {
-   $ocsservers_id = -1;
+if (!isset($_GET["ocs_server_id"]) || ($_GET["ocs_server_id"] == '')) {
+    $ocsservers_id = -1;
 } else {
-   $ocsservers_id = (int) $_GET["ocs_server_id"];
+    $ocsservers_id = (int) $_GET["ocs_server_id"];
 }
 
-if (isset($_GET["thread_nbr"]) || isset ($_GET["thread_id"])) {
-   if (!isset($_GET["thread_id"])
-      || ($_GET["thread_id"] > $_GET["thread_nbr"])
-      || ($_GET["thread_id"] <= 0)
-   ) {
-      echo("Threadid invalid: threadid must be between 1 and thread_nbr\n\n");
-      exit (1);
-   }
+if (isset($_GET["thread_nbr"]) || isset($_GET["thread_id"])) {
+    if (!isset($_GET["thread_id"])
+       || ($_GET["thread_id"] > $_GET["thread_nbr"])
+       || ($_GET["thread_id"] <= 0)
+    ) {
+        echo("Threadid invalid: threadid must be between 1 and thread_nbr\n\n");
+        exit(1);
+    }
 
-   $thread_nbr = $_GET["thread_nbr"];
-   $threadid = $_GET["thread_id"];
+    $thread_nbr = $_GET["thread_nbr"];
+    $threadid = $_GET["thread_id"];
 
-   echo "=====================================================\n";
-   echo "\tThread #$threadid: starting ($threadid/$thread_nbr)\n";
+    echo "=====================================================\n";
+    echo "\tThread #$threadid: starting ($threadid/$thread_nbr)\n";
 } else {
-   $thread_nbr = -1;
-   $threadid = -1;
+    $thread_nbr = -1;
+    $threadid = -1;
 }
 
 //Get the script's process identifier
-if (isset ($_GET["process_id"])) {
-   $fields["processid"] = $_GET["process_id"];
+if (isset($_GET["process_id"])) {
+    $fields["processid"] = $_GET["process_id"];
 }
 $thread = new Thread();
 
@@ -149,24 +150,24 @@ $tid = $threadid;
 global $DB;
 
 if ($ocsservers_id != -1) {
-   $result = launchSync($tid, $ocsservers_id, $thread_nbr, $threadid, $fields, $config);
-   if ($result) {
-      $fields = $result;
-   }
+    $result = launchSync($tid, $ocsservers_id, $thread_nbr, $threadid, $fields, $config);
+    if ($result) {
+        $fields = $result;
+    }
 } else {
-   //Import from all the OCS servers
-   $query = "SELECT `id`, `name`
+    //Import from all the OCS servers
+    $query = "SELECT `id`, `name`
                 FROM `glpi_plugin_ocsinventoryng_ocsservers`
                 WHERE `is_active`
                   AND `use_massimport`";
-   $res = $DB->doQuery($query);
+    $res = $DB->doQuery($query);
 
-   while ($ocsservers = $DB->fetchArray($res)) {
-      $result = launchSync($tid, $ocsservers["id"], $thread_nbr, $threadid, $fields, $config);
-      if ($result) {
-         $fields = $result;
-      }
-   }
+    while ($ocsservers = $DB->fetchArray($res)) {
+        $result = launchSync($tid, $ocsservers["id"], $thread_nbr, $threadid, $fields, $config);
+        if ($result) {
+            $fields = $result;
+        }
+    }
 }
 
 //Write in db all the informations about this thread
@@ -195,28 +196,35 @@ echo "=====================================================\n";
 function launchSync($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields, $config)
 {
 
-   $server = new Server();
-   $ocsserver = new OcsServer();
+    $server = new Server();
+    $ocsserver = new OcsServer();
 
-   if (!OcsServer::checkOCSconnection($ocsservers_id)) {
-      echo "\tThread #" . $threadid . ": cannot contact server\n\n";
-      return false;
-   }
+    if (!OcsServer::checkOCSconnection($ocsservers_id)) {
+        echo "\tThread #" . $threadid . ": cannot contact server\n\n";
+        return false;
+    }
 
-   if (!$ocsserver->getFromDB($ocsservers_id)) {
-      echo "\tThread #" . $threadid . ": cannot get OCS server information\n\n";
-      return false;
-   }
+    if (!$ocsserver->getFromDB($ocsservers_id)) {
+        echo "\tThread #" . $threadid . ": cannot get OCS server information\n\n";
+        return false;
+    }
 
-   if (!$server->getFromDBbyOcsServer($ocsservers_id)) {
-      echo "\tThread #" . $threadid . ": cannot get server information\n\n";
-      return false;
-   }
+    if (!$server->getFromDBbyOcsServer($ocsservers_id)) {
+        echo "\tThread #" . $threadid . ": cannot get server information\n\n";
+        return false;
+    }
 
-   $cfg_ocs = OcsServer::getConfig($ocsservers_id);
+    $cfg_ocs = OcsServer::getConfig($ocsservers_id);
 
-   return importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
-      $threadid, $fields, $config);
+    return importSNMPFromOcsServer(
+        $threads_id,
+        $cfg_ocs,
+        $server,
+        $thread_nbr,
+        $threadid,
+        $fields,
+        $config,
+    );
 }
 
 
@@ -231,123 +239,129 @@ function launchSync($threads_id, $ocsservers_id, $thread_nbr, $threadid, $fields
  *
  * @return mixed
  */
-function importSNMPFromOcsServer($threads_id, $cfg_ocs, $server, $thread_nbr,
-                                 $threadid, $fields, $config)
-{
-   global $DB;
+function importSNMPFromOcsServer(
+    $threads_id,
+    $cfg_ocs,
+    $server,
+    $thread_nbr,
+    $threadid,
+    $fields,
+    $config
+) {
+    global $DB;
 
-   echo "\tThread #" . $threadid . ": synchronize SNMP objects from server: '" . $cfg_ocs["name"] . "'\n";
+    echo "\tThread #" . $threadid . ": synchronize SNMP objects from server: '" . $cfg_ocs["name"] . "'\n";
 
-   $multiThread = false;
-   if ($threadid != -1 && $thread_nbr > 1) {
-      $multiThread = true;
-   }
+    $multiThread = false;
+    if ($threadid != -1 && $thread_nbr > 1) {
+        $multiThread = true;
+    }
 
-   $ocsServerId = $cfg_ocs['id'];
-   $ocsClient = OcsServer::getDBocs($ocsServerId);
+    $ocsServerId = $cfg_ocs['id'];
+    $ocsClient = OcsServer::getDBocs($ocsServerId);
 
-   $already_linked_query = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`ocs_id`,`glpi_plugin_ocsinventoryng_snmpocslinks`.`id`
+    $already_linked_query = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`ocs_id`,`glpi_plugin_ocsinventoryng_snmpocslinks`.`id`
                                FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
                                WHERE `glpi_plugin_ocsinventoryng_snmpocslinks`.`plugin_ocsinventoryng_ocsservers_id`
                                             = '$ocsServerId'";
-   $already_linked_result = $DB->doQuery($already_linked_query);
-   $already_linked_ocs_ids = array();
+    $already_linked_result = $DB->doQuery($already_linked_query);
+    $already_linked_ocs_ids = [];
 
-   if ($DB->numrows($already_linked_result) > 0) {
-      while ($data = $DB->fetchAssoc($already_linked_result)) {
-         $already_linked_ocs_ids [] = $data['ocs_id'];
-//         $already_linked_ids [] = $data['id'];
-      }
-   }
+    if ($DB->numrows($already_linked_result) > 0) {
+        while ($data = $DB->fetchAssoc($already_linked_result)) {
+            $already_linked_ocs_ids [] = $data['ocs_id'];
+            //         $already_linked_ids [] = $data['id'];
+        }
+    }
 
-   $ocsResult = $ocsClient->getSnmp(array(
-      'ORDER'    => 'LASTDATE',
-      'COMPLETE' => '0',
-      'FILTER'   => array(
-         'IDS' => $already_linked_ocs_ids,
-      )
-   ));
+    $ocsResult = $ocsClient->getSnmp([
+        'ORDER'    => 'LASTDATE',
+        'COMPLETE' => '0',
+        'FILTER'   => [
+            'IDS' => $already_linked_ocs_ids,
+        ],
+    ]);
 
-   //Unset SNMP objects not updated by OCS
-   foreach ($ocsResult['SNMP'] as $ID => $snmpids) {
+    //Unset SNMP objects not updated by OCS
+    foreach ($ocsResult['SNMP'] as $ID => $snmpids) {
 
 
-      $last_update = date('Y-m-d H:i:s');
-      //Compute lastest synchronization date
-      $query = "SELECT `last_update`
+        $last_update = date('Y-m-d H:i:s');
+        //Compute lastest synchronization date
+        $query = "SELECT `last_update`
                 FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
                 WHERE `ocs_id` = '$ID'";
 
-      if ($result = $DB->doQuery($query)) {
-         if ($DB->numrows($result) > 0) {
-            if ($DB->result($result, 0, 0) != '') {
-               $last_update = $DB->result($result, 0, 0);
+        if ($result = $DB->doQuery($query)) {
+            if ($DB->numrows($result) > 0) {
+                if ($DB->result($result, 0, 0) != '') {
+                    $last_update = $DB->result($result, 0, 0);
+                }
             }
-         }
-      }
+        }
 
-      if ($snmpids['META']['LASTDATE'] < $last_update) {
-         if (($key = array_search($ID, $already_linked_ocs_ids)) !== false) {
-            unset($already_linked_ocs_ids[$key]);
-         }
-      }
-   }
+        if ($snmpids['META']['LASTDATE'] < $last_update) {
+            if (($key = array_search($ID, $already_linked_ocs_ids)) !== false) {
+                unset($already_linked_ocs_ids[$key]);
+            }
+        }
+    }
 
-   $already_linked_ids = array();
-   //List definitive SNMP objects to update
-   if (count($already_linked_ocs_ids) > 0) {
-      $query = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`id`
+    $already_linked_ids = [];
+    //List definitive SNMP objects to update
+    if (count($already_linked_ocs_ids) > 0) {
+        $query = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`id`
                                   FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
                                   WHERE `ocs_id` IN (" . implode(",", $already_linked_ocs_ids) . ")";
-      $result = $DB->doQuery($query);
+        $result = $DB->doQuery($query);
 
 
-      if ($DB->numrows($result) > 0) {
-         while ($data = $DB->fetchAssoc($result)) {
-            $already_linked_ids [] = $data['id'];
-         }
-      }
-   }
-   $nb = count($already_linked_ids);
+        if ($DB->numrows($result) > 0) {
+            while ($data = $DB->fetchAssoc($result)) {
+                $already_linked_ids [] = $data['id'];
+            }
+        }
+    }
+    $nb = count($already_linked_ids);
 
-   echo "\tThread #$threadid: $nb object(s)\n";
+    echo "\tThread #$threadid: $nb object(s)\n";
 
-   $fields["total_number_machines"] += $nb;
+    $fields["total_number_machines"] += $nb;
 
-//   $thread = new Thread();
-//   $notimport = new Notimportedcomputer();
+    //   $thread = new Thread();
+    //   $notimport = new Notimportedcomputer();
 
-//   $i = 0;
+    //   $i = 0;
 
-   foreach ($already_linked_ids as $ID) {
+    foreach ($already_linked_ids as $ID) {
 
-      /* TODO create thread & update it ?
-       * if ($i == $config->fields["thread_log_frequency"]) {
-         $fields["status"] = PLUGIN_OCSINVENTORYNG_STATE_RUNNING;
-         $thread->update($fields);
-         $i = 0;
-      } else {
-         $i++;
-      }*/
+        /* TODO create thread & update it ?
+         * if ($i == $config->fields["thread_log_frequency"]) {
+           $fields["status"] = PLUGIN_OCSINVENTORYNG_STATE_RUNNING;
+           $thread->update($fields);
+           $i = 0;
+        } else {
+           $i++;
+        }*/
 
-      echo ".";
-      $action = SnmpOcslink::updateSnmp($ID, $ocsServerId);
-      OcsProcess::manageImportStatistics($fields, $action['status']);
+        echo ".";
+        $action = SnmpOcslink::updateSnmp($ID, $ocsServerId);
+        OcsProcess::manageImportStatistics($fields, $action['status']);
 
-      /* TODO log it ?
-      /*switch ($action['status']) {
-         case OcsProcess::SNMP_FAILED_IMPORT:
-            $notimport->logNotImported($ocsServerId, $ID, $action);
-            break;
+        /* TODO log it ?
+        /*switch ($action['status']) {
+           case OcsProcess::SNMP_FAILED_IMPORT:
+              $notimport->logNotImported($ocsServerId, $ID, $action);
+              break;
 
-         default:
-            $notimport->cleanNotImported($ocsServerId, $ID);
-            //Log detail
-            $detail = new Detail();
-            $detail->logProcessedComputer($ID, $ocsServerId, $action, $threadid, $threads_id);
-            break;
-      }*/
+           default:
+              $notimport->cleanNotImported($ocsServerId, $ID);
+              //Log detail
+              $detail = new Detail();
+              $detail->logProcessedComputer($ID, $ocsServerId, $action, $threadid, $threads_id);
+              break;
+        }*/
 
-   }
-   return $fields;
+    }
+    return $fields;
 }

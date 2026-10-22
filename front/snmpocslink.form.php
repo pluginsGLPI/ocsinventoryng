@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -39,30 +40,30 @@ use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
  * @return SnmpOcslink
  */
 $check_link = static function (): SnmpOcslink {
-   Session::checkRight("plugin_ocsinventoryng", UPDATE);
+    Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-   $link = new SnmpOcslink();
-   if (!$link->getFromDB((int) ($_POST["id"] ?? 0))
-       || !in_array($link->fields['itemtype'], SnmpOcslink::$snmptypes, true)
-       || !($item = getItemForItemtype($link->fields['itemtype']))) {
-      throw new BadRequestHttpException();
-   }
-   $item->check((int) $link->fields['items_id'], UPDATE);
-   // The OCS server of the link: allowed for the active profile
-   OcsServer::checkAllowedServer($link->fields['plugin_ocsinventoryng_ocsservers_id']);
+    $link = new SnmpOcslink();
+    if (!$link->getFromDB((int) ($_POST["id"] ?? 0))
+        || !in_array($link->fields['itemtype'], SnmpOcslink::$snmptypes, true)
+        || !($item = getItemForItemtype($link->fields['itemtype']))) {
+        throw new BadRequestHttpException();
+    }
+    $item->check((int) $link->fields['items_id'], UPDATE);
+    // The OCS server of the link: allowed for the active profile
+    OcsServer::checkAllowedServer($link->fields['plugin_ocsinventoryng_ocsservers_id']);
 
-   return $link;
+    return $link;
 };
 
 if (isset($_POST["force_ocssnmp_resynch"])) {
-   $link = $check_link();
-   SnmpOcslink::updateSnmp($link->getID(), $link->fields["plugin_ocsinventoryng_ocsservers_id"]);
-   Html::back();
+    $link = $check_link();
+    SnmpOcslink::updateSnmp($link->getID(), $link->fields["plugin_ocsinventoryng_ocsservers_id"]);
+    Html::back();
 
-} else if (isset($_POST["delete_link"])) {
-   $link = $check_link();
-   $link->delete(['id' => $link->getID()], 1);
-   Html::back();
+} elseif (isset($_POST["delete_link"])) {
+    $link = $check_link();
+    $link->delete(['id' => $link->getID()], 1);
+    Html::back();
 
 } else {
     throw new BadRequestHttpException();

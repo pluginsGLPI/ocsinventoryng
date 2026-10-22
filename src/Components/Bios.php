@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -43,16 +44,15 @@ if (!defined('GLPI_ROOT')) {
  */
 class Bios
 {
+    public static $rightname = "plugin_ocsinventoryng";
 
-    static $rightname = "plugin_ocsinventoryng";
 
-
-   /**
-    * @param int $plugin_ocsinventoryng_ocsservers_id
-    *
-    * @return array
-    */
-    static function getBiosLockableFields($plugin_ocsinventoryng_ocsservers_id = 0)
+    /**
+     * @param int $plugin_ocsinventoryng_ocsservers_id
+     *
+     * @return array
+     */
+    public static function getBiosLockableFields($plugin_ocsinventoryng_ocsservers_id = 0)
     {
 
         if ($plugin_ocsinventoryng_ocsservers_id > 0) {
@@ -80,21 +80,21 @@ class Bios
             }
         } else {
             $locks = ["manufacturers_id"  => __('Manufacturer'),
-                   "computermodels_id" => __('Model'),
-                   "serial"            => __('Serial number'),
-                   "computertypes_id"  => __('Type')];
+                "computermodels_id" => __('Model'),
+                "serial"            => __('Serial number'),
+                "computertypes_id"  => __('Type')];
         }
 
         return $locks;
     }
 
-   /**
-    * Update the computer bios configuration
-    *
-    * @param array $params
-    *
-    */
-    static function updateComputerBios($params = [])
+    /**
+     * Update the computer bios configuration
+     *
+     * @param array $params
+     *
+     */
+    public static function updateComputerBios($params = [])
     {
 
         $compupdate = [];
@@ -124,10 +124,10 @@ class Bios
                     'ComputerModel',
                     OcsProcess::encodeOcsDataInUtf8(
                         $ocs_db_utf8,
-                        $bios["SMODEL"]
+                        $bios["SMODEL"],
                     ),
                     -1,
-                    (isset($bios["SMANUFACTURER"]) ? ["manufacturer" => $bios["SMANUFACTURER"]] : [])
+                    (isset($bios["SMANUFACTURER"]) ? ["manufacturer" => $bios["SMANUFACTURER"]] : []),
                 );
             }
 
@@ -139,8 +139,8 @@ class Bios
                     'Manufacturer',
                     OcsProcess::encodeOcsDataInUtf8(
                         $ocs_db_utf8,
-                        $bios["SMANUFACTURER"]
-                    )
+                        $bios["SMANUFACTURER"],
+                    ),
                 );
             }
 
@@ -152,8 +152,8 @@ class Bios
                     'ComputerType',
                     OcsProcess::encodeOcsDataInUtf8(
                         $ocs_db_utf8,
-                        $bios["TYPE"]
-                    )
+                        $bios["TYPE"],
+                    ),
                 );
             }
 

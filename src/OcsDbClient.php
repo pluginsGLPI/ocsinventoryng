@@ -39,15 +39,14 @@ use DBmysql;
 #[AllowDynamicProperties]
 class OcsDbClient extends OcsClient
 {
-
-   /**
-    * A date filter (INVENTORIED_SINCE / INVENTORIED_BEFORE) put in the SQL of the OCS database:
-    * a date "Y-m-d" or "Y-m-d H:i:s" only, the epoch otherwise
-    *
-    * @param mixed $date
-    *
-    * @return string
-    */
+    /**
+     * A date filter (INVENTORIED_SINCE / INVENTORIED_BEFORE) put in the SQL of the OCS database:
+     * a date "Y-m-d" or "Y-m-d H:i:s" only, the epoch otherwise
+     *
+     * @param mixed $date
+     *
+     * @return string
+     */
     private static function checkFilterDate($date): string
     {
         $date = is_scalar($date) ? trim((string) $date) : '';
@@ -58,15 +57,15 @@ class OcsDbClient extends OcsClient
         return '1970-01-01 00:00:00';
     }
 
-   /**
-    * The ORDER / OFFSET / MAX_RECORDS options put in the SQL of the OCS database:
-    * a known column for the sort, integers for the pagination
-    *
-    * @param array  $options
-    * @param string $default_order
-    *
-    * @return array [order, limit, offset] SQL fragments
-    */
+    /**
+     * The ORDER / OFFSET / MAX_RECORDS options put in the SQL of the OCS database:
+     * a known column for the sort, integers for the pagination
+     *
+     * @param array  $options
+     * @param string $default_order
+     *
+     * @return array [order, limit, offset] SQL fragments
+     */
     private static function checkQueryOptions(array $options, string $default_order): array
     {
         $order = $default_order;
@@ -80,15 +79,15 @@ class OcsDbClient extends OcsClient
         return [$order, $max_records, $offset];
     }
 
-   /**
-    * The custom value of an accountinfo field (config ACCOUNT_VALUE_<column>_<value>),
-    * the stored value otherwise
-    *
-    * @param string $column accountinfo column (fields_N)
-    * @param mixed  $value
-    *
-    * @return mixed
-    */
+    /**
+     * The custom value of an accountinfo field (config ACCOUNT_VALUE_<column>_<value>),
+     * the stored value otherwise
+     *
+     * @param string $column accountinfo column (fields_N)
+     * @param mixed  $value
+     *
+     * @return mixed
+     */
     private function getAccountInfoCustomValue($column, $value)
     {
         if (is_null($value)
@@ -97,7 +96,7 @@ class OcsDbClient extends OcsClient
             return $value;
         }
         $requestcolname = $this->db->doQuery(
-            "SELECT `ID`, `NAME` FROM `accountinfo_config` WHERE `ID` = " . (int) $matches[1]
+            "SELECT `ID`, `NAME` FROM `accountinfo_config` WHERE `ID` = " . (int) $matches[1],
         );
         $colname = $this->db->fetchAssoc($requestcolname);
         if (empty($colname['NAME'])) {
@@ -106,27 +105,27 @@ class OcsDbClient extends OcsClient
         // Values from the OCS agents: escaped
         $name         = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" . $value;
         $requestvalue = $this->db->doQuery(
-            "SELECT `TVALUE`, `NAME` FROM `config` WHERE `NAME` = '" . $this->db->escape($name) . "'"
+            "SELECT `TVALUE`, `NAME` FROM `config` WHERE `NAME` = '" . $this->db->escape($name) . "'",
         );
         $custom_value = $this->db->fetchAssoc($requestvalue);
 
         return $custom_value['TVALUE'] ?? $value;
     }
 
-   /**
-    * @var DBocs
-    */
+    /**
+     * @var DBocs
+     */
     private $db;
 
-   /**
-    * OcsDbClient constructor.
-    *
-    * @param $id
-    * @param $dbhost
-    * @param $dbuser
-    * @param $dbpassword
-    * @param $dbdefault
-    */
+    /**
+     * OcsDbClient constructor.
+     *
+     * @param $id
+     * @param $dbhost
+     * @param $dbuser
+     * @param $dbpassword
+     * @param $dbdefault
+     */
     public function __construct($id, $dbhost, $dbuser, $dbpassword, $dbdefault)
     {
         parent::__construct($id);
@@ -139,14 +138,14 @@ class OcsDbClient extends OcsClient
             throw new \RuntimeException(
                 sprintf('Failed to connect to OCS database on host "%s": %s', $dbhost, $e->getMessage()),
                 0,
-                $e
+                $e,
             );
         }
     }
 
-   /**
-    * @return DBocs
-    */
+    /**
+     * @return DBocs
+     */
     public function getDB()
     {
         return $this->db;
@@ -167,13 +166,13 @@ class OcsDbClient extends OcsClient
         return $this->dbname;
     }
 
-   /**
-    * @param       $id
-    * @param array $tables
-    *
-    * @return array
-    * @throws \GlpitestSQLError
-    */
+    /**
+     * @param       $id
+     * @param array $tables
+     *
+     * @return array
+     * @throws \GlpitestSQLError
+     */
     public function getComputerRule($id, $tables = [])
     {
         // Put in the SQL of the OCS database: integers only
@@ -250,17 +249,17 @@ class OcsDbClient extends OcsClient
         return $computers;
     }
 
-   /**
-    * Verify if a DB table exists
-    *
-    * @param $tablename string : Name of the table we want to verify.
-    *
-    * @return bool : true if exists, false elseway.
-    **/
-    function OcsTableExists($tablename)
+    /**
+     * Verify if a DB table exists
+     *
+     * @param $tablename string : Name of the table we want to verify.
+     *
+     * @return bool : true if exists, false elseway.
+     **/
+    public function OcsTableExists($tablename)
     {
 
-       // Get a list of tables contained within the database.
+        // Get a list of tables contained within the database.
         $query   = "SELECT table_name as TABLE_NAME
                 FROM information_schema.tables
                 WHERE table_schema = " . DBmysql::quoteValue((string) $this->dbname) . "
@@ -278,19 +277,19 @@ class OcsDbClient extends OcsClient
     }
 
 
-   /*    * ******************* */
-   /* PRIVATE  FUNCTIONS */
-   /*    * ******************* */
+    /*    * ******************* */
+    /* PRIVATE  FUNCTIONS */
+    /*    * ******************* */
 
-   /**
-    * @param     $ids
-    * @param     $checksum
-    * @param     $wanted
-    * @param     $plugins
-    * @param int $complete
-    *
-    * @return mixed
-    */
+    /**
+     * @param     $ids
+     * @param     $checksum
+     * @param     $wanted
+     * @param     $plugins
+     * @param int $complete
+     *
+     * @return mixed
+     */
     private function getComputerSections($ids, $checksum, $wanted, $plugins, $complete = 0)
     {
         // Put in the SQL of the OCS database: integers only
@@ -415,7 +414,7 @@ class OcsDbClient extends OcsClient
                             $query   .= " ORDER BY  `software`.`id` DESC";
                             $request = $this->db->doQuery($query);
                             while ($software = $this->db->fetchAssoc($request)) {
-                                 $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
+                                $computers[$software['HARDWARE_ID']]["SOFTWARES"][] = $software;
                             }
                         }
                     } else {
@@ -489,7 +488,7 @@ class OcsDbClient extends OcsClient
                         }
                     }
                     break;
-               //plugins
+                    //plugins
                 case "securitycenter":
                 case "uptime":
                 case "winupdatestate":
@@ -505,13 +504,13 @@ class OcsDbClient extends OcsClient
                 case "bitlockerstatus":
                     if (self::OcsTableExists($table)) {
                         if (($check & $plugins) || $plugins == self::PLUGINS_ALL || $complete > 0) {
-                             $query   = "SELECT *
+                            $query   = "SELECT *
                              FROM `$table`
                              WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-                             $request = $this->db->doQuery($query);
+                            $request = $this->db->doQuery($query);
                             while ($plugin = $this->db->fetchAssoc($request)) {
                                 if ($multi) {
-                                      $computers[$plugin['HARDWARE_ID']][strtoupper($table)][$plugin['ID']] = $plugin;
+                                    $computers[$plugin['HARDWARE_ID']][strtoupper($table)][$plugin['ID']] = $plugin;
                                 } else {
                                     $computers[$plugin['HARDWARE_ID']][strtoupper($table)] = $plugin;
                                 }
@@ -558,13 +557,13 @@ class OcsDbClient extends OcsClient
                 default:
                     if (self::OcsTableExists($table)) {
                         if (($check & $checksum) || $complete > 0) {
-                             $query   = "SELECT *
+                            $query   = "SELECT *
                              FROM `" . $table . "`
                              WHERE `HARDWARE_ID` IN (" . implode(',', $ids) . ")";
-                             $request = $this->db->doQuery($query);
+                            $request = $this->db->doQuery($query);
                             while ($computer = $this->db->fetchAssoc($request)) {
                                 if ($multi) {
-                                      $computers[$computer['HARDWARE_ID']][strtoupper($table)][] = $computer;
+                                    $computers[$computer['HARDWARE_ID']][strtoupper($table)][] = $computer;
                                 } else {
                                     $computers[$computer['HARDWARE_ID']][strtoupper($table)] = $computer;
                                 }
@@ -578,19 +577,19 @@ class OcsDbClient extends OcsClient
         return $computers;
     }
 
-   /**
-    * @param     $ids
-    * @param int $complete
-    *
-    * @return array
-    */
+    /**
+     * @param     $ids
+     * @param int $complete
+     *
+     * @return array
+     */
     private function getSnmpSections($ids, $complete = 1)
     {
         // Put in the SQL of the OCS database: integers only
         $ids = array_map('intval', (array) $ids);
         $snmp = [];
 
-       // Check for basics snmp infos
+        // Check for basics snmp infos
         $query   = "SELECT *
                   FROM `snmp`
                   WHERE `ID` IN (" . implode(',', $ids) . ")";
@@ -599,7 +598,7 @@ class OcsDbClient extends OcsClient
             $snmp[$snmp_request['ID']]['META'] = $snmp_request;
         }
         if ($complete) {
-           // Printers infos
+            // Printers infos
             $query   = "SELECT *
                       FROM `snmp_printers`
                       WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
@@ -608,7 +607,7 @@ class OcsDbClient extends OcsClient
                 $snmp[$snmp_request['SNMP_ID']]['PRINTER'][] = $snmp_request;
             }
 
-           // Cartridges
+            // Cartridges
             $query   = "SELECT *
                     FROM `snmp_cartridges`
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
@@ -617,7 +616,7 @@ class OcsDbClient extends OcsClient
                 $snmp[$snmp_request['SNMP_ID']]['CARTRIDGES'][] = $snmp_request;
             }
 
-           // Switches
+            // Switches
             $query   = "SELECT *
                     FROM `snmp_switchs`
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
@@ -626,7 +625,7 @@ class OcsDbClient extends OcsClient
                 $snmp[$snmp_request['SNMP_ID']]['SWITCH'][] = $snmp_request;
             }
 
-           // cards
+            // cards
             $query   = "SELECT *
                     FROM `snmp_cards`
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
@@ -635,7 +634,7 @@ class OcsDbClient extends OcsClient
                 $snmp[$snmp_request['SNMP_ID']]['CARDS'][] = $snmp_request;
             }
 
-           // Powersupplies
+            // Powersupplies
             $query   = "SELECT *
                     FROM `snmp_powersupplies`
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
@@ -644,7 +643,7 @@ class OcsDbClient extends OcsClient
                 $snmp[$snmp_request['SNMP_ID']]['POWERSUPPLIES'][] = $snmp_request;
             }
 
-           // Firewall
+            // Firewall
             $query   = "SELECT *
                     FROM `snmp_firewalls`
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
@@ -653,7 +652,7 @@ class OcsDbClient extends OcsClient
                 $snmp[$snmp_request['SNMP_ID']]['FIREWALLS'][] = $snmp_request;
             }
 
-           // Fans
+            // Fans
             $query   = "SELECT *
                     FROM `snmp_fans`
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
@@ -662,7 +661,7 @@ class OcsDbClient extends OcsClient
                 $snmp[$snmp_request['SNMP_ID']]['FANS'][] = $snmp_request;
             }
 
-           // Trays
+            // Trays
             $query   = "SELECT *
                     FROM `snmp_trays`
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
@@ -671,7 +670,7 @@ class OcsDbClient extends OcsClient
                 $snmp[$snmp_request['SNMP_ID']]['TRAYS'][] = $snmp_request;
             }
 
-           //memories
+            //memories
             $query   = "SELECT *
                     FROM `snmp_memories`
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
@@ -680,7 +679,7 @@ class OcsDbClient extends OcsClient
                 $snmp[$snmp_request['SNMP_ID']]['MEMORIES'][] = $snmp_request;
             }
 
-           //cpus
+            //cpus
             $query   = "SELECT *
                     FROM `snmp_cpus`
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
@@ -689,7 +688,7 @@ class OcsDbClient extends OcsClient
                 $snmp[$snmp_request['SNMP_ID']]['CPU'][] = $snmp_request;
             }
 
-           //networks
+            //networks
             $query   = "SELECT *
                     FROM `snmp_networks`
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
@@ -698,7 +697,7 @@ class OcsDbClient extends OcsClient
                 $snmp[$snmp_request['SNMP_ID']]['NETWORKS'][] = $snmp_request;
             }
 
-           //virtualmachines
+            //virtualmachines
             $query   = "SELECT *
                     FROM `snmp_virtualmachines`
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
@@ -707,7 +706,7 @@ class OcsDbClient extends OcsClient
                 $snmp[$snmp_request['SNMP_ID']]['VIRTUALMACHINES'][] = $snmp_request;
             }
 
-           //softwares
+            //softwares
             $query   = "SELECT *
                     FROM `snmp_softwares`
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
@@ -716,7 +715,7 @@ class OcsDbClient extends OcsClient
                 $snmp[$snmp_request['SNMP_ID']]['SOFTWARES'][] = $snmp_request;
             }
 
-           //drives
+            //drives
             $query   = "SELECT *
                     FROM `snmp_drives`
                     WHERE `SNMP_ID` IN (" . implode(',', $ids) . ")";
@@ -728,52 +727,52 @@ class OcsDbClient extends OcsClient
         return $snmp;
     }
 
-   /*    * ******************* */
-   /* PUBLIC  FUNCTIONS  */
-   /*    * ******************* */
+    /*    * ******************* */
+    /* PUBLIC  FUNCTIONS  */
+    /*    * ******************* */
 
-   /**
-    * @see OcsClient::checkConnection()
-    */
+    /**
+     * @see OcsClient::checkConnection()
+     */
     public function checkConnection(): bool
     {
         return isset($this->db) && $this->db->connected === true;
     }
 
-   /**
-    * @param string $field
-    * @param mixed  $value
-    *
-    * @return array
-    * @see OcsClient::searchComputers()
-    *
-    */
+    /**
+     * @param string $field
+     * @param mixed  $value
+     *
+     * @return array
+     * @see OcsClient::searchComputers()
+     *
+     */
     public function searchComputers($field, $value)
     {
 
         if ($field == "id" || $field == "ID") {
             $options = [
-            "FILTER" => [
-               'IDS' => [
-                  $value
-               ]
-            ]
+                "FILTER" => [
+                    'IDS' => [
+                        $value,
+                    ],
+                ],
             ];
         } elseif ($field == "tag" || $field == "TAG") {
             $options = [
-            "FILTER" => [
-               'TAGS' => [
-                  $value
-               ]
-            ]
+                "FILTER" => [
+                    'TAGS' => [
+                        $value,
+                    ],
+                ],
             ];
         } elseif ($field == "deviceid" || $field == "DEVICEID") {
             $options = [
-            "FILTER" => [
-               'DEVICEIDS' => [
-                  $value
-               ]
-            ]
+                "FILTER" => [
+                    'DEVICEIDS' => [
+                        $value,
+                    ],
+                ],
             ];
         }
 
@@ -781,13 +780,13 @@ class OcsDbClient extends OcsClient
         return $res;
     }
 
-   /**
-    * @param int $ssn
-    * @param int $id
-    *
-    * @see OcsClient::updateBios()
-    *
-    */
+    /**
+     * @param int $ssn
+     * @param int $id
+     *
+     * @see OcsClient::updateBios()
+     *
+     */
     public function updateBios($ssn, $id)
     {
         if (!$this->isConnected()) {
@@ -796,13 +795,13 @@ class OcsDbClient extends OcsClient
         $this->db->update('bios', ['SSN' => (string) $ssn], ['HARDWARE_ID' => (int) $id]);
     }
 
-   /**
-    * @param int $tag
-    * @param int $id
-    *
-    * @see OcsClient::updateTag()
-    *
-    */
+    /**
+     * @param int $tag
+     * @param int $id
+     *
+     * @see OcsClient::updateTag()
+     *
+     */
     public function updateTag($tag, $id)
     {
         if (!$this->isConnected()) {
@@ -811,13 +810,13 @@ class OcsDbClient extends OcsClient
         $this->db->update('accountinfo', ['TAG' => (string) $tag], ['HARDWARE_ID' => (int) $id]);
     }
 
-   /**
-    * @param array $options
-    *
-    * @return array
-    * @throws \GlpitestSQLError
-    * @see OcsClient::getComputers()
-    */
+    /**
+     * @param array $options
+     *
+     * @return array
+     * @throws \GlpitestSQLError
+     * @see OcsClient::getComputers()
+     */
     public function countComputers($options)
     {
         if (!$this->isConnected()) {
@@ -897,7 +896,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['INVENTORIED_BEFORE']) and $filters['INVENTORIED_BEFORE']) {
                 $before       = DBmysql::quoteValue(self::checkFilterDate($filters['INVENTORIED_BEFORE']));
                 $where_before = " AND (UNIX_TIMESTAMP(`hardware`.`LASTDATE`) < (UNIX_TIMESTAMP(" . $before . ")-180";
-               // $where_before .= "'" .$before. "'";
+                // $where_before .= "'" .$before. "'";
                 $where_before .= ")) ";
             } else {
                 $where_before = "";
@@ -943,14 +942,14 @@ class OcsDbClient extends OcsClient
         return ['total' => 0];
     }
 
-   /**
-    * @param array $options
-    * @param int   $id
-    *
-    * @return array
-    * @see OcsClient::getComputers()
-    *
-    */
+    /**
+     * @param array $options
+     * @param int   $id
+     *
+     * @return array
+     * @see OcsClient::getComputers()
+     *
+     */
     public function getComputers($options, $id = 0)
     {
         // Put in the SQL of the OCS database: integers only
@@ -1031,7 +1030,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['INVENTORIED_BEFORE']) and $filters['INVENTORIED_BEFORE']) {
                 $before       = DBmysql::quoteValue(self::checkFilterDate($filters['INVENTORIED_BEFORE']));
                 $where_before = " AND (`hardware`.`LASTDATE` < '$before'";
-  //             $where_before .= "'" .$before. "'";
+                //             $where_before .= "'" .$before. "'";
                 $where_before .= ") ";
             } else {
                 $where_before = "";
@@ -1131,13 +1130,13 @@ class OcsDbClient extends OcsClient
         return $res;
     }
 
-   /**
-    * @param string $key
-    *
-    * @return bool|mixed|result
-    * @see OcsClient::getConfig()
-    *
-    */
+    /**
+     * @param string $key
+     *
+     * @return bool|mixed|result
+     * @see OcsClient::getConfig()
+     *
+     */
     public function getConfig($key)
     {
         $res = false;
@@ -1156,14 +1155,14 @@ class OcsDbClient extends OcsClient
         return $res;
     }
 
-   /**
-    * @param string $key
-    * @param int    $ivalue
-    * @param string $tvalue
-    *
-    * @see OcsClient::setConfig()
-    *
-    */
+    /**
+     * @param string $key
+     * @param int    $ivalue
+     * @param string $tvalue
+     *
+     * @see OcsClient::setConfig()
+     *
+     */
     public function setConfig($key, $ivalue, $tvalue)
     {
         $query = "UPDATE `config`
@@ -1172,13 +1171,13 @@ class OcsDbClient extends OcsClient
         $this->db->doQuery($query);
     }
 
-   /**
-    * @param int $checksum
-    * @param int $id
-    *
-    * @see OcsClient::setChecksum()
-    *
-    */
+    /**
+     * @param int $checksum
+     * @param int $id
+     *
+     * @see OcsClient::setChecksum()
+     *
+     */
     public function setChecksum($checksum, $id)
     {
         // Put in the SQL of the OCS database: integers only
@@ -1188,13 +1187,13 @@ class OcsDbClient extends OcsClient
         $this->db->doQuery($query);
     }
 
-   /**
-    * @param int $id
-    *
-    * @return int
-    * @see OcsClient::getChecksum()
-    *
-    */
+    /**
+     * @param int $id
+     *
+     * @return int
+     * @see OcsClient::getChecksum()
+     *
+     */
     public function getChecksum($id)
     {
         // Put in the SQL of the OCS database: integers only
@@ -1205,14 +1204,14 @@ class OcsDbClient extends OcsClient
         return isset($res["CHECKSUM"]) ? $res["CHECKSUM"] : 0;
     }
 
-   /**
-    * @param array $cfg_ocs
-    * @param date  $max_date
-    *
-    * @return array
-    * @see OcsClient::getComputersToUpdate()
-    *
-    */
+    /**
+     * @param array $cfg_ocs
+     * @param date  $max_date
+     *
+     * @return array
+     * @see OcsClient::getComputersToUpdate()
+     *
+     */
     public function getComputersToUpdate($cfg_ocs, $max_date)
     {
 
@@ -1228,8 +1227,8 @@ class OcsDbClient extends OcsClient
               WHERE ((`hardware`.`CHECKSUM` & " . (int) $cfg_ocs["checksum"] . ") > 1
                      OR `hardware`.`LASTDATE` > " . DBmysql::quoteValue(self::checkFilterDate($max_date)) . ")  $archive ";
 
-       // workaround to avoid duplicate when synchro occurs during an inventory
-       // "after" insert in ocsweb.hardware  and "before" insert in ocsweb.deleted_equiv
+        // workaround to avoid duplicate when synchro occurs during an inventory
+        // "after" insert in ocsweb.hardware  and "before" insert in ocsweb.deleted_equiv
         $query .= " AND UNIX_TIMESTAMP(`LASTDATE`) < (UNIX_TIMESTAMP(NOW())-180) ";
 
         $tag_limit = OcsServer::getTagLimit($cfg_ocs);
@@ -1251,9 +1250,9 @@ class OcsDbClient extends OcsClient
         return $data;
     }
 
-   /**
-    * @see OcsClient::getOCSComputers()
-    */
+    /**
+     * @see OcsClient::getOCSComputers()
+     */
     public function getOCSComputers()
     {
         $query = "SELECT `ID`, `DEVICEID`
@@ -1269,11 +1268,11 @@ class OcsDbClient extends OcsClient
         return $data;
     }
 
-   /**
-    * @param $id
-    *
-    * @return bool
-    */
+    /**
+     * @param $id
+     *
+     * @return bool
+     */
     public function getIfOCSComputersExists($id)
     {
         // Put in the SQL of the OCS database: integers only
@@ -1289,13 +1288,13 @@ class OcsDbClient extends OcsClient
         return false;
     }
 
-   /**
-    * @param $delay
-    *
-    * @return array
-    * @throws \GlpitestSQLError
-    * @see OcsClient::getOldAgents()
-    */
+    /**
+     * @param $delay
+     *
+     * @return array
+     * @throws \GlpitestSQLError
+     * @see OcsClient::getOldAgents()
+     */
     public function getOldAgents($delay)
     {
         // Put in the SQL of the OCS database: integers only
@@ -1316,11 +1315,11 @@ class OcsDbClient extends OcsClient
         return $data;
     }
 
-   /**
-    * @param $agents
-    *
-    * @return int
-    */
+    /**
+     * @param $agents
+     *
+     * @return int
+     */
     public function deleteOldAgents($agents)
     {
 
@@ -1377,7 +1376,7 @@ class OcsDbClient extends OcsClient
                                 "storages",
                                 "usbdevices",
                                 "videos",
-                                "virtualmachines"
+                                "virtualmachines",
                             ];
                             if (isset($tables) and is_array($tables)) {
                                 foreach ($tables as $table) {
@@ -1393,7 +1392,7 @@ class OcsDbClient extends OcsClient
                             $sql = "DELETE FROM `hardware` WHERE `id` = $agent";
                             $this->db->doQuery($sql);
 
-                          //Deleted computers tracking
+                            //Deleted computers tracking
                             // deviceid comes from the OCS agent
                             $this->db->insert('deleted_equiv', ['DELETED' => (string) $did, 'EQUIVALENT' => 'NULL']);
                             $i++;
@@ -1405,9 +1404,9 @@ class OcsDbClient extends OcsClient
         return $i;
     }
 
-   /**
-    * @see OcsClient::getTotalDeletedComputers()
-    */
+    /**
+     * @see OcsClient::getTotalDeletedComputers()
+     */
     public function getTotalDeletedComputers()
     {
 
@@ -1418,18 +1417,18 @@ class OcsDbClient extends OcsClient
         return intval($total['0']);
     }
 
-   /**
-    * @see OcsClient::getDeletedComputers()
-    */
+    /**
+     * @see OcsClient::getDeletedComputers()
+     */
     public function getDeletedComputers()
     {
 
-       //      if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
+        //      if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
         $query                                  = "SELECT COUNT(*) FROM `deleted_equiv`";
         $total_count                            = $this->db->doQuery($query);
         $total                                  = $this->db->fetchRow($total_count);
         $_SESSION["ocs_deleted_equiv"]["total"] = intval($total['0']);
-       //      }
+        //      }
         $count   = 0;
         $query   = "SELECT `DATE`,`DELETED`,`EQUIVALENT`
                   FROM `deleted_equiv` ORDER BY `DATE`,`EQUIVALENT`
@@ -1446,7 +1445,7 @@ class OcsDbClient extends OcsClient
         } else {
             $res = [];
         }
-       //      $_SESSION["ocs_deleted_equiv"]["deleted"] = 0;
+        //      $_SESSION["ocs_deleted_equiv"]["deleted"] = 0;
         if (empty($_SESSION["ocs_deleted_equiv"]["deleted"])) {
             $_SESSION["ocs_deleted_equiv"]["deleted"] = $count;
         } else {
@@ -1456,13 +1455,13 @@ class OcsDbClient extends OcsClient
         return $res;
     }
 
-   /**
-    * @param      $deleted
-    * @param null $equivclean
-    *
-    * @return bool|\mysqli_result
-    * @throws \GlpitestSQLError
-    */
+    /**
+     * @param      $deleted
+     * @param null $equivclean
+     *
+     * @return bool|\mysqli_result
+     * @throws \GlpitestSQLError
+     */
     public function removeDeletedComputers($deleted, $equivclean = null)
     {
         if (is_array($deleted)) {
@@ -1482,15 +1481,15 @@ class OcsDbClient extends OcsClient
         return $res;
     }
 
-   /*    * eee
-    * @see OcsClient::getAccountInfoColumns()
-    */
+    /*    * eee
+     * @see OcsClient::getAccountInfoColumns()
+     */
 
-   /**
-    * @param string $table
-    *
-    * @return mixed
-    */
+    /**
+     * @param string $table
+     *
+     * @return mixed
+     */
     public function getAccountInfoColumns($table = 'accountinfo')
     {
         if ($table == 'accountinfo') {
@@ -1505,13 +1504,13 @@ class OcsDbClient extends OcsClient
         return $res;
     }
 
-   /**
-    * @param array $options
-    *
-    * @return array
-    * @see OcsClient::getSnmp()
-    *
-    */
+    /**
+     * @param array $options
+     *
+     * @return array
+     * @see OcsClient::getSnmp()
+     *
+     */
     public function getSnmp($options)
     {
 
@@ -1566,7 +1565,7 @@ class OcsDbClient extends OcsClient
             if (isset($filters['INVENTORIED_BEFORE']) and $filters['INVENTORIED_BEFORE']) {
                 $before       = DBmysql::quoteValue(self::checkFilterDate($filters['INVENTORIED_BEFORE']));
                 $where_before = " AND (UNIX_TIMESTAMP(`snmp`.`LASTDATE`) < (UNIX_TIMESTAMP(" . $before . ")-180";
-               // $where_before .= "'" .$before. "'";
+                // $where_before .= "'" .$before. "'";
                 $where_before .= ")) ";
             } else {
                 $where_before = "";

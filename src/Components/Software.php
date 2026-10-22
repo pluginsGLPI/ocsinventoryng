@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -47,28 +48,27 @@ if (!defined('GLPI_ROOT')) {
  */
 class Software
 {
+    public static $rightname = "plugin_ocsinventoryng";
 
-    static $rightname = "plugin_ocsinventoryng";
 
-
-   /**
-    * Update config of a new software
-    *
-    * This function create a new software in GLPI with some general data.
-    *
-    * @param array   $cfg_ocs OCSNG mode configuration
-    * @param integer $computers_id computer's id in GLPI
-    * @param array   $ocsComputer
-    * @param integer $entity the entity in which the peripheral will be created
-    * @param array   $officepack
-    * @param array   $ocsOfficePack
-    *
-    * @param int     $force
-    *
-    * @return void .
-    * @throws \GlpitestSQLError
-    */
-    static function updateSoftware($cfg_ocs, $computers_id, $ocsComputer, $entity, $officepack, $ocsOfficePack, $force = 0)
+    /**
+     * Update config of a new software
+     *
+     * This function create a new software in GLPI with some general data.
+     *
+     * @param array   $cfg_ocs OCSNG mode configuration
+     * @param integer $computers_id computer's id in GLPI
+     * @param array   $ocsComputer
+     * @param integer $entity the entity in which the peripheral will be created
+     * @param array   $officepack
+     * @param array   $ocsOfficePack
+     *
+     * @param int     $force
+     *
+     * @return void .
+     * @throws \GlpitestSQLError
+     */
+    public static function updateSoftware($cfg_ocs, $computers_id, $ocsComputer, $entity, $officepack, $ocsOfficePack, $force = 0)
     {
         $chrono_rules = 0;
 
@@ -98,11 +98,11 @@ class Software
 
         $is_utf8                  = $cfg_ocs["ocs_db_utf8"];
         $item_softwareversion = new Item_SoftwareVersion();
-       //---- Get all the softwares for this machine from OCS -----//
+        //---- Get all the softwares for this machine from OCS -----//
 
         $soft = new \Software();
 
-       // Read imported software in last sync
+        // Read imported software in last sync
         $imported = [];
 
         $criteria = [
@@ -114,20 +114,20 @@ class Software
                 'glpi_softwareversions' => [
                     'ON' => [
                         'glpi_softwareversions' => 'id',
-                        'glpi_items_softwareversions'          => 'softwareversions_id'
-                    ]
+                        'glpi_items_softwareversions'          => 'softwareversions_id',
+                    ],
                 ],
                 'glpi_softwares' => [
                     'ON' => [
                         'glpi_softwares' => 'id',
-                        'glpi_softwareversions'          => 'softwares_id'
-                    ]
-                ]
+                        'glpi_softwareversions'          => 'softwares_id',
+                    ],
+                ],
             ],
             'WHERE' => [
                 'glpi_items_softwareversions.itemtype' => 'Computer',
                 'glpi_items_softwareversions.items_id' => $computers_id,
-                'is_dynamic' => 1
+                'is_dynamic' => 1,
             ],
         ];
 
@@ -149,26 +149,26 @@ class Software
                     'glpi_softwarelicenses' => [
                         'ON' => [
                             'glpi_softwarelicenses' => 'id',
-                            'glpi_items_softwarelicenses'          => 'softwarelicenses_id'
-                        ]
+                            'glpi_items_softwarelicenses'          => 'softwarelicenses_id',
+                        ],
                     ],
                     'glpi_softwares' => [
                         'ON' => [
                             'glpi_softwares' => 'id',
-                            'glpi_softwarelicenses'          => 'softwares_id'
-                        ]
+                            'glpi_softwarelicenses'          => 'softwares_id',
+                        ],
                     ],
                     'glpi_softwareversions' => [
                         'ON' => [
                             'glpi_softwarelicenses' => 'softwareversions_id_use',
-                            'glpi_softwareversions'          => 'id'
-                        ]
-                    ]
+                            'glpi_softwareversions'          => 'id',
+                        ],
+                    ],
                 ],
                 'WHERE' => [
                     'glpi_items_softwarelicenses.itemtype' => 'Computer',
                     'glpi_items_softwarelicenses.items_id' => $computers_id,
-                    'is_dynamic' => 1
+                    'is_dynamic' => 1,
                 ],
             ];
 
@@ -191,7 +191,7 @@ class Software
             }
 
             $manufacturer = "";
-           //Replay dictionnary on manufacturer
+            //Replay dictionnary on manufacturer
             if (isset($software["PUBLISHER"])) {
                 $manufacturer = Manufacturer::processName($software["PUBLISHER"]);
             }
@@ -199,9 +199,9 @@ class Software
             $name        = isset($software['NAME']) ? $software['NAME'] : "";
             $installdate = (isset($software['INSTALLDATE']) && $software['INSTALLDATE'] != '0000-00-00 00:00:00') ? date('Y-m-d', strtotime($software['INSTALLDATE'])) : "NULL";
 
-           //Software might be created in another entity, depending on the entity's configuration
+            //Software might be created in another entity, depending on the entity's configuration
             $target_entity = Entity::getUsedConfig('entities_strategy_software', $entity, 'entities_id_software', 0);
-           //Do not change software's entity except if the dictionnary explicity changes it
+            //Do not change software's entity except if the dictionnary explicity changes it
             if ($target_entity < 0) {
                 $target_entity = $entity;
             }
@@ -211,21 +211,21 @@ class Software
             $is_helpdesk_visible = null;
 
             if (!$cfg_ocs["use_soft_dict"]) {
-               //Software dictionnary
+                //Software dictionnary
                 $params         = ["name"         => $name,
-                               "manufacturer" => $manufacturer,
-                               "old_version"  => $version,
-                               "entities_id"  => $entity];
+                    "manufacturer" => $manufacturer,
+                    "old_version"  => $version,
+                    "entities_id"  => $entity];
                 $rulecollection = new RuleDictionnarySoftwareCollection();
                 $res_rule       = $rulecollection->processAllRules(
                     $params,
                     [],
-                    ['version' => $version]
+                    ['version' => $version],
                 );
 
                 if (isset($res_rule["name"])
                  && $res_rule["name"]) {
-                     $modified_name = $res_rule["name"];
+                    $modified_name = $res_rule["name"];
                 }
 
                 if (isset($res_rule["version"])
@@ -243,30 +243,30 @@ class Software
                     $manufacturer = $res_rule["manufacturer"];
                 }
 
-               //If software dictionnary returns an entity, it overrides the one that may have
-               //been defined in the entity's configuration
+                //If software dictionnary returns an entity, it overrides the one that may have
+                //been defined in the entity's configuration
                 if (isset($res_rule["new_entities_id"])
                 && strlen($res_rule["new_entities_id"])) {
                     $target_entity = $res_rule["new_entities_id"];
                 }
             }
 
-           //If software must be imported
+            //If software must be imported
             if (!isset($res_rule["_ignore_import"])
              || !$res_rule["_ignore_import"]) {
-               // Clean software object
+                // Clean software object
                 $soft->reset();
 
-               // EXPLANATION About dictionnaries
-               // OCS dictionnary : if software name change, as we don't store INITNAME
-               //     GLPI will detect an uninstall (oldname) + install (newname)
-               // GLPI dictionnary : is rule have change
-               //     if rule have been replayed, modifiedname will be found => ok
-               //     if not, GLPI will detect an uninstall (oldname) + install (newname)
+                // EXPLANATION About dictionnaries
+                // OCS dictionnary : if software name change, as we don't store INITNAME
+                //     GLPI will detect an uninstall (oldname) + install (newname)
+                // GLPI dictionnary : is rule have change
+                //     if rule have been replayed, modifiedname will be found => ok
+                //     if not, GLPI will detect an uninstall (oldname) + install (newname)
 
                 $id = array_search(
                     strtolower(stripslashes($modified_name . OcsProcess::FIELD_SEPARATOR . $modified_version)),
-                    $imported
+                    $imported,
                 );
 
 
@@ -276,48 +276,48 @@ class Software
                     $target_entity,
                     '',
                     ($entity != $target_entity),
-                    $is_helpdesk_visible
+                    $is_helpdesk_visible,
                 );
                 if ($id) {
-                     //-------------------------------------------------------------------------//
-                     //---- The software exists in this version for this computer - Update comments --------------//
-                     //----  Update date install --------------//
-                     //---------------------------------------------------- --------------------//
+                    //-------------------------------------------------------------------------//
+                    //---- The software exists in this version for this computer - Update comments --------------//
+                    //----  Update date install --------------//
+                    //---------------------------------------------------- --------------------//
 
-                     //Update version for this software
-                     $versionID = self::updateVersion(
-                         $isNewSoft,
-                         $modified_version,
-                         $version_comments,
-                         $install_history
-                     );
+                    //Update version for this software
+                    $versionID = self::updateVersion(
+                        $isNewSoft,
+                        $modified_version,
+                        $version_comments,
+                        $install_history,
+                    );
                     if ($versionID == !false) {
-                          //Update version for this machine
-                          self::updateSoftwareVersion(
-                              $computers_id,
-                              $versionID,
-                              $installdate,
-                              $install_history
-                          );
+                        //Update version for this machine
+                        self::updateSoftwareVersion(
+                            $computers_id,
+                            $versionID,
+                            $installdate,
+                            $install_history,
+                        );
                     }
-                     unset($imported[$id]);
+                    unset($imported[$id]);
                 } else {
-                   //------------------------------------------------------------------------//
-                   //---- The software doesn't exists in this version for this computer -----//
-                   //------------------------------------------------------------------------//
+                    //------------------------------------------------------------------------//
+                    //---- The software doesn't exists in this version for this computer -----//
+                    //------------------------------------------------------------------------//
 
-                   //Import version for this software
+                    //Import version for this software
                     $versionID = self::importVersion($cfg_ocs, $isNewSoft, $modified_version, $version_comments);
-                   //Install version for this machine
+                    //Install version for this machine
                     self::installSoftwareVersion(
                         $computers_id,
                         $versionID,
                         $installdate,
-                        $install_history
+                        $install_history,
                     );
                 }
                 if ($officepack && count($ocsOfficePack) > 0) {
-                   // Get import officepack
+                    // Get import officepack
                     Officepack::updateOfficePack(
                         $computers_id,
                         $isNewSoft,
@@ -326,7 +326,7 @@ class Software
                         $entity,
                         $ocsOfficePack,
                         $cfg_ocs,
-                        $imported_licences
+                        $imported_licences,
                     );
                 }
             }
@@ -337,39 +337,39 @@ class Software
             $item_softwareversion->delete(
                 ['id' => $id, '_no_history' => !$uninstall_history],
                 true,
-                $uninstall_history
+                $uninstall_history,
             );
-           // delete cause a getFromDB, so fields contains values
+            // delete cause a getFromDB, so fields contains values
             $verid = $item_softwareversion->getField('softwareversions_id');
             $dbu   = new DbUtils();
             if ($dbu->countElementsInTable(
                 'glpi_items_softwareversions',
-                ["softwareversions_id" => $verid]
+                ["softwareversions_id" => $verid],
             ) == 0
              && $dbu->countElementsInTable(
                  'glpi_softwarelicenses',
-                 ["softwareversions_id_buy" => $verid]
+                 ["softwareversions_id_buy" => $verid],
              ) == 0) {
                 $vers = new SoftwareVersion();
                 if ($vers->getFromDB($verid)
                 && $dbu->countElementsInTable(
                     'glpi_softwarelicenses',
-                    ["softwares_id" => $vers->fields['softwares_id']]
+                    ["softwares_id" => $vers->fields['softwares_id']],
                 ) == 0
                 && $dbu->countElementsInTable(
                     'glpi_softwareversions',
-                    ["softwares_id" => $vers->fields['softwares_id']]
+                    ["softwares_id" => $vers->fields['softwares_id']],
                 ) == 1) {
-                  // 1 is the current to be removed
+                    // 1 is the current to be removed
                     $soft->putInTrash(
                         $vers->fields['softwares_id'],
-                        __('Software deleted by OCSNG synchronization', 'ocsinventoryng')
+                        __('Software deleted by OCSNG synchronization', 'ocsinventoryng'),
                     );
                 }
                 $vers->delete(
                     ["id" => $verid, '_no_history' => !$uninstall_history],
                     true,
-                    $uninstall_history
+                    $uninstall_history,
                 );
             }
         }
@@ -379,7 +379,7 @@ class Software
             $item_softwarelicenses = new Item_SoftwareLicense();
             foreach ($imported_licences as $id => $unused) {
                 $item_softwarelicenses->delete(['id' => $id], true, $uninstall_history);
-               // delete cause a getFromDB, so fields contains values
+                // delete cause a getFromDB, so fields contains values
                 $verid = $item_softwarelicenses->getField('softwareversions_id');
 
                 if (is_int($verid)
@@ -388,7 +388,7 @@ class Software
                     if ($vers->getFromDB($verid)
                     && $dbu->countElementsInTable(
                         'glpi_softwarelicenses',
-                        ["softwares_id" => $vers->fields['softwares_id']]
+                        ["softwares_id" => $vers->fields['softwares_id']],
                     ) == 0) {
                         $soft = new \Software();
                         $soft->delete(['id' => $vers->fields['softwares_id']], 1);
@@ -400,16 +400,16 @@ class Software
     }
 
 
-   /**
-    * Update a software on a computer - check if not already installed
-    *
-    * @param     $computers_id ID of the computer where to install a software
-    * @param     $softwareversions_id ID of the version to install
-    * @param     $installdate
-    * @param int $dohistory
-    *
-    */
-    static function updateSoftwareVersion($computers_id, $softwareversions_id, $installdate, $dohistory = 1)
+    /**
+     * Update a software on a computer - check if not already installed
+     *
+     * @param     $computers_id ID of the computer where to install a software
+     * @param     $softwareversions_id ID of the version to install
+     * @param     $installdate
+     * @param int $dohistory
+     *
+     */
+    public static function updateSoftwareVersion($computers_id, $softwareversions_id, $installdate, $dohistory = 1)
     {
         global $DB;
 
@@ -429,29 +429,29 @@ class Software
                 $tmp  = new Item_SoftwareVersion();
 
                 $input = ['id'           => $data['id'],
-                      '_no_history'  => !$dohistory,
-                      'date_install' => $installdate];
+                    '_no_history'  => !$dohistory,
+                    'date_install' => $installdate];
                 $tmp->update($input);
             }
         }
     }
 
 
-   /**
-    * Update config of a new version
-    *
-    * This function create a new software in GLPI with some general datas.
-    *
-    * @param $software : id of a software.
-    * @param $version : version of the software
-    *
-    * @param $comments
-    * @param $dohistory
-    * return int/bool : inserted version id or false.
-    *
-    * @return bool
-    */
-    static function updateVersion($software, $version, $comments, $dohistory)
+    /**
+     * Update config of a new version
+     *
+     * This function create a new software in GLPI with some general datas.
+     *
+     * @param $software : id of a software.
+     * @param $version : version of the software
+     *
+     * @param $comments
+     * @param $dohistory
+     * return int/bool : inserted version id or false.
+     *
+     * @return bool
+     */
+    public static function updateVersion($software, $version, $comments, $dohistory)
     {
         global $DB;
 
@@ -474,20 +474,20 @@ class Software
         return false;
     }
 
-   /**
-    * Import config of a new version
-    *
-    * This function create a new software in GLPI with some general datas.
-    *
-    * @param $cfg_ocs
-    * @param $software : id of a software.
-    * @param $version : version of the software
-    *
-    * @param $comments
-    *
-    * @return int : inserted version id.
-    */
-    static function importVersion($cfg_ocs, $software, $version, $comments)
+    /**
+     * Import config of a new version
+     *
+     * This function create a new software in GLPI with some general datas.
+     *
+     * @param $cfg_ocs
+     * @param $software : id of a software.
+     * @param $version : version of the software
+     *
+     * @param $comments
+     *
+     * @return int : inserted version id.
+     */
+    public static function importVersion($cfg_ocs, $software, $version, $comments)
     {
         global $DB;
 
@@ -510,7 +510,7 @@ class Software
 
         if (!$isNewVers) {
             $vers = new SoftwareVersion();
-           //for rule asset
+            //for rule asset
             $input['_auto']        = 1;
             $input["is_dynamic"]   = 1;
             $input["softwares_id"] = $software;
@@ -523,16 +523,16 @@ class Software
     }
 
 
-   /**
-    * Install a software on a computer - check if not already installed
-    *
-    * @param        $computers_id //ID of the computer where to install a software
-    * @param        $softwareversions_id //ID of the version to install
-    * @param        $installdate
-    * @param int $dohistory //Do history?
-    *
-    */
-    static function installSoftwareVersion($computers_id, $softwareversions_id, $installdate, $dohistory = 1)
+    /**
+     * Install a software on a computer - check if not already installed
+     *
+     * @param        $computers_id //ID of the computer where to install a software
+     * @param        $softwareversions_id //ID of the version to install
+     * @param        $installdate
+     * @param int $dohistory //Do history?
+     *
+     */
+    public static function installSoftwareVersion($computers_id, $softwareversions_id, $installdate, $dohistory = 1)
     {
         global $DB;
 
@@ -555,26 +555,26 @@ class Software
         }
     }
 
-   /**
-    * Delete all old softwares of a computer.
-    *
-    * @param $glpi_computers_id integer : glpi computer id.
-    *
-    * @param $uninstall_history
-    *
-    * @return void .
-    * @throws \GlpitestSQLError
-    */
-    static function resetSoftwares($glpi_computers_id, $uninstall_history)
+    /**
+     * Delete all old softwares of a computer.
+     *
+     * @param $glpi_computers_id integer : glpi computer id.
+     *
+     * @param $uninstall_history
+     *
+     * @return void .
+     * @throws \GlpitestSQLError
+     */
+    public static function resetSoftwares($glpi_computers_id, $uninstall_history)
     {
         global $DB;
 
 
-         $csv = new Item_SoftwareVersion();
-         $csv->deleteByCriteria(['items_id' => $glpi_computers_id,
-                                 'itemtype' => 'Computer',
-                                 'is_dynamic'   => 1], 1, $uninstall_history);
+        $csv = new Item_SoftwareVersion();
+        $csv->deleteByCriteria(['items_id' => $glpi_computers_id,
+            'itemtype' => 'Computer',
+            'is_dynamic'   => 1], 1, $uninstall_history);
 
-//      }
+        //      }
     }
 }

@@ -40,11 +40,10 @@ use Session;
  */
 class Menu extends CommonGLPI
 {
-
-   /**
-    * @var string
-    */
-    static $rightname = 'plugin_ocsinventoryng';
+    /**
+     * @var string
+     */
+    public static $rightname = 'plugin_ocsinventoryng';
 
     /**
      * @return string
@@ -54,23 +53,23 @@ class Menu extends CommonGLPI
         return 'OCS Inventory NG';
     }
 
-    static function getIcon()
+    public static function getIcon()
     {
         return "ti ti-devices";
     }
 
-   /**
-    * @return string
-    */
-    static function getMenuName()
+    /**
+     * @return string
+     */
+    public static function getMenuName()
     {
         return 'OCS Inventory NG';
     }
 
-   /**
-    * @return array
-    */
-    static function getMenuContent()
+    /**
+     * @return array
+     */
+    public static function getMenuContent()
     {
 
         $menu                    = [];
@@ -80,65 +79,65 @@ class Menu extends CommonGLPI
 
         if (Session::haveRight(static::$rightname, UPDATE)
           || Session::haveRight("config", UPDATE)) {
-           //Entry icon in breadcrumb
+            //Entry icon in breadcrumb
             $menu['links']['config'] = Config::getSearchURL(false);
-           //Link to config page in admin plugins list
+            //Link to config page in admin plugins list
             $menu['config_page'] = Config::getSearchURL(false);
         }
 
         $usemassimport = OcsServer::useMassImport();
-       // Import
+        // Import
         if (Session::haveRight("plugin_ocsinventoryng_import", READ)) {
             $menu['links']["<i class='ti ti-plus fa-1x' title='" . __s('Import new computers', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_WEBDIR . '/front/ocsng.import.php';
         }
-       // Sync
+        // Sync
         if (Session::haveRight("plugin_ocsinventoryng_sync", READ)) {
             $menu['links']["<i class='ti ti-refresh fa-1x' title='" . __s('Synchronize computers already imported', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_WEBDIR . '/front/ocsng.sync.php';
         }
-       // Thread
+        // Thread
         if ($usemassimport && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
             $menu['links']["<i class='ti ti-player-play fa-1x' title='" . __('Scripts execution of automatic actions', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_WEBDIR . '/front/thread.php';
         }
-       // Detail
+        // Detail
         $log = Config::logProcessedComputers();
         if ($log && Session::haveRight("plugin_ocsinventoryng_import", READ) && $usemassimport) {
             $menu['links']["<i class='ti ti-check fa-1x' title='" . __('Computers imported by automatic actions', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_WEBDIR . '/front/detail.php';
         }
-       // Notimported
+        // Notimported
         if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $usemassimport) {
             $menu['links']["<i class='ti ti-x fa-1x' title='" . __s('Computers not imported by automatic actions', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_WEBDIR . '/front/notimportedcomputer.php';
-           // networkport
+            // networkport
             $menu['links']["<i class='ti ti-network fa-1x' title='" . _n('Unknown imported network port type', 'Unknown imported network ports types', 2, 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_WEBDIR . '/front/networkport.php';
         }
         if (Session::haveRight("plugin_ocsinventoryng_clean", UPDATE)
           || Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
             if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
-               // Deleted_equiv
+                // Deleted_equiv
                 $menu['links']["<i class='ti ti-trash fa-1x' title='" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_WEBDIR . '/front/deleted_equiv.php';
             }
-           // Clean
+            // Clean
             $menu['links']["<i class='ti ti-recycle fa-1x' title='" . __s('Clean links between GLPI and OCSNG', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_WEBDIR . '/front/ocsng.clean.php';
         }
 
-       // Import
-       //      $menu['options']['importsnmp']['title'] = __s('Import new snmp devices', 'ocsinventoryng');
-       //      $menu['options']['importsnmp']['page']  = PLUGIN_OCS_WEBDIR.'/front/ocsngsnmp.import.php';
-       //
-       //      // Sync
-       //      $menu['options']['syncsnmp']['title'] = __s('Synchronize snmp devices already imported', 'ocsinventoryng');
-       //      $menu['options']['syncsnmp']['page']  = PLUGIN_OCS_WEBDIR.'/front/ocsngsnmp.sync.php';
-       //
-       //      // Link
-       //      $menu['options']['synclink']['title'] = __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng');
-       //      $menu['options']['synclink']['page']  = PLUGIN_OCS_WEBDIR.'/front/ocsngsnmp.link.php';
-       //
-       //      //ipdiscover
-       //      $menu['options']['importipdiscover']['title'] = __s('IPDiscover Import', 'ocsinventoryng');
-       //      $menu['options']['importipdiscover']['page']  = PLUGIN_OCS_WEBDIR.'/front/ipdiscover.php';
-       //
-       //      //Modify Network
-       //      $menu['options']['modifysubnet']['title'] = __s('Modify Subnet', 'ocsinventoryng');
-       //      $menu['options']['modifysubnet']['page']  = PLUGIN_OCS_WEBDIR.'/front/ipdiscover.modifynetwork.php';
+        // Import
+        //      $menu['options']['importsnmp']['title'] = __s('Import new snmp devices', 'ocsinventoryng');
+        //      $menu['options']['importsnmp']['page']  = PLUGIN_OCS_WEBDIR.'/front/ocsngsnmp.import.php';
+        //
+        //      // Sync
+        //      $menu['options']['syncsnmp']['title'] = __s('Synchronize snmp devices already imported', 'ocsinventoryng');
+        //      $menu['options']['syncsnmp']['page']  = PLUGIN_OCS_WEBDIR.'/front/ocsngsnmp.sync.php';
+        //
+        //      // Link
+        //      $menu['options']['synclink']['title'] = __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng');
+        //      $menu['options']['synclink']['page']  = PLUGIN_OCS_WEBDIR.'/front/ocsngsnmp.link.php';
+        //
+        //      //ipdiscover
+        //      $menu['options']['importipdiscover']['title'] = __s('IPDiscover Import', 'ocsinventoryng');
+        //      $menu['options']['importipdiscover']['page']  = PLUGIN_OCS_WEBDIR.'/front/ipdiscover.php';
+        //
+        //      //Modify Network
+        //      $menu['options']['modifysubnet']['title'] = __s('Modify Subnet', 'ocsinventoryng');
+        //      $menu['options']['modifysubnet']['page']  = PLUGIN_OCS_WEBDIR.'/front/ipdiscover.modifynetwork.php';
 
         // OCS servers (front/ocsserver.php): search and add buttons in the header
         $menu['options']['ocsserver'] = [
@@ -171,10 +170,10 @@ class Menu extends CommonGLPI
         ]);
     }
 
-   /**
-    *
-    */
-    static function removeRightsFromSession()
+    /**
+     *
+     */
+    public static function removeRightsFromSession()
     {
         if (isset($_SESSION['glpimenu']['tools']['types'][Menu::class])) {
             unset($_SESSION['glpimenu']['tools']['types'][Menu::class]);
@@ -184,13 +183,13 @@ class Menu extends CommonGLPI
         }
     }
 
-   /**
-    * @param CommonGLPI $item
-    * @param int        $withtemplate
-    *
-    * @return array|string
-    */
-    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    /**
+     * @param CommonGLPI $item
+     * @param int        $withtemplate
+     *
+     * @return array|string
+     */
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
         global $CFG_GLPI;
 
@@ -199,12 +198,12 @@ class Menu extends CommonGLPI
                 $dbu        = new DbUtils();
                 $ocsServers = $dbu->getAllDataFromTable(
                     'glpi_plugin_ocsinventoryng_ocsservers',
-                    ["is_active" => 1]
+                    ["is_active" => 1],
                 );
                 if (!empty($ocsServers)) {
-                     $ong[0] = self::createTabEntry(__('Server Setup', 'ocsinventoryng'));
+                    $ong[0] = self::createTabEntry(__('Server Setup', 'ocsinventoryng'));
 
-                     $ong[1] = self::createTabEntry(__('Inventory Import', 'ocsinventoryng'));
+                    $ong[1] = self::createTabEntry(__('Inventory Import', 'ocsinventoryng'));
 
                     if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
                        && $_SESSION["plugin_ocsinventoryng_ocsservers_id"] > 0) {
@@ -213,7 +212,7 @@ class Menu extends CommonGLPI
                             $client     = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
                             $ipdiscover = $client->getIntConfig('IPDISCOVER');
                             if ($ipdiscover) {
-                                 $ong[2] = self::createTabEntry(__('IPDiscover Import', 'ocsinventoryng'));
+                                $ong[2] = self::createTabEntry(__('IPDiscover Import', 'ocsinventoryng'));
                             }
                         }
                     }
@@ -222,10 +221,10 @@ class Menu extends CommonGLPI
                     if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
                      && $_SESSION["plugin_ocsinventoryng_ocsservers_id"] > 0) {
                         if (OcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
-                               $ocsClient = new OcsServer();
-                               $client    = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-                               $version   = $client->getTextConfig('GUI_VERSION');
-                               $snmp      = ($client->getIntConfig('SNMP') > 0) ? true : false;
+                            $ocsClient = new OcsServer();
+                            $client    = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
+                            $version   = $client->getTextConfig('GUI_VERSION');
+                            $snmp      = ($client->getIntConfig('SNMP') > 0) ? true : false;
                             if ($version > $ocsClient::OCS2_1_VERSION_LIMIT && $snmp) {
                                 $ong[3] = self::createTabEntry(__('SNMP Import', 'ocsinventoryng'));
                             }
@@ -242,14 +241,14 @@ class Menu extends CommonGLPI
         }
     }
 
-   /**
-    * @param CommonGLPI $item
-    * @param int        $tabnum
-    * @param int        $withtemplate
-    *
-    * @return bool
-    */
-    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 0, $withtemplate = 0)
+    /**
+     * @param CommonGLPI $item
+     * @param int        $tabnum
+     * @param int        $withtemplate
+     *
+     * @return bool
+     */
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 0, $withtemplate = 0)
     {
 
         if ($item->getType() == __CLASS__) {
@@ -277,12 +276,12 @@ class Menu extends CommonGLPI
         return true;
     }
 
-   /**
-    * @param array $options
-    *
-    * @return array
-    */
-    function defineTabs($options = [])
+    /**
+     * @param array $options
+     *
+     * @return array
+     */
+    public function defineTabs($options = [])
     {
 
         $ong = [];

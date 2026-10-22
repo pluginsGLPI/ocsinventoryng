@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -33,43 +34,44 @@ use GlpiPlugin\Ocsinventoryng\OcsServer;
 $dropdown = new Notimportedcomputer();
 
 if (isset($_POST['action'])) {
-   $input = ['id' => (int) ($_POST['id'] ?? 0)];
-   // The posted rejection: one of the entities of the user, from an OCS server allowed to
-   // the profile
-   if (!$dropdown->can($input['id'], READ)) {
-      throw new \Glpi\Exception\Http\AccessDeniedHttpException();
-   }
-   OcsServer::checkAllowedServer($dropdown->fields['plugin_ocsinventoryng_ocsservers_id']);
-   switch ($_POST['action']) {
-      case 'plugin_ocsinventoryng_import' :
-         $input['force'] = true;
+    $input = ['id' => (int) ($_POST['id'] ?? 0)];
+    // The posted rejection: one of the entities of the user, from an OCS server allowed to
+    // the profile
+    if (!$dropdown->can($input['id'], READ)) {
+        throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+    }
+    OcsServer::checkAllowedServer($dropdown->fields['plugin_ocsinventoryng_ocsservers_id']);
+    switch ($_POST['action']) {
+        case 'plugin_ocsinventoryng_import':
+            $input['force'] = true;
 
-      case 'plugin_ocsinventoryng_replayrules' :
-         Session::checkRight('plugin_ocsinventoryng_import', UPDATE);
-         // The computer is imported into an entity of the user
-         $entity = (int) ($_POST['entity'] ?? -1);
-         if ($entity >= 0 && !Session::haveAccessToEntity($entity)) {
-            throw new \Glpi\Exception\Http\AccessDeniedHttpException();
-         }
-         $input['entity'] = $entity;
-         if (Notimportedcomputer::computerImport($input)) {
+            // no break
+        case 'plugin_ocsinventoryng_replayrules':
+            Session::checkRight('plugin_ocsinventoryng_import', UPDATE);
+            // The computer is imported into an entity of the user
+            $entity = (int) ($_POST['entity'] ?? -1);
+            if ($entity >= 0 && !Session::haveAccessToEntity($entity)) {
+                throw new \Glpi\Exception\Http\AccessDeniedHttpException();
+            }
+            $input['entity'] = $entity;
+            if (Notimportedcomputer::computerImport($input)) {
+                $dropdown->redirectToList();
+            } else {
+                Html::redirect(Toolbox::getItemTypeFormURL(Notimportedcomputer::class) .
+                   '?id=' . $input['id']);
+            }
+            break;
+
+        case 'plugin_ocsinventoryng_link':
+            Session::checkRight('plugin_ocsinventoryng_link', UPDATE);
+            // The computer whose data the OCS machine will overwrite must be one the user may update
+            $input['computers_id'] = (int) ($_POST['computers_id'] ?? 0);
+            $computer = new Computer();
+            $computer->check($input['computers_id'], UPDATE);
+            $dropdown->linkComputer($input);
             $dropdown->redirectToList();
-         } else {
-            Html::redirect(Toolbox::getItemTypeFormURL(Notimportedcomputer::class) .
-               '?id=' . $input['id']);
-         }
-         break;
-
-      case 'plugin_ocsinventoryng_link' :
-         Session::checkRight('plugin_ocsinventoryng_link', UPDATE);
-         // The computer whose data the OCS machine will overwrite must be one the user may update
-         $input['computers_id'] = (int) ($_POST['computers_id'] ?? 0);
-         $computer = new Computer();
-         $computer->check($input['computers_id'], UPDATE);
-         $dropdown->linkComputer($input);
-         $dropdown->redirectToList();
-         break;
-   }
+            break;
+    }
 }
 
 include(GLPI_ROOT . "/front/dropdown.common.form.php");

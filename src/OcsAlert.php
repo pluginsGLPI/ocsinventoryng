@@ -72,7 +72,7 @@ class OcsAlert extends CommonDBTM
         return __('OCS-NG Synchronization alerts', 'ocsinventoryng');
     }
 
-    static function getIcon()
+    public static function getIcon()
     {
         return "ti ti-devices";
     }
@@ -162,8 +162,8 @@ class OcsAlert extends CommonDBTM
                 'glpi_computers' => [
                     'ON' => [
                         'glpi_plugin_ocsinventoryng_ocslinks' => 'computers_id',
-                        'glpi_computers'          => 'id'
-                    ]
+                        'glpi_computers'          => 'id',
+                    ],
                 ],
                 'glpi_items_operatingsystems' => [
                     'ON' => [
@@ -173,14 +173,14 @@ class OcsAlert extends CommonDBTM
                                 'glpi_items_operatingsystems.itemtype' => 'Computer',
                             ],
                         ],
-                    ]
+                    ],
                 ],
             ],
             'WHERE' => [
                 'glpi_computers.is_deleted' => 0,
                 'glpi_computers.is_template' => 0,
                 'glpi_plugin_ocsinventoryng_ocslinks.plugin_ocsinventoryng_ocsservers_id' => $config["id"],
-                'last_ocs_update'=> ['>=', $date_ocs],
+                'last_ocs_update' => ['>=', $date_ocs],
             ],
             'ORDERBY' => 'glpi_plugin_ocsinventoryng_ocslinks.last_ocs_update ASC',
         ];
@@ -225,8 +225,8 @@ class OcsAlert extends CommonDBTM
                 'glpi_computers' => [
                     'ON' => [
                         'glpi_plugin_ocsinventoryng_ocslinks' => 'computers_id',
-                        'glpi_computers'          => 'id'
-                    ]
+                        'glpi_computers'          => 'id',
+                    ],
                 ],
                 'glpi_items_operatingsystems' => [
                     'ON' => [
@@ -236,7 +236,7 @@ class OcsAlert extends CommonDBTM
                                 'glpi_items_operatingsystems.itemtype' => 'Computer',
                             ],
                         ],
-                    ]
+                    ],
                 ],
             ],
             'WHERE' => [
@@ -244,7 +244,7 @@ class OcsAlert extends CommonDBTM
                 'glpi_computers.is_template' => 0,
                 'glpi_computers.entities_id' => $entity,
                 'glpi_plugin_ocsinventoryng_ocslinks.plugin_ocsinventoryng_ocsservers_id' => $config["id"],
-                'last_ocs_update'=> ['<=', $date_ocs],
+                'last_ocs_update' => ['<=', $date_ocs],
             ],
             'ORDERBY' => 'glpi_plugin_ocsinventoryng_ocslinks.last_ocs_update DESC',
         ];
@@ -306,7 +306,7 @@ class OcsAlert extends CommonDBTM
         $row['last_update'] = htmlescape((string) Html::convDateTime($data["last_update"]));
         $row['server']      = htmlescape((string) Dropdown::getDropdownName(
             "glpi_plugin_ocsinventoryng_ocsservers",
-            $data["plugin_ocsinventoryng_ocsservers_id"]
+            $data["plugin_ocsinventoryng_ocsservers_id"],
         ));
 
         return $row;
@@ -453,20 +453,20 @@ class OcsAlert extends CommonDBTM
                         new OcsAlert(),
                         ['entities_id' => $entity,
                             'ocsmachines' => $ocsmachines,
-                            'delay_ocs'   => $delay_ocs]
+                            'delay_ocs'   => $delay_ocs],
                     )) {
                         $message     = $ocs_messages[$type][$entity];
                         $cron_status = 1;
                         if ($task) {
                             $task->log(Dropdown::getDropdownName(
                                 "glpi_entities",
-                                $entity
+                                $entity,
                             ) . ":  $message\n");
                             $task->addVolume(1);
                         } else {
                             Session::addMessageAfterRedirect(Dropdown::getDropdownName(
                                 "glpi_entities",
-                                $entity
+                                $entity,
                             ) . ":  $message");
                         }
                     } else {
@@ -540,20 +540,20 @@ class OcsAlert extends CommonDBTM
                         new OcsAlert(),
                         ['entities_id' => $entity,
                             'ocsmachines' => $newocsmachines,
-                            'delay_ocs'   => $delay_ocs]
+                            'delay_ocs'   => $delay_ocs],
                     )) {
                         $message     = $newocsmachine_messages[$type][$entity];
                         $cron_status = 1;
                         if ($task) {
                             $task->log(Dropdown::getDropdownName(
                                 "glpi_entities",
-                                $entity
+                                $entity,
                             ) . ":  $message\n");
                             $task->addVolume(1);
                         } else {
                             Session::addMessageAfterRedirect(Dropdown::getDropdownName(
                                 "glpi_entities",
-                                $entity
+                                $entity,
                             ) . ":  $message");
                         }
                     } else {

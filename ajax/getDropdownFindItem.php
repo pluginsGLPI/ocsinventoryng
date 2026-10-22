@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -59,7 +60,7 @@ if ($item->isEntityAssign()) {
     if (isset($_POST['entity_restrict']) && $_POST['entity_restrict'] !== '' && $_POST['entity_restrict'] >= 0) {
         $entity = array_values(array_intersect(
             array_map('intval', (array) $_POST['entity_restrict']),
-            array_map('intval', $_SESSION['glpiactiveentities'] ?? [])
+            array_map('intval', $_SESSION['glpiactiveentities'] ?? []),
         )) ?: '';
     }
     $where += getEntitiesRestrictCriteria($table, '', $entity, $item->maybeRecursive());

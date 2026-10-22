@@ -35,24 +35,25 @@ use CommonDBTM;
 /**
  * Class Server
  */
-class Server extends CommonDBTM {
+class Server extends CommonDBTM
+{
+    /**
+     * @param $id
+     *
+     * @return bool
+     */
+    public function getFromDBbyOcsServer($id)
+    {
+        global $DB;
 
-   /**
-    * @param $id
-    *
-    * @return bool
-    */
-   function getFromDBbyOcsServer($id) {
-      global $DB;
-
-      $result = $DB->request([
-         'FROM'  => $this->getTable(),
-         'WHERE' => ['plugin_ocsinventoryng_ocsservers_id' => (int) $id],
-      ]);
-      if (count($result) != 1) {
-         return false;
-      }
-      $this->fields = $result->current();
-      return is_array($this->fields) && count($this->fields) > 0;
-   }
+        $result = $DB->request([
+            'FROM'  => $this->getTable(),
+            'WHERE' => ['plugin_ocsinventoryng_ocsservers_id' => (int) $id],
+        ]);
+        if (count($result) != 1) {
+            return false;
+        }
+        $this->fields = $result->current();
+        return is_array($this->fields) && count($this->fields) > 0;
+    }
 }

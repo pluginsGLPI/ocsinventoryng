@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -32,25 +33,25 @@ use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 if (isset($_POST['update_lock'])) {
 
-   // A synchronization of the computer: the right of the plugin, on a server allowed for the profile
-   Session::checkRight('plugin_ocsinventoryng_sync', UPDATE);
-   $plugin_ocsinventoryng_ocsservers_id = OcsServer::checkAllowedServer($_POST['plugin_ocsinventoryng_ocsservers_id'] ?? 0);
-   $computers_id = (int) ($_POST['computers_id'] ?? 0);
-   $ocsid = (int) ($_POST['ocsid'] ?? 0);
-   $field = (string) ($_POST['field'] ?? '');
+    // A synchronization of the computer: the right of the plugin, on a server allowed for the profile
+    Session::checkRight('plugin_ocsinventoryng_sync', UPDATE);
+    $plugin_ocsinventoryng_ocsservers_id = OcsServer::checkAllowedServer($_POST['plugin_ocsinventoryng_ocsservers_id'] ?? 0);
+    $computers_id = (int) ($_POST['computers_id'] ?? 0);
+    $ocsid = (int) ($_POST['ocsid'] ?? 0);
+    $field = (string) ($_POST['field'] ?? '');
 
-   // The user must be allowed to update the computer, and the OCS machine must be the one
-   // linked to it on that server
-   $computer = new Computer();
-   $computer->check($computers_id, UPDATE);
-   $link = new Ocslink();
-   if (!$link->getFromDBByCrit([
-      'computers_id'                        => $computers_id,
-      'ocsid'                               => $ocsid,
-      'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
-   ])) {
-      throw new \Glpi\Exception\Http\BadRequestHttpException();
-   }
+    // The user must be allowed to update the computer, and the OCS machine must be the one
+    // linked to it on that server
+    $computer = new Computer();
+    $computer->check($computers_id, UPDATE);
+    $link = new Ocslink();
+    if (!$link->getFromDBByCrit([
+        'computers_id'                        => $computers_id,
+        'ocsid'                               => $ocsid,
+        'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
+    ])) {
+        throw new \Glpi\Exception\Http\BadRequestHttpException();
+    }
 
-   Ocslink::updateLock($plugin_ocsinventoryng_ocsservers_id, $computers_id, $ocsid, $field);
+    Ocslink::updateLock($plugin_ocsinventoryng_ocsservers_id, $computers_id, $ocsid, $field);
 }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  -------------------------------------------------------------------------
  Ocsinventoryng plugin for GLPI
@@ -31,14 +32,14 @@ namespace GlpiPlugin\Ocsinventoryng;
 use CommonDBTM;
 
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
 /**
  * Class Ocsserver_Profile
  */
-class Ocsserver_Profile extends CommonDBTM {
-
-   static $rightname = "profile";
+class Ocsserver_Profile extends CommonDBTM
+{
+    public static $rightname = "profile";
 
 }

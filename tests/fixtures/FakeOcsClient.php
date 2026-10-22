@@ -185,9 +185,7 @@ class FakeOcsClient extends OcsClient
     }
 
     /** @param string $key @param int $ivalue @param string $tvalue */
-    public function setConfig($key, $ivalue, $tvalue): void
-    {
-    }
+    public function setConfig($key, $ivalue, $tvalue): void {}
 
     /** @param int $id @return int */
     public function getChecksum($id): int
@@ -226,12 +224,8 @@ class FakeOcsClient extends OcsClient
     }
 
     /** @param int $ssn @param int $id */
-    public function updateBios($ssn, $id): void
-    {
-    }
+    public function updateBios($ssn, $id): void {}
 
     /** @param int $tag @param int $id */
-    public function updateTag($tag, $id): void
-    {
-    }
+    public function updateTag($tag, $id): void {}
 }

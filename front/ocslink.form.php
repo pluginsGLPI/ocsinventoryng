@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -42,52 +43,52 @@ Session::checkRight("computer", READ);
  * @return Ocslink
  */
 $check_link = static function ($links_id): Ocslink {
-   $link = new Ocslink();
-   if (!$link->getFromDB((int) $links_id)) {
-      throw new BadRequestHttpException();
-   }
-   $computer = new Computer();
-   $computer->check((int) $link->fields['computers_id'], UPDATE);
-   // The OCS server of the link: allowed for the active profile
-   OcsServer::checkAllowedServer($link->fields['plugin_ocsinventoryng_ocsservers_id']);
+    $link = new Ocslink();
+    if (!$link->getFromDB((int) $links_id)) {
+        throw new BadRequestHttpException();
+    }
+    $computer = new Computer();
+    $computer->check((int) $link->fields['computers_id'], UPDATE);
+    // The OCS server of the link: allowed for the active profile
+    OcsServer::checkAllowedServer($link->fields['plugin_ocsinventoryng_ocsservers_id']);
 
-   return $link;
+    return $link;
 };
 
 if (isset($_POST["launch_ocs_resynch"]) || isset($_POST["force_ocs_resynch"])) {
-   // The computer checked is the one of the link synchronised, not another posted id
-   $link = $check_link($_POST["resynch_id"] ?? 0);
+    // The computer checked is the one of the link synchronised, not another posted id
+    $link = $check_link($_POST["resynch_id"] ?? 0);
 
-   //Update the computer
-   $ocsservers_id = (int) $link->fields['plugin_ocsinventoryng_ocsservers_id'];
-   $sync_params = ['ID' => (int) $link->getID(),
-                   'plugin_ocsinventoryng_ocsservers_id' => $ocsservers_id,
-                   'cfg_ocs' => OcsServer::getConfig($ocsservers_id),
-                   'force' => isset($_POST["force_ocs_resynch"]) ? 1 : 0];
-   OcsProcess::synchronizeComputer($sync_params);
-   Html::back();
-} else if (isset ($_POST["update"])) {
-   $link = $check_link($_POST["link_id"] ?? 0);
-   $link->update([
-      'id'              => $link->getID(),
-      'use_auto_update' => (int) ($_POST["use_auto_update"] ?? 0),
-   ]);
-   Html::back();
+    //Update the computer
+    $ocsservers_id = (int) $link->fields['plugin_ocsinventoryng_ocsservers_id'];
+    $sync_params = ['ID' => (int) $link->getID(),
+        'plugin_ocsinventoryng_ocsservers_id' => $ocsservers_id,
+        'cfg_ocs' => OcsServer::getConfig($ocsservers_id),
+        'force' => isset($_POST["force_ocs_resynch"]) ? 1 : 0];
+    OcsProcess::synchronizeComputer($sync_params);
+    Html::back();
+} elseif (isset($_POST["update"])) {
+    $link = $check_link($_POST["link_id"] ?? 0);
+    $link->update([
+        'id'              => $link->getID(),
+        'use_auto_update' => (int) ($_POST["use_auto_update"] ?? 0),
+    ]);
+    Html::back();
 
-} else if (isset ($_POST["delete_link"])) {
-   // Removes the link and the inventory rows of the plugin, and possibly the machine in OCS
-   Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);
-   $comp = new Computer();
-   $comp->check((int) ($_POST["items_id"] ?? 0), UPDATE);
-   // The OCS server of the computer: allowed for the active profile (the purge may delete the
-   // machine in its OCS database)
-   $ocsservers_id = OcsServer::getServerByComputerID($comp->getID());
-   if ($ocsservers_id > 0) {
-      OcsServer::checkAllowedServer($ocsservers_id);
-   }
-   $link = new Ocslink();
-   $link->purgeComputer($comp);
-   Html::back();
+} elseif (isset($_POST["delete_link"])) {
+    // Removes the link and the inventory rows of the plugin, and possibly the machine in OCS
+    Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);
+    $comp = new Computer();
+    $comp->check((int) ($_POST["items_id"] ?? 0), UPDATE);
+    // The OCS server of the computer: allowed for the active profile (the purge may delete the
+    // machine in its OCS database)
+    $ocsservers_id = OcsServer::getServerByComputerID($comp->getID());
+    if ($ocsservers_id > 0) {
+        OcsServer::checkAllowedServer($ocsservers_id);
+    }
+    $link = new Ocslink();
+    $link->purgeComputer($comp);
+    Html::back();
 } else {
     throw new BadRequestHttpException();
 

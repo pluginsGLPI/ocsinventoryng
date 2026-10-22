@@ -245,7 +245,7 @@ class OcsProcess extends CommonDBTM
                             Ocslink::history(
                                 $link_data['computers_id'],
                                 $changes,
-                                Ocslink::HISTORY_OCS_IDCHANGED
+                                Ocslink::HISTORY_OCS_IDCHANGED,
                             );
                         }
                     }
@@ -604,7 +604,7 @@ class OcsProcess extends CommonDBTM
                 $computerinput + ['ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id,
                     '_source'       => 'ocsinventoryng'],
                 [],
-                ['ocsid' => $ocsid]
+                ['ocsid' => $ocsid],
             );
 
             if (isset($data['_ignore_import']) && $data['_ignore_import'] == 1) {
@@ -638,7 +638,7 @@ class OcsProcess extends CommonDBTM
                     $computer,
                     OcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id),
                     $data['entities_id'],
-                    $is_recursive
+                    $is_recursive,
                 );
 
                 Hardware::getFields($ocsComputer, $cfg_ocs, $input);
@@ -797,7 +797,7 @@ class OcsProcess extends CommonDBTM
                 if ($DB->update(
                     'glpi_plugin_ocsinventoryng_ocslinks',
                     ['ocsid' => $ocsid],
-                    ['id' => (int) $data["id"]]
+                    ['id' => (int) $data["id"]],
                 )) {
                     if ($cfg_ocs['dohistory'] == 1) {
                         $ocs_id_change = true;
@@ -911,7 +911,7 @@ class OcsProcess extends CommonDBTM
                                        + ['ocsservers_id' => $line_links["plugin_ocsinventoryng_ocsservers_id"],
                                            '_source'       => 'ocsinventoryng'],
             $values,
-            ['ocsid' => $line_links["ocsid"]]
+            ['ocsid' => $line_links["ocsid"]],
         );
 
         // If entity is changing move items to the new entities_id
@@ -1035,7 +1035,7 @@ class OcsProcess extends CommonDBTM
                                                    + ['ocsservers_id' => $line["plugin_ocsinventoryng_ocsservers_id"],
                                                        '_source'       => 'ocsinventoryng'],
                         $values,
-                        ['ocsid' => $line["ocsid"]]
+                        ['ocsid' => $line["ocsid"]],
                     );
                     Hardware::updateComputerFields($line, $data, $cfg_ocs);
                 }
@@ -1338,7 +1338,7 @@ class OcsProcess extends CommonDBTM
                             $plugin_ocsinventoryng_ocsservers_id,
                             $computer_updates,
                             $ocsComputer['HARDWARE'],
-                            $cfg_ocs
+                            $cfg_ocs,
                         );
                     }
 
@@ -1447,7 +1447,7 @@ class OcsProcess extends CommonDBTM
                             $comp->fields["entities_id"],
                             $updates['officepack'],
                             ($ocsComputer['OFFICEPACK'] ?? []),
-                            $force
+                            $force,
                         );
                     }
                     if ($updates['drives'] && isset($ocsComputer["DRIVES"])) {
@@ -1459,7 +1459,7 @@ class OcsProcess extends CommonDBTM
                             $updates['bitlocker'],
                             ($ocsComputer['BITLOCKERSTATUS'] ?? []),
                             $cfg_ocs,
-                            $force
+                            $force,
                         );
                     }
                     if ($updates['virtualmachines'] && isset($ocsComputer["VIRTUALMACHINES"])) {
@@ -1469,7 +1469,7 @@ class OcsProcess extends CommonDBTM
                             $ocsComputer["VIRTUALMACHINES"],
                             $plugin_ocsinventoryng_ocsservers_id,
                             $cfg_ocs,
-                            $force
+                            $force,
                         );
                     }
                     if ($updates['registry'] && isset($ocsComputer["REGISTRY"])) {
@@ -1478,7 +1478,7 @@ class OcsProcess extends CommonDBTM
                             $line['computers_id'],
                             $ocsComputer["REGISTRY"],
                             $cfg_ocs,
-                            1
+                            1,
                         );
                     }
                     /********************* PLUGINS *********************/
@@ -1488,7 +1488,7 @@ class OcsProcess extends CommonDBTM
                             $line['computers_id'],
                             $ocsComputer["SECURITYCENTER"],
                             $cfg_ocs,
-                            1
+                            1,
                         );
                     }
                     if ($updates['winupdatestate'] && isset($ocsComputer["WINUPDATESTATE"])) {
@@ -1497,7 +1497,7 @@ class OcsProcess extends CommonDBTM
                             $line['computers_id'],
                             $ocsComputer["WINUPDATESTATE"],
                             $cfg_ocs,
-                            1
+                            1,
                         );
                     }
                     if ($updates['osinstall'] && isset($ocsComputer["OSINSTALL"])) {
@@ -1506,7 +1506,7 @@ class OcsProcess extends CommonDBTM
                             $line['computers_id'],
                             $ocsComputer["OSINSTALL"],
                             $cfg_ocs,
-                            1
+                            1,
                         );
                     }
                     if ($updates['proxysetting'] && isset($ocsComputer["NAVIGATORPROXYSETTING"])) {
@@ -1515,7 +1515,7 @@ class OcsProcess extends CommonDBTM
                             $line['computers_id'],
                             $ocsComputer["NAVIGATORPROXYSETTING"],
                             $cfg_ocs,
-                            1
+                            1,
                         );
                     }
                     if ($updates['networkshare'] && isset($ocsComputer["NETWORKSHARE"])) {
@@ -1524,7 +1524,7 @@ class OcsProcess extends CommonDBTM
                             $line['computers_id'],
                             $ocsComputer["NETWORKSHARE"],
                             $cfg_ocs,
-                            1
+                            1,
                         );
                     }
                     if ($updates['runningprocess'] && isset($ocsComputer["RUNNINGPROCESS"])) {
@@ -1533,7 +1533,7 @@ class OcsProcess extends CommonDBTM
                             $line['computers_id'],
                             $ocsComputer["RUNNINGPROCESS"],
                             $cfg_ocs,
-                            1
+                            1,
                         );
                     }
                     if ($updates['service'] && isset($ocsComputer["SERVICE"])) {
@@ -1542,7 +1542,7 @@ class OcsProcess extends CommonDBTM
                             $line['computers_id'],
                             $ocsComputer["SERVICE"],
                             $cfg_ocs,
-                            1
+                            1,
                         );
                     }
                     if ($updates['winuser'] && isset($ocsComputer["WINUSERS"])) {
@@ -1551,7 +1551,7 @@ class OcsProcess extends CommonDBTM
                             $line['computers_id'],
                             $ocsComputer["WINUSERS"],
                             $cfg_ocs,
-                            1
+                            1,
                         );
                     }
                     if ($updates['teamviewer'] && isset($ocsComputer["TEAMVIEWER"])) {
@@ -1560,7 +1560,7 @@ class OcsProcess extends CommonDBTM
                             $line['computers_id'],
                             $ocsComputer["TEAMVIEWER"],
                             $cfg_ocs,
-                            1
+                            1,
                         );
                     }
                     if ($updates['uptime'] && isset($ocsComputer["UPTIME"])) {
@@ -1573,7 +1573,7 @@ class OcsProcess extends CommonDBTM
                             $line['computers_id'],
                             $ocsComputer["CUSTOMAPP"],
                             $cfg_ocs,
-                            1
+                            1,
                         );
                     }
 

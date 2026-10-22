@@ -44,7 +44,7 @@ if (!Session::haveRight("plugin_ocsinventoryng_import", READ)
 $plugin_ocsinventoryng_ocsservers_id = OcsServer::checkAllowedServer($_POST["plugin_ocsinventoryng_ocsservers_id"] ?? 0);
 $entities_id                         = array_values(array_intersect(
     array_map('intval', (array) ($_POST["entities_id"] ?? [])),
-    array_map('intval', $_SESSION['glpiactiveentities'] ?? [])
+    array_map('intval', $_SESSION['glpiactiveentities'] ?? []),
 )) ?: array_map('intval', $_SESSION['glpiactiveentities'] ?? []);
 $advancedimport                      = (int) ($_POST["importmode"] ?? 0);
 $advancedlink                        = (int) ($_POST["linkmode"] ?? 0);
@@ -182,7 +182,7 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                         'display'       => false,
                         'autoclose'     => false,
                         'onclick'       => true,
-                    ]
+                    ],
                 );
 
                 $toimport_disable_unicity_check = "";
@@ -220,7 +220,7 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
                             'is_recursive'  => $recursive,
                         ],
                         ['is_recursive' => $recursive],
-                        ['ocsid' => $id, 'return' => true]
+                        ['ocsid' => $id, 'return' => true],
                     );
 
                     if (!isset($datar['entities_id']) || $datar['entities_id'] == -1) {

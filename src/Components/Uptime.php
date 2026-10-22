@@ -57,7 +57,7 @@ class Uptime
                 $DB->update(
                     'glpi_plugin_ocsinventoryng_ocslinks',
                     ['uptime' => (string) $ocsComputer["DURATION"]],
-                    ['id' => (int) $id]
+                    ['id' => (int) $id],
                 );
             }
         }

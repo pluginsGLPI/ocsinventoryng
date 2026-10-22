@@ -37,197 +37,219 @@ use Dropdown;
 /**
  * Class Detail
  */
-class Detail extends CommonDBTM {
+class Detail extends CommonDBTM
+{
+    /**
+     * @return array
+     */
+    public function rawSearchOptions()
+    {
+
+        $tab = [];
+
+        $tab[] = [
+            'id'   => 'common',
+            'name' => _n(
+                'Computer not imported',
+                'Computers not imported',
+                2,
+                'ocsinventoryng',
+            ),
+        ];
+
+        $tab[] = [
+            'id'       => '1',
+            'table'    => $this->getTable(),
+            'field'    => 'ocsid',
+            'name'     => __('OCSNG ID', 'ocsinventoryng'),
+            'datatype' => 'integer',
+        ];
+
+        $tab[] = [
+            'id'         => '2',
+            'table'      => 'glpi_plugin_ocsinventoryng_ocsservers',
+            'field'      => 'name',
+            'name'       => __('Server'),
+            'searchtype' => 'equals',
+        ];
+
+        $tab[] = [
+            'id'       => '3',
+            'table'    => $this->getTable(),
+            'field'    => 'process_time',
+            'name'     => __('Process time', 'ocsinventoryng'),
+            'datatype' => 'datetime',
+        ];
+
+        $tab[] = [
+            'id'         => '4',
+            'table'      => $this->getTable(),
+            'field'      => 'action',
+            'name'       => __('Action type'),
+            'searchtype' => 'equals',
+        ];
+
+        $tab[] = [
+            'id'       => '5',
+            'table'    => 'glpi_plugin_ocsinventoryng_threads',
+            'field'    => 'processid',
+            'name'     => __('Process', 'ocsinventoryng'),
+            'datatype' => 'integer',
+        ];
+
+        $tab[] = [
+            'id'    => '6',
+            'table' => $this->getTable(),
+            'field' => 'computers_id',
+            'name'  => _n('Computer', 'Computers', 1),
+        ];
+
+        $tab[] = [
+            'id'       => '7',
+            'table'    => $this->getTable(),
+            'field'    => 'threadid',
+            'name'     => __('Thread', 'ocsinventoryng'),
+            'datatype' => 'integer',
+        ];
+
+        $tab[] = [
+            'id'       => '8',
+            'table'    => $this->getTable(),
+            'field'    => 'rules_id',
+            'name'     => __('Rules checked', 'ocsinventoryng'),
+            'datatype' => 'text',
+        ];
+
+        $tab[] = [
+            'id'         => '80',
+            'table'      => 'glpi_entities',
+            'field'      => 'completename',
+            'name'       => __('Entity'),
+            'datatype'   => 'dropdown',
+            'searchtype' => 'equals',
+        ];
+
+        return $tab;
+    }
 
 
-   /**
-    * @return array
-    */
-   function rawSearchOptions() {
+    /**
+     * @param $ocsid
+     * @param $ocsservers_id
+     * @param $action
+     * @param $threadid
+     * @param $threads_id
+     **/
+    public function logProcessedComputer($ocsid, $ocsservers_id, $action, $threadid, $threads_id)
+    {
 
-      $tab = [];
+        $input["ocsid"] = $ocsid;
+        if (isset($action["rule_matched"])) {
+            $input["rules_id"] = json_encode($action['rule_matched']);
+        } else {
+            $input["rules_id"] = "";
+        }
+        $input["threadid"]                            = $threadid;
+        $input["plugin_ocsinventoryng_threads_id"]    = $threads_id;
+        $input["plugin_ocsinventoryng_ocsservers_id"] = $ocsservers_id;
+        $input["action"]                              = $action['status'];
+        if (isset($action["entities_id"])) {
+            $input["entities_id"] = $action['entities_id'];
+        } else {
+            $input['entities_id'] = 0;
+        }
+        if (isset($action['computers_id'])) {
+            $comp = new Computer();
+            if ($comp->getFromDB($action['computers_id'])) {
+                $input['computers_id'] = $comp->getID();
+                $input['entities_id']  = $comp->getEntityID();
+            }
+        }
+        $input["process_time"] = date("Y-m-d H:i:s");
 
-      $tab[] = [
-         'id'   => 'common',
-         'name' => _n('Computer not imported', 'Computers not imported', 2,
-                      'ocsinventoryng')
-      ];
-
-      $tab[] = [
-         'id'       => '1',
-         'table'    => $this->getTable(),
-         'field'    => 'ocsid',
-         'name'     => __('OCSNG ID', 'ocsinventoryng'),
-         'datatype' => 'integer'
-      ];
-
-      $tab[] = [
-         'id'         => '2',
-         'table'      => 'glpi_plugin_ocsinventoryng_ocsservers',
-         'field'      => 'name',
-         'name'       => __('Server'),
-         'searchtype' => 'equals'
-      ];
-
-      $tab[] = [
-         'id'       => '3',
-         'table'    => $this->getTable(),
-         'field'    => 'process_time',
-         'name'     => __('Process time', 'ocsinventoryng'),
-         'datatype' => 'datetime'
-      ];
-
-      $tab[] = [
-         'id'         => '4',
-         'table'      => $this->getTable(),
-         'field'      => 'action',
-         'name'       => __('Action type'),
-         'searchtype' => 'equals'
-      ];
-
-      $tab[] = [
-         'id'       => '5',
-         'table'    => 'glpi_plugin_ocsinventoryng_threads',
-         'field'    => 'processid',
-         'name'     => __('Process', 'ocsinventoryng'),
-         'datatype' => 'integer'
-      ];
-
-      $tab[] = [
-         'id'    => '6',
-         'table' => $this->getTable(),
-         'field' => 'computers_id',
-         'name'  => _n('Computer', 'Computers', 1)
-      ];
-
-      $tab[] = [
-         'id'       => '7',
-         'table'    => $this->getTable(),
-         'field'    => 'threadid',
-         'name'     => __('Thread', 'ocsinventoryng'),
-         'datatype' => 'integer'
-      ];
-
-      $tab[] = [
-         'id'       => '8',
-         'table'    => $this->getTable(),
-         'field'    => 'rules_id',
-         'name'     => __('Rules checked', 'ocsinventoryng'),
-         'datatype' => 'text'
-      ];
-
-      $tab[] = [
-         'id'         => '80',
-         'table'      => 'glpi_entities',
-         'field'      => 'completename',
-         'name'       => __('Entity'),
-         'datatype'   => 'dropdown',
-         'searchtype' => 'equals'
-      ];
-
-      return $tab;
-   }
+        $this->add($input);
+    }
 
 
-   /**
-    * @param $ocsid
-    * @param $ocsservers_id
-    * @param $action
-    * @param $threadid
-    * @param $threads_id
-    **/
-   function logProcessedComputer($ocsid, $ocsservers_id, $action, $threadid, $threads_id) {
+    /**
+     * @param $threads_id
+     **/
+    public static function deleteThreadDetailsByProcessID($threads_id)
+    {
 
-      $input["ocsid"] = $ocsid;
-      if (isset($action["rule_matched"])) {
-         $input["rules_id"] = json_encode($action['rule_matched']);
-      } else {
-         $input["rules_id"] = "";
-      }
-      $input["threadid"]                            = $threadid;
-      $input["plugin_ocsinventoryng_threads_id"]    = $threads_id;
-      $input["plugin_ocsinventoryng_ocsservers_id"] = $ocsservers_id;
-      $input["action"]                              = $action['status'];
-      if (isset($action["entities_id"])) {
-         $input["entities_id"] = $action['entities_id'];
-      } else {
-         $input['entities_id'] = 0;
-      }
-      if (isset($action['computers_id'])) {
-         $comp = new Computer();
-         if ($comp->getFromDB($action['computers_id'])) {
-            $input['computers_id'] = $comp->getID();
-            $input['entities_id']  = $comp->getEntityID();
-         }
-      }
-      $input["process_time"] = date("Y-m-d H:i:s");
-
-      $this->add($input);
-   }
+        $temp = new self();
+        $temp->deleteByCriteria(['plugin_ocsinventoryng_threads_id' => $threads_id]);
+    }
 
 
-   /**
-    * @param $threads_id
-    **/
-   static function deleteThreadDetailsByProcessID($threads_id) {
+    /**
+     * @param $action
+     *
+     * @return mixed|string
+     */
+    public static function giveActionNameByActionID($action)
+    {
 
-      $temp = new self();
-      $temp->deleteByCriteria(['plugin_ocsinventoryng_threads_id' => $threads_id]);
-   }
-
-
-   /**
-    * @param $action
-    *
-    * @return mixed|string
-    */
-   static function giveActionNameByActionID($action) {
-
-      $actions = self::getActions();
-      if (isset($actions[$action])) {
-         return $actions[$action];
-      }
-      return '';
-   }
+        $actions = self::getActions();
+        if (isset($actions[$action])) {
+            return $actions[$action];
+        }
+        return '';
+    }
 
 
-   /**
-    * @return array
-    */
-   static function getActions() {
+    /**
+     * @return array
+     */
+    public static function getActions()
+    {
 
-      return [OcsProcess::COMPUTER_FAILED_IMPORT
-              => _n('Computer not imported',
-                    'Computers not imported', 2,
-                    'ocsinventoryng'),
-          OcsProcess::COMPUTER_IMPORTED
-              => __('Computers imported',
-                    'ocsinventoryng'),
-          OcsProcess::COMPUTER_LINKED
-              => __('Computers linked',
-                    'ocsinventoryng'),
-          OcsProcess::COMPUTER_NOTUPDATED
-              => __('Computers not updated',
-                    'ocsinventoryng'),
-          OcsProcess::COMPUTER_SYNCHRONIZED
-              => __('Computers synchronized',
-                    'ocsinventoryng'),
-          OcsProcess::COMPUTER_NOT_UNIQUE
-              => __('Computers not unique',
-                    'ocsinventoryng'),
-          OcsProcess::COMPUTER_LINK_REFUSED
-              => __('Import refused by rule', 'ocsinventoryng')];
-   }
+        return [OcsProcess::COMPUTER_FAILED_IMPORT
+                => _n(
+                    'Computer not imported',
+                    'Computers not imported',
+                    2,
+                    'ocsinventoryng',
+                ),
+            OcsProcess::COMPUTER_IMPORTED
+                => __(
+                    'Computers imported',
+                    'ocsinventoryng',
+                ),
+            OcsProcess::COMPUTER_LINKED
+                => __(
+                    'Computers linked',
+                    'ocsinventoryng',
+                ),
+            OcsProcess::COMPUTER_NOTUPDATED
+                => __(
+                    'Computers not updated',
+                    'ocsinventoryng',
+                ),
+            OcsProcess::COMPUTER_SYNCHRONIZED
+                => __(
+                    'Computers synchronized',
+                    'ocsinventoryng',
+                ),
+            OcsProcess::COMPUTER_NOT_UNIQUE
+                => __(
+                    'Computers not unique',
+                    'ocsinventoryng',
+                ),
+            OcsProcess::COMPUTER_LINK_REFUSED
+                => __('Import refused by rule', 'ocsinventoryng')];
+    }
 
 
-   /**
-    * @param $name
-    * @param $value (default 0)
-    **/
-   static function showActions($name, $value = 0) {
+    /**
+     * @param $name
+     * @param $value (default 0)
+     **/
+    public static function showActions($name, $value = 0)
+    {
 
-      $actions = self::getActions();
-      Dropdown::showFromArray($name, $actions, ['value' => $value]);
-   }
+        $actions = self::getActions();
+        Dropdown::showFromArray($name, $actions, ['value' => $value]);
+    }
 
 }

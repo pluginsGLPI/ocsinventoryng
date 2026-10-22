@@ -91,8 +91,9 @@ if (isset($_SESSION["ocs_import"]['computers'])) {
             100,
             round(
                 100 * ($_SESSION["ocs_import_count"] - $count) / $_SESSION["ocs_import_count"],
-                0, PHP_ROUND_HALF_UP
-            )
+                0,
+                PHP_ROUND_HALF_UP,
+            ),
         );
 
         $key = array_pop($_SESSION["ocs_import"]['computers']);
@@ -133,7 +134,7 @@ if (isset($_SESSION["ocs_import"]['computers'])) {
 
         OcsProcess::manageImportStatistics(
             $_SESSION["ocs_import"]['statistics'],
-            $action['status']
+            $action['status'],
         );
         echo Html::getProgressBar($percent);
 

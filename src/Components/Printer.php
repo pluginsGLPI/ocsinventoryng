@@ -45,7 +45,6 @@ if (!defined('GLPI_ROOT')) {
  */
 class Printer
 {
-
     public static $rightname = "plugin_ocsinventoryng";
 
 
@@ -128,7 +127,7 @@ class Printer
                     //to this computer
                     $criteria = [
                         'SELECT' => [
-                            'glpi_printers.id'
+                            'glpi_printers.id',
                         ],
                         'FROM' => 'glpi_printers',
                         'LEFT JOIN'       => [
@@ -140,7 +139,7 @@ class Printer
                                             'glpi_assets_assets_peripheralassets.itemtype_peripheral' => 'Printer',
                                         ],
                                     ],
-                                ]
+                                ],
                             ],
                         ],
                         'WHERE' => [
@@ -148,7 +147,7 @@ class Printer
                             'glpi_assets_assets_peripheralassets.is_dynamic' => 1,
                             'glpi_assets_assets_peripheralassets.items_id_asset' => $computers_id,
                             'glpi_assets_assets_peripheralassets.itemtype_asset' => 'Computer',
-                        ]
+                        ],
                     ];
 
                     $iterator = $DB->request($criteria);
@@ -178,7 +177,7 @@ class Printer
                                 'WHERE' => [
                                     'name' => $print["name"],
                                     'is_global' => MANAGEMENT_GLOBAL,
-                                ]
+                                ],
                             ];
 
                             if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
@@ -277,7 +276,7 @@ class Printer
                         'glpi_assets_assets_peripheralassets',
                         [
                             'id' =>  $data['id'],
-                        ]
+                        ],
                     );
 
                     //Put periph in dustbin
@@ -290,7 +289,7 @@ class Printer
                         ],
                         [
                             'id' =>  $data['id'],
-                        ]
+                        ],
                     );
 
                 }

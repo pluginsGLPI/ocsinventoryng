@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -50,7 +51,7 @@ class RuleImportEntity extends CommonDBTM
 {
     public static $rightname = "plugin_ocsinventoryng";
 
-    const NO_RULE = 0;
+    public const NO_RULE = 0;
 
     /**
      * @param int $nb
@@ -120,14 +121,14 @@ class RuleImportEntity extends CommonDBTM
                                sprintf(
                                    __('Items that do not meet the allocation rules for the entity %s: %s', 'ocsinventoryng'),
                                    Dropdown::getDropdownName("glpi_entities", $entities_id),
-                                   count($items)
+                                   count($items),
                                ) . "<br />";
 
                     if (NotificationEvent::raiseEvent(
                         "CheckRuleImportEntity",
                         new RuleImportEntity(),
                         ['entities_id' => $entities_id,
-                         'items'       => $items]
+                            'items'       => $items],
                     )) {
                         $cron_status = 1;
                         if ($task) {
@@ -172,7 +173,7 @@ class RuleImportEntity extends CommonDBTM
             $fields = $ruleCollection->processAllRules(
                 $computer,
                 [],
-                ['ocsid' => $computer['ocsid']]
+                ['ocsid' => $computer['ocsid']],
             );
 
 
@@ -242,7 +243,7 @@ class RuleImportEntity extends CommonDBTM
 
         $ocslinks = $ocslink->find(
             ["plugin_ocsinventoryng_ocsservers_id" => $plugin_ocsinventoryng_ocsservers_id],
-            ["entities_id"]
+            ["entities_id"],
         );
 
         $computers = [];

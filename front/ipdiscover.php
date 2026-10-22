@@ -45,21 +45,21 @@ Html::header(Menu::getTypeName(), '', "tools", Menu::class, "importipdiscover");
 
 $ip = new IpdiscoverOcslink();
 if (empty($_POST)) {
-   $_POST = $_GET;
+    $_POST = $_GET;
 }
 // The action of the list, and the subnet chosen: an id of the list of the page
 $_GET['action'] = IpdiscoverOcslink::checkAction($_GET['action'] ?? 'import');
 
 if (isset($_GET['subnetsChoice'])) {
-   $_POST["subnetsChoice"] = $_GET['subnetsChoice'];
+    $_POST["subnetsChoice"] = $_GET['subnetsChoice'];
 }
 foreach (['subnetsChoice', 'ident', 'nonident'] as $key) {
-   foreach ([&$_POST, &$_GET] as &$source) {
-      if (isset($source[$key]) && !array_key_exists((string) $source[$key], $_SESSION["subnets"] ?? [])) {
-         unset($source[$key]);
-      }
-   }
-   unset($source);
+    foreach ([&$_POST, &$_GET] as &$source) {
+        if (isset($source[$key]) && !array_key_exists((string) $source[$key], $_SESSION["subnets"] ?? [])) {
+            unset($source[$key]);
+        }
+    }
+    unset($source);
 }
 $_POST['start'] = max(0, (int) ($_POST['start'] ?? 0));
 
@@ -67,39 +67,39 @@ if (isset($_POST["subnetsChoice"])
    && isset($_SESSION["subnets"])
    || isset($_SESSION["subnets"])
 ) {
-   $sN = "";
-   $networksDetail = [];
-   $ocsServerId = $_SESSION["plugin_ocsinventoryng_ocsservers_id"];
-   $tab = $_SESSION["subnets"];
-   $subnets = $ip->getSubnets($ocsServerId);
+    $sN = "";
+    $networksDetail = [];
+    $ocsServerId = $_SESSION["plugin_ocsinventoryng_ocsservers_id"];
+    $tab = $_SESSION["subnets"];
+    $subnets = $ip->getSubnets($ocsServerId);
 
-   if (isset($_POST["subnetsChoice"])) {
-      $sN = $_POST["subnetsChoice"];
-      $knownMacAdresses = $ip->getKnownMacAdresseFromGlpi();
-      $networksDetail["subnets"] = $ip->showSubnets($ocsServerId, $subnets, $knownMacAdresses, $sN);
-      $networksDetail["subnetsChoice"] = $_POST["subnetsChoice"];
+    if (isset($_POST["subnetsChoice"])) {
+        $sN = $_POST["subnetsChoice"];
+        $knownMacAdresses = $ip->getKnownMacAdresseFromGlpi();
+        $networksDetail["subnets"] = $ip->showSubnets($ocsServerId, $subnets, $knownMacAdresses, $sN);
+        $networksDetail["subnetsChoice"] = $_POST["subnetsChoice"];
 
-   } else {
-      $sN = "";
-      if (isset($_GET["ident"])) {
-         $sN = $_GET["ident"];
+    } else {
+        $sN = "";
+        if (isset($_GET["ident"])) {
+            $sN = $_GET["ident"];
 
-      } else if (isset($_GET["nonident"])) {
-         $sN = $_GET["nonident"];
-      }
-      $knownMacAdresses = $ip->getKnownMacAdresseFromGlpi();
-      $networksDetail["subnets"] = $ip->showSubnets($ocsServerId, $subnets, $knownMacAdresses, $sN);
-      $networksDetail["subnetsChoice"] = $sN;
-   }
-   $lim = count($networksDetail["subnets"]);
-   // The pager links carry "start" in the URL
-   $start = (int) ($_GET["start"] ?? $_POST["start"] ?? 0);
-   IpdiscoverOcslink::showSubnetSearchForm($_GET["action"]);
-   if ($lim > $_SESSION["glpilist_limit"]) {
-      $ip->showSubnetsDetails($networksDetail, $_SESSION["glpilist_limit"], $start, $_GET["action"]);
-   } else {
-      $ip->showSubnetsDetails($networksDetail, $lim, $start, $_GET["action"]);
-   }
+        } elseif (isset($_GET["nonident"])) {
+            $sN = $_GET["nonident"];
+        }
+        $knownMacAdresses = $ip->getKnownMacAdresseFromGlpi();
+        $networksDetail["subnets"] = $ip->showSubnets($ocsServerId, $subnets, $knownMacAdresses, $sN);
+        $networksDetail["subnetsChoice"] = $sN;
+    }
+    $lim = count($networksDetail["subnets"]);
+    // The pager links carry "start" in the URL
+    $start = (int) ($_GET["start"] ?? $_POST["start"] ?? 0);
+    IpdiscoverOcslink::showSubnetSearchForm($_GET["action"]);
+    if ($lim > $_SESSION["glpilist_limit"]) {
+        $ip->showSubnetsDetails($networksDetail, $_SESSION["glpilist_limit"], $start, $_GET["action"]);
+    } else {
+        $ip->showSubnetsDetails($networksDetail, $lim, $start, $_GET["action"]);
+    }
 }
 
 Html::footer();

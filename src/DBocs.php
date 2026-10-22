@@ -70,7 +70,7 @@ class DBocs extends DBmysql
                 $dbhost,
                 $dbuser,
                 $dbdefault,
-                $error_msg
+                $error_msg,
             );
             throw new \RuntimeException($diagnostic);
         }
@@ -105,7 +105,7 @@ class DBocs extends DBmysql
                 $this->dbsslcert,
                 $this->dbsslca,
                 $this->dbsslcapath,
-                $this->dbsslcacipher
+                $this->dbsslcacipher,
             );
         }
 

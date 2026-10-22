@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -27,43 +28,46 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Ocsinventoryng\IpdiscoverOcslink;
 use GlpiPlugin\Ocsinventoryng\Menu;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 Session::checkSeveralRightsOr(["plugin_ocsinventoryng" => READ,
-   "plugin_ocsinventoryng_clean" => READ]);
+    "plugin_ocsinventoryng_clean" => READ]);
 
 Html::header(Menu::getTypeName(), '', "tools", Menu::class, "ocsinventoryng");
 
-if (isset ($_SESSION["ocs_import"])) {
-   unset ($_SESSION["ocs_import"]);
+if (isset($_SESSION["ocs_import"])) {
+    unset($_SESSION["ocs_import"]);
 }
-if (isset ($_SESSION["ocs_link"])) {
-   unset ($_SESSION["ocs_link"]);
+if (isset($_SESSION["ocs_link"])) {
+    unset($_SESSION["ocs_link"]);
 }
-if (isset ($_SESSION["ocs_update"])) {
-   unset ($_SESSION["ocs_update"]);
+if (isset($_SESSION["ocs_update"])) {
+    unset($_SESSION["ocs_update"]);
 }
 // when open the menu, no $_POST
 if (isset($_POST["plugin_ocsinventoryng_ocsservers_id"])) {
-   // The server used by every page of the plugin: an integer, allowed for the active profile
-   $_SESSION["plugin_ocsinventoryng_ocsservers_id"]
-      = OcsServer::checkAllowedServer($_POST["plugin_ocsinventoryng_ocsservers_id"]);
+    // The server used by every page of the plugin: an integer, allowed for the active profile
+    $_SESSION["plugin_ocsinventoryng_ocsservers_id"]
+       = OcsServer::checkAllowedServer($_POST["plugin_ocsinventoryng_ocsservers_id"]);
 } else {
-   $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = OcsServer::getFirstServer();
+    $_SESSION["plugin_ocsinventoryng_ocsservers_id"] = OcsServer::getFirstServer();
 }
 
-//OcsServer::newOcsMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-echo "<div class='center'><img src='".PLUGIN_OCS_WEBDIR . "/pics/ocsinventoryng.png'></div>";
+echo TemplateRenderer::getInstance()->renderFromStringTemplate(
+    '<div class="text-center my-3"><img src="{{ logo }}" alt="{{ name }}"></div>',
+    ['logo' => PLUGIN_OCS_WEBDIR . "/pics/ocsinventoryng.png", 'name' => Menu::getTypeName()],
+);
 $menu = new Menu();
 $menu->display();
 //load mac constructors in sessionMemory
 $_SESSION["OCS"]["count"] = 0;
 if (!isset($_SESSION["OCS"]["IpdiscoverMacConstructors"])) {
-   $ip = new IpdiscoverOcslink();
-   $ip->loadMacConstructor();
-   $_SESSION["OCS"]["count"] = $_SESSION["OCS"]["count"] + 1;
+    $ip = new IpdiscoverOcslink();
+    $ip->loadMacConstructor();
+    $_SESSION["OCS"]["count"] = $_SESSION["OCS"]["count"] + 1;
 }
 //OcsServer::ocsMenu($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
 

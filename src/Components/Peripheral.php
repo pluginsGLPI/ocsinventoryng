@@ -96,7 +96,7 @@ class Peripheral
                 //to this computer
                 $criteria = [
                     'SELECT' => [
-                        'glpi_peripherals.id'
+                        'glpi_peripherals.id',
                     ],
                     'FROM' => 'glpi_peripherals',
                     'LEFT JOIN'       => [
@@ -108,7 +108,7 @@ class Peripheral
                                         'glpi_assets_assets_peripheralassets.itemtype_peripheral' => 'Peripheral',
                                     ],
                                 ],
-                            ]
+                            ],
                         ],
                     ],
                     'WHERE' => [
@@ -116,7 +116,7 @@ class Peripheral
                         'glpi_assets_assets_peripheralassets.is_dynamic' => 1,
                         'glpi_assets_assets_peripheralassets.items_id_asset' => $computers_id,
                         'glpi_assets_assets_peripheralassets.itemtype_asset' => 'Computer',
-                    ]
+                    ],
                 ];
 
                 $iterator = $DB->request($criteria);
@@ -134,18 +134,18 @@ class Peripheral
                     if ($peripheral["MANUFACTURER"] != "NULL") {
                         $periph["brand"] = OcsProcess::encodeOcsDataInUtf8(
                             $cfg_ocs["ocs_db_utf8"],
-                            $peripheral["MANUFACTURER"]
+                            $peripheral["MANUFACTURER"],
                         );
                     }
                     if ($peripheral["INTERFACE"] != "NULL") {
                         $periph["comment"] = OcsProcess::encodeOcsDataInUtf8(
                             $cfg_ocs["ocs_db_utf8"],
-                            $peripheral["INTERFACE"]
+                            $peripheral["INTERFACE"],
                         );
                     }
                     $periph["peripheraltypes_id"] = Dropdown::importExternal(
                         'PeripheralType',
-                        $peripheral["TYPE"]
+                        $peripheral["TYPE"],
                     );
                     $id_periph                    = 0;
                     if ($cfg_ocs["import_periph"] == 1) {
@@ -159,7 +159,7 @@ class Peripheral
                             'WHERE' => [
                                 'name' => $periph["name"],
                                 'is_global' => MANAGEMENT_GLOBAL,
-                            ]
+                            ],
                         ];
 
                         if (Entity::getUsedConfig('transfers_strategy', $entity, 'transfers_id', 0) < 1) {
@@ -254,7 +254,7 @@ class Peripheral
                         'glpi_assets_assets_peripheralassets',
                         [
                             'id' =>  $data['id'],
-                        ]
+                        ],
                     );
 
                     //Put periph in dustbin
@@ -267,7 +267,7 @@ class Peripheral
                         ],
                         [
                             'id' =>  $data['id'],
-                        ]
+                        ],
                     );
 
                 }

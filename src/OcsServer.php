@@ -132,7 +132,7 @@ class OcsServer extends CommonDBTM
         return '';
     }
 
-    static function getIcon()
+    public static function getIcon()
     {
         return "ti ti-server";
     }
@@ -681,8 +681,12 @@ class OcsServer extends CommonDBTM
                     $admin_column('import_group', 'groups_id', __('Group'), $accountinfo),
                     $admin_column('import_contact_num', 'contact_num', __('Alternate username number'), $accountinfo),
                     $admin_column('import_network', 'networks_id', __('Network'), $accountinfo),
-                    $admin_column('import_use_date', 'use_date', __('Startup date'),
-                        OcsAdminInfosLink::getColumnListFromAccountInfoTable($ID, 'hardware')),
+                    $admin_column(
+                        'import_use_date',
+                        'use_date',
+                        __('Startup date'),
+                        OcsAdminInfosLink::getColumnListFromAccountInfoTable($ID, 'hardware'),
+                    ),
                 ],
             ],
         ], true);
@@ -936,38 +940,32 @@ class OcsServer extends CommonDBTM
      * */
     public function showDBConnectionStatus($ID)
     {
-        $out   = "<br><div class='center'>\n";
-        $out   .= "<table class='tab_cadre_fixe'>";
-        $out   .= "<tr><th>" . __('Connecting to the database', 'ocsinventoryng') . "</th></tr>\n";
-        $out   .= "</table></div>";
-        $msg   = "";
-        $style = "alert-info";
-        if ($ID != -1) {
-            if (!self::checkOCSconnection($ID)) {
-                $style = "alert-warning";
-                $msg   = __('Connection to the database failed', 'ocsinventoryng');
-            } elseif (!self::checkVersion($ID)) {
-                $style = "alert-warning";
-                $msg   = __('Invalid OCSNG Version: RC3 is required', 'ocsinventoryng');
-            } elseif (!self::checkTraceDeleted($ID)) {
-                $style = "alert-warning";
-                $msg   = __('Invalid OCSNG configuration (TRACE_DELETED must be active)', 'ocsinventoryng');
-                // TODO
-                /* } else if (!self::checkConfig(4)) {
-                  $out .= __('Access denied on database (Need write rights on hardware.CHECKSUM necessary)',
-                  'ocsinventoryng');
-                  } else if (!self::checkConfig(8)) {
-                  $out .= __('Access denied on database (Delete rights in deleted_equiv table necessary)',
-                  'ocsinventoryng'); */
-            } else {
-                $msg = __('Connection to database successful', 'ocsinventoryng');
-                $msg .= "<br>" . __('Valid OCSNG configuration and version', 'ocsinventoryng');
-            }
+        if ($ID == -1) {
+            return;
         }
-        $out .= "<br><div class='alert " . $style . " d-flex'>\n";
-        $out .= $msg;
-        $out .= "</div>";
-        echo $out;
+
+        $message = [
+            'title' => __('Connecting to the database', 'ocsinventoryng'),
+            'icon'  => 'ti-alert-triangle',
+            'color' => 'bg-orange-lt',
+        ];
+        if (!self::checkOCSconnection($ID)) {
+            $message['lines'] = [__('Connection to the database failed', 'ocsinventoryng')];
+            $message['icon']  = 'ti-plug-connected-x';
+            $message['color'] = 'bg-red-lt';
+        } elseif (!self::checkVersion($ID)) {
+            $message['lines'] = [__('Invalid OCSNG Version: RC3 is required', 'ocsinventoryng')];
+        } elseif (!self::checkTraceDeleted($ID)) {
+            $message['lines'] = [__('Invalid OCSNG configuration (TRACE_DELETED must be active)', 'ocsinventoryng')];
+        } else {
+            $message['lines'] = [
+                __('Connection to database successful', 'ocsinventoryng'),
+                __('Valid OCSNG configuration and version', 'ocsinventoryng'),
+            ];
+            $message['icon']  = 'ti-plug-connected';
+            $message['color'] = 'bg-green-lt';
+        }
+        self::showMessage($message);
     }
 
     /**
@@ -1007,7 +1005,7 @@ class OcsServer extends CommonDBTM
         Session::addMessageAfterRedirect(
             __('The OCS console URL must start with http:// or https://', 'ocsinventoryng'),
             false,
-            ERROR
+            ERROR,
         );
 
         return false;
@@ -1509,7 +1507,7 @@ class OcsServer extends CommonDBTM
                         $config['ocs_db_host'],
                         $config['ocs_db_user'],
                         $key,
-                        $config['ocs_db_name']
+                        $config['ocs_db_name'],
                     );
                 } else {
                     return new OcsDbClient(
@@ -1517,7 +1515,7 @@ class OcsServer extends CommonDBTM
                         $config['ocs_db_host'],
                         $config['ocs_db_user'],
                         $key,
-                        $config['ocs_db_name']
+                        $config['ocs_db_name'],
                     );
                 }
             }
@@ -2195,7 +2193,7 @@ class OcsServer extends CommonDBTM
                     'WHERE'      => [
                         'glpi_computers.is_deleted' => 1,
                         'ocslink.last_ocs_update'   => ['>=', new QueryExpression(
-                            'NOW() - INTERVAL ' . (int) $delay . ' DAY'
+                            'NOW() - INTERVAL ' . (int) $delay . ' DAY',
                         )],
                     ],
                 ]);
@@ -2215,7 +2213,7 @@ class OcsServer extends CommonDBTM
                             'Computer',
                             $changes,
                             0,
-                            Log::HISTORY_RESTORE_ITEM
+                            Log::HISTORY_RESTORE_ITEM,
                         );
                         //                  $computer->update(array('id' => $data['id'], 'is_deleted' => 0));
                     }
@@ -2274,13 +2272,13 @@ class OcsServer extends CommonDBTM
                         'glpi_computers' => [
                             'ON' => [
                                 'glpi_computers' => 'id',
-                                'glpi_plugin_ocsinventoryng_ocslinks'          => 'computers_id'
-                            ]
-                        ]
+                                'glpi_plugin_ocsinventoryng_ocslinks'          => 'computers_id',
+                            ],
+                        ],
                     ],
                     'WHERE'     => [
-                        'glpi_plugin_ocsinventoryng_ocslinks.plugin_ocsinventoryng_ocsservers_id'  => $plugin_ocsinventoryng_ocsservers_id
-                    ]
+                        'glpi_plugin_ocsinventoryng_ocslinks.plugin_ocsinventoryng_ocsservers_id'  => $plugin_ocsinventoryng_ocsservers_id,
+                    ],
                 ]);
 
                 $already_linked_ids = [];
@@ -2318,13 +2316,13 @@ class OcsServer extends CommonDBTM
 
                             $criteria = [
                                 'SELECT'    => [
-                                    'id', 'ocs_deviceid'
+                                    'id', 'ocs_deviceid',
                                 ],
                                 'FROM'      => 'glpi_plugin_ocsinventoryng_ocslinks',
                                 'WHERE'     => [
                                     'plugin_ocsinventoryng_ocsservers_id'  => $plugin_ocsinventoryng_ocsservers_id,
-                                    'ocsid'  => $data["ID"]
-                                ]
+                                    'ocsid'  => $data["ID"],
+                                ],
                             ];
 
                             $iterator = $DB->request($criteria);
@@ -2336,7 +2334,7 @@ class OcsServer extends CommonDBTM
                                     $task->log(sprintf(
                                         __('%1$s: %2$s'),
                                         _n('Computer', 'Computer', 1),
-                                        sprintf(__('%1$s (%2$s)'), $values["ocs_deviceid"], $values["id"])
+                                        sprintf(__('%1$s (%2$s)'), $values["ocs_deviceid"], $values["id"]),
                                     ));
 
                                     $sync_params = ['ID'                                  => $values["id"],
@@ -2411,29 +2409,15 @@ class OcsServer extends CommonDBTM
     {
         $ocsconfig = self::getConfig($id);
 
-        echo "<div class='center'>";
-        if ($ocsconfig["ocs_url"] != '') {
-            // A http(s) URL only (checkOcsUrl()), escaped in the attribute
-            if (self::isValidOcsUrl((string) $ocsconfig["ocs_url"])) {
-                echo "<iframe src='" . htmlescape(rtrim((string) $ocsconfig["ocs_url"], '/') . "/index.php?multi=4") . "' width='95%' height='650'></iframe>";
-            }
-        }
-        echo "</div>";
-    }
-
-    /**
-     * @param $target
-     * *@since version 0.84
-     *
-     */
-    public static function checkBox($target)
-    {
-        echo "<a href='" . $target . "?check=all' " .
-             "onclick= \"if (markCheckboxes('ocsng_form')) return false;\">" . __('Check all') .
-             "</a>&nbsp;/&nbsp;\n";
-        echo "<a href='" . $target . "?check=none' " .
-             "onclick= \"if ( unMarkCheckboxes('ocsng_form') ) return false;\">" .
-             __('Uncheck all') . "</a>\n";
+        // A http(s) URL only (checkOcsUrl()), escaped by the template
+        $url = (string) $ocsconfig["ocs_url"];
+        echo TemplateRenderer::getInstance()->renderFromStringTemplate(<<<TWIG
+            {% if url is not empty %}
+                <div class="card mb-3">
+                    <iframe src="{{ url }}" class="w-100 border-0" style="height: 650px"></iframe>
+                </div>
+            {% endif %}
+TWIG, ['url' => $url != '' && self::isValidOcsUrl($url) ? rtrim($url, '/') . "/index.php?multi=4" : '']);
     }
 
 
