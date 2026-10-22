@@ -85,7 +85,7 @@ if ($servers_id == -1) {
         'icon'     => 'ti-trash',
         'lines'    => [
             sprintf(
-                __('%1$s %2$s', 'ocsinventoryng'),
+                __('%1$s %2$s'),
                 (int) OcsServer::getDBocs($servers_id)->getTotalDeletedComputers(),
                 __('deleted computers into OCS Inventory NG', 'ocsinventoryng')
             ),
