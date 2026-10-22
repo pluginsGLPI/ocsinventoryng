@@ -34,7 +34,7 @@ use GlpiPlugin\Ocsinventoryng\OcsServer;
 Session::checkSeveralRightsOr(["plugin_ocsinventoryng" => READ,
    "plugin_ocsinventoryng_clean" => READ]);
 
-Html::header('OCS Inventory NG', '', "tools", Menu::class, "ocsinventoryng");
+Html::header(Menu::getTypeName(), '', "tools", Menu::class, "ocsinventoryng");
 
 if (isset ($_SESSION["ocs_import"])) {
    unset ($_SESSION["ocs_import"]);

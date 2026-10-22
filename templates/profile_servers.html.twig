@@ -1,0 +1,81 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# OCS tab of a profile (Profile::showForm()): the allowed OCS servers, then the rights of the plugin #}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="ti ti-server me-2"></i>{{ _n('Allowed OCSNG server', 'Allowed OCSNG servers', 2, 'ocsinventoryng') }}
+        </h3>
+    </div>
+    <form method="post" action="{{ form_url }}">
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="profile" value="{{ profiles_id }}">
+
+        {% if can_update_profile %}
+            <div class="card-body border-bottom">
+                <div class="row align-items-center">
+                    {{ fields.dropdownField(ocsserver_itemtype, 'plugin_ocsinventoryng_ocsservers_id', 0, __('Add a OCSNG server', 'ocsinventoryng'), {
+                        'used': used,
+                        'condition': {'is_active': 1},
+                        'toadd': {'-1': __('All')},
+                        'field_class': 'col-12 col-md-9',
+                        'label_class': 'col-md-4',
+                        'input_class': 'col-md-8',
+                    }) }}
+                    <div class="col-12 col-md-3 mb-2">
+                        <button type="submit" name="addocsserver" value="1" class="btn btn-primary">
+                            <i class="ti ti-plus me-1"></i>{{ _x('button', 'Add') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if servers is empty %}
+            <div class="card-body text-secondary">{{ __('None') }}</div>
+        {% else %}
+            <div class="list-group list-group-flush">
+                {% for server in servers %}
+                    <label class="list-group-item d-flex align-items-center gap-2">
+                        {% if can_update_profile %}
+                            <input type="checkbox" class="form-check-input m-0" name="item[{{ server.link_id }}]" value="1">
+                        {% endif %}
+                        <i class="ti ti-server text-secondary"></i>
+                        <a href="{{ server.url }}">{{ server.name }}</a>
+                    </label>
+                {% endfor %}
+            </div>
+            {% if can_update_profile %}
+                <div class="card-footer">
+                    <button type="submit" name="delete" value="1" class="btn btn-outline-danger">
+                        <i class="ti ti-trash me-1"></i>{{ _x('button', 'Delete') }}
+                    </button>
+                </div>
+            {% endif %}
+        {% endif %}
+    </form>
+</div>

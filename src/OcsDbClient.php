@@ -59,6 +59,61 @@ class OcsDbClient extends OcsClient
     }
 
    /**
+    * The ORDER / OFFSET / MAX_RECORDS options put in the SQL of the OCS database:
+    * a known column for the sort, integers for the pagination
+    *
+    * @param array  $options
+    * @param string $default_order
+    *
+    * @return array [order, limit, offset] SQL fragments
+    */
+    private static function checkQueryOptions(array $options, string $default_order): array
+    {
+        $order = $default_order;
+        if (isset($options['ORDER'])
+            && preg_match('/^\s*(LASTDATE|NAME|ID)(\s+(ASC|DESC))?\s*$/i', (string) $options['ORDER'])) {
+            $order = trim($options['ORDER']);
+        }
+        $max_records = isset($options['MAX_RECORDS']) ? "LIMIT  " . max(0, (int) $options['MAX_RECORDS']) : "";
+        $offset      = isset($options['OFFSET']) ? "OFFSET  " . max(0, (int) $options['OFFSET']) : "";
+
+        return [$order, $max_records, $offset];
+    }
+
+   /**
+    * The custom value of an accountinfo field (config ACCOUNT_VALUE_<column>_<value>),
+    * the stored value otherwise
+    *
+    * @param string $column accountinfo column (fields_N)
+    * @param mixed  $value
+    *
+    * @return mixed
+    */
+    private function getAccountInfoCustomValue($column, $value)
+    {
+        if (is_null($value)
+            || !preg_match('/^fields_(\d+)$/', $column, $matches)
+            || !$this->OcsTableExists("accountinfo_config")) {
+            return $value;
+        }
+        $requestcolname = $this->db->doQuery(
+            "SELECT `ID`, `NAME` FROM `accountinfo_config` WHERE `ID` = " . (int) $matches[1]
+        );
+        $colname = $this->db->fetchAssoc($requestcolname);
+        if (empty($colname['NAME'])) {
+            return $value;
+        }
+        // Values from the OCS agents: escaped
+        $name         = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" . $value;
+        $requestvalue = $this->db->doQuery(
+            "SELECT `TVALUE`, `NAME` FROM `config` WHERE `NAME` = '" . $this->db->escape($name) . "'"
+        );
+        $custom_value = $this->db->fetchAssoc($requestvalue);
+
+        return $custom_value['TVALUE'] ?? $value;
+    }
+
+   /**
     * @var DBocs
     */
     private $db;
@@ -167,31 +222,7 @@ class OcsDbClient extends OcsClient
                 $request = $this->db->doQuery($query);
                 while ($accountinfo = $this->db->fetchAssoc($request)) {
                     foreach ($accountinfo as $column => $value) {
-                        if (preg_match('/fields_\d+/', $column, $matches)) {
-                             $colnumb = explode("fields_", $matches['0']);
-
-                            if (self::OcsTableExists("accountinfo_config")) {
-                                $col            = $colnumb['1'];
-                                $query          = "SELECT `ID`, `NAME`
-                                            FROM `accountinfo_config`
-                                           WHERE `ID` = $col";
-                                $requestcolname = $this->db->doQuery($query);
-                                $colname        = $this->db->fetchAssoc($requestcolname);
-                                if ($colname['NAME'] != "") {
-                                    if (!is_null($value)) {
-                                        $name         = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" . $value;
-                                        $query        = "SELECT `TVALUE`, `NAME`
-                                                FROM `config`
-                                                WHERE `NAME` = '" . $name . "'";
-                                        $requestvalue = $this->db->doQuery($query);
-                                        $custom_value = $this->db->fetchAssoc($requestvalue);
-                                        if (isset($custom_value['TVALUE'])) {
-                                                $accountinfo[$column] = $custom_value['TVALUE'];
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        $accountinfo[$column] = $this->getAccountInfoCustomValue($column, $value);
                     }
                     $accountinfomap = $this->getAccountInfoColumns();
                     foreach ($accountinfo as $key => $value) {
@@ -232,9 +263,9 @@ class OcsDbClient extends OcsClient
        // Get a list of tables contained within the database.
         $query   = "SELECT table_name as TABLE_NAME
                 FROM information_schema.tables
-                WHERE table_schema = '$this->dbname'
+                WHERE table_schema = " . DBmysql::quoteValue((string) $this->dbname) . "
                  AND table_type ='BASE TABLE'
-                     AND table_name = '$tablename'";
+                     AND table_name = " . DBmysql::quoteValue((string) $tablename);
         $request = $this->db->doQuery($query);
 
         while ($data = $this->db->fetchAssoc($request)) {
@@ -262,7 +293,8 @@ class OcsDbClient extends OcsClient
     */
     private function getComputerSections($ids, $checksum, $wanted, $plugins, $complete = 0)
     {
-
+        // Put in the SQL of the OCS database: integers only
+        $ids = array_map('intval', (array) $ids);
         $OCS_MAP  = self::getOcsMap();
         $DATA_MAP = [];
 
@@ -319,32 +351,7 @@ class OcsDbClient extends OcsClient
                         $request = $this->db->doQuery($query);
                         while ($accountinfo = $this->db->fetchAssoc($request)) {
                             foreach ($accountinfo as $column => $value) {
-                                if (preg_match('/fields_\d+/', $column, $matches)) {
-                                    $colnumb = explode("fields_", $matches['0']);
-
-                                    if (self::OcsTableExists("accountinfo_config")) {
-                                         $col            = $colnumb['1'];
-                                         $query          = "SELECT `ID`,`NAME`
-                                                  FROM `accountinfo_config`
-                                                  WHERE `ID` = $col";
-                                         $requestcolname = $this->db->doQuery($query);
-                                         $colname        = $this->db->fetchAssoc($requestcolname);
-                                        if ($colname['NAME'] != "") {
-                                            if (!is_null($value)) {
-                                                    $name         = "ACCOUNT_VALUE_" . $colname['NAME'] . "_" .
-                                                    $value;
-                                                    $query        = "SELECT `TVALUE`, `NAME`
-                                                    FROM `config`
-                                                    WHERE `NAME` = '" . $name . "'";
-                                                    $requestvalue = $this->db->doQuery($query);
-                                                    $custom_value = $this->db->fetchAssoc($requestvalue);
-                                                if (isset($custom_value['TVALUE'])) {
-                                                    $accountinfo[$column] = $custom_value['TVALUE'];
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                $accountinfo[$column] = $this->getAccountInfoCustomValue($column, $value);
                             }
                             $accountinfomap = $this->getAccountInfoColumns();
                             foreach ($accountinfo as $key => $value2) {
@@ -579,7 +586,8 @@ class OcsDbClient extends OcsClient
     */
     private function getSnmpSections($ids, $complete = 1)
     {
-
+        // Put in the SQL of the OCS database: integers only
+        $ids = array_map('intval', (array) $ids);
         $snmp = [];
 
        // Check for basics snmp infos
@@ -816,16 +824,7 @@ class OcsDbClient extends OcsClient
             throw new \RuntimeException('OCS database connection is not established');
         }
 
-        if (isset($options['OFFSET'])) {
-            $offset = "OFFSET  " . $options['OFFSET'];
-        } else {
-            $offset = "";
-        }
-        if (isset($options['MAX_RECORDS'])) {
-            $max_records = "LIMIT  " . $options['MAX_RECORDS'];
-        } else {
-            $max_records = "";
-        }
+        [, $max_records, $offset] = self::checkQueryOptions($options, 'LASTDATE');
 
         if (isset($options['FILTER'])) {
             $filters = $options['FILTER'];
@@ -848,9 +847,9 @@ class OcsDbClient extends OcsClient
             }
             if (isset($filters['DEVICEIDS']) and $filters['DEVICEIDS']) {
                 $deviceids       = $filters['DEVICEIDS'];
-                $where_deviceids = " AND hardware.DEVICEID IN ('";
-                $where_deviceids .= join('\',\'', $deviceids);
-                $where_deviceids .= "') ";
+                $where_deviceids = " AND hardware.DEVICEID IN (";
+                $where_deviceids .= join(',', array_map([DBmysql::class, 'quoteValue'], array_map('strval', (array) $deviceids)));
+                $where_deviceids .= ") ";
             } else {
                 $where_deviceids = "";
             }
@@ -960,21 +959,7 @@ class OcsDbClient extends OcsClient
             throw new \RuntimeException('OCS database connection is not established');
         }
 
-        if (isset($options['OFFSET'])) {
-            $offset = "OFFSET  " . $options['OFFSET'];
-        } else {
-            $offset = "";
-        }
-        if (isset($options['MAX_RECORDS'])) {
-            $max_records = "LIMIT  " . $options['MAX_RECORDS'];
-        } else {
-            $max_records = "";
-        }
-        if (isset($options['ORDER'])) {
-            $order = $options['ORDER'];
-        } else {
-            $order = " LASTDATE ";
-        }
+        [$order, $max_records, $offset] = self::checkQueryOptions($options, 'LASTDATE');
 
         if (isset($options['FILTER'])) {
             $filters = $options['FILTER'];
@@ -997,9 +982,9 @@ class OcsDbClient extends OcsClient
             }
             if (isset($filters['DEVICEIDS']) and $filters['DEVICEIDS']) {
                 $deviceids       = $filters['DEVICEIDS'];
-                $where_deviceids = " AND hardware.DEVICEID IN ('";
-                $where_deviceids .= join('\',\'', $deviceids);
-                $where_deviceids .= "') ";
+                $where_deviceids = " AND hardware.DEVICEID IN (";
+                $where_deviceids .= join(',', array_map([DBmysql::class, 'quoteValue'], array_map('strval', (array) $deviceids)));
+                $where_deviceids .= ") ";
             } else {
                 $where_deviceids = "";
             }
@@ -1182,7 +1167,7 @@ class OcsDbClient extends OcsClient
     public function setConfig($key, $ivalue, $tvalue)
     {
         $query = "UPDATE `config`
-                SET `IVALUE` = '" . $ivalue . "', `TVALUE` = '" . $this->db->escape($tvalue) . "'
+                SET `IVALUE` = " . (int) $ivalue . ", `TVALUE` = '" . $this->db->escape($tvalue) . "'
                 WHERE `NAME` = '" . $this->db->escape($key) . "'";
         $this->db->doQuery($query);
     }
@@ -1240,8 +1225,8 @@ class OcsDbClient extends OcsClient
         $query = "SELECT `hardware`.`ID`
               FROM `hardware`
               INNER JOIN `accountinfo` ON (`hardware`.`ID` = `accountinfo`.`HARDWARE_ID`)
-              WHERE ((`hardware`.`CHECKSUM` & " . $cfg_ocs["checksum"] . ") > 1
-                     OR `hardware`.`LASTDATE` > '$max_date')  $archive ";
+              WHERE ((`hardware`.`CHECKSUM` & " . (int) $cfg_ocs["checksum"] . ") > 1
+                     OR `hardware`.`LASTDATE` > " . DBmysql::quoteValue(self::checkFilterDate($max_date)) . ")  $archive ";
 
        // workaround to avoid duplicate when synchro occurs during an inventory
        // "after" insert in ocsweb.hardware  and "before" insert in ocsweb.deleted_equiv
@@ -1313,6 +1298,8 @@ class OcsDbClient extends OcsClient
     */
     public function getOldAgents($delay)
     {
+        // Put in the SQL of the OCS database: integers only
+        $delay = (int) $delay;
 
         $query = "SELECT `id` from `hardware`
                      WHERE ( unix_timestamp(LASTCOME) <= UNIX_TIMESTAMP(NOW() - INTERVAL $delay DAY))
@@ -1341,6 +1328,8 @@ class OcsDbClient extends OcsClient
 
         foreach ($agents as $key => $val) {
             foreach ($val as $k => $agent) {
+                // Put in the SQL of the OCS database: integers only
+                $agent = (int) $agent;
                 $query = "SELECT `deviceid`, `name` , `IPADDR`, `OSNAME`
                       FROM `hardware`
                       WHERE `id` = $agent";
@@ -1405,8 +1394,8 @@ class OcsDbClient extends OcsClient
                             $this->db->doQuery($sql);
 
                           //Deleted computers tracking
-                            $sql = "INSERT INTO `deleted_equiv` (`DELETED`,`EQUIVALENT`) VALUES('$did','NULL')";
-                            $this->db->doQuery($sql);
+                            // deviceid comes from the OCS agent
+                            $this->db->insert('deleted_equiv', ['DELETED' => (string) $did, 'EQUIVALENT' => 'NULL']);
                             $i++;
                         }
                     }
@@ -1477,9 +1466,7 @@ class OcsDbClient extends OcsClient
     public function removeDeletedComputers($deleted, $equivclean = null)
     {
         if (is_array($deleted)) {
-            $del   = "('";
-            $del   .= join("','", $deleted);
-            $del   .= "')";
+            $del   = "(" . join(',', array_map([DBmysql::class, 'quoteValue'], array_map('strval', $deleted))) . ")";
             $query = "DELETE FROM `deleted_equiv` WHERE `DELETED` IN " . $del . " ";
         } else {
             $query = "DELETE FROM `deleted_equiv` WHERE `DELETED` = '" . $this->db->escape($deleted) . "' ";
@@ -1528,21 +1515,7 @@ class OcsDbClient extends OcsClient
     public function getSnmp($options)
     {
 
-        if (isset($options['OFFSET'])) {
-            $offset = "OFFSET  " . $options['OFFSET'];
-        } else {
-            $offset = "";
-        }
-        if (isset($options['MAX_RECORDS'])) {
-            $max_records = "LIMIT  " . $options['MAX_RECORDS'];
-        } else {
-            $max_records = "";
-        }
-        if (isset($options['ORDER'])) {
-            $order = $options['ORDER'];
-        } else {
-            $order = " LASTDATE ";
-        }
+        [$order, $max_records, $offset] = self::checkQueryOptions($options, 'LASTDATE');
 
         if (isset($options['FILTER'])) {
             $filters = $options['FILTER'];
@@ -1565,9 +1538,9 @@ class OcsDbClient extends OcsClient
             }
             if (isset($filters['DEVICEIDS']) and $filters['DEVICEIDS']) {
                 $deviceids       = $filters['DEVICEIDS'];
-                $where_deviceids = " AND `snmp`.`SNMPDEVICEID` IN ('";
-                $where_deviceids .= join('\',\'', $deviceids);
-                $where_deviceids .= "') ";
+                $where_deviceids = " AND `snmp`.`SNMPDEVICEID` IN (";
+                $where_deviceids .= join(',', array_map([DBmysql::class, 'quoteValue'], array_map('strval', (array) $deviceids)));
+                $where_deviceids .= ") ";
             } else {
                 $where_deviceids = "";
             }
@@ -1632,16 +1605,6 @@ class OcsDbClient extends OcsClient
                 $snmpids[] = $snmpid['ID'];
             }
             $res["TOTAL_COUNT"] = $count;
-           //         if (isset($options['DISPLAY']['CHECKSUM'])) {
-           //            $checksum = $options['DISPLAY']['CHECKSUM'];
-           //         } else {
-           //            $checksum = self::CHECKSUM_NONE;
-           //         }
-           //         if (isset($options['DISPLAY']['WANTED'])) {
-           //            $wanted = $options['DISPLAY']['WANTED'];
-           //         } else {
-           //            $wanted = self::WANTED_NONE;
-           //         }
             $complete = 1;
             if (isset($options['COMPLETE'])) {
                 $complete = $options['COMPLETE'];

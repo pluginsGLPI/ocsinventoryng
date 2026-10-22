@@ -223,14 +223,6 @@ class OcsProcess extends CommonDBTM
                             $data = ['ID' => $equiv];
                         }
                     }
-                    //foreach($ocs_deviceid as $deviceid => $equiv){
-                    //$query = "UPDATE `glpi_plugin_ocsinventoryng_ocslinks`
-                    //SET `ocsid` = '$equiv'
-                    //WHERE `ocs_deviceid` = '$del'
-                    //AND `plugin_ocsinventoryng_ocsservers_id` = '$plugin_ocsinventoryng_ocsservers_id'";
-                    //}
-                    //TODO
-                    //http://www.karlrixon.co.uk/writing/update-multiple-rows-with-different-values-and-a-single-sql-query/
                     if (isset($data)) {
                         $links = $DB->request([
                             'SELECT' => ['computers_id'],
@@ -289,12 +281,8 @@ class OcsProcess extends CommonDBTM
             }
             //If cron, no redirect
             if ($redirect) {
-                if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != "") {
-                    $redirection = $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING'];
-                } else {
-                    $redirection = $_SERVER['PHP_SELF'];
-                }
-                Html::redirect($redirection);
+                // The page of the plugin being processed (PHP_SELF is the GLPI 11 entry point)
+                Html::redirect($_SERVER['REQUEST_URI']);
             }
         } else {
             $_SESSION['ocs_deleted_equiv']['computers_to_del']  = false;

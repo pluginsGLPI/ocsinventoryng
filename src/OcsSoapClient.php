@@ -491,28 +491,9 @@ class OcsSoapClient extends OcsClient {
 
    // $options = array_merge($defaultOptions, $options);
 
-   // $xml = $this->callSoap('get_computers_V1', new OcsSoapRequest(array(
-   // 'ENGINE' => 'FIRST',
-   // 'OFFSET' => 0,
-   // 'ASKING_FOR' => 'META',
-   // 'CHECKSUM' => $options['checksum'],
-   // 'WANTED' => $options['wanted'],
-   // )));
 
    // $computerObjs = simplexml_load_string($xml);
 
-   // $computers = array();
-   // foreach ($computerObjs as $obj) {
-   // $computers []= array(
-   // 'ID' => (string) $obj->DATABASEID,
-   // 'CHECKSUM' => (string) $obj->CHECKSUM,
-   // 'DEVICEID' => (string) $obj->DEVICEID,
-   // 'LASTCOME' => (string) $obj->LASTCOME,
-   // 'LASTDATE' => (string) $obj->LASTDATE,
-   // 'NAME' => (string) $obj->NAME,
-   // 'TAG' => (string) $obj->TAG,
-   // );
-   // }
 
    // return $computers;
    // }

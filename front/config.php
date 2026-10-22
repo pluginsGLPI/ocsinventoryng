@@ -35,7 +35,7 @@ global $CFG_GLPI;
 if (Plugin::isPluginActive("ocsinventoryng")
    && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
 
-   Html::header('OCSInventory NG', '', "tools", Menu::class, "ocsinventoryng");
+   Html::header(Menu::getTypeName(), '', "tools", Menu::class, "ocsinventoryng");
 
    // choose config server or config synchro
    Config::showMenu();

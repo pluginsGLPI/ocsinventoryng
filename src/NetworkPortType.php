@@ -254,14 +254,16 @@ class NetworkPortType extends CommonDropdown
         }
         $params['rand'] = 1; // To reload main window
         $link = PLUGIN_OCS_WEBDIR . '/front/networkporttype.form.php?' . http_build_query($params);
-        echo Ajax::createIframeModalWindow(
-            'create_network',
+        // One modal by link: the page lists several types
+        $modal_id = 'create_network' . mt_rand();
+        $modal    = Ajax::createIframeModalWindow(
+            $modal_id,
             $link,
-            ['title'   => __('Create')]
+            ['title'   => self::getTypeName(1), 'display' => false, 'reloadonclose' => true]
         );
 
-
-        return "<a href='#' data-bs-toggle='modal' data-bs-target='#create_network' class='submit btn btn-primary' title='" . htmlescape(__('Create')) . "' >" . htmlescape(__('Create')) . "</a>";
+        return $modal . "<a href='#' data-bs-toggle='modal' data-bs-target='#" . $modal_id . "' class='btn btn-sm btn-primary' title='" . htmlescape(__('Create')) . "' >"
+            . "<i class='ti ti-plus me-1'></i>" . htmlescape(__('Create')) . "</a>";
     }
 
 

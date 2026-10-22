@@ -247,44 +247,6 @@ class Dashboard extends MydashboardHtml
                     }
                 }
 
-//                if (Plugin::isPluginActive("fusioninventory")) {
-//                    $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
-//                                 FROM `glpi_computers`
-//                                 LEFT JOIN `glpi_plugin_fusioninventory_inventorycomputercomputers`
-//                                 ON (`glpi_computers`.`id` = `glpi_plugin_fusioninventory_inventorycomputercomputers`.`computers_id` )
-//                                 WHERE `glpi_computers`.`is_deleted` = 0
-//                                 AND `glpi_computers`.`is_template` = 0
-//                                 AND `glpi_computers`.`entities_id` = " . $_SESSION["glpiactive_entity"];
-//
-//                    //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-//                    $query .= " AND ( `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` NOT LIKE '' )";
-//
-//                    $result = $DB->doQuery($query);
-//                    $nb     = $DB->numrows($result);
-//
-//                    if ($nb) {
-//                        while ($data = $DB->fetchAssoc($result)) {
-////                     $counts[]     = $data["nb"];
-//                            $name_agent[] = __('Fusion Inventory', 'ocsinventoryng');
-//                            $counts[] = ['value' => $data['nb'],
-//                                        'name' =>  __('Fusion Inventory', 'ocsinventoryng')];
-//                        }
-//                    }
-//                }
-//                if (Plugin::isPluginActive("fusioninventory")) {
-//                    $query = "SELECT DISTINCT `glpi_computers`.`id`, COUNT(`glpi_computers`.`id`) AS nb
-//                              FROM `glpi_computers`
-//                              LEFT JOIN `glpi_plugin_ocsinventoryng_ocslinks`
-//                              ON (`glpi_computers`.`id` = `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` )
-//                              LEFT JOIN `glpi_plugin_fusioninventory_inventorycomputercomputers`
-//                              ON (`glpi_computers`.`id` = `glpi_plugin_fusioninventory_inventorycomputercomputers`.`computers_id` )
-//                              WHERE `glpi_computers`.`is_deleted` = 0
-//                              AND `glpi_computers`.`is_template` = 0
-//                              AND `glpi_computers`.`entities_id` = " . $_SESSION["glpiactive_entity"];
-//
-//                    //$query .= getEntitiesRestrictRequest("AND", Computer::getTable())
-//                    $query .= " AND ( (`glpi_plugin_ocsinventoryng_ocslinks`.`last_update` LIKE '' OR `glpi_plugin_ocsinventoryng_ocslinks`.`last_update` IS NULL) AND (`glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` LIKE '' OR `glpi_plugin_fusioninventory_inventorycomputercomputers`.`last_fusioninventory_update` IS NULL) )";
-//                } else {
                     $result = $DB->request([
                         'COUNT'     => 'nb',
                         'FROM'      => 'glpi_computers',

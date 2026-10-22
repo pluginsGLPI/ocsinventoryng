@@ -157,16 +157,6 @@ class Notimportedcomputer extends CommonDBTM
             'name'     => __('OCSNG ID', 'ocsinventoryng'),
 //            'datatype' => 'integer',
         ];
-        //
-        //      $tab[] = [
-        //         'id'            => '2',
-        //         'table'         => $this->getTable(),
-        //         'field'         => 'name',
-        //         'name'          => __('OCSNG name', 'ocsinventoryng'),
-        //         'datatype'      => 'itemlink',
-        //         'massiveaction' => false,
-        //         'itemlink_type' => $this->getType()
-        //      ];
 
         $tab[] = [
             'id'       => '3',

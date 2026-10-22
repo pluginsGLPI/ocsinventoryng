@@ -29,7 +29,6 @@
 
 use GlpiPlugin\Ocsinventoryng\Ocslink;
 
-Session::checkLoginUser();
 if (isset($_POST['update_lock'])) {
 
    $plugin_ocsinventoryng_ocsservers_id = (int) ($_POST['plugin_ocsinventoryng_ocsservers_id'] ?? 0);

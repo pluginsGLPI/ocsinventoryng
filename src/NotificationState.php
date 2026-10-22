@@ -30,6 +30,7 @@ namespace GlpiPlugin\Ocsinventoryng;
 
 use CommonDBTM;
 use Dropdown;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use MassiveAction;
 
@@ -50,45 +51,36 @@ class NotificationState extends CommonDBTM {
    function configState() {
       global $DB;
 
-      $rand = mt_rand();
-
-      $query = "SELECT *
-                 FROM `" . $this->getTable() . "`
-                 ORDER BY `states_id` ASC ";
-      if ($result = $DB->doQuery($query)) {
-         $number = $DB->numrows($result);
-         if ($number != 0) {
-
-            echo "<div class='center'>";
-
-            Html::openMassiveActionsForm('mass' . $this->getType() . $rand);
-            $massiveactionparams = ['item'      => $this->getType(),
-                                    'container' => 'mass' . $this->getType() . $rand];
-            Html::showMassiveActions($massiveactionparams);
-
-            echo "<table class='tab_cadre_fixe' cellpadding='5'>";
-            echo "<tr>";
-            echo "<th width='10'>";
-            echo Html::getCheckAllAsCheckbox('mass' . $this->getType() . $rand);
-            echo "</th>";
-            echo "<th>" . _n('Status', 'Statuses', 2) . "</th>";
-            echo "</tr>";
-            while ($ligne = $DB->fetchArray($result)) {
-               echo "<tr class='tab_bg_1'>";
-               echo "<td width='10' class='center'>";
-               Html::showMassiveActionCheckBox($this->getType(), $ligne['id'], ['class' => $this]);
-               echo "</td>";
-               echo "<td>" . Dropdown::getDropdownName("glpi_states", $ligne["states_id"]) . "</td>";
-               echo "</tr>";
-            }
-            echo "</table>";
-
-            $massiveactionparams['ontop'] = false;
-            Html::showMassiveActions($massiveactionparams);
-            Html::closeForm();
-            echo "</div>";
-         }
+      $entries = [];
+      foreach ($DB->request([
+         'FROM'  => $this->getTable(),
+         'ORDER' => 'states_id ASC',
+      ]) as $ligne) {
+         $entries[] = [
+            'itemtype' => self::class,
+            'id'       => $ligne['id'],
+            // The name of a status, created by any user with the right on the statuses: escaped by the template
+            'state'    => (string) Dropdown::getDropdownName("glpi_states", $ligne["states_id"]),
+         ];
       }
+      if (count($entries) == 0) {
+         return;
+      }
+
+      TemplateRenderer::getInstance()->display('components/datatable.html.twig', [
+         'nofilter'            => true,
+         'nosort'              => true,
+         'super_header'        => __('Statuses used for alert', 'ocsinventoryng'),
+         'columns'             => ['state' => _n('Status', 'Statuses', 1)],
+         'entries'             => $entries,
+         'total_number'        => count($entries),
+         'filtered_number'     => count($entries),
+         'showmassiveactions'  => true,
+         'massiveactionparams' => [
+            'num_displayed' => count($entries),
+            'container'     => 'mass' . str_replace('\\', '', self::class) . mt_rand(),
+         ],
+      ]);
    }
 
    /**

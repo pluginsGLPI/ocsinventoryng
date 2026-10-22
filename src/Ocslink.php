@@ -94,7 +94,7 @@ class Ocslink extends CommonDBTM
         if ($item->isDynamic()
             && $item->isField('computers_id')
             && $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocslinks', ["computers_id" => $item->getField('computers_id')]) > 0) {
-            echo __('OCS Inventory NG');
+            echo htmlescape(Menu::getTypeName());
         }
     }
 
@@ -803,17 +803,6 @@ class Ocslink extends CommonDBTM
     public static function purgeComputer_Item(Asset_PeripheralAsset $comp)
     {
 
-//        Asset_PeripheralAsset::getTable() => [
-//        'FKEY' => [
-//            Asset_PeripheralAsset::getTable() . '.items_id_asset',
-//            Computer::getTable() . '.id',
-//            [
-//                'AND' => [
-//                    Asset_PeripheralAsset::getTable() . '.itemtype_asset' => 'Computer',
-//                ],
-//            ],
-//        ],
-//    ],
 
         global $DB;
         $dbu = new DbUtils();
@@ -844,16 +833,7 @@ class Ocslink extends CommonDBTM
                     if (($mode >= 2)
                         && (strlen($decoConf) > 0)
                     ) {
-                        //Delete periph from glpi
-                        // if ($decoConf == "delete") {
-                        // $tmp["id"] = $comp->fields['items_id'];
-                        // $device->delete(array('id'  => $tmp['id']), 1);
 
-                        // Put periph in dustbin
-                        // } else if ($decoConf == "trash") {
-                        // $tmp["id"] = $comp->fields['items_id'];
-                        // $device->delete(array('id'  => $tmp['id']), 0);
-                        // }
 
                         if ($decoConf == "delete") {
                             $DB->delete('glpi_assets_assets_peripheralassets', ['id' => (int) $comp->getID()]);
@@ -1341,9 +1321,6 @@ class Ocslink extends CommonDBTM
                 }
                 $dbu    = new DbUtils();
                 $locked = $dbu->importArrayFromDB($data["computer_update"]);
-                //            if (!in_array(OcsProcess::IMPORT_TAG_078, $locked)) {
-                //               $locked = self::migrateComputerUpdates($ID, $locked);
-                //            }
                 if (count($locked) > 0) {
                     foreach ($locked as $key => $val) {
                         if (!isset($lockable_fields[$val])) {

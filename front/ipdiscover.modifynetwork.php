@@ -34,7 +34,7 @@ use GlpiPlugin\Ocsinventoryng\Menu;
 
 Session::checkRight("plugin_ocsinventoryng", UPDATE);
 
-Html::header('OCS Inventory NG', '', "tools", Menu::class, "modifysubnet");
+Html::header(Menu::getTypeName(), '', "tools", Menu::class, "modifysubnet");
 
 $ip = new IpdiscoverOcslink();
 

@@ -112,19 +112,7 @@ class Bitlockerstatus extends CommonDBTM
                         $bitlockers->add($inputBitlockers, ['disable_unicity_check' => true], $install_history);
                     }
                 }
-              //            $input["drive"]             = isset($bitlocker["DRIVE"]) ? $bitlocker["DRIVE"] : '';
-              //            $input["volume_type"]       = isset($bitlocker["VOLUMETYPE"]) ? $bitlocker["VOLUMETYPE"] : '';
-              //            $input["conversion_status"] = isset($bitlocker["CONVERSIONSTATUS"]) ? $bitlocker["CONVERSIONSTATUS"] : '';
-              //            $input["protection_status"] = isset($bitlocker["PROTECTIONSTATUS"]) ? $bitlocker["PROTECTIONSTATUS"] : '';
-              //            $input["encryp_method"]     = isset($bitlocker["ENCRYPMETHOD"]) ? $bitlocker["ENCRYPMETHOD"] : '';
-              //            $input["init_project"]      = isset($bitlocker["INITPROTECT"]) ? $bitlocker["INITPROTECT"] : '';
 
-              //            if($bitlockers->getFromDBByCrit(["computers_id" => $input["computers_id"]])){
-              //               $input['id'] = $bitlockers->getID();
-              //               $bitlockers->update($input, $install_history, ['disable_unicity_check' => true]);
-              //            } else{
-              //               $bitlockers->add($input, ['disable_unicity_check' => true], $install_history);
-              //            }
             }
         }
     }
@@ -156,30 +144,6 @@ class Bitlockerstatus extends CommonDBTM
     * @see CommonGLPI::getTabNameForItem()
     *
     */
-   //   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-   //
-   //      $plugin_ocsinventoryng_ocsservers_id = Ocslink::getOCSServerForItem($item);
-   //      if ($plugin_ocsinventoryng_ocsservers_id > 0
-   //         && OcsServer::serverIsActive($plugin_ocsinventoryng_ocsservers_id)) {
-   //
-   //         OcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
-   //         $cfg_ocs = OcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
-   //         // can exists for template
-   //         if (($item->getType() == 'Computer')
-   //            && Computer::canView()
-   //            && $cfg_ocs["import_bitlocker"]) {
-   //            $nb = 0;
-   //            if ($_SESSION['glpishow_count_on_tabs']) {
-   //               $dbu = new DbUtils();
-   //               $nb = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_bitlockerstatuses',
-   //                  ["computers_id" => $item->getID()]);
-   //            }
-   //            return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
-   //         }
-   //         return '';
-   //      }
-   //      return '';
-   //   }
 
 
    /**
@@ -189,11 +153,6 @@ class Bitlockerstatus extends CommonDBTM
     *
     * @return bool|true
     */
-   //   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-   //
-   //      self::showForComputer($item, $withtemplate);
-   //      return true;
-   //   }
 
    /**
     * Print the computers windows update states

@@ -417,71 +417,17 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
 
     public static function ipDiscoverMenu()
     {
-        global $CFG_GLPI, $DB;
-        $ocsservers = [];
-
         $dbu = new DbUtils();
-        $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', ["is_active" => 1]);
-        if ($numberActiveServers > 0) {
-            echo "<form action=\"" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php\"
-         method='post'>";
-            echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
-            echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an OCSNG server', 'ocsinventoryng') .
-              "</th></tr>\n";
+        if ($dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', ["is_active" => 1]) > 0) {
+            OcsServer::showServerChoice();
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Name') . "</td>";
-            echo "<td class='center'>";
-
-            $iterator = $DB->request([
-                'SELECT'    => [
-                    'glpi_plugin_ocsinventoryng_ocsservers.id',
-                ],
-                'FROM'      => 'glpi_plugin_ocsinventoryng_ocsservers_profiles',
-                'LEFT JOIN'       => [
-                    'glpi_plugin_ocsinventoryng_ocsservers' => [
-                        'ON' => [
-                            'glpi_plugin_ocsinventoryng_ocsservers_profiles' => 'plugin_ocsinventoryng_ocsservers_id',
-                            'glpi_plugin_ocsinventoryng_ocsservers'          => 'id',
-                        ],
-                    ],
-                ],
-                'WHERE'     => [
-                    'profiles_id'  => $_SESSION["glpiactiveprofile"]['id'],
-                    'is_active' => 1,
-                ],
-                'ORDERBY'   => 'name ASC',
-            ]);
-
-            if (count($iterator) > 0) {
-                foreach ($iterator as $data) {
-                    $ocsservers[] = $data['id'];
-                }
-            }
-
-            Dropdown::show(
-                OcsServer::class,
-                ["condition"           => ["id" => $ocsservers],
-                    "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                    "on_change"           => "this.form.submit()",
-                    "display_emptychoice" => false]
-            );
-
-            echo "</td></tr>";
-            echo "<tr class='tab_bg_2'><td colspan='2'>";
-            echo "<div class='alert alert-important alert-warning d-flex'>";
-            echo __('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
-            echo "</div>";
-            echo "</td></tr>";
-            echo "</table></div>";
-            Html::closeForm();
-
-            echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
-            echo "<tr class='tab_bg_2'><td class='center'>";
+            echo "<div class='container-lg my-3'><div class='row row-cards g-3'>";
+            echo "<div class='col-12 col-lg-6'>";
             self::showSubnetSearchForm("import");
-            echo "</td><td class='center'>";
+            echo "</div><div class='col-12 col-lg-6'>";
             self::showSubnetSearchForm("link");
-            echo "</td></tr>";
-            echo "</table></div>";
+            echo "</div>";
+            echo "</div></div>";
         }
     }
 
@@ -1514,7 +1460,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                     echo Search::showHeaderItem($output_type, __('Location'), $header_num);
                     echo Search::showHeaderItem($output_type, __('Import date in GLPI', 'ocsinventoryng'), $header_num);
                     echo Search::showHeaderItem($output_type, __('Subnet'), $header_num);
-                    echo Search::showHeaderItem($output_type, __('&nbsp;'), $header_num);
+                    echo Search::showHeaderItem($output_type, '&nbsp;', $header_num);
                     echo Search::showEndLine($output_type);
                     $row_num = 1;
                     for ($i = $start; $i < $lim + $start; $i++) {
@@ -1605,7 +1551,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                     } else {
                         echo Search::showHeaderItem($output_type, __('Item to link', 'ocsinventoryng'), $header_num, "", 0, "", 'width=15%');
                     }
-                    echo Search::showHeaderItem($output_type, __('&nbsp;'), $header_num);
+                    echo Search::showHeaderItem($output_type, '&nbsp;', $header_num);
                     echo Search::showEndLine($output_type);
                     $row_num  = 1;
                     $ocstypes = [];
@@ -1736,7 +1682,7 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
                     } else {
                         echo Search::showHeaderItem($output_type, __('Item to link', 'ocsinventoryng'), $header_num, "", 0, "", 'width=15%');
                     }
-                    echo Search::showHeaderItem($output_type, __('&nbsp;'), $header_num);
+                    echo Search::showHeaderItem($output_type, '&nbsp;', $header_num);
                     echo Search::showEndLine($output_type);
                     $row_num    = 1;
                     $itemstypes = [Dropdown::EMPTY_VALUE];

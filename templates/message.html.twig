@@ -1,0 +1,55 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# A message page of the plugin (OcsServer::showMessage()): an icon, a title, optional lines and links #}
+<div class="container-lg my-3">
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <span class="avatar avatar-xl {{ color ?? 'bg-secondary-lt' }} mb-3">
+                <i class="ti {{ icon }} fs-1"></i>
+            </span>
+            <h2 class="mb-2">{{ title }}</h2>
+            {% for line in lines ?? [] %}
+                <div class="text-secondary">{{ line }}</div>
+            {% endfor %}
+            {% if progress is defined %}
+                <div class="progress progress-lg mx-auto my-3" style="max-width: 30rem">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: {{ progress }}%"
+                         role="progressbar" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">
+                        {{ progress }} %
+                    </div>
+                </div>
+            {% endif %}
+            {% if links ?? [] is not empty %}
+                <div class="mt-4">
+                    {% for link in links %}
+                        <a href="{{ link.url }}" class="btn {{ link.class ?? 'btn-outline-secondary' }} me-1">
+                            {% if link.icon is defined %}<i class="ti {{ link.icon }} me-1"></i>{% endif %}{{ link.title }}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -2114,17 +2114,12 @@ function plugin_ocsinventoryng_item_transfer($options = [])
     global $DB;
 
     if ($options['type'] == 'Computer') {
-        $query = "UPDATE glpi_plugin_ocsinventoryng_ocslinks
-                SET `computers_id` = '" . $options['newID'] . "',
-                    `entities_id` = '" . $options['entities_id'] . "'
-                WHERE `computers_id` = '" . $options['id'] . "'";
-
-        $DB->doQuery($query);
-
-        Session::addMessageAfterRedirect(
-            "Transfer Computer Hook " . $options['type'] . " "
-            . $options['id'] . "->" . $options['newID']
-        );
+        $DB->update('glpi_plugin_ocsinventoryng_ocslinks', [
+            'computers_id' => (int) $options['newID'],
+            'entities_id'  => (int) $options['entities_id'],
+        ], [
+            'computers_id' => (int) $options['id'],
+        ]);
     }
     return false;
 }

@@ -35,7 +35,6 @@ header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 // Same rights as the page of the list (OcsServer::showComputersToAdd())
-Session::checkLoginUser();
 if (!Session::haveRight("plugin_ocsinventoryng_import", READ)
     && !Session::haveRight("plugin_ocsinventoryng_link", READ)) {
     throw new \Glpi\Exception\Http\AccessDeniedHttpException();
@@ -89,10 +88,6 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
     $ocsClient = OcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
     //      $numrows   = $ocsClient->countComputers($computerOptions);
 
-    //      if ($start != 0) {
-    //         $computerOptions['OFFSET'] = $start;
-    //      }
-    //      $computerOptions['MAX_RECORDS'] = $_SESSION['glpilist_limit'];
 
     $ocsResult                      = $ocsClient->getComputers($computerOptions);
 
@@ -269,16 +264,6 @@ if ($plugin_ocsinventoryng_ocsservers_id > 0) {
 
                     $options['width'] = "100%";
 
-                    //                  if (isset($options['value']) && $options['value'] > 0) {
-                    //
-                    //                     $query  = "SELECT *
-                    //                            FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                    //                            WHERE `computers_id` = '" . $options['value'] . "' ";
-                    //                     $result = $DB->doQuery($query);
-                    //                     if ($DB->numrows($result) > 0) {
-                    //                        $ko = 1;
-                    //                     }
-                    //                  }
                     $options['comments']  = false;
                     $options['display']   = false;
                     $computers_id_founded = Computer::dropdown($options);

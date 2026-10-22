@@ -36,7 +36,6 @@ header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 // Same right as the page of the list (front/ocsng.sync.php)
-Session::checkLoginUser();
 Session::checkRight("plugin_ocsinventoryng_sync", READ);
 
 // A server allowed for the active profile

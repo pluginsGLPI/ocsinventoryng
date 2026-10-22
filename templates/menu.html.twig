@@ -1,0 +1,60 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# Plugin menus (Menu::displayMenuSections()): one block per section, one clickable card per entry #}
+<div class="container-lg my-3">
+    {% for section in sections %}
+        <div class="mb-4">
+            <h2 class="mb-2">
+                {% if section.icon is defined %}<i class="{{ section.icon }} me-2"></i>{% endif %}{{ section.title }}
+            </h2>
+            {% if section.link is defined %}
+                <a href="{{ section.link.url }}" class="d-inline-block mb-2">{{ section.link.title }}</a>
+            {% endif %}
+            {% if section.alert is defined %}
+                <div class="alert alert-warning">{{ section.alert }}</div>
+            {% endif %}
+            <div class="row row-cards g-3">
+                {% for item in section.items %}
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <a href="{{ item.url }}" class="card card-link card-link-pop h-100 text-reset text-decoration-none">
+                            <div class="card-body text-center py-4">
+                                <span class="avatar avatar-xl bg-secondary-lt mb-3">
+                                    <i class="ti {{ item.icon }} fs-1 {{ item.color ?? '' }}"></i>
+                                </span>
+                                <h3 class="card-title mb-1">{{ item.title }}</h3>
+                                {% if item.badge is defined %}
+                                    <span class="badge bg-red-lt mb-1">{{ item.badge }}</span>
+                                {% endif %}
+                                {% if item.description is defined %}
+                                    <div class="text-secondary small">{{ item.description }}</div>
+                                {% endif %}
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>

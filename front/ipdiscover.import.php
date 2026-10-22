@@ -81,7 +81,10 @@ if (isset($_GET["b"])) {
    ];
 }
 
-Html::header('OCS Inventory NG', '', "tools", Menu::class, "importipdiscover");
+// The URL of this page (PHP_SELF is the GLPI 11 entry point)
+$self_url = PLUGIN_OCS_WEBDIR . '/front/ipdiscover.import.php';
+
+Html::header(Menu::getTypeName(), '', "tools", Menu::class, "importipdiscover");
 
 if (Plugin::isPluginActive("ocsinventoryng")) {
    $ip = new IpdiscoverOcslink();
@@ -151,7 +154,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"]   = $ipObjects;
             $_SESSION["ocs_importipdiscover"]["datas"]["b"]           = $_GET["b"];
             $_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"] = $macAdresses;
-            Html::redirect($_SERVER['PHP_SELF']);
+            Html::redirect($self_url);
          }
       } else if (isset($_SESSION["ocs_importipdiscover"]["datas"])) {
          $action = null;
@@ -163,7 +166,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
              OcsProcess::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
              OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
              Html::getProgressBar($percent);
-            Html::redirect($_SERVER['PHP_SELF']);
+            Html::redirect($self_url);
          }
           OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
          if (isset($_GET["b"])) {
@@ -171,7 +174,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $ipAdress = $b[0];
             $status   = $b[1];
             echo "<div class='center b'><br>";
-            echo "<a href='" . htmlescape($_SERVER['PHP_SELF'] . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status])) . "'>" . __s('Back') . "</a></div>";
+            echo "<a href='" . htmlescape($self_url . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status])) . "'>" . __s('Back') . "</a></div>";
          }
          if (isset($_SESSION["ocs_importipdiscover"]["datas"]["b"])) {
             $b        = [
@@ -181,7 +184,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $ipAdress = $b[0];
             $status   = $b[1];
             echo "<div class='center b'><br>";
-            echo "<a href='" . htmlescape($_SERVER['PHP_SELF'] . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status])) . "'>" . __s('Back') . "</a></div>";
+            echo "<a href='" . htmlescape($self_url . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status])) . "'>" . __s('Back') . "</a></div>";
          }
 
          if (isset($_SESSION["ocs_importipdiscover"]["datas"])) {
@@ -197,7 +200,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $ipAdress = $b[0];
             $status   = $b[1];
 
-            Html::redirect($_SERVER['PHP_SELF'] . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status]));
+            Html::redirect($self_url . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status]));
          }
       }
    } else if (isset($_POST["IdentifyAndImport"])
@@ -232,7 +235,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"]   = $ipObjects;
             $_SESSION["ocs_importipdiscover"]["datas"]["b"]           = $_GET["b"];
             $_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"] = $macAdresses;
-            Html::redirect($_SERVER['PHP_SELF']);
+            Html::redirect($self_url);
          }
       } else if (isset($_SESSION["ocs_importipdiscover"]["datas"])) {
          $action = null;
@@ -244,7 +247,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
              OcsProcess::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
              OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
              Html::getProgressBar($percent);
-            Html::redirect($_SERVER['PHP_SELF']);
+            Html::redirect($self_url);
          }
           OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
          if (isset($_GET["b"])) {
@@ -252,7 +255,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $ipAdress = $b[0];
             $status   = $b[1];
             echo "<div class='center b'><br>";
-            echo "<a href='" . htmlescape($_SERVER['PHP_SELF'] . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status])) . "'>" . __s('Back') . "</a></div>";
+            echo "<a href='" . htmlescape($self_url . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status])) . "'>" . __s('Back') . "</a></div>";
          }
          if (isset($_SESSION["ocs_importipdiscover"]["datas"]["b"])) {
             $b        = [
@@ -262,7 +265,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $ipAdress = $b[0];
             $status   = $b[1];
             echo "<div class='center b'><br>";
-            echo "<a href='" . htmlescape($_SERVER['PHP_SELF'] . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status])) . "'>" . __s('Back') . "</a></div>";
+            echo "<a href='" . htmlescape($self_url . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status])) . "'>" . __s('Back') . "</a></div>";
          }
 
          if (isset($_SESSION["ocs_importipdiscover"]["datas"])) {
@@ -278,7 +281,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $ipAdress = $b[0];
             $status   = $b[1];
 
-            Html::redirect($_SERVER['PHP_SELF'] . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status]));
+            Html::redirect($self_url . "?" . http_build_query(['ip' => $ipAdress, 'status' => $status]));
          }
       }
    } else if (isset($_POST["Link"])) {

@@ -47,7 +47,10 @@ if ((isset($_POST["id"]) && is_array($_POST["id"]))
     Session::checkRight("plugin_ocsinventoryng_link", UPDATE);
 }
 
-Html::header('OCS Inventory NG', '', "tools", Menu::class, "link");
+// The URL of this page (PHP_SELF is the GLPI 11 entry point)
+$self_url = PLUGIN_OCS_WEBDIR . '/front/ocsng.link.php';
+
+Html::header(Menu::getTypeName(), '', "tools", Menu::class, "link");
 
 if (isset($_POST["id"]) && is_array($_POST["id"])) {
     // The OCS machine overwrites the data of the computer: one the user may update
@@ -125,7 +128,7 @@ if (isset($_SESSION["ocs_link"])) {
             if (!OcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
                 $_SESSION["ocs_link"] = [];
 
-                Html::redirect($_SERVER['PHP_SELF']);
+                Html::redirect($self_url);
             } else {
                 $_SESSION["ocs_link_data"]["connection"] = true;
             }
@@ -142,13 +145,13 @@ if (isset($_SESSION["ocs_link"])) {
                         'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
                         'computers_id'                        => $key["computers_id"]];
         OcsProcess::linkComputer($link_params);
-        Html::redirect($_SERVER['PHP_SELF']);
+        Html::redirect($self_url);
     } else {
         Html::getProgressBar(100);
 
         unset($_SESSION["ocs_link"]);
         echo "<div class='center b'>" . __('Successful link', 'ocsinventoryng') . "<br>";
-        echo "<a href='" . $_SERVER['PHP_SELF'] . "'>" . __('Back') . "</a></div>";
+        echo "<a href='" . $self_url . "'>" . __('Back') . "</a></div>";
     }
 }
 
@@ -200,7 +203,7 @@ if (!isset($_POST["import_ok"])) {
             }
         }
     }
-    Html::redirect($_SERVER['PHP_SELF']);
+    Html::redirect($self_url);
 }
 
 Html::footer();

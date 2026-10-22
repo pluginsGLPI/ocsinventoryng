@@ -1,0 +1,96 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# Form of an OCS server (OcsServer::showForm()). The password is never displayed; the blocks of the
+   automatic actions are shown or hidden by public/js/ocs-server-form.js (class ocs-toggle-<name>). #}
+{% extends "generic_show_form.html.twig" %}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{% set no_inventory_footer = true %}
+{% set params = params ?? {} %}
+
+{% block form_fields %}
+    {{ fields.autoNameField('name', item, __('Name'), 0, field_options) }}
+    {{ fields.dropdownYesNo('is_active', item.fields['is_active'], __('Active'), field_options) }}
+
+    {{ fields.dropdownArrayField('conn_type', item.fields['conn_type'], conn_types, __('Connection type', 'ocsinventoryng'), field_options) }}
+    {{ fields.dropdownArrayField('use_massimport', item.fields['use_massimport'], sync_methods, __('Synchronisation method', 'ocsinventoryng'), field_options) }}
+
+    {% if not item.isNewItem() %}
+        {{ fields.htmlField('', item.fields['ocs_version'], _n('Version', 'Versions', 1), field_options) }}
+        {% set checksum %}
+            <span class="me-2">{{ item.fields['checksum'] }}</span>
+            <button type="submit" name="force_checksum" value="1" class="btn btn-sm btn-outline-secondary">
+                <i class="ti ti-refresh me-1"></i>{{ _x('button', 'Reload Checksum', 'ocsinventoryng') }}
+            </button>
+        {% endset %}
+        {{ fields.htmlField('', checksum, 'Checksum', field_options) }}
+    {% endif %}
+
+    {{ fields.smallTitle(__('Connecting to the database', 'ocsinventoryng'), 'ti ti-database') }}
+    {{ fields.textField('ocs_db_host', item.fields['ocs_db_host'], __('Host', 'ocsinventoryng'), field_options|merge({
+        'helper': __('Like http://127.0.0.1 for SOAP method', 'ocsinventoryng'),
+    })) }}
+    {{ fields.textField('ocs_db_name', item.fields['ocs_db_name'], __('Database'), field_options) }}
+    {{ fields.textField('ocs_db_user', item.fields['ocs_db_user'], _n('User', 'Users', 1), field_options) }}
+    {% set password %}
+        <input type="password" name="ocs_db_passwd" class="form-control" autocomplete="new-password" value="" />
+        {% if not item.isNewItem() %}
+            <label class="form-check mt-1 mb-0">
+                <input type="checkbox" name="_blank_passwd" value="1" class="form-check-input" />
+                <span class="form-check-label">{{ __('Clear') }}</span>
+            </label>
+        {% endif %}
+    {% endset %}
+    {{ fields.htmlField('ocs_db_passwd', password, __('Password'), field_options) }}
+    {{ fields.dropdownYesNo('ocs_db_utf8', item.fields['ocs_db_utf8'], __('Database in UTF8', 'ocsinventoryng'), field_options) }}
+
+    {{ fields.smallTitle(__('Automatic actions'), 'ti ti-player-play') }}
+    {{ fields.dropdownYesNo('use_cleancron', item.fields['use_cleancron'], __('Use automatic action for clean old agents & drop from OCSNG software', 'ocsinventoryng'), field_options|merge({
+        'class': 'form-select ocs-toggle-cleancron',
+    })) }}
+    <div class="row col-12 p-0 m-0" data-ocs-toggled="cleancron" {{ item.fields['use_cleancron'] ? '' : 'hidden' }}>
+        {{ fields.dropdownArrayField('action_cleancron', item.fields['action_cleancron'], cron_actions, __('Action'), field_options) }}
+        {{ fields.dropdownNumberField('cleancron_nb_days', item.fields['cleancron_nb_days'], __('Number of days without inventory for cleaning', 'ocsinventoryng'), field_options|merge({
+            'min': 1,
+            'max': 365,
+        })) }}
+        {{ fields.dropdownYesNo('use_restorationcron', item.fields['use_restorationcron'], __('Use automatic action restore deleted computer', 'ocsinventoryng'), field_options|merge({
+            'class': 'form-select ocs-toggle-restorecron',
+        })) }}
+        <div class="row col-12 col-sm-6 p-0 m-0" data-ocs-toggled="restorecron" {{ item.fields['use_restorationcron'] ? '' : 'hidden' }}>
+            {{ fields.dropdownNumberField('delay_restorationcron', item.fields['delay_restorationcron'], __('Number of days for the restoration of computers from the date of last inventory', 'ocsinventoryng'), field_options|merge({
+                'full_width': true,
+            })) }}
+        </div>
+    </div>
+    {{ fields.dropdownYesNo('use_checkruleimportentity', item.fields['use_checkruleimportentity'], __('Use automatic action to check entity assignment rules', 'ocsinventoryng'), field_options|merge({
+        'helper': __('Use automatic action to check and send a notification for machines that no longer respond the entity and location assignment rules', 'ocsinventoryng'),
+    })) }}
+    {{ fields.dropdownYesNo('use_locks', item.fields['use_locks'], __('Use automatic locks', 'ocsinventoryng'), field_options) }}
+
+    {{ fields.textareaField('comment', item.fields['comment'], __('Comments'), field_options) }}
+
+    <script src="{{ js_url }}"></script>
+{% endblock %}

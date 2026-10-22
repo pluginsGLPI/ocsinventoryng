@@ -137,21 +137,6 @@ class Software
         }
 
         if ($officepack) {
-           // Read imported software in last sync
-//            $query             = "SELECT `glpi_items_softwarelicenses`.`id` as id,
-//                          `glpi_softwares`.`name` as sname,
-//                          `glpi_softwarelicenses`.`name` as lname,
-//                          `glpi_softwareversions`.`id` as vid
-//                   FROM `glpi_items_softwarelicenses`
-//                   INNER JOIN `glpi_softwarelicenses`
-//                           ON `glpi_softwarelicenses`.`id`= `glpi_items_softwarelicenses`.`softwarelicenses_id`
-//                   INNER JOIN `glpi_softwares`
-//                           ON `glpi_softwares`.`id`= `glpi_softwarelicenses`.`softwares_id`
-//                   INNER JOIN `glpi_softwareversions`
-//                           ON `glpi_softwarelicenses`.`softwareversions_id_use` = `glpi_softwareversions`.`id`
-//                   WHERE `glpi_items_softwarelicenses`.`items_id`= $computers_id
-//                         AND `glpi_items_softwarelicenses`.`itemtype`= 'Computer'
-//                         AND `is_dynamic` = 1";
             $imported_licences = [];
 
             $criteria = [
@@ -195,13 +180,6 @@ class Software
 
 
         foreach ($ocsComputer as $software) {
-           //As we cannot be sure that data coming from OCS are in utf8, let's try to encode them
-           //if possible
-           //         foreach (['NAME', 'PUBLISHER', 'VERSION'] as $field) {
-           //            if (isset($software[$field])) {
-           //               $software[$field] = OcsProcess::encodeOcsDataInUtf8($is_utf8, $software[$field]);
-           //            }
-           //         }
             if (isset($software['NAME'])) {
                 $software['NAME'] = OcsProcess::encodeOcsDataInUtf8($is_utf8, $software['NAME']);
             }
@@ -591,41 +569,6 @@ class Software
     {
         global $DB;
 
-//      $query  = "SELECT *
-//                FROM `glpi_items_softwareversions`
-//                WHERE `items_id` = $glpi_computers_id
-//                     AND `itemtype` = 'Computer'
-//                     AND `is_dynamic` = 1";
-//      $result = $DB->doQuery($query);
-//
-//      if ($DB->numrows($result) > 0) {
-//         while ($data = $DB->fetchAssoc($result)) {
-//            $query2  = "SELECT COUNT(*)
-//                       FROM `glpi_items_softwareversions`
-//                       WHERE `softwareversions_id` = " . $data['softwareversions_id'];
-//            $result2 = $DB->doQuery($query2);
-//
-//            if ($DB->result($result2, 0, 0) == 1) {
-//               $vers = new SoftwareVersion();
-//               $vers->getFromDB($data['softwareversions_id']);
-//               $query3  = "SELECT COUNT(*)
-//                          FROM `glpi_softwareversions`
-//                          WHERE `softwares_id`= " . $vers->fields['softwares_id'];
-//               $result3 = $DB->doQuery($query3);
-//
-//               if ($DB->result($result3, 0, 0) == 1) {
-//                  $soft = new \Software();
-//                  $soft->delete(['id'          => $vers->fields['softwares_id'],
-//                                 '_no_history' => !$uninstall_history],
-//                                true,
-//                                $uninstall_history);
-//               }
-//               $vers->delete(["id"          => $data['softwareversions_id'],
-//                              '_no_history' => !$uninstall_history],
-//                             true,
-//                             $uninstall_history);
-//            }
-//         }
 
          $csv = new Item_SoftwareVersion();
          $csv->deleteByCriteria(['items_id' => $glpi_computers_id,

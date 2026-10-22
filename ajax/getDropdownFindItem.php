@@ -34,7 +34,6 @@ use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 header("Content-Type: application/json; charset=UTF-8");
 Html::header_nocache();
 
-Session::checkLoginUser();
 
 global $CFG_GLPI, $DB;
 

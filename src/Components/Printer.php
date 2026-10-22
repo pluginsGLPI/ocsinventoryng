@@ -273,18 +273,17 @@ class Printer
                 //Delete periph from glpi
                 if ($decoConf == "delete") {
 
-                    $query = $DB->buildDelete(
+                    $DB->delete(
                         'glpi_assets_assets_peripheralassets',
                         [
                             'id' =>  $data['id'],
                         ]
                     );
-                    $DB->doQuery($query);
 
                     //Put periph in dustbin
                 } elseif ($decoConf == "trash") {
 
-                    $query = $DB->buildUpdate(
+                    $DB->update(
                         'glpi_assets_assets_peripheralassets',
                         [
                             'is_deleted' => 1,
@@ -293,7 +292,6 @@ class Printer
                             'id' =>  $data['id'],
                         ]
                     );
-                    $DB->doQuery($query);
 
                 }
             }

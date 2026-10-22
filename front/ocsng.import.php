@@ -39,7 +39,10 @@ Session::checkRight("plugin_ocsinventoryng_import", READ);
 OcsServer::checkSessionServer();
 
 
-Html::header('OCS Inventory NG', '', "tools", Menu::class, "import");
+// The URL of this page (PHP_SELF is the GLPI 11 entry point)
+$self_url = PLUGIN_OCS_WEBDIR . '/front/ocsng.import.php';
+
+Html::header(Menu::getTypeName(), '', "tools", Menu::class, "import");
 
 //First time this screen is displayed : set the import mode to 'basic'
 if (!isset($_SESSION["change_import_mode"])) {
@@ -77,7 +80,7 @@ if (isset($_SESSION["ocs_import"]['computers'])) {
             OcsProcess::showStatistics($_SESSION["ocs_import_statistics"]);
             $_SESSION["ocs_import"]["id"] = [];
 
-            Html::redirect($_SERVER['PHP_SELF']);
+            Html::redirect($self_url);
         } else {
             $_SESSION["ocs_import"]["connection"] = true;
         }
@@ -141,8 +144,10 @@ if (isset($_SESSION["ocs_import"]['computers'])) {
 if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
     && $_SESSION["plugin_ocsinventoryng_ocsservers_id"] > -1) {
     if (!isset($_POST["import_ok"])) {
-        $ocsClient   = OcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-        $deleted_pcs = $ocsClient->getTotalDeletedComputers();
+        $deleted_pcs = 0;
+        if (OcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
+            $deleted_pcs = OcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"])->getTotalDeletedComputers();
+        }
         if ($deleted_pcs > 0) {
             echo "<div class='alert alert-important alert-warning d-flex'>";
             echo __('You have', 'ocsinventoryng') . " " . $deleted_pcs . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng');

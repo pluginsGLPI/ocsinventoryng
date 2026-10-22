@@ -32,6 +32,8 @@ namespace GlpiPlugin\Ocsinventoryng;
 
 use CommonDBTM;
 use Dropdown;
+use Glpi\Application\View\TemplateRenderer;
+use Glpi\DBAL\QueryExpression;
 use Html;
 use Session;
 use Toolbox;
@@ -67,15 +69,6 @@ class Thread extends CommonDBTM
         }
     }
 
-    public function title()
-    {
-
-        $buttons = [];
-        $title = "";
-        $buttons["thread.php"] = __('Back to processes list', 'ocsinventoryng');
-        Html::displayTitle("", "", $title, $buttons);
-        echo "<br>";
-    }
 
 
     /**
@@ -93,114 +86,96 @@ class Thread extends CommonDBTM
         $config->getFromDB(1);
 
         $finished = true;
-        $total = 0;
-        $sql = "SELECT `id`, `threadid`, `status`, `total_number_machines`, `processid`,
-                     `start_time` AS starting_date, `end_time` AS ending_date,
-                     TIME_TO_SEC(`end_time`) - TIME_TO_SEC(`start_time`) AS duree,
-                     `imported_machines_number` AS imported_machines,
-                     `synchronized_machines_number` AS synchronized_machines,
-                     `failed_rules_machines_number` AS failed_rules_machines,
-                     `linked_machines_number` AS linked_machines,
-                     `notupdated_machines_number` AS notupdated_machines,
-                     `not_unique_machines_number` AS not_unique_machines_number,
-                     `link_refused_machines_number` AS link_refused_machines_number
-              FROM `" . $this->getTable() . "`
-              WHERE `processid` = " . (int) $pid . "
-              ORDER BY `threadid` ASC";
-        $result = $DB->doQuery($sql);
-
-        echo "<div class='center' id='tabsbody'>";
-        echo "<form name=cas action='' method='post'>";
-        echo "<table class='tab_cadre' cellpadding='11'>";
-        echo "<tr><th colspan='14'>" . sprintf(__s('%1$s: %2$s'), __s('Process information', 'ocsinventoryng'), (int) $pid) .
-         "</th></tr>";
-        echo "<tr>";
-        echo "<th>" . __('Thread', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Status') . "</th>";
-        echo "<th>" . __('Beginning date of execution', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Ending date of execution', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Computers imported by automatic actions', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Computers synchronized', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Computers linked', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __(
-            'Computers not imported by automatic actions',
-            'ocsinventoryng'
-        ) . "</th>";
-        echo "<th>" . __('Computers not updated', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Computers not unique', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Computers refused', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Process time execution', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Total of computers to be treated', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('performed percentage', 'ocsinventoryng') . "</th>";
-        echo "</th></tr>";
-
-        if ($DB->numrows($result)) {
-            while ($thread = $DB->fetchArray($result)) {
-                echo "<tr class='tab_bg_2'>";
-                echo "<td class='center'>" . $thread["threadid"] . "</td>";
-
-                echo "<td class='center'>";
-                $this->displayProcessStatusIcon($thread["status"]);
-                echo "</td>";
-
-                echo "<td class='center'>" . Html::convDateTime($thread["starting_date"]) . "</td>";
-                echo "<td class='center'>" . Html::convDateTime($thread["ending_date"]) . "</td>";
-                echo "<td class='center'>" . $thread["imported_machines"] . "</td>";
-                echo "<td class='center'>" . $thread["synchronized_machines"] . "</td>";
-                echo "<td class='center'>" . $thread["linked_machines"] . "</td>";
-                echo "<td class='center'>" . $thread["failed_rules_machines"] . "</td>";
-                echo "<td class='center'>" . $thread["notupdated_machines"] . "</td>";
-                echo "<td class='center'>" . $thread["not_unique_machines_number"] . "</td>";
-                echo "<td class='center'>" . $thread["link_refused_machines_number"] . "</td>";
-                echo "<td class='center'>";
-                if ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED) {
-                    echo $this->timestampToStringShort($thread["duree"]);
-                } else {
-                    echo Dropdown::EMPTY_VALUE;
-                    $finished = false;
-                }
-                echo "</td>";
-
-                echo "<td class='center'>" . $thread["total_number_machines"] . "</td>";
-
-                if ($thread["total_number_machines"] == 0) {
-                    //Total number of machines is 0 because the thread had no machines to process
-                    if ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED) {
-                        $pourcent = 100;
-                    } else {
-                        //Total number of machines is 0 because the thread just started to process
-                        $pourcent = 0;
-                    }
-                } else {
-                    $pourcent = (100 * ($thread["imported_machines"] + $thread["synchronized_machines"]))
-                    / $thread["total_number_machines"];
-                }
-                echo "<td class='center'>";
-                printf("%.4s", $pourcent);
-                echo "%</td>";
-
-                echo "</tr>";
-
-                $total += $thread["imported_machines"] + $thread["synchronized_machines"]
-                + $thread["linked_machines"];
+        $total    = 0;
+        $rows     = [];
+        foreach ($DB->request([
+            'SELECT' => [
+                'id', 'threadid', 'status', 'total_number_machines', 'processid',
+                'start_time AS starting_date', 'end_time AS ending_date',
+                new QueryExpression('TIME_TO_SEC(' . $DB->quoteName('end_time') . ') - TIME_TO_SEC(' . $DB->quoteName('start_time') . ') AS ' . $DB->quoteName('duree')),
+                'imported_machines_number AS imported_machines',
+                'synchronized_machines_number AS synchronized_machines',
+                'failed_rules_machines_number AS failed_rules_machines',
+                'linked_machines_number AS linked_machines',
+                'notupdated_machines_number AS notupdated_machines',
+                'not_unique_machines_number',
+                'link_refused_machines_number',
+            ],
+            'FROM'   => $this->getTable(),
+            'WHERE'  => ['processid' => $pid],
+            'ORDER'  => 'threadid ASC',
+        ]) as $thread) {
+            $thread_finished = ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED);
+            if (!$thread_finished) {
+                $finished = false;
             }
+
+            if ($thread["total_number_machines"] == 0) {
+                // No machines to process: the thread is done, or it just started
+                $percent = $thread_finished ? 100 : 0;
+            } else {
+                $percent = (100 * ($thread["imported_machines"] + $thread["synchronized_machines"]))
+                    / $thread["total_number_machines"];
+            }
+            $percent = min(100, max(0, (int) round($percent)));
+
+            $rows[] = [
+                'threadid'                     => (int) $thread["threadid"],
+                'status'                       => $this->getProcessStatusIcon($thread["status"]),
+                'starting_date'                => Html::convDateTime($thread["starting_date"]),
+                'ending_date'                  => Html::convDateTime($thread["ending_date"]),
+                'imported_machines'            => (int) $thread["imported_machines"],
+                'synchronized_machines'        => (int) $thread["synchronized_machines"],
+                'linked_machines'              => (int) $thread["linked_machines"],
+                'failed_rules_machines'        => (int) $thread["failed_rules_machines"],
+                'notupdated_machines'          => (int) $thread["notupdated_machines"],
+                'not_unique_machines_number'   => (int) $thread["not_unique_machines_number"],
+                'link_refused_machines_number' => (int) $thread["link_refused_machines_number"],
+                'duree'                        => $thread_finished ? self::timestampToStringShort($thread["duree"]) : Dropdown::EMPTY_VALUE,
+                'total_number_machines'        => (int) $thread["total_number_machines"],
+                'percent'                      => "<div class='progress' style='min-width: 6rem'>"
+                    . "<div class='progress-bar' style='width: " . $percent . "%'>" . $percent . " %</div></div>",
+            ];
+
+            $total += $thread["imported_machines"] + $thread["synchronized_machines"]
+                + $thread["linked_machines"];
         }
-        echo "<tr class='tab_bg_2'>";
-        echo "<td colspan='14' class='center'>" . sprintf(
-            __('%1$s: %2$s'),
-            __('Total of treated computers', 'ocsinventoryng'),
-            $total
-        ) .
-         "</td></tr>";
 
         if (($config->fields["delay_refresh"] > 0) && !$finished) {
-            echo "<meta http-equiv='refresh' content=\"" .
-              $config->fields["delay_refresh"] . "\"; url=\"#\" />";
+            echo "<meta http-equiv='refresh' content='" . (int) $config->fields["delay_refresh"] . "' />";
         }
-        echo "</table></div>";
 
-        echo "<div id='tabcontent'></div>";
-        //      echo "<script type='text/javascript'>loadDefaultTab();</script>";
+        TemplateRenderer::getInstance()->display('@ocsinventoryng/table.html.twig', [
+            'title'         => sprintf(__('%1$s: %2$s'), __('Process information', 'ocsinventoryng'), $pid),
+            'icon'          => 'ti ti-player-play',
+            'header_link'   => [
+                'title' => __('Processes execution of automatic actions', 'ocsinventoryng'),
+                'url'   => PLUGIN_OCS_WEBDIR . "/front/thread.php",
+            ],
+            'columns'       => [
+                'threadid'                     => __('Thread', 'ocsinventoryng'),
+                'status'                       => __('Status'),
+                'starting_date'                => __('Beginning date of execution', 'ocsinventoryng'),
+                'ending_date'                  => __('Ending date of execution', 'ocsinventoryng'),
+                'imported_machines'            => __('Computers imported by automatic actions', 'ocsinventoryng'),
+                'synchronized_machines'        => __('Computers synchronized', 'ocsinventoryng'),
+                'linked_machines'              => __('Computers linked', 'ocsinventoryng'),
+                'failed_rules_machines'        => __('Computers not imported by automatic actions', 'ocsinventoryng'),
+                'notupdated_machines'          => __('Computers not updated', 'ocsinventoryng'),
+                'not_unique_machines_number'   => __('Computers not unique', 'ocsinventoryng'),
+                'link_refused_machines_number' => __('Computers refused', 'ocsinventoryng'),
+                'duree'                        => __('Process time execution', 'ocsinventoryng'),
+                'total_number_machines'        => __('Total of computers to be treated', 'ocsinventoryng'),
+                'percent'                      => __('performed percentage', 'ocsinventoryng'),
+            ],
+            // Built in PHP from integers and translated strings
+            'raw_columns'   => ['status', 'percent'],
+            'rows'          => $rows,
+            'footers'       => count($rows) ? [[
+                'threadid' => sprintf(__('%1$s: %2$s'), __('Total of treated computers', 'ocsinventoryng'), $total),
+            ]] : [],
+            'empty_message' => __('No results found'),
+        ]);
     }
 
 
@@ -215,16 +190,15 @@ class Thread extends CommonDBTM
 
         $pid = (int) $pid;
 
-        $sql = "SELECT `status`
-              FROM `" . $this->getTable() . "`
-              WHERE `processid` = " . (int) $pid . "";
-        $result = $DB->doQuery($sql);
-        $status = 0;
-        $thread_number = 0;
+        $result = $DB->request([
+            'SELECT' => 'status',
+            'FROM'   => $this->getTable(),
+            'WHERE'  => ['processid' => $pid],
+        ]);
+        $status        = 0;
+        $thread_number = count($result);
 
-        $thread_number = $DB->numrows($result);
-
-        while ($thread = $DB->fetchArray($result)) {
+        foreach ($result as $thread) {
             $status += $thread["status"];
         }
 
@@ -249,17 +223,15 @@ class Thread extends CommonDBTM
         $nbdel = 0;
 
         if ($delete_frequency > 0) {
-            $sql = "DELETE
-                 FROM `" . $this->getTable() . "`
-                 WHERE (`end_time` < DATE_ADD(NOW(), INTERVAL -" . $delete_frequency . " HOUR)) OR `end_time` IS NULL";
-            $DB->doQuery($sql);
-            //foreach($DB->request($sql) as $data) {
-            // Requires to clean details
-            //   $this->delete(array('id'=>$data['id']), true);
-            //   $nbdel++;
-            //}
+            $DB->delete($this->getTable(), [
+                'OR' => [
+                    'end_time' => null,
+                    ['end_time' => ['<', new QueryExpression('DATE_ADD(NOW(), INTERVAL -' . $delete_frequency . ' HOUR)')]],
+                ],
+            ]);
+            $nbdel = $DB->affectedRows();
         }
-        return true;
+        return $nbdel;
     }
 
 
@@ -269,307 +241,200 @@ class Thread extends CommonDBTM
      */
     public function showProcesses($target, $plugin_ocsinventoryng_ocsservers_id = 0)
     {
-        global $DB, $CFG_GLPI;
+        global $DB;
 
         // The server comes from the request: an integer
         $plugin_ocsinventoryng_ocsservers_id = (int) $plugin_ocsinventoryng_ocsservers_id;
-        $target = htmlescape((string) $target);
 
         $canedit = Session::haveRight("plugin_ocsinventoryng", UPDATE);
+        $log     = Config::logProcessedComputers();
 
         $config = new Config();
         $config->getFromDB(1);
 
-        $minfreq = 9999;
-        //$task    = new CronTask();
-        //if ($task->getFromDBbyName('Thread', 'CleanOldThreads')) {
-        //First of all, deleted old processes
-        //   $this->deleteOldProcesses($task->fields['param']);
+        $counters = [
+            'imported_machines'            => new MiniStat(),
+            'synchronized_machines'        => new MiniStat(),
+            'linked_machines'              => new MiniStat(),
+            'failed_rules_machines'        => new MiniStat(),
+            'notupdated_machines'          => new MiniStat(),
+            'not_unique_machines_number'   => new MiniStat(),
+            'link_refused_machines_number' => new MiniStat(),
+            'duree'                        => new MiniStat(),
+        ];
 
-        //   if ($task->fields['param'] > 0) {
-        //      $minfreq=$task->fields['param'];
-        //   }
-        //}
-
-        $imported_number = new MiniStat();
-        $synchronized_number = new MiniStat();
-        $linked_number = new MiniStat();
-        $failed_number = new MiniStat();
-        $notupdated_number = new MiniStat();
-        $notunique_number = new MiniStat();
-        $linkedrefused_number = new MiniStat();
-        $process_time = new MiniStat();
-
-        $sql = "SELECT `id`, `processid`, SUM(`total_number_machines`) AS total_machines,
-                     `plugin_ocsinventoryng_ocsservers_id`, `status`, COUNT(*) AS threads_number,
-                     MIN(`start_time`) AS starting_date, MAX(`end_time`) AS ending_date,
-                     TIMESTAMPDIFF(SECOND,MIN(start_time),MAX(end_time)) AS duree,
-                     SUM(`imported_machines_number`) AS imported_machines,
-                     SUM(`synchronized_machines_number`) AS synchronized_machines,
-                     SUM(`linked_machines_number`) AS linked_machines,
-                     SUM(`failed_rules_machines_number`) AS failed_rules_machines,
-                     SUM(`notupdated_machines_number`) AS notupdated_machines,
-                     SUM(`not_unique_machines_number`) AS not_unique_machines_number,
-                     SUM(`link_refused_machines_number`) AS link_refused_machines_number,
-                     `end_time` >= DATE_ADD(NOW(), INTERVAL - " . $minfreq . " HOUR) AS DoStat
-              FROM `" . $this->getTable() . "` ";
+        $criteria = [
+            'SELECT'  => [
+                'processid', 'plugin_ocsinventoryng_ocsservers_id', 'status',
+                'SUM' => [
+                    'total_number_machines AS total_machines',
+                    'imported_machines_number AS imported_machines',
+                    'synchronized_machines_number AS synchronized_machines',
+                    'linked_machines_number AS linked_machines',
+                    'failed_rules_machines_number AS failed_rules_machines',
+                    'notupdated_machines_number AS notupdated_machines',
+                    'not_unique_machines_number AS not_unique_machines_number',
+                    'link_refused_machines_number AS link_refused_machines_number',
+                ],
+                'MIN'     => 'start_time AS starting_date',
+                'MAX'     => ['id AS id', 'end_time AS ending_date'],
+                'COUNT'   => '* AS threads_number',
+                new QueryExpression('TIMESTAMPDIFF(SECOND, MIN(' . $DB->quoteName('start_time') . '), MAX('
+                    . $DB->quoteName('end_time') . ')) AS ' . $DB->quoteName('duree')),
+            ],
+            'FROM'    => $this->getTable(),
+            'GROUPBY' => 'processid',
+            'ORDER'   => 'id DESC',
+            'LIMIT'   => 50,
+        ];
         if ($plugin_ocsinventoryng_ocsservers_id > 0) {
-            $sql .= "WHERE `plugin_ocsinventoryng_ocsservers_id` = " . $plugin_ocsinventoryng_ocsservers_id . "";
+            $criteria['WHERE'] = ['plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id];
         }
-        $sql .= " GROUP BY `processid`
-              ORDER BY `id` DESC
-              LIMIT 50";
-        $result = $DB->doQuery($sql);
 
-        echo "<div class='center'>";
-        echo "<form name='processes' id='processes' action='$target' method='post'>";
-        echo "<table class='tab_cadre_fixe'>";
-        $colspan = '15';
-        $log = Config::logProcessedComputers();
-        if ($log) {
-            $colspan = '16';
-        }
-        echo "<tr><th colspan='$colspan'>" . __('Processes execution of automatic actions', 'ocsinventoryng');
-        if (Session::haveRecursiveAccessToEntity(0)) {
-            echo "&nbsp;<a href='thread.php?plugin_ocsinventoryng_ocsservers_id=0'>(" . __('See all servers', 'ocsinventoryng') . ")</a>";
-        }
-        echo "</th></tr>";
-        echo "<tr>";
-        echo "<th>&nbsp;</th>";
-        echo "<th>&nbsp;</th>";
-        echo "<th>" . __('Status') . "</th>";
-        echo "<th>" . __('Number of threads', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Beginning date of execution', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Ending date of execution', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Computers imported by automatic actions', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Computers synchronized', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Computers linked', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Computers not imported by automatic actions', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Computers not updated', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Computers not unique', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Computers refused', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Process time execution', 'ocsinventoryng') . "</th>";
-        echo "<th>" . __('Server') . "</th>";
-        $log = Config::logProcessedComputers();
-        if ($log) {
-            echo "<th>&nbsp;</th>";
-        }
-        echo "</tr>\n";
-
-        if ($DB->numrows($result)) {
-            while ($thread = $DB->fetchArray($result)) {
-                if ($config->fields["is_displayempty"]
-                || ($thread["status"] != PLUGIN_OCSINVENTORYNG_STATE_FINISHED)
-                || (!$config->fields["is_displayempty"]
-                  && ($thread["total_machines"] > 0)
-                  && ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED))) {
-                    if ($thread["DoStat"]
-                    && ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED)) {
-                        $imported_number->AddValue($thread["imported_machines"]);
-                        $synchronized_number->AddValue($thread["synchronized_machines"]);
-                        $linked_number->AddValue($thread["linked_machines"]);
-                        $failed_number->AddValue($thread["failed_rules_machines"]);
-                        $notupdated_number->AddValue($thread["notupdated_machines"]);
-                        $notunique_number->AddValue($thread["not_unique_machines_number"]);
-                        $linkedrefused_number->AddValue($thread["link_refused_machines_number"]);
-                        $process_time->AddValue($thread["duree"]);
-                    } elseif ($imported_number->GetCount() > 0) {
-                        $this->showStat(
-                            $minfreq,
-                            $imported_number,
-                            $synchronized_number,
-                            $linked_number,
-                            $failed_number,
-                            $notupdated_number,
-                            $notunique_number,
-                            $linkedrefused_number,
-                            $process_time,
-                            $colspan
-                        );
-                        $imported_number->Reset();
-                    }
-                    echo "<tr class='tab_bg_1'>";
-                    echo "<td width='10'>";
-
-                    if ($canedit) {
-                        Html::showCheckbox(['name'    => 'item[' . $thread["processid"] . ']']);
-                    } else {
-                        echo "&nbsp;";
-                    }
-                    echo "</td>";
-
-                    echo "<td class='center'>";
-                    echo "<a href=\"./thread.form.php?pid=" . $thread["processid"] . "\">" .
-                    $thread["processid"] . "</a></td>";
-                    echo "<td class='center'>";
-                    $this->displayProcessStatusIcon($this->getProcessStatus($thread["processid"]));
-                    echo "</td>";
-                    echo "<td class='center'>" . $thread["threads_number"] . "</td>";
-                    echo "<td class='center'>" . Html::convDateTime($thread["starting_date"]) . "</td>";
-                    echo "<td class='center'>" . Html::convDateTime($thread["ending_date"]) . "</td>";
-                    echo "<td class='center'>" . $thread["imported_machines"] . "</td>";
-                    echo "<td class='center'>" . $thread["synchronized_machines"] . "</td>";
-                    echo "<td class='center'>" . $thread["linked_machines"] . "</td>";
-                    echo "<td class='center'>" . $thread["failed_rules_machines"] . "</td>";
-                    echo "<td class='center'>" . $thread["notupdated_machines"] . "</td>";
-                    echo "<td class='center'>" . $thread["not_unique_machines_number"] . "</td>";
-                    echo "<td class='center'>" . $thread["link_refused_machines_number"] . "</td>";
-
-                    echo "<td class='center'>";
-                    if ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED) {
-                        echo $this->timestampToStringShort($thread["duree"]);
-                    } else {
-                        echo Dropdown::EMPTY_VALUE;
-                    }
-                    echo "</td>";
-
-                    echo "<td class='center'>";
-                    if ($thread["plugin_ocsinventoryng_ocsservers_id"] != -1) {
-                        $ocsConfig = OcsServer::getConfig($thread["plugin_ocsinventoryng_ocsservers_id"]);
-                        if (isset($ocsConfig["id"])) {
-                            echo "<a href=\"ocsserver.form.php?id=" . (int) $ocsConfig["id"] . "\">" .
-                            htmlescape((string) $ocsConfig["name"]) . "</a>";
-                        }
-                    } else {
-                        echo __('All servers', 'ocsinventoryng');
-                    }
-                    echo "</td>";
-
-                    if ($log) {
-                        echo "<td class='center'>";
-                        echo "<a class='fas fa-search-plus' href=\"detail.php?criteria[0][field]=5&" .
-                          "criteria[0][searchtype]=contains&criteria[0][value]=^" . $thread["processid"] . '$">' . "</a></td>";
-                    }
-                    echo "</tr>\n";
+        $servers = [];
+        $rows    = [];
+        foreach ($DB->request($criteria) as $thread) {
+            $finished = ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED);
+            if (!$config->fields["is_displayempty"] && $finished && $thread["total_machines"] == 0) {
+                continue;
+            }
+            if ($finished) {
+                foreach ($counters as $key => $counter) {
+                    $counter->AddValue($thread[$key]);
                 }
             }
+
+            $processid = (int) $thread["processid"];
+            $server    = __('All servers', 'ocsinventoryng');
+            $servers_id = (int) $thread["plugin_ocsinventoryng_ocsservers_id"];
+            if ($servers_id != -1) {
+                if (!isset($servers[$servers_id])) {
+                    $ocsConfig            = OcsServer::getConfig($servers_id);
+                    $servers[$servers_id] = isset($ocsConfig["id"])
+                        ? "<a href=\"" . htmlescape(OcsServer::getFormURLWithID($servers_id)) . "\">"
+                            . htmlescape((string) $ocsConfig["name"]) . "</a>"
+                        : '';
+                }
+                $server = $servers[$servers_id];
+            } else {
+                $server = htmlescape($server);
+            }
+
+            $row = [
+                '_checkbox'                    => $processid,
+                'processid'                    => "<a href=\"" . htmlescape(PLUGIN_OCS_WEBDIR . "/front/thread.form.php?pid=" . $processid) . "\">"
+                    . $processid . "</a>",
+                'status'                       => $this->getProcessStatusIcon($this->getProcessStatus($processid)),
+                'threads_number'               => (int) $thread["threads_number"],
+                'starting_date'                => Html::convDateTime($thread["starting_date"]),
+                'ending_date'                  => Html::convDateTime($thread["ending_date"]),
+                'imported_machines'            => (int) $thread["imported_machines"],
+                'synchronized_machines'        => (int) $thread["synchronized_machines"],
+                'linked_machines'              => (int) $thread["linked_machines"],
+                'failed_rules_machines'        => (int) $thread["failed_rules_machines"],
+                'notupdated_machines'          => (int) $thread["notupdated_machines"],
+                'not_unique_machines_number'   => (int) $thread["not_unique_machines_number"],
+                'link_refused_machines_number' => (int) $thread["link_refused_machines_number"],
+                'duree'                        => $finished ? self::timestampToStringShort($thread["duree"]) : Dropdown::EMPTY_VALUE,
+                'server'                       => $server,
+            ];
+            if ($log) {
+                $row['detail'] = "<a href=\"" . htmlescape(PLUGIN_OCS_WEBDIR . "/front/detail.php?"
+                    . http_build_query(['criteria' => [['field' => 5, 'searchtype' => 'contains', 'value' => '^' . $processid . '$']]]))
+                    . "\" title=\"" . htmlescape(__('Details')) . "\"><i class='ti ti-zoom-in'></i></a>";
+            }
+            $rows[] = $row;
         }
 
-        if ($imported_number->GetCount() > 0) {
-            $this->showStat(
-                $minfreq,
-                $imported_number,
-                $synchronized_number,
-                $linked_number,
-                $failed_number,
-                $notupdated_number,
-                $notunique_number,
-                $linkedrefused_number,
-                $process_time,
-                $colspan
-            );
+        $columns = [
+            'processid'                    => __('Process', 'ocsinventoryng'),
+            'status'                       => __('Status'),
+            'threads_number'               => __('Number of threads', 'ocsinventoryng'),
+            'starting_date'                => __('Beginning date of execution', 'ocsinventoryng'),
+            'ending_date'                  => __('Ending date of execution', 'ocsinventoryng'),
+            'imported_machines'            => __('Computers imported by automatic actions', 'ocsinventoryng'),
+            'synchronized_machines'        => __('Computers synchronized', 'ocsinventoryng'),
+            'linked_machines'              => __('Computers linked', 'ocsinventoryng'),
+            'failed_rules_machines'        => __('Computers not imported by automatic actions', 'ocsinventoryng'),
+            'notupdated_machines'          => __('Computers not updated', 'ocsinventoryng'),
+            'not_unique_machines_number'   => __('Computers not unique', 'ocsinventoryng'),
+            'link_refused_machines_number' => __('Computers refused', 'ocsinventoryng'),
+            'duree'                        => __('Process time execution', 'ocsinventoryng'),
+            'server'                       => __('Server'),
+        ];
+        if ($log) {
+            $columns['detail'] = '';
         }
-        echo "</table>";
 
-        if ($canedit) {
-            echo "<table class='tab_glpi' width='95%'>";
-            echo "<tr><td width='30px'><i class='fas fa-level-up-alt fa-flip-horizontal mt-2'></td><td class='center'>";
-            echo "<a onclick= \"if ( markCheckboxes('processes') ) "
-              . "return false;\" href='#'>" . __("Check all") . "</a></td>";
-
-            echo "<td>/</td><td class='center'>";
-            echo "<a onclick= \"if ( unMarkCheckboxes('processes') ) "
-              . "return false;\" href='#'>" . __("Uncheck all") . "</a>";
-            echo "</td><td align='left' width='80%'>";
-            echo Html::submit(_x('button', 'Delete permanently'), ['name' => 'delete_processes', 'class' => 'btn btn-primary']);
-            echo "</td>";
-            echo "</table>";
-        }
-        Html::closeForm();
+        TemplateRenderer::getInstance()->display('@ocsinventoryng/table.html.twig', [
+            'title'         => __('Processes execution of automatic actions', 'ocsinventoryng'),
+            'icon'          => 'ti ti-player-play',
+            'header_link'   => Session::haveRecursiveAccessToEntity(0) ? [
+                'title' => __('See all servers', 'ocsinventoryng'),
+                'url'   => PLUGIN_OCS_WEBDIR . "/front/thread.php?plugin_ocsinventoryng_ocsservers_id=0",
+            ] : null,
+            'columns'       => $columns,
+            'raw_columns'   => ['processid', 'status', 'server', 'detail'],
+            'rows'          => $rows,
+            'footers'       => $this->getStatFooters($counters),
+            'empty_message' => __('No results found'),
+            'form_action'   => $canedit ? $target : null,
+            'checkbox_name' => $canedit ? 'item' : null,
+            'buttons'       => [
+                [
+                    'name'    => 'delete_processes',
+                    'title'   => _x('button', 'Delete permanently'),
+                    'icon'    => 'ti-trash',
+                    'class'   => 'btn-danger',
+                    'confirm' => __('Confirm the final deletion?'),
+                ],
+            ],
+        ]);
     }
 
 
     /**
-     * @param $duree
-     * @param $imported
-     * @param $synchronized
-     * @param $linked
-     * @param $failed
-     * @param $notupdated
-     * @param $notunique
-     * @param $linkedrefused
-     * @param $time
-     **/
-    public function showStat(
-        $duree,
-        &$imported,
-        &$synchronized,
-        &$linked,
-        &$failed,
-        &$notupdated,
-        &$notunique,
-        &$linkedrefused,
-        &$time,
-        $colspan
-    ) {
-
-        $title = __('Statistics');
-        if ($duree < 9999) {
-            $title = sprintf(
-                __('%1$s (%2$s)'),
-                $title,
-                sprintf(_n('%d hour', '%d hours', $duree), $duree)
-            );
+     * Statistics of the finished processes: minimum, maximum, average and total of each counter
+     *
+     * @param MiniStat[] $counters counters by column
+     *
+     * @return array footer rows of the processes table
+     */
+    private function getStatFooters(array $counters)
+    {
+        if ($counters['duree']->GetCount() == 0) {
+            return [];
         }
 
-        echo "<tr><th colspan='$colspan'>" . $title . "</th></tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        $colsp = '5';
-        if ($colspan == '16') {
-            $colsp = '6';
+        $footers = [];
+        foreach ([
+            __('Minimum')               => fn(MiniStat $stat) => $stat->GetMinimum(),
+            __('Maximum', 'ocsinventoryng') => fn(MiniStat $stat) => $stat->GetMaximum(),
+            __('Average')               => fn(MiniStat $stat) => round($stat->GetAverage(), 2, PHP_ROUND_HALF_UP),
+            __('Total')                 => fn(MiniStat $stat) => $stat->GetTotal(),
+        ] as $label => $value) {
+            $footer = ['processid' => __('Statistics'), 'status' => $label];
+            foreach ($counters as $key => $counter) {
+                $footer[$key] = ($key == 'duree')
+                    ? self::timestampToStringShort($value($counter))
+                    : $value($counter);
+            }
+            $footers[] = $footer;
         }
-        echo "<td class='right' colspan='$colsp'>" . __('Minimum') .
-         "<br />" . __('Maximum', 'ocsinventoryng') .
-         "<br />" . __('Average') .
-         "<br />" . __('Total') . "</td>";
-        echo "<td class='center'>" . $imported->GetMinimum() .
-         "<br />" . $imported->GetMaximum() .
-         "<br />" . round($imported->GetAverage(), 2, PHP_ROUND_HALF_UP) .
-         "<br />" . $imported->GetTotal() . "</td>";
-        echo "<td class='center'>" . $synchronized->GetMinimum() .
-         "<br />" . $synchronized->GetMaximum() .
-         "<br />" . round($synchronized->GetAverage(), 2, PHP_ROUND_HALF_UP) .
-         "<br />" . $synchronized->GetTotal() . "</td>";
-        echo "<td class='center'>" . $linked->GetMinimum() .
-         "<br />" . $linked->GetMaximum() .
-         "<br />" . round($linked->GetAverage(), 2, PHP_ROUND_HALF_UP) .
-         "<br />" . $linked->GetTotal() . "</td>";
-        echo "<td class='center'>" . $failed->GetMinimum() .
-         "<br />" . $failed->GetMaximum() .
-         "<br />" . round($failed->GetAverage(), 2, PHP_ROUND_HALF_UP) .
-         "<br />&nbsp;</td>";
-        echo "<td class='center'>" . $notupdated->GetMinimum() .
-         "<br />" . $notupdated->GetMaximum() .
-         "<br />" . round($notupdated->GetAverage(), 2, PHP_ROUND_HALF_UP) .
-         "<br />&nbsp;</td>";
-        echo "<td class='center'>" . $notunique->GetMinimum() .
-         "<br />" . $notunique->GetMaximum() .
-         "<br />" . round($notunique->GetAverage(), 2, PHP_ROUND_HALF_UP) .
-         "<br />&nbsp;</td>";
-        echo "<td class='center'>" . $linkedrefused->GetMinimum() .
-         "<br />" . $linkedrefused->GetMaximum() .
-         "<br />" . round($linkedrefused->GetAverage(), 2, PHP_ROUND_HALF_UP) .
-         "<br />&nbsp;</td>";
-        echo "<td class='center'>" . $this->timestampToStringShort($time->GetMinimum()) .
-         "<br />" . $this->timestampToStringShort($time->GetMaximum()) . "<br />" .
-         $this->timestampToStringShort(round($time->GetAverage(),0, PHP_ROUND_HALF_UP)) .
-         "<br />" . $this->timestampToStringShort($time->GetTotal()) . "</td>";
-        if ($time->GetTotal() > 0) {
-            echo "<td class='center' colspan='2'>" . __('Speed') . "<br />" .
-            sprintf(
-                __('%1$s %2$s'),
-                round(($imported->GetTotal() + $synchronized->GetTotal()
-                     + $linked->GetTotal() + $failed->GetTotal()
-                     + $notunique->getTotal())
-                  / $time->GetTotal(), 2, PHP_ROUND_HALF_UP),
+
+        $time = $counters['duree']->GetTotal();
+        if ($time > 0) {
+            $computers = $counters['imported_machines']->GetTotal() + $counters['synchronized_machines']->GetTotal()
+                + $counters['linked_machines']->GetTotal() + $counters['failed_rules_machines']->GetTotal()
+                + $counters['not_unique_machines_number']->GetTotal();
+            $footers[] = [
+                'processid' => __('Speed'),
                 //TRANS: means computers by second
-                __('pc/s', 'ocsinventoryng')
-            ) . "</td>";
-        } else {
-            echo "<td>&nbsp;</td><td>&nbsp;</td>";
+                'duree'     => sprintf(__('%1$s %2$s'), round($computers / $time, 2, PHP_ROUND_HALF_UP), __('pc/s', 'ocsinventoryng')),
+            ];
         }
-        echo "</tr>\n";
+
+        return $footers;
     }
 
 
@@ -578,93 +443,73 @@ class Thread extends CommonDBTM
      */
     public function showErrorLog()
     {
-
-        $fic = GLPI_LOG_DIR . "/ocsng_fullsync.log";
-        if (!is_file($fic)) {
-            return false;
+        $title = sprintf(__('%1$s: %2$s'), __('Log file', 'ocsinventoryng'), 'ocsng_fullsync.log');
+        $fic   = GLPI_LOG_DIR . "/ocsng_fullsync.log";
+        $events = [];
+        if (is_file($fic)) {
+            $size = filesize($fic);
+            if ($size > 20000) {
+                $logfile = file_get_contents($fic, false, null, $size - 20000, 20000);
+                $events  = explode("\n", $logfile);
+                // Remove fist partial event
+                array_shift($events);
+            } else {
+                $logfile = file_get_contents($fic);
+                $events  = explode("\n\n", $logfile);
+            }
+            // Remove last empty event
+            array_pop($events);
         }
 
-        $size = filesize($fic);
-
-        if ($size > 20000) {
-            $logfile = file_get_contents($fic, 0, null, $size - 20000, 20000);
-            $events = explode("\n", $logfile);
-            // Remove fist partial event
-            array_shift($events);
-        } else {
-            $logfile = file_get_contents($fic);
-            $events = explode("\n\n", $logfile);
-        }
-
-        // Remove last empty event
-        array_pop($events);
         $number = count($events);
+        $limit  = (int) $_SESSION['glpilist_limit'];
+        $start  = min($number, max(0, (int) ($_GET["start"] ?? 0)));
 
-        $start = max(0, (int) ($_REQUEST["start"] ?? 0));
-
-        if ($number < 1) {
-            return $this->lognothing();
+        $rows = [];
+        foreach (array_slice($events, $start, $limit) as $event) {
+            // The log holds names reported by the agents: plain text, escaped by the template
+            $rows[] = ['message' => explode("\n", $event)[0]];
         }
-        if ($start > $number) {
-            $start = $number;
-        }
 
-        // Display the pager
-        Html::printAjaxPager("Logfile: ocsng_fullsync.log", $start, $number);
+        TemplateRenderer::getInstance()->display('@ocsinventoryng/table.html.twig', [
+            'title'         => $title,
+            'icon'          => 'ti ti-file-text',
+            'columns'       => ['message' => __('Message')],
+            'rows'          => $rows,
+            'empty_message' => __('No results found'),
+            'pager'         => $number > $limit ? [
+                'start' => $start,
+                'count' => $number,
+                'limit' => $limit,
+                'href'  => PLUGIN_OCS_WEBDIR . "/front/logs.php",
+            ] : null,
+        ]);
 
-        // Output events
-        echo "<div class='center'><table class='tab_cadre_fixe'>";
-        echo "<tr><th>Message</th></tr>";
-
-        for ($i = $start; $i < ($start + $_SESSION['glpilist_limit']) && $i < count($events); $i++) {
-            $lines = explode("\n", $events[$i]);
-            // The log holds names reported by the agents: plain text
-            echo "<tr class='tab_bg_2 top'><td>" . htmlescape($lines[0]) . "</td>";
-            echo "</tr>";
-        }
-        echo "</table></div>";
+        return $number > 0;
     }
 
-
     /**
-     * @return bool
-     */
-    public function lognothing()
-    {
-
-        echo "<div class='center'>";
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr><th>No record found</th></tr>";
-        echo "</table>";
-        echo "</div><br>";
-
-        return false;
-    }
-
-
-    /**
+     * Badge of a process status
+     *
      * @param $status
+     *
+     * @return string HTML
      **/
-    public function displayProcessStatusIcon($status)
+    public function getProcessStatusIcon($status)
     {
-
-        switch ($status) {
-            case PLUGIN_OCSINVENTORYNG_STATE_FINISHED:
-                echo "<i style='color:darkgreen' class='ti ti-circle-check'
-            title=\"" . __('Finished state') . "\"></i>";
-                break;
-
-            case PLUGIN_OCSINVENTORYNG_STATE_RUNNING:
-                echo "<i style='color:grey' class='ti ti-hourglass'
-               title=\"" . __('Running') . "\"></i>";
-                break;
-
-            case PLUGIN_OCSINVENTORYNG_STATE_STARTED:
-                echo "<i style='color:grey' class='ti ti-hourglass-high'
-            title=\"" . __('Scheduled') . "\"></i>";
-                break;
+        $badges = [
+            PLUGIN_OCSINVENTORYNG_STATE_FINISHED => ['bg-green-lt', 'ti-circle-check', __('Finished state')],
+            PLUGIN_OCSINVENTORYNG_STATE_RUNNING  => ['bg-blue-lt', 'ti-hourglass', __('Running')],
+            PLUGIN_OCSINVENTORYNG_STATE_STARTED  => ['bg-secondary-lt', 'ti-hourglass-high', __('Scheduled')],
+        ];
+        if (!isset($badges[$status])) {
+            return '';
         }
+        [$color, $icon, $label] = $badges[$status];
+
+        return "<span class='badge " . $color . "'><i class='ti " . $icon . " me-1'></i>" . htmlescape($label) . "</span>";
     }
+
 
 
     /**

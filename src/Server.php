@@ -45,19 +45,14 @@ class Server extends CommonDBTM {
    function getFromDBbyOcsServer($id) {
       global $DB;
 
-      $query = "SELECT *
-                FROM `" . $this->getTable() . "`
-                WHERE `plugin_ocsinventoryng_ocsservers_id` = $id";
-
-      if ($result = $DB->doQuery($query)) {
-         if ($DB->numrows($result) != 1) {
-            return false;
-         }
-         $this->fields = $DB->fetchAssoc($result);
-         if (is_array($this->fields) && count($this->fields)) {
-            return true;
-         }
+      $result = $DB->request([
+         'FROM'  => $this->getTable(),
+         'WHERE' => ['plugin_ocsinventoryng_ocsservers_id' => (int) $id],
+      ]);
+      if (count($result) != 1) {
+         return false;
       }
-      return false;
+      $this->fields = $result->current();
+      return is_array($this->fields) && count($this->fields) > 0;
    }
 }

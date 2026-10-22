@@ -41,7 +41,7 @@ if (OcsServer::checkSessionServer() <= 0) {
 }
 
 
-Html::header('OCS Inventory NG', '', "tools", Menu::class, "importipdiscover");
+Html::header(Menu::getTypeName(), '', "tools", Menu::class, "importipdiscover");
 
 $ip = new IpdiscoverOcslink();
 if (empty($_POST)) {

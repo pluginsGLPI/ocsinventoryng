@@ -40,7 +40,10 @@ if (OcsServer::checkSessionServer() <= 0) {
 }
 
 
-Html::header('OCS Inventory NG', '', "tools", Menu::class, "syncsnmp");
+// The URL of this page (PHP_SELF is the GLPI 11 entry point)
+$self_url = PLUGIN_OCS_WEBDIR . '/front/ocsngsnmp.sync.php';
+
+Html::header(Menu::getTypeName(), '', "tools", Menu::class, "syncsnmp");
 
 
 $display_list = true;
@@ -64,7 +67,7 @@ if (isset($_POST["delete"])
             $link->delete(['id' => $link->getID()], 1);
          }
       }
-      Html::redirect($_SERVER['PHP_SELF']);
+      Html::redirect($self_url);
 
    }
 
@@ -85,7 +88,7 @@ if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
        OcsProcess::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false, true);
        Html::getProgressBar($percent);
 
-      Html::redirect($_SERVER['PHP_SELF']);
+      Html::redirect($self_url);
 
    } else {
 
@@ -99,7 +102,7 @@ if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
       unset($_SESSION["ocs_updatesnmp"]);
       $display_list = false;
       echo "<div class='center b'><br>";
-      echo "<a href='" . $_SERVER['PHP_SELF'] . "'>" . __('Back') . "</a></div>";
+      echo "<a href='" . $self_url . "'>" . __('Back') . "</a></div>";
    }
 }
 
@@ -127,7 +130,7 @@ if (!isset($_POST["update_ok"])) {
          }
       }
    }
-   Html::redirect($_SERVER['PHP_SELF']);
+   Html::redirect($self_url);
 }
 
 Html::footer();

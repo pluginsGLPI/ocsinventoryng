@@ -71,11 +71,6 @@ class SnmpOcslink extends CommonDBTM
 {
     public static $snmptypes = ['Computer', 'NetworkEquipment', 'Peripheral', 'Phone', 'Printer'];
     public static $rightname = "plugin_ocsinventoryng";
-    /** @const */
-    private static $CARTRIDGE_COLOR_CYAN    = ['cyan'];
-    private static $CARTRIDGE_COLOR_MAGENTA = ['magenta'];
-    private static $CARTRIDGE_COLOR_YELLOW  = ['yellow', 'jaune'];
-    private static $CARTRIDGE_COLOR_BLACK   = ['black', 'noir'];
     public const OTHER_DATA = 'other';
 
     /**
@@ -173,30 +168,12 @@ class SnmpOcslink extends CommonDBTM
 
         echo "<tr class='tab_bg_2'>\n";
         echo "<td class='top'>\n";
-        echo Html::css(PLUGIN_OCS_WEBDIR . "/lib/jquery-ui/jquery-ui.min.css");
-        echo Html::script(PLUGIN_OCS_WEBDIR . "/lib/jquery-ui/jquery-ui.min.js");
-        echo $JS = "<script type='text/javascript'>
-         function accordions(id, openall) {
-             if(id == undefined){
-                 id  = 'accordions';
-             }
-             jQuery(document).ready(function () {
-                 $('#'+id).accordion({
-                     collapsible: true,
-                     //active:[0, 1, 2, 3],
-                     //heightStyle: 'content'
-                 });
-                 //if (openall) {
-                     //$('#'+id +' .ui-accordion-content').show();
-                 //}
-             });
-         };
-         </script>";
 
-        echo "<div id='accordions'>";
+        // Sections of the options, opened and closed by the browser (native <details>)
+        echo "<div id='accordions' class='ocs-option-sections'>";
 
-        echo "<h2><a href='#'>" . __('General SNMP import options', 'ocsinventoryng') . "</a></h2>";
-        echo "<div>";
+        echo "<details class='card mb-2' open><summary class='card-header fw-bold' role='button'>" . htmlescape(__('General SNMP import options', 'ocsinventoryng')) . "</summary>";
+        echo "<div class='card-body'>";
         echo "<table class='tab_cadre' width='100%'>";
         echo "<tr><th colspan='4'>" . __('General SNMP import options', 'ocsinventoryng') . "</th></tr>\n";
 
@@ -277,14 +254,14 @@ class SnmpOcslink extends CommonDBTM
         Dropdown::showYesNo("importsnmp_fan", $conf->fields["importsnmp_fan"]);
         echo "</td><td colspan='2'></td></tr>\n";
         echo "</table><br>";
-        echo "</div>";
+        echo "</div></details>";
 
         //Components
 
-        echo "<h2><a href='#'>" . __('General SNMP link options', 'ocsinventoryng') . "</a></h2>";
+        echo "<details class='card mb-2'><summary class='card-header fw-bold' role='button'>" . htmlescape(__('General SNMP link options', 'ocsinventoryng')) . "</summary>";
 
         /******Link ***/
-        echo "<div>";
+        echo "<div class='card-body'>";
         echo "<table class='tab_cadre' width='100%'>";
         echo "<tr><th colspan='4'>" . __('General SNMP link options', 'ocsinventoryng') . "</th></tr>\n";
 
@@ -365,11 +342,10 @@ class SnmpOcslink extends CommonDBTM
         Dropdown::showYesNo("linksnmp_fan", $conf->fields["linksnmp_fan"]);
         echo "</td><td colspan='2'></td></tr>\n";
         echo "</table>\n";
-        echo "</div>";
+        echo "</div></details>";
 
         echo "</div>";
 
-        echo "<script>accordions();</script>";
 
         echo "</td></tr>\n";
 
@@ -390,125 +366,41 @@ class SnmpOcslink extends CommonDBTM
      */
     public static function snmpMenu($plugin_ocsinventoryng_ocsservers_id)
     {
-        global $CFG_GLPI, $DB;
-        $ocsservers = [];
-        $dbu = new DbUtils();
-        $numberActiveServers = $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocsservers', ["is_active" => 1]);
-        if ($numberActiveServers > 0) {
-            echo "<form action=\"" . PLUGIN_OCS_WEBDIR . "/front/ocsng.php\"
-                method='post'>";
-            echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
-            echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Choice of an OCSNG server', 'ocsinventoryng') .
-              "</th></tr>\n";
+        OcsServer::showServerChoice();
 
-            echo "<tr class='tab_bg_2'><td class='center'>" . __('Name') . "</td>";
-            echo "<td class='center'>";
-            $iterator = $DB->request([
-                'SELECT'    => [
-                    'glpi_plugin_ocsinventoryng_ocsservers.id',
-                ],
-                'FROM'      => 'glpi_plugin_ocsinventoryng_ocsservers_profiles',
-                'LEFT JOIN'       => [
-                    'glpi_plugin_ocsinventoryng_ocsservers' => [
-                        'ON' => [
-                            'glpi_plugin_ocsinventoryng_ocsservers_profiles' => 'plugin_ocsinventoryng_ocsservers_id',
-                            'glpi_plugin_ocsinventoryng_ocsservers'          => 'id',
-                        ],
-                    ],
-                ],
-                'WHERE'     => [
-                    'profiles_id'  => $_SESSION["glpiactiveprofile"]['id'],
-                    'is_active' => 1,
-                ],
-                'ORDERBY'   => 'name ASC',
-            ]);
-
-            foreach ($iterator as $data) {
-                $ocsservers[] = $data['id'];
-            }
-            Dropdown::show('OcsServer', ["condition"           => ["id" => $ocsservers],
-                "value"               => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-                "on_change"           => "this.form.submit()",
-                "display_emptychoice" => false]);
-            echo "</td></tr>";
-            echo "<tr class='tab_bg_2'><td colspan='2'>";
-            echo "<div class='alert alert-important alert-warning d-flex'>";
-            echo __('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng');
-            echo "</div>";
-            echo "</td></tr>";
-            echo "</table></div>";
-            Html::closeForm();
+        [, $isactive] = OcsServer::getServerState($plugin_ocsinventoryng_ocsservers_id);
+        if (!$isactive) {
+            return;
         }
 
-        $iterator = $DB->request([
-            'SELECT'    => [
-                'glpi_plugin_ocsinventoryng_ocsservers.name',
-                'glpi_plugin_ocsinventoryng_ocsservers.is_active',
-            ],
-            'FROM'      => 'glpi_plugin_ocsinventoryng_ocsservers',
-            'LEFT JOIN'       => [
-                'glpi_plugin_ocsinventoryng_ocsservers_profiles' => [
-                    'ON' => [
-                        'glpi_plugin_ocsinventoryng_ocsservers_profiles' => 'plugin_ocsinventoryng_ocsservers_id',
-                        'glpi_plugin_ocsinventoryng_ocsservers'          => 'id',
+        Menu::displayMenuSections([
+            [
+                'title' => __('OCSNG SNMP import', 'ocsinventoryng'),
+                'icon'  => 'ti ti-router',
+                'link'  => [
+                    'title' => __('See Setup : SNMP Import before', 'ocsinventoryng'),
+                    'url'   => PLUGIN_OCS_WEBDIR . "/front/ocsserver.form.php?id=" . (int) $plugin_ocsinventoryng_ocsservers_id
+                        . "&forcetab=" . urlencode(self::class . '$1'),
+                ],
+                'items' => [
+                    [
+                        'title' => __('Import new SNMP devices', 'ocsinventoryng'),
+                        'url'   => PLUGIN_OCS_WEBDIR . "/front/ocsngsnmp.import.php",
+                        'icon'  => 'ti-plus',
+                    ],
+                    [
+                        'title' => __('Link SNMP devices to existing GLPI objects', 'ocsinventoryng'),
+                        'url'   => PLUGIN_OCS_WEBDIR . "/front/ocsngsnmp.link.php",
+                        'icon'  => 'ti-link',
+                    ],
+                    [
+                        'title' => __('Synchronize snmp devices already imported', 'ocsinventoryng'),
+                        'url'   => PLUGIN_OCS_WEBDIR . "/front/ocsngsnmp.sync.php",
+                        'icon'  => 'ti-refresh',
                     ],
                 ],
-            ],
-            'WHERE'     => [
-                'glpi_plugin_ocsinventoryng_ocsservers.id'  => $plugin_ocsinventoryng_ocsservers_id,
-                'glpi_plugin_ocsinventoryng_ocsservers_profiles.profiles_id' => $_SESSION["glpiactiveprofile"]['id'],
             ],
         ]);
-
-        $isactive = 0;
-        if (count($iterator) > 0) {
-            foreach ($iterator as $datas) {
-                $name = " : " . $datas["name"];
-                $isactive = $datas["is_active"];
-            }
-        }
-        if ($isactive) {
-            $client = OcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
-
-            //if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $version > OcsServer::OCS2_1_VERSION_LIMIT && $snmp) {
-            //host not imported by thread
-            echo "<div class='center'><table class='tab_cadre_fixe' width='40%'>";
-            echo "<tr><th colspan='4'>";
-            echo __('OCSNG SNMP import', 'ocsinventoryng');
-            echo "<br>";
-            echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsserver.form.php?id=" . $plugin_ocsinventoryng_ocsservers_id . "&forcetab=GlpiPlugin\Ocsinventoryng\SnmpOcslink\$1'>";
-            echo __('See Setup : SNMP Import before', 'ocsinventoryng');
-            echo "</a>";
-            echo "</th></tr>";
-
-            // SNMP device link feature
-            echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-                  <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsngsnmp.link.php'>
-                   <i style='color:firebrick' class='fas fa-arrow-alt-circle-down fa-2x'
-                           title=\"" . __s('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "\"></i>
-                     <br>" . __('Link SNMP devices to existing GLPI objects', 'ocsinventoryng') . "
-                  </a></td>";
-
-            echo "<td class='center b' colspan='2'>
-               <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsngsnmp.sync.php'>
-                  <i style='color:cornflowerblue' class='ti ti-refresh fa-2x'
-                     title=\"" . __s('Synchronize snmp devices already imported', 'ocsinventoryng') . "\"></i>
-                  <br>" . __('Synchronize snmp devices already imported', 'ocsinventoryng') . "
-               </a></td>";
-            echo "</tr>";
-
-            //SNMP device import feature
-            echo "<tr class='tab_bg_1'><td class='center b' colspan='2'>
-             <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsngsnmp.import.php'>
-              <i style='color:cornflowerblue' class='ti ti-plus fa-2x'
-                           title=\"" . __s('Import new SNMP devices', 'ocsinventoryng') . "\"></i>
-                <br>" . __('Import new SNMP devices', 'ocsinventoryng') . "
-             </a></td>";
-
-            echo "<td></td>";
-            echo "</tr>";
-            echo "</table></div>";
-        }
     }
 
     /**
@@ -586,7 +478,7 @@ class SnmpOcslink extends CommonDBTM
                                 }
                                 if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
                                     echo "</table><table class='tab_cadre_fixe'>";
-                                    echo "<tr class='tab_bg_1'><th colspan='2'>" . __('SNMP Debug') . "</th>";
+                                    echo "<tr class='tab_bg_1'><th colspan='2'>" . __('SNMP Debug', 'ocsinventoryng') . "</th>";
                                     echo "<tr class='tab_bg_1'>";
                                     echo "<td  colspan='2'>";
                                     echo "<pre>";
@@ -739,94 +631,6 @@ class SnmpOcslink extends CommonDBTM
                             echo "<td colspan='2'></td>";
                         }
                         echo "</tr>";
-
-                        $linked_ids [] = $data['ocs_id'];
-                        $ocsClient     = OcsServer::getDBocs($data['plugin_ocsinventoryng_ocsservers_id']);
-//                        $ocsResult     = $ocsClient->getSnmp([
-//                            'MAX_RECORDS' => 1,
-//                            'FILTER'      => [
-//                                'IDS' => $linked_ids,
-//                            ],
-//                        ]);
-//                        if (isset($ocsResult['SNMP'])) {
-//                            if (count($ocsResult['SNMP']) > 0) {
-//                                foreach ($ocsResult['SNMP'] as $snmp) {
-//                                    $LASTDATE = $snmp['META']['LASTDATE'];
-//                                    $UPTIME   = $snmp['META']['UPTIME'];
-//
-//                                    echo "<tr class='tab_bg_1'><td>" . __('Last OCSNG SNMP inventory date', 'ocsinventoryng');
-//                                    echo "</td><td>" . Html::convDateTime($LASTDATE) . "</td>";
-//
-//                                    echo "<td>" . __('Uptime', 'ocsinventoryng');
-//                                    echo "</td><td>" . $UPTIME . "</td></tr>";
-//                                }
-//                            }
-//                        }
-                        if ($item->getType() == 'Printer') {
-                            $cartridges = [];
-                            $trays      = [];
-                            if (isset($ocsResult['SNMP'])) {
-                                if (count($ocsResult['SNMP']) > 0) {
-                                    foreach ($ocsResult['SNMP'] as $snmp) {
-                                        $cartridges = $snmp['CARTRIDGES'];
-                                        $trays      = $snmp['TRAYS'];
-                                    }
-                                }
-                            }
-                            if (count($cartridges) > 0) {
-                                $colors = [self::$CARTRIDGE_COLOR_BLACK,
-                                    self::$CARTRIDGE_COLOR_CYAN,
-                                    self::$CARTRIDGE_COLOR_MAGENTA,
-                                    self::$CARTRIDGE_COLOR_YELLOW];
-
-                                echo "<tr class='tab_bg_1'><th colspan='4'>" . __('Cartridges informations', 'ocsinventoryng') . "</th>";
-                                foreach ($cartridges as $cartridge) {
-                                    if ($cartridge['TYPE'] != "wasteToner") {
-                                        echo "<tr class='tab_bg_1'>";
-                                        echo "<td>" . $cartridge['DESCRIPTION'] . "</td>";
-                                        $class = 'ocsinventoryng_toner_level_other';
-                                        foreach ($colors as $k => $v) {
-                                            foreach ($v as $color) {
-                                                if (preg_match('/(' . $color . ')/i', $cartridge['DESCRIPTION'], $matches)) {
-                                                    $class = 'ocsinventoryng_toner_level_' . strtolower($matches[1]);
-                                                    if ($matches[1] == "jaune") {
-                                                        $class = 'ocsinventoryng_toner_level_yellow';
-                                                    }
-                                                    if ($matches[1] == "noir") {
-                                                        $class = 'ocsinventoryng_toner_level_black';
-                                                    }
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                        $percent = 0;
-                                        if ($cartridge['LEVEL'] > 0) {
-                                            $percent = ($cartridge['LEVEL'] * 100) / $cartridge['MAXCAPACITY'];
-                                        }
-                                        echo "<td colspan='2'><div class='ocsinventoryng_toner_level'><div class='ocsinventoryng_toner_level $class' style='width:" . $percent . "%'></div></div></td>";
-                                        echo "<td>" . $cartridge['LEVEL'] . " %</td>";
-                                        echo "</tr>";
-                                    }
-                                }
-                            }
-                            if (count($trays) > 0) {
-                                echo "<tr class='tab_bg_1'><th colspan='4'>" . __('Trays informations', 'ocsinventoryng') . "</th>";
-                                foreach ($trays as $tray) {
-                                    if ($tray['NAME'] != "Bypass Tray") {
-                                        echo "<tr class='tab_bg_1'>";
-                                        echo "<td>" . $tray['DESCRIPTION'] . "</td>";
-                                        $class   = 'ocsinventoryng_toner_level_other';
-                                        $percent = 0;
-                                        if ($tray['LEVEL'] > 0) {
-                                            $percent = ($tray['LEVEL'] * 100) / $tray['MAXCAPACITY'];
-                                        }
-                                        echo "<td colspan='2'><div class='ocsinventoryng_toner_level'><div class='ocsinventoryng_toner_level $class' style='width:" . $percent . "%'></div></div></td>";
-                                        echo "<td>" . $tray['LEVEL'] . " / " . $tray['MAXCAPACITY'] . "</td>";
-                                        echo "</tr>";
-                                    }
-                                }
-                            }
-                        }
                         echo "</table>";
                     }
                 }
@@ -1000,17 +804,6 @@ class SnmpOcslink extends CommonDBTM
             "have_ethernet" => 1,
         ];
 
-        //TODOSNMP TO TEST:
-        //'PRINTER' =>
-        // array (size=1)
-        //   0 =>
-        //     array (size=6)
-        //       'SNMP_ID' => string '4' (length=1)
-        //       'NAME' => string 'MP C3003' (length=8)
-        //       'SERIALNUMBER' => string 'E1543632108' (length=11)
-        //       'COUNTER' => string '98631 sheets' (length=12)
-        //       'STATUS' => string 'idle' (length=4)
-        //       'ERRORSTATE' => string '' (length=0)
 
         if (($cfg_ocs['importsnmp_name'] && $action == "add")
           || ($cfg_ocs['linksnmp_name'] && $linked)
@@ -1216,11 +1009,6 @@ class SnmpOcslink extends CommonDBTM
             $input["locations_id"] = $loc_id;
         }
 
-        //if($ocsSnmp['META']['TYPE'] == null){
-        //   $type_id = self::checkIfExist("NetworkEquipmentType", "Network Device");
-        //} else {
-        //   $type_id = self::checkIfExist("network", $ocsSnmp['META']['TYPE']);
-        //}
 
         if (!empty($ocsSnmp['SWITCH'])) {
             if (($cfg_ocs['importsnmp_manufacturer'] && $action == "add")
@@ -1251,13 +1039,6 @@ class SnmpOcslink extends CommonDBTM
              || ($action == "update" && $cfg_ocs['linksnmp_serial'] && $linked)) {
                 $input['serial'] = $ocsSnmp['SWITCH'][0]['SERIALNUMBER'];
             }
-            //TODOSNMP = chassis ??
-            //$mod_id = Dropdown::importExternal('NetworkEquipmentModel',
-            //OcsProcess::encodeOcsDataInUtf8($cfg_ocs['ocs_db_utf8'],
-            //$ocsSnmp['SWITCH'][0]['REFERENCE']));
-            //$input['networkequipmentmodels_id'] = $mod_id;
-            // TODOSNMP ?
-            //$input['networkequipmenttypes_id'] = self::checkIfExist("NetworkEquipmentType", "Switch");
         }
         if (!empty($ocsSnmp['FIREWALLS'])) {
             if (($cfg_ocs['importsnmp_serial'] && $action == "add")
@@ -2309,13 +2090,7 @@ class SnmpOcslink extends CommonDBTM
             'ORDER'   => 'NAME',
         ];
 
-        //if ($cfg_ocs["tag_limit"] and $tag_limit = explode("$", trim($cfg_ocs["tag_limit"]))) {
-        //   $snmpOptions['FILTER']['TAGS'] = $tag_limit;
-        //}
 
-        //if ($cfg_ocs["tag_exclude"] and $tag_exclude = explode("$", trim($cfg_ocs["tag_exclude"]))) {
-        //   $snmpOptions['FILTER']['EXCLUDE_TAGS'] = $tag_exclude;
-        //}
         $ocsClient = OcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
         $ocsResult = $ocsClient->getSnmp($snmpOptions);
 
@@ -2725,10 +2500,6 @@ class SnmpOcslink extends CommonDBTM
                 if (count($result) > 0) {
                     foreach ($result as $data) {
                         $format = 'Y-m-d H:i:s';
-                        //                  $last_glpi_update = DateTime::createFromFormat($format, $data['last_update']);
-                        //                  $last_ocs_inventory = DateTime::createFromFormat($format, $ocs_snmp_inv[$data['ocs_id']]);
-                        //TODOSNMP comment for test
-                        //if ($last_ocs_inventory > $last_glpi_update) {
                         $already_linked[$data['id']] = $data;
                         //}
                     }

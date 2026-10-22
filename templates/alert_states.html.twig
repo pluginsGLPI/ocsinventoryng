@@ -1,0 +1,49 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# Statuses used for the alerts (OcsAlert::configCron()): add a status; the list is
+   NotificationState::configState() #}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+<form method="post" action="{{ form_url }}" class="card mb-3">
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+    <div class="card-header">
+        <h3 class="card-title"><i class="ti ti-bell me-2"></i>{{ __('Statuses used for alert', 'ocsinventoryng') }}</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {{ fields.dropdownField('State', 'states_id', 0, __('Status'), {
+                'used': used,
+                'full_width': true,
+                'label_class': 'col-md-3',
+                'input_class': 'col-md-9',
+            }) }}
+        </div>
+    </div>
+    <div class="card-footer text-end">
+        <button type="submit" name="add_state" value="1" class="btn btn-primary">
+            <i class="ti ti-plus me-1"></i>{{ _x('button', 'Add') }}
+        </button>
+    </div>
+</form>

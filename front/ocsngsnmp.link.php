@@ -39,7 +39,10 @@ if (OcsServer::checkSessionServer() <= 0) {
 }
 
 
-Html::header('OCS Inventory NG', '', "tools", Menu::class, "synclink");
+// The URL of this page (PHP_SELF is the GLPI 11 entry point)
+$self_url = PLUGIN_OCS_WEBDIR . '/front/ocsngsnmp.link.php';
+
+Html::header(Menu::getTypeName(), '', "tools", Menu::class, "synclink");
 
 //First time this screen is displayed : set the import mode to 'basic'
 if (!isset($_SESSION["change_import_mode"])) {
@@ -79,13 +82,13 @@ if (isset($_SESSION["ocs_linksnmp"]["id"])) {
       SnmpOcslink::linkSnmpDevice($key,
          $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
          $params);
-      Html::redirect($_SERVER['PHP_SELF']);
+      Html::redirect($self_url);
    } else {
        Html::getProgressBar(100);
 
       unset($_SESSION["ocs_link"]);
       echo "<div class='center b'>" . __('Successful link', 'ocsinventoryng') . "<br>";
-      echo "<a href='" . $_SERVER['PHP_SELF'] . "'>" . __('Back') . "</a></div>";
+      echo "<a href='" . $self_url . "'>" . __('Back') . "</a></div>";
    }
 }
 
@@ -137,7 +140,7 @@ if (!isset($_POST["import_ok"])) {
          $_SESSION["ocs_linksnmp_count"]++;
       }
    }
-   Html::redirect($_SERVER['PHP_SELF']);
+   Html::redirect($self_url);
 }
 
 Html::footer();

@@ -241,35 +241,16 @@ class Teamviewer extends \CommonDBTM
             echo "</table></br>";
 
             if ($result->numrows() != 0) {
-                $dbu      = new DbUtils();
                 $restrict = $comp->getEntityID();
-                $query    = "SELECT `glpi_links`.`id`,
-                       `glpi_links`.`link` AS link,
-                       `glpi_links`.`name` AS name ,
-                       `glpi_links`.`data` AS data,
-                       `glpi_links`.`open_window` AS open_window
-                FROM `glpi_links`
-                INNER JOIN `glpi_links_itemtypes`
-                     ON `glpi_links`.`id` = `glpi_links_itemtypes`.`links_id`
-                WHERE `glpi_links_itemtypes`.`itemtype`='GlpiPlugin\\Ocsinventoryng\\Components\\Teamviewer' " .
-                        $dbu->getEntitiesRestrictRequest(
-                            " AND",
-                            "glpi_links",
-                            "entities_id",
-                            $restrict,
-                            true
-                        ) . "
-                ORDER BY name";
+                $result = self::getLinks($restrict);
 
-                $result = $DB->doQuery($query);
-
-                if ($DB->numrows($result) > 0) {
+                if (count($result) > 0) {
                     echo "<table class='tab_cadre_fixe'>";
                     $colspan = 2;
 
                     echo "<tr><th colspan='$colspan'>" . __('Teamviewer direct access', 'ocsinventoryng') . "</th></tr>";
 
-                    while ($data = $DB->fetchAssoc($result)) {
+                    foreach ($result as $data) {
                         $links = Link::getAllLinksFor($self, $data);
                         foreach ($links as $link) {
                             echo "<tr class='tab_bg_2'>";
@@ -305,39 +286,20 @@ class Teamviewer extends \CommonDBTM
             'FROM' => 'glpi_plugin_ocsinventoryng_teamviewers',
             'WHERE' => ['computers_id' => $ID]])) {
             if (count($iterator)) {
-                $data = $iterator->next();
+                $data = $iterator->current();
 
                 $self = new self();
                 $self->getFromDB($data['id']);
 
                 $restrict = $comp->getEntityID();
-                $dbu      = new DbUtils();
-                $query    = "SELECT `glpi_links`.`id`,
-                       `glpi_links`.`link` AS link,
-                       `glpi_links`.`name` AS name ,
-                       `glpi_links`.`data` AS data,
-                       `glpi_links`.`open_window` AS open_window
-                FROM `glpi_links`
-                INNER JOIN `glpi_links_itemtypes`
-                     ON `glpi_links`.`id` = `glpi_links_itemtypes`.`links_id`
-                WHERE `glpi_links_itemtypes`.`itemtype`= 'GlpiPlugin\\Ocsinventoryng\\Components\\Teamviewer' " .
-                        $dbu->getEntitiesRestrictRequest(
-                            " AND",
-                            "glpi_links",
-                            "entities_id",
-                            $restrict,
-                            true
-                        ) . "
-                ORDER BY name";
+                $result = self::getLinks($restrict);
 
-                $result = $DB->doQuery($query);
-
-                if ($DB->numrows($result) > 0) {
+                if (count($result) > 0) {
                     $colspan = 4;
 
                     echo "<tr><th colspan='$colspan'>" . __('Teamviewer direct access', 'ocsinventoryng') . "</th></tr>";
 
-                    while ($data = $DB->fetchAssoc($result)) {
+                    foreach ($result as $data) {
                         $links = Link::getAllLinksFor($self, $data);
                         foreach ($links as $link) {
                             echo "<tr class='tab_bg_2'>";
@@ -347,6 +309,40 @@ class Teamviewer extends \CommonDBTM
                 }
             }
         }
+    }
+
+    /**
+     * External links of the Teamviewer items, visible in an entity
+     *
+     * @param int $entities_id
+     *
+     * @return \DBmysqlIterator
+     */
+    private static function getLinks($entities_id)
+    {
+        global $DB;
+
+        return $DB->request([
+            'SELECT'     => [
+                'glpi_links.id',
+                'glpi_links.link AS link',
+                'glpi_links.name AS name',
+                'glpi_links.data AS data',
+                'glpi_links.open_window AS open_window',
+            ],
+            'FROM'       => 'glpi_links',
+            'INNER JOIN' => [
+                'glpi_links_itemtypes' => [
+                    'ON' => [
+                        'glpi_links'           => 'id',
+                        'glpi_links_itemtypes' => 'links_id',
+                    ],
+                ],
+            ],
+            'WHERE'      => ['glpi_links_itemtypes.itemtype' => self::class]
+                + getEntitiesRestrictCriteria('glpi_links', 'entities_id', $entities_id, true),
+            'ORDER'      => 'name',
+        ]);
     }
 
     /**

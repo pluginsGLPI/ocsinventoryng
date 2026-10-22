@@ -40,7 +40,10 @@ if (OcsServer::checkSessionServer() <= 0) {
 }
 
 
-Html::header('OCS Inventory NG', '', "tools", Menu::class, "importsnmp");
+// The URL of this page (PHP_SELF is the GLPI 11 entry point)
+$self_url = PLUGIN_OCS_WEBDIR . '/front/ocsngsnmp.import.php';
+
+Html::header(Menu::getTypeName(), '', "tools", Menu::class, "importsnmp");
 
 $display_list = true;
 //First time this screen is displayed : set the import mode to 'basic'
@@ -64,7 +67,7 @@ if (isset($_SESSION["ocs_importsnmp"]["id"])) {
             OcsProcess::showStatistics($_SESSION["ocs_importsnmp"]['statistics']);
             $_SESSION["ocs_importsnmp"]["id"] = [];
 
-            Html::redirect($_SERVER['PHP_SELF']);
+            Html::redirect($self_url);
          }else{
             $_SESSION["ocs_importsnmp"]["connection"] = true;
          }
@@ -94,7 +97,7 @@ if (isset($_SESSION["ocs_importsnmp"]["id"])) {
          $action['status'], true);
        OcsProcess::showStatistics($_SESSION["ocs_importsnmp"]['statistics'], false, true);
       Html::displayProgressBar(400, $percent);
-      Html::redirect($_SERVER['PHP_SELF']);
+      Html::redirect($self_url);
    } else {
       //Html::getProgressBar($percent);
       if (isset($_SESSION["ocs_importsnmp"]['statistics'])) {
@@ -107,7 +110,7 @@ if (isset($_SESSION["ocs_importsnmp"]["id"])) {
       unset($_SESSION["ocs_importsnmp"]);
 
       echo "<div class='center b'><br>";
-      echo "<a href='" . $_SERVER['PHP_SELF'] . "'>" . __('Back') . "</a></div>";
+      echo "<a href='" . $self_url . "'>" . __('Back') . "</a></div>";
       $display_list = false;
    }
 }
@@ -166,7 +169,7 @@ if (!isset($_POST["import_ok"])) {
          }
       }
    }
-   Html::redirect($_SERVER['PHP_SELF']);
+   Html::redirect($self_url);
 }
 
 Html::footer();

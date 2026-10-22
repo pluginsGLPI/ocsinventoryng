@@ -37,14 +37,18 @@ use CronTask;
 use DbUtils;
 use Dropdown;
 use Entity;
+use Glpi\Application\View\TemplateRenderer;
 use Group;
 use Group_Item;
 use Html;
 use Item_OperatingSystem;
+use Location;
 use NotificationEvent;
+use OperatingSystem;
 use Plugin;
 use Session;
 use Toolbox;
+use User;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -145,21 +149,6 @@ class OcsAlert extends CommonDBTM
         $date_ocs        = date("Y-m-d", $delay_stamp_ocs);
         $date_ocs        = $date_ocs . " 00:00:00";
 
-//        $query = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update`,
-//                      `glpi_plugin_ocsinventoryng_ocslinks`.`last_update`,
-//                      `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`,
-//                      `glpi_computers`.*,
-//                      `glpi_items_operatingsystems`.`operatingsystems_id`
-//            FROM `glpi_plugin_ocsinventoryng_ocslinks`
-//            LEFT JOIN `glpi_computers` ON `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` = `glpi_computers`.`id`
-//            LEFT JOIN `glpi_items_operatingsystems` ON (`glpi_computers`.`id` = `glpi_items_operatingsystems`.`items_id`
-//                AND `glpi_items_operatingsystems`.`itemtype` = 'Computer')
-//            WHERE `glpi_computers`.`is_deleted` = 0
-//            AND `glpi_computers`.`is_template` = 0
-//            AND `last_ocs_update` >= '" . $date_ocs . "'
-//            AND `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id` = '" . $config["id"] . "' ";
-//        $query .= "AND `glpi_computers`.`entities_id` = '" . $entity . "' ";
-//        $query .= " ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update` ASC";
 
 
         $criteria = [
@@ -215,36 +204,6 @@ class OcsAlert extends CommonDBTM
         $date_ocs        = date("Y-m-d", $delay_stamp_ocs);
         $date_ocs        = $date_ocs . " 00:00:00";
 
-//        $query = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update`,
-//                        `glpi_plugin_ocsinventoryng_ocslinks`.`last_update`,
-//                        `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id`,
-//                        `glpi_computers`.*,
-//                        `glpi_items_operatingsystems`.`operatingsystems_id`
-//                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-//                  LEFT JOIN `glpi_computers`
-//                    ON `glpi_plugin_ocsinventoryng_ocslinks`.`computers_id` = `glpi_computers`.`id`
-//                  LEFT JOIN `glpi_items_operatingsystems`
-//                    ON (`glpi_computers`.`id` = `glpi_items_operatingsystems`.`items_id`
-//                      AND `glpi_items_operatingsystems`.`itemtype` = 'Computer')
-//                WHERE `glpi_computers`.`is_deleted` = 0
-//                AND `glpi_computers`.`is_template` = 0
-//                AND `last_ocs_update` <= '" . $date_ocs . "'
-//                AND `glpi_plugin_ocsinventoryng_ocslinks`.`plugin_ocsinventoryng_ocsservers_id` = " . $config["id"];
-//
-//        $query_state = "SELECT `states_id`
-//            FROM `glpi_plugin_ocsinventoryng_notificationstates` ";
-//        $result_state = $DB->doQuery($query_state);
-//        if ($DB->numrows($result_state) > 0) {
-//            $query .= " AND (`glpi_computers`.`states_id` = 999999 ";
-//            while ($data_state = $DB->fetchArray($result_state)) {
-//                $type_where = "OR `glpi_computers`.`states_id` = " . $data_state["states_id"] . " ";
-//                $query      .= " $type_where ";
-//            }
-//            $query .= ") ";
-//        }
-//
-//        $query .= " AND `glpi_computers`.`entities_id` = $entity";
-//        $query .= " ORDER BY `glpi_plugin_ocsinventoryng_ocslinks`.`last_ocs_update` DESC";
 
         $states = [];
 
@@ -295,66 +254,85 @@ class OcsAlert extends CommonDBTM
     }
 
     /**
+     * A row of the alert lists (Config::displayAlerts()): HTML cells, every value escaped
+     *
      * @param $data
      *
-     * @return string
+     * @return array
      */
-    public static function displayBody($data)
+    public static function getAlertRow($data)
     {
-        global $CFG_GLPI;
-
-        // Every value is escaped: the name and the contact of a computer come from the OCS agent,
+        // The name and the contact of a computer come from the OCS agent,
         // the names of the dropdowns from any user who may create them
         $computer = new Computer();
         $computer->getFromDB($data["id"]);
         $computers_id = (int) $computer->fields["id"];
 
-        $body = "<tr class='tab_bg_2'><td><a href=\"" . htmlescape($CFG_GLPI["root_doc"] . "/front/computer.form.php?id=" . $computers_id) . "\">"
-            . htmlescape((string) $computer->fields["name"]);
-
-        if ($_SESSION["glpiis_ids_visible"] == 1 || empty($computer->fields["name"])) {
-            $body .= " (" . $computers_id . ")";
+        $name = (string) $computer->fields["name"];
+        if ($_SESSION["glpiis_ids_visible"] == 1 || empty($name)) {
+            $name .= " (" . $computers_id . ")";
         }
-        $body .= "</a></td>";
+        $row = [
+            'name' => "<a href=\"" . htmlescape(Computer::getFormURLWithID($computers_id)) . "\">" . htmlescape($name) . "</a>",
+        ];
         if (Session::isMultiEntitiesMode()) {
-            $body .= "<td class='center'>" . htmlescape((string) Dropdown::getDropdownName("glpi_entities", $data["entities_id"])) . "</td>";
+            $row['entity'] = htmlescape((string) Dropdown::getDropdownName("glpi_entities", $data["entities_id"]));
         }
+        // A computer may have several operating systems
+        $operatingsystems      = [];
         $item_operatingsystems = new Item_OperatingSystem();
-        $item_operatingsystems->getFromDBByCrit(['itemtype' => 'Computer',
-            'items_id' => $computer->getID()]);
-        $body .= "<td>" . htmlescape((string) Dropdown::getDropdownName(
-            "glpi_operatingsystems",
-            $item_operatingsystems->getField("operatingsystems_id")
-        )) . "</td>";
-        $body .= "<td>" . htmlescape((string) Dropdown::getDropdownName("glpi_states", $computer->fields["states_id"])) . "</td>";
-        $body .= "<td>" . htmlescape((string) Dropdown::getDropdownName("glpi_locations", $computer->fields["locations_id"])) . "</td>";
-        $body .= "<td>";
+        foreach ($item_operatingsystems->find(['itemtype' => Computer::class, 'items_id' => $computers_id]) as $item_os) {
+            $operatingsystems[] = (string) Dropdown::getDropdownName("glpi_operatingsystems", $item_os["operatingsystems_id"]);
+        }
+        $row['os']       = htmlescape(implode(", ", $operatingsystems));
+        $row['state']    = htmlescape((string) Dropdown::getDropdownName("glpi_states", $computer->fields["states_id"]));
+        $row['location'] = htmlescape((string) Dropdown::getDropdownName("glpi_locations", $computer->fields["locations_id"]));
+
+        $users = [];
         if (!empty($computer->fields["users_id"])) {
-            $dbu  = new DbUtils();
-            $body .= "<a href=\"" . htmlescape($CFG_GLPI["root_doc"] . "/front/user.form.php?id=" . (int) $computer->fields["users_id"]) . "\">"
-                  . htmlescape((string) $dbu->getUserName($computer->fields["users_id"])) . "</a>";
+            $dbu     = new DbUtils();
+            $users[] = "<a href=\"" . htmlescape(User::getFormURLWithID((int) $computer->fields["users_id"])) . "\">"
+                . htmlescape((string) $dbu->getUserName($computer->fields["users_id"])) . "</a>";
         }
-
         $groupsitem = new Group_Item();
-        foreach ($groupsitem->find(['itemtype' => 'Computer', 'items_id' => $computers_id, 'type' => Group_Item::GROUP_TYPE_NORMAL]) as $group) {
-            $body .= " - " . htmlescape((string) Group::getFriendlyNameById($group['groups_id']));
+        foreach ($groupsitem->find(['itemtype' => Computer::class, 'items_id' => $computers_id, 'type' => Group_Item::GROUP_TYPE_NORMAL]) as $group) {
+            $users[] = htmlescape((string) Group::getFriendlyNameById($group['groups_id']));
         }
-
         if (!empty($computer->fields["contact"])) {
-            $body .= " - " . htmlescape((string) $computer->fields["contact"]);
+            $users[] = htmlescape((string) $computer->fields["contact"]);
         }
-
-        $body .= "</td>";
-        $body .= "<td>" . htmlescape((string) Html::convDateTime($data["last_ocs_update"])) . "</td>";
-        $body .= "<td>" . htmlescape((string) Html::convDateTime($data["last_update"])) . "</td>";
-        $body .= "<td>" . htmlescape((string) Dropdown::getDropdownName(
+        $row['user']        = implode(" - ", $users);
+        $row['last_ocs']    = htmlescape((string) Html::convDateTime($data["last_ocs_update"]));
+        $row['last_update'] = htmlescape((string) Html::convDateTime($data["last_update"]));
+        $row['server']      = htmlescape((string) Dropdown::getDropdownName(
             "glpi_plugin_ocsinventoryng_ocsservers",
             $data["plugin_ocsinventoryng_ocsservers_id"]
-        )) . "</td>";
+        ));
 
-        $body .= "</tr>";
+        return $row;
+    }
 
-        return $body;
+    /**
+     * Columns of the alert lists (Config::displayAlerts())
+     *
+     * @return array
+     */
+    public static function getAlertColumns()
+    {
+        $columns = ['name' => __('Name')];
+        if (Session::isMultiEntitiesMode()) {
+            $columns['entity'] = Entity::getTypeName(1);
+        }
+
+        return $columns + [
+            'os'          => OperatingSystem::getTypeName(1),
+            'state'       => __('Status'),
+            'location'    => Location::getTypeName(1),
+            'user'        => __('User') . " / " . __('Group') . " / " . __('Alternate username'),
+            'last_ocs'    => __('Last OCSNG inventory date', 'ocsinventoryng'),
+            'last_update' => __('Import date in GLPI', 'ocsinventoryng'),
+            'server'      => __('OCSNG server', 'ocsinventoryng'),
+        ];
     }
 
     /**
@@ -367,14 +345,19 @@ class OcsAlert extends CommonDBTM
     {
         global $DB;
 
-        $query = "SELECT `entities_id` as `entity`,`$field`
-               FROM `glpi_plugin_ocsinventoryng_ocsalerts`";
-        $query .= " ORDER BY `entities_id` ASC";
+        // A column of the alerts: use_newocs_alert or delay_ocs only
+        if (!in_array($field, ['use_newocs_alert', 'delay_ocs'], true)) {
+            return [];
+        }
 
         $entities = [];
-        $result   = $DB->doQuery($query);
+        $result   = $DB->request([
+            'SELECT' => ['entities_id AS entity', $field],
+            'FROM'   => 'glpi_plugin_ocsinventoryng_ocsalerts',
+            'ORDER'  => 'entities_id ASC',
+        ]);
 
-        if ($DB->numrows($result) > 0) {
+        if (count($result) > 0) {
             foreach ($result as $entitydatas) {
                 self::getDefaultValueForNotification($field, $entities, $entitydatas);
             }
@@ -595,34 +578,16 @@ class OcsAlert extends CommonDBTM
     public static function configCron()
     {
 
-        $state  = new NotificationState();
-        $states = $state->find();
-        $used   = [];
-        foreach ($states as $data) {
+        $state = new NotificationState();
+        $used  = [];
+        foreach ($state->find() as $data) {
             $used[] = $data['states_id'];
         }
 
-        echo "<div class='center'>";
-        echo "<form method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
-        echo "<table class='tab_cadre_fixe' cellpadding='5'>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<th colspan='2'>" . __('Statuses used for alert', 'ocsinventoryng') . "</th>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('Status');
-        echo "</td>";
-        echo "<td>";
-        Dropdown::show('State', ['name' => "states_id",
-            'used' => $used]);
-        echo Html::submit(_sx('button', 'Add'), ['name' => 'add_state', 'class' => 'btn btn-primary']);
-        echo "</td>";
-        echo "</tr>";
-        echo "</table>";
-        Html::closeForm();
-
-        echo "</div>";
+        TemplateRenderer::getInstance()->display('@ocsinventoryng/alert_states.html.twig', [
+            'form_url' => Toolbox::getItemTypeFormURL(__CLASS__),
+            'used'     => $used,
+        ]);
 
         $state->configState();
     }
@@ -635,16 +600,10 @@ class OcsAlert extends CommonDBTM
      */
     public static function showNotificationOptions(Entity $entity)
     {
-
-        $con_spotted = false;
-
         $ID = $entity->getField('id');
         if (!$entity->can($ID, READ)) {
             return false;
         }
-
-        // Notification right applied
-        $canedit = Session::haveRight('notification', UPDATE) && Session::haveAccessToEntity($ID);
 
         // Get data
         $entitynotification = new OcsAlert();
@@ -652,49 +611,17 @@ class OcsAlert extends CommonDBTM
             $entitynotification->getEmpty();
         }
 
-        if ($canedit) {
-            echo "<form method='post' name=form action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
-        }
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr class='tab_bg_2'>";
-        echo "<th colspan='3'>" . __('OCS-NG Synchronization alerts', 'ocsinventoryng');
-        echo "</th></tr>";
+        TemplateRenderer::getInstance()->display('@ocsinventoryng/entity_alerts.html.twig', [
+            'form_url'         => Toolbox::getItemTypeFormURL(__CLASS__),
+            // Notification right applied
+            'canedit'          => Session::haveRight('notification', UPDATE) && Session::haveAccessToEntity($ID),
+            'entities_id'      => (int) $ID,
+            'id'               => (int) ($entitynotification->fields["id"] ?? 0),
+            'use_newocs_alert' => (int) $entitynotification->fields["use_newocs_alert"],
+            'delay_ocs'        => (int) $entitynotification->fields["delay_ocs"],
+            'days'             => Config::getAlertDelays(),
+        ]);
 
-        echo "<tr class='tab_bg_1'><td>" . __('New imported computers from OCS-NG', 'ocsinventoryng') . "</td><td>";
-        Alert::dropdownIntegerNever(
-            'use_newocs_alert',
-            $entitynotification->fields["use_newocs_alert"],
-            ['max'            => 99,
-                'inherit_global' => 1]
-        );
-        echo "&nbsp;" . _n('Day', 'Days', 2) . "</td>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'><td >" . __('Computers not synchronized with OCS-NG since more', 'ocsinventoryng') . "</td><td>";
-        Alert::dropdownIntegerNever(
-            'delay_ocs',
-            $entitynotification->fields["delay_ocs"],
-            ['max'            => 99,
-                'inherit_global' => 1]
-        );
-        echo "&nbsp;" . _n('Day', 'Days', 2) . "</td>";
-        echo "</tr>";
-
-        if ($canedit) {
-            echo "<tr>";
-            echo "<td class='tab_bg_2 center' colspan='4'>";
-            echo Html::hidden('entities_id', ['value' => $ID]);
-            if ($entitynotification->fields["id"]) {
-                echo Html::hidden('id', ['value' => $entitynotification->fields["id"]]);
-                echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
-            } else {
-                echo Html::submit(_sx('button', 'Save'), ['name' => 'add', 'class' => 'btn btn-primary']);
-            }
-            echo "</td></tr>";
-            echo "</table>";
-            Html::closeForm();
-        } else {
-            echo "</table>";
-        }
+        return true;
     }
 }

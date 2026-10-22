@@ -177,9 +177,6 @@ class Device
                             }
                             $ram["designation"] .= $line2["DESCRIPTION"];
                         }
-                        //                  if (!is_numeric($line2["CAPACITY"])) {
-                        //                     $line2["CAPACITY"] = 0;
-                        //                  }
                         if (is_numeric($line2["CAPACITY"])) {
                             $ram["size_default"] = $line2["CAPACITY"];
                         }

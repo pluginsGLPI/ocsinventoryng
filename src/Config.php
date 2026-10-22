@@ -29,13 +29,11 @@
 
 namespace GlpiPlugin\Ocsinventoryng;
 
-use Alert;
 use CommonGLPI;
 use CronTask;
-use Dropdown;
-use Html;
-use NotificationEvent;
+use Glpi\Application\View\TemplateRenderer;
 use Session;
+use Toolbox;
 
 /**
  * Class Config
@@ -148,20 +146,29 @@ class Config extends \CommonDBTM
      */
     public static function showMenu()
     {
-        global $CFG_GLPI;
-
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr><th>" . __('Configuration') . "</th></tr>";
-        echo "<tr class='tab_bg_1'><td class='center b'>";
-        echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsserver.php'>" .
-           _n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng') . "</a>";
-        echo "</td></tr>";
-
-        echo "<tr class='tab_bg_1'><td class='center b'>";
-        echo "<a href='" . PLUGIN_OCS_WEBDIR . "/front/config.form.php'>" .
-           self::getTypeName() . "</a>";
-        echo "</td></tr>";
-        echo "</table>";
+        Menu::displayMenuSections([
+            [
+                'title' => __('Configuration'),
+                'icon'  => 'ti ti-tool',
+                'items' => [
+                    [
+                        'title' => _n('OCSNG server', 'OCSNG servers', 2, 'ocsinventoryng'),
+                        'url'   => PLUGIN_OCS_WEBDIR . "/front/ocsserver.php",
+                        'icon'  => 'ti-server',
+                    ],
+                    [
+                        'title' => __('Add a OCSNG server', 'ocsinventoryng'),
+                        'url'   => OcsServer::getFormURL(),
+                        'icon'  => 'ti-plus',
+                    ],
+                    [
+                        'title' => self::getTypeName(),
+                        'url'   => PLUGIN_OCS_WEBDIR . "/front/config.form.php",
+                        'icon'  => 'ti-settings',
+                    ],
+                ],
+            ],
+        ]);
     }
 
     /**
@@ -169,38 +176,49 @@ class Config extends \CommonDBTM
      *
      * @return bool
      */
+    /**
+     * Values of the alert delays: never, then 1 to 99 days (as Alert::dropdownIntegerNever())
+     *
+     * @return array
+     */
+    public static function getAlertDelays()
+    {
+        $days = [0 => __('Never')];
+        for ($i = 1; $i <= 99; $i++) {
+            $days[$i] = sprintf(_n('%d day', '%d days', $i), $i);
+        }
+
+        return $days;
+    }
+
     public function showForm($ID, $options = [])
     {
 
         $this->getFromDB(1);
+        $days = self::getAlertDelays();
 
-        $this->showFormHeader($options);
-
-        echo "<tr class='tab_bg_2'>";
-        echo "<th colspan='3'>" . __('OCS-NG Synchronization alerts', 'ocsinventoryng');
-        echo "</th></tr>";
-
-        echo "<tr class='tab_bg_2'>";
-        echo "<td colspan='2'>" . __('New imported computers from OCS-NG', 'ocsinventoryng') . "</td><td>";
-        Alert::dropdownIntegerNever(
-            'use_newocs_alert',
-            $this->fields["use_newocs_alert"],
-            ['max' => 99]
-        );
-        echo "&nbsp;" . _n('Day', 'Days', 2);
-        echo "</td></tr>";
-
-        echo "<tr class='tab_bg_2'><td colspan='2'>" . __('Computers not synchronized with OCS-NG since more', 'ocsinventoryng') . "</td><td>";
-        Alert::dropdownIntegerNever(
-            'delay_ocs',
-            $this->fields["delay_ocs"],
-            ['max' => 99]
-        );
-        echo "&nbsp;" . _n('Day', 'Days', 2);
-        echo Html::hidden('id', ['value' => 1]);
-        echo "</td></tr>";
-
-        $this->showFormButtons($options);
+        TemplateRenderer::getInstance()->display('@ocsinventoryng/config_form.html.twig', [
+            'title'       => __('OCS-NG Synchronization alerts', 'ocsinventoryng'),
+            'icon'        => 'ti ti-bell',
+            'form_url'    => $this->getFormURL(),
+            'canedit'     => $this->canUpdateItem(),
+            'form_fields' => [
+                [
+                    'type'   => 'alert',
+                    'name'   => 'use_newocs_alert',
+                    'value'  => (int) $this->fields['use_newocs_alert'],
+                    'values' => $days,
+                    'label'  => __('New imported computers from OCS-NG', 'ocsinventoryng'),
+                ],
+                [
+                    'type'   => 'alert',
+                    'name'   => 'delay_ocs',
+                    'value'  => (int) $this->fields['delay_ocs'],
+                    'values' => $days,
+                    'label'  => __('Computers not synchronized with OCS-NG since more', 'ocsinventoryng'),
+                ],
+            ],
+        ]);
 
         return true;
     }
@@ -243,94 +261,52 @@ class Config extends \CommonDBTM
 
         if ($synchro_ocs == 0
           && $new_ocs == 0) {
-            echo "<div class='center'><b>" . __('No used alerts, please activate the automatic actions', 'ocsinventoryng') . "</b></div>";
+            OcsServer::showMessage([
+                'title' => __('No used alerts, please activate the automatic actions', 'ocsinventoryng'),
+                'icon'  => 'ti-bell-off',
+            ]);
+            return;
         }
 
-        if ($new_ocs != 0) {
-            foreach ($DB->request([
-                'FROM' => 'glpi_plugin_ocsinventoryng_ocsservers',
-                'WHERE' => ['is_active' => 1]]) as $config) {
-                $query  = OcsAlert::queryNew(
-                    $delay_ocs,
-                    $config,
-                    $_SESSION["glpiactive_entity"]
-                );
-                $result = $DB->doQuery($query);
-
-                if ($DB->numrows($result) > 0) {
-                    if (Session::isMultiEntitiesMode()) {
-                        $nbcol = 9;
-                    } else {
-                        $nbcol = 8;
-                    }
-
-                    echo "<div class='center'><table class='tab_cadre' cellspacing='2' cellpadding='3'>";
-                    echo "<tr><th colspan='$nbcol'>";
-                    echo __('New imported computers from OCS-NG', 'ocsinventoryng') . " - " . $delay_ocs . " " . _n('Day', 'Days', 2) . "</th></tr>";
-                    echo "<tr><th>" . __('Name') . "</th>";
-                    if (Session::isMultiEntitiesMode()) {
-                        echo "<th>" . __('Entity') . "</th>";
-                    }
-                    echo "<th>" . __('Operating system') . "</th>";
-                    echo "<th>" . __('Status') . "</th>";
-                    echo "<th>" . __('Location') . "</th>";
-                    echo "<th>" . __('User') . " / " . __('Group') . " / " . __('Alternate username') . "</th>";
-                    echo "<th>" . __('Last OCSNG inventory date', 'ocsinventoryng') . "</th>";
-                    echo "<th>" . __('Import date in GLPI', 'ocsinventoryng') . "</th>";
-                    echo "<th>" . __('OCSNG server', 'ocsinventoryng') . "</th></tr>";
-
-                    while ($data = $DB->fetchArray($result)) {
-                        echo OcsAlert::displayBody($data);
-                    }
-                    echo "</table></div>";
-                } else {
-                    echo "<br><div class='center'><b>" . __('No new imported computer from OCS-NG', 'ocsinventoryng') . "</b></div>";
-                }
+        $lists = [];
+        foreach ($DB->request([
+            'FROM'  => 'glpi_plugin_ocsinventoryng_ocsservers',
+            'WHERE' => ['is_active' => 1],
+        ]) as $ocsserver) {
+            if ($new_ocs != 0) {
+                $lists[] = [
+                    'title'    => __('New imported computers from OCS-NG', 'ocsinventoryng') . " - " . $delay_ocs . " " . _n('Day', 'Days', 2),
+                    'icon'     => 'ti ti-plus',
+                    'criteria' => OcsAlert::queryNew($delay_ocs, $ocsserver, $_SESSION["glpiactive_entity"]),
+                    'empty'    => __('No new imported computer from OCS-NG', 'ocsinventoryng'),
+                ];
             }
-            echo "<br>";
+            if ($synchro_ocs != 0) {
+                $lists[] = [
+                    'title'    => __('Computers not synchronized with OCS-NG since more', 'ocsinventoryng') . " " . $delay_ocs . " " . _n('Day', 'Days', 2),
+                    'icon'     => 'ti ti-clock-exclamation',
+                    'criteria' => OcsAlert::query($delay_ocs, $ocsserver, $_SESSION["glpiactive_entity"]),
+                    'empty'    => __('No computer not synchronized since more', 'ocsinventoryng') . " " . $delay_ocs . " " . _n('Day', 'Days', 2),
+                ];
+            }
         }
 
-        if ($synchro_ocs != 0) {
-            foreach ($DB->request([
-                'FROM' => 'glpi_plugin_ocsinventoryng_ocsservers',
-                'WHERE' => [
-                    'is_active' => '1',
-                ],
-            ]) as $config) {
-                $criteria  = OcsAlert::query($delay_ocs, $config, $_SESSION["glpiactive_entity"]);
-
-                $iterator = $DB->request($criteria);
-
-                if (count($iterator) > 0) {
-                    if (Session::isMultiEntitiesMode()) {
-                        $nbcol = 9;
-                    } else {
-                        $nbcol = 8;
-                    }
-                    echo "<div class='center'><table class='tab_cadre' cellspacing='2' cellpadding='3'>";
-                    echo "<tr><th colspan='$nbcol'>";
-                    echo __('Computers not synchronized with OCS-NG since more', 'ocsinventoryng') . " " . $delay_ocs . " " . _n('Day', 'Days', 2) . "</th></tr>";
-                    echo "<tr><th>" . __('Name') . "</th>";
-                    if (Session::isMultiEntitiesMode()) {
-                        echo "<th>" . __('Entity') . "</th>";
-                    }
-                    echo "<th>" . __('Operating system') . "</th>";
-                    echo "<th>" . __('Status') . "</th>";
-                    echo "<th>" . __('Location') . "</th>";
-                    echo "<th>" . __('User') . " / " . __('Group') . " / " . __('Alternate username') . "</th>";
-                    echo "<th>" . __('Last OCSNG inventory date', 'ocsinventoryng') . "</th>";
-                    echo "<th>" . __('Import date in GLPI', 'ocsinventoryng') . "</th>";
-                    echo "<th>" . __('OCSNG server', 'ocsinventoryng') . "</th></tr>";
-
-                    foreach ($iterator as $data) {
-                        echo OcsAlert::displayBody($data);
-                    }
-                    echo "</table></div>";
-                } else {
-                    echo "<br><div class='center'><b>" . __('No computer not synchronized since more', 'ocsinventoryng') . " " . $delay_ocs . " " . _n('Day', 'Days', 2) . "</b></div>";
-                }
+        foreach ($lists as $list) {
+            $rows = [];
+            // OcsAlert::queryNew() and OcsAlert::query() return criteria
+            foreach ($DB->request($list['criteria']) as $data) {
+                $rows[] = OcsAlert::getAlertRow($data);
             }
-            echo "<br>";
+            $columns = OcsAlert::getAlertColumns();
+            TemplateRenderer::getInstance()->display('@ocsinventoryng/table.html.twig', [
+                'title'         => $list['title'],
+                'icon'          => $list['icon'],
+                'columns'       => $columns,
+                // Built and escaped by OcsAlert::getAlertRow()
+                'raw_columns'   => array_keys($columns),
+                'rows'          => $rows,
+                'empty_message' => $list['empty'],
+            ]);
         }
     }
 
@@ -345,48 +321,55 @@ class Config extends \CommonDBTM
         if (!Session::haveRight("plugin_ocsinventoryng_sync", READ)) {
             return false;
         }
-        $canedit = Session::haveRight("plugin_ocsinventoryng_sync", UPDATE);
         $this->getFromDB(1);
-        $this->showFormHeader();
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td> " . __('Show processes where nothing was changed', 'ocsinventoryng') . " </td><td>";
-        Dropdown::showYesNo("is_displayempty", $this->fields["is_displayempty"]);
-        echo "</td>";
-        echo "<td rowspan='4' class='middle right'> " . __('Comments') . "</td>";
-        echo "<td class='center middle' rowspan='4'>";
-        Html::textarea(['name'            => 'comment',
-            'cols'       => 40,
-            'rows'       => 5,
-            'enable_richtext' => false]);
-        echo "</td></tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td> " . __('Authorize the OCSNG update (purge agents when purge GLPI computers or from Automatic actions)', 'ocsinventoryng') . " </td><td>";
-        Dropdown::showYesNo('allow_ocs_update', $this->fields['allow_ocs_update']);
-        echo "</td>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td> " . __('Log imported computers', 'ocsinventoryng') . " </td><td>";
-        Dropdown::showYesNo('log_imported_computers', $this->fields['log_imported_computers']);
-        echo "</td>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td> " . __('Refresh information of a process every', 'ocsinventoryng') . " </td><td>";
-        echo Html::input('delay_refresh', ['value' => $this->fields['delay_refresh'], 'size' => 5]);
-        echo "&nbsp;" . _n('second', 'seconds', 2, 'ocsinventoryng') . "</td>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td> " . __('Limit each massive import to this number of objects', 'ocsinventoryng') . " </td><td>";
-        echo Html::input('import_limit', ['value' => $this->fields['import_limit'], 'size' => 5]);
-        echo "</td>";
-        echo "</tr>";
-
-        $this->showFormButtons(['canedit' => $canedit,
-            'candel'  => false]);
+        TemplateRenderer::getInstance()->display('@ocsinventoryng/config_form.html.twig', [
+            'title'       => __("Automatic synchronization's configuration", 'ocsinventoryng'),
+            'icon'        => 'ti ti-refresh',
+            'form_url'    => $this->getFormURL(),
+            'canedit'     => Session::haveRight("plugin_ocsinventoryng_sync", UPDATE),
+            'form_fields' => [
+                [
+                    'type'  => 'yesno',
+                    'name'  => 'is_displayempty',
+                    'value' => $this->fields['is_displayempty'],
+                    'label' => __('Show processes where nothing was changed', 'ocsinventoryng'),
+                ],
+                [
+                    'type'  => 'yesno',
+                    'name'  => 'allow_ocs_update',
+                    'value' => $this->fields['allow_ocs_update'],
+                    'label' => __('Authorize the OCSNG update (purge agents when purge GLPI computers or from Automatic actions)', 'ocsinventoryng'),
+                ],
+                [
+                    'type'  => 'yesno',
+                    'name'  => 'log_imported_computers',
+                    'value' => $this->fields['log_imported_computers'],
+                    'label' => __('Log imported computers', 'ocsinventoryng'),
+                ],
+                [
+                    'type'    => 'number',
+                    'name'    => 'delay_refresh',
+                    'value'   => (int) $this->fields['delay_refresh'],
+                    'label'   => __('Refresh information of a process every', 'ocsinventoryng')
+                        . ' (' . _n('second', 'seconds', 2, 'ocsinventoryng') . ')',
+                    'options' => ['min' => 0],
+                ],
+                [
+                    'type'    => 'number',
+                    'name'    => 'import_limit',
+                    'value'   => (int) $this->fields['import_limit'],
+                    'label'   => __('Limit each massive import to this number of objects', 'ocsinventoryng'),
+                    'options' => ['min' => 0],
+                ],
+                [
+                    'type'  => 'textarea',
+                    'name'  => 'comment',
+                    'value' => $this->fields['comment'],
+                    'label' => __('Comments'),
+                ],
+            ],
+        ]);
 
         return true;
     }
@@ -397,34 +380,12 @@ class Config extends \CommonDBTM
      */
     public function showScriptLock()
     {
-
-        echo "<div class='center'>";
-        echo "<form name='lock' action=\"" . $_SERVER['HTTP_REFERER'] . "\" method='post'>";
-        echo Html::hidden('id', ['value' => 1]);
-        echo "<table class='tab_cadre'>";
-        echo "<tr class='tab_bg_2'>";
-        echo "<th>&nbsp;" . __('Check OCSNG import script', 'ocsinventoryng') . "&nbsp;</th></tr>";
-
-        echo "<tr class='tab_bg_2'>";
-        echo "<td class='center'>";
-        $status = $this->isScriptLocked();
-        if (!$status) {
-            echo __('Lock not activated', 'ocsinventoryng');
-            echo "&nbsp;<i style='color:darkgreen' class='ti ti-lock-open'></i>";
-        } else {
-            echo __('Lock activated', 'ocsinventoryng');
-            echo "&nbsp;<i style='color:firebrick' class='ti ti-lock'></i>";
-        }
-        echo "</td></tr>";
-
-        echo "<tr class='tab_bg_2'><td colspan='2' class='center'>";
-        echo Html::submit(
-            (!$status ? _sx('button', 'Lock', 'ocsinventoryng') : _sx('button', 'Unlock')),
-            ['name' => !$status ? "soft_lock" : "soft_unlock", 'class' => 'btn btn-primary']
-        );
-        echo "</td/></tr/></table><br>";
-        Html::closeForm();
-        echo "</div>";
+        // A fixed target: the Referer is chosen by the previous page
+        TemplateRenderer::getInstance()->display('@ocsinventoryng/script_lock.html.twig', [
+            'form_url' => Toolbox::getItemTypeFormURL(self::class),
+            'locked'   => self::isScriptLocked(),
+            'canedit'  => Session::haveRight(static::$rightname, UPDATE),
+        ]);
     }
 
 
@@ -469,11 +430,10 @@ class Config extends \CommonDBTM
 
         $servers[-1] = __('All servers', 'ocsinventoryng');
 
-        $sql    = "SELECT `id`, `name`
-                  FROM `glpi_plugin_ocsinventoryng_ocsservers`";
-        $result = $DB->doQuery($sql);
-
-        while ($conf = $DB->fetchArray($result)) {
+        foreach ($DB->request([
+            'SELECT' => ['id', 'name'],
+            'FROM'   => 'glpi_plugin_ocsinventoryng_ocsservers',
+        ]) as $conf) {
             $servers[$conf["id"]] = $conf["name"];
         }
 

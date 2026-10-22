@@ -44,7 +44,7 @@ if (isset($_POST["update_ok"]) || !empty($_SESSION["ocs_update"]['computers'])) 
     Session::checkRight("plugin_ocsinventoryng_sync", UPDATE);
 }
 
-Html::header('OCS Inventory NG', '', "tools", Menu::class, "sync");
+Html::header(Menu::getTypeName(), '', "tools", Menu::class, "sync");
 
 $display_list = true;
 

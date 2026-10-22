@@ -34,6 +34,7 @@ use CommonDBTM;
 use CommonGLPI;
 use Computer;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
 use Session;
 
@@ -138,49 +139,36 @@ class RegistryKey extends \CommonDBTM
             "HKEY_CURRENT_CONFIG",
             "HKEY_DYN_DATA"];
 
-        $query = "SELECT *
-                FROM `glpi_plugin_ocsinventoryng_registrykeys`
-                WHERE `computers_id` = $ID";
-
-        if ($result = $DB->doQuery($query)) {
-            if ($DB->numrows($result) != 0) {
-                echo "<div class='center'><table class='tab_cadre_fixe'>";
-                echo "<tr><th colspan='4'>" . sprintf(
-                    _n(
-                        '%d registry key found',
-                        '%d registry keys found',
-                        $DB->numrows($result),
-                        'ocsinventoryng'
-                    ),
-                    $DB->numrows($result)
-                );
-                echo "</th></tr>\n";
-
-                echo "<tr><th>" . __('Name') . "</th>";
-                echo "<th>" . __('Hive', 'ocsinventoryng') . "</th>";
-                echo "<th>" . __('Path', 'ocsinventoryng') . "</th>";
-                echo "<th>" . __('Key/Value', 'ocsinventoryng') . "</th></tr>\n";
-                while ($data = $DB->fetchAssoc($result)) {
-                    echo "<tr class='tab_bg_1'>";
-                    echo "<td>" . htmlescape((string) $data["ocs_name"]) . "</td>";
-                    if (isset($REGISTRY_HIVE[$data["hive"]])) {
-                        echo "<td>" . htmlescape((string) $REGISTRY_HIVE[$data["hive"]]) . "</td>";
-                    } else {
-                        echo "<td>(" . htmlescape((string) $data["hive"]) . ")</td>";
-                    }
-                    echo "<td>" . htmlescape((string) $data["path"]) . "</td>";
-                    echo "<td>" . htmlescape((string) $data["value"]) . "</td>";
-                    echo "</tr>";
-                }
-                echo "</table></div>\n\n";
-            } else {
-                echo "<div class='center'><table class='tab_cadre_fixe'>";
-                echo "<tr class='tab_bg_2'><th>" . __('Registry', 'ocsinventoryng') . "</th></tr>";
-                echo "<tr class='tab_bg_2'>";
-                echo "<td class='center b'>" . __('No key found in registry', 'ocsinventoryng') . "</td></tr>";
-                echo "</table></div>";
-            }
+        $rows = [];
+        foreach ($DB->request([
+            'FROM'  => 'glpi_plugin_ocsinventoryng_registrykeys',
+            'WHERE' => ['computers_id' => (int) $ID],
+        ]) as $data) {
+            // Values reported by the OCS agent: escaped by the template
+            $rows[] = [
+                'name'  => (string) $data["ocs_name"],
+                'hive'  => $REGISTRY_HIVE[$data["hive"]] ?? "(" . $data["hive"] . ")",
+                'path'  => (string) $data["path"],
+                'value' => (string) $data["value"],
+            ];
         }
+
+        TemplateRenderer::getInstance()->display('@ocsinventoryng/table.html.twig', [
+            'title'         => count($rows)
+                ? sprintf(_n('%d registry key found', '%d registry keys found', count($rows), 'ocsinventoryng'), count($rows))
+                : __('Registry', 'ocsinventoryng'),
+            'icon'          => 'ti ti-binary-tree',
+            'columns'       => [
+                'name'  => __('Name'),
+                'hive'  => __('Hive', 'ocsinventoryng'),
+                'path'  => __('Path', 'ocsinventoryng'),
+                'value' => __('Key/Value', 'ocsinventoryng'),
+            ],
+            'rows'          => $rows,
+            'empty_message' => __('No key found in registry', 'ocsinventoryng'),
+        ]);
+
+        return true;
     }
 
 

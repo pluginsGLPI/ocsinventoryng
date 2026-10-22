@@ -35,7 +35,6 @@ Session::checkRight("plugin_ocsinventoryng", UPDATE);
 Html::header(__('Information about the script', 'ocsinventoryng'), '', "tools", Menu::class, "thread");
 
 $thread = new Thread();
-$thread->title();
 $thread->showThreadForm((int) ($_GET["pid"] ?? 0));
 
 Html::footer();

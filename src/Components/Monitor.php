@@ -124,24 +124,7 @@ class Monitor
                 }
                 $mon["serial"]     = $monitor["SERIAL"];
                 $mon["is_dynamic"] = 1;
-                //Look for a monitor with the same name (and serial if possible) already connected
-                //to this computer
-                //15012021 : Unactivated because block link for good computer
-                //            $query = "SELECT `m`.`id`, `gci`.`is_deleted`
-                //                      FROM `glpi_monitors` as `m`, `glpi_assets_assets_peripheralassets` as `gci`
-                //                      WHERE `m`.`id` = `gci`.`items_id`
-                //                         AND `gci`.`is_dynamic` = 1
-                //                         AND `computers_id`= $computers_id
-                //                         AND `itemtype`= 'Monitor'
-                //                         AND `m`.`name`='" . $mon["name"] . "'";
-                //            if ($cfg_ocs["import_monitor"] > 2 && !empty($mon["serial"])) {
-                //               $query .= " AND `m`.`serial`='" . $mon["serial"] . "'";
-                //            }
-                //            $results = $DB->doQuery($query);
                 $id      = false;
-                //            if ($DB->numrows($results) == 1) {
-                //               $id = $DB->result($results, 0, 'id');
-                //            }
 
                 if ($id == false) {
                     // Clean monitor object
@@ -343,18 +326,17 @@ class Monitor
                         //Delete periph from glpi
                         if ($decoConf == "delete") {
 
-                            $query = $DB->buildDelete(
+                            $DB->delete(
                                 'glpi_assets_assets_peripheralassets',
                                 [
                                     'id' =>  $data['id'],
                                 ]
                             );
-                            $DB->doQuery($query);
 
                             //Put periph in dustbin
                         } elseif ($decoConf == "trash") {
 
-                            $query = $DB->buildUpdate(
+                            $DB->update(
                                 'glpi_assets_assets_peripheralassets',
                                 [
                                     'is_deleted' => 1,
@@ -363,7 +345,6 @@ class Monitor
                                     'id' =>  $data['id'],
                                 ]
                             );
-                            $DB->doQuery($query);
 
                         }
                     }

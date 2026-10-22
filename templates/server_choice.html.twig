@@ -1,0 +1,47 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# Choice of the OCS server used by the plugin pages (OcsServer::showServerChoice()) #}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+<div class="container-lg my-3">
+    <form action="{{ action }}" method="post">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">{{ __('Choice of an OCSNG server', 'ocsinventoryng') }}</h3>
+            </div>
+            <div class="card-body">
+                {{ fields.dropdownField(itemtype, 'plugin_ocsinventoryng_ocsservers_id', value, __('Name'), {
+                    condition: {'id': servers},
+                    on_change: 'this.form.submit()',
+                    display_emptychoice: false,
+                }) }}
+                <div class="alert alert-warning mb-0">
+                    {{ __('If you not find your OCSNG server in this dropdown, please check if your profile can access it !', 'ocsinventoryng') }}
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
+    </form>
+</div>

@@ -34,6 +34,7 @@ use CommonDBTM;
 use Computer;
 use DbUtils;
 use DeviceNetworkCard;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\DBAL\QueryExpression;
 use GlpiPlugin\Ocsinventoryng\NetworkPortType;
 use GlpiPlugin\Ocsinventoryng\OcsProcess;
@@ -50,6 +51,7 @@ use MassiveAction;
 use NetworkName;
 use NetworkPortEthernet;
 use NetworkPortInstantiation;
+use Session;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -381,10 +383,6 @@ class NetworkPort extends NetworkPortInstantiation
             $networkport_type = new NetworkPortType();
             $networkport_type->getFromTypeAndTypeMIB($line);
             $networkport_type->fields['speed'] = $line['SPEED'];
-            //         $speed = NetworkPortEthernet::transformPortSpeed($line['SPEED'], false);
-            //         if (!empty($speed)) {
-            //            $networkport_type->fields['speed'] = $speed;
-            //         }
 
             $typen = (array_push($network_ifaces, $networkport_type) - 1);
 
@@ -704,77 +702,72 @@ class NetworkPort extends NetworkPortInstantiation
     {
         global $DB;
 
-        $criteria = [
-            'SELECT' => 'TYPE',
+        $rows     = [];
+        $iterator = $DB->request([
+            'SELECT'   => 'TYPE',
             'DISTINCT' => true,
-            'FROM' => 'glpi_plugin_ocsinventoryng_networkports',
-        ];
-        $iterator = $DB->request($criteria);
-        echo "<br>\n<div class ='center'><table class='tab_cadre_fixe'>";
-        if (count($iterator) > 0) {
-            echo "<tr class='tab_bg_2'><th colspan='4'>" . self::getTypeName(2) . "</th></tr>";
-            foreach ($iterator as $type) {
-
-                //                $query           = "SELECT `TYPEMIB`, `TYPE`,
-                //                             GROUP_CONCAT(DISTINCT `speed` SEPARATOR '#') AS speed
-                //                        FROM `glpi_plugin_ocsinventoryng_networkports`
-                //                       WHERE `TYPE` = '" . $type['TYPE'] . "'
-                //                       GROUP BY `TYPEMIB`";
-
-                $criteria = [
-                    'SELECT' => ['TYPEMIB',
-                        'TYPE',
-                        new QueryExpression("GROUP_CONCAT(DISTINCT `speed` SEPARATOR '#') AS " . $DB->quoteName('speed'). ""),
-                    ],
-                    'FROM' => 'glpi_plugin_ocsinventoryng_networkports',
-                    'WHERE' => [
-                        'TYPE' => $type['TYPE'],
-                    ],
-                    'GROUPBY' => 'TYPEMIB',
-                ];
-                $typemib_results = $DB->request($criteria);
-
-                echo "<tr class='tab_bg_1'>";
-                echo "<td rowspan='" . $typemib_results->numrows() . "'>" .
-                 self::getTextualType($type['TYPE']) . "</td>";
-                $first = true;
-                foreach ($typemib_results as $typemib) {
-                    if (!$first) {
-                        echo "<tr class='tab_bg_1'>";
-                    } else {
-                        $first = false;
+            'FROM'     => 'glpi_plugin_ocsinventoryng_networkports',
+        ]);
+        foreach ($iterator as $type) {
+            $typemib_results = $DB->request([
+                'SELECT'  => ['TYPEMIB',
+                    'TYPE',
+                    new QueryExpression("GROUP_CONCAT(DISTINCT `speed` SEPARATOR '#') AS " . $DB->quoteName('speed')),
+                ],
+                'FROM'    => 'glpi_plugin_ocsinventoryng_networkports',
+                'WHERE'   => [
+                    'TYPE' => $type['TYPE'],
+                ],
+                'GROUPBY' => 'TYPEMIB',
+            ]);
+            foreach ($typemib_results as $typemib) {
+                // Normalize speeds ...
+                $speeds = [];
+                foreach (explode('#', (string) $typemib['speed']) as $speed) {
+                    $speed = NetworkPortEthernet::transformPortSpeed($speed, false);
+                    if (($speed !== false) and (!in_array($speed, $speeds))) {
+                        $speeds[] = $speed;
                     }
-
-                    echo "<td>" . self::getTextualType($typemib['TYPEMIB']) . "</td>";
-
-                    // Normalize speeds ...
-                    $speeds = [];
-                    foreach (explode('#', $typemib['speed']) as $speed) {
-                        $speed = NetworkPortEthernet::transformPortSpeed($speed, false);
-                        if (($speed !== false) and (!in_array($speed, $speeds))) {
-                            $speeds[] = $speed;
-                        }
-                    }
-                    asort($speeds);
-                    $printable_speeds = [];
-                    foreach ($speeds as $speed) {
-                        $printable_speeds[] = NetworkPortEthernet::transformPortSpeed($speed, true);
-                    }
-                    $typemib['speed'] = implode(', ', $printable_speeds);
-                    echo "<td>" . htmlescape((string) $typemib['speed']) . "</td>";
-
-                    echo "<td>" . NetworkPortType::getLinkToCreateFromTypeAndTypeMIB($typemib) . "</td>";
-
-                    echo "</tr>";
                 }
+                asort($speeds);
+                $printable_speeds = [];
+                foreach ($speeds as $speed) {
+                    $printable_speeds[] = NetworkPortEthernet::transformPortSpeed($speed, true);
+                }
+                $typemib['speed'] = implode(', ', $printable_speeds);
+
+                $rows[] = [
+                    'type'    => self::getTextualType($type['TYPE']),
+                    'typemib' => self::getTextualType($typemib['TYPEMIB']),
+                    'speed'   => htmlescape((string) $typemib['speed']),
+                    'create'  => Session::haveRight('config', CREATE)
+                        ? NetworkPortType::getLinkToCreateFromTypeAndTypeMIB($typemib)
+                        : '',
+                ];
             }
-        } else {
-            echo "<tr class='tab_bg_2'><th>" . __(
-                'No unknown network port type from OCS !',
-                'ocsinventoryng'
-            ) . "</th></tr>";
         }
-        echo "</table></div>";
+
+        TemplateRenderer::getInstance()->display('@ocsinventoryng/table.html.twig', [
+            'title'         => self::getTypeName(2),
+            'icon'          => 'ti ti-network',
+            'alert'         => count($rows) ? [
+                __('Create a network port type for each of these OCS types, then synchronize the computers again', 'ocsinventoryng'),
+            ] : null,
+            'header_link'   => [
+                'title' => NetworkPortType::getTypeName(2),
+                'url'   => NetworkPortType::getSearchURL(),
+            ],
+            'columns'       => [
+                'type'    => __('Type'),
+                'typemib' => 'TYPEMIB',
+                'speed'   => __('Speed'),
+                'create'  => '',
+            ],
+            // Escaped above (values sent by the OCS agent)
+            'raw_columns'   => ['type', 'typemib', 'speed', 'create'],
+            'rows'          => $rows,
+            'empty_message' => __('No unknown network port type from OCS !', 'ocsinventoryng'),
+        ]);
     }
 
 

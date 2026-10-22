@@ -40,19 +40,20 @@ if ($ocsservers_id > 0) {
 }
 
 $thread = new Thread();
-
-
-Html::header(__('Processes execution of automatic actions', 'ocsinventoryng'), '', "tools", Menu::class, "thread");
+// The list itself (PHP_SELF is the GLPI 11 entry point)
+$target = PLUGIN_OCS_WEBDIR . "/front/thread.php?plugin_ocsinventoryng_ocsservers_id=" . $ocsservers_id;
 
 if (isset ($_POST["delete_processes"])) {
 
    foreach ((array) ($_POST["item"] ?? []) as $key => $val) {
       $thread->deleteThreadsByProcessId((int) $key);
    }
-   Html::back();
+   Html::redirect($target);
 
-} else {
-   $thread->showProcesses($_SERVER["PHP_SELF"], $ocsservers_id);
 }
+
+Html::header(__('Processes execution of automatic actions', 'ocsinventoryng'), '', "tools", Menu::class, "thread");
+
+$thread->showProcesses($target, $ocsservers_id);
 
 Html::footer();

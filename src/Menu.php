@@ -32,6 +32,7 @@ namespace GlpiPlugin\Ocsinventoryng;
 
 use CommonGLPI;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use Session;
 
 /**
@@ -139,11 +140,36 @@ class Menu extends CommonGLPI
        //      $menu['options']['modifysubnet']['title'] = __s('Modify Subnet', 'ocsinventoryng');
        //      $menu['options']['modifysubnet']['page']  = PLUGIN_OCS_WEBDIR.'/front/ipdiscover.modifynetwork.php';
 
+        // OCS servers (front/ocsserver.php): search and add buttons in the header
+        $menu['options']['ocsserver'] = [
+            'title' => OcsServer::getTypeName(2),
+            'page'  => OcsServer::getSearchURL(false),
+            'icon'  => OcsServer::getIcon(),
+            'links' => ['search' => OcsServer::getSearchURL(false)],
+        ];
+        if (OcsServer::canCreate()) {
+            $menu['options']['ocsserver']['links']['add'] = OcsServer::getFormURL(false);
+        }
+
         $menu['icon'] = self::getIcon();
 
         return $menu;
     }
 
+
+    /**
+     * Render the plugin menus: one block per section, one clickable card per entry
+     *
+     * @param array $sections List of sections, each with 'title', 'icon' and 'items' keys
+     *                        (optional 'link' and 'alert'); each item with 'title', 'url' and 'icon' keys
+     *                        (optional 'description', 'badge' and 'color')
+     */
+    public static function displayMenuSections(array $sections)
+    {
+        TemplateRenderer::getInstance()->display('@ocsinventoryng/menu.html.twig', [
+            'sections' => $sections,
+        ]);
+    }
 
    /**
     *

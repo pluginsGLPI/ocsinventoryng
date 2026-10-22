@@ -1,0 +1,55 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# Lock of the OCSNG import script (Config::showScriptLock()) #}
+<form method="post" action="{{ form_url }}" class="card mb-3">
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="id" value="1">
+
+    <div class="card-header">
+        <h3 class="card-title"><i class="ti ti-lock me-2"></i>{{ __('Check OCSNG import script', 'ocsinventoryng') }}</h3>
+    </div>
+    <div class="card-body text-center py-4">
+        {% if locked %}
+            <span class="avatar avatar-xl bg-red-lt mb-3"><i class="ti ti-lock fs-1"></i></span>
+            <h3>{{ __('Lock activated', 'ocsinventoryng') }}</h3>
+        {% else %}
+            <span class="avatar avatar-xl bg-green-lt mb-3"><i class="ti ti-lock-open fs-1"></i></span>
+            <h3>{{ __('Lock not activated', 'ocsinventoryng') }}</h3>
+        {% endif %}
+    </div>
+    {% if canedit %}
+        <div class="card-footer text-center">
+            {% if locked %}
+                <button type="submit" name="soft_unlock" value="1" class="btn btn-primary">
+                    <i class="ti ti-lock-open me-1"></i>{{ _x('button', 'Unlock') }}
+                </button>
+            {% else %}
+                <button type="submit" name="soft_lock" value="1" class="btn btn-primary">
+                    <i class="ti ti-lock me-1"></i>{{ _x('button', 'Lock', 'ocsinventoryng') }}
+                </button>
+            {% endif %}
+        </div>
+    {% endif %}
+</form>

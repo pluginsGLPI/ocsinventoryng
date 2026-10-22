@@ -1,0 +1,137 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# A list of the plugin (clean links, processes, unknown network port types): a card with a table,
+   optional checkboxes posted as <checkbox_name>[<row.checkbox>], buttons and pager.
+   Cells are escaped, except the columns listed in raw_columns (HTML built and escaped in PHP). #}
+{% set table_id = 'ocstable' ~ random() %}
+{% set raw_columns = raw_columns ?? [] %}
+{% set has_checkbox = checkbox_name ?? null is not null %}
+
+<div class="container-fluid my-3">
+    {% if alert ?? null %}
+        <div class="alert alert-warning d-flex align-items-center">
+            <i class="ti ti-alert-triangle fs-2 me-2"></i>
+            <div>
+                {% for line in alert %}<div>{{ line }}</div>{% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if form_action ?? null %}<form method="post" action="{{ form_action }}" id="{{ table_id }}_form">{% endif %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                {% if icon ?? null %}<i class="{{ icon }} me-2"></i>{% endif %}{{ title }}
+            </h3>
+            {% if header_link ?? null %}
+                <div class="card-actions">
+                    <a href="{{ header_link.url }}" class="btn btn-sm btn-ghost-secondary">{{ header_link.title }}</a>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if pager ?? null %}
+            <div class="card-body border-bottom py-2">
+                {{ include('components/pager.html.twig', pager) }}
+            </div>
+        {% endif %}
+
+        {% if rows is empty %}
+            <div class="card-body text-center text-secondary py-4">
+                {{ empty_message }}
+            </div>
+        {% else %}
+            <div class="table-responsive" id="{{ table_id }}">
+                <table class="table table-vcenter table-hover card-table">
+                    <thead>
+                        <tr>
+                            {% if has_checkbox %}
+                                <th class="w-1">
+                                    <input type="checkbox" class="form-check-input" title="{{ __('Check all') }}"
+                                           onclick="$('#{{ table_id }} input.ocs-row-check').prop('checked', this.checked);"
+                                           {{ checked_all ?? false ? 'checked' : '' }} />
+                                </th>
+                            {% endif %}
+                            {% for label in columns %}
+                                <th>{{ label }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                            <tr class="{{ row._class ?? '' }}">
+                                {% if has_checkbox %}
+                                    <td>
+                                        <input type="checkbox" class="form-check-input ocs-row-check"
+                                               name="{{ checkbox_name }}[{{ row._checkbox }}]"
+                                               {{ checked_all ?? false ? 'checked' : '' }} />
+                                    </td>
+                                {% endif %}
+                                {% for key, label in columns %}
+                                    <td>
+                                        {% if key in raw_columns %}{{ row[key]|raw }}{% else %}{{ row[key] ?? '' }}{% endif %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    {% if footers ?? [] is not empty %}
+                        <tfoot>
+                            {% for footer in footers %}
+                                <tr>
+                                    {% if has_checkbox %}<td></td>{% endif %}
+                                    {% for key, label in columns %}
+                                        <td class="fw-bold">{{ footer[key] ?? '' }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tfoot>
+                    {% endif %}
+                </table>
+            </div>
+        {% endif %}
+
+        {% if (buttons ?? []) is not empty and rows is not empty %}
+            <div class="card-footer d-flex gap-2">
+                {% for button in buttons %}
+                    <button type="submit" name="{{ button.name }}" class="btn {{ button.class ?? 'btn-primary' }}"
+                            {% if button.confirm ?? null %}onclick="return confirm('{{ button.confirm|e('js') }}');"{% endif %}>
+                        {% if button.icon ?? null %}<i class="ti {{ button.icon }} me-1"></i>{% endif %}{{ button.title }}
+                    </button>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if pager ?? null %}
+            <div class="card-footer py-2">
+                {{ include('components/pager.html.twig', pager) }}
+            </div>
+        {% endif %}
+    </div>
+    {% if form_action ?? null %}
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
+        </form>
+    {% endif %}
+</div>

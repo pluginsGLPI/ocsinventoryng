@@ -39,7 +39,7 @@ if (!isset($_GET["id"]) || $_GET["id"] == -1) {
     $_GET["id"] = "";
 }
 
-Html::header('OCS Inventory NG', '', "tools", Menu::class, "ocsserver");
+Html::header(Menu::getTypeName(), '', "tools", Menu::class, "ocsserver");
 
 //Delete template or server
 if (isset($_POST["purge"])) {
@@ -67,8 +67,8 @@ if (isset($_POST["purge"])) {
     //Other
 } elseif (isset($_POST["force_checksum"])) {
     $ocs->check($_POST['id'], UPDATE);
-    $_POST['checksum'] = 0;
-    $ocs->update($_POST);
+    // The button is in the server form: only the checksum is reset, not the other fields
+    $ocs->update(['id' => (int) $_POST['id'], 'checksum' => 0]);
     Html::back();
 } else {
     $ocs->display($_GET);

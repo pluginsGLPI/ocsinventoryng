@@ -83,7 +83,7 @@ class OS  {
 
          if (intval($cfg_ocs["import_os_serial"]) > 0) {
             $locks["license_number"] = __('Serial of the operating system');
-            $locks["licenseid"]      = __('Product ID of the operating system');
+            $locks["licenseid"]      = __('Product ID of the operating system', 'ocsinventoryng');
          }
 
       } else {
@@ -92,7 +92,7 @@ class OS  {
                    "operatingsystemversions_id"      => __('Version of the operating system'),
                    'operatingsystemarchitectures_id' => __('Operating system architecture'),//Enable 9.1
                    "license_number"                  => __('Serial of the operating system'),
-                   "licenseid"                       => __('Product ID of the operating system')];
+                   "licenseid"                       => __('Product ID of the operating system', 'ocsinventoryng')];
       }
 
       return $locks;

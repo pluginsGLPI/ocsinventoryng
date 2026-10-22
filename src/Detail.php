@@ -216,7 +216,7 @@ class Detail extends CommonDBTM {
               => __('Computers not unique',
                     'ocsinventoryng'),
           OcsProcess::COMPUTER_LINK_REFUSED
-              => __('Import refused by rule')];
+              => __('Import refused by rule', 'ocsinventoryng')];
    }
 
 

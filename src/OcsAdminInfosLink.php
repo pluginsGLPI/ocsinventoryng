@@ -285,12 +285,14 @@ class OcsAdminInfosLink extends CommonDBTM {
       //      OcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id);
       $ocsClient = OcsServer::getDBocs($plugin_ocsinventoryng_ocsservers_id);
       //check link between ocs and glpi column
-      $queryListUpdate = "SELECT `ocs_column`, `glpi_column`
-                          FROM `glpi_plugin_ocsinventoryng_ocsadmininfoslinks`
-                          WHERE `plugin_ocsinventoryng_ocsservers_id` = " . (int) $plugin_ocsinventoryng_ocsservers_id;
-      $result          = $DB->doQuery($queryListUpdate);
+      // An array: the links are read again for each accountinfo
+      $links = iterator_to_array($DB->request([
+         'SELECT' => ['ocs_column', 'glpi_column'],
+         'FROM'   => 'glpi_plugin_ocsinventoryng_ocsadmininfoslinks',
+         'WHERE'  => ['plugin_ocsinventoryng_ocsservers_id' => (int) $plugin_ocsinventoryng_ocsservers_id],
+      ]), false);
 
-      if ($DB->numrows($result) > 0) {
+      if (count($links) > 0) {
 
          if (isset($params["ACCOUNTINFO"])) {
 
@@ -299,7 +301,7 @@ class OcsAdminInfosLink extends CommonDBTM {
             foreach ($accountinfos as $key => $accountinfo) {
                $comp = new Computer();
                //update data
-               while ($links_glpi_ocs = $DB->fetchArray($result)) {
+               foreach ($links as $links_glpi_ocs) {
                   //get info from ocs
                   $ocs_column  = $links_glpi_ocs['ocs_column'];
                   $glpi_column = $links_glpi_ocs['glpi_column'];

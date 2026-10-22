@@ -1,0 +1,62 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# Computers to synchronize, import or link (OcsServer::showOcsDataTable()). The table is filled
+   by public/js/ocs-datatable.js, configured by the data-ocs-table attribute; the ids of the
+   selected rows are posted with the form. #}
+
+{{ assets|raw }}
+
+<form method="post" action="{{ target }}" id="ocsng_form" name="ocsng_form">
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+    <div class="card my-3">
+        <div class="card-header d-flex flex-wrap align-items-center gap-2">
+            <h3 class="card-title mb-0">
+                <i class="ti {{ icon }} me-2"></i>{{ title }}
+            </h3>
+        </div>
+        <div class="card-body">
+            <div data-ocs-table="{{ table_config|json_encode }}">
+                <div class="text-center py-3" data-ocs-loader>
+                    <div class="spinner-border text-secondary" role="status"></div>
+                </div>
+                <table class="table table-hover table-vcenter w-100 ocs-datatable">
+                    <thead>
+                        <tr>
+                            {% for header in headers %}
+                                <th>{{ header }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer d-flex flex-wrap align-items-center gap-2">
+            <button type="submit" name="{{ submit_name }}" value="1" class="btn btn-primary">
+                <i class="ti {{ submit_icon }} me-1"></i>{{ submit_label }}
+            </button>
+            <span class="text-secondary small">{{ __('Click on the first cell of a row to select it', 'ocsinventoryng') }}</span>
+        </div>
+    </div>
+</form>

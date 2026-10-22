@@ -32,7 +32,7 @@ use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 Session::checkRight("plugin_ocsinventoryng", READ);
 
-Html::header('OCS Inventory NG', '', "tools", Menu::class, "ocsserver");
+Html::header(Menu::getTypeName(), '', "tools", Menu::class, "ocsserver");
 
 Search::show(OcsServer::class);
 

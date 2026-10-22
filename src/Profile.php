@@ -32,7 +32,7 @@ namespace GlpiPlugin\Ocsinventoryng;
 
 use CommonGLPI;
 use DbUtils;
-use Dropdown;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use ProfileRight;
 use Session;
@@ -176,66 +176,22 @@ class Profile extends \Profile
      */
     public function showForm($profiles_id = 0, $openform = true, $closeform = true)
     {
-        global $DB, $CFG_GLPI;
+        global $DB;
 
         $profile = new \Profile();
         $profile->getFromDB($profiles_id);
 
-        echo "<div class='firstbloc'>";
-
-        if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]))
-            && $openform) {
-            echo "<form action='" . PLUGIN_OCS_WEBDIR . "/front/profile.form.php' method='post'>";
-        }
-        //Delegating
-        echo "<table class='tab_cadre_fixehov'>";
-        echo "<tr><th colspan='4' class='center b'>" . sprintf(
-            __('%1$s - %2$s'),
-            'OcsinventoryNG',
-            $profile->fields["name"]
-        ) . "</th>";
-        echo "</tr>";
-
-        $used = [];
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . sprintf(
-            __('%1$s : %2$s'),
-            _n('Allowed OCSNG server', 'Allowed OCSNG servers', 2, 'ocsinventoryng'),
-            "&nbsp;"
-        );
-
+        // The OCS servers of the profile
+        $used    = [];
+        $servers = [];
         foreach ($DB->request([
-            'FROM' => 'glpi_plugin_ocsinventoryng_ocsservers_profiles',
-            'WHERE' => ['profiles_id' => $profiles_id]]) as $data) {
-            $used[$data['plugin_ocsinventoryng_ocsservers_id']]     = $data['plugin_ocsinventoryng_ocsservers_id'];
-            $configid[$data['plugin_ocsinventoryng_ocsservers_id']] = $data['id'];
-        }
-        if (Session::haveRight("profile", UPDATE)) {
-            Dropdown::show(OcsServer::class, ['width'     => '50%',
-                'used'      => $used,
-                'value'     => '',
-                'condition' => ["is_active" => 1],
-                'toadd'     => ['-1' => __('All')]]);
-            echo Html::hidden('profile', ['value' => $profiles_id]);
-            echo Html::submit(_sx('button', 'Add'), ['name' => 'addocsserver', 'class' => 'btn btn-primary']);
-        }
-
-        echo "</td><td>";
-
-        echo "<table width='100%'><tr class='tab_bg_1'><td>";
-        $dbu = new DbUtils();
-        $nbservers = $dbu->countElementsInTable(
-            'glpi_plugin_ocsinventoryng_ocsservers_profiles',
-            ["profiles_id" => $profiles_id]
-        );
-
-        $result = $DB->request([
             'SELECT'    => [
+                'glpi_plugin_ocsinventoryng_ocsservers_profiles.id AS link_id',
                 'glpi_plugin_ocsinventoryng_ocsservers.id',
                 'glpi_plugin_ocsinventoryng_ocsservers.name',
             ],
             'FROM'      => 'glpi_plugin_ocsinventoryng_ocsservers_profiles',
-            'LEFT JOIN' => [
+            'INNER JOIN' => [
                 'glpi_plugin_ocsinventoryng_ocsservers' => [
                     'ON' => [
                         'glpi_plugin_ocsinventoryng_ocsservers_profiles' => 'plugin_ocsinventoryng_ocsservers_id',
@@ -243,60 +199,43 @@ class Profile extends \Profile
                     ],
                 ],
             ],
-            'WHERE'     => ['profiles_id' => (int) $_SESSION["glpiactiveprofile"]['id']],
-            'ORDER'     => 'name ASC',
+            'WHERE'     => ['glpi_plugin_ocsinventoryng_ocsservers_profiles.profiles_id' => (int) $profiles_id],
+            'ORDER'     => 'glpi_plugin_ocsinventoryng_ocsservers.name ASC',
+        ]) as $data) {
+            $used[$data['id']] = $data['id'];
+            $servers[]         = [
+                'link_id' => (int) $data['link_id'],
+                'name'    => (string) $data['name'],
+                'url'     => OcsServer::getFormURLWithID($data['id']),
+            ];
+        }
+
+        TemplateRenderer::getInstance()->display('@ocsinventoryng/profile_servers.html.twig', [
+            'form_url'           => PLUGIN_OCS_WEBDIR . '/front/profile.form.php',
+            'profiles_id'        => (int) $profiles_id,
+            'ocsserver_itemtype' => OcsServer::class,
+            'used'               => $used,
+            'servers'            => $servers,
+            'can_update_profile' => Session::haveRight("profile", UPDATE),
         ]);
-        if ($data = $result->current()) {
-            $ocsserver = new OcsServer();
-            foreach ($used as $id) {
-                if ($ocsserver->getFromDB($id)) {
-                    echo "<br>";
-                    if (Session::haveRight("profile", UPDATE)) {
-                        Html::showCheckbox([
-                            'name'      => 'item[' . $configid[$id] . ']',
-                            'value' => 1,
-                        ]);
-                    }
-                    echo $ocsserver->getLink();
-                }
-            }
-        }
-        if (!$nbservers) {
-            echo __('None');
-        }
-        echo "</td></tr>";
-        if ($nbservers && Session::haveRight("profile", UPDATE)) {
-            echo "<tr class='tab_bg_1 center'><td>";
-            echo Html::submit(_sx('button', 'Delete'), ['name' => 'delete', 'class' => 'btn btn-primary']);
-            echo "</td></tr>";
-        }
-        echo "</table>";
-        echo "</td></tr>";
-        echo "</table>";
-        Html::closeForm();
 
-        if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]))
-            && $openform
-        ) {
-            echo "<form method='post' action='" . $profile->getFormURL() . "'>";
+        // The rights of the plugin
+        $canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]);
+        if ($canedit && $openform) {
+            echo "<form method='post' action='" . htmlescape($profile->getFormURL()) . "'>";
         }
 
-        $rights = $this->getAllRights();
-
-        $profile->displayRightsChoiceMatrix($rights, ['canedit'       => $canedit,
+        $profile->displayRightsChoiceMatrix($this->getAllRights(), ['canedit'       => $canedit,
             'default_class' => 'tab_bg_2',
             'title'         => __('General')]);
 
-        if ($canedit
-            && $closeform) {
-            echo "<div class='center'>";
+        if ($canedit && $closeform) {
+            echo "<div class='text-center my-2'>";
             echo Html::hidden('id', ['value' => $profiles_id]);
             echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
-            echo "</div>\n";
+            echo "</div>";
             Html::closeForm();
         }
-
-        echo "</div>";
     }
 
     /**
