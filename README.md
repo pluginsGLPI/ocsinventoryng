@@ -1,3 +1,5 @@
+Looking for new maintainers to manage the project !
+
 # Plugin ocsinventoryng for GLPI
 ![Logo ocsinventoryng](https://raw.githubusercontent.com/pluginsGLPI/ocsinventoryng/master/ocsinventoryng.png "Logo ocsinventoryng")
 
