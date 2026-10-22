@@ -1340,6 +1340,22 @@ function plugin_ocsinventoryng_displayConfigItem($type, $ID, $data, $num)
 
 
 /**
+ * Restriction of the searches of the plugin types: the details of the processes of the OCS
+ * servers the active profile sees only (as the processes, Thread::getVisibleServers())
+ *
+ * @param string $itemtype
+ *
+ * @return array criteria of the query builder, empty for the default behavior
+ */
+function plugin_ocsinventoryng_addDefaultWhere($itemtype)
+{
+    if ($itemtype === Detail::class) {
+        return [Detail::getTable() . '.plugin_ocsinventoryng_ocsservers_id' => Thread::getVisibleServers()];
+    }
+    return [];
+}
+
+/**
  * @param $type
  * @param $id
  * @param $num

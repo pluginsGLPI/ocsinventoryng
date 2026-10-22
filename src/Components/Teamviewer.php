@@ -34,6 +34,7 @@ use CommonDBTM;
 use CommonGLPI;
 use Computer;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Ocsinventoryng\Ocslink;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
 use Link;
@@ -160,18 +161,8 @@ class Teamviewer extends \CommonDBTM
      */
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
-        $plugin_ocsinventoryng_ocsservers_id = Ocslink::getOCSServerForItem($item);
-        if (!OcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
-            echo "<div class='spaced center'>";
-            echo "<table class='tab_cadre_fixehov'>";
-            echo "<tr class='noHover'><th colspan='5'>" . self::getTypeName(0) .
-            "</th></tr>";
-            echo "<tr class='tab_bg_2'><th colspan='5'>" . __('Server unreachable', 'ocsinventoryng') . "</th></tr>";
-            echo "</table>";
-            echo "</div>";
-        } else {
-            self::showForComputer($item, $withtemplate);
-        }
+        // Rows stored in GLPI by the synchronization: no connection to the OCS server needed
+        self::showForComputer($item, $withtemplate);
         return true;
     }
 
@@ -195,83 +186,48 @@ class Teamviewer extends \CommonDBTM
             return false;
         }
 
-        echo "<div class='spaced center'>";
-
-        if ($result = $DB->request([
-            'FROM' => 'glpi_plugin_ocsinventoryng_services',
+        $rows = [];
+        foreach ($DB->request([
+            'FROM'  => 'glpi_plugin_ocsinventoryng_teamviewers',
             'WHERE' => ['computers_id' => $ID],
-        ])) {
-            echo "<table class='tab_cadre_fixehov'>";
-            $colspan = 2;
-            echo "<tr class='noHover'><th colspan='$colspan'>" . self::getTypeName($result->numrows()) .
-              "</th></tr>";
-
-            if ($result->numrows() != 0) {
-                $header = "<tr><th>" . __('Teamviewer ID', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Version') . "</th>";
-                $header .= "</tr>";
-                echo $header;
-
-                Session::initNavigateListItems(
-                    __CLASS__,
-                    //TRANS : %1$s is the itemtype name,
-                    //        %2$s is the name of the item (used for headings of a list)
-                    sprintf(
-                        __('%1$s = %2$s'),
-                        Computer::getTypeName(1),
-                        $comp->getName()
-                    )
-                );
-
-                foreach ($result as $data) {
-                    echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . htmlescape((string) $data['twid']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['version']) . "</td>";
-                    echo "</tr>";
-                    Session::addToNavigateListItems(__CLASS__, $data['id']);
-
-                    $self = new self();
-                    $self->getFromDB($data['id']);
-                }
-                echo $header;
-            } else {
-                echo "<tr class='tab_bg_2'><th colspan='$colspan'>" . __('No results found') . "</th></tr>";
-            }
-
-            echo "</table></br>";
-
-            if ($result->numrows() != 0) {
-                $restrict = $comp->getEntityID();
-                $result = self::getLinks($restrict);
-
-                if (count($result) > 0) {
-                    echo "<table class='tab_cadre_fixe'>";
-                    $colspan = 2;
-
-                    echo "<tr><th colspan='$colspan'>" . __('Teamviewer direct access', 'ocsinventoryng') . "</th></tr>";
-
-                    foreach ($result as $data) {
-                        $links = Link::getAllLinksFor($self, $data);
-                        foreach ($links as $link) {
-                            echo "<tr class='tab_bg_2'>";
-                            echo "<td class='center' colspan='$colspan'>$link</td></tr>";
-                        }
-                    }
-
-                    echo "</table>";
-                }
-            }
+        ]) as $data) {
+            // Values reported by the OCS agent: escaped by the template
+            $rows[] = [
+                'id'      => $data['id'],
+                'twid'    => (string) $data['twid'],
+                'version' => (string) $data['version'],
+            ];
         }
-        echo "</div>";
+
+        Ocslink::showComponentRows(self::class, $comp, [
+            'twid'    => __('Teamviewer ID', 'ocsinventoryng'),
+            'version' => __('Version'),
+        ], $rows);
+
+        $links = self::getDirectAccessLinks($comp);
+        if (count($links) > 0) {
+            TemplateRenderer::getInstance()->display('@ocsinventoryng/table.html.twig', [
+                'title'         => __('Teamviewer direct access', 'ocsinventoryng'),
+                'icon'          => 'ti ti-link',
+                'columns'       => ['link' => ''],
+                // Links escaped by Link::getAllLinksFor()
+                'raw_columns'   => ['link'],
+                'rows'          => array_map(fn($link) => ['link' => $link], $links),
+                'empty_message' => '',
+            ]);
+        }
+
+        return true;
     }
 
     /**
-     * @param \Computer $comp
-     * @param string    $withtemplate
+     * The Teamviewer direct access links of a computer (inventory information block)
      *
-     * @return bool
+     * @param \Computer $comp
+     *
+     * @return string[] HTML links, escaped by Link::getAllLinksFor()
      */
-    public static function showForSimpleForItem(Computer $comp, $withtemplate = '')
+    public static function getDirectAccessLinks(Computer $comp)
     {
         global $DB;
 
@@ -279,36 +235,25 @@ class Teamviewer extends \CommonDBTM
 
         if (!$comp->getFromDB($ID)
           || !$comp->can($ID, READ)) {
-            return false;
+            return [];
         }
 
-        if ($iterator = $DB->request([
+        $iterator = $DB->request([
             'FROM' => 'glpi_plugin_ocsinventoryng_teamviewers',
-            'WHERE' => ['computers_id' => $ID]])) {
-            if (count($iterator)) {
-                $data = $iterator->current();
-
-                $self = new self();
-                $self->getFromDB($data['id']);
-
-                $restrict = $comp->getEntityID();
-                $result = self::getLinks($restrict);
-
-                if (count($result) > 0) {
-                    $colspan = 4;
-
-                    echo "<tr><th colspan='$colspan'>" . __('Teamviewer direct access', 'ocsinventoryng') . "</th></tr>";
-
-                    foreach ($result as $data) {
-                        $links = Link::getAllLinksFor($self, $data);
-                        foreach ($links as $link) {
-                            echo "<tr class='tab_bg_2'>";
-                            echo "<td class='center' colspan='$colspan'>$link</td></tr>";
-                        }
-                    }
-                }
-            }
+            'WHERE' => ['computers_id' => $ID]]);
+        if (!count($iterator)) {
+            return [];
         }
+
+        $self = new self();
+        $self->getFromDB($iterator->current()['id']);
+
+        $links = [];
+        foreach (self::getLinks($comp->getEntityID()) as $data) {
+            array_push($links, ...Link::getAllLinksFor($self, $data));
+        }
+
+        return $links;
     }
 
     /**

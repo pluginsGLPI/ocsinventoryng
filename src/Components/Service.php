@@ -157,18 +157,8 @@ class Service extends \CommonDBTM
      */
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
-        $plugin_ocsinventoryng_ocsservers_id = Ocslink::getOCSServerForItem($item);
-        if (!OcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
-            echo "<div class='spaced center'>";
-            echo "<table class='tab_cadre_fixehov'>";
-            echo "<tr class='noHover'><th colspan='5'>" . self::getTypeName(0) .
-            "</th></tr>";
-            echo "<tr class='tab_bg_2'><th colspan='5'>" . __('Server unreachable', 'ocsinventoryng') . "</th></tr>";
-            echo "</table>";
-            echo "</div>";
-        } else {
-            self::showForComputer($item, $withtemplate);
-        }
+        // Rows stored in GLPI by the synchronization: no connection to the OCS server needed
+        self::showForComputer($item, $withtemplate);
         return true;
     }
 
@@ -190,62 +180,40 @@ class Service extends \CommonDBTM
           || !$comp->can($ID, READ)) {
             return false;
         }
-        echo "<div class='spaced center'>";
 
-        if ($result = $DB->request([
-            'FROM' => 'glpi_plugin_ocsinventoryng_services',
+        $rows = [];
+        foreach ($DB->request([
+            'FROM'  => 'glpi_plugin_ocsinventoryng_services',
             'WHERE' => ['computers_id' => $ID],
             'ORDER' => 'svcname',
-        ])) {
-            echo "<table class='tab_cadre_fixehov'>";
-            echo "<tr class='noHover'><th colspan='9'>" . self::getTypeName($result->numrows()) .
-              "</th></tr>";
-
-            if ($result->numrows() != 0) {
-                $header = "<tr><th>" . __('Name of the service', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Full name', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Service Status', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Description') . "</th>";
-                $header .= "<th>" . __('Start type', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Access path', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Session', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Exit code', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Spec Exit code', 'ocsinventoryng') . "</th>";
-                $header .= "</tr>";
-                echo $header;
-
-                Session::initNavigateListItems(
-                    __CLASS__,
-                    //TRANS : %1$s is the itemtype name,
-                    //        %2$s is the name of the item (used for headings of a list)
-                    sprintf(
-                        __('%1$s = %2$s'),
-                        Computer::getTypeName(1),
-                        $comp->getName()
-                    )
-                );
-
-                foreach ($result as $data) {
-                    echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . htmlescape((string) $data['svcname']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['svcdn']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['svcstate']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['svcdesc']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['svcstartmode']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['svcpath']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['svcstartname']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['svcexitcode']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['svcspecexitcode']) . "</td>";
-                    echo "</tr>";
-                    Session::addToNavigateListItems(__CLASS__, $data['id']);
-                }
-                echo $header;
-            } else {
-                echo "<tr class='tab_bg_2'><th colspan='9'>" . __('No results found') . "</th></tr>";
-            }
-
-            echo "</table>";
+        ]) as $data) {
+            // Values reported by the OCS agent: escaped by the template
+            $rows[] = [
+                'id'              => $data['id'],
+                'svcname'         => (string) $data['svcname'],
+                'svcdn'           => (string) $data['svcdn'],
+                'svcstate'        => (string) $data['svcstate'],
+                'svcdesc'         => (string) $data['svcdesc'],
+                'svcstartmode'    => (string) $data['svcstartmode'],
+                'svcpath'         => (string) $data['svcpath'],
+                'svcstartname'    => (string) $data['svcstartname'],
+                'svcexitcode'     => (string) $data['svcexitcode'],
+                'svcspecexitcode' => (string) $data['svcspecexitcode'],
+            ];
         }
-        echo "</div>";
+
+        Ocslink::showComponentRows(self::class, $comp, [
+            'svcname'         => __('Name of the service', 'ocsinventoryng'),
+            'svcdn'           => __('Full name', 'ocsinventoryng'),
+            'svcstate'        => __('Service Status', 'ocsinventoryng'),
+            'svcdesc'         => __('Description'),
+            'svcstartmode'    => __('Start type', 'ocsinventoryng'),
+            'svcpath'         => __('Access path', 'ocsinventoryng'),
+            'svcstartname'    => __('Session', 'ocsinventoryng'),
+            'svcexitcode'     => __('Exit code', 'ocsinventoryng'),
+            'svcspecexitcode' => __('Spec Exit code', 'ocsinventoryng'),
+        ], $rows);
+
+        return true;
     }
 }

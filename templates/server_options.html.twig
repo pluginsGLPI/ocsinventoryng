@@ -1,0 +1,95 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# Options of an OCS server (OcsServer::ocsFormImportOptions(), ocsFormConfig(), ocsHistoryConfig()):
+   sections of fields given by the PHP side; the yes/no fields of a section are set at once by the
+   "All" dropdown (public/js/ocs-server-form.js, class ocs-set-all). #}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+<form method="post" action="{{ form_url }}" class="ocs-options-form">
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="id" value="{{ id }}">
+
+    {% if set_all ?? false %}
+        <div class="card mb-2">
+            <div class="card-body py-2">
+                <div class="row">
+                    {{ fields.dropdownArrayField('init_all', -1, {'-1': '-----', '0': __('No'), '1': __('Yes')}, __('All'), {
+                        'class': 'form-select ocs-set-all',
+                        'full_width': true,
+                        'label_class': 'col-md-3',
+                        'input_class': 'col-md-3',
+                        'mb': '',
+                    }) }}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% for section in sections %}
+        <details class="card mb-2" {{ loop.first or not (collapsible ?? false) ? 'open' : '' }}>
+            <summary class="card-header fw-bold" role="button">
+                {% if section.icon ?? null %}<i class="{{ section.icon }} me-2"></i>{% endif %}{{ section.title }}
+            </summary>
+            <div class="card-body">
+                {% for alert in section.alerts ?? [] %}
+                    <div class="alert alert-warning">{{ alert }}</div>
+                {% endfor %}
+                <div class="row">
+                    {% for field in section.fields %}
+                        {% set options = {
+                            'full_width': field.full_width ?? false,
+                            'helper': field.helper ?? '',
+                        }|merge(field.options ?? {}) %}
+                        {% if field.type == 'yesno' %}
+                            {{ fields.dropdownYesNo(field.name, field.value, field.label, options|merge({
+                                'class': 'form-select' ~ ((field.no_set_all ?? false) ? '' : ' ocs-yesno'),
+                            })) }}
+                        {% elseif field.type == 'array' %}
+                            {{ fields.dropdownArrayField(field.name, field.value, field.values, field.label, options) }}
+                        {% elseif field.type == 'text' %}
+                            {{ fields.textField(field.name, field.value, field.label, options) }}
+                        {% elseif field.type == 'number' %}
+                            {{ fields.dropdownNumberField(field.name, field.value, field.label, options) }}
+                        {% elseif field.type == 'hidden' %}
+                            <input type="hidden" name="{{ field.name }}" value="{{ field.value }}">
+                        {% elseif field.type == 'title' %}
+                            {{ fields.smallTitle(field.label) }}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </details>
+    {% endfor %}
+
+    {% if canedit %}
+        <div class="card">
+            <div class="card-body text-center py-2">
+                <button type="submit" name="{{ submit_name ?? 'update' }}" value="1" class="btn btn-primary">
+                    <i class="ti ti-device-floppy me-1"></i>{{ _x('button', 'Save') }}
+                </button>
+            </div>
+        </div>
+    {% endif %}
+</form>

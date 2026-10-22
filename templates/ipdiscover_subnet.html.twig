@@ -1,0 +1,50 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# Name, id and mask of an IPDiscover subnet in the OCS database (IpdiscoverOcslink::modifyNetworkForm()):
+   "Update" for a known subnet, "Add" for an unknown one #}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+<div class="container-lg my-3">
+    <form method="post" action="{{ form_url }}" class="card">
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+        <div class="card-header">
+            <h3 class="card-title"><i class="ti ti-network me-2"></i>{{ __('Modify Subnet', 'ocsinventoryng') }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {{ fields.htmlField('', ip, __('IP address')) }}
+                {{ fields.textField('subnetName', name, __('Subnet Name', 'ocsinventoryng'), {'required': true}) }}
+                {{ fields.dropdownArrayField('subnetChoice', subnet_id, subnet_ids, __('Choose ID', 'ocsinventoryng')) }}
+                {{ fields.textField('SubnetMask', mask, __('Subnet mask'), {'required': true}) }}
+            </div>
+        </div>
+        <div class="card-footer d-flex gap-2">
+            <button type="submit" name="{{ known ? 'Modify' : 'Add' }}" value="1" class="btn btn-primary">
+                <i class="ti {{ known ? 'ti-device-floppy' : 'ti-plus' }} me-1"></i>{{ known ? _x('button', 'Update') : _x('button', 'Add') }}
+            </button>
+            <a href="{{ cancel_url }}" class="btn btn-outline-secondary">{{ _x('button', 'Cancel') }}</a>
+        </div>
+    </form>
+</div>

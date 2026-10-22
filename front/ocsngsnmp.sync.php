@@ -86,7 +86,7 @@ if (isset($_SESSION["ocs_updatesnmp"]['id'])) {
       OcsProcess::manageImportStatistics($_SESSION["ocs_updatesnmp"]['statistics'],
          $action['status'], true);
        OcsProcess::showStatistics($_SESSION["ocs_updatesnmp"]['statistics'], false, true);
-       Html::getProgressBar($percent);
+       echo Html::getProgressBar($percent);
 
       Html::redirect($self_url);
 

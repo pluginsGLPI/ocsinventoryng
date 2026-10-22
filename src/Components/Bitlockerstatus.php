@@ -26,7 +26,7 @@ namespace GlpiPlugin\Ocsinventoryng\Components;
 use CommonDBTM;
 use CommonGLPI;
 use Computer;
-use Html;
+use GlpiPlugin\Ocsinventoryng\Ocslink;
 use Item_Disk;
 
 if (!defined('GLPI_ROOT')) {
@@ -174,16 +174,17 @@ class Bitlockerstatus extends CommonDBTM
 
             if ($bitlockerstatus->getFromDBByCrit(['computers_id' => $computers_id,
                                                 'item_disks_id' => $item_disks_id])) {
-                echo "<tr class='tab_bg_1'>";
-                echo "<td>" . __('Volume type', 'ocsinventoryng') . "</td>";
-                echo "<td>" . Html::input('volume_type', ['value' => $bitlockerstatus->getField('volume_type')]) . "</td>";
-                echo "<td>" . __('Protection status', 'ocsinventoryng') . "</td>";
-                echo "<td>" . Html::input('protection_status', ['value' => $bitlockerstatus->getField('protection_status')]) . "</td>";
-                echo "</tr>";
-                echo "<tr class='tab_bg_1'>";
-                echo "<td>" . __('Volume initialization for protection', 'ocsinventoryng') . "</td>";
-                echo "<td>" . Html::input('init_project', ['value' => $bitlockerstatus->getField('init_project')]) . "</td>";
-                echo "</tr>";
+                // Values reported by the OCS agent, read only (nothing saves them from the disk
+                // form): escaped by the template
+                Ocslink::displayInventoryInfo([[
+                    'title' => self::getTypeName(1),
+                    'icon'  => 'ti ti-lock',
+                    'infos' => [
+                        ['label' => __('Volume type', 'ocsinventoryng'), 'value' => (string) $bitlockerstatus->getField('volume_type')],
+                        ['label' => __('Protection status', 'ocsinventoryng'), 'value' => (string) $bitlockerstatus->getField('protection_status')],
+                        ['label' => __('Volume initialization for protection', 'ocsinventoryng'), 'value' => (string) $bitlockerstatus->getField('init_project')],
+                    ],
+                ]]);
             }
         }
     }

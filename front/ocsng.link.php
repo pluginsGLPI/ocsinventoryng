@@ -82,7 +82,7 @@ if (!isset($_SESSION["change_import_mode"])) {
 
 //Changing the import mode
 if (isset($_POST["change_import_mode"])) {
-    if ('id' == "false") {
+    if (($_POST['id'] ?? '') == "false") {
         $_SESSION["change_import_mode"] = 0;
     } else {
         $_SESSION["change_import_mode"] = 1;
@@ -138,7 +138,7 @@ if (isset($_SESSION["ocs_link"])) {
             round(100 * ($_SESSION["ocs_link_count"] - $count) / $_SESSION["ocs_link_count"], 0, PHP_ROUND_HALF_UP)
         );
 
-        Html::getProgressBar($percent);
+        echo Html::getProgressBar($percent);
 
         $key         = array_pop($_SESSION["ocs_link"]);
         $link_params = ['ocsid'                               => $key["ocsid"],
@@ -147,7 +147,7 @@ if (isset($_SESSION["ocs_link"])) {
         OcsProcess::linkComputer($link_params);
         Html::redirect($self_url);
     } else {
-        Html::getProgressBar(100);
+        echo Html::getProgressBar(100);
 
         unset($_SESSION["ocs_link"]);
         echo "<div class='center b'>" . __('Successful link', 'ocsinventoryng') . "<br>";

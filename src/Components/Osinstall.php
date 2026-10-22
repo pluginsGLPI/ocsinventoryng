@@ -152,55 +152,28 @@ class Osinstall extends \CommonDBTM
                 $data['id'] = $link['id'] ?? null;
                 $data['plugin_ocsinventoryng_ocsservers_id'] = $plugin_ocsinventoryng_ocsservers_id;
                 Ocslink::showLockIcon($items_id, $data);
-                // can exists for template
-                if (//               ($item->getType() == 'Item_OperatingSystem')
-                    //             && Computer::canView()
-                    //                &&
-                    $cfg_ocs["import_osinstall"]) {
-                    if ($result = $DB->request([
-                        'FROM' => 'glpi_plugin_ocsinventoryng_osinstalls',
+                if ($cfg_ocs["import_osinstall"]) {
+                    $blocks = [];
+                    foreach ($DB->request([
+                        'FROM'  => 'glpi_plugin_ocsinventoryng_osinstalls',
                         'WHERE' => ['computers_id' => $computer->getID()],
-
-                    ])) {
-                        echo "<table class='tab_cadre_fixe'>";
-                        $colspan = 4;
-                        echo "<tr class='noHover'><th colspan='$colspan'>" . self::getTypeName($result->numrows())
-                        . "</th></tr>";
-
-                        if ($result->numrows() != 0) {
-                            foreach ($result as $data) {
-                                echo "<tr class='tab_bg_1'>";
-                                echo "<td>" . __('Build version', 'ocsinventoryng') . "</td>";
-                                echo "<td>" . htmlescape((string) $data['build_version']) . "</td>";
-                                echo "<td>" . __('Installation date') . "</td>";
-                                echo "<td>" . htmlescape((string) $data['install_date']) . "</td>";
-                                echo "</tr>";
-
-                                echo "<tr class='tab_bg_1'>";
-                                echo "<td>" . __('Codeset', 'ocsinventoryng') . "</td>";
-                                echo "<td>" . htmlescape((string) $data['codeset']) . "</td>";
-                                echo "<td>" . __('Country code', 'ocsinventoryng') . "</td>";
-                                echo "<td>" . htmlescape((string) $data['countrycode']) . "</td>";
-                                echo "</tr>";
-
-                                echo "<tr class='tab_bg_1'>";
-                                echo "<td>" . __('OS Language', 'ocsinventoryng') . "</td>";
-                                echo "<td>" . htmlescape((string) $data['oslanguage']) . "</td>";
-                                echo "<td>" . __('Current Timezone', 'ocsinventoryng') . "</td>";
-                                echo "<td>" . htmlescape((string) $data['curtimezone']) . "</td>";
-                                echo "</tr>";
-
-                                echo "<tr class='tab_bg_1'>";
-                                echo "<td>" . __('Locale', 'ocsinventoryng') . "</td>";
-                                echo "<td>" . htmlescape((string) $data['locale']) . "</td>";
-                                echo "<td colspan='2'></td></tr>";
-                            }
-                        } else {
-                            echo "<tr class='tab_bg_2'><td colspan='$colspan'>" . __('No results found') . "</td></tr>";
-                        }
-
-                        echo "</table>";
+                    ]) as $data) {
+                        // Values reported by the OCS agent: escaped by the template
+                        $blocks[] = [
+                            'title' => self::getTypeName(1),
+                            'icon'  => 'ti ti-brand-windows',
+                            'infos' => [
+                                ['label' => __('Build version', 'ocsinventoryng'), 'value' => (string) $data['build_version']],
+                                ['label' => __('Installation date'), 'value' => (string) $data['install_date']],
+                                ['label' => __('Codeset', 'ocsinventoryng'), 'value' => (string) $data['codeset']],
+                                ['label' => __('Country code', 'ocsinventoryng'), 'value' => (string) $data['countrycode']],
+                                ['label' => __('OS Language', 'ocsinventoryng'), 'value' => (string) $data['oslanguage']],
+                                ['label' => __('Current Timezone', 'ocsinventoryng'), 'value' => (string) $data['curtimezone']],
+                                ['label' => __('Locale', 'ocsinventoryng'), 'value' => (string) $data['locale']],
+                            ],
+                        ];
                     }
+                    Ocslink::displayInventoryInfo($blocks);
                 }
             }
         }

@@ -1,0 +1,80 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# Inventory information of an item (autoinventory_information hook: Ocslink::showSimpleForItem(),
+   SnmpOcslink::showSimpleForItem()), laid out as the inventory block of the core: one block per
+   source, label / value pairs, then the actions.
+   A value is escaped, except a "html" value (link built and escaped in PHP). #}
+{% for block in blocks %}
+    <div class="card m-n2 border-0 shadow-none mt-2">
+        <div class="card-header">
+            <h4 class="card-title"><i class="{{ block.icon ?? 'ti ti-devices' }} me-2"></i>{{ block.title }}</h4>
+        </div>
+        <div class="card-body row">
+            {% for info in block.infos %}
+                <div class="mb-3 col-12 col-sm-4">
+                    <label class="form-label">{{ info.label }}</label>
+                    <span>{% if info.html is defined %}{{ info.html|raw }}{% else %}{{ info.value }}{% endif %}</span>
+                </div>
+            {% endfor %}
+            {% if block.links ?? [] is not empty %}
+                <div class="mb-3 col-12">
+                    {% for link in block.links %}
+                        <div>{{ link|raw }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if block.actions ?? [] is not empty %}
+                <div class="col-12 d-flex flex-wrap gap-2">
+                    {% for action in block.actions %}
+                        {% if action.url is defined %}
+                            <a href="{{ action.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary">
+                                <i class="ti ti-external-link me-1"></i>{{ action.title }}
+                            </a>
+                        {% else %}
+                            <form method="post" action="{{ action.target }}" class="d-inline">
+                                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                                {% for name, value in action.params %}
+                                    <input type="hidden" name="{{ name }}" value="{{ value }}">
+                                {% endfor %}
+                                {% set is_delete = action.name starts with 'delete' %}
+                                <button type="submit" name="{{ action.name }}" value="1"
+                                        class="btn btn-sm {{ is_delete ? 'btn-outline-danger' : 'btn-outline-primary' }}"
+                                        {% if is_delete %}onclick="return confirm('{{ __('Confirm the final deletion?')|e('js') }}');"{% endif %}>
+                                    <i class="ti {{ action.icon ?? 'ti-refresh' }} me-1"></i>{{ action.title }}
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if block.debug ?? null %}
+                <div class="col-12 mt-3">
+                    <h5>{{ __('SNMP Debug', 'ocsinventoryng') }}</h5>
+                    <pre class="mb-0">{{ block.debug }}</pre>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endfor %}

@@ -63,7 +63,7 @@ if (isset($_SESSION["ocs_linksnmp"]["id"])) {
       $percent = min(100,
          round(100 * ($_SESSION["ocs_linksnmp_count"] - $count) / $_SESSION["ocs_linksnmp_count"], 0, PHP_ROUND_HALF_UP));
 
-       Html::getProgressBar($percent);
+       echo Html::getProgressBar($percent);
 
       $key = array_pop($_SESSION["ocs_linksnmp"]["id"]);
 
@@ -84,7 +84,7 @@ if (isset($_SESSION["ocs_linksnmp"]["id"])) {
          $params);
       Html::redirect($self_url);
    } else {
-       Html::getProgressBar(100);
+       echo Html::getProgressBar(100);
 
       unset($_SESSION["ocs_link"]);
       echo "<div class='center b'>" . __('Successful link', 'ocsinventoryng') . "<br>";

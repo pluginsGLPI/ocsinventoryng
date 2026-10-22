@@ -1,0 +1,43 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# Choice of the subnets of the IPDiscover lists (IpdiscoverOcslink::showSubnetSearchForm()) #}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+<div class="{{ column_class ?? 'container-lg my-3' }}">
+<form method="post" action="{{ form_url }}" class="card h-100">
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+    <div class="card-header">
+        <h3 class="card-title"><i class="ti {{ icon }} me-2"></i>{{ title }}</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {{ fields.dropdownArrayField('subnetsChoice', 0, subnets, __('Subnet'), {
+                'on_change': 'this.form.submit()',
+                'full_width': true,
+            }) }}
+        </div>
+    </div>
+</form>
+</div>

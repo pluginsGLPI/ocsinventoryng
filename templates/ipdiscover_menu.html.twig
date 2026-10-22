@@ -1,0 +1,33 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# IPDiscover tab of the plugin menu (IpdiscoverOcslink::ipDiscoverMenu()): the choices of the
+   subnets to import and to link, side by side #}
+<div class="container-lg my-3">
+    <div class="row row-cards g-3">
+        {% for choice in choices %}
+            {{ include('@ocsinventoryng/ipdiscover_subnet_choice.html.twig', choice|merge({'column_class': 'col-12 col-lg-6'}), with_context = false) }}
+        {% endfor %}
+    </div>
+</div>

@@ -45,9 +45,16 @@
             <h3 class="card-title">
                 {% if icon ?? null %}<i class="{{ icon }} me-2"></i>{% endif %}{{ title }}
             </h3>
-            {% if header_link ?? null %}
+            {% if (header_link ?? null) or (refresh_url ?? null) %}
                 <div class="card-actions">
-                    <a href="{{ header_link.url }}" class="btn btn-sm btn-ghost-secondary">{{ header_link.title }}</a>
+                    {% if refresh_url ?? null %}
+                        <a href="{{ refresh_url }}" class="btn btn-sm btn-ghost-secondary" title="{{ _x('button', 'Refresh') }}">
+                            <i class="ti ti-refresh"></i>
+                        </a>
+                    {% endif %}
+                    {% if header_link ?? null %}
+                        <a href="{{ header_link.url }}" class="btn btn-sm btn-ghost-secondary">{{ header_link.title }}</a>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>
@@ -74,8 +81,16 @@
                                            {{ checked_all ?? false ? 'checked' : '' }} />
                                 </th>
                             {% endif %}
-                            {% for label in columns %}
-                                <th>{{ label }}</th>
+                            {% for key, label in columns %}
+                                {% if key == 'check' %}
+                                    {# A column of checkboxes built in PHP (class ocs-row-check) #}
+                                    <th class="w-1">
+                                        <input type="checkbox" class="form-check-input" title="{{ __('Check all') }}" checked
+                                               onclick="$('#{{ table_id }} input.ocs-row-check').prop('checked', this.checked);" />
+                                    </th>
+                                {% else %}
+                                    <th>{{ label }}</th>
+                                {% endif %}
                             {% endfor %}
                         </tr>
                     </thead>
@@ -131,6 +146,9 @@
         {% endif %}
     </div>
     {% if form_action ?? null %}
+        {% for name, value in hidden ?? {} %}
+            <input type="hidden" name="{{ name }}" value="{{ value }}" />
+        {% endfor %}
         <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
         </form>
     {% endif %}

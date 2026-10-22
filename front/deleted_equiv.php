@@ -29,98 +29,105 @@
  */
 
 
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Ocsinventoryng\Menu;
 use GlpiPlugin\Ocsinventoryng\OcsProcess;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
 use GlpiPlugin\Ocsinventoryng\OcsSoapClient;
 
-Session::checkRight("plugin_ocsinventoryng", UPDATE);
+// Cleaning computers (trashbin or state change): the clean right, as front/ocsng.clean.php
+Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);
 
 // The OCS server of the session, chosen on front/ocsng.php: still allowed for the active
 // profile, otherwise "no server"
 OcsServer::checkSessionServer();
 
+$self_url = PLUGIN_OCS_WEBDIR . '/front/deleted_equiv.php';
+
+// The cleaning is started by a POST of the confirmation form (CSRF token), never by a GET: the
+// batches that follow only go on with a cleaning started that way (session flag)
+if (isset($_POST['clean_deleted'])) {
+    unset($_SESSION["ocs_deleted_equiv"]);
+    $_SESSION["ocs_deleted_equiv"]["started"] = true;
+    Html::redirect($self_url);
+}
+$started = !empty($_SESSION["ocs_deleted_equiv"]["started"]);
 
 Html::header(Menu::getTypeName(), '', "tools", Menu::class, "deleted_equiv");
 
-if (!isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
-    || $_SESSION["plugin_ocsinventoryng_ocsservers_id"] == -1) {
+$servers_id = $_SESSION["plugin_ocsinventoryng_ocsservers_id"] ?? -1;
+$title      = __('Clean OCSNG deleted computers', 'ocsinventoryng');
+$done       = static function (string $line, int $progress = 100) use ($title) {
+    unset($_SESSION["ocs_deleted_equiv"]);
+    OcsServer::showMessage([
+        'title'    => $title,
+        'lines'    => [$line],
+        'icon'     => 'ti-circle-check',
+        'color'    => 'bg-green-lt',
+        'progress' => $progress,
+        'links'    => [OcsServer::getBackLink()],
+    ]);
+};
+
+if ($servers_id == -1) {
     OcsServer::showNoServer();
-} elseif (!OcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
+} elseif (!OcsServer::checkOCSconnection($servers_id)) {
     OcsServer::showMessage([
         'title' => __('Connection to the database failed', 'ocsinventoryng'),
         'icon'  => 'ti-plug-connected-x',
         'color' => 'bg-red-lt',
         'links' => [OcsServer::getBackLink()],
     ]);
+} elseif (!$started) {
+    // Confirmation: the number of deleted computers, and the button starting the cleaning
+    TemplateRenderer::getInstance()->display('@ocsinventoryng/confirm_action.html.twig', [
+        'title'    => $title,
+        'icon'     => 'ti-trash',
+        'lines'    => [
+            sprintf(
+                __('%1$s %2$s', 'ocsinventoryng'),
+                (int) OcsServer::getDBocs($servers_id)->getTotalDeletedComputers(),
+                __('deleted computers into OCS Inventory NG', 'ocsinventoryng')
+            ),
+            __('Update ID of deleted computers of OCSNG', 'ocsinventoryng'),
+        ],
+        'form_url' => $self_url,
+        'name'     => 'clean_deleted',
+        'button'   => _x('button', 'Clean'),
+        'back'     => OcsServer::getBackLink(),
+    ]);
+} elseif (OcsServer::getDBocs($servers_id)->getConnectionType() == OcsSoapClient::class) {
+    // Only the computers the user may delete or update are cleaned
+    OcsProcess::manageDeleted($servers_id, true, true);
+    if ($_SESSION["ocs_deleted_equiv"]['computers_to_del']) {
+        Html::redirect($self_url);
+    }
+    $deleted = (int) $_SESSION["ocs_deleted_equiv"]['computers_deleted'];
+    $done($deleted === 0
+        ? __('No new computers to delete', 'ocsinventoryng')
+        : $deleted . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng'));
 } else {
-    $title     = __('Clean OCSNG deleted computers', 'ocsinventoryng');
-    $ocsClient = OcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-    if ($ocsClient->getConnectionType() == OcsSoapClient::class) {
-        OcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-        if ($_SESSION["ocs_deleted_equiv"]['computers_to_del']) {
-            Html::redirect(PLUGIN_OCS_WEBDIR . '/front/deleted_equiv.php');
-        } elseif ($_SESSION["ocs_deleted_equiv"]['computers_deleted'] === 0) {
-            OcsServer::showMessage([
-                'title' => $title,
-                'lines' => [__('No new computers to delete', 'ocsinventoryng')],
-                'icon'  => 'ti-circle-check',
-                'color' => 'bg-green-lt',
-                'links' => [OcsServer::getBackLink()],
-            ]);
-        } else {
-            OcsServer::showMessage([
-                'title' => $title,
-                'lines' => [(int) $_SESSION["ocs_deleted_equiv"]['computers_deleted'] . " "
-                    . __('deleted computers into OCS Inventory NG', 'ocsinventoryng')],
-                'icon'  => 'ti-circle-check',
-                'color' => 'bg-green-lt',
-                'links' => [OcsServer::getBackLink()],
-            ]);
-        }
+    if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
+        // Only the computers the user may delete or update are cleaned
+        OcsProcess::manageDeleted($servers_id, true, true);
+    }
+
+    $total = (int) ($_SESSION["ocs_deleted_equiv"]["total"] ?? 0);
+    $count = (int) ($_SESSION["ocs_deleted_equiv"]["deleted"] ?? 0);
+    if ($total != $count && isset($_SESSION["ocs_deleted_equiv"]["last_req"])) {
+        // Batch in progress: the page reloads itself until every deleted computer is processed
+        OcsServer::showMessage([
+            'title'    => $title,
+            'lines'    => [$count . " / " . $total],
+            'icon'     => 'ti-loader-2',
+            'progress' => $total > 0 ? min(100, (int) round(100 * $count / $total, 0, PHP_ROUND_HALF_UP)) : 0,
+        ]);
+
+        OcsProcess::manageDeleted($servers_id, true, true);
+    } elseif ($total === 0) {
+        $done(__('No new computers to delete', 'ocsinventoryng'));
     } else {
-        if (empty($_SESSION["ocs_deleted_equiv"]["total"])) {
-            OcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-        }
-
-        if ($_SESSION["ocs_deleted_equiv"]["total"] != $_SESSION["ocs_deleted_equiv"]["deleted"]
-            && isset($_SESSION["ocs_deleted_equiv"]["last_req"])) {
-            // Batch in progress: the page reloads itself until every deleted computer is processed
-            $count = (int) $_SESSION["ocs_deleted_equiv"]["deleted"];
-            $total = (int) $_SESSION["ocs_deleted_equiv"]["total"];
-            $message = [
-                'title' => $title,
-                'lines' => [$count . " / " . $total],
-                'icon'  => 'ti-loader-2',
-            ];
-            if ($total > 0) {
-                $message['progress'] = min(100, (int) round(100 * $count / $total, 0, PHP_ROUND_HALF_UP));
-            }
-            OcsServer::showMessage($message);
-
-            OcsProcess::manageDeleted($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
-        } elseif ($_SESSION["ocs_deleted_equiv"]["total"] === 0) {
-            OcsServer::showMessage([
-                'title' => $title,
-                'lines' => [__('No new computers to delete', 'ocsinventoryng')],
-                'icon'  => 'ti-circle-check',
-                'color' => 'bg-green-lt',
-                'links' => [OcsServer::getBackLink()],
-            ]);
-        } else {
-            $total                                    = (int) $_SESSION["ocs_deleted_equiv"]["total"];
-            $_SESSION["ocs_deleted_equiv"]["total"]   = 0;
-            $count                                    = (int) $_SESSION["ocs_deleted_equiv"]["deleted"];
-            $_SESSION["ocs_deleted_equiv"]["deleted"] = 0;
-            OcsServer::showMessage([
-                'title'    => $title,
-                'lines'    => [$count . " / " . $total . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng')],
-                'icon'     => 'ti-circle-check',
-                'color'    => 'bg-green-lt',
-                'progress' => 100,
-                'links'    => [OcsServer::getBackLink()],
-            ]);
-        }
+        $done($count . " / " . $total . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng'));
     }
 }
 Html::footer();

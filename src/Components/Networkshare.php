@@ -171,18 +171,8 @@ class Networkshare extends \CommonDBTM
      */
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
-        $plugin_ocsinventoryng_ocsservers_id = Ocslink::getOCSServerForItem($item);
-        if (!OcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
-            echo "<div class='spaced center'>";
-            echo "<table class='tab_cadre_fixehov'>";
-            echo "<tr class='noHover'><th colspan='5'>" . self::getTypeName(0) .
-               "</th></tr>";
-            echo "<tr class='tab_bg_2'><th colspan='5'>" . __('Server unreachable', 'ocsinventoryng') . "</th></tr>";
-            echo "</table>";
-            echo "</div>";
-        } else {
-            self::showForComputer($item, $withtemplate);
-        }
+        // Rows stored in GLPI by the synchronization: no connection to the OCS server needed
+        self::showForComputer($item, $withtemplate);
         return true;
     }
 
@@ -205,70 +195,37 @@ class Networkshare extends \CommonDBTM
             return false;
         }
 
-        echo "<div class='spaced center'>";
-
-        if ($result = $DB->request([
-            'FROM' => 'glpi_plugin_ocsinventoryng_networkshares',
+        $rows = [];
+        foreach ($DB->request([
+            'FROM'  => 'glpi_plugin_ocsinventoryng_networkshares',
             'WHERE' => ['computers_id' => $ID],
             'ORDER' => 'drive',
-        ])) {
-
-            echo "<table class='tab_cadre_fixehov'>";
-            $colspan = 6;
-            echo "<tr class='noHover'><th colspan='$colspan'>" . self::getTypeName($result->numrows()) .
-                 "</th></tr>";
-
-            if ($result->numrows() != 0) {
-
-                $header = "<tr><th>" . _n('Drive', 'Drives', 1) . "</th>";
-                $header .= "<th>" . __('Path', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Global size') . "</th>";
-                $header .= "<th>" . __('Free size') . "</th>";
-                $header .= "<th>" . __('Free percentage') . "</th>";
-                $header .= "<th>" . __('Quota', 'ocsinventoryng') . "</th>";
-                $header .= "</tr>";
-                echo $header;
-
-                Session::initNavigateListItems(
-                    __CLASS__,
-                    //TRANS : %1$s is the itemtype name,
-                    //        %2$s is the name of the item (used for headings of a list)
-                    sprintf(
-                        __('%1$s = %2$s'),
-                        Computer::getTypeName(1),
-                        $comp->getName()
-                    )
-                );
-
-                foreach ($result as $data) {
-                    echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . htmlescape((string) $data['drive']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['path']) . "</td>";
-                    $tmp = Toolbox::getSize(str_replace(",", ".", $data['size']) * 1024 * 1024 * 1024 * 1024);
-                    echo "<td>" . $tmp . "</td>";
-                    $tmp = Toolbox::getSize(str_replace(",", ".", $data['freespace']) * 1024 * 1024 * 1024 * 1024);
-                    echo "<td>" . $tmp . "</td>";
-
-                    echo "<td>";
-                    $percent = 0;
-                    $total = str_replace(",", ".", $data['size']);
-                    $free = str_replace(",", ".", $data['freespace']);
-                    if ($total > 0) {
-                        $percent = round(100 * $free / $total, 0, PHP_ROUND_HALF_UP);
-                    }
-                    Html::getProgressBar($percent);
-                    echo "</td>";
-                    echo "<td>" . htmlescape((string) $data['quota']) . "</td>";
-                    echo "</tr>";
-                    Session::addToNavigateListItems(__CLASS__, $data['id']);
-                }
-                echo $header;
-            } else {
-                echo "<tr class='tab_bg_2'><th colspan='$colspan'>" . __('No results found') . "</th></tr>";
-            }
-
-            echo "</table>";
+        ]) as $data) {
+            // Sizes reported in TiO by the agent, with a decimal comma
+            $total   = (float) str_replace(",", ".", (string) $data['size']);
+            $free    = (float) str_replace(",", ".", (string) $data['freespace']);
+            $percent = $total > 0 ? round(100 * $free / $total, 0, PHP_ROUND_HALF_UP) : 0;
+            // Values reported by the OCS agent: escaped by the template
+            $rows[] = [
+                'id'        => $data['id'],
+                'drive'     => (string) $data['drive'],
+                'path'      => (string) $data['path'],
+                'size'      => Toolbox::getSize($total * 1024 * 1024 * 1024 * 1024),
+                'freespace' => Toolbox::getSize($free * 1024 * 1024 * 1024 * 1024),
+                'percent'   => Html::getProgressBar($percent),
+                'quota'     => (string) $data['quota'],
+            ];
         }
-        echo "</div>";
+
+        Ocslink::showComponentRows(self::class, $comp, [
+            'drive'     => _n('Drive', 'Drives', 1),
+            'path'      => __('Path', 'ocsinventoryng'),
+            'size'      => __('Global size'),
+            'freespace' => __('Free size'),
+            'percent'   => __('Free percentage'),
+            'quota'     => __('Quota', 'ocsinventoryng'),
+        ], $rows, ['percent']);
+
+        return true;
     }
 }

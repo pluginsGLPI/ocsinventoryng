@@ -135,7 +135,7 @@ if (isset($_SESSION["ocs_import"]['computers'])) {
             $_SESSION["ocs_import"]['statistics'],
             $action['status']
         );
-        Html::getProgressBar($percent);
+        echo Html::getProgressBar($percent);
 
         Html::redirect(PLUGIN_OCS_WEBDIR . '/front/ocsng.import.php');
     }

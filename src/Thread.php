@@ -55,15 +55,30 @@ class Thread extends CommonDBTM
     }
 
     /**
+     * The OCS servers whose processes the active profile sees: its allowed servers, and -1 (the
+     * processes run for every server)
+     *
+     * @return int[]
+     */
+    public static function getVisibleServers(): array
+    {
+        return array_merge([-1], OcsServer::getAllowedServers());
+    }
+
+    /**
      * @param $processid
      **/
     public function deleteThreadsByProcessId($processid)
     {
         global $DB;
 
+        // Only the threads of a server allowed for the active profile
         foreach ($DB->request([
             'FROM' => $this->getTable(),
-            'WHERE' => ['processid' => $processid]]) as $data) {
+            'WHERE' => [
+                'processid'                           => (int) $processid,
+                'plugin_ocsinventoryng_ocsservers_id' => self::getVisibleServers(),
+            ]]) as $data) {
             // Requires to clean details
             $this->delete(['id' => $data['id']], true);
         }
@@ -102,7 +117,8 @@ class Thread extends CommonDBTM
                 'link_refused_machines_number',
             ],
             'FROM'   => $this->getTable(),
-            'WHERE'  => ['processid' => $pid],
+            // Only the threads of a server the active profile sees
+            'WHERE'  => ['processid' => $pid, 'plugin_ocsinventoryng_ocsservers_id' => self::getVisibleServers()],
             'ORDER'  => 'threadid ASC',
         ]) as $thread) {
             $thread_finished = ($thread["status"] == PLUGIN_OCSINVENTORYNG_STATE_FINISHED);
@@ -287,9 +303,12 @@ class Thread extends CommonDBTM
             'ORDER'   => 'id DESC',
             'LIMIT'   => 50,
         ];
-        if ($plugin_ocsinventoryng_ocsservers_id > 0) {
-            $criteria['WHERE'] = ['plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id];
-        }
+        // 0 lists every server the active profile sees, never the others
+        $criteria['WHERE'] = [
+            'plugin_ocsinventoryng_ocsservers_id' => $plugin_ocsinventoryng_ocsservers_id > 0
+                ? $plugin_ocsinventoryng_ocsservers_id
+                : self::getVisibleServers(),
+        ];
 
         $servers = [];
         $rows    = [];

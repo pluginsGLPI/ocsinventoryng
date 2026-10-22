@@ -22,16 +22,50 @@
  * --------------------------------------------------------------------------
  */
 
-// Form of an OCS server (templates/ocsserver_form.html.twig): the yes/no dropdowns of class
-// ocs-toggle-<name> show or hide the blocks marked data-ocs-toggled="<name>".
+// Forms of an OCS server. The script is included by each form, and the forms of the tabs come
+// back by Ajax: the handlers are delegated to the document and bound once (window flag), so they
+// work whatever the order of the script and of the forms.
+(function () {
+    if (window.ocsServerFormBound) {
+        return;
+    }
+    window.ocsServerFormBound = true;
 
-document.querySelectorAll('select[class*="ocs-toggle-"]').forEach((select) => {
-    const name = [...select.classList].find((css_class) => css_class.startsWith('ocs-toggle-')).substring('ocs-toggle-'.length);
-    const blocks = document.querySelectorAll(`[data-ocs-toggled="${name}"]`);
-    const toggle = () => blocks.forEach((block) => {
-        block.hidden = select.value === '0';
-    });
+    // The yes/no dropdowns of class ocs-toggle-<name> show or hide the blocks marked
+    // data-ocs-toggled="<name>" (templates/ocsserver_form.html.twig)
+    const toggleName = (select) => {
+        const css_class = [...select.classList].find((name) => name.startsWith('ocs-toggle-'));
+        return css_class ? css_class.substring('ocs-toggle-'.length) : null;
+    };
+    const applyToggle = (select) => {
+        const name = toggleName(select);
+        if (name === null) {
+            return;
+        }
+        (select.closest('form') || document).querySelectorAll(`[data-ocs-toggled="${name}"]`).forEach((block) => {
+            block.hidden = select.value === '0';
+        });
+    };
+
     // Select2 triggers the jQuery change event only
-    $(select).on('change', toggle);
-    toggle();
-});
+    $(document).on('change', 'select[class*="ocs-toggle-"]', function () {
+        applyToggle(this);
+    });
+
+    // The "All" dropdown (class ocs-set-all) sets every yes/no field of its form (class ocs-yesno)
+    // to its value (templates/server_options.html.twig)
+    $(document).on('change', 'select.ocs-set-all', function () {
+        if (this.value === '-1') {
+            return;
+        }
+        const value = this.value;
+        this.closest('form').querySelectorAll('select.ocs-yesno').forEach((field) => {
+            $(field).val(value).trigger('change');
+        });
+    });
+
+    // Initial state of the toggled blocks, at load and when a tab comes back
+    const init = () => document.querySelectorAll('select[class*="ocs-toggle-"]').forEach(applyToggle);
+    $(init);
+    $(document).on('glpi.tab.loaded', init);
+})();

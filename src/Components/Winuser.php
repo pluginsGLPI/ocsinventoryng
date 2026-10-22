@@ -168,18 +168,8 @@ class Winuser extends \CommonDBTM
      */
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
-        $plugin_ocsinventoryng_ocsservers_id = Ocslink::getOCSServerForItem($item);
-        if (!OcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
-            echo "<div class='spaced center'>";
-            echo "<table class='tab_cadre_fixehov'>";
-            echo "<tr class='noHover'><th colspan='5'>" . self::getTypeName(0) .
-            "</th></tr>";
-            echo "<tr class='tab_bg_2'><th colspan='5'>" . __('Server unreachable', 'ocsinventoryng') . "</th></tr>";
-            echo "</table>";
-            echo "</div>";
-        } else {
-            self::showForComputer($item, $withtemplate);
-        }
+        // Rows stored in GLPI by the synchronization: no connection to the OCS server needed
+        self::showForComputer($item, $withtemplate);
         return true;
     }
 
@@ -202,54 +192,31 @@ class Winuser extends \CommonDBTM
             return false;
         }
 
-        echo "<div class='spaced center'>";
-        if ($result = $DB->request([
-            'FROM' => 'glpi_plugin_ocsinventoryng_winusers',
+        $rows = [];
+        foreach ($DB->request([
+            'FROM'  => 'glpi_plugin_ocsinventoryng_winusers',
             'WHERE' => ['computers_id' => $ID],
             'ORDER' => 'type',
-        ])) {
-            echo "<table class='tab_cadre_fixehov'>";
-            $colspan = 5;
-            echo "<tr class='noHover'><th colspan='$colspan'>" . self::getTypeName($result->numrows()) .
-              "</th></tr>";
-
-            if ($result->numrows() != 0) {
-                $header = "<tr><th>" . __('Name') . "</th>";
-                $header .= "<th>" . __('Type') . "</th>";
-                $header .= "<th>" . __('Description') . "</th>";
-                $header .= "<th>" . __('Status', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('SID', 'ocsinventoryng') . "</th>";
-                $header .= "</tr>";
-                echo $header;
-
-                Session::initNavigateListItems(
-                    __CLASS__,
-                    //TRANS : %1$s is the itemtype name,
-                    //        %2$s is the name of the item (used for headings of a list)
-                    sprintf(
-                        __('%1$s = %2$s'),
-                        Computer::getTypeName(1),
-                        $comp->getName()
-                    )
-                );
-
-                foreach ($result as $data) {
-                    echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . htmlescape((string) $data['name']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['type']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['description']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['disabled']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['sid']) . "</td>";
-                    echo "</tr>";
-                    Session::addToNavigateListItems(__CLASS__, $data['id']);
-                }
-                echo $header;
-            } else {
-                echo "<tr class='tab_bg_2'><th colspan='$colspan'>" . __('No results found') . "</th></tr>";
-            }
-
-            echo "</table>";
+        ]) as $data) {
+            // Values reported by the OCS agent: escaped by the template
+            $rows[] = [
+                'id'          => $data['id'],
+                'name'        => (string) $data['name'],
+                'type'        => (string) $data['type'],
+                'description' => (string) $data['description'],
+                'disabled'    => (string) $data['disabled'],
+                'sid'         => (string) $data['sid'],
+            ];
         }
-        echo "</div>";
+
+        Ocslink::showComponentRows(self::class, $comp, [
+            'name'        => __('Name'),
+            'type'        => __('Type'),
+            'description' => __('Description'),
+            'disabled'    => __('Status', 'ocsinventoryng'),
+            'sid'         => __('SID', 'ocsinventoryng'),
+        ], $rows);
+
+        return true;
     }
 }

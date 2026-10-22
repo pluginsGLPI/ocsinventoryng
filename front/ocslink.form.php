@@ -79,6 +79,12 @@ if (isset($_POST["launch_ocs_resynch"]) || isset($_POST["force_ocs_resynch"])) {
    Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);
    $comp = new Computer();
    $comp->check((int) ($_POST["items_id"] ?? 0), UPDATE);
+   // The OCS server of the computer: allowed for the active profile (the purge may delete the
+   // machine in its OCS database)
+   $ocsservers_id = OcsServer::getServerByComputerID($comp->getID());
+   if ($ocsservers_id > 0) {
+      OcsServer::checkAllowedServer($ocsservers_id);
+   }
    $link = new Ocslink();
    $link->purgeComputer($comp);
    Html::back();

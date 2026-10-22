@@ -1,0 +1,51 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# Filter of the SNMP lists to import or link (SnmpOcslink::searchForm()) #}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+<div class="container-fluid mt-3">
+    <form method="post" action="{{ form_url }}" class="card">
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+        <div class="card-header">
+            <h3 class="card-title"><i class="ti ti-filter me-2"></i>{{ __('Filter SNMP Objects list', 'ocsinventoryng') }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="row align-items-center">
+                {{ fields.dropdownArrayField('itemtype', itemtype, itemtypes, __('By itemtype', 'ocsinventoryng'), {
+                    'display_emptychoice': true,
+                }) }}
+                {{ fields.textField('ip', ip, __('By IP', 'ocsinventoryng')) }}
+            </div>
+        </div>
+        <div class="card-footer d-flex gap-2">
+            <button type="submit" name="search" value="1" class="btn btn-primary">
+                <i class="ti ti-search me-1"></i>{{ _x('button', 'Post') }}
+            </button>
+            <a href="{{ form_url }}?reset=reset" class="btn btn-outline-secondary">
+                <i class="ti ti-filter-off me-1"></i>{{ __('Blank') }}
+            </a>
+        </div>
+    </form>
+</div>

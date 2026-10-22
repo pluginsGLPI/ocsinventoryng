@@ -233,17 +233,7 @@ class Menu extends CommonGLPI
                     }
                 } else {
                     $ong = [];
-                    echo "<div class='center'>";
-                    echo "<i class='ti ti-alert-triangle fa-4x' style='color:orange'></i>";
-                    echo "<br>";
-                    echo "<div class='red b'>";
-                    echo __('No OCSNG server defined', 'ocsinventoryng');
-                    echo "<br>";
-                    echo __('You must to configure a OCSNG server', 'ocsinventoryng');
-                    echo " : <a href='" . PLUGIN_OCS_WEBDIR . "/front/ocsserver.form.php'>";
-                    echo __('Add a OCSNG server', 'ocsinventoryng');
-                    echo "</a>";
-                    echo "</div></div>";
+                    OcsServer::showNoServer();
                 }
                 return $ong;
 

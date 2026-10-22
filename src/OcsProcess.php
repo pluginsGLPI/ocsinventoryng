@@ -158,11 +158,13 @@ class OcsProcess extends CommonDBTM
     /**
      * @param      $plugin_ocsinventoryng_ocsservers_id
      * @param bool $redirect
+     * @param bool $check_rights from the interface: only the computers the user may delete or
+     *                           update are cleaned (the automatic action cleans every computer)
      *
      * @return bool
      * @throws \GlpitestSQLError
      */
-    public static function manageDeleted($plugin_ocsinventoryng_ocsservers_id, $redirect = true)
+    public static function manageDeleted($plugin_ocsinventoryng_ocsservers_id, $redirect = true, bool $check_rights = false)
     {
         global $DB;
 
@@ -266,7 +268,7 @@ class OcsProcess extends CommonDBTM
                     foreach ($links as $data) {
                         $ocslinks_toclean[$data['id']] = $data['id'];
                     }
-                    Ocslink::cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_toclean);
+                    Ocslink::cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_toclean, $check_rights);
                 }
                 //Delete from deleted_equiv
                 if (!empty($equiv)) {
@@ -1839,22 +1841,24 @@ class OcsProcess extends CommonDBTM
      */
     public static function showStatistics($statistics = [], $finished = false, $snmp = false, $ipdiscover = false)
     {
-        echo "<div class='alert alert-info d-flex alert-dismissible' role='alert'>";
-        echo "<table class='tab_cadre_fixe'>";
         if ($snmp) {
-            echo "<th colspan='2'>" . __('Statistics of the OCSNG SNMP import', 'ocsinventoryng');
+            $title = __('Statistics of the OCSNG SNMP import', 'ocsinventoryng');
         } elseif ($ipdiscover) {
-            echo "<th colspan='2'>" . __('Statistics of the OCSNG IPDISCOVER import', 'ocsinventoryng');
+            $title = __('Statistics of the OCSNG IPDISCOVER import', 'ocsinventoryng');
         } else {
-            echo "<th colspan='2'>" . __('Statistics of the OCSNG link', 'ocsinventoryng');
+            $title = __('Statistics of the OCSNG link', 'ocsinventoryng');
         }
 
-        echo "</th>";
-
+        $infos = [];
         foreach (self::getAvailableStatistics($snmp, $ipdiscover) as $field => $label) {
-            echo "<tr class='tab_bg_1'><td>" . $label . "</td><td>" . $statistics[$field] . "</td></tr>";
+            $infos[] = ['label' => $label, 'value' => (int) ($statistics[$field] ?? 0)];
         }
-        echo "</table></div>";
+
+        Ocslink::displayInventoryInfo([[
+            'title' => $title,
+            'icon'  => 'ti ti-chart-bar',
+            'infos' => $infos,
+        ]]);
     }
 
 

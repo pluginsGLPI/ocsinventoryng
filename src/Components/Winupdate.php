@@ -164,18 +164,8 @@ class Winupdate extends \CommonDBTM
      */
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
-        $plugin_ocsinventoryng_ocsservers_id = Ocslink::getOCSServerForItem($item);
-        if (!OcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
-            echo "<div class='spaced center'>";
-            echo "<table class='tab_cadre_fixehov'>";
-            echo "<tr class='noHover'><th colspan='5'>" . self::getTypeName(0) .
-            "</th></tr>";
-            echo "<tr class='tab_bg_2'><th colspan='5'>" . __('Server unreachable', 'ocsinventoryng') . "</th></tr>";
-            echo "</table>";
-            echo "</div>";
-        } else {
-            self::showForComputer($item, $withtemplate);
-        }
+        // Rows stored in GLPI by the synchronization: no connection to the OCS server needed
+        self::showForComputer($item, $withtemplate);
         return true;
     }
 
@@ -198,76 +188,34 @@ class Winupdate extends \CommonDBTM
             return false;
         }
 
-        echo "<div class='spaced center'>";
+        // A date of the agent, "Automatic" when it is not a valid date
+        $date = fn($value) => (DateTime::createFromFormat('Y-m-d H:i:s', (string) $value) !== false
+            && $value != "0000-00-00 00:00:00") ? Html::convDateTime($value) : __('Automatic');
 
-        if ($result = $DB->request([
-            'FROM' => 'glpi_plugin_ocsinventoryng_winupdates',
+        $rows = [];
+        foreach ($DB->request([
+            'FROM'  => 'glpi_plugin_ocsinventoryng_winupdates',
             'WHERE' => ['computers_id' => $ID],
-        ])) {
-            echo "<table class='tab_cadre_fixehov'>";
-            $colspan = 5;
-            echo "<tr class='noHover'><th colspan='$colspan'>" . self::getTypeName($result->numrows()) .
-              "</th></tr>";
-
-            if ($result->numrows() != 0) {
-                $header = "<tr><th>" . __('AU Options', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Schedule Install Date', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Last Success Time', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Detect Success Time', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Download Success Time', 'ocsinventoryng') . "</th>";
-                $header .= "</tr>";
-                echo $header;
-
-                Session::initNavigateListItems(
-                    __CLASS__,
-                    //TRANS : %1$s is the itemtype name,
-                    //        %2$s is the name of the item (used for headings of a list)
-                    sprintf(
-                        __('%1$s = %2$s'),
-                        Computer::getTypeName(1),
-                        $comp->getName()
-                    )
-                );
-
-                foreach ($result as $data) {
-                    echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . htmlescape((string) self::getAuoptionsName($data['auoptions'])) . "</td>";
-
-                    if (DateTime::createFromFormat('Y-m-d H:i:s', $data['scheduleinstalldate']) !== false
-                     && $data['scheduleinstalldate'] != "0000-00-00 00:00:00") {
-                        echo "<td>" . Html::convDateTime($data['scheduleinstalldate']) . "</td>";
-                    } else {
-                        echo "<td>" . __('Automatic') . "</td>";
-                    }
-                    if (DateTime::createFromFormat('Y-m-d H:i:s', $data['lastsuccesstime']) !== false
-                    && $data['lastsuccesstime'] != "0000-00-00 00:00:00") {
-                        echo "<td>" . Html::convDateTime($data['lastsuccesstime']) . "</td>";
-                    } else {
-                        echo "<td>" . __('Automatic') . "</td>";
-                    }
-                    if (DateTime::createFromFormat('Y-m-d H:i:s', $data['detectsuccesstime']) !== false
-                    && $data['detectsuccesstime'] != "0000-00-00 00:00:00") {
-                        echo "<td>" . Html::convDateTime($data['detectsuccesstime']) . "</td>";
-                    } else {
-                        echo "<td>" . __('Automatic') . "</td>";
-                    }
-                    if (DateTime::createFromFormat('Y-m-d H:i:s', $data['downloadsuccesstime']) !== false
-                    && $data['downloadsuccesstime'] != "0000-00-00 00:00:00") {
-                        echo "<td>" . Html::convDateTime($data['downloadsuccesstime']) . "</td>";
-                    } else {
-                        echo "<td>" . __('Automatic') . "</td>";
-                    }
-                    echo "</tr>";
-                    Session::addToNavigateListItems(__CLASS__, $data['id']);
-                }
-                echo $header;
-            } else {
-                echo "<tr class='tab_bg_2'><th colspan='$colspan'>" . __('No results found') . "</th></tr>";
-            }
-
-            echo "</table>";
+        ]) as $data) {
+            $rows[] = [
+                'id'                  => $data['id'],
+                'auoptions'           => (string) self::getAuoptionsName($data['auoptions']),
+                'scheduleinstalldate' => $date($data['scheduleinstalldate']),
+                'lastsuccesstime'     => $date($data['lastsuccesstime']),
+                'detectsuccesstime'   => $date($data['detectsuccesstime']),
+                'downloadsuccesstime' => $date($data['downloadsuccesstime']),
+            ];
         }
-        echo "</div>";
+
+        Ocslink::showComponentRows(self::class, $comp, [
+            'auoptions'           => __('AU Options', 'ocsinventoryng'),
+            'scheduleinstalldate' => __('Schedule Install Date', 'ocsinventoryng'),
+            'lastsuccesstime'     => __('Last Success Time', 'ocsinventoryng'),
+            'detectsuccesstime'   => __('Detect Success Time', 'ocsinventoryng'),
+            'downloadsuccesstime' => __('Download Success Time', 'ocsinventoryng'),
+        ], $rows);
+
+        return true;
     }
 
     /**

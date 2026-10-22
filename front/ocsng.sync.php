@@ -71,7 +71,7 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
                 $_SESSION["ocs_update"]['statistics'],
                 $action['status']
             );
-            Html::getProgressBar($percent);
+            echo Html::getProgressBar($percent);
 
             Html::redirect(PLUGIN_OCS_WEBDIR . '/front/ocsng.sync.php');
         } catch (\RuntimeException $e) {

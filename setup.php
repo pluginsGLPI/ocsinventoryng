@@ -230,6 +230,9 @@ function plugin_init_ocsinventoryng()
     if (isset($_SESSION['glpiactiveprofile']['interface'])
         && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
         $PLUGIN_HOOKS[Hooks::ADD_CSS]['ocsinventoryng'] = 'css/ocsinventoryng.css';
+        // Forms of the OCS servers: delegated handlers, loaded with the page and not with the
+        // forms of the tabs (scripts of an Ajax content are not run in order)
+        $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['ocsinventoryng'] = ['js/ocs-server-form.js'];
     }
     if (Session::getLoginUserID()) {
         $ocsserver = new OcsServer();

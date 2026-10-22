@@ -58,9 +58,9 @@ if (isset($_POST["subnet"])) {
    $_POST["subnet"] = is_string($_POST["subnet"]) && filter_var($_POST["subnet"], FILTER_VALIDATE_IP) !== false
       ? $_POST["subnet"] : '';
 }
-// The lists of the forms, keyed by MAC address: arrays of scalars, entities and items as
-// integers (types, entities and MAC addresses are checked again by the import and link code)
-foreach (['mactoimport', 'glpiitemstype', 'itemsname', 'itemsdescription', 'itemsip', 'ocsitemstype',
+// The lists of the forms, keyed by line: arrays of scalars, entities and items as integers
+// (types, entities and MAC addresses are checked again by the import and link code)
+foreach (['glpiitemstype', 'itemsname', 'itemsdescription', 'itemsip', 'ocsitemstype',
           'entities', 'tolink_itemtype', 'tolink_items'] as $list) {
    if (isset($_POST[$list])) {
       $_POST[$list] = is_array($_POST[$list])
@@ -72,6 +72,16 @@ foreach (['entities', 'tolink_items'] as $list) {
    if (isset($_POST[$list])) {
       $_POST[$list] = array_map('intval', $_POST[$list]);
    }
+}
+// The checked lines: line => [MAC address => "on"], the MAC address being the key
+if (isset($_POST['mactoimport'])) {
+   $macs = [];
+   foreach (is_array($_POST['mactoimport']) ? $_POST['mactoimport'] : [] as $line => $checked) {
+      foreach (is_array($checked) ? $checked : [] as $mac => $on) {
+         $macs[(int) $line] = [(string) $mac => 'on'];
+      }
+   }
+   $_POST['mactoimport'] = $macs;
 }
 // The "back" values: an IP address and a status
 if (isset($_GET["b"])) {
@@ -150,7 +160,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $action = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"], $_POST["subnet"]);
             OcsProcess::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
              OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
-             Html::getProgressBar($percent);
+             echo Html::getProgressBar($percent);
             $_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"]   = $ipObjects;
             $_SESSION["ocs_importipdiscover"]["datas"]["b"]           = $_GET["b"];
             $_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"] = $macAdresses;
@@ -165,7 +175,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $action  = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"], $_POST["subnet"]);
              OcsProcess::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
              OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
-             Html::getProgressBar($percent);
+             echo Html::getProgressBar($percent);
             Html::redirect($self_url);
          }
           OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
@@ -231,7 +241,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $action = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"], $_POST["subnet"]);
              OcsProcess::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
              OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
-             Html::getProgressBar($percent);
+             echo Html::getProgressBar($percent);
             $_SESSION["ocs_importipdiscover"]["datas"]["ipObjects"]   = $ipObjects;
             $_SESSION["ocs_importipdiscover"]["datas"]["b"]           = $_GET["b"];
             $_SESSION["ocs_importipdiscover"]["datas"]["macAdresses"] = $macAdresses;
@@ -246,7 +256,7 @@ if (Plugin::isPluginActive("ocsinventoryng")) {
             $action  = $ip->processIpDiscover($ipObject, $_SESSION["plugin_ocsinventoryng_ocsservers_id"], $_POST["subnet"]);
              OcsProcess::manageImportStatistics($_SESSION["ocs_importipdiscover"]['statistics'], $action['status'], false, true);
              OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);
-             Html::getProgressBar($percent);
+             echo Html::getProgressBar($percent);
             Html::redirect($self_url);
          }
           OcsProcess::showStatistics($_SESSION["ocs_importipdiscover"]['statistics'], false, false, true);

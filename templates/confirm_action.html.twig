@@ -1,0 +1,46 @@
+{#
+ # -------------------------------------------------------------------------
+ # ocsinventoryng plugin for GLPI
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of ocsinventoryng.
+ #
+ # ocsinventoryng is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 2 of the License, or
+ # (at your option) any later version.
+ #
+ # ocsinventoryng is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with ocsinventoryng. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{# Confirmation of an action of the plugin (front/deleted_equiv.php): the action is started by the
+   POST of this form, which carries the CSRF token, never by a link #}
+<div class="container-lg my-3">
+    <form method="post" action="{{ form_url }}" class="card">
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+        <div class="card-body text-center py-5">
+            <span class="avatar avatar-xl bg-orange-lt mb-3"><i class="ti {{ icon }} fs-1"></i></span>
+            <h2 class="mb-2">{{ title }}</h2>
+            {% for line in lines %}
+                <div class="text-secondary">{{ line }}</div>
+            {% endfor %}
+            <div class="mt-4">
+                <button type="submit" name="{{ name }}" value="1" class="btn btn-primary me-1">
+                    <i class="ti {{ icon }} me-1"></i>{{ button }}
+                </button>
+                <a href="{{ back.url }}" class="btn btn-outline-secondary">
+                    <i class="ti {{ back.icon }} me-1"></i>{{ back.title }}
+                </a>
+            </div>
+        </div>
+    </form>
+</div>

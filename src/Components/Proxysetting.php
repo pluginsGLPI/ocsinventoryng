@@ -167,18 +167,8 @@ class Proxysetting extends \CommonDBTM
      */
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
-        $plugin_ocsinventoryng_ocsservers_id = Ocslink::getOCSServerForItem($item);
-        if (!OcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
-            echo "<div class='spaced center'>";
-            echo "<table class='tab_cadre_fixehov'>";
-            echo "<tr class='noHover'><th colspan='5'>" . self::getTypeName(0) .
-            "</th></tr>";
-            echo "<tr class='tab_bg_2'><th colspan='5'>" . __('Server unreachable', 'ocsinventoryng') . "</th></tr>";
-            echo "</table>";
-            echo "</div>";
-        } else {
-            self::showForComputer($item, $withtemplate);
-        }
+        // Rows stored in GLPI by the synchronization: no connection to the OCS server needed
+        self::showForComputer($item, $withtemplate);
         return true;
     }
 
@@ -201,55 +191,31 @@ class Proxysetting extends \CommonDBTM
             return false;
         }
 
-        echo "<div class='spaced center'>";
-
-        if ($result = $DB->request([
-            'FROM' => self::getTable(),
+        $rows = [];
+        foreach ($DB->request([
+            'FROM'  => self::getTable(),
             'WHERE' => ['computers_id' => $ID],
             'ORDER' => 'user',
-        ])) {
-            echo "<table class='tab_cadre_fixehov'>";
-            $colspan = 5;
-            echo "<tr class='noHover'><th colspan='$colspan'>" . self::getTypeName($result->numrows()) .
-              "</th></tr>";
-
-            if ($result->numrows() != 0) {
-                $header = "<tr><th>" . __('User') . "</th>";
-                $header .= "<th>" . __('Proxy enabled', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Auto Config URL', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Proxy address', 'ocsinventoryng') . "</th>";
-                $header .= "<th>" . __('Proxy exceptions', 'ocsinventoryng') . "</th>";
-                $header .= "</tr>";
-                echo $header;
-
-                Session::initNavigateListItems(
-                    __CLASS__,
-                    //TRANS : %1$s is the itemtype name,
-                    //        %2$s is the name of the item (used for headings of a list)
-                    sprintf(
-                        __('%1$s = %2$s'),
-                        Computer::getTypeName(1),
-                        $comp->getName()
-                    )
-                );
-
-                foreach ($result as $data) {
-                    echo "<tr class='tab_bg_2'>";
-                    echo "<td>" . htmlescape((string) $data['user']) . "</td>";
-                    echo "<td class='center'>" . Dropdown::getYesNo($data['enabled']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['autoconfigurl']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['address']) . "</td>";
-                    echo "<td>" . htmlescape((string) $data['override']) . "</td>";
-                    echo "</tr>";
-                    Session::addToNavigateListItems(__CLASS__, $data['id']);
-                }
-                echo $header;
-            } else {
-                echo "<tr class='tab_bg_2'><th colspan='$colspan'>" . __('No results found') . "</th></tr>";
-            }
-
-            echo "</table>";
+        ]) as $data) {
+            // Values reported by the OCS agent: escaped by the template
+            $rows[] = [
+                'id'            => $data['id'],
+                'user'          => (string) $data['user'],
+                'enabled'       => Dropdown::getYesNo($data['enabled']),
+                'autoconfigurl' => (string) $data['autoconfigurl'],
+                'address'       => (string) $data['address'],
+                'override'      => (string) $data['override'],
+            ];
         }
-        echo "</div>";
+
+        Ocslink::showComponentRows(self::class, $comp, [
+            'user'          => __('User'),
+            'enabled'       => __('Proxy enabled', 'ocsinventoryng'),
+            'autoconfigurl' => __('Auto Config URL', 'ocsinventoryng'),
+            'address'       => __('Proxy address', 'ocsinventoryng'),
+            'override'      => __('Proxy exceptions', 'ocsinventoryng'),
+        ], $rows);
+
+        return true;
     }
 }

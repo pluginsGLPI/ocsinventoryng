@@ -92,7 +92,8 @@ if (isset($_POST["subnetsChoice"])
       $networksDetail["subnetsChoice"] = $sN;
    }
    $lim = count($networksDetail["subnets"]);
-   $start = isset($_POST['start']) ? $_POST['start'] : 0;
+   // The pager links carry "start" in the URL
+   $start = (int) ($_GET["start"] ?? $_POST["start"] ?? 0);
    IpdiscoverOcslink::showSubnetSearchForm($_GET["action"]);
    if ($lim > $_SESSION["glpilist_limit"]) {
       $ip->showSubnetsDetails($networksDetail, $_SESSION["glpilist_limit"], $start, $_GET["action"]);
