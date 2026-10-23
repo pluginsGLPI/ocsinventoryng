@@ -1593,16 +1593,13 @@ class OcsProcess extends CommonDBTM
                 $locks = Ocslink::getLocksForComputer($line['computers_id']);
                 Ocslink::mergeOcsArray($line['computers_id'], $locks);
 
-                // Update OCS Cheksum
-                $oldChecksum = $ocsClient->getChecksum($line['ocsid']);
-                $newchecksum = $oldChecksum - $mixed_checksum;
-                if ($newchecksum > 0) {
-                    if (isset($computer_ocs['OFFICEPACK'])) {
-                        $ocsClient->setChecksum($newchecksum | OcsClient::CHECKSUM_SOFTWARE, $line['ocsid']);
-                    } else {
-                        $ocsClient->setChecksum($newchecksum, $line['ocsid']);
-                    }
+                // Update OCS Cheksum: clear only the synchronized sections, in one query,
+                // so that sections sent by the agent meanwhile are kept for the next run
+                $synchronized_bits = $mixed_checksum;
+                if (isset($computer_ocs['OFFICEPACK'])) {
+                    $synchronized_bits &= ~OcsClient::CHECKSUM_SOFTWARE;
                 }
+                $ocsClient->clearChecksumBits($synchronized_bits, $line['ocsid']);
 
 
                 //Return code to indicate that computer was synchronized

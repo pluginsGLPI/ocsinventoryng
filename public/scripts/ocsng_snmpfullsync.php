@@ -156,13 +156,16 @@ if ($ocsservers_id != -1) {
     }
 } else {
     //Import from all the OCS servers
-    $query = "SELECT `id`, `name`
-                FROM `glpi_plugin_ocsinventoryng_ocsservers`
-                WHERE `is_active`
-                  AND `use_massimport`";
-    $res = $DB->doQuery($query);
+    $res = $DB->request([
+        'SELECT' => ['id', 'name'],
+        'FROM'   => 'glpi_plugin_ocsinventoryng_ocsservers',
+        'WHERE'  => [
+            'is_active'      => 1,
+            'use_massimport' => 1,
+        ],
+    ]);
 
-    while ($ocsservers = $DB->fetchArray($res)) {
+    foreach ($res as $ocsservers) {
         $result = launchSync($tid, $ocsservers["id"], $thread_nbr, $threadid, $fields, $config);
         if ($result) {
             $fields = $result;
@@ -260,18 +263,16 @@ function importSNMPFromOcsServer(
     $ocsServerId = $cfg_ocs['id'];
     $ocsClient = OcsServer::getDBocs($ocsServerId);
 
-    $already_linked_query = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`ocs_id`,`glpi_plugin_ocsinventoryng_snmpocslinks`.`id`
-                               FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
-                               WHERE `glpi_plugin_ocsinventoryng_snmpocslinks`.`plugin_ocsinventoryng_ocsservers_id`
-                                            = '$ocsServerId'";
-    $already_linked_result = $DB->doQuery($already_linked_query);
+    $already_linked_result = $DB->request([
+        'SELECT' => ['ocs_id', 'id'],
+        'FROM'   => 'glpi_plugin_ocsinventoryng_snmpocslinks',
+        'WHERE'  => ['plugin_ocsinventoryng_ocsservers_id' => (int) $ocsServerId],
+    ]);
     $already_linked_ocs_ids = [];
 
-    if ($DB->numrows($already_linked_result) > 0) {
-        while ($data = $DB->fetchAssoc($already_linked_result)) {
-            $already_linked_ocs_ids [] = $data['ocs_id'];
-            //         $already_linked_ids [] = $data['id'];
-        }
+    foreach ($already_linked_result as $data) {
+        $already_linked_ocs_ids [] = $data['ocs_id'];
+        //         $already_linked_ids [] = $data['id'];
     }
 
     $ocsResult = $ocsClient->getSnmp([
@@ -288,16 +289,14 @@ function importSNMPFromOcsServer(
 
         $last_update = date('Y-m-d H:i:s');
         //Compute lastest synchronization date
-        $query = "SELECT `last_update`
-                FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
-                WHERE `ocs_id` = '$ID'";
-
-        if ($result = $DB->doQuery($query)) {
-            if ($DB->numrows($result) > 0) {
-                if ($DB->result($result, 0, 0) != '') {
-                    $last_update = $DB->result($result, 0, 0);
-                }
-            }
+        $link = $DB->request([
+            'SELECT' => 'last_update',
+            'FROM'   => 'glpi_plugin_ocsinventoryng_snmpocslinks',
+            'WHERE'  => ['ocs_id' => (int) $ID],
+            'LIMIT'  => 1,
+        ])->current();
+        if ($link !== null && $link['last_update'] != '') {
+            $last_update = $link['last_update'];
         }
 
         if ($snmpids['META']['LASTDATE'] < $last_update) {
@@ -310,16 +309,13 @@ function importSNMPFromOcsServer(
     $already_linked_ids = [];
     //List definitive SNMP objects to update
     if (count($already_linked_ocs_ids) > 0) {
-        $query = "SELECT `glpi_plugin_ocsinventoryng_snmpocslinks`.`id`
-                                  FROM `glpi_plugin_ocsinventoryng_snmpocslinks`
-                                  WHERE `ocs_id` IN (" . implode(",", $already_linked_ocs_ids) . ")";
-        $result = $DB->doQuery($query);
-
-
-        if ($DB->numrows($result) > 0) {
-            while ($data = $DB->fetchAssoc($result)) {
-                $already_linked_ids [] = $data['id'];
-            }
+        $result = $DB->request([
+            'SELECT' => 'id',
+            'FROM'   => 'glpi_plugin_ocsinventoryng_snmpocslinks',
+            'WHERE'  => ['ocs_id' => array_values($already_linked_ocs_ids)],
+        ]);
+        foreach ($result as $data) {
+            $already_linked_ids [] = $data['id'];
         }
     }
     $nb = count($already_linked_ids);

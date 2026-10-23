@@ -91,17 +91,16 @@ $run = (isset($_GET["run"]) && $_GET["run"] > 0);
 $debug = (isset($_GET["debug"]) && $_GET["debug"] > 0);
 
 // Find Last Machine ID + time
-$sql = "SELECT *
-        FROM `hardware`
-        ORDER BY `ID` DESC
-        LIMIT 0,1";
-$res = $DBocs->doQuery($sql);
+$data = $DBocs->request([
+    'FROM'  => 'hardware',
+    'ORDER' => 'ID DESC',
+    'LIMIT' => 1,
+])->current();
 
-if (!($res && $DBocs->numrows($res) > 0)) {
+if ($data === null) {
     die("No data from OCS\n");
 }
 
-$data = $DBocs->fetchArray($res);
 $maxid = $data["ID"];
 $maxti = $data["LASTCOME"];
 
@@ -110,16 +109,15 @@ if (!$maxid) {
     die("Bad value\n");
 }
 // Computer from OCS : New, ID Changed, Linked
-$sql = "SELECT *
-        FROM `glpi_logs`
-        WHERE `date_mod` >= '$maxti'
-              AND `itemtype` = 1
-              AND `linked_action` IN (8,10,11)
-        ORDER BY `id` DESC";
-$res = $DB->doQuery($sql);
-if (!$res) {
-    die("No data from GLPI\n");
-}
+$res = $DB->request([
+    'FROM'  => 'glpi_logs',
+    'WHERE' => [
+        'date_mod'      => ['>=', $maxti],
+        'itemtype'      => 1,
+        'linked_action' => [8, 10, 11],
+    ],
+    'ORDER' => 'id DESC',
+]);
 
 $comp = new Computer();
 
@@ -127,7 +125,7 @@ echo "Start\n";
 $tabres = [];
 $nb = $nbupd = 0;
 
-while ($event = $DB->fetchArray($res)) {
+foreach ($res as $event) {
 
     if ($event["new_value"] > $maxid
        && OcsServer::getServerByComputerID($event["items_id"]) == $_GET["server"]
@@ -154,48 +152,46 @@ while ($event = $DB->fetchArray($res)) {
                " (" . $comp->fields["serial"] . ") => rollback lien";
 
             // Search the old Device_ID in OCS
-            $sql = "SELECT `DEVICEID`
-                 FROM `hardware`
-                 WHERE `ID` = '" . $event["old_value"] . "'";
-            $resocs = $DBocs->doQuery($sql);
+            $hard = $DBocs->request([
+                'SELECT' => 'DEVICEID',
+                'FROM'   => 'hardware',
+                'WHERE'  => ['ID' => $event["old_value"]],
+                'LIMIT'  => 1,
+            ])->current();
 
             $olddevid = "";
-            if ($hard = $DBocs->fetchArray($resocs)) {
+            if ($hard !== null) {
                 $olddevid = $hard["DEVICEID"];
             }
 
             // Rollback the change in ocs_link
-            $sql = "UPDATE `glpi_ocslinks`
-                 SET `ocsid` = '" . $event["old_value"] . "'";
+            $params = ['ocsid' => $event["old_value"]];
 
             if (!empty($olddevid)) {
-                $sql .= ", `ocs_deviceid` = '$olddevid'";
+                $params['ocs_deviceid'] = $olddevid;
             }
 
-            $sql .= " WHERE `computers_id` = '" . $event["items_id"] . "'";
+            $where = ['computers_id' => (int) $event["items_id"]];
 
             if ($debug) {
-                echo "DEBUG: $sql \n";
+                echo "DEBUG: " . $DB->buildUpdate('glpi_ocslinks', $params, $where)->getQuery() . " \n";
             }
 
             if ($run) {
-                $resupd = $DB->doQuery($sql);
-                if ($res) {
-                    $nbupd += $DB->getAffectedRows();
+                // A failing query throws: no error branch
+                $DB->update('glpi_ocslinks', $params, $where);
+                $nbupd += $DB->getAffectedRows();
 
-                    $changes[0] = 0;
-                    $changes[2] = "Rollback: restauration lien du $maxti";
-                    $changes[1] = "";
-                    Log::history(
-                        $event["items_id"],
-                        'Computer',
-                        $changes,
-                        0,
-                        Log::HISTORY_LOG_SIMPLE_MESSAGE,
-                    );
-                } else {
-                    echo "*** MySQL : $sql\n*** Error : " . $DB->error() . "\n";
-                }
+                $changes[0] = 0;
+                $changes[2] = "Rollback: restauration lien du $maxti";
+                $changes[1] = "";
+                Log::history(
+                    $event["items_id"],
+                    'Computer',
+                    $changes,
+                    0,
+                    Log::HISTORY_LOG_SIMPLE_MESSAGE,
+                );
             }
 
         } else { // $event["linked_action"]==8 (New) or 11 (linked)
@@ -210,12 +206,10 @@ while ($event = $DB->fetchArray($res)) {
             $input["state"] = 5;     // Available
 
             // Unlink the computer
-            $sql = "DELETE
-                 FROM `glpi_ocslinks`
-                 WHERE `computers_id` = '" . $event["items_id"] . "'";
+            $where = ['computers_id' => (int) $event["items_id"]];
 
             if ($debug) {
-                echo "DEBUG: $sql \n";
+                echo "DEBUG: " . $DB->buildDelete('glpi_ocslinks', $where)->getQuery() . " \n";
             }
 
             if ($run) {
@@ -223,23 +217,20 @@ while ($event = $DB->fetchArray($res)) {
                 $comp->update($input);
 
                 // Unlink the computer
-                $resupd = $DB->doQuery($sql);
-                if ($res) {
-                    $nbupd += $DB->getAffectedRows();
+                // A failing query throws: no error branch
+                $DB->delete('glpi_ocslinks', $where);
+                $nbupd += $DB->getAffectedRows();
 
-                    $changes[0] = 0;
-                    $changes[2] = "Rollback: restauration statut au $maxti";
-                    $changes[1] = "";
-                    Log::history(
-                        $event["items_id"],
-                        'Computer',
-                        $changes,
-                        0,
-                        Log::HISTORY_LOG_SIMPLE_MESSAGE,
-                    );
-                } else {
-                    echo "*** MySQL : $sql\n*** Error : " . $DB->error() . "\n";
-                }
+                $changes[0] = 0;
+                $changes[2] = "Rollback: restauration statut au $maxti";
+                $changes[1] = "";
+                Log::history(
+                    $event["items_id"],
+                    'Computer',
+                    $changes,
+                    0,
+                    Log::HISTORY_LOG_SIMPLE_MESSAGE,
+                );
             }
         } // Else
     } // If PC

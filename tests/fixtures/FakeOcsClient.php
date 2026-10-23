@@ -193,6 +193,8 @@ class FakeOcsClient extends OcsClient
         return 0;
     }
 
+    public function clearChecksumBits(int $bits, int $id): void {}
+
     /** @param array<string, mixed> $cfg_ocs @param mixed $max_date @return array<mixed> */
     public function getComputersToUpdate($cfg_ocs, $max_date): array
     {

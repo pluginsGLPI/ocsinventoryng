@@ -36,6 +36,8 @@ use DbUtils;
 use Dropdown;
 use Entity;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\DBAL\QueryIdentifier;
+use Glpi\DBAL\QuerySubQuery;
 use Html;
 use NetworkName;
 use NetworkPort;
@@ -181,12 +183,12 @@ class IpdiscoverOcslink extends CommonDBTM
     {
         $ocsClient = new OcsServer();
         $DBOCS     = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"])->getDB();
-        $query     = "SELECT `config`.`TVALUE`
-                    FROM `config`
-                    WHERE `config`.`NAME`
-                    LIKE 'ID_IPDISCOVER_%'";
-        $result    = $DBOCS->doQuery($query);
-        while ($subNetId = $DBOCS->fetchAssoc($result)) {
+        $result    = $DBOCS->request([
+            'SELECT' => 'config.TVALUE',
+            'FROM'   => 'config',
+            'WHERE'  => ['config.NAME' => ['LIKE', 'ID_IPDISCOVER_%']],
+        ]);
+        foreach ($result as $subNetId) {
             $outputs[$subNetId["TVALUE"]] = $subNetId["TVALUE"];
         }
     }
@@ -263,13 +265,12 @@ class IpdiscoverOcslink extends CommonDBTM
     {
         $ocsClient = new OcsServer();
         $DBOCS     = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"])->getDB();
-        $query     = "SELECT MAX(`config`.`IVALUE`) as MAX
-                 FROM `config`
-                 WHERE `config`.`NAME`
-                 LIKE 'ID_IPDISCOVER_%'";
-        $result    = $DBOCS->doQuery($query);
-        $subNetId  = $DBOCS->fetchAssoc($result);
-        $count     = intval($subNetId["MAX"]);
+        $subNetId  = $DBOCS->request([
+            'SELECT' => ['MAX' => 'config.IVALUE AS MAX'],
+            'FROM'   => 'config',
+            'WHERE'  => ['config.NAME' => ['LIKE', 'ID_IPDISCOVER_%']],
+        ])->current();
+        $count     = intval($subNetId["MAX"] ?? 0);
     }
 
 
@@ -282,11 +283,13 @@ class IpdiscoverOcslink extends CommonDBTM
     {
         $ocsClient = new OcsServer();
         $DBOCS     = $ocsClient->getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"])->getDB();
-        $query     = "SELECT `devicetype`.`id` , `devicetype`.`name`
-                    FROM `devicetype`";
-        $result    = $DBOCS->doQuery($query);
+        // Lowercase names in the query: the keys of the rows below
+        $result    = $DBOCS->request([
+            'SELECT' => ['devicetype.id', 'devicetype.name'],
+            'FROM'   => 'devicetype',
+        ]);
 
-        while ($ent = $DBOCS->fetchAssoc($result)) {
+        foreach ($result as $ent) {
             $out["id"][]   = $ent["id"];
             $out["name"][] = $ent["name"];
         }
@@ -308,16 +311,25 @@ class IpdiscoverOcslink extends CommonDBTM
         $unknownIP = [];
         $knownIP   = [];
         //$IP        = array();
-        $query     = "SELECT DISTINCT `networks`.`IPSUBNET`,`subnet`.`NAME`,`subnet`.`ID`
-                     FROM `networks`
-                     LEFT JOIN `subnet`
-                     ON (`networks`.`IPSUBNET` = `subnet`.`NETID`) ,`accountinfo`
-                     WHERE `networks`.`HARDWARE_ID`=`accountinfo`.`HARDWARE_ID`
-                     AND `networks`.`STATUS`='Up'";
         $ocsClient = new OcsServer();
         $DBOCS     = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
-        $result    = $DBOCS->doQuery($query);
-        while ($subNet = $DBOCS->fetchAssoc($result)) {
+        $result    = $DBOCS->request([
+            'SELECT'     => ['networks.IPSUBNET', 'subnet.NAME', 'subnet.ID'],
+            'DISTINCT'   => true,
+            'FROM'       => 'networks',
+            'LEFT JOIN'  => [
+                'subnet' => [
+                    'ON' => ['networks' => 'IPSUBNET', 'subnet' => 'NETID'],
+                ],
+            ],
+            'INNER JOIN' => [
+                'accountinfo' => [
+                    'ON' => ['networks' => 'HARDWARE_ID', 'accountinfo' => 'HARDWARE_ID'],
+                ],
+            ],
+            'WHERE'      => ['networks.STATUS' => 'Up'],
+        ]);
+        foreach ($result as $subNet) {
             $subnets[] = $subNet;
         }
 
@@ -588,12 +600,10 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
 
         $ocsClient = new OcsServer();
         $DBOCS     = $ocsClient->getDBocs($plugin_ocsinventoryng_ocsservers_id)->getDB();
-        $query     = "";
 
-        // The subnet comes from the request: a quoted IP address in the OCS queries
+        // The subnet comes from the request: a valid IP address, bound in the OCS queries
         $ipAdress = self::checkIp($ipAdress);
         $status   = self::checkStatus($status);
-        $qip      = \DBmysql::quoteValue($ipAdress);
 
         if ($status == "imported") {
             // Links of GLPI: the query builder
@@ -614,40 +624,127 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
         }
 
         if ($status == "inventoried") {
-            $query = " SELECT `hardware`.`lastdate`, `hardware`.`name`, `hardware`.`userid`, `hardware`.`osname`, `hardware`.`workgroup`, `hardware`.`osversion`, `hardware`.`ipaddr`, `hardware`.`userdomain`
-         FROM `hardware`
-         LEFT JOIN `networks` ON `networks`.`hardware_id`=`hardware`.`id`
-         WHERE `networks`.`ipsubnet`=$qip
-         AND status='Up'
-         GROUP BY `hardware`.`id`,`hardware`.`lastdate`, `hardware`.`name`, `hardware`.`userid`, `hardware`.`osname`, `hardware`.`workgroup`, `hardware`.`osversion`, `hardware`.`ipaddr`, `hardware`.`userdomain`
-         ORDER BY `hardware`.`lastdate`";
+            $criteria = [
+                'SELECT'    => [
+                    'hardware.lastdate',
+                    'hardware.name',
+                    'hardware.userid',
+                    'hardware.osname',
+                    'hardware.workgroup',
+                    'hardware.osversion',
+                    'hardware.ipaddr',
+                    'hardware.userdomain',
+                ],
+                'FROM'      => 'hardware',
+                'LEFT JOIN' => [
+                    'networks' => [
+                        'ON' => ['networks' => 'hardware_id', 'hardware' => 'id'],
+                    ],
+                ],
+                'WHERE'     => [
+                    'networks.ipsubnet' => $ipAdress,
+                    'networks.status'   => 'Up',
+                ],
+                'GROUPBY'   => [
+                    'hardware.id',
+                    'hardware.lastdate',
+                    'hardware.name',
+                    'hardware.userid',
+                    'hardware.osname',
+                    'hardware.workgroup',
+                    'hardware.osversion',
+                    'hardware.ipaddr',
+                    'hardware.userdomain',
+                ],
+                'ORDER'     => 'hardware.lastdate',
+            ];
         } elseif ($status == "noninventoried") {
-            $query = " SELECT `netmap`.`ip`, `netmap`.`mac`, `netmap`.`mask`, `netmap`.`date`, `netmap`.`name` as DNS
-              FROM `netmap`
-              LEFT JOIN `networks`
-              ON `netmap`.`mac` =`networks`.`macaddr`
-              WHERE `netmap`.`netid`=$qip
-              AND (`networks`.`macaddr` IS NULL OR `networks`.`ipsubnet` <> `netmap`.`netid`)
-              AND `netmap`.`mac` NOT IN ( SELECT DISTINCT(`network_devices`.`macaddr`)
-              FROM `network_devices`)
-              GROUP BY `netmap`.`mac`,`netmap`.`ip`,`netmap`.`mask`, `netmap`.`date`, `netmap`.`name`
-              ORDER BY `netmap`.`date` DESC";
+            $criteria = [
+                'SELECT'    => [
+                    'netmap.ip',
+                    'netmap.mac',
+                    'netmap.mask',
+                    'netmap.date',
+                    'netmap.name AS DNS',
+                ],
+                'FROM'      => 'netmap',
+                'LEFT JOIN' => [
+                    'networks' => [
+                        'ON' => ['netmap' => 'mac', 'networks' => 'macaddr'],
+                    ],
+                ],
+                'WHERE'     => [
+                    'netmap.netid' => $ipAdress,
+                    [
+                        'OR' => [
+                            'networks.macaddr'  => null,
+                            'networks.ipsubnet' => ['<>', new QueryIdentifier('netmap.netid')],
+                        ],
+                    ],
+                    'netmap.mac'   => ['NOT IN', new QuerySubQuery([
+                        'SELECT'   => 'network_devices.macaddr',
+                        'DISTINCT' => true,
+                        'FROM'     => 'network_devices',
+                    ])],
+                ],
+                'GROUPBY'   => [
+                    'netmap.mac',
+                    'netmap.ip',
+                    'netmap.mask',
+                    'netmap.date',
+                    'netmap.name',
+                ],
+                'ORDER'     => 'netmap.date DESC',
+            ];
         } else {
             //group by doesn't work well
-            $macAdresses = self::parseArrayToString($knownMacAdresses);
-            $query       = "SELECT `network_devices`.`id`,`network_devices`.`type`,`network_devices`.`description`,`network_devices`.`user`,`netmap`.`ip`,`netmap`.`mac`,`netmap`.`mask`,`netmap`.`netid`,`netmap`.`name`,`netmap`.`date`
-              FROM `network_devices`
-              LEFT JOIN `netmap`
-              ON `network_devices`.`macaddr`=`netmap`.`mac`
-              WHERE `netmap`.`netid`=$qip
-              AND `network_devices`.`MACADDR` NOT IN($macAdresses)
-              GROUP BY `network_devices`.`macaddr`,`network_devices`.`id`,`network_devices`.`type`,`network_devices`.`description`,`network_devices`.`user`,`netmap`.`ip`,`netmap`.`mac`,`netmap`.`mask`,`netmap`.`netid`,`netmap`.`name`,`netmap`.`date`
-              ORDER BY `netmap`.`date` DESC";
+            // The MAC addresses known in GLPI: an empty list keeps the former "NOT IN ('')"
+            $macAdresses = array_map('strval', array_values($knownMacAdresses));
+            if ($macAdresses === []) {
+                $macAdresses = [''];
+            }
+            $criteria = [
+                'SELECT'    => [
+                    'network_devices.id',
+                    'network_devices.type',
+                    'network_devices.description',
+                    'network_devices.user',
+                    'netmap.ip',
+                    'netmap.mac',
+                    'netmap.mask',
+                    'netmap.netid',
+                    'netmap.name',
+                    'netmap.date',
+                ],
+                'FROM'      => 'network_devices',
+                'LEFT JOIN' => [
+                    'netmap' => [
+                        'ON' => ['network_devices' => 'macaddr', 'netmap' => 'mac'],
+                    ],
+                ],
+                'WHERE'     => [
+                    'netmap.netid'            => $ipAdress,
+                    'network_devices.MACADDR' => ['NOT IN', $macAdresses],
+                ],
+                'GROUPBY'   => [
+                    'network_devices.macaddr',
+                    'network_devices.id',
+                    'network_devices.type',
+                    'network_devices.description',
+                    'network_devices.user',
+                    'netmap.ip',
+                    'netmap.mac',
+                    'netmap.mask',
+                    'netmap.netid',
+                    'netmap.name',
+                    'netmap.date',
+                ],
+                'ORDER'     => 'netmap.date DESC',
+            ];
         }
-        $result   = $DBOCS->doQuery($query);
         $hardware = [];
 
-        while ($res = $DBOCS->fetchAssoc($result)) {
+        foreach ($DBOCS->request($criteria) as $res) {
             if (!isset($res["mac"])) {
                 $hardware[] = $res;
             } elseif (!self::findInArray($hardware, "mac", $res["mac"])) {

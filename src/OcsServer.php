@@ -1505,16 +1505,17 @@ class OcsServer extends CommonDBTM
                 $key = rawurldecode(stripslashes($key));
             }
             if (isset($config['conn_type'])) {
-                if ($config['conn_type'] == self::CONN_TYPE_DB) {
-                    return new OcsDbClient(
-                        $serverId,
-                        $config['ocs_db_host'],
-                        $config['ocs_db_user'],
-                        $key,
-                        $config['ocs_db_name'],
-                    );
-                } else {
-                    return new OcsDbClient(
+                // One connection per server and per PHP process: import and synchronization
+                // call this method several times per computer
+                static $clients = [];
+                $cache_key = $serverId . '|' . md5(serialize([
+                    $config['ocs_db_host'],
+                    $config['ocs_db_user'],
+                    $key,
+                    $config['ocs_db_name'],
+                ]));
+                if (!isset($clients[$cache_key]) || !$clients[$cache_key]->checkConnection()) {
+                    $clients[$cache_key] = new OcsDbClient(
                         $serverId,
                         $config['ocs_db_host'],
                         $config['ocs_db_user'],
@@ -1522,6 +1523,7 @@ class OcsServer extends CommonDBTM
                         $config['ocs_db_name'],
                     );
                 }
+                return $clients[$cache_key];
             }
         }
         return false;
@@ -2222,7 +2224,7 @@ class OcsServer extends CommonDBTM
                     }
                     $cron_status = 1;
                     if ($task) {
-                        $task->addVolume($DB->numrows($result));
+                        $task->addVolume(count($result));
                         $task->log(__('Restore computers OK', 'ocsinventoryng'));
                     }
                 } else {

@@ -91,18 +91,6 @@ parameters:
 			path: hook.php
 
 		-
-			message: '#^Left side of or is always true\.$#'
-			identifier: logicalOr.leftAlwaysTrue
-			count: 8
-			path: hook.php
-
-		-
-			message: '#^Method DBmysql\:\:doQuery\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 50
-			path: hook.php
-
-		-
 			message: '#^PHPDoc tag @return has invalid value \(\$output array\)\: Unexpected token "\$output", expected type at offset 101 on line 7$#'
 			identifier: phpDoc.parseError
 			count: 1
@@ -154,12 +142,6 @@ parameters:
 			message: '#^Variable \$type might not be defined\.$#'
 			identifier: variable.undefined
 			count: 2
-			path: hook.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 8
 			path: hook.php
 
 		-
@@ -1735,12 +1717,6 @@ parameters:
 			path: src/OcsDbClient.php
 
 		-
-			message: '#^Method GlpiPlugin\\Ocsinventoryng\\OcsDbClient\:\:countComputers\(\) should return array but returns string\.$#'
-			identifier: return.type
-			count: 1
-			path: src/OcsDbClient.php
-
-		-
 			message: '#^Parameter \$max_date of method GlpiPlugin\\Ocsinventoryng\\OcsDbClient\:\:getComputersToUpdate\(\) has invalid type GlpiPlugin\\Ocsinventoryng\\date\.$#'
 			identifier: class.notFound
 			count: 1
@@ -1983,12 +1959,6 @@ parameters:
 		-
 			message: '#^Method GlpiPlugin\\Ocsinventoryng\\OcsServer\:\:useMassImport\(\) should return bool but returns int\.$#'
 			identifier: return.type
-			count: 1
-			path: src/OcsServer.php
-
-		-
-			message: '#^Parameter \#1 \$result of method DBmysql\:\:numrows\(\) expects mysqli_result, DBmysqlIterator given\.$#'
-			identifier: argument.type
 			count: 1
 			path: src/OcsServer.php
 

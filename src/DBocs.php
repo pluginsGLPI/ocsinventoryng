@@ -32,7 +32,12 @@ namespace GlpiPlugin\Ocsinventoryng;
 
 use AllowDynamicProperties;
 use DBmysql;
+use Glpi\DBAL\Parts\BasePart;
+use Glpi\Exception\Database\QueryException;
+use Glpi\Exception\Database\StatementException;
 use mysqli;
+use mysqli_result;
+use mysqli_stmt;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -45,6 +50,12 @@ if (!defined('GLPI_ROOT')) {
 #[AllowDynamicProperties]
 class DBocs extends DBmysql
 {
+    /** Same connect timeout as GLPI core: an unreachable OCS server must not block the page */
+    private const CONNECT_TIMEOUT = 5;
+
+    /** CR_SERVER_GONE_ERROR, ER_CLIENT_INTERACTION_TIMEOUT (MySQL 8) */
+    private const GONE_AWAY_ERRORS = [2006, 4031];
+
     /**
      * Constructor
      *
@@ -108,7 +119,7 @@ class DBocs extends DBmysql
             );
         }
 
-        $this->dbh->options(MYSQLI_OPT_CONNECT_TIMEOUT, 30);
+        $this->dbh->options(MYSQLI_OPT_CONNECT_TIMEOUT, self::CONNECT_TIMEOUT);
 
         if (is_array($this->dbhost)) {
             // Round robin choice
@@ -148,6 +159,64 @@ class DBocs extends DBmysql
             // DBmysql::guessTimezone() is removed in GLPI 12: the timezone of PHP, as the core does
             $this->setTimezone(date_default_timezone_get());
         }
+    }
+
+    /**
+     * Execute a query, reconnecting once if the OCS server closed the connection
+     * (wait_timeout reached during a long import or synchronization)
+     *
+     * @param string|BasePart $query
+     *
+     * @return mysqli_result|true
+     */
+    public function doQuery(BasePart|string $query): true|mysqli_result
+    {
+        try {
+            return parent::doQuery($query);
+        } catch (QueryException|StatementException $e) {
+            if (!$this->reconnectIfGone()) {
+                throw $e;
+            }
+            return parent::doQuery($query);
+        }
+    }
+
+    /**
+     * Prepare a query, reconnecting once if the OCS server closed the connection
+     *
+     * @param string $query
+     *
+     * @return mysqli_stmt
+     */
+    public function prepare($query)
+    {
+        try {
+            return parent::prepare($query);
+        } catch (StatementException $e) {
+            if (!$this->reconnectIfGone()) {
+                throw $e;
+            }
+            return parent::prepare($query);
+        }
+    }
+
+    /**
+     * Reconnect when the last error means that the connection was dropped
+     * before the query was sent, so that replaying it is safe
+     *
+     * @return bool true if a new connection has been established
+     */
+    private function reconnectIfGone(): bool
+    {
+        if (!in_array($this->dbh->errno, self::GONE_AWAY_ERRORS, true)) {
+            return false;
+        }
+        trigger_error(
+            sprintf('Connection to OCS database "%s" lost (%s), reconnecting.', $this->dbdefault, $this->dbh->error),
+            E_USER_NOTICE,
+        );
+        $this->connect();
+        return $this->connected;
     }
 
     /**

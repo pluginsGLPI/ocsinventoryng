@@ -34,6 +34,7 @@ use Alert;
 use CommonDBTM;
 use Dropdown;
 use Entity;
+use Glpi\DBAL\QuerySubQuery;
 use Html;
 use MassiveAction;
 use NotificationEvent;
@@ -292,16 +293,17 @@ class Notimportedcomputer extends CommonDBTM
     public static function deleteComputerInOCS($ocs_id, $ocs_server_id)
     {
         $DBocs = OcsServer::getDBocs($ocs_server_id)->getDB();
-        // Id of the OCS computer: an integer, put in the queries below
+        // Id of the OCS computer: an integer, bound in the queries below
         $ocs_id = (int) $ocs_id;
 
         //First try to remove all the network ports
-        $query = "DELETE
-                FROM `netmap`
-                WHERE `MAC` IN (SELECT `MACADDR`
-                                FROM `networks`
-                                WHERE `networks`.`HARDWARE_ID` = '" . $ocs_id . "')";
-        $DBocs->doQuery($query);
+        $DBocs->delete('netmap', [
+            'MAC' => new QuerySubQuery([
+                'SELECT' => 'MACADDR',
+                'FROM'   => 'networks',
+                'WHERE'  => ['networks.HARDWARE_ID' => $ocs_id],
+            ]),
+        ]);
 
         $tables = ["accesslog", "accountinfo", "batteries", "bios", "controllers", "cpus", "devices",
             "download_history", "download_servers", "drives", "groups",
@@ -311,17 +313,11 @@ class Notimportedcomputer extends CommonDBTM
 
         foreach ($tables as $table) {
             if (self::OcsTableExists($ocs_server_id, $table)) {
-                $query = "DELETE
-                      FROM `" . $table . "`
-                      WHERE `hardware_id` = '" . $ocs_id . "'";
-                $DBocs->doQuery($query);
+                $DBocs->delete($table, ['hardware_id' => $ocs_id]);
             }
         }
 
-        $query = "DELETE
-                FROM `hardware`
-                WHERE `ID` = '" . $ocs_id . "'";
-        $DBocs->doQuery($query);
+        $DBocs->delete('hardware', ['ID' => $ocs_id]);
     }
 
     public static function OcsTableExists($ocs_server_id, $tablename)

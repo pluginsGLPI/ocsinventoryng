@@ -87,29 +87,34 @@ foreach ($DB->request([
 
     if (isset($_GET['glpi'])) {
         echo "+ Search links with no computer in GLPI\n";
-        $query = "SELECT `glpi_plugin_ocsinventoryng_ocslinks`.`id`,
-                       `glpi_plugin_ocsinventoryng_ocslinks`.`ocs_deviceid`
-                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                LEFT JOIN `glpi_computers`
-                       ON `glpi_computers`.`id`=`glpi_plugin_ocsinventoryng_ocslinks`.`computers_id`
-                WHERE `glpi_computers`.`id` IS NULL
-                      AND `plugin_ocsinventoryng_ocsservers_id`=$ocsservers_id";
-
-        $result = $DB->doQuery($query);
-        if ($DB->numrows($result) > 0) {
-            while ($data = $DB->fetchArray($result)) {
-                $nbchk++;
-                printf("%12d : %s\n", $data['id'], $data['ocs_deviceid']);
-                if (isset($_GET['clean'])) {
-                    $query2 = "DELETE
-                          FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                          WHERE `id` = " . $data['id'];
-                    if ($DB->doQuery($query2)) {
-                        $nbdel++;
-                    }
-                } else {
-                    $nbtodo++;
+        $result = $DB->request([
+            'SELECT'    => [
+                'glpi_plugin_ocsinventoryng_ocslinks.id',
+                'glpi_plugin_ocsinventoryng_ocslinks.ocs_deviceid',
+            ],
+            'FROM'      => 'glpi_plugin_ocsinventoryng_ocslinks',
+            'LEFT JOIN' => [
+                'glpi_computers' => [
+                    'ON' => [
+                        'glpi_computers'                      => 'id',
+                        'glpi_plugin_ocsinventoryng_ocslinks' => 'computers_id',
+                    ],
+                ],
+            ],
+            'WHERE'     => [
+                'glpi_computers.id'                                                       => null,
+                'glpi_plugin_ocsinventoryng_ocslinks.plugin_ocsinventoryng_ocsservers_id' => (int) $ocsservers_id,
+            ],
+        ]);
+        foreach ($result as $data) {
+            $nbchk++;
+            printf("%12d : %s\n", $data['id'], $data['ocs_deviceid']);
+            if (isset($_GET['clean'])) {
+                if ($DB->delete('glpi_plugin_ocsinventoryng_ocslinks', ['id' => (int) $data['id']])) {
+                    $nbdel++;
                 }
+            } else {
+                $nbtodo++;
             }
         }
     }
@@ -134,30 +139,29 @@ foreach ($DB->request([
         }
 
         echo "+ Search links with no computer in OCS\n";
-        $query = "SELECT `id`, `ocsid`, `ocs_deviceid`
-                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                WHERE `plugin_ocsinventoryng_ocsservers_id` = $ocsservers_id";
-
-        $result = $DB->doQuery($query);
-        $nb = $DB->numrows($result);
+        $result = $DB->request([
+            'SELECT' => ['id', 'ocsid', 'ocs_deviceid'],
+            'FROM'   => 'glpi_plugin_ocsinventoryng_ocslinks',
+            'WHERE'  => ['plugin_ocsinventoryng_ocsservers_id' => (int) $ocsservers_id],
+        ]);
+        $nb = count($result);
         if ($nb > 0) {
-            for ($i = 1; $data = $DB->fetchArray($result); $i++) {
+            $i = 1;
+            foreach ($result as $data) {
                 $nbchk++;
                 if (isset($hardware[$data["ocsid"]])) {
                     echo "$i/$nb\r";
                 } else {
                     printf("%12d : %s\n", $data['id'], $data['ocs_deviceid']);
                     if (isset($_GET['clean'])) {
-                        $query_del = "DELETE
-                                FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                                WHERE `id` = " . $data["id"];
-                        if ($DB->doQuery($query_del)) {
+                        if ($DB->delete('glpi_plugin_ocsinventoryng_ocslinks', ['id' => (int) $data["id"]])) {
                             $nbdel++;
                         }
                     } else {
                         $nbtodo++;
                     }
                 }
+                $i++;
             }
             echo "  $nb links checked\n";
         }
@@ -197,10 +201,7 @@ if (isset($_GET['dup'])) {
             );
             if ($del) {
                 if (isset($_GET['clean'])) {
-                    $query_del = "DELETE
-                             FROM `glpi_plugin_ocsinventoryng_ocslinks`
-                             WHERE `id` = " . $data2["id"];
-                    if ($DB->doQuery($query_del)) {
+                    if ($DB->delete('glpi_plugin_ocsinventoryng_ocslinks', ['id' => (int) $data2["id"]])) {
                         $nbdel++;
                     }
                 } else {

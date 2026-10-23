@@ -267,6 +267,16 @@ abstract class OcsClient
     abstract public function getChecksum($id);
 
     /**
+     * Clears the given checksum bits (synchronized sections) for the given computer
+     *
+     * @param int $bits The checksum bits to clear
+     * @param int $id The computer id
+     *
+     * @return void
+     */
+    abstract public function clearChecksumBits(int $bits, int $id): void;
+
+    /**
      * Gets the array of computers to update with cron
      *
      * @param array $cfg_ocs Server confifguration

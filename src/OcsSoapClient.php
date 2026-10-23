@@ -441,6 +441,17 @@ class OcsSoapClient extends OcsClient
         return (int) simplexml_load_string($xml);
     }
 
+    /**
+     * Not atomic: the SOAP API has no partial checksum update
+     *
+     * @param int $bits
+     * @param int $id
+     */
+    public function clearChecksumBits(int $bits, int $id): void
+    {
+        $this->setChecksum($this->getChecksum($id) & ~$bits, $id);
+    }
+
 
     /**
      * @see OcsClient::getAccountInfoColumns()
