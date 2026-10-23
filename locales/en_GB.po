@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-22 15:47+0000\n"
-"PO-Revision-Date: 2026-10-22 15:47+0000\n"
+"POT-Creation-Date: 2026-10-23 03:08+0000\n"
+"PO-Revision-Date: 2026-10-23 03:08+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en_GB\n"
@@ -22,12 +22,12 @@ msgid "OCS-NG Synchronization alerts"
 msgstr "OCS-NG Synchronization alerts"
 
 #: templates/entity_alerts.html.twig src/OcsAlert.php:529 src/Config.php:211
-#: src/Config.php:278 src/NotificationTargetOcsAlert.php:54
+#: src/Config.php:278 src/NotificationTargetOcsAlert.php:56
 msgid "New imported computers from OCS-NG"
 msgstr "New imported computers from OCS-NG"
 
 #: templates/entity_alerts.html.twig src/Config.php:218 src/Config.php:286
-#: src/NotificationTargetOcsAlert.php:76
+#: src/NotificationTargetOcsAlert.php:81
 msgid "Computers not synchronized with OCS-NG since more"
 msgstr "Computers not synchronized with OCS-NG since more"
 
@@ -56,17 +56,21 @@ msgctxt "button"
 msgid "Reload Checksum"
 msgstr "Reload Checksum"
 
-#: templates/ocsserver_form.html.twig src/OcsServer.php:941
+#: templates/ocsserver_form.html.twig src/OcsServer.php:948
 msgid "Connecting to the database"
 msgstr "Connecting to the database"
 
-#: templates/ocsserver_form.html.twig src/OcsServer.php:2470
+#: templates/ocsserver_form.html.twig src/OcsServer.php:2454
 msgid "Host"
 msgstr "Host"
 
 #: templates/ocsserver_form.html.twig
-msgid "Like http://127.0.0.1 for SOAP method"
-msgstr "Like http://127.0.0.1 for SOAP method"
+msgid ""
+"Like https://127.0.0.1 for SOAP method (https only: the OCS credentials are "
+"sent with each request)"
+msgstr ""
+"Like https://127.0.0.1 for SOAP method (https only: the OCS credentials are "
+"sent with each request)"
 
 #: templates/ocsserver_form.html.twig src/OcsServer.php:256
 msgid "Database in UTF8"
@@ -118,8 +122,8 @@ msgid_plural "Allowed OCSNG servers"
 msgstr[0] "Allowed OCSNG server"
 msgstr[1] "Allowed OCSNG servers"
 
-#: templates/profile_servers.html.twig front/ocsng.sync.php:149
-#: front/ocsng.import.php:215 src/Config.php:160 src/OcsServer.php:1640
+#: templates/profile_servers.html.twig front/ocsng.sync.php:151
+#: front/ocsng.import.php:216 src/Config.php:160 src/OcsServer.php:1638
 msgid "Add a OCSNG server"
 msgstr "Add a OCSNG server"
 
@@ -135,12 +139,12 @@ msgstr ""
 "If you not find your OCSNG server in this dropdown, please check if your "
 "profile can access it !"
 
-#: templates/alert_states.html.twig src/NotificationState.php:73
+#: templates/alert_states.html.twig src/NotificationState.php:75
 msgid "Statuses used for alert"
 msgstr "Statuses used for alert"
 
 #: templates/ocslink.html.twig src/Ocslink.php:82 src/Ocslink.php:676
-#: hook.php:1605
+#: hook.php:1606
 msgid "OCSNG link"
 msgid_plural "OCSNG links"
 msgstr[0] "OCSNG link"
@@ -154,49 +158,49 @@ msgstr "No computer found into OCSNG Database"
 msgid "OCSNG DEVICE ID"
 msgstr "OCSNG DEVICE ID"
 
-#: templates/ocslink.html.twig src/Notimportedcomputer.php:190
-#: src/NotificationTargetNotimportedcomputer.php:97 src/Ocslink.php:172
-#: src/OcsServer.php:1879 src/OcsServer.php:1972 hook.php:1175 hook.php:1507
-#: hook.php:1568
+#: templates/ocslink.html.twig src/Notimportedcomputer.php:120
+#: src/NotificationTargetNotimportedcomputer.php:109 src/Ocslink.php:172
+#: src/OcsServer.php:1877 src/OcsServer.php:1970 hook.php:1176 hook.php:1508
+#: hook.php:1569
 msgid "OCSNG TAG"
 msgstr "OCSNG TAG"
 
-#: templates/ocslink.html.twig src/Ocslink.php:174 hook.php:1161
+#: templates/ocslink.html.twig src/Ocslink.php:174
 msgid "Automatic update OCSNG"
 msgstr "Automatic update OCSNG"
 
 #: templates/ocslink.html.twig src/SnmpOcslink.php:460 src/Ocslink.php:177
-#: src/OcsServer.php:662 hook.php:1206
+#: src/OcsServer.php:662 hook.php:1207
 msgid "Uptime"
 msgstr "Uptime"
 
-#: templates/ocslink.html.twig src/OcsServer.php:1880
+#: templates/ocslink.html.twig src/OcsServer.php:1878
 msgid "Checksum"
 msgstr "Checksum"
 
-#: templates/ocslink.html.twig src/Ocslink.php:191 hook.php:1095
+#: templates/ocslink.html.twig src/Ocslink.php:191 hook.php:1096
 msgctxt "button"
 msgid "Launch synchronization"
 msgstr "Launch synchronization"
 
-#: templates/ocslink.html.twig src/Ocslink.php:194 hook.php:1098
+#: templates/ocslink.html.twig src/Ocslink.php:194 hook.php:1099
 msgctxt "button"
 msgid "Force full import"
 msgstr "Force full import"
 
-#: templates/ocslink.html.twig src/IpdiscoverOcslink.php:1362
+#: templates/ocslink.html.twig src/IpdiscoverOcslink.php:1363
 #: src/SnmpOcslink.php:479 src/SnmpOcslink.php:2116
 msgctxt "button"
 msgid "Delete link"
 msgstr "Delete link"
 
 #: templates/ocslink.html.twig src/Thread.php:544
-#: src/Notimportedcomputer.php:667 src/OcsServer.php:2072
-#: src/OcsServer.php:2076 src/OcsServer.php:2080 src/RuleImportEntity.php:74
-#: hook.php:1142 hook.php:1149 hook.php:1160 hook.php:1169 hook.php:1175
-#: hook.php:1182 hook.php:1189 hook.php:1199 hook.php:1206 hook.php:1213
-#: hook.php:1224 hook.php:1241 hook.php:1256 hook.php:1270 hook.php:1278
-#: hook.php:1285 hook.php:1295 hook.php:1305
+#: src/Notimportedcomputer.php:597 src/OcsServer.php:2070
+#: src/OcsServer.php:2074 src/OcsServer.php:2078 src/RuleImportEntity.php:75
+#: hook.php:1143 hook.php:1150 hook.php:1161 hook.php:1170 hook.php:1176
+#: hook.php:1183 hook.php:1190 hook.php:1200 hook.php:1207 hook.php:1214
+#: hook.php:1225 hook.php:1242 hook.php:1257 hook.php:1271 hook.php:1279
+#: hook.php:1286 hook.php:1296 hook.php:1306
 msgid "OCSNG"
 msgstr "OCSNG"
 
@@ -237,8 +241,8 @@ msgstr "Subnet Name"
 msgid "Choose ID"
 msgstr "Choose ID"
 
-#: front/detail.php:35 src/Thread.php:176 src/Thread.php:374
-#: src/OcsServer.php:468 src/Menu.php:105
+#: front/detail.php:36 src/Thread.php:176 src/Thread.php:374
+#: src/OcsServer.php:468 src/Menu.php:104
 msgid "Computers imported by automatic actions"
 msgstr "Computers imported by automatic actions"
 
@@ -247,97 +251,90 @@ msgstr "Computers imported by automatic actions"
 msgid "Automatic synchronization's configuration"
 msgstr "Automatic synchronization's configuration"
 
-#: front/thread.php:55 src/Thread.php:168 src/Thread.php:389
+#: front/thread.php:56 src/Thread.php:168 src/Thread.php:389
 msgid "Processes execution of automatic actions"
 msgstr "Processes execution of automatic actions"
 
-#: front/ocsng.clean.php:52 front/deleted_equiv.php:76 src/OcsServer.php:948
+#: front/ocsng.clean.php:53 front/deleted_equiv.php:76 src/OcsServer.php:953
 msgid "Connection to the database failed"
 msgstr "Connection to the database failed"
 
-#: front/ocsng.clean.php:62 front/deleted_equiv.php:59 src/OcsServer.php:492
-#: src/Menu.php:117
+#: front/ocsng.clean.php:63 front/deleted_equiv.php:59 src/OcsServer.php:492
+#: src/Menu.php:116
 msgid "Clean OCSNG deleted computers"
 msgstr "Clean OCSNG deleted computers"
 
-#: front/ocsng.clean.php:69 front/ocsng.link.php:176 front/ocsng.sync.php:95
-#: front/ocsng.import.php:153
+#: front/ocsng.clean.php:70 front/ocsng.link.php:180 front/ocsng.sync.php:97
+#: front/ocsng.import.php:154
 msgid "You have"
 msgstr "You have"
 
-#: front/ocsng.clean.php:70 front/ocsng.link.php:176 front/ocsng.sync.php:95
-#: front/ocsng.import.php:153 front/deleted_equiv.php:90
+#: front/ocsng.clean.php:71 front/ocsng.link.php:180 front/ocsng.sync.php:97
+#: front/ocsng.import.php:154 front/deleted_equiv.php:90
 #: front/deleted_equiv.php:108 front/deleted_equiv.php:130
 msgid "deleted computers into OCS Inventory NG"
 msgstr "deleted computers into OCS Inventory NG"
 
-#: front/ocsng.clean.php:71 front/ocsng.link.php:178 front/ocsng.sync.php:97
-#: front/ocsng.import.php:155
+#: front/ocsng.clean.php:72 front/ocsng.link.php:182 front/ocsng.sync.php:99
+#: front/ocsng.import.php:156
 msgid "Please clean them before import or synchronize computers"
 msgstr "Please clean them before import or synchronize computers"
 
-#: front/ocsng.clean.php:89 front/ocsng.clean.php:95 src/Profile.php:259
-#: src/OcsServer.php:507 src/OcsServer.php:1820 src/Menu.php:120
+#: front/ocsng.clean.php:93 front/ocsng.clean.php:99 src/Profile.php:257
+#: src/OcsServer.php:507 src/OcsServer.php:1818 src/Menu.php:119
 msgid "Clean links between GLPI and OCSNG"
 msgstr "Clean links between GLPI and OCSNG"
 
-#: front/thread.form.php:35
+#: front/thread.form.php:36
 msgid "Information about the script"
 msgstr "Information about the script"
 
-#: front/ocsngsnmp.link.php:90 front/ocsng.link.php:153
+#: front/ocsngsnmp.link.php:95 front/ocsng.link.php:153
 msgid "Successful link"
 msgstr "Successful link"
 
-#: front/ocsng.sync.php:79
+#: front/ocsng.sync.php:81
 msgid "Synchronization interrupted"
 msgstr "Synchronization interrupted"
 
-#: front/ocsng.sync.php:108
+#: front/ocsng.sync.php:110
 msgid "Unable to connect to OCS Inventory NG server"
 msgstr "Unable to connect to OCS Inventory NG server"
 
-#: front/ocsng.sync.php:110
+#: front/ocsng.sync.php:112
 msgid "Error"
 msgstr "Error"
 
-#: front/ocsng.sync.php:112
+#: front/ocsng.sync.php:114
 msgid "Please check the OCS server configuration and network connectivity"
 msgstr "Please check the OCS server configuration and network connectivity"
 
-#: front/ocsng.sync.php:115
+#: front/ocsng.sync.php:117
 msgid "View OCSNG server configuration"
 msgstr "View OCSNG server configuration"
 
-#: front/ocsng.sync.php:145 front/ocsng.import.php:211 src/OcsServer.php:1647
+#: front/ocsng.sync.php:147 front/ocsng.import.php:212 src/OcsServer.php:1645
 msgid "No OCSNG server defined"
 msgstr "No OCSNG server defined"
 
-#: front/ocsng.sync.php:147 front/ocsng.import.php:213 src/OcsServer.php:1648
+#: front/ocsng.sync.php:149 front/ocsng.import.php:214 src/OcsServer.php:1646
 msgid "You must to configure a OCSNG server"
 msgstr "You must to configure a OCSNG server"
 
-#: front/ocsngsnmp.sync.php:99
+#: front/ocsngsnmp.sync.php:110
 msgid "No synchronization: the plugin will not synchronize these elements"
 msgstr "No synchronization: the plugin will not synchronize these elements"
 
-#: front/notimportedcomputer.php:35 src/Thread.php:179 src/Thread.php:377
-#: src/NotificationTargetNotimportedcomputer.php:48
-#: src/NotificationTargetNotimportedcomputer.php:99 src/OcsServer.php:476
-#: src/Menu.php:109
+#: front/notimportedcomputer.php:36 src/Thread.php:179 src/Thread.php:377
+#: src/OcsServer.php:476 src/Menu.php:108
 msgid "Computers not imported by automatic actions"
 msgstr "Computers not imported by automatic actions"
 
-#: front/networkport.php:36 src/Components/NetworkPort.php:74 src/Menu.php:111
+#: front/networkport.php:37 src/Components/NetworkPort.php:74 src/Menu.php:110
 msgid "Unknown imported network port type"
 msgid_plural "Unknown imported network ports types"
 msgstr[0] "Unknown imported network port type"
 msgstr[1] "Unknown imported network ports types"
-
-#: front/deleted_equiv.php:88
-#, php-format
-msgid "%1$s %2$s"
-msgstr "%1$s %2$s"
 
 #: front/deleted_equiv.php:92 src/OcsServer.php:493
 msgid "Update ID of deleted computers of OCSNG"
@@ -347,7 +344,7 @@ msgstr "Update ID of deleted computers of OCSNG"
 msgid "No new computers to delete"
 msgstr "No new computers to delete"
 
-#: front/ocsngsnmp.import.php:107 src/OcsServer.php:650
+#: front/ocsngsnmp.import.php:119 src/OcsServer.php:650
 msgid "No import: the plugin will not import these elements"
 msgstr "No import: the plugin will not import these elements"
 
@@ -393,7 +390,7 @@ msgstr "Transform unknown ports that match"
 msgid "Plugin setup"
 msgstr "Plugin setup"
 
-#: src/OcsAlert.php:129 src/NotificationTargetOcsAlert.php:53
+#: src/OcsAlert.php:129 src/NotificationTargetOcsAlert.php:55
 msgid "Computers not synchronized with OCS-NG since X days"
 msgstr "Computers not synchronized with OCS-NG since X days"
 
@@ -401,118 +398,117 @@ msgstr "Computers not synchronized with OCS-NG since X days"
 msgid "Alert for the new imported computers"
 msgstr "Alert for the new imported computers"
 
-#: src/OcsAlert.php:332 src/IpdiscoverOcslink.php:1295
-#: src/Notimportedcomputer.php:211 src/Ocslink.php:159 src/OcsServer.php:1878
-#: src/OcsServer.php:1971 src/NotificationTargetOcsAlert.php:86
-#: src/NotificationTargetOcsAlert.php:142 hook.php:1150
+#: src/OcsAlert.php:332 src/IpdiscoverOcslink.php:1296
+#: src/Notimportedcomputer.php:141 src/Ocslink.php:159 src/OcsServer.php:1876
+#: src/OcsServer.php:1969 src/NotificationTargetOcsAlert.php:91
+#: src/NotificationTargetOcsAlert.php:156
 msgid "Last OCSNG inventory date"
 msgstr "Last OCSNG inventory date"
 
-#: src/OcsAlert.php:333 src/IpdiscoverOcslink.php:1317 src/SnmpOcslink.php:423
+#: src/OcsAlert.php:333 src/IpdiscoverOcslink.php:1318 src/SnmpOcslink.php:423
 #: src/SnmpOcslink.php:447 src/SnmpOcslink.php:2098 src/Ocslink.php:228
-#: src/OcsServer.php:1811 src/OcsServer.php:1877
-#: src/NotificationTargetOcsAlert.php:87 src/NotificationTargetOcsAlert.php:143
+#: src/OcsServer.php:1809 src/OcsServer.php:1875
+#: src/NotificationTargetOcsAlert.php:92 src/NotificationTargetOcsAlert.php:157
 msgid "Import date in GLPI"
 msgstr "Import date in GLPI"
 
-#: src/OcsAlert.php:334 src/Profile.php:247 src/Thread.php:54
+#: src/OcsAlert.php:334 src/Profile.php:245 src/Thread.php:54
 #: src/Config.php:155 src/OcsServer.php:101 src/OcsServer.php:384
-#: src/OcsServer.php:428 src/NotificationTargetOcsAlert.php:88
-#: src/NotificationTargetOcsAlert.php:144 hook.php:1256 hook.php:1518
-#: hook.php:1558
+#: src/OcsServer.php:428 src/NotificationTargetOcsAlert.php:93
+#: src/NotificationTargetOcsAlert.php:158 hook.php:1257
 msgid "OCSNG server"
 msgid_plural "OCSNG servers"
 msgstr[0] "OCSNG server"
 msgstr[1] "OCSNG servers"
 
-#: src/IpdiscoverOcslink.php:132 src/Menu.php:216
+#: src/IpdiscoverOcslink.php:133 src/Menu.php:215
 msgid "IPDiscover Import"
 msgstr "IPDiscover Import"
 
-#: src/IpdiscoverOcslink.php:454
+#: src/IpdiscoverOcslink.php:455
 msgid "All Subnets"
 msgstr "All Subnets"
 
-#: src/IpdiscoverOcslink.php:455
+#: src/IpdiscoverOcslink.php:456
 msgid "Known Subnets"
 msgstr "Known Subnets"
 
-#: src/IpdiscoverOcslink.php:456
+#: src/IpdiscoverOcslink.php:457
 msgid "Unknown Subnets"
 msgstr "Unknown Subnets"
 
-#: src/IpdiscoverOcslink.php:464
+#: src/IpdiscoverOcslink.php:465
 msgid "Import IPDiscover"
 msgstr "Import IPDiscover"
 
-#: src/IpdiscoverOcslink.php:464
+#: src/IpdiscoverOcslink.php:465
 msgid "Link IPDiscover"
 msgstr "Link IPDiscover"
 
-#: src/IpdiscoverOcslink.php:756 src/IpdiscoverOcslink.php:1236
+#: src/IpdiscoverOcslink.php:757 src/IpdiscoverOcslink.php:1237
 msgid "Non Inventoried"
 msgstr "Non Inventoried"
 
-#: src/IpdiscoverOcslink.php:757 src/IpdiscoverOcslink.php:1234
+#: src/IpdiscoverOcslink.php:758 src/IpdiscoverOcslink.php:1235
 msgid "Inventoried"
 msgstr "Inventoried"
 
-#: src/IpdiscoverOcslink.php:758 src/IpdiscoverOcslink.php:1243
+#: src/IpdiscoverOcslink.php:759 src/IpdiscoverOcslink.php:1244
 msgid "Identified"
 msgstr "Identified"
 
-#: src/IpdiscoverOcslink.php:759 src/IpdiscoverOcslink.php:1235
+#: src/IpdiscoverOcslink.php:760 src/IpdiscoverOcslink.php:1236
 msgid "Imported / Linked"
 msgstr "Imported / Linked"
 
-#: src/IpdiscoverOcslink.php:996
+#: src/IpdiscoverOcslink.php:997
 msgid "Unable to add. an object with same MAC address already exists."
 msgstr "Unable to add. an object with same MAC address already exists."
 
-#: src/IpdiscoverOcslink.php:1380 src/IpdiscoverOcslink.php:1388
+#: src/IpdiscoverOcslink.php:1381 src/IpdiscoverOcslink.php:1389
 msgid "OCS Type"
 msgstr "OCS Type"
 
-#: src/IpdiscoverOcslink.php:1386
+#: src/IpdiscoverOcslink.php:1387
 msgid "DNS"
 msgstr "DNS"
 
-#: src/IpdiscoverOcslink.php:1395
+#: src/IpdiscoverOcslink.php:1396
 msgid "GLPI Type"
 msgstr "GLPI Type"
 
-#: src/IpdiscoverOcslink.php:1397 src/SnmpOcslink.php:1927
-#: src/OcsServer.php:1977
+#: src/IpdiscoverOcslink.php:1398 src/SnmpOcslink.php:1927
+#: src/OcsServer.php:1975
 msgid "Item to link"
 msgstr "Item to link"
 
-#: src/IpdiscoverOcslink.php:1439
-#: src/NotificationTargetRuleImportEntity.php:131
+#: src/IpdiscoverOcslink.php:1440
+#: src/NotificationTargetRuleImportEntity.php:146
 msgid "Link"
 msgstr "Link"
 
-#: src/IpdiscoverOcslink.php:1440
+#: src/IpdiscoverOcslink.php:1441
 msgctxt "button"
 msgid "Delete from OCSNG"
 msgstr "Delete from OCSNG"
 
-#: src/IpdiscoverOcslink.php:1457
+#: src/IpdiscoverOcslink.php:1458
 msgid "No new IPDiscover device to import"
 msgstr "No new IPDiscover device to import"
 
-#: src/Profile.php:250
+#: src/Profile.php:248
 msgid "Manually synchronization"
 msgstr "Manually synchronization"
 
-#: src/Profile.php:255
+#: src/Profile.php:253
 msgid "See information"
 msgstr "See information"
 
-#: src/Profile.php:264
+#: src/Profile.php:262
 msgid "Import computer"
 msgstr "Import computer"
 
-#: src/Profile.php:269
+#: src/Profile.php:267
 msgid "Link computer"
 msgstr "Link computer"
 
@@ -520,7 +516,7 @@ msgstr "Link computer"
 msgid "Process information"
 msgstr "Process information"
 
-#: src/Thread.php:172 src/Detail.php:107
+#: src/Thread.php:172 src/Detail.php:111
 msgid "Thread"
 msgstr "Thread"
 
@@ -532,22 +528,19 @@ msgstr "Beginning date of execution"
 msgid "Ending date of execution"
 msgstr "Ending date of execution"
 
-#: src/Thread.php:177 src/Thread.php:375 src/Detail.php:213
-#: src/OcsProcess.php:1732
+#: src/Thread.php:177 src/Thread.php:375 src/OcsProcess.php:1732
 msgid "Computers synchronized"
 msgstr "Computers synchronized"
 
-#: src/Thread.php:178 src/Thread.php:376 src/Detail.php:207
-#: src/OcsProcess.php:1733
+#: src/Thread.php:178 src/Thread.php:376 src/OcsProcess.php:1733
 msgid "Computers linked"
 msgstr "Computers linked"
 
-#: src/Thread.php:180 src/Thread.php:378 src/Detail.php:210
-#: src/OcsProcess.php:1734
+#: src/Thread.php:180 src/Thread.php:378 src/OcsProcess.php:1734
 msgid "Computers not updated"
 msgstr "Computers not updated"
 
-#: src/Thread.php:181 src/Thread.php:379 src/Detail.php:216
+#: src/Thread.php:181 src/Thread.php:379
 msgid "Computers not unique"
 msgstr "Computers not unique"
 
@@ -575,7 +568,7 @@ msgstr "Total of treated computers"
 msgid "All servers"
 msgstr "All servers"
 
-#: src/Thread.php:369 src/Detail.php:92
+#: src/Thread.php:369 src/Detail.php:96
 msgid "Process"
 msgstr "Process"
 
@@ -608,79 +601,78 @@ msgstr "Clean processes"
 msgid "Delete processes after"
 msgstr "Delete processes after"
 
-#: src/Notimportedcomputer.php:65 src/Notimportedcomputer.php:146
-#: src/Detail.php:52 src/Detail.php:200
+#: src/Notimportedcomputer.php:62
 msgid "Computer not imported"
 msgid_plural "Computers not imported"
 msgstr[0] "Computer not imported"
 msgstr[1] "Computers not imported"
 
-#: src/Notimportedcomputer.php:157
-#: src/NotificationTargetNotimportedcomputer.php:101 src/Detail.php:60
-#: hook.php:1182
+#: src/Notimportedcomputer.php:87
+#: src/NotificationTargetNotimportedcomputer.php:115 src/Detail.php:64
+#: hook.php:1183
 msgid "OCSNG ID"
 msgstr "OCSNG ID"
 
-#: src/Notimportedcomputer.php:165 src/Ocslink.php:161 hook.php:1169
+#: src/Notimportedcomputer.php:95 src/Ocslink.php:161 hook.php:1170
 msgid "Inventory agent"
 msgstr "Inventory agent"
 
-#: src/Notimportedcomputer.php:173
-#: src/NotificationTargetNotimportedcomputer.php:102
+#: src/Notimportedcomputer.php:103
+#: src/NotificationTargetNotimportedcomputer.php:116
 msgid "Device ID"
 msgstr "Device ID"
 
-#: src/Notimportedcomputer.php:420
+#: src/Notimportedcomputer.php:350
 msgid "Can't affect an entity"
 msgstr "Can't affect an entity"
 
-#: src/Notimportedcomputer.php:423
+#: src/Notimportedcomputer.php:353
 msgid "Unicity criteria not verified"
 msgstr "Unicity criteria not verified"
 
-#: src/Notimportedcomputer.php:426 src/Detail.php:219
+#: src/Notimportedcomputer.php:356 src/Detail.php:240
 msgid "Import refused by rule"
 msgstr "Import refused by rule"
 
-#: src/Notimportedcomputer.php:449 src/Notimportedcomputer.php:524
+#: src/Notimportedcomputer.php:379 src/Notimportedcomputer.php:454
 msgid "Error to contact ocs server"
 msgstr "Error to contact ocs server"
 
-#: src/Notimportedcomputer.php:637
+#: src/Notimportedcomputer.php:567
 msgid "Send OCSNG not imported computers alert failed"
 msgstr "Send OCSNG not imported computers alert failed"
 
-#: src/Notimportedcomputer.php:668
+#: src/Notimportedcomputer.php:598
 msgid "Not imported computers alert"
 msgstr "Not imported computers alert"
 
-#: src/Dashboard.php:83 src/Dashboard.php:169
+#: src/Dashboard.php:81 src/Dashboard.php:167
 msgid "Last synchronization of computers by month"
 msgstr "Last synchronization of computers by month"
 
-#: src/Dashboard.php:85 src/Dashboard.php:170
+#: src/Dashboard.php:83 src/Dashboard.php:168
 msgid "Display synchronization of computers by month"
 msgstr "Display synchronization of computers by month"
 
-#: src/Dashboard.php:87 src/Dashboard.php:285
+#: src/Dashboard.php:85 src/Dashboard.php:283
 msgid "Detail of imported computers"
 msgstr "Detail of imported computers"
 
-#: src/Dashboard.php:89 src/Dashboard.php:286
+#: src/Dashboard.php:87 src/Dashboard.php:284
 msgid ""
 "Number of OCSNG computers, Fusion Inventory computer, without agent computers"
 msgstr ""
 "Number of OCSNG computers, Fusion Inventory computer, without agent computers"
 
-#: src/Dashboard.php:152
+#: src/Dashboard.php:150
 msgid "Computers number"
 msgstr "Computers number"
 
-#: src/Dashboard.php:245 src/Dashboard.php:246 src/OcsServer.php:2477
+#: src/Dashboard.php:243 src/Dashboard.php:244 src/OcsServer.php:2461
 msgid "OCS Inventory NG"
 msgstr "OCS Inventory NG"
 
-#: src/Dashboard.php:277 src/Dashboard.php:279
+#: src/Dashboard.php:275 src/Dashboard.php:277
 msgid "Without agent"
 msgstr "Without agent"
 
@@ -708,7 +700,7 @@ msgstr ""
 msgid "No unknown network port type from OCS !"
 msgstr "No unknown network port type from OCS !"
 
-#: src/Components/Hardware.php:249 src/OcsProcess.php:410
+#: src/Components/Hardware.php:248 src/OcsProcess.php:410
 msgid "Swap"
 msgstr "Swap"
 
@@ -760,43 +752,43 @@ msgstr "Disables AU"
 msgid "Customapp"
 msgstr "Customapp"
 
-#: src/Components/OS.php:86 src/Components/OS.php:95
+#: src/Components/OS.php:89 src/Components/OS.php:98
 msgid "Product ID of the operating system"
 msgstr "Product ID of the operating system"
 
-#: src/Components/Runningprocess.php:59 src/OcsServer.php:670
+#: src/Components/Runningprocess.php:58 src/OcsServer.php:670
 msgid "Running Process"
 msgstr "Running Process"
 
-#: src/Components/Runningprocess.php:205 hook.php:1295
+#: src/Components/Runningprocess.php:204 hook.php:1296
 msgid "Process name"
 msgstr "Process name"
 
-#: src/Components/Runningprocess.php:206
+#: src/Components/Runningprocess.php:205
 msgid "Process ID"
 msgstr "Process ID"
 
-#: src/Components/Runningprocess.php:208
+#: src/Components/Runningprocess.php:207
 msgid "Process memory"
 msgstr "Process memory"
 
-#: src/Components/Runningprocess.php:209
+#: src/Components/Runningprocess.php:208
 msgid "Command line"
 msgstr "Command line"
 
-#: src/Components/Runningprocess.php:211
+#: src/Components/Runningprocess.php:210
 msgid "Company"
 msgstr "Company"
 
-#: src/Components/Networkshare.php:61 src/OcsServer.php:668
+#: src/Components/Networkshare.php:60 src/OcsServer.php:668
 msgid "Network shares"
 msgstr "Network shares"
 
-#: src/Components/Networkshare.php:222 src/Components/RegistryKey.php:164
+#: src/Components/Networkshare.php:221 src/Components/RegistryKey.php:164
 msgid "Path"
 msgstr "Path"
 
-#: src/Components/Networkshare.php:226
+#: src/Components/Networkshare.php:225
 msgid "Quota"
 msgstr "Quota"
 
@@ -804,15 +796,15 @@ msgstr "Quota"
 msgid "Bitlocker"
 msgstr "Bitlocker"
 
-#: src/Components/Bitlockerstatus.php:183
+#: src/Components/Bitlockerstatus.php:184
 msgid "Volume type"
 msgstr "Volume type"
 
-#: src/Components/Bitlockerstatus.php:184
+#: src/Components/Bitlockerstatus.php:185
 msgid "Protection status"
 msgstr "Protection status"
 
-#: src/Components/Bitlockerstatus.php:185
+#: src/Components/Bitlockerstatus.php:186
 msgid "Volume initialization for protection"
 msgstr "Volume initialization for protection"
 
@@ -820,15 +812,15 @@ msgstr "Volume initialization for protection"
 msgid "Software deleted by OCSNG synchronization"
 msgstr "Software deleted by OCSNG synchronization"
 
-#: src/Components/Winuser.php:59 src/OcsServer.php:666
+#: src/Components/Winuser.php:58 src/OcsServer.php:666
 msgid "Windows Users"
 msgstr "Windows Users"
 
-#: src/Components/Winuser.php:216
+#: src/Components/Winuser.php:215
 msgid "Status"
 msgstr "Status"
 
-#: src/Components/Winuser.php:217
+#: src/Components/Winuser.php:216
 msgid "SID"
 msgstr "SID"
 
@@ -872,23 +864,23 @@ msgstr "Teamviewer ID"
 msgid "Teamviewer direct access"
 msgstr "Teamviewer direct access"
 
-#: src/Components/Proxysetting.php:60 src/OcsServer.php:665
+#: src/Components/Proxysetting.php:59 src/OcsServer.php:665
 msgid "Proxy Settings"
 msgstr "Proxy Settings"
 
-#: src/Components/Proxysetting.php:213 hook.php:1270
+#: src/Components/Proxysetting.php:212 hook.php:1271
 msgid "Proxy enabled"
 msgstr "Proxy enabled"
 
-#: src/Components/Proxysetting.php:214
+#: src/Components/Proxysetting.php:213
 msgid "Auto Config URL"
 msgstr "Auto Config URL"
 
-#: src/Components/Proxysetting.php:215 hook.php:1278
+#: src/Components/Proxysetting.php:214 hook.php:1279
 msgid "Proxy address"
 msgstr "Proxy address"
 
-#: src/Components/Proxysetting.php:216
+#: src/Components/Proxysetting.php:215
 msgid "Proxy exceptions"
 msgstr "Proxy exceptions"
 
@@ -896,7 +888,7 @@ msgstr "Proxy exceptions"
 msgid "Services"
 msgstr "Services"
 
-#: src/Components/Service.php:206 hook.php:1286
+#: src/Components/Service.php:206
 msgid "Name of the service"
 msgstr "Name of the service"
 
@@ -929,7 +921,7 @@ msgid "Spec Exit code"
 msgstr "Spec Exit code"
 
 #: src/Components/RegistryKey.php:65 src/Components/RegistryKey.php:159
-#: src/OcsServer.php:598 hook.php:1225 hook.php:1242
+#: src/OcsServer.php:598
 msgid "Registry"
 msgstr "Registry"
 
@@ -944,7 +936,7 @@ msgstr[1] "%d registry keys found"
 msgid "Hive"
 msgstr "Hive"
 
-#: src/Components/RegistryKey.php:165 hook.php:1229
+#: src/Components/RegistryKey.php:165
 msgid "Key/Value"
 msgstr "Key/Value"
 
@@ -956,7 +948,7 @@ msgstr "No key found in registry"
 msgid "OCSNG SNMP"
 msgstr "OCSNG SNMP"
 
-#: src/SnmpOcslink.php:101 src/Menu.php:230 hook.php:1306
+#: src/SnmpOcslink.php:101 src/Menu.php:229
 msgid "SNMP Import"
 msgstr "SNMP Import"
 
@@ -1250,15 +1242,15 @@ msgstr "No new SNMP device to be updated"
 msgid "OCS Inventory NG Import informations"
 msgstr "OCS Inventory NG Import informations"
 
-#: src/Ocslink.php:163 hook.php:1142 hook.php:1308
+#: src/Ocslink.php:163 hook.php:1143 hook.php:1309
 msgid "GLPI import date"
 msgstr "GLPI import date"
 
-#: src/Ocslink.php:167 hook.php:1190
+#: src/Ocslink.php:167
 msgid "Last OCSNG connection date"
 msgstr "Last OCSNG connection date"
 
-#: src/Ocslink.php:170 hook.php:1199
+#: src/Ocslink.php:170 hook.php:1200
 msgid "IP Source"
 msgstr "IP Source"
 
@@ -1277,16 +1269,6 @@ msgstr "Deleted in OCSNG"
 #: src/Ocslink.php:759
 msgid "Linked with an OCSNG computer"
 msgstr "Linked with an OCSNG computer"
-
-#: src/Ocslink.php:766
-#, php-format
-msgid "The OCSNG ID of the computer changed from %1$s to %2$s"
-msgstr "The OCSNG ID of the computer changed from %1$s to %2$s"
-
-#: src/Ocslink.php:776
-#, php-format
-msgid "The OCSNG TAG of the computer changed from %1$s to %2$s"
-msgstr "The OCSNG TAG of the computer changed from %1$s to %2$s"
 
 #: src/Ocslink.php:1183
 msgid "Unlock field and import OCSNG data"
@@ -1342,11 +1324,11 @@ msgstr "Limit each massive import to this number of objects"
 msgid "Datas to import"
 msgstr "Datas to import"
 
-#: src/OcsServer.php:122 src/OcsServer.php:804
+#: src/OcsServer.php:122 src/OcsServer.php:808
 msgid "Import options"
 msgstr "Import options"
 
-#: src/OcsServer.php:123 src/OcsServer.php:767
+#: src/OcsServer.php:123 src/OcsServer.php:771
 msgid "General history"
 msgstr "General history"
 
@@ -1379,15 +1361,15 @@ msgstr "Setup rules for select criteria for items link"
 msgid "See Setup : Datas to import before"
 msgstr "See Setup : Datas to import before"
 
-#: src/OcsServer.php:444 src/OcsServer.php:1927
+#: src/OcsServer.php:444 src/OcsServer.php:1925
 msgid "Import or link new computers"
 msgstr "Import or link new computers"
 
-#: src/OcsServer.php:451 src/Menu.php:96
+#: src/OcsServer.php:451 src/Menu.php:95
 msgid "Synchronize computers already imported"
 msgstr "Synchronize computers already imported"
 
-#: src/OcsServer.php:458 src/Menu.php:100
+#: src/OcsServer.php:458 src/Menu.php:99
 msgid "Scripts execution of automatic actions"
 msgstr "Scripts execution of automatic actions"
 
@@ -1627,96 +1609,96 @@ msgstr ""
 msgid "OCSNG administrative information"
 msgstr "OCSNG administrative information"
 
-#: src/OcsServer.php:696
+#: src/OcsServer.php:700
 msgid "Installation / Update / Uninstallation"
 msgstr "Installation / Update / Uninstallation"
 
-#: src/OcsServer.php:697
+#: src/OcsServer.php:701
 msgid "Installation / Update"
 msgstr "Installation / Update"
 
-#: src/OcsServer.php:698
+#: src/OcsServer.php:702
 msgid "Uninstallation"
 msgstr "Uninstallation"
 
-#: src/OcsServer.php:740
+#: src/OcsServer.php:744
 msgid "Do history"
 msgstr "Do history"
 
-#: src/OcsServer.php:742
+#: src/OcsServer.php:746
 msgid "System history"
 msgstr "System history"
 
-#: src/OcsServer.php:744
+#: src/OcsServer.php:748
 msgid "Bios history"
 msgstr "Bios history"
 
-#: src/OcsServer.php:747
+#: src/OcsServer.php:751
 msgid "Devices history"
 msgstr "Devices history"
 
-#: src/OcsServer.php:748
+#: src/OcsServer.php:752
 msgid "Volumes history"
 msgstr "Volumes history"
 
-#: src/OcsServer.php:749
+#: src/OcsServer.php:753
 msgid "Network history"
 msgstr "Network history"
 
-#: src/OcsServer.php:750
+#: src/OcsServer.php:754
 msgid "Monitor connection history"
 msgstr "Monitor connection history"
 
-#: src/OcsServer.php:751
+#: src/OcsServer.php:755
 msgid "Printer connection history"
 msgstr "Printer connection history"
 
-#: src/OcsServer.php:752
+#: src/OcsServer.php:756
 msgid "Peripheral connection history"
 msgstr "Peripheral connection history"
 
-#: src/OcsServer.php:753
+#: src/OcsServer.php:757
 msgid "Software connection history"
 msgstr "Software connection history"
 
-#: src/OcsServer.php:754
+#: src/OcsServer.php:758
 msgid "Virtual machines history"
 msgstr "Virtual machines history"
 
-#: src/OcsServer.php:755
+#: src/OcsServer.php:759
 msgid "Administrative infos history"
 msgstr "Administrative infos history"
 
-#: src/OcsServer.php:756
+#: src/OcsServer.php:760
 msgid "Plugins history"
 msgstr "Plugins history"
 
-#: src/OcsServer.php:757
+#: src/OcsServer.php:761
 msgid "OS history"
 msgstr "OS history"
 
-#: src/OcsServer.php:792
+#: src/OcsServer.php:796
 #, php-format
 msgid "Change to state %s"
 msgstr "Change to state %s"
 
-#: src/OcsServer.php:808
+#: src/OcsServer.php:812
 msgid "Web address of the OCSNG console"
 msgstr "Web address of the OCSNG console"
 
-#: src/OcsServer.php:810
+#: src/OcsServer.php:814
 msgid "Limit the import to the following tags (separator $, nothing for all)"
 msgstr "Limit the import to the following tags (separator $, nothing for all)"
 
-#: src/OcsServer.php:812
+#: src/OcsServer.php:816
 msgid "Exclude the following tags (separator $, nothing for all)"
 msgstr "Exclude the following tags (separator $, nothing for all)"
 
-#: src/OcsServer.php:816 src/OcsServer.php:826
+#: src/OcsServer.php:820 src/OcsServer.php:830
 msgid "Behavior when disconnecting"
 msgstr "Behavior when disconnecting"
 
-#: src/OcsServer.php:818
+#: src/OcsServer.php:822
 msgid ""
 "Define the action to do on link with other objects when computer is "
 "disconnecting from them"
@@ -1724,27 +1706,27 @@ msgstr ""
 "Define the action to do on link with other objects when computer is "
 "disconnecting from them"
 
-#: src/OcsServer.php:822
+#: src/OcsServer.php:826
 msgid "Preserve link"
 msgstr "Preserve link"
 
-#: src/OcsServer.php:823
+#: src/OcsServer.php:827
 msgid "Put the link in dustbin and add a lock"
 msgstr "Put the link in dustbin and add a lock"
 
-#: src/OcsServer.php:824
+#: src/OcsServer.php:828
 msgid "Delete  the link permanently"
 msgstr "Delete  the link permanently"
 
-#: src/OcsServer.php:829
+#: src/OcsServer.php:833
 msgid "Behavior to the deletion of a computer in OCSNG"
 msgstr "Behavior to the deletion of a computer in OCSNG"
 
-#: src/OcsServer.php:833 src/OcsServer.php:838 src/OcsServer.php:2472
+#: src/OcsServer.php:837 src/OcsServer.php:842 src/OcsServer.php:2456
 msgid "Use the OCSNG software dictionary"
 msgstr "Use the OCSNG software dictionary"
 
-#: src/OcsServer.php:835
+#: src/OcsServer.php:839
 msgid ""
 "If Use the OCSNG software dictionary parameter is checked, no software will "
 "be imported before you setup them into OCS"
@@ -1752,13 +1734,13 @@ msgstr ""
 "If Use the OCSNG software dictionary parameter is checked, no software will "
 "be imported before you setup them into OCS"
 
-#: src/OcsServer.php:845
+#: src/OcsServer.php:849
 msgid ""
 "The automatic task ocsng is launched only if server is not in expert mode"
 msgstr ""
 "The automatic task ocsng is launched only if server is not in expert mode"
 
-#: src/OcsServer.php:846
+#: src/OcsServer.php:850
 msgid ""
 "The automatic task ocsng only synchronize existant computers, it doesn't "
 "import new computers"
@@ -1766,7 +1748,7 @@ msgstr ""
 "The automatic task ocsng only synchronize existant computers, it doesn't "
 "import new computers"
 
-#: src/OcsServer.php:847
+#: src/OcsServer.php:851
 msgid ""
 "If you want to import new computers, disable this parameter, change to "
 "expert mode and use script from system"
@@ -1774,208 +1756,208 @@ msgstr ""
 "If you want to import new computers, disable this parameter, change to "
 "expert mode and use script from system"
 
-#: src/OcsServer.php:852
+#: src/OcsServer.php:856
 msgid "Number of items to synchronize via the automatic OCSNG action"
 msgstr "Number of items to synchronize via the automatic OCSNG action"
 
-#: src/OcsServer.php:911
+#: src/OcsServer.php:915
 msgid "Database"
 msgstr "Database"
 
-#: src/OcsServer.php:914
+#: src/OcsServer.php:918
 msgid "Standard (allow manual actions)"
 msgstr "Standard (allow manual actions)"
 
-#: src/OcsServer.php:915
+#: src/OcsServer.php:919
 msgid "Expert (Fully automatic, for large configuration)"
 msgstr "Expert (Fully automatic, for large configuration)"
 
-#: src/OcsServer.php:951
+#: src/OcsServer.php:957
 msgid "Invalid OCSNG Version: RC3 is required"
 msgstr "Invalid OCSNG Version: RC3 is required"
 
-#: src/OcsServer.php:954
+#: src/OcsServer.php:959
 msgid "Invalid OCSNG configuration (TRACE_DELETED must be active)"
 msgstr "Invalid OCSNG configuration (TRACE_DELETED must be active)"
 
-#: src/OcsServer.php:963
+#: src/OcsServer.php:962
 msgid "Connection to database successful"
 msgstr "Connection to database successful"
 
-#: src/OcsServer.php:964
+#: src/OcsServer.php:963
 msgid "Valid OCSNG configuration and version"
 msgstr "Valid OCSNG configuration and version"
 
-#: src/OcsServer.php:1008
+#: src/OcsServer.php:1006
 msgid "The OCS console URL must start with http:// or https://"
 msgstr "The OCS console URL must start with http:// or https://"
 
-#: src/OcsServer.php:1128
+#: src/OcsServer.php:1126
 msgid "Unable to add. The OCSNG server already exists."
 msgstr "Unable to add. The OCSNG server already exists."
 
-#: src/OcsServer.php:1812
+#: src/OcsServer.php:1810
 msgid "Existing in GLPI"
 msgstr "Existing in GLPI"
 
-#: src/OcsServer.php:1813
+#: src/OcsServer.php:1811
 msgid "Existing in OCSNG"
 msgstr "Existing in OCSNG"
 
-#: src/OcsServer.php:1824
+#: src/OcsServer.php:1822
 msgid "No item to clean"
 msgstr "No item to clean"
 
-#: src/OcsServer.php:1866
+#: src/OcsServer.php:1864
 msgid "Computers updated in OCSNG"
 msgstr "Computers updated in OCSNG"
 
-#: src/OcsServer.php:1873 src/OcsServer.php:1964
+#: src/OcsServer.php:1871 src/OcsServer.php:1962
 msgid "All"
 msgstr "All"
 
-#: src/OcsServer.php:1934
+#: src/OcsServer.php:1932
 msgid "Manual import mode"
 msgstr "Manual import mode"
 
-#: src/OcsServer.php:1937
+#: src/OcsServer.php:1935
 msgid "Disable preview"
 msgstr "Disable preview"
 
-#: src/OcsServer.php:1939
+#: src/OcsServer.php:1937
 msgid "Enable preview for import"
 msgstr "Enable preview for import"
 
-#: src/OcsServer.php:1940
+#: src/OcsServer.php:1938
 msgid "Enable preview for linking"
 msgstr "Enable preview for linking"
 
-#: src/OcsServer.php:1943
+#: src/OcsServer.php:1941
 msgid "Check first that duplicates have been correctly managed in OCSNG"
 msgstr "Check first that duplicates have been correctly managed in OCSNG"
 
-#: src/OcsServer.php:1973
+#: src/OcsServer.php:1971
 msgid "Override unicity check ?"
 msgstr "Override unicity check ?"
 
-#: src/OcsServer.php:1974
+#: src/OcsServer.php:1972
 msgid "Match the rule ?"
 msgstr "Match the rule ?"
 
-#: src/OcsServer.php:1975
+#: src/OcsServer.php:1973
 msgid "Destination entity"
 msgstr "Destination entity"
 
-#: src/OcsServer.php:2052
+#: src/OcsServer.php:2050
 msgid "Purge computers in OCSNG"
 msgstr "Purge computers in OCSNG"
 
-#: src/OcsServer.php:2055
+#: src/OcsServer.php:2053
 msgid "Delete computers"
 msgstr "Delete computers"
 
-#: src/OcsServer.php:2073
+#: src/OcsServer.php:2071
 msgid "Launch OCSNG synchronization script"
 msgstr "Launch OCSNG synchronization script"
 
-#: src/OcsServer.php:2077
+#: src/OcsServer.php:2075
 msgid "Clean old agents & drop from OCSNG software"
 msgstr "Clean old agents & drop from OCSNG software"
 
-#: src/OcsServer.php:2081
+#: src/OcsServer.php:2079
 msgid "Restore computers from the date of last inventory"
 msgstr "Restore computers from the date of last inventory"
 
-#: src/OcsServer.php:2127
+#: src/OcsServer.php:2125
 msgid "Clean old agents OK"
 msgstr "Clean old agents OK"
 
-#: src/OcsServer.php:2130
+#: src/OcsServer.php:2128
 msgid "Clean old agents failed"
 msgstr "Clean old agents failed"
 
-#: src/OcsServer.php:2142
+#: src/OcsServer.php:2140
 msgid "Delete computers OK"
 msgstr "Delete computers OK"
 
-#: src/OcsServer.php:2145
+#: src/OcsServer.php:2143
 msgid "Delete computers failed"
 msgstr "Delete computers failed"
 
-#: src/OcsServer.php:2225
+#: src/OcsServer.php:2223
 msgid "Restore computers OK"
 msgstr "Restore computers OK"
 
-#: src/OcsServer.php:2228
+#: src/OcsServer.php:2226
 msgid "Restore computers failed"
 msgstr "Restore computers failed"
 
-#: src/OcsServer.php:2258
+#: src/OcsServer.php:2256
 msgid "Launch OCSNG synchronization script from server"
 msgstr "Launch OCSNG synchronization script from server"
 
-#: src/OcsServer.php:2537
+#: src/OcsServer.php:2521
 msgid "No data available in table"
 msgstr "No data available in table"
 
-#: src/OcsServer.php:2538
+#: src/OcsServer.php:2522
 msgid "Showing _START_ to _END_ of _TOTAL_ entries"
 msgstr "Showing _START_ to _END_ of _TOTAL_ entries"
 
-#: src/OcsServer.php:2539
+#: src/OcsServer.php:2523
 msgid "Showing 0 to 0 of 0 entries"
 msgstr "Showing 0 to 0 of 0 entries"
 
-#: src/OcsServer.php:2540
+#: src/OcsServer.php:2524
 msgid "(filtered from _MAX_ total entries)"
 msgstr "(filtered from _MAX_ total entries)"
 
-#: src/OcsServer.php:2543
+#: src/OcsServer.php:2527
 msgid "Show _MENU_ entries"
 msgstr "Show _MENU_ entries"
 
-#: src/OcsServer.php:2547
+#: src/OcsServer.php:2531
 msgid "No matching records found"
 msgstr "No matching records found"
 
-#: src/OcsServer.php:2555
+#: src/OcsServer.php:2539
 msgid ": activate to sort column ascending"
 msgstr ": activate to sort column ascending"
 
-#: src/OcsServer.php:2556
+#: src/OcsServer.php:2540
 msgid ": activate to sort column descending"
 msgstr ": activate to sort column descending"
 
-#: src/OcsServer.php:2558
+#: src/OcsServer.php:2542
 msgid "Close"
 msgstr "Close"
 
-#: src/OcsServer.php:2559
+#: src/OcsServer.php:2543
 msgid "Maximize"
 msgstr "Maximize"
 
-#: src/OcsServer.php:2560
+#: src/OcsServer.php:2544
 msgid "Minimize"
 msgstr "Minimize"
 
-#: src/OcsServer.php:2561
+#: src/OcsServer.php:2545
 msgid "Refresh"
 msgstr "Refresh"
 
-#: src/OcsServer.php:2563
+#: src/OcsServer.php:2547
 msgid "Column visibility"
 msgstr "Column visibility"
 
-#: src/OcsServer.php:2567
+#: src/OcsServer.php:2551
 #, php-format
 msgid "%d rows selected"
 msgstr "%d rows selected"
 
-#: src/RuleImportEntity.php:62 src/NotificationTargetRuleImportEntity.php:50
+#: src/RuleImportEntity.php:63 src/NotificationTargetRuleImportEntity.php:52
 msgid "Elements not match with the rule"
 msgstr "Elements not match with the rule"
 
-#: src/RuleImportEntity.php:75
+#: src/RuleImportEntity.php:76
 msgid ""
 "Alerts on computers that no longer respond the rules for assigning an item "
 "to an entity"
@@ -1983,32 +1965,28 @@ msgstr ""
 "Alerts on computers that no longer respond the rules for assigning an item "
 "to an entity"
 
-#: src/RuleImportEntity.php:121
+#: src/RuleImportEntity.php:122
 #, php-format
 msgid "Items that do not meet the allocation rules for the entity %s: %s"
 msgstr "Items that do not meet the allocation rules for the entity %s: %s"
 
-#: src/Detail.php:76
+#: src/Detail.php:80
 msgid "Process time"
 msgstr "Process time"
 
-#: src/Detail.php:115
+#: src/Detail.php:119
 msgid "Rules checked"
 msgstr "Rules checked"
 
-#: src/Detail.php:204 src/OcsProcess.php:1731
-msgid "Computers imported"
-msgstr "Computers imported"
-
-#: src/Menu.php:92
+#: src/Menu.php:91
 msgid "Import new computers"
 msgstr "Import new computers"
 
-#: src/Menu.php:205
+#: src/Menu.php:204
 msgid "Server Setup"
 msgstr "Server Setup"
 
-#: src/Menu.php:207
+#: src/Menu.php:206
 msgid "Inventory Import"
 msgstr "Inventory Import"
 
@@ -2030,6 +2008,10 @@ msgid ""
 msgstr ""
 "Unable to import, GLPI computer is already related to an element of OCSNG "
 "(%d)"
+
+#: src/OcsProcess.php:1731
+msgid "Computers imported"
+msgstr "Computers imported"
 
 #: src/OcsProcess.php:1735
 msgid "Computers don't check any rule"
@@ -2091,19 +2073,19 @@ msgstr "Statistics of the OCSNG IPDISCOVER import"
 msgid "Statistics of the OCSNG link"
 msgstr "Statistics of the OCSNG link"
 
-#: src/NotificationTargetRuleImportEntity.php:57
+#: src/NotificationTargetRuleImportEntity.php:60
 msgid "Elements not match with the rule by automatic actions"
 msgstr "Elements not match with the rule by automatic actions"
 
-#: src/NotificationTargetRuleImportEntity.php:71
+#: src/NotificationTargetRuleImportEntity.php:75
 msgid "Verification of assignment rules for entities and locations"
 msgstr "Verification of assignment rules for entities and locations"
 
-#: src/NotificationTargetRuleImportEntity.php:94
+#: src/NotificationTargetRuleImportEntity.php:104
 msgid "No rules match"
 msgstr "No rules match"
 
-#: src/NotificationTargetRuleImportEntity.php:137
+#: src/NotificationTargetRuleImportEntity.php:152
 msgid "Data error"
 msgstr "Data error"
 
@@ -2123,64 +2105,22 @@ msgstr "Blacklisted MAC"
 msgid "Blacklisted IP"
 msgstr "Blacklisted IP"
 
-#: hook.php:1075
+#: hook.php:1076
 msgid "Restart import"
 msgstr "Restart import"
 
-#: hook.php:1078
-msgid "Import in the entity"
-msgstr "Import in the entity"
-
-#: hook.php:1084
-msgid "Delete computer in OCSNG"
-msgstr "Delete computer in OCSNG"
-
-#: hook.php:1101
-msgid "Lock fields"
-msgstr "Lock fields"
-
-#: hook.php:1106
-msgid "Unlock fields"
-msgstr "Unlock fields"
-
-#: hook.php:1119
-msgid "Update networkport types"
-msgstr "Update networkport types"
-
-#: hook.php:1246
-msgid "OCSNG name"
-msgstr "OCSNG name"
-
-#: hook.php:1792
+#: hook.php:1794
 msgid "Link possible"
 msgstr "Link possible"
 
-#: hook.php:1796
+#: hook.php:1798
 msgid "Import refused"
 msgstr "Import refused"
 
-#: hook.php:1800
+#: hook.php:1802
 msgid "New computer created in GLPI"
 msgstr "New computer created in GLPI"
 
-#: hook.php:1812
+#: hook.php:1814
 msgid "Link with computer"
 msgstr "Link with computer"
-
-#: hook.php:2070
-msgid "Locked field"
-msgid_plural "Locked fields"
-msgstr[0] "Locked field"
-msgstr[1] "Locked fields"
-
-#: hook.php:2087
-msgid "You don't use locks - See setup for activate them"
-msgstr "You don't use locks - See setup for activate them"
-
-#: hook.php:2335
-msgid ""
-"The startup date field is locked by ocsinventoryng please unlock it before "
-"update."
-msgstr ""
-"The startup date field is locked by ocsinventoryng please unlock it before "
-"update."
