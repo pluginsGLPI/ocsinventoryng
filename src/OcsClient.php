@@ -289,7 +289,7 @@ abstract class OcsClient
     /**
      * Gets the array of computers for script checkocslinks.php
      *
-     * @return array $data the list of computers
+     * @return array<int, string> the DEVICEID of each OCS computer, by ID
      */
     abstract public function getOCSComputers();
 

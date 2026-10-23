@@ -217,12 +217,6 @@ parameters:
 			path: src/Components/Customapp.php
 
 		-
-			message: '#^Parameter \#1 \$item of static method GlpiPlugin\\Ocsinventoryng\\Ocslink\:\:getOCSServerForItem\(\) expects CommonDBTM, CommonGLPI given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Components/Customapp.php
-
-		-
 			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:deleteByCriteria\(\) expects bool, int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -463,12 +457,6 @@ parameters:
 			path: src/Components/Networkshare.php
 
 		-
-			message: '#^Parameter \#1 \$item of static method GlpiPlugin\\Ocsinventoryng\\Ocslink\:\:getOCSServerForItem\(\) expects CommonDBTM, CommonGLPI given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Components/Networkshare.php
-
-		-
 			message: '#^Parameter \#1 \$size of static method Toolbox\:\:getSize\(\) expects int, float given\.$#'
 			identifier: argument.type
 			count: 2
@@ -637,12 +625,6 @@ parameters:
 			path: src/Components/Proxysetting.php
 
 		-
-			message: '#^Parameter \#1 \$item of static method GlpiPlugin\\Ocsinventoryng\\Ocslink\:\:getOCSServerForItem\(\) expects CommonDBTM, CommonGLPI given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Components/Proxysetting.php
-
-		-
 			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:deleteByCriteria\(\) expects bool, int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -721,12 +703,6 @@ parameters:
 			path: src/Components/Runningprocess.php
 
 		-
-			message: '#^Parameter \#1 \$item of static method GlpiPlugin\\Ocsinventoryng\\Ocslink\:\:getOCSServerForItem\(\) expects CommonDBTM, CommonGLPI given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Components/Runningprocess.php
-
-		-
 			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:deleteByCriteria\(\) expects bool, int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -758,12 +734,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$comp of static method GlpiPlugin\\Ocsinventoryng\\Components\\Service\:\:showForComputer\(\) expects Computer, CommonGLPI given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Components/Service.php
-
-		-
-			message: '#^Parameter \#1 \$item of static method GlpiPlugin\\Ocsinventoryng\\Ocslink\:\:getOCSServerForItem\(\) expects CommonDBTM, CommonGLPI given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Components/Service.php
@@ -847,12 +817,6 @@ parameters:
 			path: src/Components/Teamviewer.php
 
 		-
-			message: '#^Parameter \#1 \$item of static method GlpiPlugin\\Ocsinventoryng\\Ocslink\:\:getOCSServerForItem\(\) expects CommonDBTM, CommonGLPI given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Components/Teamviewer.php
-
-		-
 			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:deleteByCriteria\(\) expects bool, int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -925,12 +889,6 @@ parameters:
 			path: src/Components/Winupdate.php
 
 		-
-			message: '#^Parameter \#1 \$item of static method GlpiPlugin\\Ocsinventoryng\\Ocslink\:\:getOCSServerForItem\(\) expects CommonDBTM, CommonGLPI given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Components/Winupdate.php
-
-		-
 			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:deleteByCriteria\(\) expects bool, int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -962,12 +920,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$comp of static method GlpiPlugin\\Ocsinventoryng\\Components\\Winuser\:\:showForComputer\(\) expects Computer, CommonGLPI given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Components/Winuser.php
-
-		-
-			message: '#^Parameter \#1 \$item of static method GlpiPlugin\\Ocsinventoryng\\Ocslink\:\:getOCSServerForItem\(\) expects CommonDBTM, CommonGLPI given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Components/Winuser.php
@@ -2017,12 +1969,6 @@ parameters:
 			path: src/OcsSoapClient.php
 
 		-
-			message: '#^Return type \(void\) of method GlpiPlugin\\Ocsinventoryng\\OcsSoapClient\:\:getOCSComputers\(\) should be compatible with return type \(array\) of method GlpiPlugin\\Ocsinventoryng\\OcsClient\:\:getOCSComputers\(\)$#'
-			identifier: method.childReturnType
-			count: 1
-			path: src/OcsSoapClient.php
-
-		-
 			message: '#^Return type \(void\) of method GlpiPlugin\\Ocsinventoryng\\OcsSoapClient\:\:getOldAgents\(\) should be compatible with return type \(array\) of method GlpiPlugin\\Ocsinventoryng\\OcsClient\:\:getOldAgents\(\)$#'
 			identifier: method.childReturnType
 			count: 1
@@ -2059,18 +2005,6 @@ parameters:
 			path: src/Ocslink.php
 
 		-
-			message: '#^Method GlpiPlugin\\Ocsinventoryng\\Ocslink\:\:getOCSServerForItem\(\) should return int but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/Ocslink.php
-
-		-
-			message: '#^Method GlpiPlugin\\Ocsinventoryng\\Ocslink\:\:getOCSServerForItem\(\) should return int but returns false\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Ocslink.php
-
-		-
 			message: '#^Method GlpiPlugin\\Ocsinventoryng\\Ocslink\:\:history\(\) should return int but returns bool\.$#'
 			identifier: return.type
 			count: 1
@@ -2090,12 +2024,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$comp of static method GlpiPlugin\\Ocsinventoryng\\Components\\Teamviewer\:\:getDirectAccessLinks\(\) expects Computer, CommonDBTM given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Ocslink.php
-
-		-
-			message: '#^Parameter \#1 \$item of static method GlpiPlugin\\Ocsinventoryng\\Ocslink\:\:getOCSServerForItem\(\) expects CommonDBTM, CommonGLPI given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Ocslink.php

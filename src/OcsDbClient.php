@@ -1135,8 +1135,8 @@ class OcsDbClient extends OcsClient
         ]);
         $data = [];
 
-        foreach ($request as $num) {
-            $data = $num;
+        foreach ($request as $computer) {
+            $data[$computer['ID']] = $computer['DEVICEID'];
         }
         return $data;
     }

@@ -351,9 +351,14 @@ class OcsSoapClient extends OcsClient
     /**
      * Gets the array of computers for script checkocslinks.php
      *
-     * @return void $data the list of computers
+     * Not available through the SOAP API
+     *
+     * @return array<int, string>
      */
-    public function getOCSComputers() {}
+    public function getOCSComputers()
+    {
+        return [];
+    }
 
     /**
      *

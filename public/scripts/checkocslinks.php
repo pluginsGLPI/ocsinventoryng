@@ -121,21 +121,13 @@ foreach ($DB->request([
 
     if (isset($_GET['ocs'])) {
         $DBocs = OcsServer::getDBocs($ocsservers_id);
-        $res[] = $DBocs->getOCSComputers();
+        $hardware = $DBocs->getOCSComputers();
+        echo "  " . count($hardware) . " computers in OCS\n";
 
-        $hardware = [];
-        $nb = 0;
-        $i = 0;
-        if (count($res) > 0) {
-            foreach ($res as $k => $data) {
-                if (count($data) > 0) {
-                    $i++;
-                    $nb = count($data);
-                    $hardware[$data["ID"]] = $data["DEVICEID"];
-                    echo "$i/$nb\r";
-                }
-            }
-            echo "  $nb computers in OCS\n";
+        // An empty list would flag every link as orphan (and delete them all with clean)
+        if (count($hardware) === 0) {
+            echo "  No computer found in OCS, links not checked\n";
+            continue;
         }
 
         echo "+ Search links with no computer in OCS\n";
