@@ -79,7 +79,7 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
             Html::redirect(PLUGIN_OCS_WEBDIR . '/front/ocsng.sync.php');
         } catch (\RuntimeException $e) {
             $_SESSION["ocs_update"]['computers'] = [];
-            // Html::displayErrorMessage() is removed in GLPI 12: the message is shown after the redirect
+            // Html::displayErrorMessage() does not exist: the message is shown after the redirect
             Session::addMessageAfterRedirect(
                 htmlescape(__('Synchronization interrupted', 'ocsinventoryng') . ': ' . $e->getMessage()),
                 false,

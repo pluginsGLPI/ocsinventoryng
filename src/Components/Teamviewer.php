@@ -297,12 +297,10 @@ class Teamviewer extends \CommonDBTM
      */
     public static function generateLinkContents($link, CommonDBTM $item, bool $safe_url = true)
     {
+        // The tag of the plugin, then the tags and the URL sanitizing of the core (the name of the
+        // link goes through here too: without [TWID], it is returned as the core does)
+        $link = str_replace("[TWID]", (string) ($item->fields['twid'] ?? ''), (string) $link);
 
-        if (strstr($link, "[TWID]")) {
-            $link = str_replace("[TWID]", $item->fields['twid'], $link);
-            return [$link];
-        }
-
-        //        return parent::generateLinkContents($link, $item);
+        return parent::generateLinkContents($link, $item, $safe_url);
     }
 }

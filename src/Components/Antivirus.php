@@ -72,7 +72,7 @@ class Antivirus
         }
         $av = new ItemAntivirus();
         //update data
-        foreach ($ocsComputer as $anti) {
+        foreach ($ocsComputer as $antivirus) {
             $input     = [];
 
             if (isset($antivirus["CATEGORY"]) && $antivirus["CATEGORY"] == "AntiVirus") {

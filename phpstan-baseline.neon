@@ -43,12 +43,6 @@ parameters:
 			path: front/ocsng.sync.php
 
 		-
-			message: '#^Loose comparison using \=\= between ''id'' and ''false'' will always evaluate to false\.$#'
-			identifier: equal.alwaysFalse
-			count: 1
-			path: front/ocsngsnmp.link.php
-
-		-
 			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -70,18 +64,6 @@ parameters:
 			message: '#^Access to property \$input on an unknown class type\.$#'
 			identifier: class.notFound
 			count: 4
-			path: hook.php
-
-		-
-			message: '#^Array has 4 duplicate keys with value ''glpi_plugin_massocsimport_config'' \("glpi_plugin_massocsimport_config", "glpi_plugin_massocsimport_config", "glpi_plugin_massocsimport_config", "glpi_plugin_massocsimport_config"\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
-			path: hook.php
-
-		-
-			message: '#^Call to an undefined static method GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer\:\:getRuleMatchedMessage\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
 			path: hook.php
 
 		-
@@ -189,24 +171,6 @@ parameters:
 		-
 			message: '#^Parameter \#3 \$history of method CommonDBTM\:\:add\(\) expects bool, int given\.$#'
 			identifier: argument.type
-			count: 1
-			path: src/Components/Antivirus.php
-
-		-
-			message: '#^Result of && is always false\.$#'
-			identifier: booleanAnd.alwaysFalse
-			count: 1
-			path: src/Components/Antivirus.php
-
-		-
-			message: '#^Undefined variable\: \$antivirus$#'
-			identifier: variable.undefined
-			count: 6
-			path: src/Components/Antivirus.php
-
-		-
-			message: '#^Variable \$antivirus in isset\(\) is never defined\.$#'
-			identifier: isset.variable
 			count: 1
 			path: src/Components/Antivirus.php
 
@@ -484,18 +448,6 @@ parameters:
 			message: '#^Parameter \#3 \$history of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
 			identifier: argument.type
 			count: 3
-			path: src/Components/NetworkPort.php
-
-		-
-			message: '#^Undefined variable\: \$already_processed$#'
-			identifier: variable.undefined
-			count: 1
-			path: src/Components/NetworkPort.php
-
-		-
-			message: '#^Variable \$already_processed in empty\(\) is never defined\.$#'
-			identifier: empty.variable
-			count: 1
 			path: src/Components/NetworkPort.php
 
 		-
@@ -907,12 +859,6 @@ parameters:
 			path: src/Components/Teamviewer.php
 
 		-
-			message: '#^Method GlpiPlugin\\Ocsinventoryng\\Components\\Teamviewer\:\:generateLinkContents\(\) should return array but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/Components/Teamviewer.php
-
-		-
 			message: '#^Parameter \#1 \$comp of static method GlpiPlugin\\Ocsinventoryng\\Components\\Teamviewer\:\:showForComputer\(\) expects Computer, CommonGLPI given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1119,12 +1065,6 @@ parameters:
 		-
 			message: '#^Property DBmysql\:\:\$dbhost \(array\<string\>\|string\) does not accept int\|null\.$#'
 			identifier: assign.propertyType
-			count: 1
-			path: src/DBocs.php
-
-		-
-			message: '#^Variable \$password in isset\(\) is never defined\.$#'
-			identifier: isset.variable
 			count: 1
 			path: src/DBocs.php
 
@@ -1921,24 +1861,6 @@ parameters:
 			path: src/OcsProcess.php
 
 		-
-			message: '#^Access to offset ''delay…'' on an unknown class GlpiPlugin\\Ocsinventoryng\\datas\.$#'
-			identifier: class.notFound
-			count: 3
-			path: src/OcsServer.php
-
-		-
-			message: '#^Access to offset ''name'' on an unknown class GlpiPlugin\\Ocsinventoryng\\datas\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/OcsServer.php
-
-		-
-			message: '#^Access to offset ''ocs_db_passwd'' on an unknown class GlpiPlugin\\Ocsinventoryng\\datas\.$#'
-			identifier: class.notFound
-			count: 7
-			path: src/OcsServer.php
-
-		-
 			message: '#^Call to an undefined method CommonGLPI\:\:getField\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -2035,6 +1957,12 @@ parameters:
 			path: src/OcsServer.php
 
 		-
+			message: '#^Method GlpiPlugin\\Ocsinventoryng\\OcsServer\:\:prepareInputForAdd\(\) should return bool\|GlpiPlugin\\Ocsinventoryng\\datas but returns array\.$#'
+			identifier: return.type
+			count: 1
+			path: src/OcsServer.php
+
+		-
 			message: '#^Method GlpiPlugin\\Ocsinventoryng\\OcsServer\:\:showComputersToAdd\(\) should return bool but return statement is missing\.$#'
 			identifier: return.missing
 			count: 2
@@ -2059,18 +1987,6 @@ parameters:
 			path: src/OcsServer.php
 
 		-
-			message: '#^Parameter \#1 \$input \(GlpiPlugin\\Ocsinventoryng\\datas\) of method GlpiPlugin\\Ocsinventoryng\\OcsServer\:\:prepareInputForAdd\(\) should be compatible with parameter \$input \(array\<string, mixed\>\) of method CommonDBTM\:\:prepareInputForAdd\(\)$#'
-			identifier: method.childParameterType
-			count: 1
-			path: src/OcsServer.php
-
-		-
-			message: '#^Parameter \#1 \$input of static method GlpiPlugin\\Ocsinventoryng\\OcsServer\:\:checkOcsUrl\(\) expects array, GlpiPlugin\\Ocsinventoryng\\datas given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/OcsServer.php
-
-		-
 			message: '#^Parameter \#1 \$result of method DBmysql\:\:numrows\(\) expects mysqli_result, DBmysqlIterator given\.$#'
 			identifier: argument.type
 			count: 1
@@ -2085,12 +2001,6 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$agents of static method GlpiPlugin\\Ocsinventoryng\\Ocslink\:\:deleteComputers\(\) expects GlpiPlugin\\Ocsinventoryng\\type, array given\.$#'
 			identifier: argument.type
-			count: 1
-			path: src/OcsServer.php
-
-		-
-			message: '#^Parameter \$input of method GlpiPlugin\\Ocsinventoryng\\OcsServer\:\:prepareInputForAdd\(\) has invalid type GlpiPlugin\\Ocsinventoryng\\datas\.$#'
-			identifier: class.notFound
 			count: 1
 			path: src/OcsServer.php
 
@@ -2129,12 +2039,6 @@ parameters:
 			identifier: glpi.forbidExit
 			count: 1
 			path: src/OcsServer.php
-
-		-
-			message: '#^Class GlpiPlugin\\Ocsinventoryng\\OcsSoapRequest constructor invoked with 0 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: src/OcsSoapClient.php
 
 		-
 			message: '#^Return type \(void\) of method GlpiPlugin\\Ocsinventoryng\\OcsSoapClient\:\:getComputersToUpdate\(\) should be compatible with return type \(array\) of method GlpiPlugin\\Ocsinventoryng\\OcsClient\:\:getComputersToUpdate\(\)$#'

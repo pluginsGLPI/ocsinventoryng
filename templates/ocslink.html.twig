@@ -40,13 +40,13 @@
             <input type="hidden" name="resynch_id" value="{{ link.id }}">
             <div class="card-body">
                 <div class="row">
-                    {{ fields.htmlField('', link.ocs_deviceid, __('OCSNG DEVICE ID', 'ocsinventoryng')) }}
-                    {{ fields.htmlField('', link.tag, __('OCSNG TAG', 'ocsinventoryng')) }}
+                    {{ fields.htmlField('', link.ocs_deviceid|e, __('OCSNG DEVICE ID', 'ocsinventoryng')) }}
+                    {{ fields.htmlField('', link.tag|e, __('OCSNG TAG', 'ocsinventoryng')) }}
                     {{ fields.dropdownYesNo('use_auto_update', link.use_auto_update, __('Automatic update OCSNG', 'ocsinventoryng'), {
                         'disabled': not canedit,
                     }) }}
-                    {{ fields.htmlField('', link.uptime, __('Uptime', 'ocsinventoryng')) }}
-                    {{ fields.htmlField('', checksum, __('Checksum', 'ocsinventoryng')) }}
+                    {{ fields.htmlField('', link.uptime|e, __('Uptime', 'ocsinventoryng')) }}
+                    {{ fields.htmlField('', checksum|e, __('Checksum', 'ocsinventoryng')) }}
                 </div>
             </div>
             {% if canedit %}

@@ -119,7 +119,7 @@ class DBocs extends DBmysql
         }
 
         $hostport = explode(":", $host);
-        $password = (isset($password)) ? rawurldecode($this->dbpassword) : $this->dbpassword;
+        $password = $this->dbpassword;
         if (count($hostport) < 2) {
             // Host
             $this->dbh->real_connect($host, $this->dbuser, $password, $this->dbdefault);

@@ -132,8 +132,8 @@ class NetworkPort extends NetworkPortInstantiation
         if ($check_name) {
             $criteria['WHERE'] = $criteria['WHERE'] + ['name' => $name];
         }
-        if (!empty($already_processed)) {
-            $criteria['WHERE'] = $criteria['WHERE'] + ['id' => ['NOT IN', $already_processed]];
+        if (!empty($already_known_ports)) {
+            $criteria['WHERE'] = $criteria['WHERE'] + ['id' => ['NOT IN', $already_known_ports]];
         }
         $iterator = $DB->request($criteria);
 

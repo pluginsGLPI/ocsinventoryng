@@ -38,7 +38,7 @@
     {{ fields.dropdownArrayField('use_massimport', item.fields['use_massimport'], sync_methods, __('Synchronisation method', 'ocsinventoryng'), field_options) }}
 
     {% if not item.isNewItem() %}
-        {{ fields.htmlField('', item.fields['ocs_version'], _n('Version', 'Versions', 1), field_options) }}
+        {{ fields.htmlField('', item.fields['ocs_version']|e, _n('Version', 'Versions', 1), field_options) }}
         {% set checksum %}
             <span class="me-2">{{ item.fields['checksum'] }}</span>
             <button type="submit" name="force_checksum" value="1" class="btn btn-sm btn-outline-secondary">

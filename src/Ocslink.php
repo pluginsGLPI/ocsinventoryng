@@ -361,7 +361,7 @@ class Ocslink extends CommonDBTM
             }
         }
 
-        // Values of the link reported by the OCS agent: escaped by the template
+        // Values of the link reported by the OCS agent: escaped by the template (|e, htmlField prints raw)
         TemplateRenderer::getInstance()->display('@ocsinventoryng/ocslink.html.twig', [
             'form_url'   => Toolbox::getItemTypeFormURL(__CLASS__),
             'items_id'   => (int) $items_id,
@@ -872,7 +872,7 @@ class Ocslink extends CommonDBTM
      * @param bool $check_rights ids posted by a user (front/ocsng.clean.php): only the computers
      *                           the user may delete or update, not those of other entities
      *
-     * @return void
+     * @return int the number of links skipped (computers the user may not clean)
      */
     public static function cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_id, bool $check_rights = false)
     {
@@ -880,6 +880,7 @@ class Ocslink extends CommonDBTM
 
         $plugin_ocsinventoryng_ocsservers_id = (int) $plugin_ocsinventoryng_ocsservers_id;
         $cfg_ocs = OcsServer::getConfig($plugin_ocsinventoryng_ocsservers_id);
+        $skipped = 0;
 
         foreach ($ocslinks_id as $key => $val) {
             $data = $DB->request([
@@ -897,6 +898,7 @@ class Ocslink extends CommonDBTM
             $comp = new Computer();
             if ($check_rights
                 && !$comp->can((int) $data['computers_id'], $cfg_ocs['deleted_behavior'] == 1 ? DELETE : UPDATE)) {
+                $skipped++;
                 continue;
             }
             if ($cfg_ocs['deleted_behavior']) {
@@ -922,6 +924,8 @@ class Ocslink extends CommonDBTM
 
             $DB->delete('glpi_plugin_ocsinventoryng_ocslinks', ['id' => (int) $data["id"]]);
         }
+
+        return $skipped;
     }
 
     /**

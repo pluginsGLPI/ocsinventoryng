@@ -1,7 +1,6 @@
 <?php
 
 /*
- * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  ocsinventoryng plugin for GLPI
  Copyright (C) 2015-2025 by the ocsinventoryng Development Team.
@@ -28,7 +27,39 @@
  --------------------------------------------------------------------------
  */
 
-use GlpiPlugin\Ocsinventoryng\NetworkPortType;
+/**
+ * Psalm-only stubs of the GLPI core classes extended by the plugin.
+ *
+ * The Psalm security scan (psalm/psalm-github-security-scan) runs in a container
+ * without the GLPI core: without these declarations, Psalm crashes with
+ * "Could not get class storage for commondbtm" when it resolves a parent class.
+ * Never loaded at runtime.
+ */
 
-$dropdown = new NetworkPortType();
-include(GLPI_ROOT . "/front/dropdown.common.form.php");
+#[\AllowDynamicProperties]
+class CommonGLPI {}
+
+#[\AllowDynamicProperties]
+class CommonDBTM extends CommonGLPI
+{
+    /** @var array<string, mixed> */
+    public $fields = [];
+}
+
+#[\AllowDynamicProperties]
+class CommonDropdown extends CommonDBTM {}
+
+#[\AllowDynamicProperties]
+class CommonDBChild extends CommonDBTM {}
+
+#[\AllowDynamicProperties]
+class NotificationTarget extends CommonDBChild {}
+
+#[\AllowDynamicProperties]
+class NetworkPortInstantiation extends CommonDBChild {}
+
+#[\AllowDynamicProperties]
+class Profile extends CommonDBTM {}
+
+#[\AllowDynamicProperties]
+class DBmysql {}

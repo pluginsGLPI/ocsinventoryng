@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<psalm
+    noCache="true"
+    errorLevel="8"
+    resolveFromConfigFile="true"
+    findUnusedCode="false"
+    ensureOverrideAttribute="false"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+>
+    <projectFiles>
+        <directory name="src" />
+        <directory name="front" />
+        <directory name="ajax" />
+        <file name="hook.php" />
+        <file name="setup.php" />
+        <ignoreFiles>
+            <directory name="vendor" />
+            <directory name="tests" />
+        </ignoreFiles>
+    </projectFiles>
+
+    <!--
+        GLPI core is unavailable inside the security-scan container. Stub the
+        classes the plugin extends so Psalm can resolve parent chains instead of
+        crashing on "Could not get class storage".
+    -->
+    <stubs>
+        <file name="stubs/glpi-core.php" />
+    </stubs>
+
+    <!--
+        Without GLPI source, references to core classes/methods/constants are
+        unknown. Suppress those so the run stays focused on taint (security)
+        findings; taint issues are still reported regardless of these handlers.
+    -->
+    <issueHandlers>
+        <UndefinedClass errorLevel="suppress" />
+        <UndefinedDocblockClass errorLevel="suppress" />
+        <UndefinedMethod errorLevel="suppress" />
+        <UndefinedFunction errorLevel="suppress" />
+        <UndefinedConstant errorLevel="suppress" />
+        <UndefinedPropertyFetch errorLevel="suppress" />
+        <UndefinedPropertyAssignment errorLevel="suppress" />
+        <UndefinedThisPropertyFetch errorLevel="suppress" />
+        <UndefinedThisPropertyAssignment errorLevel="suppress" />
+        <UndefinedGlobalVariable errorLevel="suppress" />
+
+        <!--
+            The shared GLPI CI (plugin-ci-workflows) also runs Psalm when this file
+            exists, against the real GLPI core and without taint analysis. Suppress
+            the non-security inference noise it reports there.
+        -->
+        <InvalidGlobal errorLevel="suppress" />
+        <NoValue errorLevel="suppress" />
+        <InvalidParamDefault errorLevel="suppress" />
+        <MissingTemplateParam errorLevel="suppress" />
+    </issueHandlers>
+</psalm>
