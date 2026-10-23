@@ -785,13 +785,19 @@ class Ocslink extends CommonDBTM
     }
 
     /**
-     * @param CommonDBTM $item
+     * @param CommonGLPI $item
      *
-     * @return int
+     * @return int the OCS server id, 0 if the item is not linked
      */
     public static function getOCSServerForItem(CommonGLPI $item)
     {
         global $DB;
+
+        // Items without database id, e.g. the virtual items of the PDF plugin
+        if (!$item instanceof CommonDBTM) {
+            return 0;
+        }
+
         $dbu = new DbUtils();
         $result = $DB->request([
             'FROM'  => 'glpi_plugin_ocsinventoryng_ocslinks',
@@ -806,8 +812,10 @@ class Ocslink extends CommonDBTM
                 return $data['plugin_ocsinventoryng_ocsservers_id'];
             }
 
-            return false;
+            return 0;
         }
+
+        return 0;
     }
 
     /**
