@@ -30,8 +30,9 @@
 
 use GlpiPlugin\Ocsinventoryng\Menu;
 use GlpiPlugin\Ocsinventoryng\Notimportedcomputer;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
-Session::checkRight("plugin_ocsinventoryng", UPDATE);
+Session::checkRight(OcsServer::$rightname, UPDATE);
 
 Html::header(__('Computers not imported by automatic actions', 'ocsinventoryng'), '', "tools", Menu::class, "notimported");
 

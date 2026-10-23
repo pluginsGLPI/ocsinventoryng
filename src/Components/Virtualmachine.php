@@ -53,7 +53,6 @@ class Virtualmachine
      * @param         $force
      *
      * @return void
-     * @throws \GlpitestSQLError
      * @internal param unknown $ocsid
      * @internal param unknown $dohistory
      */

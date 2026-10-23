@@ -171,7 +171,6 @@ class OcsDbClient extends OcsClient
      * @param array $tables
      *
      * @return array
-     * @throws \GlpitestSQLError
      */
     public function getComputerRule($id, $tables = [])
     {
@@ -814,7 +813,6 @@ class OcsDbClient extends OcsClient
      * @param array $options
      *
      * @return array
-     * @throws \GlpitestSQLError
      * @see OcsClient::getComputers()
      */
     public function countComputers($options)
@@ -1292,7 +1290,6 @@ class OcsDbClient extends OcsClient
      * @param $delay
      *
      * @return array
-     * @throws \GlpitestSQLError
      * @see OcsClient::getOldAgents()
      */
     public function getOldAgents($delay)
@@ -1460,7 +1457,6 @@ class OcsDbClient extends OcsClient
      * @param null $equivclean
      *
      * @return bool|\mysqli_result
-     * @throws \GlpitestSQLError
      */
     public function removeDeletedComputers($deleted, $equivclean = null)
     {

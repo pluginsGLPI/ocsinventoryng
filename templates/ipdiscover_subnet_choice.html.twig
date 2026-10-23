@@ -27,7 +27,6 @@
 
 <div class="{{ column_class ?? 'container-lg my-3' }}">
 <form method="post" action="{{ form_url }}" class="card h-100">
-    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
     <div class="card-header">
         <h3 class="card-title"><i class="ti {{ icon }} me-2"></i>{{ title }}</h3>
     </div>

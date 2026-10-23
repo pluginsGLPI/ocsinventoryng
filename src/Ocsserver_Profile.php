@@ -40,6 +40,6 @@ if (!defined('GLPI_ROOT')) {
  */
 class Ocsserver_Profile extends CommonDBTM
 {
-    public static $rightname = "profile";
+    public static string $rightname = "profile";
 
 }

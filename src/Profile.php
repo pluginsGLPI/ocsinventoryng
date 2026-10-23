@@ -45,7 +45,14 @@ if (!defined('GLPI_ROOT')) {
  */
 class Profile extends \Profile
 {
-    public static $rightname = "profile";
+    public static string $rightname = "profile";
+
+    public const RIGHT_SYNC   = 'plugin_ocsinventoryng_sync';
+    public const RIGHT_VIEW   = 'plugin_ocsinventoryng_view';
+    public const RIGHT_IMPORT = 'plugin_ocsinventoryng_import';
+    public const RIGHT_LINK   = 'plugin_ocsinventoryng_link';
+    public const RIGHT_CLEAN  = 'plugin_ocsinventoryng_clean';
+    public const RIGHT_RULE   = 'plugin_ocsinventoryng_rule';
 
     /**
      * @param int $nb
@@ -169,7 +176,6 @@ class Profile extends \Profile
      * @param bool $closeform
      *
      * @return void
-     * @throws \GlpitestSQLError
      * @internal param int $items_id id of the profile
      * @internal param value $target url of target
      */
@@ -215,7 +221,7 @@ class Profile extends \Profile
             'ocsserver_itemtype' => OcsServer::class,
             'used'               => $used,
             'servers'            => $servers,
-            'can_update_profile' => Session::haveRight("profile", UPDATE),
+            'can_update_profile' => Session::haveRight(\Profile::$rightname, UPDATE),
         ]);
 
         // The rights of the plugin: the matrix of the core, which prints itself

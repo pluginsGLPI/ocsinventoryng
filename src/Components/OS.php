@@ -106,7 +106,6 @@ class OS
      * @param array $options
      *
      * @return void
-     * @throws \GlpitestSQLError
      */
     public static function updateComputerOS($options = [])
     {

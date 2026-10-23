@@ -55,7 +55,6 @@ class Peripheral
      *
      * @param $periph_params
      *
-     * @throws \GlpitestSQLError
      * @internal param computer $ocsid 's id in OCS
      */
     public static function importPeripheral($periph_params)
@@ -282,7 +281,6 @@ class Peripheral
      *
      * @param $uninstall_history
      * @return void .
-     * @throws \GlpitestSQLError
      */
     public static function resetPeripherals($glpi_computers_id, $uninstall_history)
     {

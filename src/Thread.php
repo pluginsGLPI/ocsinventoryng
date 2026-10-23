@@ -43,7 +43,7 @@ use Toolbox;
  */
 class Thread extends CommonDBTM
 {
-    public static $rightname = "plugin_ocsinventoryng";
+    public static string $rightname = "plugin_ocsinventoryng";
 
     /**
      * @param int $nb
@@ -245,7 +245,7 @@ class Thread extends CommonDBTM
                     ['end_time' => ['<', new QueryExpression('DATE_ADD(NOW(), INTERVAL -' . $delete_frequency . ' HOUR)')]],
                 ],
             ]);
-            $nbdel = $DB->affectedRows();
+            $nbdel = $DB->getAffectedRows();
         }
         return $nbdel;
     }
@@ -262,7 +262,7 @@ class Thread extends CommonDBTM
         // The server comes from the request: an integer
         $plugin_ocsinventoryng_ocsservers_id = (int) $plugin_ocsinventoryng_ocsservers_id;
 
-        $canedit = Session::haveRight("plugin_ocsinventoryng", UPDATE);
+        $canedit = Session::haveRight(OcsServer::$rightname, UPDATE);
         $log     = Config::logProcessedComputers();
 
         $config = new Config();

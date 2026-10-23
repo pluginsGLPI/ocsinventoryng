@@ -26,7 +26,6 @@
    as HTML by Profile::displayRightsChoiceMatrix() #}
 {% if canedit and openform %}
 <form method="post" action="{{ form_url }}">
-    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
 {% endif %}
     {{ matrix|raw }}
 {% if canedit and closeform %}

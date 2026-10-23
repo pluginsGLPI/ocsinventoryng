@@ -39,7 +39,7 @@ if (!defined('GLPI_ROOT')) {
  */
 class Bitlockerstatus extends CommonDBTM
 {
-    public static $rightname = "plugin_ocsinventoryng";
+    public static string $rightname = "plugin_ocsinventoryng";
 
     /**
      * @param int $nb
@@ -141,7 +141,6 @@ class Bitlockerstatus extends CommonDBTM
      * @param int         $withtemplate
      *
      * @return array|string
-     * @throws \GlpitestSQLError
      * @see CommonGLPI::getTabNameForItem()
      *
      */

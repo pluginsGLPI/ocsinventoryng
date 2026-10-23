@@ -47,7 +47,7 @@ if (!defined('GLPI_ROOT')) {
  */
 class RegistryKey extends \CommonDBTM
 {
-    public static $rightname = "plugin_ocsinventoryng";
+    public static string $rightname = "plugin_ocsinventoryng";
 
     public static function getTable($classname = null)
     {
@@ -127,7 +127,7 @@ class RegistryKey extends \CommonDBTM
     {
         global $DB;
 
-        if (!Session::haveRight("computer", READ)) {
+        if (!Session::haveRight(\Computer::$rightname, READ)) {
             return false;
         }
 

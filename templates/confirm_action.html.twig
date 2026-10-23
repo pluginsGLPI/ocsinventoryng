@@ -23,10 +23,9 @@
  #}
 
 {# Confirmation of an action of the plugin (front/deleted_equiv.php): the action is started by the
-   POST of this form, which carries the CSRF token, never by a link #}
+   POST of this form (CSRF protection of GLPI), never by a link #}
 <div class="container-lg my-3">
     <form method="post" action="{{ form_url }}" class="card">
-        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
         <div class="card-body text-center py-5">
             <span class="avatar avatar-xl bg-orange-lt mb-3"><i class="ti {{ icon }} fs-1"></i></span>
             <h2 class="mb-2">{{ title }}</h2>

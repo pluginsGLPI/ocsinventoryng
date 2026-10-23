@@ -32,7 +32,7 @@ use GlpiPlugin\Ocsinventoryng\OcsServer;
 use GlpiPlugin\Ocsinventoryng\Ocsserver_Profile;
 use GlpiPlugin\Ocsinventoryng\Profile;
 
-Session::checkRight("profile", READ);
+Session::checkRight(\Profile::$rightname, READ);
 
 $profservers = new Ocsserver_Profile();
 $prof        = new Profile();
@@ -46,7 +46,7 @@ $can_update_profile = static function (int $profiles_id): bool {
        && \Profile::currentUserHaveMoreRightThan([$profiles_id => $profiles_id]);
 };
 if (isset($_POST["addocsserver"]) || isset($_POST['delete'])) {
-    Session::checkRight("profile", UPDATE);
+    Session::checkRight(\Profile::$rightname, UPDATE);
 }
 if (isset($_POST["addocsserver"]) && !$can_update_profile((int) ($_POST['profile'] ?? 0))) {
     throw new \Glpi\Exception\Http\AccessDeniedHttpException();

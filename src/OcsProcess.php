@@ -77,9 +77,9 @@ if (!defined('GLPI_ROOT')) {
  */
 class OcsProcess extends CommonDBTM
 {
-    public static $rightname = "plugin_ocsinventoryng";
+    public static string $rightname = "plugin_ocsinventoryng";
     // From CommonDBTM
-    public $dohistory = true;
+    public bool $dohistory = true;
 
     // Class constants - OCSNG Flags on Checksum
     // See Apache/Ocsinventory/Map.pm
@@ -162,7 +162,6 @@ class OcsProcess extends CommonDBTM
      *                           update are cleaned (the automatic action cleans every computer)
      *
      * @return bool
-     * @throws \GlpitestSQLError
      */
     public static function manageDeleted($plugin_ocsinventoryng_ocsservers_id, $redirect = true, bool $check_rights = false)
     {
@@ -474,7 +473,6 @@ class OcsProcess extends CommonDBTM
      * @param $process_params
      *
      * @return array
-     * @throws \GlpitestSQLError
      */
     public static function processComputer($process_params)
     {
@@ -543,7 +541,6 @@ class OcsProcess extends CommonDBTM
      * @param $import_params
      *
      * @return array
-     * @throws \GlpitestSQLError
      */
     public static function importComputer($import_params)
     {
@@ -738,7 +735,6 @@ class OcsProcess extends CommonDBTM
      * @param $link_params
      *
      * @return bool
-     * @throws \GlpitestSQLError
      */
     public static function linkComputer($link_params)
     {
@@ -939,7 +935,6 @@ class OcsProcess extends CommonDBTM
      * @param $sync_params
      *
      * @return array
-     * @throws \GlpitestSQLError
      */
     public static function synchronizeComputer($sync_params, $transfer = true)
     {
@@ -1913,7 +1908,6 @@ class OcsProcess extends CommonDBTM
      * @param array         $ids
      *
      * @return void
-     * @throws \GlpitestSQLError
      * @see CommonDBTM::processMassiveActionsForOneItemtype()
      *
      * @since version 0.85

@@ -32,6 +32,7 @@
 use GlpiPlugin\Ocsinventoryng\Menu;
 use GlpiPlugin\Ocsinventoryng\Ocslink;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
+use GlpiPlugin\Ocsinventoryng\Profile;
 
 // The OCS server of the session, chosen on front/ocsng.php: still allowed for the active
 // profile, otherwise "no server"
@@ -43,7 +44,7 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
     && $_SESSION["plugin_ocsinventoryng_ocsservers_id"] > -1) {
     if (!isset($_POST["clean_ok"])) {
 
-        Session::checkRight("plugin_ocsinventoryng_clean", READ);
+        Session::checkRight(Profile::RIGHT_CLEAN, READ);
 
         $deleted_pcs = 0;
         if (OcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
@@ -58,7 +59,7 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
         }
         if ($deleted_pcs > 0) {
             $links = [];
-            if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+            if (Session::haveRight(OcsServer::$rightname, UPDATE)) {
                 $links[] = [
                     'title' => __('Clean OCSNG deleted computers', 'ocsinventoryng'),
                     'url'   => PLUGIN_OCS_WEBDIR . "/front/deleted_equiv.php",
@@ -81,7 +82,7 @@ if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
         OcsServer::showComputersToClean($show_params);
 
     } else {
-        Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);
+        Session::checkRight(Profile::RIGHT_CLEAN, UPDATE);
         if (is_array($_POST['toclean'] ?? null) && count($_POST['toclean']) > 0) {
             // Posted ids: only the computers the user may delete or update are cleaned
             Ocslink::cleanLinksFromList(

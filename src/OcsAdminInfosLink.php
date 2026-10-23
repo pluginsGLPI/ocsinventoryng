@@ -272,7 +272,6 @@ class OcsAdminInfosLink extends CommonDBTM
      *
      * @param $params
      *
-     * @throws \GlpitestSQLError
      */
     public static function updateAdministrativeInfo($params)
     {

@@ -46,8 +46,8 @@ use Toolbox;
 class Notimportedcomputer extends CommonDBTM
 {
     // From CommonDBTM
-    public $dohistory         = true;
-    public static $rightname         = "plugin_ocsinventoryng";
+    public bool $dohistory         = true;
+    public static string $rightname         = "plugin_ocsinventoryng";
     public $first_level_menu  = "plugins";
     public $second_level_menu = "ocsinventoryng";
 
@@ -248,11 +248,11 @@ class Notimportedcomputer extends CommonDBTM
         if (empty($where)) {
             // Use truncate to reset id
             $result = $DB->doQuery("TRUNCATE " . $DB->quoteName($this->getTable()));
-            return ($result ? $DB->affectedRows() : -1);
+            return ($result ? $DB->getAffectedRows() : -1);
         }
         $result = $DB->delete($this->getTable(), $where);
 
-        return ($result ? $DB->affectedRows() : -1);
+        return ($result ? $DB->getAffectedRows() : -1);
     }
 
 
@@ -269,7 +269,7 @@ class Notimportedcomputer extends CommonDBTM
         // Writing to the OCS database must be enabled, and the machine of a server allowed to the
         // profile of a user who may manage the computers not imported
         $can_update = Config::canUpdateOCS()
-            && Session::haveRight('plugin_ocsinventoryng_import', UPDATE);
+            && Session::haveRight(Profile::RIGHT_IMPORT, UPDATE);
         if ($can_update
             && $this->getFromDB($not_imported_id)
             && OcsServer::isAllowedServer((int) $this->fields["plugin_ocsinventoryng_ocsservers_id"])) {
@@ -287,7 +287,6 @@ class Notimportedcomputer extends CommonDBTM
      * @param $ocs_id
      * @param $ocs_server_id
      *
-     * @throws \GlpitestSQLError
      */
     public static function deleteComputerInOCS($ocs_id, $ocs_server_id)
     {
@@ -701,7 +700,7 @@ class Notimportedcomputer extends CommonDBTM
                     }
                     $params = ['force' => true, 'entity' => $entity];
                 }
-                if (!Session::haveRight('plugin_ocsinventoryng_import', UPDATE)) {
+                if (!Session::haveRight(Profile::RIGHT_IMPORT, UPDATE)) {
                     $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_NORIGHT);
                     return;
                 }

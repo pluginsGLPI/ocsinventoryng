@@ -31,8 +31,9 @@
 use GlpiPlugin\Ocsinventoryng\Menu;
 use GlpiPlugin\Ocsinventoryng\OcsProcess;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
+use GlpiPlugin\Ocsinventoryng\Profile;
 
-Session::checkRight("plugin_ocsinventoryng_import", READ);
+Session::checkRight(Profile::RIGHT_IMPORT, READ);
 
 // The OCS server of the session, chosen on front/ocsng.php: still allowed for the active
 // profile, otherwise "no server"
@@ -69,7 +70,7 @@ if (isset($_POST["change_link_mode"])) {
 
 // Queuing and processing imports writes computers: the update right of the import
 if (isset($_POST["import_ok"]) || isset($_SESSION["ocs_import"]['computers'])) {
-    Session::checkRight("plugin_ocsinventoryng_import", UPDATE);
+    Session::checkRight(Profile::RIGHT_IMPORT, UPDATE);
 }
 
 if (isset($_SESSION["ocs_import"]['computers'])) {

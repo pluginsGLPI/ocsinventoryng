@@ -34,7 +34,6 @@
         <div class="card-body text-secondary">{{ __('No computer found into OCSNG Database', 'ocsinventoryng') }}</div>
     {% else %}
         <form method="post" action="{{ form_url }}">
-            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="id" value="{{ items_id }}">
             <input type="hidden" name="items_id" value="{{ items_id }}">
             <input type="hidden" name="link_id" value="{{ link.id }}">

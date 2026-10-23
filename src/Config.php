@@ -43,7 +43,7 @@ class Config extends \CommonDBTM
     /**
      * @var string
      */
-    public static $rightname = "plugin_ocsinventoryng";
+    public static string $rightname = "plugin_ocsinventoryng";
 
     /**
      * @param int $nb
@@ -318,7 +318,7 @@ class Config extends \CommonDBTM
     public function showFormAutomaticSynchronization()
     {
 
-        if (!Session::haveRight("plugin_ocsinventoryng_sync", READ)) {
+        if (!Session::haveRight(Profile::RIGHT_SYNC, READ)) {
             return false;
         }
         $this->getFromDB(1);
@@ -327,7 +327,7 @@ class Config extends \CommonDBTM
             'title'       => __("Automatic synchronization's configuration", 'ocsinventoryng'),
             'icon'        => 'ti ti-refresh',
             'form_url'    => $this->getFormURL(),
-            'canedit'     => Session::haveRight("plugin_ocsinventoryng_sync", UPDATE),
+            'canedit'     => Session::haveRight(Profile::RIGHT_SYNC, UPDATE),
             'form_fields' => [
                 [
                     'type'  => 'yesno',

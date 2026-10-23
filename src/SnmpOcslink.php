@@ -34,7 +34,6 @@ use Ajax;
 use CommonDBTM;
 use CommonGLPI;
 use Computer;
-use ComputerVirtualMachine;
 use DbUtils;
 use DeviceMemory;
 use DeviceNetworkCard;
@@ -52,6 +51,7 @@ use Item_DevicePci;
 use Item_DevicePowerSupply;
 use Item_DeviceProcessor;
 use Item_Disk;
+use ItemVirtualMachine;
 use NetworkEquipment;
 use NetworkName;
 use NetworkPort;
@@ -70,7 +70,7 @@ if (!defined('GLPI_ROOT')) {
 class SnmpOcslink extends CommonDBTM
 {
     public static $snmptypes = ['Computer', 'NetworkEquipment', 'Peripheral', 'Phone', 'Printer'];
-    public static $rightname = "plugin_ocsinventoryng";
+    public static string $rightname = "plugin_ocsinventoryng";
     public const OTHER_DATA = 'other';
 
     /**
@@ -277,7 +277,6 @@ class SnmpOcslink extends CommonDBTM
      * @param $item                   CommonDBTM object
      *
      * @return void
-     * @throws \GlpitestSQLError
      * @internal param int|string $withtemplate integer  withtemplate param (default '')
      */
     public static function showForItem(CommonDBTM $item)
@@ -288,7 +287,7 @@ class SnmpOcslink extends CommonDBTM
         if (!in_array($item->getType(), self::$snmptypes)
             || empty($items_id)
             || !$item->fields["is_dynamic"]
-            || !Session::haveRight("plugin_ocsinventoryng_view", READ)) {
+            || !Session::haveRight(Profile::RIGHT_VIEW, READ)) {
             return;
         }
 
@@ -386,14 +385,13 @@ class SnmpOcslink extends CommonDBTM
      * @param $item                   CommonDBTM object
      *
      * @return void
-     * @throws \GlpitestSQLError
      */
     public static function showSimpleForItem(CommonDBTM $item)
     {
         global $DB;
 
         $items_id = $item->getField('id');
-        if (empty($items_id) || !Session::haveRight("plugin_ocsinventoryng_view", READ)) {
+        if (empty($items_id) || !Session::haveRight(Profile::RIGHT_VIEW, READ)) {
             return;
         }
 
@@ -474,7 +472,7 @@ class SnmpOcslink extends CommonDBTM
         $actions = [];
         if ($tab) {
             // front/snmpocslink.form.php: the right of the plugin and of the item
-            if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+            if (Session::haveRight(OcsServer::$rightname, UPDATE)) {
                 $actions[] = [
                     'title'  => _sx('button', 'Delete link', 'ocsinventoryng'),
                     'icon'   => 'ti-unlink',
@@ -483,7 +481,7 @@ class SnmpOcslink extends CommonDBTM
                     'params' => $params,
                 ];
             }
-        } elseif (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
+        } elseif (Session::haveRight(Profile::RIGHT_SYNC, UPDATE)) {
             $actions[] = [
                 'title'  => _sx('button', 'Force SNMP synchronization', 'ocsinventoryng'),
                 'target' => Toolbox::getItemTypeFormURL(self::class),
@@ -627,7 +625,6 @@ class SnmpOcslink extends CommonDBTM
      * @param      $cfg_ocs
      *
      * @return int
-     * @throws \GlpitestSQLError
      */
     public static function addOrUpdatePrinter($itemtype, $ID, $ocsSnmp, $loc_id, $action, $linked, $cfg_ocs)
     {
@@ -805,7 +802,6 @@ class SnmpOcslink extends CommonDBTM
      *
      * @param      $cfg_ocs
      * @return int
-     * @throws \GlpitestSQLError
      */
     public static function addOrUpdateNetworkEquipment($itemtype, $ID, $ocsSnmp, $loc_id, $action, $linked, $cfg_ocs)
     {
@@ -1124,7 +1120,6 @@ class SnmpOcslink extends CommonDBTM
      *
      * @param      $cfg_ocs
      * @return int
-     * @throws \GlpitestSQLError
      */
     public static function addOrUpdateComputer($plugin_ocsinventoryng_ocsservers_id, $itemtype, $ID, $ocsSnmp, $loc_id, $action, $linked, $cfg_ocs)
     {
@@ -1345,7 +1340,7 @@ class SnmpOcslink extends CommonDBTM
           && count($ocsSnmp['VIRTUALMACHINES']) > 0) {
             $already_processed = [];
 
-            $virtualmachine = new ComputerVirtualMachine();
+            $virtualmachine = new ItemVirtualMachine();
             foreach ($ocsSnmp['VIRTUALMACHINES'] as $k => $ocsVirtualmachine) {
                 $vm                 = [];
                 $vm['name']         = $ocsVirtualmachine['NAME'];
@@ -2029,7 +2024,7 @@ class SnmpOcslink extends CommonDBTM
         if (!OcsServer::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
             return false;
         }
-        if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+        if (!Session::haveRight(OcsServer::$rightname, UPDATE)) {
             return false;
         }
 

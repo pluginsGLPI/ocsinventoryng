@@ -63,11 +63,11 @@ if (!defined('GLPI_ROOT')) {
 class OcsServer extends CommonDBTM
 {
     public static $types     = ['Computer'];
-    public static $rightname = "plugin_ocsinventoryng";
+    public static string $rightname = "plugin_ocsinventoryng";
     // From CommonDBTM
-    public $dohistory = true;
+    public bool $dohistory = true;
     // The password of the OCS database, even encrypted, never goes to the history
-    public $history_blacklist = ['ocs_db_passwd'];
+    public array $history_blacklist = ['ocs_db_passwd'];
 
     /**
      * The password of the OCS database is never sent by the API nor the exports
@@ -366,14 +366,14 @@ class OcsServer extends CommonDBTM
         [$name, $isactive] = self::getServerState($plugin_ocsinventoryng_ocsservers_id);
 
         $sections = [];
-        if (Session::haveRight("plugin_ocsinventoryng", READ) && $isactive) {
+        if (Session::haveRight(OcsServer::$rightname, READ) && $isactive) {
             $items   = [];
             $items[] = [
                 'title' => sprintf(__('Configuration of OCSNG server %s', 'ocsinventoryng'), $name),
                 'url'   => PLUGIN_OCS_WEBDIR . "/front/ocsserver.form.php?id=" . (int) $plugin_ocsinventoryng_ocsservers_id,
                 'icon'  => 'ti-settings',
             ];
-            if (self::useMassImport() && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+            if (self::useMassImport() && Session::haveRight(OcsServer::$rightname, UPDATE)) {
                 $items[] = [
                     'title' => __("Automatic synchronization's configuration", 'ocsinventoryng'),
                     'url'   => PLUGIN_OCS_WEBDIR . "/front/config.form.php",
@@ -429,7 +429,7 @@ class OcsServer extends CommonDBTM
             'icon'  => self::getIcon(),
             'items' => [],
         ];
-        if (Session::haveRight("plugin_ocsinventoryng", READ) && $isactive) {
+        if (Session::haveRight(OcsServer::$rightname, READ) && $isactive) {
             $section['link'] = [
                 'title' => __('See Setup : Datas to import before', 'ocsinventoryng'),
                 'url'   => PLUGIN_OCS_WEBDIR . "/front/ocsserver.form.php?id=" . (int) $plugin_ocsinventoryng_ocsservers_id
@@ -437,23 +437,23 @@ class OcsServer extends CommonDBTM
             ];
         }
 
-        if (Session::haveRight("plugin_ocsinventoryng", READ)) {
+        if (Session::haveRight(OcsServer::$rightname, READ)) {
             if ($isactive) {
-                if (Session::haveRight("plugin_ocsinventoryng_import", READ)) {
+                if (Session::haveRight(Profile::RIGHT_IMPORT, READ)) {
                     $section['items'][] = [
                         'title' => __('Import or link new computers', 'ocsinventoryng'),
                         'url'   => PLUGIN_OCS_WEBDIR . "/front/ocsng.import.php",
                         'icon'  => 'ti-plus',
                     ];
                 }
-                if (Session::haveRight("plugin_ocsinventoryng_sync", READ)) {
+                if (Session::haveRight(Profile::RIGHT_SYNC, READ)) {
                     $section['items'][] = [
                         'title' => __('Synchronize computers already imported', 'ocsinventoryng'),
                         'url'   => PLUGIN_OCS_WEBDIR . "/front/ocsng.sync.php",
                         'icon'  => 'ti-refresh',
                     ];
                 }
-                if ($usemassimport && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+                if ($usemassimport && Session::haveRight(OcsServer::$rightname, UPDATE)) {
                     $section['items'][] = [
                         'title' => __('Scripts execution of automatic actions', 'ocsinventoryng'),
                         'url'   => PLUGIN_OCS_WEBDIR . "/front/thread.php?plugin_ocsinventoryng_ocsservers_id="
@@ -462,7 +462,7 @@ class OcsServer extends CommonDBTM
                     ];
                 }
                 if (Config::logProcessedComputers()
-                    && Session::haveRight("plugin_ocsinventoryng_import", READ)
+                    && Session::haveRight(Profile::RIGHT_IMPORT, READ)
                     && $usemassimport) {
                     $section['items'][] = [
                         'title' => __('Computers imported by automatic actions', 'ocsinventoryng'),
@@ -471,7 +471,7 @@ class OcsServer extends CommonDBTM
                         'color' => 'text-green',
                     ];
                 }
-                if ($usemassimport && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+                if ($usemassimport && Session::haveRight(OcsServer::$rightname, UPDATE)) {
                     $section['items'][] = [
                         'title' => __('Computers not imported by automatic actions', 'ocsinventoryng'),
                         'url'   => PLUGIN_OCS_WEBDIR . "/front/notimportedcomputer.php",
@@ -484,7 +484,7 @@ class OcsServer extends CommonDBTM
             }
         }
 
-        if ((Session::haveRight("plugin_ocsinventoryng_clean", UPDATE)
+        if ((Session::haveRight(Profile::RIGHT_CLEAN, UPDATE)
              || Session::haveRight(static::$rightname, UPDATE))
             && $isactive) {
             if (Session::haveRight(static::$rightname, UPDATE)) {
@@ -524,7 +524,7 @@ class OcsServer extends CommonDBTM
      */
     public function ocsFormConfig($ID)
     {
-        if (!Session::haveRight("plugin_ocsinventoryng", READ)) {
+        if (!Session::haveRight(OcsServer::$rightname, READ)) {
             return false;
         }
         $this->getFromDB($ID);
@@ -722,7 +722,7 @@ class OcsServer extends CommonDBTM
      */
     public function ocsHistoryConfig($ID)
     {
-        if (!Session::haveRight("plugin_ocsinventoryng", READ)) {
+        if (!Session::haveRight(OcsServer::$rightname, READ)) {
             return false;
         }
         $this->getFromDB($ID);
@@ -877,7 +877,7 @@ class OcsServer extends CommonDBTM
             'sections'    => $sections,
             'set_all'     => $set_all,
             'collapsible' => count($sections) > 3,
-            'canedit'     => Session::haveRight("plugin_ocsinventoryng", UPDATE),
+            'canedit'     => Session::haveRight(OcsServer::$rightname, UPDATE),
             'submit_name' => $submit_name,
         ]);
     }
@@ -1226,7 +1226,6 @@ class OcsServer extends CommonDBTM
      * @param $ocsservers_id
      *
      * @return int
-     * @throws \GlpitestSQLError
      */
     public static function getOCSIDByComputerID($ID, $ocsservers_id)
     {
@@ -1309,7 +1308,6 @@ class OcsServer extends CommonDBTM
      * @param $id int : ID of the OCS config (default value 1)
      *
      * @return int|null|string[] of $confVar fields or false if unfound.
-     * @throws \GlpitestSQLError
      */
     public static function getConfig($id)
     {
@@ -1686,10 +1684,10 @@ class OcsServer extends CommonDBTM
             return false;
         }
 
-        if (!Session::haveRight("plugin_ocsinventoryng_clean", READ)) {
+        if (!Session::haveRight(Profile::RIGHT_CLEAN, READ)) {
             return false;
         }
-        $canedit = Session::haveRight("plugin_ocsinventoryng_clean", UPDATE);
+        $canedit = Session::haveRight(Profile::RIGHT_CLEAN, UPDATE);
 
         // ocslinks ocsid
         $ocsids = [];
@@ -1855,8 +1853,8 @@ class OcsServer extends CommonDBTM
         if (!self::checkOCSconnection($plugin_ocsinventoryng_ocsservers_id)) {
             return false;
         }
-        if (!Session::haveRight("plugin_ocsinventoryng", UPDATE)
-            && !Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
+        if (!Session::haveRight(OcsServer::$rightname, UPDATE)
+            && !Session::haveRight(Profile::RIGHT_SYNC, UPDATE)) {
             return false;
         }
 
@@ -1895,7 +1893,6 @@ class OcsServer extends CommonDBTM
      * @param $show_params
      *
      * @return bool
-     * @throws \GlpitestSQLError
      * @internal param the $plugin_ocsinventoryng_ocsservers_id ID of the ocs server
      * @internal param display $advanced detail about the computer import or not (target entity, matched rules, etc.)
      * @internal param indicates $check if checkboxes are checked or not
@@ -1916,9 +1913,9 @@ class OcsServer extends CommonDBTM
             return false;
         }
 
-        if (!Session::haveRight("plugin_ocsinventoryng", READ)
-            && !Session::haveRight("plugin_ocsinventoryng_import", READ)
-            && !Session::haveRight("plugin_ocsinventoryng_link", READ)) {
+        if (!Session::haveRight(OcsServer::$rightname, READ)
+            && !Session::haveRight(Profile::RIGHT_IMPORT, READ)
+            && !Session::haveRight(Profile::RIGHT_LINK, READ)) {
             return false;
         }
 

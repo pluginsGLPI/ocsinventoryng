@@ -49,7 +49,7 @@ if (!defined('GLPI_ROOT')) {
  */
 class Teamviewer extends \CommonDBTM
 {
-    public static $rightname = "plugin_ocsinventoryng";
+    public static string $rightname = "plugin_ocsinventoryng";
 
     public static $tags = '[TWID]';
 
@@ -173,7 +173,6 @@ class Teamviewer extends \CommonDBTM
      * @param bool|string $withtemplate boolean  Template or basic item (default '')
      *
      * @return bool
-     * @throws \GlpitestSQLError
 */
     public static function showForComputer(Computer $comp, $withtemplate = '')
     {

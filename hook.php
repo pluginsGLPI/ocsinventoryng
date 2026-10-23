@@ -1047,9 +1047,9 @@ function plugin_ocsinventoryng_postinit()
             'Phone' => [SnmpOcslink::class, 'purgePhone'],
         ];
 
-    if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
-        || Session::haveRight("plugin_ocsinventoryng_view", READ)
-        || Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)
+    if (Session::haveRight(OcsServer::$rightname, UPDATE)
+        || Session::haveRight(Profile::RIGHT_VIEW, READ)
+        || Session::haveRight(Profile::RIGHT_SYNC, UPDATE)
     ) {
         foreach (OcsServer::getTypes(true) as $type) {
             CommonGLPI::registerStandardTab($type, OcsServer::class);
@@ -1069,7 +1069,7 @@ function plugin_ocsinventoryng_MassiveActions($type)
         case Notimportedcomputer::class:
             $actions = [];
             // Checked again by Notimportedcomputer::processMassiveActionsForOneItemtype()
-            if (!Session::haveRight('plugin_ocsinventoryng_import', UPDATE)) {
+            if (!Session::haveRight(Profile::RIGHT_IMPORT, UPDATE)) {
                 return $actions;
             }
             $actions[Notimportedcomputer::class . MassiveAction::CLASS_ACTION_SEPARATOR
@@ -1088,8 +1088,8 @@ function plugin_ocsinventoryng_MassiveActions($type)
             return $actions;
 
         case 'Computer':
-            if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
-                || Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
+            if (Session::haveRight(OcsServer::$rightname, UPDATE)
+                || Session::haveRight(Profile::RIGHT_SYNC, UPDATE)) {
                 return [// Specific one
                     OcsProcess::class . MassiveAction::CLASS_ACTION_SEPARATOR
                     . "plugin_ocsinventoryng_launch_ocsng_update"
@@ -1112,8 +1112,8 @@ function plugin_ocsinventoryng_MassiveActions($type)
             break;
 
         case 'NetworkPort':
-            if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
-                && Session::haveRight('networking', UPDATE)) {
+            if (Session::haveRight(OcsServer::$rightname, UPDATE)
+                && Session::haveRight(\NetworkEquipment::$rightname, UPDATE)) {
                 return [
                     NetworkPort::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'plugin_ocsinventoryng_update_networkport_type'
                     => __(
@@ -1137,7 +1137,7 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype)
     $sopt = [];
     if (Plugin::isPluginActive("ocsinventoryng")) {
         if ($itemtype == 'Computer') {
-            if (Session::haveRight("plugin_ocsinventoryng_view", READ)) {
+            if (Session::haveRight(Profile::RIGHT_VIEW, READ)) {
                 $sopt[10002]['table'] = 'glpi_plugin_ocsinventoryng_ocslinks';
                 $sopt[10002]['field'] = 'last_update';
                 $sopt[10002]['name'] = __('OCSNG', 'ocsinventoryng') . " - " . __('GLPI import date', 'ocsinventoryng');
@@ -1300,7 +1300,7 @@ function plugin_ocsinventoryng_getAddSearchOptions($itemtype)
             }
         }
         if (in_array($itemtype, SnmpOcslink::$snmptypes)) {
-            if (Session::haveRight("plugin_ocsinventoryng_view", READ)) {
+            if (Session::haveRight(Profile::RIGHT_VIEW, READ)) {
                 $sopt[10013]['table'] = 'glpi_plugin_ocsinventoryng_snmpocslinks';
                 $sopt[10013]['field'] = 'last_update';
                 $sopt[10013]['name'] = __('OCSNG', 'ocsinventoryng') . " - " . __(
@@ -2063,7 +2063,7 @@ function plugin_ocsinventoryng_showLocksForItem($params = [])
 
     $locks = Ocslink::getLocksForComputer($ID);
 
-    if (!Session::haveRight("computer", UPDATE)) {
+    if (!Session::haveRight(\Computer::$rightname, UPDATE)) {
         return $params;
     }
     $lockable_fields = Ocslink::getLockableFields();

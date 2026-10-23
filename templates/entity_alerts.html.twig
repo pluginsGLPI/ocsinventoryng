@@ -26,7 +26,6 @@
 {% import 'components/form/fields_macros.html.twig' as fields %}
 
 <form method="post" action="{{ form_url }}" class="card mb-3">
-    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="entities_id" value="{{ entities_id }}">
     {% if id > 0 %}<input type="hidden" name="id" value="{{ id }}">{% endif %}
 

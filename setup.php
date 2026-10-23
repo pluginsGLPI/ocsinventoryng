@@ -76,8 +76,7 @@ function plugin_init_ocsinventoryng()
 {
     global $PLUGIN_HOOKS, $CFG_GLPI, $DB;
 
-    $PLUGIN_HOOKS['csrf_compliant']['ocsinventoryng'] = true;
-    $PLUGIN_HOOKS['use_rules']['ocsinventoryng']      = ['RuleImportEntity', 'RuleImportAsset'];
+    $PLUGIN_HOOKS['use_rules']['ocsinventoryng'] = ['RuleImportEntity', 'RuleImportAsset'];
 
     $PLUGIN_HOOKS['change_profile']['ocsinventoryng'] = [Profile::class,
         'initProfile'];
@@ -86,8 +85,9 @@ function plugin_init_ocsinventoryng()
 
     $PLUGIN_HOOKS['autoinventory_information']['ocsinventoryng']
        = ['Computer'               => [Ocslink::class, 'showSimpleForItem'],
-           'ComputerDisk'           => [Ocslink::class, 'showSimpleForChild'],
-           'ComputerVirtualMachine' => [Ocslink::class, 'showSimpleForChild'],
+           // ComputerDisk / ComputerVirtualMachine are removed in GLPI 12
+           'Item_Disk'              => [Ocslink::class, 'showSimpleForChild'],
+           'ItemVirtualMachine'     => [Ocslink::class, 'showSimpleForChild'],
            'Printer'                => [SnmpOcslink::class, 'showSimpleForItem'],
            'NetworkEquipment'       => [SnmpOcslink::class, 'showSimpleForItem'],
            'Peripheral'             => [SnmpOcslink::class, 'showSimpleForItem'],
@@ -237,12 +237,12 @@ function plugin_init_ocsinventoryng()
     if (Session::getLoginUserID()) {
         $ocsserver = new OcsServer();
         // Display a menu entry ?
-        if (Session::haveRight("plugin_ocsinventoryng", READ)) {
+        if (Session::haveRight(OcsServer::$rightname, READ)) {
             $PLUGIN_HOOKS['menu_toadd']['ocsinventoryng'] = ['tools' => Menu::class];
         }
 
-        if (Session::haveRight("plugin_ocsinventoryng", UPDATE)
-            || Session::haveRight("config", UPDATE)) {
+        if (Session::haveRight(OcsServer::$rightname, UPDATE)
+            || Session::haveRight(\Config::$rightname, UPDATE)) {
             $PLUGIN_HOOKS['use_massive_action']['ocsinventoryng'] = 1;
             //$PLUGIN_HOOKS['redirect_page']['ocsinventoryng']      = "front/ocsng.php";
             $PLUGIN_HOOKS['redirect_page']['ocsinventoryng'] = PLUGIN_OCS_WEBDIR . "/front/notimportedcomputer.form.php";
@@ -288,8 +288,8 @@ function plugin_version_ocsinventoryng()
         'homepage'     => 'https://github.com/pluginsGLPI/ocsinventoryng',
         'requirements' => [
             'glpi' => [
-                'min' => '11.0',
-                'max' => '12.0',
+                'min' => '11.0.99',
+                'max' => '12.0.99',
                 'dev' => false,
             ],
         ],

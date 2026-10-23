@@ -66,7 +66,6 @@ class Software
      * @param int     $force
      *
      * @return void .
-     * @throws \GlpitestSQLError
      */
     public static function updateSoftware($cfg_ocs, $computers_id, $ocsComputer, $entity, $officepack, $ocsOfficePack, $force = 0)
     {
@@ -563,7 +562,6 @@ class Software
      * @param $uninstall_history
      *
      * @return void .
-     * @throws \GlpitestSQLError
      */
     public static function resetSoftwares($glpi_computers_id, $uninstall_history)
     {

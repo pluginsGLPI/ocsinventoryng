@@ -70,7 +70,7 @@ class Ocslink extends CommonDBTM
     public const HISTORY_OCS_LINK       = 11;
     public const HISTORY_OCS_TAGCHANGED = 12;
 
-    public static $rightname = "plugin_ocsinventoryng";
+    public static string $rightname = "plugin_ocsinventoryng";
 
     /**
      * @param int $nb
@@ -91,10 +91,11 @@ class Ocslink extends CommonDBTM
      */
     public static function showSimpleForChild(CommonDBTM $item)
     {
+        // The children of a computer: Item_Disk / ItemVirtualMachine (itemtype + items_id)
         $dbu = new DbUtils();
         if ($item->isDynamic()
-            && $item->isField('computers_id')
-            && $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocslinks', ["computers_id" => $item->getField('computers_id')]) > 0) {
+            && ($item->fields['itemtype'] ?? null) === Computer::class
+            && $dbu->countElementsInTable('glpi_plugin_ocsinventoryng_ocslinks', ["computers_id" => (int) $item->fields['items_id']]) > 0) {
             echo htmlescape(Menu::getTypeName());
         }
     }
@@ -105,7 +106,6 @@ class Ocslink extends CommonDBTM
      * @param $item                   CommonDBTM object
      *
      * @return void
-     * @throws \GlpitestSQLError
      */
     public static function showSimpleForItem(CommonDBTM $item)
     {
@@ -138,7 +138,7 @@ class Ocslink extends CommonDBTM
         $items_id = $item->getField('id');
         if (empty($items_id)
             || !$item->fields["is_dynamic"]
-            || !Session::haveRight("plugin_ocsinventoryng_link", READ)) {
+            || !Session::haveRight(Profile::RIGHT_LINK, READ)) {
             return;
         }
 
@@ -170,7 +170,7 @@ class Ocslink extends CommonDBTM
                 $infos[] = ['label' => __('IP Source', 'ocsinventoryng'), 'value' => (string) $data["ip_src"]];
             }
             $infos[] = ['label' => __('OCSNG TAG', 'ocsinventoryng'), 'value' => (string) $data["tag"]];
-            if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
+            if (Session::haveRight(Profile::RIGHT_SYNC, UPDATE)) {
                 $infos[] = ['label' => __('Automatic update OCSNG', 'ocsinventoryng'), 'value' => Dropdown::getYesNo($data["use_auto_update"])];
             }
             if ($data['uptime'] != null) {
@@ -179,14 +179,14 @@ class Ocslink extends CommonDBTM
 
             $actions = [];
             // If have write right on OCS and ocsreports url is not empty in OCS config
-            if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && ($ocs_config["ocs_url"] != '')) {
+            if (Session::haveRight(OcsServer::$rightname, UPDATE) && ($ocs_config["ocs_url"] != '')) {
                 $url = OcsServer::getComputerLinkToOcsConsole($ocs_config['id'], $data["ocsid"], '', true);
                 if ($url != '') {
                     $actions[] = ['title' => __('OCS NG Interface', 'ocsinventoryng'), 'url' => $url];
                 }
             }
             $resynch = ['id' => $items_id, 'resynch_id' => $data["id"]];
-            if (Session::haveRight("plugin_ocsinventoryng_sync", UPDATE)) {
+            if (Session::haveRight(Profile::RIGHT_SYNC, UPDATE)) {
                 if (strtotime($data["last_ocs_update"]) > strtotime($data["last_update"])) {
                     $actions[] = ['title' => _sx('button', 'Launch synchronization', 'ocsinventoryng'),
                         'target' => $target, 'name' => 'launch_ocs_resynch', 'params' => $resynch];
@@ -244,7 +244,7 @@ class Ocslink extends CommonDBTM
     public static function getServerLink(array $ocs_config)
     {
         $name = htmlescape((string) ($ocs_config['name'] ?? ''));
-        if (!Session::haveRight("plugin_ocsinventoryng", READ)) {
+        if (!Session::haveRight(OcsServer::$rightname, READ)) {
             return $name;
         }
 
@@ -325,7 +325,6 @@ class Ocslink extends CommonDBTM
      * @param $item                   CommonDBTM object
      *
      * @return void
-     * @throws \GlpitestSQLError
      * @internal param int|string $withtemplate integer  withtemplate param (default '')
      */
     public static function showForItem(CommonDBTM $item)
@@ -340,7 +339,7 @@ class Ocslink extends CommonDBTM
         $data     = null;
         if (!empty($items_id)
             && $item->fields["is_dynamic"]
-            && Session::haveRight("plugin_ocsinventoryng_link", READ)) {
+            && Session::haveRight(Profile::RIGHT_LINK, READ)) {
             $dbu  = new DbUtils();
             $data = $DB->request([
                 'FROM'  => 'glpi_plugin_ocsinventoryng_ocslinks',
@@ -368,8 +367,8 @@ class Ocslink extends CommonDBTM
             'items_id'   => (int) $items_id,
             'link'       => $data,
             'checksum'   => (string) $checksum,
-            'canedit'    => Session::haveRight("plugin_ocsinventoryng_link", UPDATE),
-            'can_delete' => Session::haveRight("plugin_ocsinventoryng_clean", UPDATE),
+            'canedit'    => Session::haveRight(Profile::RIGHT_LINK, UPDATE),
+            'can_delete' => Session::haveRight(Profile::RIGHT_CLEAN, UPDATE),
             'debug'      => $debug,
         ]);
     }
@@ -428,7 +427,6 @@ class Ocslink extends CommonDBTM
      * @param $meta
      *
      * @return string : current tag of computer on update
-     * @throws \GlpitestSQLError
      * @internal param array $line_ocs : data from ocs tables
      */
     public static function updateTag($line, $meta)
@@ -669,7 +667,7 @@ class Ocslink extends CommonDBTM
         if ($plugin_ocsinventoryng_ocsservers_id > 0
             && OcsServer::serverIsActive($plugin_ocsinventoryng_ocsservers_id)) {
             if (in_array($item->getType(), OcsServer::getTypes(true))
-                && Session::haveRight("plugin_ocsinventoryng_link", READ)) {
+                && Session::haveRight(Profile::RIGHT_LINK, READ)) {
                 switch ($item->getType()) {
                     case 'Computer':
                         if (!$withtemplate) {
@@ -737,7 +735,7 @@ class Ocslink extends CommonDBTM
      **/
     public static function getHistoryEntry($data)
     {
-        if (Session::haveRight("plugin_ocsinventoryng", READ)) {
+        if (Session::haveRight(OcsServer::$rightname, READ)) {
             switch ($data['linked_action'] - Log::HISTORY_PLUGIN) {
                 case self::HISTORY_OCS_IMPORT:
                     return sprintf(
@@ -817,7 +815,6 @@ class Ocslink extends CommonDBTM
      *
      * @param $link_params
      * @return bool|item
-     * @throws \GlpitestSQLError
      */
     public static function ocsLink($link_params)
     {
@@ -876,7 +873,6 @@ class Ocslink extends CommonDBTM
      *                           the user may delete or update, not those of other entities
      *
      * @return void
-     * @throws \GlpitestSQLError
      */
     public static function cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_id, bool $check_rights = false)
     {
@@ -972,7 +968,6 @@ class Ocslink extends CommonDBTM
      * @param $computers_id
      * @param $tomerge
      * @return bool
-     * @throws \GlpitestSQLError
      */
     public static function mergeOcsArray($computers_id, $tomerge)
     {
@@ -1002,7 +997,6 @@ class Ocslink extends CommonDBTM
      * @param bool $is_value_to_del
      *
      * @return bool
-     * @throws \GlpitestSQLError
      */
     public static function deleteInOcsArray($computers_id, $todel, $is_value_to_del = false)
     {
@@ -1033,7 +1027,6 @@ class Ocslink extends CommonDBTM
      * @param bool $lock
      *
      * @return bool
-     * @throws \GlpitestSQLError
      */
     public static function replaceOcsArray($computers_id, $newArray, $lock = true)
     {
@@ -1094,7 +1087,6 @@ class Ocslink extends CommonDBTM
      *
      * @param int $withrule
      * @return array|null
-     * @throws \GlpitestSQLError
      */
     public static function getLocksForComputer($ID, $withrule = 1)
     {
@@ -1238,7 +1230,6 @@ class Ocslink extends CommonDBTM
      * @param $ocsid
      * @param $field
      *
-     * @throws \GlpitestSQLError
      */
     public static function updateLock($plugin_ocsinventoryng_ocsservers_id, $computers_id, $ocsid, $field)
     {

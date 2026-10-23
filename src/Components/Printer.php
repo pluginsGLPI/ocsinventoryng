@@ -55,7 +55,6 @@ class Printer
      *
      * @param $printer_params
      *
-     * @throws \GlpitestSQLError
      * @internal param computer $ocsid 's id in OCS
      */
     public static function importPrinter($printer_params)
@@ -321,7 +320,6 @@ class Printer
      * @param $uninstall_history
      *
      * @return void .
-     * @throws \GlpitestSQLError
      */
     public static function resetPrinters($glpi_computers_id, $uninstall_history)
     {

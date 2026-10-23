@@ -32,8 +32,9 @@ use GlpiPlugin\Ocsinventoryng\Menu;
 use GlpiPlugin\Ocsinventoryng\Ocslink;
 use GlpiPlugin\Ocsinventoryng\OcsProcess;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
+use GlpiPlugin\Ocsinventoryng\Profile;
 
-Session::checkRight("plugin_ocsinventoryng_sync", READ);
+Session::checkRight(Profile::RIGHT_SYNC, READ);
 
 // The OCS server of the session, chosen on front/ocsng.php: still allowed for the active
 // profile, otherwise "no server"
@@ -42,7 +43,7 @@ OcsServer::checkSessionServer();
 
 // Forcing and processing synchronisations write computers: the update right
 if (isset($_POST["update_ok"]) || !empty($_SESSION["ocs_update"]['computers'])) {
-    Session::checkRight("plugin_ocsinventoryng_sync", UPDATE);
+    Session::checkRight(Profile::RIGHT_SYNC, UPDATE);
 }
 
 Html::header(Menu::getTypeName(), '', "tools", Menu::class, "sync");
@@ -78,7 +79,12 @@ if (isset($_SESSION["ocs_update"]['computers'])) {
             Html::redirect(PLUGIN_OCS_WEBDIR . '/front/ocsng.sync.php');
         } catch (\RuntimeException $e) {
             $_SESSION["ocs_update"]['computers'] = [];
-            Html::displayErrorMessage(__('Synchronization interrupted', 'ocsinventoryng') . ': ' . htmlspecialchars($e->getMessage()));
+            // Html::displayErrorMessage() is removed in GLPI 12: the message is shown after the redirect
+            Session::addMessageAfterRedirect(
+                htmlescape(__('Synchronization interrupted', 'ocsinventoryng') . ': ' . $e->getMessage()),
+                false,
+                ERROR,
+            );
             Html::redirect(PLUGIN_OCS_WEBDIR . '/front/ocsng.sync.php');
         }
     }

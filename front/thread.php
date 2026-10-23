@@ -32,7 +32,7 @@ use GlpiPlugin\Ocsinventoryng\Menu;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
 use GlpiPlugin\Ocsinventoryng\Thread;
 
-Session::checkRight("plugin_ocsinventoryng", UPDATE);
+Session::checkRight(OcsServer::$rightname, UPDATE);
 
 // 0 lists the processes of every server, else a server allowed for the active profile
 $ocsservers_id = (int) ($_GET["plugin_ocsinventoryng_ocsservers_id"] ?? 0);

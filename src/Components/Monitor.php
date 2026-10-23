@@ -54,7 +54,6 @@ class Monitor
      *
      * @param $monitor_params
      *
-     * @throws \GlpitestSQLError
      * @internal param computer $ocsid 's id in OCS
      * @internal param the $entity entity in which the monitor will be created
      */
@@ -360,7 +359,6 @@ class Monitor
      *
      * @param $uninstall_history
      * @return void .
-     * @throws \GlpitestSQLError
      */
     public static function resetMonitors($glpi_computers_id, $uninstall_history)
     {

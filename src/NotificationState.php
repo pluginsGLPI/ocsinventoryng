@@ -44,7 +44,7 @@ if (!defined('GLPI_ROOT')) {
  */
 class NotificationState extends CommonDBTM
 {
-    public static $rightname = "plugin_ocsinventoryng";
+    public static string $rightname = "plugin_ocsinventoryng";
 
     /**
      *

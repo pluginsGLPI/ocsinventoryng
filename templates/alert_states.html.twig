@@ -27,7 +27,6 @@
 {% import 'components/form/fields_macros.html.twig' as fields %}
 
 <form method="post" action="{{ form_url }}" class="card mb-3">
-    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
     <div class="card-header">
         <h3 class="card-title"><i class="ti ti-bell me-2"></i>{{ __('Statuses used for alert', 'ocsinventoryng') }}</h3>
     </div>

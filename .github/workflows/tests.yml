@@ -17,14 +17,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ["8.2", "8.3"]
+        php-version: ["8.3", "8.4"]
 
     steps:
       - name: Checkout GLPI core (shallow)
         uses: actions/checkout@v7
         with:
           repository: glpi-project/glpi
-          ref: 11.0/bugfixes
+          ref: 12.0/bugfixes
           path: glpi
 
       - name: Checkout plugin
@@ -69,9 +69,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - php-version: "8.2"
+          - php-version: "8.3"
             db-image: "mysql:8.0"
-          - php-version: "8.2"
+          - php-version: "8.3"
             db-image: "mariadb:10.11"
 
     services:
@@ -94,7 +94,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: glpi-project/glpi
-          ref: 11.0/bugfixes
+          ref: 12.0/bugfixes
           path: glpi
 
       - name: Checkout plugin
@@ -119,6 +119,12 @@ jobs:
       - name: Install GLPI Composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
         working-directory: glpi
+
+      # GLPI 12 requires node >= 24.11 (package.json "engines"); ubuntu-latest ships node 22
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
 
       - name: Build GLPI frontend dependencies
         run: |
@@ -149,8 +155,8 @@ jobs:
 
       - name: Install ocsinventoryng plugin
         run: |
-          php bin/console glpi:plugin:install  --no-interaction --env=testing ocsinventoryng
-          php bin/console glpi:plugin:activate --no-interaction --env=testing ocsinventoryng
+          php bin/console plugin:install  --no-interaction --env=testing ocsinventoryng
+          php bin/console plugin:activate --no-interaction --env=testing ocsinventoryng
         working-directory: glpi
 
       - name: Run integration tests

@@ -181,7 +181,7 @@ while ($event = $DB->fetchArray($res)) {
             if ($run) {
                 $resupd = $DB->doQuery($sql);
                 if ($res) {
-                    $nbupd += $DB->affectedRows();
+                    $nbupd += $DB->getAffectedRows();
 
                     $changes[0] = 0;
                     $changes[2] = "Rollback: restauration lien du $maxti";
@@ -225,7 +225,7 @@ while ($event = $DB->fetchArray($res)) {
                 // Unlink the computer
                 $resupd = $DB->doQuery($sql);
                 if ($res) {
-                    $nbupd += $DB->affectedRows();
+                    $nbupd += $DB->getAffectedRows();
 
                     $changes[0] = 0;
                     $changes[2] = "Rollback: restauration statut au $maxti";

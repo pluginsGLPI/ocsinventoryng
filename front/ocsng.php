@@ -32,9 +32,10 @@ use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Ocsinventoryng\IpdiscoverOcslink;
 use GlpiPlugin\Ocsinventoryng\Menu;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
+use GlpiPlugin\Ocsinventoryng\Profile;
 
-Session::checkSeveralRightsOr(["plugin_ocsinventoryng" => READ,
-    "plugin_ocsinventoryng_clean" => READ]);
+Session::checkSeveralRightsOr([OcsServer::$rightname => READ,
+    Profile::RIGHT_CLEAN => READ]);
 
 Html::header(Menu::getTypeName(), '', "tools", Menu::class, "ocsinventoryng");
 

@@ -30,12 +30,13 @@
 
 use GlpiPlugin\Ocsinventoryng\IpdiscoverOcslink;
 use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 // Used by the link forms of IPDiscover and SNMP devices
-Session::checkRight("plugin_ocsinventoryng", UPDATE);
+Session::checkRight(OcsServer::$rightname, UPDATE);
 
 // Make a select box, for the types offered by the link forms only
 $itemtype = (string) ($_POST["itemtype"] ?? '');

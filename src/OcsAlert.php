@@ -59,7 +59,7 @@ if (!defined('GLPI_ROOT')) {
  */
 class OcsAlert extends CommonDBTM
 {
-    public static $rightname = "plugin_ocsinventoryng";
+    public static string $rightname = "plugin_ocsinventoryng";
 
     /**
      * @param int $nb
@@ -614,7 +614,7 @@ class OcsAlert extends CommonDBTM
         TemplateRenderer::getInstance()->display('@ocsinventoryng/entity_alerts.html.twig', [
             'form_url'         => Toolbox::getItemTypeFormURL(__CLASS__),
             // Notification right applied
-            'canedit'          => Session::haveRight('notification', UPDATE) && Session::haveAccessToEntity($ID),
+            'canedit'          => Session::haveRight(\Notification::$rightname, UPDATE) && Session::haveAccessToEntity($ID),
             'entities_id'      => (int) $ID,
             'id'               => (int) ($entitynotification->fields["id"] ?? 0),
             'use_newocs_alert' => (int) $entitynotification->fields["use_newocs_alert"],

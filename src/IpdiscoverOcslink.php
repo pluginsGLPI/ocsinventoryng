@@ -842,7 +842,6 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
      * @param       $subnet
      *
      * @return array array with the status of the import or update process
-     * @throws \GlpitestSQLError
      * @global type $DB
      */
     public static function processIpDiscover($ipDiscoveryObject, $plugin_ocsinventoryng_ocsservers_id, $subnet)
@@ -1013,7 +1012,6 @@ GROUP BY netid) non_ident on non_ident.RSX = inv.RSX )nonidentified order by IP 
      * @param int  $identify
      *
      * @return void array
-     * @throws \GlpitestSQLError
      * @internal param type $ipDiscoveryObject array
      */
     public static function linkIpDiscover($plugin_ocsinventoryng_ocsservers_id, $itemtypes, $items_id, $macAdresses, $ocsItemstypes, $itemsDescription, $subnet, $identify = 0)

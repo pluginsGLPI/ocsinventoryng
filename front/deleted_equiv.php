@@ -34,9 +34,10 @@ use GlpiPlugin\Ocsinventoryng\Menu;
 use GlpiPlugin\Ocsinventoryng\OcsProcess;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
 use GlpiPlugin\Ocsinventoryng\OcsSoapClient;
+use GlpiPlugin\Ocsinventoryng\Profile;
 
 // Cleaning computers (trashbin or state change): the clean right, as front/ocsng.clean.php
-Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);
+Session::checkRight(Profile::RIGHT_CLEAN, UPDATE);
 
 // The OCS server of the session, chosen on front/ocsng.php: still allowed for the active
 // profile, otherwise "no server"
@@ -44,7 +45,7 @@ OcsServer::checkSessionServer();
 
 $self_url = PLUGIN_OCS_WEBDIR . '/front/deleted_equiv.php';
 
-// The cleaning is started by a POST of the confirmation form (CSRF token), never by a GET: the
+// The cleaning is started by a POST of the confirmation form (CSRF protection of GLPI), never by a GET: the
 // batches that follow only go on with a cleaning started that way (session flag)
 if (isset($_POST['clean_deleted'])) {
     unset($_SESSION["ocs_deleted_equiv"]);

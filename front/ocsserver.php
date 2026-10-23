@@ -31,7 +31,7 @@
 use GlpiPlugin\Ocsinventoryng\Menu;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
 
-Session::checkRight("plugin_ocsinventoryng", READ);
+Session::checkRight(OcsServer::$rightname, READ);
 
 Html::header(Menu::getTypeName(), '', "tools", Menu::class, "ocsserver");
 

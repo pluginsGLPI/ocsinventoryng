@@ -30,9 +30,10 @@
 
 use GlpiPlugin\Ocsinventoryng\Config;
 use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 // The router of GLPI refuses the pages of an inactive plugin
-Session::checkRight("plugin_ocsinventoryng", UPDATE);
+Session::checkRight(OcsServer::$rightname, UPDATE);
 
 Html::header(Menu::getTypeName(), '', "tools", Menu::class, "ocsinventoryng");
 

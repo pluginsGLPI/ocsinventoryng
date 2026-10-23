@@ -33,7 +33,7 @@ use GlpiPlugin\Ocsinventoryng\OcsProcess;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
 use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
 
-Session::checkRight("plugin_ocsinventoryng", UPDATE);
+Session::checkRight(OcsServer::$rightname, UPDATE);
 
 // The OCS server of the session, chosen on front/ocsng.php: still allowed for the active profile
 if (OcsServer::checkSessionServer() <= 0) {
@@ -108,7 +108,7 @@ if (isset($_SESSION["ocs_importsnmp"]["id"])) {
             true,
         );
         OcsProcess::showStatistics($_SESSION["ocs_importsnmp"]['statistics'], false, true);
-        Html::displayProgressBar(400, $percent);
+        echo Html::getProgressBar($percent);
         Html::redirect($self_url);
     } else {
         //Html::getProgressBar($percent);

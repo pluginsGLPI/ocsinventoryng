@@ -95,7 +95,6 @@ class DBocs extends DBmysql
         $this->dbh = @new mysqli();
 
         if (!$this->dbh) {
-            $this->error = 1;
             return;
         }
 
@@ -134,10 +133,8 @@ class DBocs extends DBmysql
 
         if ($this->dbh->connect_error) {
             $this->connected = false;
-            $this->error     = 1;
         } elseif (!defined('MYSQLI_OPT_INT_AND_FLOAT_NATIVE')) {
             $this->connected = false;
-            $this->error     = 2;
         } else {
             $this->setConnectionCharset();
 
@@ -148,7 +145,8 @@ class DBocs extends DBmysql
 
             $this->connected = true;
 
-            $this->setTimezone($this->guessTimezone());
+            // DBmysql::guessTimezone() is removed in GLPI 12: the timezone of PHP, as the core does
+            $this->setTimezone(date_default_timezone_get());
         }
     }
 

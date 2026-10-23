@@ -30,13 +30,14 @@
 
 use GlpiPlugin\Ocsinventoryng\OcsClient;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
+use GlpiPlugin\Ocsinventoryng\Profile;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 // Same rights as the page of the list (OcsServer::showComputersToAdd())
-if (!Session::haveRight("plugin_ocsinventoryng_import", READ)
-    && !Session::haveRight("plugin_ocsinventoryng_link", READ)) {
+if (!Session::haveRight(Profile::RIGHT_IMPORT, READ)
+    && !Session::haveRight(Profile::RIGHT_LINK, READ)) {
     throw new \Glpi\Exception\Http\AccessDeniedHttpException();
 }
 

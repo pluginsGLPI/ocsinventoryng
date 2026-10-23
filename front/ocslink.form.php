@@ -32,8 +32,9 @@ use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Ocsinventoryng\Ocslink;
 use GlpiPlugin\Ocsinventoryng\OcsProcess;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
+use GlpiPlugin\Ocsinventoryng\Profile;
 
-Session::checkRight("computer", READ);
+Session::checkRight(\Computer::$rightname, READ);
 
 /**
  * The link named by the request, once the user is allowed to update its computer
@@ -77,7 +78,7 @@ if (isset($_POST["launch_ocs_resynch"]) || isset($_POST["force_ocs_resynch"])) {
 
 } elseif (isset($_POST["delete_link"])) {
     // Removes the link and the inventory rows of the plugin, and possibly the machine in OCS
-    Session::checkRight("plugin_ocsinventoryng_clean", UPDATE);
+    Session::checkRight(Profile::RIGHT_CLEAN, UPDATE);
     $comp = new Computer();
     $comp->check((int) ($_POST["items_id"] ?? 0), UPDATE);
     // The OCS server of the computer: allowed for the active profile (the purge may delete the

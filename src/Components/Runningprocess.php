@@ -46,7 +46,7 @@ if (!defined('GLPI_ROOT')) {
  */
 class Runningprocess extends \CommonDBTM
 {
-    public static $rightname = "plugin_ocsinventoryng";
+    public static string $rightname = "plugin_ocsinventoryng";
 
     /**
      * @param int $nb
@@ -119,7 +119,6 @@ class Runningprocess extends \CommonDBTM
      * @param int         $withtemplate
      *
      * @return array|string
-     * @throws \GlpitestSQLError
      */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {

@@ -45,7 +45,7 @@ if (!defined('GLPI_ROOT')) {
  */
 class NotificationTargetOcsAlert extends NotificationTarget
 {
-    public static $rightname = "plugin_ocsinventoryng";
+    public static string $rightname = "plugin_ocsinventoryng";
 
     /**
      * @return array

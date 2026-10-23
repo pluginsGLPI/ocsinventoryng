@@ -30,6 +30,7 @@
 
 use GlpiPlugin\Ocsinventoryng\Notimportedcomputer;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
+use GlpiPlugin\Ocsinventoryng\Profile;
 
 $dropdown = new Notimportedcomputer();
 
@@ -47,7 +48,7 @@ if (isset($_POST['action'])) {
 
             // no break
         case 'plugin_ocsinventoryng_replayrules':
-            Session::checkRight('plugin_ocsinventoryng_import', UPDATE);
+            Session::checkRight(Profile::RIGHT_IMPORT, UPDATE);
             // The computer is imported into an entity of the user
             $entity = (int) ($_POST['entity'] ?? -1);
             if ($entity >= 0 && !Session::haveAccessToEntity($entity)) {
@@ -63,7 +64,7 @@ if (isset($_POST['action'])) {
             break;
 
         case 'plugin_ocsinventoryng_link':
-            Session::checkRight('plugin_ocsinventoryng_link', UPDATE);
+            Session::checkRight(Profile::RIGHT_LINK, UPDATE);
             // The computer whose data the OCS machine will overwrite must be one the user may update
             $input['computers_id'] = (int) ($_POST['computers_id'] ?? 0);
             $computer = new Computer();

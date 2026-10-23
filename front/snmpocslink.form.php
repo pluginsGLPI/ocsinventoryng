@@ -40,7 +40,7 @@ use GlpiPlugin\Ocsinventoryng\SnmpOcslink;
  * @return SnmpOcslink
  */
 $check_link = static function (): SnmpOcslink {
-    Session::checkRight("plugin_ocsinventoryng", UPDATE);
+    Session::checkRight(OcsServer::$rightname, UPDATE);
 
     $link = new SnmpOcslink();
     if (!$link->getFromDB((int) ($_POST["id"] ?? 0))

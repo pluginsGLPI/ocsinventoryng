@@ -30,9 +30,10 @@
 
 use GlpiPlugin\Ocsinventoryng\Menu;
 use GlpiPlugin\Ocsinventoryng\Components\NetworkPort;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
 // A list of the plugin setup (types of the OCS network ports)
-Session::checkRight("plugin_ocsinventoryng", READ);
+Session::checkRight(OcsServer::$rightname, READ);
 
 Html::header(_n('Unknown imported network port type', 'Unknown imported network ports types', 2, 'ocsinventoryng'), '', "tools", Menu::class, 'networkport');
 

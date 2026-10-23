@@ -45,7 +45,6 @@ class Uptime
      * @param $id
      * @param $ocsComputer
      *
-     * @throws \GlpitestSQLError
      */
     public static function updateUptime($id, $ocsComputer)
     {

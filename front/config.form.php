@@ -30,8 +30,9 @@
 
 use GlpiPlugin\Ocsinventoryng\Config;
 use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
-Session::checkRight("plugin_ocsinventoryng", UPDATE);
+Session::checkRight(OcsServer::$rightname, UPDATE);
 
 // The router of GLPI refuses the pages of an inactive plugin
 $config = new Config();

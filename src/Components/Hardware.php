@@ -190,7 +190,6 @@ class Hardware
      * @param array $options
      *
      * @return void
-     * @throws \GlpitestSQLError
      */
     public static function updateComputerHardware($options = [])
     {
@@ -436,7 +435,6 @@ class Hardware
      * @param     $values
      * @param int $computers_id
      *
-     * @throws \GlpitestSQLError
      */
     public static function getFields($ocsComputer, $cfg_ocs, &$values, $computers_id = 0)
     {
@@ -501,7 +499,6 @@ class Hardware
      * @param array $options
      *
      * @return void
-     * @throws \GlpitestSQLError
      */
     public static function updateComputerDomain($options = [])
     {

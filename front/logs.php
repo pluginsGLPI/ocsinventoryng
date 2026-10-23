@@ -30,8 +30,9 @@
 
 use GlpiPlugin\Ocsinventoryng\Menu;
 use GlpiPlugin\Ocsinventoryng\Thread;
+use GlpiPlugin\Ocsinventoryng\OcsServer;
 
-Session::checkRight("plugin_ocsinventoryng", UPDATE);
+Session::checkRight(OcsServer::$rightname, UPDATE);
 
 Html::header(_n('Log', 'Logs', 2), '', "tools", Menu::class, "ocsinventoryng");
 

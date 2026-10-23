@@ -46,7 +46,7 @@ if (!defined('GLPI_ROOT')) {
  */
 class Service extends \CommonDBTM
 {
-    public static $rightname = "plugin_ocsinventoryng";
+    public static string $rightname = "plugin_ocsinventoryng";
 
     /**
      * @param int $nb

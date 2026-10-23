@@ -48,7 +48,7 @@ if (!defined('GLPI_ROOT')) {
  */
 class Winupdate extends \CommonDBTM
 {
-    public static $rightname = "plugin_ocsinventoryng";
+    public static string $rightname = "plugin_ocsinventoryng";
 
     /**
      * @param int $nb

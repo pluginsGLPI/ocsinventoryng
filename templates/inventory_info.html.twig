@@ -54,7 +54,6 @@
                             </a>
                         {% else %}
                             <form method="post" action="{{ action.target }}" class="d-inline">
-                                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
                                 {% for name, value in action.params %}
                                     <input type="hidden" name="{{ name }}" value="{{ value }}">
                                 {% endfor %}

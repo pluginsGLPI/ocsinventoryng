@@ -59,7 +59,6 @@ class Disk
      * @param $force
      *
      * @return void .
-     * @throws \GlpitestSQLError
      * @internal param int $ocsid : ocs computer id (ID).
      */
     public static function updateDisk($computers_id, $ocsComputer, $ocsservers_id, $bitlockerstatus, $ocsBitlockerStatus, $cfg_ocs, $force)

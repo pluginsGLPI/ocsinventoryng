@@ -32,8 +32,9 @@ use GlpiPlugin\Ocsinventoryng\Menu;
 use GlpiPlugin\Ocsinventoryng\Ocslink;
 use GlpiPlugin\Ocsinventoryng\OcsProcess;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
+use GlpiPlugin\Ocsinventoryng\Profile;
 
-Session::checkRight("plugin_ocsinventoryng_link", READ);
+Session::checkRight(Profile::RIGHT_LINK, READ);
 
 // The OCS server of the session, chosen on front/ocsng.php: still allowed for the active profile
 if (OcsServer::checkSessionServer() <= 0) {
@@ -45,7 +46,7 @@ if (OcsServer::checkSessionServer() <= 0) {
 if ((isset($_POST["id"]) && is_array($_POST["id"]))
     || isset($_POST["delete_link"])
     || !empty($_SESSION["ocs_link"])) {
-    Session::checkRight("plugin_ocsinventoryng_link", UPDATE);
+    Session::checkRight(Profile::RIGHT_LINK, UPDATE);
 }
 
 // The URL of this page (PHP_SELF is the GLPI 11 entry point)

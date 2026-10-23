@@ -149,7 +149,6 @@
         {% for name, value in hidden ?? {} %}
             <input type="hidden" name="{{ name }}" value="{{ value }}" />
         {% endfor %}
-        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
         </form>
     {% endif %}
 </div>

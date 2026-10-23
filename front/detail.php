@@ -30,8 +30,9 @@
 
 use GlpiPlugin\Ocsinventoryng\Detail;
 use GlpiPlugin\Ocsinventoryng\Menu;
+use GlpiPlugin\Ocsinventoryng\Profile;
 
-Session::checkRight("plugin_ocsinventoryng_import", READ);
+Session::checkRight(Profile::RIGHT_IMPORT, READ);
 
 Html::header(__('Computers imported by automatic actions', 'ocsinventoryng'), '', "tools", Menu::class, "detail");
 

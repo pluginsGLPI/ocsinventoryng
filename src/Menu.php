@@ -43,7 +43,7 @@ class Menu extends CommonGLPI
     /**
      * @var string
      */
-    public static $rightname = 'plugin_ocsinventoryng';
+    public static string $rightname = 'plugin_ocsinventoryng';
 
     /**
      * @return string
@@ -78,7 +78,7 @@ class Menu extends CommonGLPI
         $menu['links']['search'] = PLUGIN_OCS_WEBDIR . "/front/ocsng.php";
 
         if (Session::haveRight(static::$rightname, UPDATE)
-          || Session::haveRight("config", UPDATE)) {
+          || Session::haveRight(\Config::$rightname, UPDATE)) {
             //Entry icon in breadcrumb
             $menu['links']['config'] = Config::getSearchURL(false);
             //Link to config page in admin plugins list
@@ -87,31 +87,31 @@ class Menu extends CommonGLPI
 
         $usemassimport = OcsServer::useMassImport();
         // Import
-        if (Session::haveRight("plugin_ocsinventoryng_import", READ)) {
+        if (Session::haveRight(Profile::RIGHT_IMPORT, READ)) {
             $menu['links']["<i class='ti ti-plus fa-1x' title='" . __s('Import new computers', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_WEBDIR . '/front/ocsng.import.php';
         }
         // Sync
-        if (Session::haveRight("plugin_ocsinventoryng_sync", READ)) {
+        if (Session::haveRight(Profile::RIGHT_SYNC, READ)) {
             $menu['links']["<i class='ti ti-refresh fa-1x' title='" . __s('Synchronize computers already imported', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_WEBDIR . '/front/ocsng.sync.php';
         }
         // Thread
-        if ($usemassimport && Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+        if ($usemassimport && Session::haveRight(OcsServer::$rightname, UPDATE)) {
             $menu['links']["<i class='ti ti-player-play fa-1x' title='" . __('Scripts execution of automatic actions', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_WEBDIR . '/front/thread.php';
         }
         // Detail
         $log = Config::logProcessedComputers();
-        if ($log && Session::haveRight("plugin_ocsinventoryng_import", READ) && $usemassimport) {
+        if ($log && Session::haveRight(Profile::RIGHT_IMPORT, READ) && $usemassimport) {
             $menu['links']["<i class='ti ti-check fa-1x' title='" . __('Computers imported by automatic actions', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_WEBDIR . '/front/detail.php';
         }
         // Notimported
-        if (Session::haveRight("plugin_ocsinventoryng", UPDATE) && $usemassimport) {
+        if (Session::haveRight(OcsServer::$rightname, UPDATE) && $usemassimport) {
             $menu['links']["<i class='ti ti-x fa-1x' title='" . __s('Computers not imported by automatic actions', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_WEBDIR . '/front/notimportedcomputer.php';
             // networkport
             $menu['links']["<i class='ti ti-network fa-1x' title='" . _n('Unknown imported network port type', 'Unknown imported network ports types', 2, 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_WEBDIR . '/front/networkport.php';
         }
-        if (Session::haveRight("plugin_ocsinventoryng_clean", UPDATE)
-          || Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
-            if (Session::haveRight("plugin_ocsinventoryng", UPDATE)) {
+        if (Session::haveRight(Profile::RIGHT_CLEAN, UPDATE)
+          || Session::haveRight(OcsServer::$rightname, UPDATE)) {
+            if (Session::haveRight(OcsServer::$rightname, UPDATE)) {
                 // Deleted_equiv
                 $menu['links']["<i class='ti ti-trash fa-1x' title='" . __s('Clean OCSNG deleted computers', 'ocsinventoryng') . "'></i>"] = PLUGIN_OCS_WEBDIR . '/front/deleted_equiv.php';
             }

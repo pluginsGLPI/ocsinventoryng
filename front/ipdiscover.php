@@ -33,7 +33,7 @@ use GlpiPlugin\Ocsinventoryng\IpdiscoverOcslink;
 use GlpiPlugin\Ocsinventoryng\Menu;
 use GlpiPlugin\Ocsinventoryng\OcsServer;
 
-Session::checkRight("plugin_ocsinventoryng", READ);
+Session::checkRight(OcsServer::$rightname, READ);
 
 // The OCS server of the session, chosen on front/ocsng.php: still allowed for the active profile
 if (OcsServer::checkSessionServer() <= 0) {

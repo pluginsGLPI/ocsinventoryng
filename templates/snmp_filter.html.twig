@@ -27,7 +27,6 @@
 
 <div class="container-fluid mt-3">
     <form method="post" action="{{ form_url }}" class="card">
-        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
         <div class="card-header">
             <h3 class="card-title"><i class="ti ti-filter me-2"></i>{{ __('Filter SNMP Objects list', 'ocsinventoryng') }}</h3>
         </div>
