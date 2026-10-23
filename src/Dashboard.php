@@ -30,7 +30,7 @@
 
 namespace GlpiPlugin\Ocsinventoryng;
 
-use AllowDynamicProperties;
+use CommonGLPI;
 use Glpi\DBAL\QueryExpression;
 use GlpiPlugin\Mydashboard\Charts\BarChart;
 use GlpiPlugin\Mydashboard\Charts\PieChart;
@@ -45,10 +45,11 @@ use Toolbox;
 /**
  * Class Dashboard
  */
-#[AllowDynamicProperties]
-class Dashboard extends MydashboardHtml
+class Dashboard extends CommonGLPI
 {
     public $widgets = [];
+    // Read by mydashboard (Widgetlist) to filter the widgets on the interface of the profile
+    public $interfaces = [];
     private $options;
     private $form;
 
@@ -162,7 +163,7 @@ class Dashboard extends MydashboardHtml
                     }
                 }
 
-                $widget = new parent();
+                $widget = new MydashboardHtml();
                 $widgets = self::getWidgetsForItem();
                 $title   = __("Last synchronization of computers by month", "ocsinventoryng");
                 $comment = __("Display synchronization of computers by month", "ocsinventoryng");
@@ -278,7 +279,7 @@ class Dashboard extends MydashboardHtml
                     }
                 }
 
-                $widget = new parent();
+                $widget = new MydashboardHtml();
                 $widgets = self::getWidgetsForItem();
                 $title   = __("Detail of imported computers", "ocsinventoryng");
                 $comment = __("Number of OCSNG computers, Fusion Inventory computer, without agent computers", "ocsinventoryng");

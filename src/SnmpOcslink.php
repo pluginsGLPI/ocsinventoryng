@@ -2069,7 +2069,9 @@ class SnmpOcslink extends CommonDBTM
         if (count($ocs_snmp) > 0) {
             foreach ($DB->request([
                 'FROM'  => 'glpi_plugin_ocsinventoryng_snmpocslinks',
-                'WHERE' => ['ocs_id' => array_map('intval', array_keys($ocs_snmp))],
+                'WHERE' => ['ocs_id' => array_map('intval', array_keys($ocs_snmp)),
+                    'plugin_ocsinventoryng_ocsservers_id' => (int) $plugin_ocsinventoryng_ocsservers_id,
+                ],
                 'ORDER' => 'last_update DESC',
             ]) as $tab) {
                 if (!($item = getItemForItemtype($tab["itemtype"])) || !$item->getFromDB($tab["items_id"])) {

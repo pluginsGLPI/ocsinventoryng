@@ -39,11 +39,6 @@ use Glpi\DBAL\QueryExpression;
 use GlpiPlugin\Ocsinventoryng\NetworkPortType;
 use GlpiPlugin\Ocsinventoryng\OcsProcess;
 use Html;
-use HTMLTableCell;
-use HTMLTableGroup;
-use HTMLTableHeader;
-use HTMLTableRow;
-use HTMLTableSuperHeader;
 use IPAddress;
 use IPNetwork;
 use Item_DeviceNetworkCard;
@@ -137,8 +132,8 @@ class NetworkPort extends NetworkPortInstantiation
         if ($check_name) {
             $criteria['WHERE'] = $criteria['WHERE'] + ['name' => $name];
         }
-        if (!empty($already_processed)) {
-            $criteria['WHERE'] = $criteria['WHERE'] + ['id' => ['NOT IN', $already_processed]];
+        if (!empty($already_known_ports)) {
+            $criteria['WHERE'] = $criteria['WHERE'] + ['id' => ['NOT IN', $already_known_ports]];
         }
         $iterator = $DB->request($criteria);
 
@@ -581,73 +576,6 @@ class NetworkPort extends NetworkPortInstantiation
             }
         }
     }
-
-    /**
-     * @param HTMLTableGroup       $group
-     * @param HTMLTableSuperHeader $super
-     * @param HTMLTableSuperHeader $internet_super
-     * @param HTMLTableHeader      $father
-     * @param array                $options
-     *
-     * @return null|the
-     * @see NetworkPortInstantiation::getInstantiationHTMLTableHeaders
-     *
-     */
-    public function getInstantiationHTMLTableHeaders(
-        HTMLTableGroup       $group,
-        HTMLTableSuperHeader $super,
-        ?HTMLTableSuperHeader $internet_super = null,
-        ?HTMLTableHeader      $father = null,
-        array                $options = []
-    ) {
-
-        DeviceNetworkCard::getHTMLTableHeader(
-            'NetworkPortWifi',
-            $group,
-            $super,
-            null,
-            $options,
-        );
-
-        $group->addHeader('TYPE', __('OCS TYPE', 'ocsinventoryng'), $super);
-        $group->addHeader('TYPEMIB', __('OCS MIB TYPE', 'ocsinventoryng'), $super);
-        $group->addHeader('Generate', __('Create a mapping', 'ocsinventoryng'), $super);
-
-        parent::getInstantiationHTMLTableHeaders($group, $super, $internet_super, $father, $options);
-        return null;
-    }
-
-
-    /**
-     * @param NetworkPort   $netport
-     * @param HTMLTableRow  $row
-     * @param HTMLTableCell $father
-     * @param array         $options
-     *
-     * @return null|the
-     * @see NetworkPortInstantiation::getInstantiationHTMLTable()
-     *
-     */
-    public function getInstantiationHTMLTable(
-        \NetworkPort   $netport,
-        HTMLTableRow $row,
-        ?HTMLTableCell $father = null,
-        array $options = []
-    ) {
-
-        DeviceNetworkCard::getHTMLTableCellsForItem($row, $this, null, $options);
-
-        // TYPE and TYPEMIB are sent by the OCS agent; the cells are output as HTML
-        $row->addCell($row->getHeaderByName('Instantiation', 'TYPE'), htmlescape((string) $this->fields['TYPE']));
-        $row->addCell($row->getHeaderByName('Instantiation', 'TYPEMIB'), htmlescape((string) $this->fields['TYPEMIB']));
-        $link  = NetworkPortType::getFormURL(true) . '?' . $this->getForeignKeyField() . '=' . $this->getID();
-        $value = NetworkPortType::getLinkToCreateFromTypeAndTypeMIB($this->fields);
-        $row->addCell($row->getHeaderByName('Instantiation', 'Generate'), $value);
-
-        parent::getInstantiationHTMLTable($netport, $row, $father, $options);
-        return null;
-    }
-
 
     /**
      * @return bool

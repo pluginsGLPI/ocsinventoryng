@@ -451,7 +451,7 @@ class OcsSoapClient extends OcsClient
      */
     public function getAccountInfoColumns($table)
     {
-        $xml = $this->callSoap('_get_account_fields_V1', new OcsSoapRequest());
+        $xml = $this->callSoap('_get_account_fields_V1', new OcsSoapRequest([]));
         $res = [
             'HARDWARE_ID' => 'HARDWARE_ID',
             'TAG'         => 'TAG',

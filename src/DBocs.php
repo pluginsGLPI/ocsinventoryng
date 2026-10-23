@@ -95,7 +95,6 @@ class DBocs extends DBmysql
         $this->dbh = @new mysqli();
 
         if (!$this->dbh) {
-            $this->error = 1;
             return;
         }
 
@@ -120,7 +119,7 @@ class DBocs extends DBmysql
         }
 
         $hostport = explode(":", $host);
-        $password = (isset($password)) ? rawurldecode($this->dbpassword) : $this->dbpassword;
+        $password = $this->dbpassword;
         if (count($hostport) < 2) {
             // Host
             $this->dbh->real_connect($host, $this->dbuser, $password, $this->dbdefault);
@@ -134,10 +133,8 @@ class DBocs extends DBmysql
 
         if ($this->dbh->connect_error) {
             $this->connected = false;
-            $this->error     = 1;
         } elseif (!defined('MYSQLI_OPT_INT_AND_FLOAT_NATIVE')) {
             $this->connected = false;
-            $this->error     = 2;
         } else {
             $this->setConnectionCharset();
 

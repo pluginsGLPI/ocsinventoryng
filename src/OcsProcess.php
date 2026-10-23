@@ -178,7 +178,9 @@ class OcsProcess extends CommonDBTM
 
         //if (strpos($_SERVER['PHP_SELF'], "deleted_equiv.php") == true){
         if (count($deleted)) {
+            $removed = 0;
             foreach ($deleted as $del => $equiv) {
+                $skipped = 0;
                 if (!empty($equiv) && $equiv != "NULL") { // New name ($equiv = VARCHAR)
                     // Get hardware due to bug of duplicates management of OCS
                     if (strpos($equiv, "-") !== false) {
@@ -268,8 +270,14 @@ class OcsProcess extends CommonDBTM
                     foreach ($links as $data) {
                         $ocslinks_toclean[$data['id']] = $data['id'];
                     }
-                    Ocslink::cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_toclean, $check_rights);
+                    $skipped = Ocslink::cleanLinksFromList($plugin_ocsinventoryng_ocsservers_id, $ocslinks_toclean, $check_rights);
                 }
+                // A computer the user may not clean keeps its deleted_equiv entry, for a user with the
+                // rights or for the automatic action
+                if (!empty($skipped)) {
+                    continue;
+                }
+                $removed++;
                 //Delete from deleted_equiv
                 if (!empty($equiv)) {
                     $ocsClient->removeDeletedComputers($del, $equiv);
@@ -281,8 +289,13 @@ class OcsProcess extends CommonDBTM
             if (!empty($to_del)) {
                 $ocsClient->removeDeletedComputers($to_del);
             }
+            // Only computers the user may not clean in the batch: they stay in deleted_equiv, the next
+            // batch would read them again (no redirect, the page ends the cleaning)
+            if ($removed === 0) {
+                $_SESSION['ocs_deleted_equiv']['skipped'] = count($deleted);
+            }
             //If cron, no redirect
-            if ($redirect) {
+            if ($redirect && $removed > 0) {
                 // The page of the plugin being processed (PHP_SELF is the GLPI 11 entry point)
                 Html::redirect($_SERVER['REQUEST_URI']);
             }

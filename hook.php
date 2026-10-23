@@ -2469,16 +2469,11 @@ function plugin_ocsinventoryng_upgrademassocsimport121to13()
             $DB->doQuery($query, "1.2.1 to 1.3 " . $DB->error());
         }
 
-        $drop_fields = [//Was not used, debug only...
-            "glpi_plugin_massocsimport_config" => "warn_if_not_imported",
-            "glpi_plugin_massocsimport_config" => "not_imported_threshold",
-            //Logging must always be enable !
-            "glpi_plugin_massocsimport_config" => "enable_logging",
-            "glpi_plugin_massocsimport_config" => "delete_empty_frequency",
-        ];
+        // Was not used, debug only... Logging must always be enabled !
+        $drop_fields = ["warn_if_not_imported", "not_imported_threshold", "enable_logging", "delete_empty_frequency"];
 
-        foreach ($drop_fields as $table => $field) {
-            $migration->dropField($table, $field);
+        foreach ($drop_fields as $field) {
+            $migration->dropField("glpi_plugin_massocsimport_config", $field);
         }
     }
     $migration->executeMigration();

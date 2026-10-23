@@ -969,7 +969,7 @@ class OcsServer extends CommonDBTM
     }
 
     /**
-     * @param datas $input
+     * @param array $input
      *
      * @return datas
      */
@@ -1013,6 +1013,9 @@ class OcsServer extends CommonDBTM
 
     public function prepareInputForUpdate($input)
     {
+        // Read from the OCS server (checkVersion(), pre_updateInDB()): never from the form
+        unset($input["ocs_version"]);
+
         if (!self::checkOcsUrl($input)) {
             return false;
         }
@@ -1109,13 +1112,16 @@ class OcsServer extends CommonDBTM
     }
 
     /**
-     * @param datas $input
+     * @param array $input
      *
      * @return bool|datas
      */
     public function prepareInputForAdd($input)
     {
         global $DB;
+
+        // Read from the OCS server (checkVersion(), pre_updateInDB()): never from the form
+        unset($input["ocs_version"], $input["checksum"]);
 
         if (!self::checkOcsUrl($input)) {
             return false;
@@ -1586,11 +1592,11 @@ class OcsServer extends CommonDBTM
         $version = $client->getTextConfig('GUI_VERSION');
 
         if ($version) {
-            $server = new self();
-            $server->update([
-                'id'          => $ID,
-                'ocs_version' => $version,
-            ]);
+            global $DB;
+
+            // The version of the OCS server (its GUI_VERSION, a number such as 7077): stored without
+            // update(), which refuses ocs_version from a form
+            $DB->update(self::getTable(), ['ocs_version' => (string) preg_replace('/[^0-9.]/', '', (string) $version)], ['id' => (int) $ID]);
         }
         return true;
         if (!$version || ($version < self::OCS_VERSION_LIMIT && strpos($version, '2.0') !== 0)) { // hack for 2.0 RC

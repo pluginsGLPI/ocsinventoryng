@@ -37,6 +37,7 @@ use Entity;
 use Html;
 use MassiveAction;
 use NotificationEvent;
+use Rule;
 use Session;
 use Toolbox;
 
@@ -336,6 +337,37 @@ class Notimportedcomputer extends CommonDBTM
         return $DBocs->tableExists($tablename);
     }
 
+
+    /**
+     * Links to the rules matched during the import (the JSON {rule class: rule id} of rules_id),
+     * for the rules the user may read
+     *
+     * @param string|null $rule_list
+     *
+     * @return string HTML
+     */
+    public static function getRuleMatchedMessage($rule_list)
+    {
+        $rules = json_decode((string) $rule_list, true);
+        if (!is_array($rules)) {
+            return '';
+        }
+
+        $message = [];
+        foreach ($rules as $itemtype => $rules_id) {
+            // Stored by the plugin, but only rule classes are instantiated
+            if (!is_string($itemtype) || !is_a($itemtype, Rule::class, true)) {
+                continue;
+            }
+            $rule = new $itemtype();
+            if ($rule->can((int) $rules_id, READ)) {
+                $message[] = "<a href='" . htmlescape($rule->getLinkURL()) . "'>"
+                    . htmlescape((string) $rule->getName()) . "</a>";
+            }
+        }
+
+        return implode(' => ', $message);
+    }
 
     /**
      * @param $reason

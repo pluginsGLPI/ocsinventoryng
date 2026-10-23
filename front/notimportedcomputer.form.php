@@ -74,4 +74,6 @@ if (isset($_POST['action'])) {
     }
 }
 
-include(GLPI_ROOT . "/front/dropdown.common.form.php");
+// No form for a computer not imported (not a dropdown: core front/dropdown.common.form.php refuses
+// it): its actions are posted above, from the list
+$dropdown->redirectToList();

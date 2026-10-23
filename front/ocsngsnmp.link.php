@@ -52,7 +52,7 @@ if (!isset($_SESSION["change_import_mode"])) {
 
 //Changing the import mode
 if (isset($_POST["change_import_mode"])) {
-    if ('id' == "false") {
+    if (($_POST['id'] ?? '') == "false") {
         $_SESSION["change_import_mode"] = false;
     } else {
         $_SESSION["change_import_mode"] = true;
@@ -91,7 +91,7 @@ if (isset($_SESSION["ocs_linksnmp"]["id"])) {
     } else {
         echo Html::getProgressBar(100);
 
-        unset($_SESSION["ocs_link"]);
+        unset($_SESSION["ocs_linksnmp"]);
         echo "<div class='center b'>" . __('Successful link', 'ocsinventoryng') . "<br>";
         echo "<a href='" . $self_url . "'>" . __('Back') . "</a></div>";
     }

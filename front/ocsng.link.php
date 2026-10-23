@@ -95,7 +95,7 @@ if (!isset($_SESSION["change_link_mode"])) {
 }
 
 if (isset($_POST["change_link_mode"])) {
-    if ($_POST['id'] == "false") {
+    if (($_POST['id'] ?? '') == "false") {
         $_SESSION["change_link_mode"] = 0;
     } else {
         $_SESSION["change_link_mode"] = 1;
@@ -142,9 +142,12 @@ if (isset($_SESSION["ocs_link"])) {
         echo Html::getProgressBar($percent);
 
         $key         = array_pop($_SESSION["ocs_link"]);
-        $link_params = ['ocsid'                               => $key["ocsid"],
+        // Whatever filled the queue, the computer is one the user may update
+        $computer = new Computer();
+        $computer->check((int) ($key["computers_id"] ?? 0), UPDATE);
+        $link_params = ['ocsid'                               => (int) $key["ocsid"],
             'plugin_ocsinventoryng_ocsservers_id' => $_SESSION["plugin_ocsinventoryng_ocsservers_id"],
-            'computers_id'                        => $key["computers_id"]];
+            'computers_id'                        => (int) $key["computers_id"]];
         OcsProcess::linkComputer($link_params);
         Html::redirect($self_url);
     } else {
@@ -170,7 +173,8 @@ if (!isset($_POST["import_ok"])) {
         $_SESSION['ocs_import']['start'] = $_GET['start'];
     }
 
-    if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
+    if (isset($_SESSION["plugin_ocsinventoryng_ocsservers_id"])
+        && OcsServer::checkOCSconnection($_SESSION["plugin_ocsinventoryng_ocsservers_id"])) {
         $ocsClient = OcsServer::getDBocs($_SESSION["plugin_ocsinventoryng_ocsservers_id"]);
         $deleted_pcs   = $ocsClient->getTotalDeletedComputers();
         if ($deleted_pcs > 0) {
@@ -192,13 +196,17 @@ if (!isset($_POST["import_ok"])) {
 } else {
     if (isset($_POST["toimport"]) && (count($_POST['toimport']) > 0)) {
         $_SESSION["ocs_link_count"] = 0;
+        $computer                   = new Computer();
 
         foreach ($_POST['toimport'] as $key => $val) {
             if ($val == "on") {
                 if (isset($_POST['tolink']) && count($_POST['tolink']) > 0) {
                     foreach ($_POST['tolink'] as $ocsid => $computers_id) {
+                        $computers_id = (int) $computers_id;
                         if ($computers_id > 0 && $key == $ocsid) {
-                            $_SESSION["ocs_link"][] = ['ocsid'        => $ocsid,
+                            // The OCS machine overwrites the data of the computer: one the user may update
+                            $computer->check($computers_id, UPDATE);
+                            $_SESSION["ocs_link"][] = ['ocsid'        => (int) $ocsid,
                                 'computers_id' => $computers_id];
                         }
                     }

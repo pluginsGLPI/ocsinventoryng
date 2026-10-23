@@ -48,10 +48,12 @@ $self_url = PLUGIN_OCS_WEBDIR . '/front/deleted_equiv.php';
 // batches that follow only go on with a cleaning started that way (session flag)
 if (isset($_POST['clean_deleted'])) {
     unset($_SESSION["ocs_deleted_equiv"]);
-    $_SESSION["ocs_deleted_equiv"]["started"] = true;
+    $_SESSION["ocs_deleted_equiv"]["started"] = time();
     Html::redirect($self_url);
 }
-$started = !empty($_SESSION["ocs_deleted_equiv"]["started"]);
+// A cleaning left half-way is not resumed later without a new confirmation
+$started = !empty($_SESSION["ocs_deleted_equiv"]["started"])
+    && (time() - (int) $_SESSION["ocs_deleted_equiv"]["started"]) < HOUR_TIMESTAMP;
 
 Html::header(Menu::getTypeName(), '', "tools", Menu::class, "deleted_equiv");
 
@@ -114,7 +116,14 @@ if ($servers_id == -1) {
 
     $total = (int) ($_SESSION["ocs_deleted_equiv"]["total"] ?? 0);
     $count = (int) ($_SESSION["ocs_deleted_equiv"]["deleted"] ?? 0);
-    if ($total != $count && isset($_SESSION["ocs_deleted_equiv"]["last_req"])) {
+    if (!empty($_SESSION["ocs_deleted_equiv"]["skipped"])) {
+        // The remaining computers are in entities the user may not clean: left to the automatic action
+        $done(sprintf(
+            __('%1$s / %2$s'),
+            $count - (int) $_SESSION["ocs_deleted_equiv"]["skipped"],
+            $total,
+        ) . " " . __('deleted computers into OCS Inventory NG', 'ocsinventoryng'));
+    } elseif ($total != $count && isset($_SESSION["ocs_deleted_equiv"]["last_req"])) {
         // Batch in progress: the page reloads itself until every deleted computer is processed
         OcsServer::showMessage([
             'title'    => $title,
