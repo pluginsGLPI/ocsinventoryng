@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI Project - ocsinventoryng plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-22 16:47+0200\n"
+"POT-Creation-Date: 2026-10-22 17:49+0200\n"
 "PO-Revision-Date: 2012-05-25 15:03+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2017-2020,2022,2025-2026\n"
 "Language-Team: French (France) (http://app.transifex.com/yllen/glpi-plugin-ocsinventoryng/language/fr_FR/)\n"
@@ -51,6 +51,88 @@ msgstr "Nouvelles machines importées depuis OCS-NG"
 msgid "Computers not synchronized with OCS-NG since more"
 msgstr "Ordinateurs n'ayant pas remontés d'infos depuis OCS-NG depuis plus de"
 
+#: templates/inventory_info.html.twig
+msgid "SNMP Debug"
+msgstr "SNMP Debug"
+
+#: templates/ipdiscover_subnet.html.twig
+msgid "Modify Subnet"
+msgstr "Modification du sous-réseau"
+
+#: templates/ipdiscover_subnet.html.twig
+msgid "Subnet Name"
+msgstr "Nom du sous-réseau"
+
+#: templates/ipdiscover_subnet.html.twig
+msgid "Choose ID"
+msgstr "Choix de l'ID"
+
+#: templates/ocslink.html.twig hook.php:1605 src/Ocslink.php:82
+#: src/Ocslink.php:676
+msgid "OCSNG link"
+msgid_plural "OCSNG links"
+msgstr[0] "Lien OCSNG"
+msgstr[1] "Liens OCSNG"
+msgstr[2] "Liens OCSNG"
+
+#: templates/ocslink.html.twig
+msgid "No computer found into OCSNG Database"
+msgstr "Pas d'ordinateur trouvé dans la base de données OCSNG"
+
+#: templates/ocslink.html.twig
+msgid "OCSNG DEVICE ID"
+msgstr "OCSNG DEVICE ID"
+
+#: templates/ocslink.html.twig hook.php:1175 hook.php:1507 hook.php:1568
+#: src/NotificationTargetNotimportedcomputer.php:97
+#: src/Notimportedcomputer.php:190 src/Ocslink.php:172 src/OcsServer.php:1879
+#: src/OcsServer.php:1972
+msgid "OCSNG TAG"
+msgstr "TAG OCSNG"
+
+#: templates/ocslink.html.twig hook.php:1161 src/Ocslink.php:174
+msgid "Automatic update OCSNG"
+msgstr "Mise à jour OCSNG automatique"
+
+#: templates/ocslink.html.twig hook.php:1206 src/Ocslink.php:177
+#: src/OcsServer.php:662 src/SnmpOcslink.php:460
+msgid "Uptime"
+msgstr "Durée de fonctionnement"
+
+#: templates/ocslink.html.twig src/OcsServer.php:1880
+msgid "Checksum"
+msgstr "Checksum"
+
+#: templates/ocslink.html.twig hook.php:1095 src/Ocslink.php:191
+msgctxt "button"
+msgid "Launch synchronization"
+msgstr "Lancer la synchronisation"
+
+#: templates/ocslink.html.twig hook.php:1098 src/Ocslink.php:194
+msgctxt "button"
+msgid "Force full import"
+msgstr "Forcer un import complet"
+
+#: templates/ocslink.html.twig src/IpdiscoverOcslink.php:1362
+#: src/SnmpOcslink.php:479 src/SnmpOcslink.php:2116
+msgctxt "button"
+msgid "Delete link"
+msgstr "Suppression du lien"
+
+#: templates/ocslink.html.twig hook.php:1142 hook.php:1149 hook.php:1160
+#: hook.php:1169 hook.php:1175 hook.php:1182 hook.php:1189 hook.php:1199
+#: hook.php:1206 hook.php:1213 hook.php:1224 hook.php:1241 hook.php:1256
+#: hook.php:1270 hook.php:1278 hook.php:1285 hook.php:1295 hook.php:1305
+#: src/Notimportedcomputer.php:667 src/OcsServer.php:2072
+#: src/OcsServer.php:2076 src/OcsServer.php:2080 src/RuleImportEntity.php:74
+#: src/Thread.php:544
+msgid "OCSNG"
+msgstr "OCSNG"
+
+#: templates/ocslink.html.twig
+msgid "Checksum test"
+msgstr "Test Checksum"
+
 #: templates/ocsserver_form.html.twig
 msgid "Connection type"
 msgstr "Type de connexion"
@@ -64,11 +146,11 @@ msgctxt "button"
 msgid "Reload Checksum"
 msgstr "Recharger le Checksum"
 
-#: templates/ocsserver_form.html.twig src/OcsServer.php:1298
+#: templates/ocsserver_form.html.twig src/OcsServer.php:941
 msgid "Connecting to the database"
 msgstr "Connexion à la base de données"
 
-#: templates/ocsserver_form.html.twig src/OcsServer.php:2790
+#: templates/ocsserver_form.html.twig src/OcsServer.php:2470
 msgid "Host"
 msgstr "Hôte"
 
@@ -120,8 +202,7 @@ msgstr[1] "Serveurs OCSNG autorisés"
 msgstr[2] "Serveurs OCSNG autorisés"
 
 #: templates/profile_servers.html.twig front/ocsng.import.php:215
-#: front/ocsng.sync.php:149 src/Config.php:160 src/Menu.php:244
-#: src/OcsServer.php:1960
+#: front/ocsng.sync.php:149 src/Config.php:160 src/OcsServer.php:1640
 msgid "Add a OCSNG server"
 msgstr "Ajouter un serveur OCSNG"
 
@@ -152,6 +233,18 @@ msgid ""
 "profile can access it !"
 msgstr "Si vous ne trouvez pas votre serveur OCSNG dans la liste, merci de vérifier si votre profil y a accès"
 
+#: templates/snmp_filter.html.twig
+msgid "Filter SNMP Objects list"
+msgstr "Flitrer la liste des objets SNMP"
+
+#: templates/snmp_filter.html.twig
+msgid "By itemtype"
+msgstr "Par type d'objet"
+
+#: templates/snmp_filter.html.twig
+msgid "By IP"
+msgstr "Par IP"
+
 #: ajax/loadcomputerstoimport.php:130
 msgid "Blacklisted serial number"
 msgstr "Numéro de série blacklisté"
@@ -173,27 +266,31 @@ msgstr "IP blacklisté"
 msgid "Automatic synchronization's configuration"
 msgstr "Configuration de la synchronisation automatique"
 
-#: front/deleted_equiv.php:51 front/ocsng.clean.php:52 src/OcsServer.php:1305
-msgid "Connection to the database failed"
-msgstr "Échec de connexion à la base de données"
-
-#: front/deleted_equiv.php:57 front/ocsng.clean.php:62 src/Menu.php:117
+#: front/deleted_equiv.php:59 front/ocsng.clean.php:62 src/Menu.php:117
 #: src/OcsServer.php:492
 msgid "Clean OCSNG deleted computers"
 msgstr "Nettoyage des ordinateurs OCSNG supprimés"
 
-#: front/deleted_equiv.php:66 front/deleted_equiv.php:105
-msgid "No new computers to delete"
-msgstr "Pas de nouveaux ordinateurs à supprimer"
+#: front/deleted_equiv.php:76 front/ocsng.clean.php:52 src/OcsServer.php:948
+msgid "Connection to the database failed"
+msgstr "Échec de connexion à la base de données"
 
-#: front/deleted_equiv.php:75 front/deleted_equiv.php:117
-#: front/ocsng.clean.php:70 front/ocsng.import.php:153
-#: front/ocsng.link.php:176 front/ocsng.sync.php:95
+#: front/deleted_equiv.php:90 front/deleted_equiv.php:108
+#: front/deleted_equiv.php:130 front/ocsng.clean.php:70
+#: front/ocsng.import.php:153 front/ocsng.link.php:176 front/ocsng.sync.php:95
 msgid "deleted computers into OCS Inventory NG"
 msgstr "ordinateurs supprimés dans OCS Inventory NG"
 
+#: front/deleted_equiv.php:92 src/OcsServer.php:493
+msgid "Update ID of deleted computers of OCSNG"
+msgstr "Mise à jour de l'ID des ordinateurs supprimés dans OCSNG"
+
+#: front/deleted_equiv.php:107 front/deleted_equiv.php:128
+msgid "No new computers to delete"
+msgstr "Pas de nouveaux ordinateurs à supprimer"
+
 #: front/detail.php:35 src/Menu.php:105 src/OcsServer.php:468
-#: src/Thread.php:160 src/Thread.php:355
+#: src/Thread.php:176 src/Thread.php:374
 msgid "Computers imported by automatic actions"
 msgstr "Ordinateurs importés par la synchronisation automatique"
 
@@ -207,7 +304,7 @@ msgstr[2] "Types de ports réseaux inconnus importés"
 #: front/notimportedcomputer.php:35 src/Menu.php:109
 #: src/NotificationTargetNotimportedcomputer.php:48
 #: src/NotificationTargetNotimportedcomputer.php:99 src/OcsServer.php:476
-#: src/Thread.php:163 src/Thread.php:358
+#: src/Thread.php:179 src/Thread.php:377
 msgid "Computers not imported by automatic actions"
 msgstr "Ordinateurs non importés par la synchronisation automatique"
 
@@ -222,17 +319,15 @@ msgid "Please clean them before import or synchronize computers"
 msgstr "Merci de les nettoyer avant d'importer ou synchroniser les ordinateurs"
 
 #: front/ocsng.clean.php:89 front/ocsng.clean.php:95 src/Menu.php:120
-#: src/OcsServer.php:507 src/OcsServer.php:2140 src/Profile.php:259
+#: src/OcsServer.php:507 src/OcsServer.php:1820 src/Profile.php:259
 msgid "Clean links between GLPI and OCSNG"
 msgstr "Nettoyage des liens GLPI / OCSNG"
 
-#: front/ocsng.import.php:211 front/ocsng.sync.php:145 src/Menu.php:240
-#: src/OcsServer.php:1967
+#: front/ocsng.import.php:211 front/ocsng.sync.php:145 src/OcsServer.php:1647
 msgid "No OCSNG server defined"
 msgstr "Aucun serveur OCSNG n'est défini"
 
-#: front/ocsng.import.php:213 front/ocsng.sync.php:147 src/Menu.php:242
-#: src/OcsServer.php:1968
+#: front/ocsng.import.php:213 front/ocsng.sync.php:147 src/OcsServer.php:1648
 msgid "You must to configure a OCSNG server"
 msgstr "Vous devez configurer un serveur OCSNG"
 
@@ -260,7 +355,7 @@ msgstr "Veuillez vérifier la configuration du serveur OCS et la connectivité r
 msgid "View OCSNG server configuration"
 msgstr "Afficher la configuration du serveur OCSNG"
 
-#: front/ocsngsnmp.import.php:107 src/OcsServer.php:799
+#: front/ocsngsnmp.import.php:107 src/OcsServer.php:650
 msgid "No import: the plugin will not import these elements"
 msgstr "Pas d'import : GLPI n'importera pas ces éléments"
 
@@ -272,7 +367,7 @@ msgstr "Pas de synchronisation : Le plugin ne synchronisera pas ces élèments"
 msgid "Information about the script"
 msgstr "Informations sur le script"
 
-#: front/thread.php:55 src/Thread.php:152 src/Thread.php:370
+#: front/thread.php:55 src/Thread.php:168 src/Thread.php:389
 msgid "Processes execution of automatic actions"
 msgstr "Exécutions de la synchronisation automatique"
 
@@ -288,16 +383,6 @@ msgstr "Importer dans l'entité"
 msgid "Delete computer in OCSNG"
 msgstr "Supprimer l'ordinateur d'OCSNG"
 
-#: hook.php:1095 src/Ocslink.php:227 src/Ocslink.php:475
-msgctxt "button"
-msgid "Launch synchronization"
-msgstr "Lancer la synchronisation"
-
-#: hook.php:1098 src/Ocslink.php:241 src/Ocslink.php:483
-msgctxt "button"
-msgid "Force full import"
-msgstr "Forcer un import complet"
-
 #: hook.php:1101
 msgid "Lock fields"
 msgstr "Verrouiller les champs"
@@ -310,41 +395,21 @@ msgstr "Déverrouiller les champs"
 msgid "Update networkport types"
 msgstr "Mettre à jour les types de port réseaux"
 
-#: hook.php:1142 hook.php:1149 hook.php:1160 hook.php:1169 hook.php:1175
-#: hook.php:1182 hook.php:1189 hook.php:1199 hook.php:1206 hook.php:1213
-#: hook.php:1224 hook.php:1241 hook.php:1256 hook.php:1270 hook.php:1278
-#: hook.php:1285 hook.php:1295 hook.php:1305 src/Notimportedcomputer.php:667
-#: src/Ocslink.php:516 src/OcsServer.php:2392 src/OcsServer.php:2396
-#: src/OcsServer.php:2400 src/RuleImportEntity.php:74 src/Thread.php:525
-msgid "OCSNG"
-msgstr "OCSNG"
-
-#: hook.php:1142 hook.php:1308 src/Ocslink.php:147
+#: hook.php:1142 hook.php:1308 src/Ocslink.php:163
 msgid "GLPI import date"
 msgstr "Date d'import dans GLPI"
 
-#: hook.php:1150 src/IpdiscoverOcslink.php:1426
+#: hook.php:1150 src/IpdiscoverOcslink.php:1295
 #: src/NotificationTargetOcsAlert.php:86
 #: src/NotificationTargetOcsAlert.php:142 src/Notimportedcomputer.php:211
-#: src/OcsAlert.php:332 src/Ocslink.php:142 src/OcsServer.php:2198
-#: src/OcsServer.php:2291
+#: src/OcsAlert.php:332 src/Ocslink.php:159 src/OcsServer.php:1878
+#: src/OcsServer.php:1971
 msgid "Last OCSNG inventory date"
 msgstr "Date dernier inventaire OCSNG"
 
-#: hook.php:1161 src/Ocslink.php:182 src/Ocslink.php:435
-msgid "Automatic update OCSNG"
-msgstr "Mise à jour OCSNG automatique"
-
-#: hook.php:1169 src/Notimportedcomputer.php:165 src/Ocslink.php:144
+#: hook.php:1169 src/Notimportedcomputer.php:165 src/Ocslink.php:161
 msgid "Inventory agent"
 msgstr "Agent d'inventaire"
-
-#: hook.php:1175 hook.php:1491 hook.php:1552
-#: src/NotificationTargetNotimportedcomputer.php:97
-#: src/Notimportedcomputer.php:190 src/Ocslink.php:174 src/Ocslink.php:428
-#: src/OcsServer.php:2199 src/OcsServer.php:2292
-msgid "OCSNG TAG"
-msgstr "TAG OCSNG"
 
 #: hook.php:1182 src/Detail.php:60
 #: src/NotificationTargetNotimportedcomputer.php:101
@@ -352,21 +417,16 @@ msgstr "TAG OCSNG"
 msgid "OCSNG ID"
 msgstr "ID OCSNG"
 
-#: hook.php:1190 src/Ocslink.php:160
+#: hook.php:1190 src/Ocslink.php:167
 msgid "Last OCSNG connection date"
 msgstr "Date de dernière connexion OCSNG"
 
-#: hook.php:1199 src/Ocslink.php:167
+#: hook.php:1199 src/Ocslink.php:170
 msgid "IP Source"
 msgstr "IP Source"
 
-#: hook.php:1206 src/Ocslink.php:195 src/Ocslink.php:305 src/Ocslink.php:442
-#: src/OcsServer.php:826 src/SnmpOcslink.php:462
-msgid "Uptime"
-msgstr "Durée de fonctionnement"
-
 #: hook.php:1225 hook.php:1242 src/Components/RegistryKey.php:65
-#: src/Components/RegistryKey.php:159 src/OcsServer.php:781
+#: src/Components/RegistryKey.php:159 src/OcsServer.php:598
 msgid "Registry"
 msgstr "Base de registre"
 
@@ -378,7 +438,7 @@ msgstr "Clé/valeur"
 msgid "OCSNG name"
 msgstr "Nom OCSNG"
 
-#: hook.php:1256 hook.php:1502 hook.php:1542 src/Config.php:155
+#: hook.php:1256 hook.php:1518 hook.php:1558 src/Config.php:155
 #: src/NotificationTargetOcsAlert.php:88
 #: src/NotificationTargetOcsAlert.php:144 src/OcsAlert.php:334
 #: src/OcsServer.php:101 src/OcsServer.php:384 src/OcsServer.php:428
@@ -389,19 +449,19 @@ msgstr[0] "Serveur OCSNG"
 msgstr[1] "Serveurs OCSNG"
 msgstr[2] "Serveurs OCSNG"
 
-#: hook.php:1270 src/Components/Proxysetting.php:218
+#: hook.php:1270 src/Components/Proxysetting.php:213
 msgid "Proxy enabled"
 msgstr "Proxy activé"
 
-#: hook.php:1278 src/Components/Proxysetting.php:220
+#: hook.php:1278 src/Components/Proxysetting.php:215
 msgid "Proxy address"
 msgstr "Adresse du proxy"
 
-#: hook.php:1286 src/Components/Service.php:205
+#: hook.php:1286 src/Components/Service.php:206
 msgid "Name of the service"
 msgstr "Nom du service"
 
-#: hook.php:1295 src/Components/Runningprocess.php:207
+#: hook.php:1295 src/Components/Runningprocess.php:205
 msgid "Process name"
 msgstr "Nom du processus"
 
@@ -409,75 +469,60 @@ msgstr "Nom du processus"
 msgid "SNMP Import"
 msgstr "Import SNMP"
 
-#: hook.php:1589 src/Ocslink.php:81 src/Ocslink.php:417 src/Ocslink.php:584
-#: src/Ocslink.php:596 src/Ocslink.php:608 src/Ocslink.php:873
-msgid "OCSNG link"
-msgid_plural "OCSNG links"
-msgstr[0] "Lien OCSNG"
-msgstr[1] "Liens OCSNG"
-msgstr[2] "Liens OCSNG"
-
-#: hook.php:1776
+#: hook.php:1792
 msgid "Link possible"
 msgstr "Liaison possible"
 
-#: hook.php:1780
+#: hook.php:1796
 msgid "Import refused"
 msgstr "Import refusé"
 
-#: hook.php:1784
+#: hook.php:1800
 msgid "New computer created in GLPI"
 msgstr "Nouvel ordinateur créé dans GLPI"
 
-#: hook.php:1796
+#: hook.php:1812
 msgid "Link with computer"
 msgstr "Liaison avec un ordinateur"
 
-#: hook.php:2054
+#: hook.php:2070
 msgid "Locked field"
 msgid_plural "Locked fields"
 msgstr[0] "Champ verrouillé"
 msgstr[1] "Champs verrouillés"
 msgstr[2] "Champs verrouillés"
 
-#: hook.php:2071
+#: hook.php:2087
 msgid "You don't use locks - See setup for activate them"
 msgstr "Vous n'utilisez pas les verrous - Voir la configuration pour les activer"
 
-#: hook.php:2319
+#: hook.php:2335
 msgid ""
 "The startup date field is locked by ocsinventoryng please unlock it before "
 "update."
 msgstr "La date de mise en service est verrouillée par ocsinventoryng. Merci de déverrouiller le champ avant de le modifier."
 
-#: src/Components/Bitlockerstatus.php:51 src/OcsServer.php:878
+#: src/Components/Bitlockerstatus.php:51 src/OcsServer.php:672
 msgid "Bitlocker"
 msgstr "Bitlocker"
 
-#: src/Components/Bitlockerstatus.php:178
+#: src/Components/Bitlockerstatus.php:183
 msgid "Volume type"
 msgstr "Type de volume"
 
-#: src/Components/Bitlockerstatus.php:180
+#: src/Components/Bitlockerstatus.php:184
 msgid "Protection status"
 msgstr "Statut de la protection"
 
-#: src/Components/Bitlockerstatus.php:184
+#: src/Components/Bitlockerstatus.php:185
 msgid "Volume initialization for protection"
 msgstr "Initialisation du volume pour la protection"
 
-#: src/Components/Customapp.php:59 src/OcsServer.php:873
+#: src/Components/Customapp.php:59 src/OcsServer.php:671
 msgid "Customapp"
 msgstr "Customapp"
 
-#: src/Components/Customapp.php:170 src/Components/Networkshare.php:180
-#: src/Components/Proxysetting.php:176 src/Components/Runningprocess.php:167
-#: src/Components/Service.php:166 src/Components/Teamviewer.php:169
-#: src/Components/Winupdate.php:173 src/Components/Winuser.php:177
-msgid "Server unreachable"
-msgstr "Serveur inaccessible"
-
-#: src/Components/Hardware.php:249 src/OcsProcess.php:408
+#: src/Components/Hardware.php:249 src/OcsProcess.php:410
 msgid "Swap"
 msgstr "Swap"
 
@@ -507,15 +552,15 @@ msgstr "Créez un type de port réseau pour chacun de ces types OCS, puis synchr
 msgid "No unknown network port type from OCS !"
 msgstr "Pas de type de port réseau inconnu provenant d'OCSNG"
 
-#: src/Components/Networkshare.php:61 src/OcsServer.php:857
+#: src/Components/Networkshare.php:61 src/OcsServer.php:668
 msgid "Network shares"
 msgstr "Lecteurs réseaux"
 
-#: src/Components/Networkshare.php:224 src/Components/RegistryKey.php:164
+#: src/Components/Networkshare.php:222 src/Components/RegistryKey.php:164
 msgid "Path"
 msgstr "Chemin"
 
-#: src/Components/Networkshare.php:228
+#: src/Components/Networkshare.php:226
 msgid "Quota"
 msgstr "Quota"
 
@@ -523,43 +568,43 @@ msgstr "Quota"
 msgid "Product ID of the operating system"
 msgstr "ID du produit du système d'exploitation"
 
-#: src/Components/Osinstall.php:56 src/OcsServer.php:851
+#: src/Components/Osinstall.php:56 src/OcsServer.php:667
 msgid "OS Informations"
 msgstr "Informations sur l'OS"
 
-#: src/Components/Osinstall.php:173
+#: src/Components/Osinstall.php:166
 msgid "Build version"
 msgstr "Version constructeur"
 
-#: src/Components/Osinstall.php:180
+#: src/Components/Osinstall.php:168
 msgid "Codeset"
 msgstr "Codeset"
 
-#: src/Components/Osinstall.php:182
+#: src/Components/Osinstall.php:169
 msgid "Country code"
 msgstr "Code pays"
 
-#: src/Components/Osinstall.php:187
+#: src/Components/Osinstall.php:170
 msgid "OS Language"
 msgstr "Langue OS"
 
-#: src/Components/Osinstall.php:189
+#: src/Components/Osinstall.php:171
 msgid "Current Timezone"
 msgstr "Fuseau horaire actuel"
 
-#: src/Components/Osinstall.php:194
+#: src/Components/Osinstall.php:172
 msgid "Locale"
 msgstr "Locale"
 
-#: src/Components/Proxysetting.php:60 src/OcsServer.php:840
+#: src/Components/Proxysetting.php:60 src/OcsServer.php:665
 msgid "Proxy Settings"
 msgstr "Paramètres du proxy"
 
-#: src/Components/Proxysetting.php:219
+#: src/Components/Proxysetting.php:214
 msgid "Auto Config URL"
 msgstr "URL de configuration automatique"
 
-#: src/Components/Proxysetting.php:221
+#: src/Components/Proxysetting.php:216
 msgid "Proxy exceptions"
 msgstr "Exceptions de proxy"
 
@@ -579,23 +624,23 @@ msgstr "Ruche"
 msgid "No key found in registry"
 msgstr "Aucune clé de la base de registre trouvée"
 
-#: src/Components/Runningprocess.php:59 src/OcsServer.php:868
+#: src/Components/Runningprocess.php:59 src/OcsServer.php:670
 msgid "Running Process"
 msgstr "Processus en cours"
 
-#: src/Components/Runningprocess.php:208
+#: src/Components/Runningprocess.php:206
 msgid "Process ID"
 msgstr "ID du processus"
 
-#: src/Components/Runningprocess.php:210
+#: src/Components/Runningprocess.php:208
 msgid "Process memory"
 msgstr "Mémoire du processus"
 
-#: src/Components/Runningprocess.php:211
+#: src/Components/Runningprocess.php:209
 msgid "Command line"
 msgstr "Ligne de commande"
 
-#: src/Components/Runningprocess.php:213
+#: src/Components/Runningprocess.php:211
 msgid "Company"
 msgstr "Société"
 
@@ -603,31 +648,31 @@ msgstr "Société"
 msgid "Services"
 msgstr "Services"
 
-#: src/Components/Service.php:206
+#: src/Components/Service.php:207
 msgid "Full name"
 msgstr "Nom complet"
 
-#: src/Components/Service.php:207
+#: src/Components/Service.php:208
 msgid "Service Status"
 msgstr "Etat du service"
 
-#: src/Components/Service.php:209
+#: src/Components/Service.php:210
 msgid "Start type"
 msgstr "Type de démarrage"
 
-#: src/Components/Service.php:210
+#: src/Components/Service.php:211
 msgid "Access path"
 msgstr "Chemin d'accès"
 
-#: src/Components/Service.php:211
+#: src/Components/Service.php:212
 msgid "Session"
 msgstr "Session"
 
-#: src/Components/Service.php:212
+#: src/Components/Service.php:213
 msgid "Exit code"
 msgstr "Code de sortie"
 
-#: src/Components/Service.php:213
+#: src/Components/Service.php:214
 msgid "Spec Exit code"
 msgstr "Code de sortie spec"
 
@@ -635,15 +680,15 @@ msgstr "Code de sortie spec"
 msgid "Software deleted by OCSNG synchronization"
 msgstr "Logiciel supprimé par la synchronisation OCSNG"
 
-#: src/Components/Teamviewer.php:62
+#: src/Components/Teamviewer.php:63
 msgid "Teamviewer access"
 msgstr "Accès Teamviewer"
 
-#: src/Components/Teamviewer.php:210
+#: src/Components/Teamviewer.php:203
 msgid "Teamviewer ID"
 msgstr "ID Teamviewer"
 
-#: src/Components/Teamviewer.php:251 src/Components/Teamviewer.php:300
+#: src/Components/Teamviewer.php:210
 msgid "Teamviewer direct access"
 msgstr "Accès direct à Teamviewer"
 
@@ -651,55 +696,55 @@ msgstr "Accès direct à Teamviewer"
 msgid "Windows Updates"
 msgstr "Windows Updates"
 
-#: src/Components/Winupdate.php:213
+#: src/Components/Winupdate.php:211
 msgid "AU Options"
 msgstr "Options de mises à jours automatique"
 
-#: src/Components/Winupdate.php:214
+#: src/Components/Winupdate.php:212
 msgid "Schedule Install Date"
 msgstr "Date d'installation planifiée"
 
-#: src/Components/Winupdate.php:215
+#: src/Components/Winupdate.php:213
 msgid "Last Success Time"
 msgstr "Dernier date de succès"
 
-#: src/Components/Winupdate.php:216
+#: src/Components/Winupdate.php:214
 msgid "Detect Success Time"
 msgstr "Dernière détection en succès"
 
-#: src/Components/Winupdate.php:217
+#: src/Components/Winupdate.php:215
 msgid "Download Success Time"
 msgstr "Dernier téléchargement en succès"
 
-#: src/Components/Winupdate.php:285
+#: src/Components/Winupdate.php:233
 msgid "Automatic Updates is required and users can configure it"
 msgstr "Mises à jours automatiques requises et l'utilisateur peut les configurer"
 
-#: src/Components/Winupdate.php:288
+#: src/Components/Winupdate.php:236
 msgid "Automatically download and schedule installation"
 msgstr "Téléchargement automatique et planification de l'installation"
 
-#: src/Components/Winupdate.php:291
+#: src/Components/Winupdate.php:239
 msgid "Automatically download and notify of installation"
 msgstr "Téléchargement automatique et notification de l'installation"
 
-#: src/Components/Winupdate.php:294
+#: src/Components/Winupdate.php:242
 msgid "Notify before download"
 msgstr "Notifier avant le téléchargement"
 
-#: src/Components/Winupdate.php:297
+#: src/Components/Winupdate.php:245
 msgid "Disables AU"
 msgstr "Désactiver les mises à jour automatiques"
 
-#: src/Components/Winuser.php:59 src/OcsServer.php:846
+#: src/Components/Winuser.php:59 src/OcsServer.php:666
 msgid "Windows Users"
 msgstr "Utilisateurs de Windows"
 
-#: src/Components/Winuser.php:220
+#: src/Components/Winuser.php:216
 msgid "Status"
 msgstr "Statut"
 
-#: src/Components/Winuser.php:221
+#: src/Components/Winuser.php:217
 msgid "SID"
 msgstr "SID"
 
@@ -752,7 +797,7 @@ msgstr[2] "secondes"
 msgid "Limit each massive import to this number of objects"
 msgstr "Limitez chaque importation massive à ce nombre d'objets"
 
-#: src/Config.php:431 src/Thread.php:308
+#: src/Config.php:431 src/Thread.php:327
 msgid "All servers"
 msgstr "Tous les serveurs"
 
@@ -778,7 +823,7 @@ msgstr "Nombre d'ordinateurs OCSNG, d'ordinateurs Fusion Inventory, ordinateurs 
 msgid "Computers number"
 msgstr "Nombres d'ordinateurs"
 
-#: src/Dashboard.php:245 src/Dashboard.php:246 src/OcsServer.php:2797
+#: src/Dashboard.php:245 src/Dashboard.php:246 src/OcsServer.php:2477
 msgid "OCS Inventory NG"
 msgstr "OCS Inventory NG"
 
@@ -798,11 +843,11 @@ msgstr[2] "Ordinateurs non importés"
 msgid "Process time"
 msgstr "Heure de traitement"
 
-#: src/Detail.php:92 src/Thread.php:350
+#: src/Detail.php:92 src/Thread.php:369
 msgid "Process"
 msgstr "Processus"
 
-#: src/Detail.php:107 src/Thread.php:156
+#: src/Detail.php:107 src/Thread.php:172
 msgid "Thread"
 msgstr "Thread"
 
@@ -810,26 +855,26 @@ msgstr "Thread"
 msgid "Rules checked"
 msgstr "Règles contrôlées"
 
-#: src/Detail.php:204 src/OcsProcess.php:1729
+#: src/Detail.php:204 src/OcsProcess.php:1731
 msgid "Computers imported"
 msgstr "Ordinateurs importés"
 
-#: src/Detail.php:207 src/OcsProcess.php:1731 src/Thread.php:162
-#: src/Thread.php:357
+#: src/Detail.php:207 src/OcsProcess.php:1733 src/Thread.php:178
+#: src/Thread.php:376
 msgid "Computers linked"
 msgstr "Ordinateurs liés"
 
-#: src/Detail.php:210 src/OcsProcess.php:1732 src/Thread.php:164
-#: src/Thread.php:359
+#: src/Detail.php:210 src/OcsProcess.php:1734 src/Thread.php:180
+#: src/Thread.php:378
 msgid "Computers not updated"
 msgstr "Ordinateurs non mis à jour"
 
-#: src/Detail.php:213 src/OcsProcess.php:1730 src/Thread.php:161
-#: src/Thread.php:356
+#: src/Detail.php:213 src/OcsProcess.php:1732 src/Thread.php:177
+#: src/Thread.php:375
 msgid "Computers synchronized"
 msgstr "Ordinateurs synchronisés"
 
-#: src/Detail.php:216 src/Thread.php:165 src/Thread.php:360
+#: src/Detail.php:216 src/Thread.php:181 src/Thread.php:379
 msgid "Computers not unique"
 msgstr "Ordinateurs non uniques"
 
@@ -841,105 +886,83 @@ msgstr "Import refusé par une règle"
 msgid "IPDiscover Import"
 msgstr "Import IPDiscover"
 
-#: src/IpdiscoverOcslink.php:446
-msgid "Import IPDiscover"
-msgstr "Import IPDiscover"
-
-#: src/IpdiscoverOcslink.php:449
-msgid "Link IPDiscover"
-msgstr "Lien IPDiscover"
-
-#: src/IpdiscoverOcslink.php:457
+#: src/IpdiscoverOcslink.php:454
 msgid "All Subnets"
 msgstr "Tous les sous-réseaux"
 
-#: src/IpdiscoverOcslink.php:458
+#: src/IpdiscoverOcslink.php:455
 msgid "Known Subnets"
 msgstr "Sous-réseaux connus"
 
-#: src/IpdiscoverOcslink.php:459
+#: src/IpdiscoverOcslink.php:456
 msgid "Unknown Subnets"
 msgstr "Sous-réseaux inconnus"
 
-#: src/IpdiscoverOcslink.php:775 src/IpdiscoverOcslink.php:1386
+#: src/IpdiscoverOcslink.php:464
+msgid "Import IPDiscover"
+msgstr "Import IPDiscover"
+
+#: src/IpdiscoverOcslink.php:464
+msgid "Link IPDiscover"
+msgstr "Lien IPDiscover"
+
+#: src/IpdiscoverOcslink.php:756 src/IpdiscoverOcslink.php:1236
 msgid "Non Inventoried"
 msgstr "Non inventorié"
 
-#: src/IpdiscoverOcslink.php:776 src/IpdiscoverOcslink.php:1382
+#: src/IpdiscoverOcslink.php:757 src/IpdiscoverOcslink.php:1234
 msgid "Inventoried"
 msgstr "Inventorié"
 
-#: src/IpdiscoverOcslink.php:777 src/IpdiscoverOcslink.php:1388
+#: src/IpdiscoverOcslink.php:758 src/IpdiscoverOcslink.php:1243
 msgid "Identified"
 msgstr "Identifié"
 
-#: src/IpdiscoverOcslink.php:778 src/IpdiscoverOcslink.php:1384
+#: src/IpdiscoverOcslink.php:759 src/IpdiscoverOcslink.php:1235
 msgid "Imported / Linked"
 msgstr "Importé / Lié"
 
-#: src/IpdiscoverOcslink.php:884
-msgid "Modify Subnet"
-msgstr "Modification du sous-réseau"
-
-#: src/IpdiscoverOcslink.php:893
-msgid "Subnet Name"
-msgstr "Nom du sous-réseau"
-
-#: src/IpdiscoverOcslink.php:904 src/IpdiscoverOcslink.php:934
-msgid "Choose ID"
-msgstr "Choix de l'ID"
-
-#: src/IpdiscoverOcslink.php:1122
+#: src/IpdiscoverOcslink.php:996
 msgid "Unable to add. an object with same MAC address already exists."
 msgstr "Impossible de l'ajouter. Un objet ayant la même MAC adresse existe."
 
-#: src/IpdiscoverOcslink.php:1414
-msgid "No new IPDiscover device to import"
-msgstr "Pas de nouveaux objets IPDiscover à importer"
-
-#: src/IpdiscoverOcslink.php:1453 src/IpdiscoverOcslink.php:1512
-#: src/Ocslink.php:491 src/SnmpOcslink.php:471 src/SnmpOcslink.php:2521
-#: src/SnmpOcslink.php:2548
-msgctxt "button"
-msgid "Delete link"
-msgstr "Suppression du lien"
-
-#: src/IpdiscoverOcslink.php:1461 src/NotificationTargetOcsAlert.php:87
+#: src/IpdiscoverOcslink.php:1317 src/NotificationTargetOcsAlert.php:87
 #: src/NotificationTargetOcsAlert.php:143 src/OcsAlert.php:333
-#: src/Ocslink.php:271 src/Ocslink.php:331 src/OcsServer.php:2131
-#: src/OcsServer.php:2197 src/SnmpOcslink.php:442 src/SnmpOcslink.php:612
-#: src/SnmpOcslink.php:658 src/SnmpOcslink.php:2528
+#: src/Ocslink.php:228 src/OcsServer.php:1811 src/OcsServer.php:1877
+#: src/SnmpOcslink.php:423 src/SnmpOcslink.php:447 src/SnmpOcslink.php:2098
 msgid "Import date in GLPI"
 msgstr "Date d'import dans GLPI"
 
-#: src/IpdiscoverOcslink.php:1531 src/IpdiscoverOcslink.php:1644
-#: src/IpdiscoverOcslink.php:1664 src/IpdiscoverOcslink.php:1764
+#: src/IpdiscoverOcslink.php:1380 src/IpdiscoverOcslink.php:1388
+msgid "OCS Type"
+msgstr "Type OCSNG"
+
+#: src/IpdiscoverOcslink.php:1386
+msgid "DNS"
+msgstr "DNS"
+
+#: src/IpdiscoverOcslink.php:1395
+msgid "GLPI Type"
+msgstr "Type GLPI"
+
+#: src/IpdiscoverOcslink.php:1397 src/OcsServer.php:1977
+#: src/SnmpOcslink.php:1927
+msgid "Item to link"
+msgstr "Objet à lier"
+
+#: src/IpdiscoverOcslink.php:1439
 #: src/NotificationTargetRuleImportEntity.php:131
 msgid "Link"
 msgstr "Lien"
 
-#: src/IpdiscoverOcslink.php:1534 src/IpdiscoverOcslink.php:1647
-#: src/IpdiscoverOcslink.php:1667 src/IpdiscoverOcslink.php:1767
+#: src/IpdiscoverOcslink.php:1440
 msgctxt "button"
 msgid "Delete from OCSNG"
 msgstr "Supprimer dans OCSNG"
 
-#: src/IpdiscoverOcslink.php:1541
-msgid "DNS"
-msgstr "DNS"
-
-#: src/IpdiscoverOcslink.php:1543 src/IpdiscoverOcslink.php:1671
-msgid "OCS Type"
-msgstr "Type OCSNG"
-
-#: src/IpdiscoverOcslink.php:1550 src/IpdiscoverOcslink.php:1681
-msgid "GLPI Type"
-msgstr "Type GLPI"
-
-#: src/IpdiscoverOcslink.php:1552 src/IpdiscoverOcslink.php:1683
-#: src/OcsServer.php:2297 src/SnmpOcslink.php:2216
-msgid "Item to link"
-msgstr "Objet à lier"
+#: src/IpdiscoverOcslink.php:1457
+msgid "No new IPDiscover device to import"
+msgstr "Pas de nouveaux objets IPDiscover à importer"
 
 #: src/Menu.php:92
 msgid "Import new computers"
@@ -1049,144 +1072,106 @@ msgstr "Alerte sur les ordinateurs non importés"
 msgid "Alert for the new imported computers"
 msgstr "Alertes pour les nouvelles machines importées"
 
-#: src/Ocslink.php:140 src/Ocslink.php:342
+#: src/Ocslink.php:128 src/Ocslink.php:199
 msgid "OCS Inventory NG Import informations"
 msgstr "Informations de l'import OCS Inventory NG"
 
-#: src/Ocslink.php:214
+#: src/Ocslink.php:185
 msgid "OCS NG Interface"
 msgstr "Interface OCSNG"
 
-#: src/Ocslink.php:266 src/SnmpOcslink.php:437 src/SnmpOcslink.php:610
-msgid "OCS Inventory NG SNMP Import informations"
-msgstr "Informations de l'import SNMP OCS Inventory NG"
-
-#: src/Ocslink.php:267 src/SnmpOcslink.php:438 src/SnmpOcslink.php:613
-msgid "Imported object"
-msgstr "Objet importé"
-
-#: src/Ocslink.php:269 src/SnmpOcslink.php:440 src/SnmpOcslink.php:615
-msgid "Linked object"
-msgstr "Objet lié"
-
-#: src/Ocslink.php:278 src/SnmpOcslink.php:623
-msgctxt "button"
-msgid "Force SNMP synchronization"
-msgstr "Forcer la synchronisation SNMP"
-
-#: src/Ocslink.php:302 src/SnmpOcslink.php:459 src/SnmpOcslink.php:2529
-msgid "Last OCSNG SNMP inventory date"
-msgstr "Derniere date d'inventaire SNMP OCSNG"
-
-#: src/Ocslink.php:329 src/SnmpOcslink.php:656
+#: src/Ocslink.php:225 src/SnmpOcslink.php:420
 msgid "OCS Inventory NG IPDiscover Import informations"
 msgstr "Informations de l'import IPDiscover OCS Inventory NG"
 
-#: src/Ocslink.php:421
-msgid "OCSNG DEVICE ID"
-msgstr "OCSNG DEVICE ID"
-
-#: src/Ocslink.php:451 src/OcsServer.php:2200
-msgid "Checksum"
-msgstr "Checksum"
-
-#: src/Ocslink.php:558 src/Ocslink.php:587 src/Ocslink.php:599
-#: src/Ocslink.php:611
-msgid "No computer found into OCSNG Database"
-msgstr "Pas d'ordinateur trouvé dans la base de données OCSNG"
-
-#: src/Ocslink.php:567
-msgid "Checksum test"
-msgstr "Test Checksum"
-
-#: src/Ocslink.php:942
+#: src/Ocslink.php:745
 msgid "Imported from OCSNG"
 msgstr "Importé depuis OCSNG"
 
-#: src/Ocslink.php:949
+#: src/Ocslink.php:752
 msgid "Deleted in OCSNG"
 msgstr "Supprimé d'OCSNG"
 
-#: src/Ocslink.php:956
+#: src/Ocslink.php:759
 msgid "Linked with an OCSNG computer"
 msgstr "Lié avec un ordinateur d'OCSNG"
 
-#: src/Ocslink.php:963
+#: src/Ocslink.php:766
 #, php-format
 msgid "The OCSNG ID of the computer changed from %1$s to %2$s"
 msgstr "L'ID OCSNG de l'ordinateur a changé de %1$s à %2$s"
 
-#: src/Ocslink.php:973
+#: src/Ocslink.php:776
 #, php-format
 msgid "The OCSNG TAG of the computer changed from %1$s to %2$s"
 msgstr "La balise OCSNG de l'ordinateur a changé de %1$s à %2$s"
 
-#: src/Ocslink.php:1380
+#: src/Ocslink.php:1183
 msgid "Unlock field and import OCSNG data"
 msgstr "Déverrouiller le champ et importer la donnée depuis OCSNG"
 
-#: src/OcsProcess.php:775
+#: src/OcsProcess.php:777
 #, php-format
 msgid "Unable to link this computer, Serial number is blacklisted (%d)"
 msgstr "Impossible de lier cet ordinateur, le numéro de série est blacklisté (%d)"
 
-#: src/OcsProcess.php:782
+#: src/OcsProcess.php:784
 #, php-format
 msgid "Unable to link this computer, UUID is blacklisted (%d)"
 msgstr "Impossible de lier cet ordinateur, l'UUID est blacklisté (%d)"
 
-#: src/OcsProcess.php:879
+#: src/OcsProcess.php:881
 #, php-format
 msgid ""
 "Unable to import, GLPI computer is already related to an element of OCSNG "
 "(%d)"
 msgstr "Importation impossible, ordinateur de destination de GLPI déjà lié à un élément d'OCSNG (%d)"
 
-#: src/OcsProcess.php:1733
+#: src/OcsProcess.php:1735
 msgid "Computers don't check any rule"
 msgstr "Ordinateurs ne vérifiant aucune règle"
 
-#: src/OcsProcess.php:1734
+#: src/OcsProcess.php:1736
 msgid "Duplicate computers"
 msgstr "Ordinateurs en doublon"
 
-#: src/OcsProcess.php:1735
+#: src/OcsProcess.php:1737
 msgid "Computers whose import is refused by a rule"
 msgstr "Ordinateurs dont l'import est refusé par une règle"
 
-#: src/OcsProcess.php:1737
+#: src/OcsProcess.php:1739
 msgid "SNMP objects imported"
 msgstr "Objets SNMP importés"
 
-#: src/OcsProcess.php:1738
+#: src/OcsProcess.php:1740
 msgid "SNMP objects synchronized"
 msgstr "Objets SNMP synchronisés"
 
-#: src/OcsProcess.php:1739
+#: src/OcsProcess.php:1741
 msgid "SNMP objects linked"
 msgstr "Objets SNMP liés"
 
-#: src/OcsProcess.php:1740
+#: src/OcsProcess.php:1742
 msgid "SNMP objects not updated"
 msgstr "Objets SNMP non mis à jour"
 
-#: src/OcsProcess.php:1741
+#: src/OcsProcess.php:1743
 msgid "SNMP objects not imported"
 msgstr "Objets SNMP non importés"
 
-#: src/OcsProcess.php:1744
+#: src/OcsProcess.php:1746
 msgid "IPDISCOVER objects imported"
 msgstr "Objets IPDiscover importés"
 
-#: src/OcsProcess.php:1745
+#: src/OcsProcess.php:1747
 msgid "IPDISCOVER objects synchronized"
 msgstr "Objets IPDiscover synchronisés"
 
-#: src/OcsProcess.php:1746
+#: src/OcsProcess.php:1748
 msgid "IPDISCOVER objects not updated"
 msgstr "Objets IPDiscover non mis à jour"
 
-#: src/OcsProcess.php:1747
+#: src/OcsProcess.php:1749
 msgid "IPDISCOVER objects not imported"
 msgstr "Objets IPDiscover non importés"
 
@@ -1206,11 +1191,11 @@ msgstr "Statistiques concernant la liaison OCSNG"
 msgid "Datas to import"
 msgstr "Données à importer"
 
-#: src/OcsServer.php:122 src/OcsServer.php:1154
+#: src/OcsServer.php:122 src/OcsServer.php:804
 msgid "Import options"
 msgstr "Options d'importation"
 
-#: src/OcsServer.php:123 src/OcsServer.php:1040
+#: src/OcsServer.php:123 src/OcsServer.php:767
 msgid "General history"
 msgstr "Historique général"
 
@@ -1243,7 +1228,7 @@ msgstr "Configuration des règles d'import et de liaison des ordinateurs"
 msgid "See Setup : Datas to import before"
 msgstr "Voir la configuration : Données à importer avant"
 
-#: src/OcsServer.php:444 src/OcsServer.php:2247
+#: src/OcsServer.php:444 src/OcsServer.php:1927
 msgid "Import or link new computers"
 msgstr "Importer ou lier des ordinateurs"
 
@@ -1253,10 +1238,6 @@ msgid ""
 "available"
 msgstr "Le serveur sélectionné n'est pas actif. L'import et la synchronisation sont impossibles"
 
-#: src/OcsServer.php:493
-msgid "Update ID of deleted computers of OCSNG"
-msgstr "Mise à jour de l'ID des ordinateurs supprimés dans OCSNG"
-
 #: src/OcsServer.php:502
 msgid "Pc deleted"
 msgstr "Ordinateurs supprimés"
@@ -1265,532 +1246,531 @@ msgstr "Ordinateurs supprimés"
 msgid "Drop links for not present computers into OCSNG"
 msgstr "Supprimer les liens pour les ordinateurs absents dans OCSNG"
 
-#: src/OcsServer.php:573
-msgid "General information"
-msgstr "Informations générales"
-
-#: src/OcsServer.php:581
-msgid "Warning : the import entity rules depends on selected fields"
-msgstr "Attention : les règles d'affectation d'un élément à une entité dépendent des champs sélectionnés"
-
-#: src/OcsServer.php:599 src/OcsServer.php:605 src/OcsServer.php:610
-#: src/OcsServer.php:616
+#: src/OcsServer.php:549
 msgid "Depends on Bios import"
 msgstr "Dépends de l'import du Bios"
 
-#: src/OcsServer.php:643
+#: src/OcsServer.php:567
 msgid "User informations"
 msgstr "Informations sur l'utilisateur"
 
-#: src/OcsServer.php:649
+#: src/OcsServer.php:569
 msgid "Link with user"
 msgstr "Lier à l'utilisateur"
 
-#: src/OcsServer.php:651
+#: src/OcsServer.php:571
 msgid "From user login / contact"
 msgstr "Depuis l'identifiant utilisateur / contact"
 
-#: src/OcsServer.php:658
+#: src/OcsServer.php:574
 msgid "Affect default group of user by default"
 msgstr "Affecter le groupe par défaut de l'utilisateur par défaut"
 
-#: src/OcsServer.php:666
+#: src/OcsServer.php:575
 msgid "Affect user location by default"
 msgstr "Affecter le lieu de l'utilisateur par défaut"
 
-#: src/OcsServer.php:669
+#: src/OcsServer.php:576
 msgid "Affect first group of user by default"
 msgstr "Affecter le premier groupe de l'utilisateur par défaut"
 
-#: src/OcsServer.php:686
-msgid "After 7006 version of OCS Inventory NG"
-msgstr "Disponible après la version 7006 d'OCS Inventory NG"
-
-#: src/OcsServer.php:709
-msgid "Modems"
-msgstr "Modems"
-
-#: src/OcsServer.php:716
-msgid "Bios"
-msgstr "Bios"
-
-#: src/OcsServer.php:723
-msgid "After 7009 version of OCS Inventory NG && Depends on Bios import"
-msgstr "Disponible après la version 7009 d'OCS Inventory NG && dépendant de l'import du Bios"
-
-#: src/OcsServer.php:729
-msgid "Other component"
-msgstr "Autre composant"
-
-#: src/OcsServer.php:738
-msgid "Linked objects"
-msgstr "Objets liés"
-
-#: src/OcsServer.php:744 src/OcsServer.php:748
+#: src/OcsServer.php:582
 msgid "Global import"
 msgstr "Import global"
 
-#: src/OcsServer.php:745 src/OcsServer.php:749 src/OcsServer.php:774
+#: src/OcsServer.php:583 src/OcsServer.php:595
 msgid "Unit import"
 msgstr "Import unique"
 
-#: src/OcsServer.php:750
+#: src/OcsServer.php:588
 msgid "Unit import on serial number"
 msgstr "Import unique sur numéro de série"
 
-#: src/OcsServer.php:751
+#: src/OcsServer.php:589
 msgid "Unit import serial number only"
 msgstr "Import unique numéro de série uniquement"
 
-#: src/OcsServer.php:800
+#: src/OcsServer.php:622
+msgid "General information"
+msgstr "Informations générales"
+
+#: src/OcsServer.php:624
+msgid "Warning : the import entity rules depends on selected fields"
+msgstr "Attention : les règles d'affectation d'un élément à une entité dépendent des champs sélectionnés"
+
+#: src/OcsServer.php:631
+msgid "After 7006 version of OCS Inventory NG"
+msgstr "Disponible après la version 7006 d'OCS Inventory NG"
+
+#: src/OcsServer.php:638
+msgid "Modems"
+msgstr "Modems"
+
+#: src/OcsServer.php:640
+msgid "Bios"
+msgstr "Bios"
+
+#: src/OcsServer.php:641
+msgid "After 7009 version of OCS Inventory NG && Depends on Bios import"
+msgstr "Disponible après la version 7009 d'OCS Inventory NG && dépendant de l'import du Bios"
+
+#: src/OcsServer.php:643
+msgid "Other component"
+msgstr "Autre composant"
+
+#: src/OcsServer.php:647
+msgid "Linked objects"
+msgstr "Objets liés"
+
+#: src/OcsServer.php:651
 msgid ""
 "Global import: everything is imported but the material is globally managed "
 "(without duplicate)"
 msgstr "Import global : tout est importé mais le matériel est géré de manière globale (sans doublons)"
 
-#: src/OcsServer.php:801
+#: src/OcsServer.php:652
 msgid "Unit import: everything is imported as it is"
 msgstr "Import unique : tout est importé tel quel"
 
-#: src/OcsServer.php:810
+#: src/OcsServer.php:657
 msgid "OCS Inventory NG plugins"
 msgstr "Plugins OCS Inventory NG"
 
-#: src/OcsServer.php:815
+#: src/OcsServer.php:660
 msgid "Microsoft Office licenses"
 msgstr "Licences Microsoft Office"
 
-#: src/OcsServer.php:818
+#: src/OcsServer.php:660
 msgid ""
 "Depends on software import and OfficePack Plugin for "
 "(https://github.com/PluginsOCSInventory-NG/officepack) OCSNG must be "
 "installed"
 msgstr "Dépend de l'importation des logiciels et du plugin OfficePack pour (https://github.com/PluginsOCSInventory-NG/officepack) OCSNG doit être installé"
 
-#: src/OcsServer.php:819
+#: src/OcsServer.php:661
 msgid "Antivirus"
 msgstr "Antivirus"
 
-#: src/OcsServer.php:822
+#: src/OcsServer.php:661
 msgid ""
 "Security Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/security) must be installed"
 msgstr "Le plugin Security pour OCSNG doit être installé (https://github.com/PluginsOCSInventory-NG/security) "
 
-#: src/OcsServer.php:829
+#: src/OcsServer.php:662
 msgid ""
 "Uptime Plugin for OCSNG (https://github.com/PluginsOCSInventory-NG/uptime) "
 "must be installed"
 msgstr "Le plugin Uptime pour OCSNG (https://github.com/PluginsOCSInventory-NG/uptime) doit être installé"
 
-#: src/OcsServer.php:830
+#: src/OcsServer.php:663
 msgid "Windows Update State"
 msgstr "Statut Windows Update"
 
-#: src/OcsServer.php:833
+#: src/OcsServer.php:663
 msgid ""
 "Winupdate Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/winupdate) must be installed"
 msgstr "Le plugin Winupdate pour OCSNG (https://github.com/PluginsOCSInventory-NG/winupdate) doit être installé"
 
-#: src/OcsServer.php:836
+#: src/OcsServer.php:664
 msgid "Teamviewer"
 msgstr "Teamviewer"
 
-#: src/OcsServer.php:839
+#: src/OcsServer.php:664
 msgid ""
 "Teamviewer Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/teamviewer) must be installed"
 msgstr "Le plugin Teamviewer pour OCSNG (https://github.com/PluginsOCSInventory-NG/teamviewer) doit être installé"
 
-#: src/OcsServer.php:843
+#: src/OcsServer.php:665
 msgid ""
 "Navigator Proxy Setting Plugin for OCSNG "
 "(https://github.com/PluginsOCSInventory-NG/navigatorproxysetting) must be "
 "installed"
 msgstr "Le plugin Navigator Proxy Setting pour OCSNG (https://github.com/PluginsOCSInventory-NG/navigatorproxysetting) doit être installé"
 
-#: src/OcsServer.php:849
+#: src/OcsServer.php:666
 msgid ""
 "Winusers Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/winusers) must be installed"
 msgstr "Le plugin Winusers pour OCSNG (https://github.com/PluginsOCSInventory-NG/winusers) doit être installé"
 
-#: src/OcsServer.php:854
+#: src/OcsServer.php:667
 msgid ""
 "OSInstall Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/osinstall) must be installed"
 msgstr "Le plugin OSInstall pour OCSNG doit être installé (https://github.com/PluginsOCSInventory-NG/osinstall) "
 
-#: src/OcsServer.php:860
+#: src/OcsServer.php:668
 msgid ""
 "Networkshare Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/networkshare) must be installed"
 msgstr "Le plugin Networkshare pour OCSNG doit être installé (https://github.com/PluginsOCSInventory-NG/networkshare) "
 
-#: src/OcsServer.php:862
+#: src/OcsServer.php:669
 msgid "Service"
 msgstr "Service"
 
-#: src/OcsServer.php:865
+#: src/OcsServer.php:669
 msgid ""
 "Service Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/services) must be installed"
 msgstr "Le plugin Service pour OCSNG doit être installé (https://github.com/PluginsOCSInventory-NG/services)"
 
-#: src/OcsServer.php:871
+#: src/OcsServer.php:670
 msgid ""
 "Running Process Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/runningProcess) must be installed"
 msgstr "Le plugin Running Process pour OCSNG doit être installé (https://github.com/PluginsOCSInventory-NG/runningProcess)"
 
-#: src/OcsServer.php:876
+#: src/OcsServer.php:671
 msgid ""
 "Customapp Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/customapp) must be installed"
 msgstr "Le plug-in Customapp pour OCSNG (https://github.com/PluginsOCSInventory-NG/customapp) doit être installé"
 
-#: src/OcsServer.php:881
+#: src/OcsServer.php:672
 msgid ""
 "Bitlocker Plugin for OCSNG (https://github.com/PluginsOCSInventory-"
 "NG/bitlocker) must be installed"
 msgstr "Le plugin Bitlocker OCSNG (https://github.com/PluginsOCSInventory-NG/bitlocker) doit être installé"
 
-#: src/OcsServer.php:889
+#: src/OcsServer.php:676
 msgid "OCSNG administrative information"
 msgstr "Informations administratives OCSNG"
 
-#: src/OcsServer.php:981
+#: src/OcsServer.php:696
 msgid "Installation / Update / Uninstallation"
 msgstr "Installation / Mise à jour / Désinstallation"
 
-#: src/OcsServer.php:982
+#: src/OcsServer.php:697
 msgid "Installation / Update"
 msgstr "Installation / Mise à jour"
 
-#: src/OcsServer.php:983
+#: src/OcsServer.php:698
 msgid "Uninstallation"
 msgstr "Désinstallation"
 
-#: src/OcsServer.php:1044
+#: src/OcsServer.php:740
 msgid "Do history"
 msgstr "Historiser"
 
-#: src/OcsServer.php:1048
+#: src/OcsServer.php:742
 msgid "System history"
 msgstr "Historique du système"
 
-#: src/OcsServer.php:1064
+#: src/OcsServer.php:744
 msgid "Bios history"
 msgstr "Historique bios"
 
-#: src/OcsServer.php:1081
+#: src/OcsServer.php:747
 msgid "Devices history"
 msgstr "Historique des composants"
 
-#: src/OcsServer.php:1085
+#: src/OcsServer.php:748
 msgid "Volumes history"
 msgstr "Historique des volumes"
 
-#: src/OcsServer.php:1089
+#: src/OcsServer.php:749
 msgid "Network history"
 msgstr "Historique des informations réseaux"
 
-#: src/OcsServer.php:1093
+#: src/OcsServer.php:750
 msgid "Monitor connection history"
 msgstr "Historique des moniteurs associés"
 
-#: src/OcsServer.php:1097
+#: src/OcsServer.php:751
 msgid "Printer connection history"
 msgstr "Historique des imprimantes associées"
 
-#: src/OcsServer.php:1101
+#: src/OcsServer.php:752
 msgid "Peripheral connection history"
 msgstr "Historique des périphériques associés"
 
-#: src/OcsServer.php:1105
+#: src/OcsServer.php:753
 msgid "Software connection history"
 msgstr "Historique des logiciels associés"
 
-#: src/OcsServer.php:1108
+#: src/OcsServer.php:754
 msgid "Virtual machines history"
 msgstr "Historique des machines virtuelles"
 
-#: src/OcsServer.php:1111
+#: src/OcsServer.php:755
 msgid "Administrative infos history"
 msgstr "Historique des informations administratives"
 
-#: src/OcsServer.php:1114
+#: src/OcsServer.php:756
 msgid "Plugins history"
 msgstr "Historique des plugins"
 
-#: src/OcsServer.php:1118
+#: src/OcsServer.php:757
 msgid "OS history"
 msgstr "Historique OS"
 
-#: src/OcsServer.php:1146
+#: src/OcsServer.php:792
+#, php-format
+msgid "Change to state %s"
+msgstr "Passage à l'état  %s"
+
+#: src/OcsServer.php:808
 msgid "Web address of the OCSNG console"
 msgstr "Chemin d'accès web de la console OCSNG"
 
-#: src/OcsServer.php:1157
+#: src/OcsServer.php:810
 msgid "Limit the import to the following tags (separator $, nothing for all)"
 msgstr "Limiter l'importation aux balises suivantes (séparateur $, rien pour tous)"
 
-#: src/OcsServer.php:1165
+#: src/OcsServer.php:812
 msgid "Exclude the following tags (separator $, nothing for all)"
 msgstr "Exclure les balises suivantes (séparateur $, rien pour aucun)"
 
-#: src/OcsServer.php:1176
+#: src/OcsServer.php:816 src/OcsServer.php:826
+msgid "Behavior when disconnecting"
+msgstr "Comportement lors de la déconnexion"
+
+#: src/OcsServer.php:818
 msgid ""
 "Define the action to do on link with other objects when computer is "
 "disconnecting from them"
 msgstr "Définissez l'action à effectuer sur le lien avec d'autres objets lorsque l'ordinateur est déconnecté"
 
-#: src/OcsServer.php:1180
-msgid "Behavior when disconnecting"
-msgstr "Comportement lors de la déconnexion"
-
-#: src/OcsServer.php:1181
+#: src/OcsServer.php:822
 msgid "Preserve link"
 msgstr "Conserver le lien"
 
-#: src/OcsServer.php:1182
+#: src/OcsServer.php:823
 msgid "Put the link in dustbin and add a lock"
 msgstr "Mettre le lien à la corbeille et ajouter un verrou"
 
-#: src/OcsServer.php:1183
+#: src/OcsServer.php:824
 msgid "Delete  the link permanently"
 msgstr "Supprimer définitivement le lien"
 
-#: src/OcsServer.php:1189
+#: src/OcsServer.php:829
+msgid "Behavior to the deletion of a computer in OCSNG"
+msgstr "Comportement à la suppression d'un ordinateur dans OCSNG"
+
+#: src/OcsServer.php:833 src/OcsServer.php:838 src/OcsServer.php:2472
+msgid "Use the OCSNG software dictionary"
+msgstr "Utiliser le dictionnaire logiciel d'OCSNG"
+
+#: src/OcsServer.php:835
 msgid ""
 "If Use the OCSNG software dictionary parameter is checked, no software will "
 "be imported before you setup them into OCS"
 msgstr "Si le paramètre -Utiliser le dictionnaire logiciel d'OCSNG- est activé, aucun logiciel ne sera importé avant de l'avoir configuré dans OCS"
 
-#: src/OcsServer.php:1193 src/OcsServer.php:2792
-msgid "Use the OCSNG software dictionary"
-msgstr "Utiliser le dictionnaire logiciel d'OCSNG"
-
-#: src/OcsServer.php:1200
+#: src/OcsServer.php:845
 msgid ""
 "The automatic task ocsng is launched only if server is not in expert mode"
 msgstr "La tâche automatique est lancée uniquement si le serveur n'est pas en mode Expert"
 
-#: src/OcsServer.php:1201
+#: src/OcsServer.php:846
 msgid ""
 "The automatic task ocsng only synchronize existant computers, it doesn't "
 "import new computers"
 msgstr "La tâche automatique synchronise uniquement les ordinateurs existants, il n'importe pas les nouveaux ordinateurs"
 
-#: src/OcsServer.php:1202
+#: src/OcsServer.php:847
 msgid ""
 "If you want to import new computers, disable this parameter, change to "
 "expert mode and use script from system"
 msgstr "Si vous voulez importer les nouveaux ordinateurs, désactivez ce paramètre, activez le mode expert et utilisez le script système"
 
-#: src/OcsServer.php:1208
+#: src/OcsServer.php:852
 msgid "Number of items to synchronize via the automatic OCSNG action"
 msgstr "Nombre d'éléments à synchroniser via l'action automatique OCSNG"
 
-#: src/OcsServer.php:1216
-msgid "Behavior to the deletion of a computer in OCSNG"
-msgstr "Comportement à la suppression d'un ordinateur dans OCSNG"
-
-#: src/OcsServer.php:1222
-#, php-format
-msgid "Change to state %s"
-msgstr "Passage à l'état  %s"
-
-#: src/OcsServer.php:1267
+#: src/OcsServer.php:911
 msgid "Database"
 msgstr "Base de données"
 
-#: src/OcsServer.php:1270
+#: src/OcsServer.php:914
 msgid "Standard (allow manual actions)"
 msgstr "Standard (Autorise les actions manuelles)"
 
-#: src/OcsServer.php:1271
+#: src/OcsServer.php:915
 msgid "Expert (Fully automatic, for large configuration)"
 msgstr "Expert (Complètement automatisée, pour grands parcs)"
 
-#: src/OcsServer.php:1308
+#: src/OcsServer.php:951
 msgid "Invalid OCSNG Version: RC3 is required"
 msgstr "Version d'OCSNG non valide : nécessite RC3"
 
-#: src/OcsServer.php:1311
+#: src/OcsServer.php:954
 msgid "Invalid OCSNG configuration (TRACE_DELETED must be active)"
 msgstr "Configuration OCSNG invalide (TRACE_DELETED doit être activé)"
 
-#: src/OcsServer.php:1320
+#: src/OcsServer.php:963
 msgid "Connection to database successful"
 msgstr "Connexion à la base de données réussie"
 
-#: src/OcsServer.php:1321
+#: src/OcsServer.php:964
 msgid "Valid OCSNG configuration and version"
 msgstr "Version et Configuration OCSNG valide"
 
-#: src/OcsServer.php:1365
+#: src/OcsServer.php:1008
 msgid "The OCS console URL must start with http:// or https://"
 msgstr "L'URL de la console OCS doit commencer par http:// ou https://"
 
-#: src/OcsServer.php:1485
+#: src/OcsServer.php:1128
 msgid "Unable to add. The OCSNG server already exists."
 msgstr "Ajout impossible. Le serveur OCSNG existe déjà."
 
-#: src/OcsServer.php:2132
+#: src/OcsServer.php:1812
 msgid "Existing in GLPI"
 msgstr "Présent dans GLPI"
 
-#: src/OcsServer.php:2133
+#: src/OcsServer.php:1813
 msgid "Existing in OCSNG"
 msgstr "Présent dans OCSNG"
 
-#: src/OcsServer.php:2144
+#: src/OcsServer.php:1824
 msgid "No item to clean"
 msgstr "Aucun objet à nettoyer."
 
-#: src/OcsServer.php:2186
+#: src/OcsServer.php:1866
 msgid "Computers updated in OCSNG"
 msgstr "Ordinateurs mis à jour dans OCSNG"
 
-#: src/OcsServer.php:2193 src/OcsServer.php:2284
+#: src/OcsServer.php:1873 src/OcsServer.php:1964
 msgid "All"
 msgstr "Tous"
 
-#: src/OcsServer.php:2254
+#: src/OcsServer.php:1934
 msgid "Manual import mode"
 msgstr "Mode d'import manuel"
 
-#: src/OcsServer.php:2257
+#: src/OcsServer.php:1937
 msgid "Disable preview"
 msgstr "Désactiver la prévisualisation"
 
-#: src/OcsServer.php:2259
+#: src/OcsServer.php:1939
 msgid "Enable preview for import"
 msgstr "Activer la prévisualisation pour l'import"
 
-#: src/OcsServer.php:2260
+#: src/OcsServer.php:1940
 msgid "Enable preview for linking"
 msgstr "Activer la prévisualisation pour les liens"
 
-#: src/OcsServer.php:2263
+#: src/OcsServer.php:1943
 msgid "Check first that duplicates have been correctly managed in OCSNG"
 msgstr "Assurez-vous au préalable d'avoir géré correctement les doublons dans OCSNG"
 
-#: src/OcsServer.php:2293
+#: src/OcsServer.php:1973
 msgid "Override unicity check ?"
 msgstr "Outrepasser la vérification d'unicité ?"
 
-#: src/OcsServer.php:2294
+#: src/OcsServer.php:1974
 msgid "Match the rule ?"
 msgstr "Vérifie la règle ?"
 
-#: src/OcsServer.php:2295
+#: src/OcsServer.php:1975
 msgid "Destination entity"
 msgstr "Entité de destination"
 
-#: src/OcsServer.php:2372
+#: src/OcsServer.php:2052
 msgid "Purge computers in OCSNG"
 msgstr "Suppression des ordinateurs dans OCSNG"
 
-#: src/OcsServer.php:2375
+#: src/OcsServer.php:2055
 msgid "Delete computers"
 msgstr "Mise en corbeille des ordinateurs"
 
-#: src/OcsServer.php:2393
+#: src/OcsServer.php:2073
 msgid "Launch OCSNG synchronization script"
 msgstr "Lancement du script de synchronisation OCSNG"
 
-#: src/OcsServer.php:2397
+#: src/OcsServer.php:2077
 msgid "Clean old agents & drop from OCSNG software"
 msgstr "Nettoyage des agents & suppression depuis OCSNG"
 
-#: src/OcsServer.php:2401
+#: src/OcsServer.php:2081
 msgid "Restore computers from the date of last inventory"
 msgstr "Restaurer les ordinateurs à partir de la date du dernier inventaire"
 
-#: src/OcsServer.php:2447
+#: src/OcsServer.php:2127
 msgid "Clean old agents OK"
 msgstr "Nettoyage des agents OK"
 
-#: src/OcsServer.php:2450
+#: src/OcsServer.php:2130
 msgid "Clean old agents failed"
 msgstr "Nettoyage des agents échoué"
 
-#: src/OcsServer.php:2462
+#: src/OcsServer.php:2142
 msgid "Delete computers OK"
 msgstr "Suppression des ordinateurs OK"
 
-#: src/OcsServer.php:2465
+#: src/OcsServer.php:2145
 msgid "Delete computers failed"
 msgstr "Suppression des ordinateurs échoués"
 
-#: src/OcsServer.php:2545
+#: src/OcsServer.php:2225
 msgid "Restore computers OK"
 msgstr "Restauration des ordinateurs OK"
 
-#: src/OcsServer.php:2548
+#: src/OcsServer.php:2228
 msgid "Restore computers failed"
 msgstr "Restauration des ordinateurs échoués"
 
-#: src/OcsServer.php:2578
+#: src/OcsServer.php:2258
 msgid "Launch OCSNG synchronization script from server"
 msgstr "Lancement du script de synchronisation depuis le serveur"
 
-#: src/OcsServer.php:2857
+#: src/OcsServer.php:2537
 msgid "No data available in table"
 msgstr "Pas de données disponibles"
 
-#: src/OcsServer.php:2858
+#: src/OcsServer.php:2538
 msgid "Showing _START_ to _END_ of _TOTAL_ entries"
 msgstr "Voir _START_ à _END_ de _TOTAL_ entrées"
 
-#: src/OcsServer.php:2859
+#: src/OcsServer.php:2539
 msgid "Showing 0 to 0 of 0 entries"
 msgstr "Voir 0 à 0 de 0 entrées"
 
-#: src/OcsServer.php:2860
+#: src/OcsServer.php:2540
 msgid "(filtered from _MAX_ total entries)"
 msgstr "(filtrés depuis _MAX_ entrées totales)"
 
-#: src/OcsServer.php:2863
+#: src/OcsServer.php:2543
 msgid "Show _MENU_ entries"
 msgstr "Voir _MENU_ entrées"
 
-#: src/OcsServer.php:2867
+#: src/OcsServer.php:2547
 msgid "No matching records found"
 msgstr "Pas d'enregistrements trouvés"
 
-#: src/OcsServer.php:2875
+#: src/OcsServer.php:2555
 msgid ": activate to sort column ascending"
 msgstr ": activer to trier la colonne en ascendant"
 
-#: src/OcsServer.php:2876
+#: src/OcsServer.php:2556
 msgid ": activate to sort column descending"
 msgstr ": activer to trier la colonne en descendant"
 
-#: src/OcsServer.php:2878
+#: src/OcsServer.php:2558
 msgid "Close"
 msgstr "Fermer"
 
-#: src/OcsServer.php:2879
+#: src/OcsServer.php:2559
 msgid "Maximize"
 msgstr "Agrandir"
 
-#: src/OcsServer.php:2880
+#: src/OcsServer.php:2560
 msgid "Minimize"
 msgstr "Réduire"
 
-#: src/OcsServer.php:2881
+#: src/OcsServer.php:2561
 msgid "Refresh"
 msgstr "Rafraichir"
 
-#: src/OcsServer.php:2883
+#: src/OcsServer.php:2563
 msgid "Column visibility"
 msgstr "Visibilité des colonnes"
 
-#: src/OcsServer.php:2887
+#: src/OcsServer.php:2567
 #, php-format
 msgid "%d rows selected"
 msgstr "%d lignes sélectionnées"
@@ -1826,342 +1806,343 @@ msgstr "Éléments qui ne répondent pas aux règles d'affectation de l'entité 
 msgid "OCSNG SNMP"
 msgstr "OCSNG SNMP"
 
-#: src/SnmpOcslink.php:175 src/SnmpOcslink.php:178
+#: src/SnmpOcslink.php:156
 msgid "General SNMP import options"
 msgstr "Options générales de l'import SNMP"
 
-#: src/SnmpOcslink.php:180
+#: src/SnmpOcslink.php:159
 msgid "Import SNMP name"
 msgstr "Import SNMP du nom"
 
-#: src/SnmpOcslink.php:184
+#: src/SnmpOcslink.php:160
 msgid "Import SNMP serial"
 msgstr "Import SNMP du numéro de série"
 
-#: src/SnmpOcslink.php:188
+#: src/SnmpOcslink.php:161
 msgid "Import SNMP comment"
 msgstr "Import SNMP des commentaires"
 
-#: src/SnmpOcslink.php:192
+#: src/SnmpOcslink.php:162
 msgid "Import SNMP contact"
 msgstr "Import SNMP du contact"
 
-#: src/SnmpOcslink.php:196
+#: src/SnmpOcslink.php:163
 msgid "Import SNMP location"
 msgstr "Import SNMP du lieu"
 
-#: src/SnmpOcslink.php:200
+#: src/SnmpOcslink.php:164
 msgid "Import SNMP domain"
 msgstr "Import SNMP du domaine"
 
-#: src/SnmpOcslink.php:204
+#: src/SnmpOcslink.php:165
 msgid "Import SNMP manufacturer"
 msgstr "Import SNMP du fabricant"
 
-#: src/SnmpOcslink.php:208 src/SnmpOcslink.php:296
+#: src/SnmpOcslink.php:166 src/SnmpOcslink.php:197
 msgid "Create network port"
 msgstr "Créer un port réseau"
 
-#: src/SnmpOcslink.php:212
+#: src/SnmpOcslink.php:168
 msgid "Computer SNMP import options"
 msgstr "Options de l'import SNMP d'ordinateurs"
 
-#: src/SnmpOcslink.php:214
+#: src/SnmpOcslink.php:169
 msgid "Import SNMP network cards"
 msgstr "Import SNMP des cartes réseaux"
 
-#: src/SnmpOcslink.php:217
+#: src/SnmpOcslink.php:170
 msgid "Import SNMP memory"
 msgstr "Import SNMP de la mémoire"
 
-#: src/SnmpOcslink.php:221
+#: src/SnmpOcslink.php:171
 msgid "Import SNMP processors"
 msgstr "Import SNMP des processeurs"
 
-#: src/SnmpOcslink.php:224
+#: src/SnmpOcslink.php:172
 msgid "Import SNMP softwares"
 msgstr "Import SNMP des logiciels"
 
-#: src/SnmpOcslink.php:228
+#: src/SnmpOcslink.php:173
 msgid "Import SNMP virtual machines"
 msgstr "Import SNMP des machines virtuelles"
 
-#: src/SnmpOcslink.php:230
+#: src/SnmpOcslink.php:174
 msgid "Import SNMP volumes"
 msgstr "Import des volumes SNMP"
 
-#: src/SnmpOcslink.php:234
+#: src/SnmpOcslink.php:176
 msgid "Printer SNMP import options"
 msgstr "Options de l'import SNMP d'imprimantes"
 
-#: src/SnmpOcslink.php:236
+#: src/SnmpOcslink.php:177
 msgid "Import SNMP last pages counter"
 msgstr "Import SNMP du compteur de pages"
 
-#: src/SnmpOcslink.php:239
+#: src/SnmpOcslink.php:178
 msgid "Import SNMP printer memory"
 msgstr "Import SNMP de la mémoire de l'imprimante"
 
-#: src/SnmpOcslink.php:243
+#: src/SnmpOcslink.php:180
 msgid "Networking SNMP import options"
 msgstr "Options de l'import SNMP des matériels réseaux"
 
-#: src/SnmpOcslink.php:245
+#: src/SnmpOcslink.php:181
 msgid "Import SNMP firmware"
 msgstr "Import SNMP du firmware"
 
-#: src/SnmpOcslink.php:249
+#: src/SnmpOcslink.php:182
 msgid "Import SNMP Power supplies"
 msgstr "Import SNMP des blocs d'alimentation"
 
-#: src/SnmpOcslink.php:253
+#: src/SnmpOcslink.php:183
 msgid "Import SNMP Fans"
 msgstr "Import SNMP des ventilateurs"
 
-#: src/SnmpOcslink.php:261 src/SnmpOcslink.php:266
+#: src/SnmpOcslink.php:187
 msgid "General SNMP link options"
 msgstr "Options générales de la liaison SNMP"
 
-#: src/SnmpOcslink.php:268
+#: src/SnmpOcslink.php:190
 msgid "Link SNMP name"
 msgstr "Lien SNMP du nom"
 
-#: src/SnmpOcslink.php:272
+#: src/SnmpOcslink.php:191
 msgid "Link SNMP serial"
 msgstr "Lien SNMP du numéro de série"
 
-#: src/SnmpOcslink.php:276
+#: src/SnmpOcslink.php:192
 msgid "Link SNMP comment"
 msgstr "Lien SNMP des commentaires"
 
-#: src/SnmpOcslink.php:280
+#: src/SnmpOcslink.php:193
 msgid "Link SNMP contact"
 msgstr "Lien SNMP du contact"
 
-#: src/SnmpOcslink.php:284
+#: src/SnmpOcslink.php:194
 msgid "Link SNMP location"
 msgstr "Lien SNMP du lieu"
 
-#: src/SnmpOcslink.php:288
+#: src/SnmpOcslink.php:195
 msgid "Link SNMP domain"
 msgstr "Lien SNMP du domaine"
 
-#: src/SnmpOcslink.php:292
+#: src/SnmpOcslink.php:196
 msgid "Link SNMP manufacturer"
 msgstr "Lien SNMP du fabricant"
 
-#: src/SnmpOcslink.php:300
+#: src/SnmpOcslink.php:199
 msgid "Computer SNMP link options"
 msgstr "Options de la liaison SNMP d'ordinateurs"
 
-#: src/SnmpOcslink.php:302
+#: src/SnmpOcslink.php:200
 msgid "Link SNMP network cards"
 msgstr "Lien SNMP des cartes réseaux"
 
-#: src/SnmpOcslink.php:305
+#: src/SnmpOcslink.php:201
 msgid "Link SNMP memory"
 msgstr "Lien SNMP de la mémoire"
 
-#: src/SnmpOcslink.php:309
+#: src/SnmpOcslink.php:202
 msgid "Link SNMP processors"
 msgstr "Lien SNMP des processeurs"
 
-#: src/SnmpOcslink.php:312
+#: src/SnmpOcslink.php:203
 msgid "Link SNMP softwares"
 msgstr "Lien SNMP des logiciels"
 
-#: src/SnmpOcslink.php:316
+#: src/SnmpOcslink.php:204
 msgid "Link SNMP virtual machines"
 msgstr "Lien SNMP des machines virtuelles"
 
-#: src/SnmpOcslink.php:318
+#: src/SnmpOcslink.php:205
 msgid "Link SNMP volumes"
 msgstr "Lien des volumes SNMP"
 
-#: src/SnmpOcslink.php:322
+#: src/SnmpOcslink.php:207
 msgid "Printer SNMP link options"
 msgstr "Options de la liaison SNMP d'imprimantes"
 
-#: src/SnmpOcslink.php:324
+#: src/SnmpOcslink.php:208
 msgid "Link SNMP last pages counter"
 msgstr "Lien SNMP du compteur de pages"
 
-#: src/SnmpOcslink.php:327
+#: src/SnmpOcslink.php:209
 msgid "Link SNMP printer memory"
 msgstr "Lien SNMP de la mémoire de l'imprimante"
 
-#: src/SnmpOcslink.php:331
+#: src/SnmpOcslink.php:211
 msgid "Networking SNMP link options"
 msgstr "Options de la liaison SNMP des matériels réseaux"
 
-#: src/SnmpOcslink.php:333
+#: src/SnmpOcslink.php:212
 msgid "Link SNMP firmware"
 msgstr "Lien SNMP du firmware"
 
-#: src/SnmpOcslink.php:337
+#: src/SnmpOcslink.php:213
 msgid "Link SNMP Power supplies"
 msgstr "Lien SNMP des blocs d'alimentation"
 
-#: src/SnmpOcslink.php:341
+#: src/SnmpOcslink.php:214
 msgid "Link SNMP Fans"
 msgstr "Lien SNMP des ventilateurs"
 
-#: src/SnmpOcslink.php:378
+#: src/SnmpOcslink.php:246
 msgid "OCSNG SNMP import"
 msgstr "OCSNG import SNMP"
 
-#: src/SnmpOcslink.php:381
+#: src/SnmpOcslink.php:249
 msgid "See Setup : SNMP Import before"
 msgstr "Voir la configuration : Import SNMP avant"
 
-#: src/SnmpOcslink.php:387 src/SnmpOcslink.php:2059
+#: src/SnmpOcslink.php:255 src/SnmpOcslink.php:1850
 msgid "Import new SNMP devices"
 msgstr "Import de nouveaux objets SNMP"
 
-#: src/SnmpOcslink.php:392
+#: src/SnmpOcslink.php:260
 msgid "Link SNMP devices to existing GLPI objects"
 msgstr "Lier les objets SNMP à des objets GLPI existants"
 
-#: src/SnmpOcslink.php:397
+#: src/SnmpOcslink.php:265
 msgid "Synchronize snmp devices already imported"
 msgstr "Synchronisation des objets SNMP déjà importés"
 
-#: src/SnmpOcslink.php:481
-msgid "SNMP Debug"
-msgstr "SNMP Debug"
+#: src/SnmpOcslink.php:445
+msgid "Linked object"
+msgstr "Objet lié"
 
-#: src/SnmpOcslink.php:866
+#: src/SnmpOcslink.php:445
+msgid "Imported object"
+msgstr "Objet importé"
+
+#: src/SnmpOcslink.php:457 src/SnmpOcslink.php:2099
+msgid "Last OCSNG SNMP inventory date"
+msgstr "Derniere date d'inventaire SNMP OCSNG"
+
+#: src/SnmpOcslink.php:488
+msgctxt "button"
+msgid "Force SNMP synchronization"
+msgstr "Forcer la synchronisation SNMP"
+
+#: src/SnmpOcslink.php:496
+msgid "OCS Inventory NG SNMP Import informations"
+msgstr "Informations de l'import SNMP OCS Inventory NG"
+
+#: src/SnmpOcslink.php:703
 msgid "Printer Memory"
 msgstr "Mémoire de l'imprimante"
 
-#: src/SnmpOcslink.php:1352
+#: src/SnmpOcslink.php:1189
 msgid "Computer Memory"
 msgstr "Mémoire de l'ordinateur"
 
-#: src/SnmpOcslink.php:1992
-msgid "Filter SNMP Objects list"
-msgstr "Flitrer la liste des objets SNMP"
-
-#: src/SnmpOcslink.php:1995
-msgid "By itemtype"
-msgstr "Par type d'objet"
-
-#: src/SnmpOcslink.php:2001
-msgid "By IP"
-msgstr "Par IP"
-
-#: src/SnmpOcslink.php:2061
+#: src/SnmpOcslink.php:1849
 msgid "Import new SNMP devices into glpi"
 msgstr "Import des nouveaux objets SNMP dans GLPI"
 
-#: src/SnmpOcslink.php:2157
+#: src/SnmpOcslink.php:1916
 msgid ""
 "Caution! The imported data (see your configuration) will overwrite the "
 "existing one"
 msgstr "Attention ! Les données importées (voir votre configuration) écraseront les données existantes"
 
-#: src/SnmpOcslink.php:2194 src/SnmpOcslink.php:2363
+#: src/SnmpOcslink.php:1924
+msgid "Contact SNMP"
+msgstr "Contact SNMP"
+
+#: src/SnmpOcslink.php:1925
+msgid "Location SNMP"
+msgstr "Lieu SNMP"
+
+#: src/SnmpOcslink.php:1926
+msgid "Type SNMP"
+msgstr "Type SNMP"
+
+#: src/SnmpOcslink.php:1927
+msgid "Item type to create"
+msgstr "Type d'objet à créer"
+
+#: src/SnmpOcslink.php:1931
+msgid "No new SNMP device to be imported"
+msgstr "Pas de nouvel objet SNMP à importer"
+
+#: src/SnmpOcslink.php:1940
 msgctxt "button"
 msgid "Link"
 msgstr "Lien"
 
-#: src/SnmpOcslink.php:2208
-msgid "Contact SNMP"
-msgstr "Contact SNMP"
-
-#: src/SnmpOcslink.php:2209
-msgid "Location SNMP"
-msgstr "Lieu SNMP"
-
-#: src/SnmpOcslink.php:2210
-msgid "Type SNMP"
-msgstr "Type SNMP"
-
-#: src/SnmpOcslink.php:2213
-msgid "Item type to create"
-msgstr "Type d'objet à créer"
-
-#: src/SnmpOcslink.php:2384 src/SnmpOcslink.php:2394 src/SnmpOcslink.php:2403
-msgid "No new SNMP device to be imported"
-msgstr "Pas de nouvel objet SNMP à importer"
-
-#: src/SnmpOcslink.php:2450 src/SnmpOcslink.php:2565 src/SnmpOcslink.php:2568
-msgid "No new SNMP device to be updated"
-msgstr "Pas de nouvel objet SNMP à mettre à jour"
-
-#: src/SnmpOcslink.php:2508
+#: src/SnmpOcslink.php:2092
 msgid "Snmp device updated in OCSNG"
 msgstr "Objet SNMP mis à jour dans OCSNG"
 
-#: src/SnmpOcslink.php:2525
+#: src/SnmpOcslink.php:2095
 msgid "GLPI Object"
 msgstr "Objet GLPI"
 
-#: src/SnmpOcslink.php:2527
+#: src/SnmpOcslink.php:2097
 msgid "OCS SNMP device"
 msgstr "Objet SNMP OCSNG"
 
-#: src/SnmpOcslink.php:2561
-msgid "Update SNMP device"
-msgstr "Mise à jour de l'objet SNMP"
+#: src/SnmpOcslink.php:2103
+msgid "No new SNMP device to be updated"
+msgstr "Pas de nouvel objet SNMP à mettre à jour"
 
-#: src/Thread.php:149
+#: src/Thread.php:165
 msgid "Process information"
 msgstr "Imformation sur les processus"
 
-#: src/Thread.php:158 src/Thread.php:353
+#: src/Thread.php:174 src/Thread.php:372
 msgid "Beginning date of execution"
 msgstr "Date de début d'exécution"
 
-#: src/Thread.php:159 src/Thread.php:354
+#: src/Thread.php:175 src/Thread.php:373
 msgid "Ending date of execution"
 msgstr "Date de fin d'exécution"
 
-#: src/Thread.php:166 src/Thread.php:361
+#: src/Thread.php:182 src/Thread.php:380
 msgid "Computers refused"
 msgstr "Ordinateurs refusés"
 
-#: src/Thread.php:167 src/Thread.php:362
+#: src/Thread.php:183 src/Thread.php:381
 msgid "Process time execution"
 msgstr "Durée d'exécution du processus"
 
-#: src/Thread.php:168
+#: src/Thread.php:184
 msgid "Total of computers to be treated"
 msgstr "Nombre d'ordinateurs à traiter"
 
-#: src/Thread.php:169
+#: src/Thread.php:185
 msgid "performed percentage"
 msgstr "Pourcentage effectué"
 
-#: src/Thread.php:175
+#: src/Thread.php:191
 msgid "Total of treated computers"
 msgstr "Total d'ordinateurs traités"
 
-#: src/Thread.php:352
+#: src/Thread.php:371
 msgid "Number of threads"
 msgstr "Nombre de threads"
 
-#: src/Thread.php:373
+#: src/Thread.php:392
 msgid "See all servers"
 msgstr "Voir tous les serveurs"
 
-#: src/Thread.php:412
+#: src/Thread.php:431
 msgid "Maximum"
 msgstr "Maximum"
 
 #. TRANS: means computers by second
-#: src/Thread.php:433
+#: src/Thread.php:452
 msgid "pc/s"
 msgstr "pc/s"
 
-#: src/Thread.php:446
+#: src/Thread.php:465
 msgid "Log file"
 msgstr "Fichier journal"
 
-#: src/Thread.php:525
+#: src/Thread.php:544
 msgid "Clean processes"
 msgstr "Nettoyer les processus"
 
-#: src/Thread.php:526
+#: src/Thread.php:545
 msgid "Delete processes after"
 msgstr "Supprimer les processus après"
