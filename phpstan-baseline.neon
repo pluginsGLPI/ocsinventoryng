@@ -1531,12 +1531,6 @@ parameters:
 			path: src/Notimportedcomputer.php
 
 		-
-			message: '#^Method GlpiPlugin\\Ocsinventoryng\\Notimportedcomputer\:\:sendAlert\(\) should return int but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/Notimportedcomputer.php
-
-		-
 			message: '#^Parameter \#1 \$ID of method CommonDBTM\:\:getFromDB\(\) expects int\|string, GlpiPlugin\\Ocsinventoryng\\if given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1844,12 +1838,6 @@ parameters:
 
 		-
 			message: '#^Method GlpiPlugin\\Ocsinventoryng\\OcsServer\:\:cronInfo\(\) should return array but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/OcsServer.php
-
-		-
-			message: '#^Method GlpiPlugin\\Ocsinventoryng\\OcsServer\:\:cronocsng\(\) should return int but return statement is missing\.$#'
 			identifier: return.missing
 			count: 1
 			path: src/OcsServer.php
