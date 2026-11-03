@@ -532,7 +532,7 @@ class Notimportedcomputer extends CommonDBTM
 
 
     /**
-     * @return int
+     * @return int number of not imported computers alerted
      */
     public static function sendAlert()
     {
@@ -543,6 +543,7 @@ class Notimportedcomputer extends CommonDBTM
         }
 
         $items_infos = [];
+        $nb_alerted  = 0;
 
         $iterator = $DB->request([
             'SELECT'    => [
@@ -587,6 +588,7 @@ class Notimportedcomputer extends CommonDBTM
                     $alert->add($input);
                     unset($alert->fields['id']);
                 }
+                $nb_alerted += count($items);
             } else {
                 Toolbox::logDebug(
                     __('%1$s: %2$s') . "\n",
@@ -595,6 +597,8 @@ class Notimportedcomputer extends CommonDBTM
                 );
             }
         }
+
+        return $nb_alerted;
     }
 
 
@@ -628,11 +632,15 @@ class Notimportedcomputer extends CommonDBTM
 
     /**
      * @param $task
+     *
+     * @return int
      */
     public static function cronSendAlerts($task)
     {
-        self::sendAlert();
-        $task->setVolume(1);
+        $nb_alerted = self::sendAlert();
+        $task->setVolume($nb_alerted);
+
+        return $nb_alerted > 0 ? 1 : 0;
     }
 
     /**

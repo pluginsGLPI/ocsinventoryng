@@ -38,7 +38,6 @@ use DBmysql;
 use DbUtils;
 use Dropdown;
 use Entity;
-use Exception;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\DBAL\QueryExpression;
 use GLPIKey;
@@ -2358,8 +2357,8 @@ class OcsServer extends CommonDBTM
                 }
             }
             return 1;
-        } catch (Exception $e) {
         } finally {
+            // No catch: the core logs the exception and marks the run in error
             $_SESSION['glpiname'] = $original_glpiname;
         }
     }

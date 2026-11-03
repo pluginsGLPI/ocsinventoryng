@@ -486,10 +486,13 @@ class NetworkPort extends NetworkPortInstantiation
                         }
                     }
                 }
-                if (!$item_device->isNewItem()) {
+                // Already known card: nothing was created above, load it
+                if ($item_device->isNewItem()) {
                     foreach ($item_net as $net) {
                         $item_device->getFromDB($net['id']);
                     }
+                }
+                if (!$item_device->isNewItem()) {
                     $already_known_ifaces[] = $item_device->getID();
                 }
                 $networkports_id = -1;
@@ -506,7 +509,8 @@ class NetworkPort extends NetworkPortInstantiation
                             unset($inst_input[$field]);
                         }
                     }
-                    $inst_input['items_devicenetworkcards_id'] = $item_device->getID();
+                    // getID() is -1 when the card could not be imported: the column is unsigned
+                    $inst_input['items_devicenetworkcards_id'] = $item_device->isNewItem() ? 0 : $item_device->getID();
 
                     $mask    = $main['result']['IPMASK'];
                     $gateway = $main['result']['IPGATEWAY'];
