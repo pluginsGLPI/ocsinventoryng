@@ -286,6 +286,9 @@ function plugin_version_ocsinventoryng()
         'author'       => 'Gilles Dubois, Remi Collet, Nelly Mahu-Lasson, David Durieux, Xavier Caillaud, Walid Nouh, Arthur Jaouen',
         'license'      => 'GPLv2+',
         'homepage'     => 'https://github.com/pluginsGLPI/ocsinventoryng',
+        // No inline event handler, javascript: URL nor script without nonce: the plugin works
+        // under the Content Security Policy of GLPI (public/js/ocs-server-form.js)
+        'csp_compliant' => true,
         'requirements' => [
             'glpi' => [
                 'min' => '11.0',

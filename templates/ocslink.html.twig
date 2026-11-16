@@ -63,7 +63,7 @@
                     </button>
                     {% if can_delete %}
                     <button type="submit" name="delete_link" value="1" class="btn btn-outline-danger ms-auto"
-                            onclick="return confirm('{{ __('Confirm the final deletion?')|e('js') }}');">
+                            data-ocsinventoryng-confirm="{{ __('Confirm the final deletion?') }}">
                         <i class="ti ti-unlink me-1"></i>{{ _x('button', 'Delete link', 'ocsinventoryng') }}
                     </button>
                     {% endif %}

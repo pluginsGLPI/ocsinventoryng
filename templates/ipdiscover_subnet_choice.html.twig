@@ -34,7 +34,7 @@
     <div class="card-body">
         <div class="row">
             {{ fields.dropdownArrayField('subnetsChoice', 0, subnets, __('Subnet'), {
-                'on_change': 'this.form.submit()',
+                'add_data_attributes': {'ocsinventoryng-submit-on-change': ''},
                 'full_width': true,
             }) }}
         </div>
