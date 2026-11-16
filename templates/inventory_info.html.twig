@@ -60,7 +60,7 @@
                                 {% set is_delete = action.name starts with 'delete' %}
                                 <button type="submit" name="{{ action.name }}" value="1"
                                         class="btn btn-sm {{ is_delete ? 'btn-outline-danger' : 'btn-outline-primary' }}"
-                                        {% if is_delete %}onclick="return confirm('{{ __('Confirm the final deletion?')|e('js') }}');"{% endif %}>
+                                        {% if is_delete %}data-ocsinventoryng-confirm="{{ __('Confirm the final deletion?') }}"{% endif %}>
                                     <i class="ti {{ action.icon ?? 'ti-refresh' }} me-1"></i>{{ action.title }}
                                 </button>
                             </form>

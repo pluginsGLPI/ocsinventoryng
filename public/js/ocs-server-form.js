@@ -68,4 +68,39 @@
     const init = () => document.querySelectorAll('select[class*="ocs-toggle-"]').forEach(applyToggle);
     $(init);
     $(document).on('glpi.tab.loaded', init);
+
+    // Behaviours formerly held by inline handlers, blocked by the Content Security Policy of GLPI.
+
+    // data-ocsinventoryng-confirm="<message>": the click goes on only once confirmed (was
+    // onclick="return confirm(...)"). Capture phase, so that a cancelled click reaches no other
+    // listener and submits no form.
+    document.addEventListener('click', (event) => {
+        if (!(event.target instanceof Element)) {
+            return;
+        }
+        const element = event.target.closest('[data-ocsinventoryng-confirm]');
+        if (element !== null && !window.confirm(element.dataset.ocsinventoryngConfirm)) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+    }, true);
+
+    // data-ocsinventoryng-check-all="<table id>": the "check all" box of templates/table.html.twig
+    // checks or clears the row checkboxes of its table
+    document.addEventListener('click', (event) => {
+        if (!(event.target instanceof Element)) {
+            return;
+        }
+        const checkbox = event.target.closest('[data-ocsinventoryng-check-all]');
+        if (checkbox !== null) {
+            $('#' + CSS.escape(checkbox.dataset.ocsinventoryngCheckAll) + ' input.ocs-row-check')
+                .prop('checked', checkbox.checked);
+        }
+    });
+
+    // data-ocsinventoryng-submit-on-change: the dropdown submits its form when it changes
+    // (select2 triggers the jQuery change event only)
+    $(document).on('change', '[data-ocsinventoryng-submit-on-change]', function () {
+        this.form.submit();
+    });
 })();

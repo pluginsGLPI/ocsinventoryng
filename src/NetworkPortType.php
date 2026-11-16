@@ -168,11 +168,24 @@ class NetworkPortType extends CommonDropdown
                 } else {
                     $speed = true;
                 }
-                Dropdown::showFromArray(
+                // The "Other..." choice of the 'other' option of Dropdown::showFromArray(), rebuilt
+                // here with the same option and the same text field: the core shows that field
+                // through an inline onchange handler, blocked by the Content Security Policy
+                $other_name = 'speed_other_value';
+                $rand = Dropdown::showFromArray(
                     'speed',
-                    $standard_speeds,
-                    ['value' => $this->fields['speed'],
-                        'other' => $speed],
+                    $standard_speeds + [$other_name => __('Other...')],
+                    ['value' => is_string($speed) ? $other_name : $this->fields['speed']],
+                );
+                echo sprintf(
+                    '<input name="%1$s" id="%1$s" type="text"%2$s>',
+                    htmlescape($other_name),
+                    is_string($speed) ? ' value="' . htmlescape($speed) . '"' : ' style="display: none"',
+                );
+                echo Html::scriptBlock(
+                    "$('#dropdown_speed$rand').on('change', function () {
+                        displayOtherSelectOptions(this, '$other_name');
+                    });",
                 );
                 break;
 
